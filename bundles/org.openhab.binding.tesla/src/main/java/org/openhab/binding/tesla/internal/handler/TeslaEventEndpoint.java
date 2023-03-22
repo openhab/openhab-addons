@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
@@ -32,6 +31,8 @@ import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.tesla.internal.protocol.Event;
 import org.openhab.core.io.net.http.WebSocketFactory;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,6 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
 
     private String endpointId;
     protected WebSocketFactory webSocketFactory;
-    private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
 
     private WebSocketClient client;
     private ConnectionState connectionState = ConnectionState.CLOSED;
@@ -62,15 +62,26 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
     private EventHandler eventHandler;
     private final Gson gson = new Gson();
 
-    public TeslaEventEndpoint(WebSocketFactory webSocketFactory) {
+    public TeslaEventEndpoint(ThingUID uid, WebSocketFactory webSocketFactory) {
         try {
-            this.endpointId = "TeslaEventEndpoint-" + INSTANCE_COUNTER.incrementAndGet();
+            this.endpointId = "TeslaEventEndpoint-" + uid.getAsString();
 
-            client = webSocketFactory.createWebSocketClient(endpointId);
+            String name = ThingWebClientUtil.buildWebClientConsumerName(uid, null);
+            client = webSocketFactory.createWebSocketClient(name);
             this.client.setConnectTimeout(TIMEOUT_MILLISECONDS);
             this.client.setMaxIdleTimeout(IDLE_TIMEOUT_MILLISECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void close() {
+        try {
+            if (client.isRunning()) {
+                client.stop();
+            }
+        } catch (Exception e) {
+            logger.warn("An exception occurred while stopping the WebSocket client : {}", e.getMessage());
         }
     }
 
@@ -113,7 +124,7 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
         this.session = session;
     }
 
-    public void close() {
+    public void closeConnection() {
         try {
             connectionState = ConnectionState.CLOSING;
             if (session != null && session.isOpen()) {

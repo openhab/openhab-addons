@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -221,7 +221,10 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult> {
         }
         try {
             byte[] value = device.readCharacteristic(characteristic).get(1, TimeUnit.SECONDS);
-            consumer.accept(BluetoothUtils.getStringValue(value, 0));
+            String strValue = BluetoothUtils.getStringValue(value, 0);
+            if (strValue != null) {
+                consumer.accept(strValue);
+            }
         } catch (ExecutionException e) {
             logger.debug("Failed to aquire uuid {} from device {}: {}", uuid, device.getAddress(), e.getMessage());
         } catch (TimeoutException e) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
-import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothException;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.BluetoothUtils;
@@ -65,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements BlueGigaEventListener {
-    private final long TIMEOUT_SEC = 60;
+    private static final long TIMEOUT_SEC = 60;
 
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBluetoothDevice.class);
 
@@ -548,13 +547,17 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
             characteristic.setService(service);
             handleToCharacteristic.put(handle, characteristic);
         } else {
+            @Nullable
             Integer chrHandle = handleToCharacteristic.floorKey(handle);
             if (chrHandle == null) {
                 logger.debug("BlueGiga: Unable to find characteristic for handle {}", handle);
                 return;
             }
+            @Nullable
             BlueGigaBluetoothCharacteristic characteristic = handleToCharacteristic.get(chrHandle);
-            characteristic.addDescriptor(new BluetoothDescriptor(characteristic, attUUID, handle));
+            if (characteristic != null) {
+                characteristic.addDescriptor(new BluetoothDescriptor(characteristic, attUUID, handle));
+            }
         }
     }
 
@@ -749,9 +752,11 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         } else {
             // it must be one of the descriptors we need to update
             UUID attUUID = handleToUUID.get(handle);
-            BluetoothDescriptor descriptor = characteristic.getDescriptor(attUUID);
-            notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor,
-                    BluetoothUtils.toByteArray(event.getValue()));
+            if (attUUID != null) {
+                BluetoothDescriptor descriptor = characteristic.getDescriptor(attUUID);
+                notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor,
+                        BluetoothUtils.toByteArray(event.getValue()));
+            }
         }
     }
 

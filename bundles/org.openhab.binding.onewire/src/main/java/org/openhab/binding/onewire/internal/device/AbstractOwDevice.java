@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AbstractOwClass} class defines an abstract onewire device
+ * The {@link AbstractOwDevice} class defines an abstract onewire device
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -68,7 +68,7 @@ public abstract class AbstractOwDevice {
     /**
      * refresh this sensor
      *
-     * @param bridgeHandler for sending requests
+     * @param owBridgeHandler for sending requests
      * @param forcedRefresh post update even if state did not change
      * @throws OwException in case of communication error
      */
@@ -80,9 +80,7 @@ public abstract class AbstractOwDevice {
      * @param channelID the channels channelID
      */
     public void enableChannel(String channelID) {
-        if (!enabledChannels.contains(channelID)) {
-            enabledChannels.add(channelID);
-        }
+        enabledChannels.add(channelID);
     }
 
     /**
@@ -91,9 +89,7 @@ public abstract class AbstractOwDevice {
      * @param channelID the channels channelID
      */
     public void disableChannel(String channelID) {
-        if (enabledChannels.contains(channelID)) {
-            enabledChannels.remove(channelID);
-        }
+        enabledChannels.remove(channelID);
     }
 
     /**
@@ -108,10 +104,9 @@ public abstract class AbstractOwDevice {
     /**
      * check sensor presence and update thing state
      *
-     * @param owServerConnection
+     * @param bridgeHandler
      * @return sensors presence state
      */
-
     public Boolean checkPresence(OwserverBridgeHandler bridgeHandler) {
         try {
             State present = bridgeHandler.checkPresence(sensorId);
@@ -122,19 +117,5 @@ public abstract class AbstractOwDevice {
                     bridgeHandler.getThing().getUID(), e.getMessage());
             return false;
         }
-    }
-
-    /**
-     * get this sensors type
-     *
-     * @param bridgeHandler bridge handler to request from if type formerly unknown
-     * @return this sensors type
-     * @throws OwException
-     */
-    public OwSensorType getSensorType(OwserverBridgeHandler bridgeHandler) throws OwException {
-        if (sensorType == OwSensorType.UNKNOWN) {
-            sensorType = bridgeHandler.getType(sensorId);
-        }
-        return sensorType;
     }
 }

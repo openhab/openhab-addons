@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -155,8 +154,13 @@ public class SerialConnection {
         }
 
         if (logger.isTraceEnabled()) {
-            logger.trace("buffer contains bytes: {}",
-                    HexUtils.bytesToHex(ArrayUtils.toPrimitive(bytes.toArray(new Byte[bytes.size()]))));
+            int j = 0;
+            byte[] primeBytes = new byte[bytes.size()];
+            for (Byte b : bytes.toArray(new Byte[bytes.size()])) {
+                primeBytes[j++] = b.byteValue();
+            }
+
+            logger.trace("buffer contains bytes: {}", HexUtils.bytesToHex(primeBytes));
         }
 
         if (bytes.size() > 1) {

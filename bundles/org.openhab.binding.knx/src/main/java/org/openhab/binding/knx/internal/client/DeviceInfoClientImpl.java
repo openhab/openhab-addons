@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
     }
 
     private byte @Nullable [] readFromManagementClient(String task, long timeout, IndividualAddress address,
-            ReadFunction<Destination, byte[]> function) {
+            ReadFunction<Destination, byte[]> function) throws InterruptedException {
         final long start = System.nanoTime();
         while ((System.nanoTime() - start) < TimeUnit.MILLISECONDS.toNanos(timeout)) {
             Destination destination = null;
@@ -68,7 +68,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
                 }
             } catch (InterruptedException e) {
                 logger.trace("Interrupted to {}", task);
-                return null;
+                throw e;
             } finally {
                 if (destination != null) {
                     destination.destroy();
@@ -87,7 +87,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
 
     @Override
     public synchronized byte @Nullable [] readDeviceDescription(IndividualAddress address, int descType,
-            boolean authenticate, long timeout) {
+            boolean authenticate, long timeout) throws InterruptedException {
         String task = "read the device description";
         return readFromManagementClient(task, timeout, address, destination -> {
             authorize(authenticate, destination);
@@ -97,7 +97,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
 
     @Override
     public synchronized byte @Nullable [] readDeviceMemory(IndividualAddress address, int startAddress, int bytes,
-            boolean authenticate, long timeout) {
+            boolean authenticate, long timeout) throws InterruptedException {
         String task = MessageFormat.format("read {0} bytes at memory location {1}", bytes, startAddress);
         return readFromManagementClient(task, timeout, address, destination -> {
             authorize(authenticate, destination);
@@ -108,7 +108,7 @@ public class DeviceInfoClientImpl implements DeviceInfoClient {
     @Override
     public synchronized byte @Nullable [] readDeviceProperties(IndividualAddress address,
             final int interfaceObjectIndex, final int propertyId, final int start, final int elements,
-            boolean authenticate, long timeout) {
+            boolean authenticate, long timeout) throws InterruptedException {
         String task = MessageFormat.format("read device property {0} at index {1}", propertyId, interfaceObjectIndex);
         return readFromManagementClient(task, timeout, address, destination -> {
             authorize(authenticate, destination);

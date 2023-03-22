@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,9 +35,9 @@ public class LocationValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String formatPattern = pattern;
-        PointType point = ((PointType) state);
+        PointType point = (PointType) command;
 
         if (formatPattern == null || "%s".equals(formatPattern)) {
             if (point.getAltitude().toBigDecimal().equals(BigDecimal.ZERO)) {
@@ -51,11 +51,11 @@ public class LocationValue extends Value {
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
+    public PointType parseCommand(Command command) throws IllegalArgumentException {
         if (command instanceof PointType) {
-            state = ((PointType) command);
+            return ((PointType) command);
         } else {
-            state = PointType.valueOf(command.toString());
+            return PointType.valueOf(command.toString());
         }
     }
 }

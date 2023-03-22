@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Configuration object for the device thing handler.
  *
  * @author Karel Goderis - Initial contribution
- * @author Simon Kaufmann - refactoring & cleanup
+ * @author Simon Kaufmann - refactoring and cleanup
  */
 @NonNullByDefault
 public class DeviceConfig {
-
     private String address = "";
     private boolean fetch = false;
     private int pingInterval = 0;

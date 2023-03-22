@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GreeException extends Exception {
     private static final long serialVersionUID = -2337258558995287405L;
-    private static String EX_NONE = "none";
+    private static final String EX_NONE = "none";
 
     public GreeException(@Nullable Exception exception) {
         super(exception);
@@ -92,7 +92,7 @@ public class GreeException extends Exception {
         return getCauseClass() == UnknownHostException.class;
     }
 
-    public boolean IsJSONException() {
+    public boolean isJSONException() {
         return getCauseClass() == JsonSyntaxException.class;
     }
 

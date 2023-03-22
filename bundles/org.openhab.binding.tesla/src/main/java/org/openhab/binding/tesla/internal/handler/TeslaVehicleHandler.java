@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -193,7 +193,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
             if (enableEvents) {
                 if (eventThread == null) {
-                    eventThread = new Thread(eventRunnable, "openHAB-Tesla-Events-" + getThing().getUID());
+                    eventThread = new Thread(eventRunnable, "OH-binding-" + getThing().getUID() + "-events");
                     eventThread.start();
                 }
             }
@@ -818,31 +818,34 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         if (authHeader != null) {
             try {
                 // get a list of vehicles
-                Response response = account.vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                        .header("Authorization", authHeader).get();
+                synchronized (account.vehiclesTarget) {
+                    Response response = account.vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                            .header("Authorization", authHeader).get();
 
-                logger.debug("Querying the vehicle, response : {}, {}", response.getStatus(),
-                        response.getStatusInfo().getReasonPhrase());
+                    logger.debug("Querying the vehicle, response : {}, {}", response.getStatus(),
+                            response.getStatusInfo().getReasonPhrase());
 
-                if (!checkResponse(response, true)) {
-                    logger.debug("An error occurred while querying the vehicle");
-                    return null;
-                }
-
-                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
-                Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
-
-                for (Vehicle vehicle : vehicleArray) {
-                    logger.debug("Querying the vehicle: VIN {}", vehicle.vin);
-                    if (vehicle.vin.equals(getConfig().get(VIN))) {
-                        vehicleJSON = gson.toJson(vehicle);
-                        parseAndUpdate("queryVehicle", null, vehicleJSON);
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("Vehicle is id {}/vehicle_id {}/tokens {}", vehicle.id, vehicle.vehicle_id,
-                                    vehicle.tokens);
-                        }
-                        return vehicle;
+                    if (!checkResponse(response, true)) {
+                        logger.debug("An error occurred while querying the vehicle");
+                        return null;
                     }
+
+                    JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
+                    Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
+
+                    for (Vehicle vehicle : vehicleArray) {
+                        logger.debug("Querying the vehicle: VIN {}", vehicle.vin);
+                        if (vehicle.vin.equals(getConfig().get(VIN))) {
+                            vehicleJSON = gson.toJson(vehicle);
+                            parseAndUpdate("queryVehicle", null, vehicleJSON);
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("Vehicle is id {}/vehicle_id {}/tokens {}", vehicle.id, vehicle.vehicle_id,
+                                        vehicle.tokens);
+                            }
+                            return vehicle;
+                        }
+                    }
+
                 }
             } catch (ProcessingException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -1127,7 +1130,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            eventEndpoint = new TeslaEventEndpoint(webSocketFactory);
+            eventEndpoint = new TeslaEventEndpoint(getThing().getUID(), webSocketFactory);
             eventEndpoint.addEventHandler(new TeslaEventEndpoint.EventHandler() {
                 @Override
                 public void handleEvent(Event event) {
@@ -1209,13 +1212,13 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                     }
                                     if (systemTimeStamp - currentTimeStamp > EVENT_TIMESTAMP_MAX_DELTA) {
                                         logger.trace("Event : The event endpoint will be reset");
-                                        eventEndpoint.close();
+                                        eventEndpoint.closeConnection();
                                     }
                                 }
                                 break;
                             case "data:error":
                                 logger.debug("Event : Received an error: '{}'/'{}'", event.value, event.error_type);
-                                eventEndpoint.close();
+                                eventEndpoint.closeConnection();
                                 break;
                         }
                     }
@@ -1260,7 +1263,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                             "Event : Reached the maximum number of errors ({}) for the current interval ({} seconds)",
                                             EVENT_MAXIMUM_ERRORS_IN_INTERVAL, EVENT_ERROR_INTERVAL_SECONDS);
                                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                                    eventEndpoint.close();
+                                    eventEndpoint.closeConnection();
                                 }
 
                                 if ((System.currentTimeMillis() - eventIntervalTimestamp) > 1000
@@ -1298,6 +1301,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
                 if (Thread.interrupted()) {
                     logger.debug("Event : The event thread was interrupted");
+                    eventEndpoint.close();
                     return;
                 }
             }

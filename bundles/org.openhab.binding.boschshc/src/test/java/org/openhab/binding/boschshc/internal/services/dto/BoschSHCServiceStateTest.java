@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.services.dto;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -53,14 +52,14 @@ public class BoschSHCServiceStateTest {
     private final Gson gson = new Gson();
 
     @Test
-    public void fromJson_nullStateForDifferentType() {
+    public void fromJsonNullStateForDifferentType() {
         var state = BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"differentState\"}", JsonObject.class),
                 TestState.class);
         assertEquals(null, state);
     }
 
     @Test
-    public void fromJson_stateObjectForValidJson() {
+    public void fromJsonStateObjectForValidJson() {
         var state = BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
                 TestState.class);
         assertNotEquals(null, state);
@@ -70,7 +69,7 @@ public class BoschSHCServiceStateTest {
      * This checks for a bug we had where the expected type stayed the same for different state classes
      */
     @Test
-    public void fromJson_stateObjectForValidJsonAfterOtherState() {
+    public void fromJsonStateObjectForValidJsonAfterOtherState() {
         BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState\"}", JsonObject.class), TestState.class);
         var state2 = BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState2\"}", JsonObject.class),
                 TestState2.class);

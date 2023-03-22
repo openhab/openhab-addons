@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,7 +156,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         try {
             db = getDB(name);
         } catch (Exception e) {
-            logger.warn("Failed to open rrd4j database '{}' ({})", name, e.getClass().getName());
+            logger.warn("Failed to open rrd4j database '{}' to store data ({})", name, e.toString());
         }
         if (db == null) {
             return;
@@ -252,13 +252,19 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        ZonedDateTime filterBeginDate = filter.getBeginDate();
+        ZonedDateTime filterEndDate = filter.getEndDate();
+        if (filterBeginDate != null && filterEndDate != null && filterBeginDate.isAfter(filterEndDate)) {
+            throw new IllegalArgumentException("begin (" + filterBeginDate + ") before end (" + filterEndDate + ")");
+        }
+
         String itemName = filter.getItemName();
 
         RrdDb db = null;
         try {
             db = getDB(itemName);
         } catch (Exception e) {
-            logger.warn("Failed to open rrd4j database '{}' ({})", itemName, e.getClass().getName());
+            logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
             return List.of();
         }
         if (db == null) {
@@ -280,11 +286,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         long start = 0L;
-        long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
-                : filter.getEndDate().toInstant().getEpochSecond();
+        long end = filterEndDate == null ? System.currentTimeMillis() / 1000
+                : filterEndDate.toInstant().getEpochSecond();
 
         try {
-            if (filter.getBeginDate() == null) {
+            if (filterBeginDate == null) {
                 // as rrd goes back for years and gets more and more
                 // inaccurate, we only support descending order
                 // and a single return value
@@ -293,7 +299,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 // query, which we want to support
                 if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
                         && filter.getPageNumber() == 0) {
-                    if (filter.getEndDate() == null) {
+                    if (filterEndDate == null) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
@@ -308,11 +314,19 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         start = end;
                     }
                 } else {
-                    throw new UnsupportedOperationException("rrd4j does not allow querys without a begin date, "
-                            + "unless order is descending and a single value is requested");
+                    throw new UnsupportedOperationException(
+                            "rrd4j does not allow querys without a begin date, unless order is descending and a single value is requested");
                 }
             } else {
-                start = filter.getBeginDate().toInstant().getEpochSecond();
+                start = filterBeginDate.toInstant().getEpochSecond();
+            }
+
+            // do not call method {@link RrdDb#createFetchRequest(ConsolFun, long, long, long)} if start > end to avoid
+            // an IAE to be thrown
+            if (start > end) {
+                logger.debug("Could not query rrd4j database for item '{}': start ({}) > end ({})", itemName, start,
+                        end);
+                return List.of();
             }
 
             FetchRequest request = db.createFetchRequest(getConsolidationFunction(db), start, end, 1);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.deconz;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
+import static org.openhab.core.thing.internal.ThingManagerImpl.PROPERTY_THING_TYPE_VERSION;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -77,34 +78,36 @@ public class LightsTest {
         assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
-        ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
-        ChannelUID channelUID_ct = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
+        ChannelUID channelUIDBri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
+        ChannelUID channelUIDCt = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
 
         Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID)
-                .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build())
-                .withChannel(ChannelBuilder.create(channelUID_ct, "Number").build()).build();
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDBri, "Dimmer").build())
+                .withChannel(ChannelBuilder.create(channelUIDCt, "Number").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
                 commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
-        lightThingHandler.messageReceived("", lightMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("21")));
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_ct), eq(new DecimalType("2500")));
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDBri), eq(new PercentType("21")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDCt), eq(new DecimalType("2500")));
     }
 
     @Test
     public void colorTemperatureLightStateDescriptionProviderTest() {
         ThingUID thingUID = new ThingUID("deconz", "light");
-        ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
-        ChannelUID channelUID_ct = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
+        ChannelUID channelUIDBri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
+        ChannelUID channelUIDCt = new ChannelUID(thingUID, CHANNEL_COLOR_TEMPERATURE);
 
         Map<String, String> properties = new HashMap<>();
         properties.put(PROPERTY_CT_MAX, "500");
         properties.put(PROPERTY_CT_MIN, "200");
+        properties.put(PROPERTY_THING_TYPE_VERSION, "1");
 
         Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID).withProperties(properties)
-                .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build())
-                .withChannel(ChannelBuilder.create(channelUID_ct, "Number").build()).build();
+                .withChannel(ChannelBuilder.create(channelUIDBri, "Dimmer").build())
+                .withChannel(ChannelBuilder.create(channelUIDCt, "Number").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
                 commandDescriptionProvider) {
             // avoid warning when initializing
@@ -116,7 +119,7 @@ public class LightsTest {
 
         lightThingHandler.initialize();
 
-        Mockito.verify(stateDescriptionProvider).setDescriptionFragment(eq(channelUID_ct), any());
+        Mockito.verify(stateDescriptionProvider).setDescriptionFragment(eq(channelUIDCt), any());
     }
 
     @Test
@@ -125,16 +128,17 @@ public class LightsTest {
         assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
-        ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
+        ChannelUID channelUIDBri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
 
         Thing light = ThingBuilder.create(THING_TYPE_DIMMABLE_LIGHT, thingUID)
-                .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build()).build();
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDBri, "Dimmer").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
                 commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
-        lightThingHandler.messageReceived("", lightMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("38")));
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDBri), eq(new PercentType("38")));
     }
 
     @Test
@@ -143,16 +147,17 @@ public class LightsTest {
         assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
-        ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
+        ChannelUID channelUIDBri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
 
         Thing light = ThingBuilder.create(THING_TYPE_DIMMABLE_LIGHT, thingUID)
-                .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build()).build();
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDBri, "Dimmer").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
                 commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
-        lightThingHandler.messageReceived("", lightMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("100")));
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDBri), eq(new PercentType("100")));
     }
 
     @Test
@@ -161,16 +166,17 @@ public class LightsTest {
         assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
-        ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
+        ChannelUID channelUIDBri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
 
         Thing light = ThingBuilder.create(THING_TYPE_DIMMABLE_LIGHT, thingUID)
-                .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build()).build();
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDBri, "Dimmer").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
                 commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
-        lightThingHandler.messageReceived("", lightMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("0")));
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDBri), eq(new PercentType("0")));
     }
 
     @Test
@@ -179,15 +185,16 @@ public class LightsTest {
         assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
-        ChannelUID channelUID_pos = new ChannelUID(thingUID, CHANNEL_POSITION);
+        ChannelUID channelUIDPos = new ChannelUID(thingUID, CHANNEL_POSITION);
 
         Thing light = ThingBuilder.create(THING_TYPE_WINDOW_COVERING, thingUID)
-                .withChannel(ChannelBuilder.create(channelUID_pos, "Rollershutter").build()).build();
+                .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, "1"))
+                .withChannel(ChannelBuilder.create(channelUIDPos, "Rollershutter").build()).build();
         LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider,
                 commandDescriptionProvider);
         lightThingHandler.setCallback(thingHandlerCallback);
 
-        lightThingHandler.messageReceived("", lightMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_pos), eq(new PercentType("41")));
+        lightThingHandler.messageReceived(lightMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUIDPos), eq(new PercentType("41")));
     }
 }

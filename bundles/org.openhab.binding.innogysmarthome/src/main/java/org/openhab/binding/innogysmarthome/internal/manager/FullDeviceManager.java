@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,6 @@ public class FullDeviceManager {
      * states. Calling this may take a while...
      */
     public List<Device> getFullDevices() throws IOException, ApiException, AuthenticationException {
-
         final Map<String, Location> locationMap = createLocationMap(client);
         final Map<String, Capability> capabilityMap = createCapabilityMap(client);
         final Map<String, DeviceState> deviceStateMap = createDeviceStateMap(client);
@@ -91,7 +90,6 @@ public class FullDeviceManager {
 
     private void initializeDevice(Device device, @Nullable DeviceState deviceState, Map<String, Location> locationMap,
             Map<String, Capability> capabilityMap, List<Message> messageList) {
-
         device.setDeviceState(deviceState);
 
         if (isBatteryPowered(device)) {
@@ -135,7 +133,6 @@ public class FullDeviceManager {
 
     private static Map<String, Capability> createCapabilityMap(InnogyClient client)
             throws IOException, ApiException, AuthenticationException {
-
         final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
         final List<Capability> capabilityList = client.getCapabilities();
 
@@ -144,7 +141,6 @@ public class FullDeviceManager {
 
     private static Map<String, Capability> createCapabilityMap(String deviceId, InnogyClient client)
             throws IOException, ApiException, AuthenticationException {
-
         final Map<String, CapabilityState> capabilityStateMap = createCapabilityStateMap(client);
         final List<Capability> capabilityList = client.getCapabilitiesForDevice(deviceId);
 
@@ -167,7 +163,6 @@ public class FullDeviceManager {
 
     private static Map<String, Capability> createDeviceCapabilityMap(Device device,
             Map<String, Capability> capabilityMap) {
-
         final HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
         for (final String capabilityValue : device.getCapabilities()) {
             final Capability capability = capabilityMap.get(Link.getId(capabilityValue));

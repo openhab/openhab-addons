@@ -1,6 +1,6 @@
 # Shelly Binding
 
-This Binding integrates [Shelly devices](https://shelly.cloud) devloped by Allterco.
+This Binding integrates [Shelly devices](https://shelly.cloud) developed by Allterco.
 
 Allterco provides a rich set of smart home devices. All of them are WiFi enabled (2,4GHz, IPv4 only) and provide a documented API.
 The binding is officially acknowledged by Allterco and openHAB is listed as a reference and directly supports the openHAB community.
@@ -121,10 +121,6 @@ Disabling this feature allows granular control, which event types will be used.
 This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
 In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
 
-'Generation 2:'
-
-### Generation 2 (Plus
-
 ## Firmware
 
 The binding requires firmware version 1.8.2 or newer for generation 1  to enable all features, version 1.9.2+ is recommended. Generation 2 devices require 0.10.2 or newer, the Plus HT at least 0.11.0.
@@ -227,7 +223,7 @@ The period is computed depending on the device type and configuration:
 - else, if CoIoT or WebSocket is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
 - else 2*60+10sec = 130sec
 
-Once the timer expires the device switches to OFFFLINE and the bindings starts to re-initialize the device periodically.
+Once the timer expires the device switches to OFFLINE and the bindings starts to re-initialize the device periodically.
 
 You could also create a rule to catch those status changes or device alarms (see rule examples).
 

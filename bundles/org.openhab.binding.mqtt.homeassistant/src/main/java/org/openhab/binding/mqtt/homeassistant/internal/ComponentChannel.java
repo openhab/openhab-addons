@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -231,6 +231,11 @@ public class ComponentChannel {
                     ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(stateTopic)
                             .withCommandTopic(commandTopic).makeTrigger(trigger).withFormatter(format).build(),
                     channelUID, valueState, channelStateUpdateListener, commandFilter);
+
+            // disabled by default components should always show up as advanced
+            if (!component.isEnabledByDefault()) {
+                isAdvanced = true;
+            }
 
             if (this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class TestICloud {
     private final Logger logger = LoggerFactory.getLogger(TestICloud.class);
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         if (logger instanceof ch.qos.logback.classic.Logger) {
             ((ch.qos.logback.classic.Logger) logger).setLevel(ch.qos.logback.classic.Level.DEBUG);

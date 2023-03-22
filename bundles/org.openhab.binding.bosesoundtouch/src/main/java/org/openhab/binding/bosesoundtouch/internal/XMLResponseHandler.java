@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,11 +97,6 @@ public class XMLResponseHandler extends DefaultHandler {
                                              // showing a
                                              // warning for unhandled states
 
-        XMLHandlerState localState = null;
-        if (stateMap != null) {
-            localState = stateMap.get(localName);
-        }
-
         switch (curState) {
             case INIT:
                 if ("updates".equals(localName)) {
@@ -112,10 +107,13 @@ public class XMLResponseHandler extends DefaultHandler {
                         state = XMLHandlerState.Unprocessed;
                     }
                 } else {
+                    XMLHandlerState localState = stateMap.get(localName);
                     if (localState == null) {
-                        logger.debug("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
+                        logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
                                 localName);
                         state = XMLHandlerState.Unprocessed;
+                    } else {
+                        state = localState;
                     }
                 }
                 break;
@@ -196,9 +194,11 @@ public class XMLResponseHandler extends DefaultHandler {
                     state = XMLHandlerState.Presets;
                 } else if ("group".equals(localName)) {
                     this.masterDeviceId = new BoseSoundTouchConfiguration();
+                    state = stateMap.get(localName);
                 } else {
-                    if (localState == null) {
-                        logger.debug("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
+                    state = stateMap.get(localName);
+                    if (state == null) {
+                        logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
                                 localName);
 
                         state = XMLHandlerState.Unprocessed;
@@ -366,16 +366,12 @@ public class XMLResponseHandler extends DefaultHandler {
             if (contentItem == null) {
                 contentItem = new ContentItem();
             }
-            String source = "";
-            String location = "";
-            String sourceAccount = "";
-            Boolean isPresetable = false;
 
             if (attributes != null) {
-                source = attributes.getValue("source");
-                sourceAccount = attributes.getValue("sourceAccount");
-                location = attributes.getValue("location");
-                isPresetable = Boolean.parseBoolean(attributes.getValue("isPresetable"));
+                String source = attributes.getValue("source");
+                String location = attributes.getValue("location");
+                String sourceAccount = attributes.getValue("sourceAccount");
+                Boolean isPresetable = Boolean.parseBoolean(attributes.getValue("isPresetable"));
 
                 if (source != null) {
                     contentItem.setSource(source);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,8 +84,9 @@ public class D2_05_00 extends _VLDMessage {
 
     protected State getPositionData() {
         if (getCMD() == CMD_ACTUATOR_POSITION_RESPONE) {
-            if (bytes[0] != 127) {
-                return new PercentType(bytes[0] & 0x7f);
+            int position = bytes[0] & 0x7f;
+            if (position != 127) {
+                return new PercentType(position);
             }
         }
 

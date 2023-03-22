@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,22 +13,22 @@
 package org.openhab.binding.unifi.internal.api.cache;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonElement;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
-import org.openhab.binding.unifi.internal.api.dto.UniFiPortTable;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
+import org.openhab.binding.unifi.internal.api.dto.UniFiVoucher;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Bowman - Initial contribution
  * @author Hilbrand Bouwkamp - Moved cache to this dedicated class.
+ * @author Mark Herwege - Added guest vouchers
  */
 @NonNullByDefault
 public class UniFiControllerCache {
@@ -49,7 +50,8 @@ public class UniFiControllerCache {
     private final UniFiDeviceCache devicesCache = new UniFiDeviceCache();
     private final UniFiClientCache clientsCache = new UniFiClientCache();
     private final UniFiClientCache insightsCache = new UniFiClientCache();
-    private final Map<String, Map<Integer, UniFiPortTuple>> devicesToPortTables = new ConcurrentHashMap<>();
+    private final UniFiVoucherCache vouchersCache = new UniFiVoucherCache();
+    private final Map<String, UniFiSwitchPorts> devicesToPortTables = new ConcurrentHashMap<>();
 
     public void clear() {
         sitesCache.clear();
@@ -57,6 +59,7 @@ public class UniFiControllerCache {
         devicesCache.clear();
         clientsCache.clear();
         insightsCache.clear();
+        vouchersCache.clear();
     }
 
     // Sites Cache
@@ -94,23 +97,23 @@ public class UniFiControllerCache {
         devicesCache.putAll(devices);
         if (devices != null) {
             Stream.of(devices).filter(Objects::nonNull).forEach(d -> {
-                Stream.ofNullable(d.getPortTable()).flatMap(pt -> Stream.of(pt)).filter(UniFiPortTable::isPortPoe)
-                        .forEach(p -> {
-                            final Map<Integer, UniFiPortTuple> tupleTable = devicesToPortTables
-                                    .computeIfAbsent(d.getMac(), tt -> new HashMap<>());
-                            final UniFiPortTuple tuple = tupleTable.computeIfAbsent(p.getPortIdx(),
-                                    t -> new UniFiPortTuple());
+                Stream.ofNullable(d.getPortTable()).forEach(pt -> {
+                    final UniFiSwitchPorts switchPorts = devicesToPortTables.computeIfAbsent(d.getMac(),
+                            p -> new UniFiSwitchPorts());
 
-                            tuple.setDevice(d);
-                            tuple.setTable(p);
-                        });
+                    Stream.of(pt).forEach(p -> {
+                        @SuppressWarnings("null")
+                        final UniFiPortTuple tuple = switchPorts.computeIfAbsent(p.getPortIdx());
+
+                        tuple.setDevice(d);
+                        tuple.setTable(p);
+                    });
+                });
                 Stream.ofNullable(d.getPortOverrides()).forEach(po -> {
-                    final Map<Integer, UniFiPortTuple> tupleTable = devicesToPortTables.get(d.getMac());
+                    final UniFiSwitchPorts tupleTable = devicesToPortTables.get(d.getMac());
 
                     if (tupleTable != null) {
-                        Stream.of(po).filter(pof -> !pof.getAsJsonObject().entrySet().isEmpty())
-                                .map(UnfiPortOverrideJsonElement::new).forEach(p -> tupleTable
-                                        .computeIfAbsent(p.getPortIdx(), t -> new UniFiPortTuple()).setJsonElement(p));
+                        Stream.of(po).forEach(p -> tupleTable.setOverride(p));
                     }
                 });
             });
@@ -121,11 +124,12 @@ public class UniFiControllerCache {
         return devicesCache.get(id);
     }
 
-    public Map<Integer, UniFiPortTuple> getSwitchPorts(@Nullable final String deviceId) {
-        return deviceId == null ? Map.of() : devicesToPortTables.getOrDefault(deviceId, Map.of());
+    public UniFiSwitchPorts getSwitchPorts(@Nullable final String deviceId) {
+        return deviceId == null ? new UniFiSwitchPorts()
+                : devicesToPortTables.getOrDefault(deviceId, new UniFiSwitchPorts());
     }
 
-    public Collection<Map<Integer, UniFiPortTuple>> getSwitchPorts() {
+    public Collection<UniFiSwitchPorts> getSwitchPorts() {
         return devicesToPortTables.values();
     }
 
@@ -139,8 +143,8 @@ public class UniFiControllerCache {
         return clientsCache.values();
     }
 
-    public long countClients(final UniFiSite site, final Function<UniFiClient, Boolean> filter) {
-        return getClients().stream().filter(c -> site.isSite(c.getSite())).filter(filter::apply).count();
+    public long countClients(final UniFiSite site, final Predicate<UniFiClient> filter) {
+        return getClients().stream().filter(c -> site.isSite(c.getSite())).filter(filter::test).count();
     }
 
     public @Nullable UniFiClient getClient(@Nullable final String cid) {
@@ -170,5 +174,20 @@ public class UniFiControllerCache {
 
     public void putInsights(final UniFiClient @Nullable [] insights) {
         insightsCache.putAll(insights);
+    }
+
+    // Vouchers Cache
+
+    public void putVouchers(final UniFiVoucher @Nullable [] vouchers) {
+        vouchersCache.putAll(vouchers);
+    }
+
+    public synchronized Stream<UniFiVoucher> getVoucherStreamForSite(final UniFiSite site) {
+        return vouchersCache.values().stream().filter(voucher -> voucher.getSite().equals(site));
+    }
+
+    public @Nullable UniFiVoucher getVoucher(final UniFiSite site) {
+        // Use one of the oldest vouchers first
+        return getVoucherStreamForSite(site).min(Comparator.comparing(UniFiVoucher::getCreateTime)).orElse(null);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
-import org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.AbstractGeneralDeviceInformations;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Circuit;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;

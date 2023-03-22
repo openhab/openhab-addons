@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import java.util.concurrent.TimeoutException;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
@@ -84,7 +83,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     private final Logger logger = LoggerFactory.getLogger(DaikinMadokaHandler.class);
 
-    private @Nullable DaikinMadokaConfiguration config;
+    private DaikinMadokaConfiguration config = new DaikinMadokaConfiguration();
 
     private @Nullable ExecutorService commandExecutor;
 
@@ -109,10 +108,10 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         // Load Configuration
         config = getConfigAs(DaikinMadokaConfiguration.class);
-        DaikinMadokaConfiguration c = config;
 
-        logger.debug("[{}] Parameter value [refreshInterval]: {}", super.thing.getUID().getId(), c.refreshInterval);
-        logger.debug("[{}] Parameter value [commandTimeout]: {}", super.thing.getUID().getId(), c.commandTimeout);
+        logger.debug("[{}] Parameter value [refreshInterval]: {}", super.thing.getUID().getId(),
+                config.refreshInterval);
+        logger.debug("[{}] Parameter value [commandTimeout]: {}", super.thing.getUID().getId(), config.commandTimeout);
 
         if (getBridge() == null) {
             logger.debug("[{}] Bridge is null. Exiting.", super.thing.getUID().getId());
@@ -144,9 +143,9 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             }
 
             submitCommand(new GetEyeBrightnessCommand());
-        }, new Random().nextInt(30), c.refreshInterval, TimeUnit.SECONDS); // We introduce a random start time, it
-                                                                           // avoids when having multiple devices to
-                                                                           // have the commands sent simultaneously.
+        }, new Random().nextInt(30), config.refreshInterval, TimeUnit.SECONDS); // We introduce a random start time, it
+        // avoids when having multiple devices to
+        // have the commands sent simultaneously.
     }
 
     private void retrieveOperationHours() throws InterruptedException {
@@ -174,7 +173,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     .getCharacteristic(DaikinMadokaBindingConstants.CHAR_NOTIF_UUID);
 
             if (charNotif != null) {
-                @NonNull
                 BluetoothCharacteristic c = charNotif;
                 this.device.disableNotifications(c);
             }
@@ -443,8 +441,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 }
             }
 
-            if (command.getState() == BRC1HCommand.State.SENT && this.config != null) {
-                if (!command.awaitStateChange(this.config.commandTimeout, TimeUnit.MILLISECONDS,
+            if (command.getState() == BRC1HCommand.State.SENT) {
+                if (!command.awaitStateChange(config.commandTimeout, TimeUnit.MILLISECONDS,
                         BRC1HCommand.State.SUCCEEDED, BRC1HCommand.State.FAILED)) {
                     logger.debug("[{}] Command {} to device {} timed out", super.thing.getUID().getId(), command,
                             device.getAddress());
@@ -825,7 +823,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         if (indicatorStatus != null) {
             this.madokaSettings.setCleanFilterIndicator(indicatorStatus);
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_CLEAN_FILTER_INDICATOR,
-                    indicatorStatus == true ? OnOffType.ON : OnOffType.OFF);
+                    OnOffType.from(indicatorStatus));
         }
     }
 

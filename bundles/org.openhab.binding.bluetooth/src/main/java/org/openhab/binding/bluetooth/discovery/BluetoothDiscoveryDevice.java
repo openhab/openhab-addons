@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.discovery;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCompanyIdentifiers;
@@ -29,7 +28,7 @@ import org.openhab.binding.bluetooth.DelegateBluetoothDevice;
 @NonNullByDefault
 public class BluetoothDiscoveryDevice extends DelegateBluetoothDevice {
 
-    private BluetoothDevice delegate;
+    private @NonNullByDefault({}) BluetoothDevice delegate;
 
     protected @Nullable String model;
     protected @Nullable String serialNumber;
@@ -43,7 +42,7 @@ public class BluetoothDiscoveryDevice extends DelegateBluetoothDevice {
     }
 
     @Override
-    protected @NonNull BluetoothDevice getDelegate() {
+    protected @Nullable BluetoothDevice getDelegate() {
         return delegate;
     }
 

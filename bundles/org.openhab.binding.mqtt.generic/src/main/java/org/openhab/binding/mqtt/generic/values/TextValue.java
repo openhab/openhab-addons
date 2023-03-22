@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,13 +60,13 @@ public class TextValue extends Value {
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
+    public StringType parseCommand(Command command) throws IllegalArgumentException {
         final Set<String> states = this.states;
         String valueStr = command.toString();
         if (states != null && !states.contains(valueStr)) {
             throw new IllegalArgumentException("Value " + valueStr + " not within range");
         }
-        state = new StringType(valueStr);
+        return new StringType(valueStr);
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
-import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
@@ -229,7 +228,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Method called when a the remote device represented by the thing for this handler is added to the jupnp
-     * {@link RegistryListener} or is updated. Configuration info can be retrieved from the {@link RemoteDevice}.
+     * {@link org.jupnp.registry.RegistryListener RegistryListener} or is updated. Configuration info can be retrieved
+     * from the {@link RemoteDevice}.
      *
      * @param device
      */
@@ -293,7 +293,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Invoke PrepareForConnection on the UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      *
      * @param remoteProtocolInfo
      * @param peerConnectionManager
@@ -340,7 +340,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Invoke GetCurrentConnectionIDs on the UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getCurrentConnectionIDs() {
         Map<String, String> inputs = Collections.emptyMap();
@@ -350,7 +350,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Invoke GetCurrentConnectionInfo on the UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getCurrentConnectionInfo() {
         CompletableFuture<Boolean> settingAVTransport = isAvTransportIdSet;
@@ -374,7 +374,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Invoke GetFeatureList on the UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getFeatureList() {
         Map<String, String> inputs = Collections.emptyMap();
@@ -384,7 +384,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Invoke GetProtocolInfo on UPnP Connection Manager.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getProtocolInfo() {
         Map<String, String> inputs = Collections.emptyMap();
@@ -416,10 +416,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     /**
-     * This method wraps {@link org.openhab.core.io.transport.upnp.UpnpIOService.invokeAction}. It schedules and
-     * submits the call and calls {@link onValueReceived} upon completion. All state updates or other actions depending
-     * on the results should be triggered from {@link onValueReceived} because the class fields with results will be
-     * filled asynchronously.
+     * This method wraps {@link org.openhab.core.io.transport.upnp.UpnpIOService#invokeAction invokeAction}. It
+     * schedules and submits the call and calls {@link #onValueReceived} upon completion. All state updates or other
+     * actions depending on the results should be triggered from {@link #onValueReceived} because the class fields with
+     * results will be filled asynchronously.
      *
      * @param serviceId
      * @param actionId

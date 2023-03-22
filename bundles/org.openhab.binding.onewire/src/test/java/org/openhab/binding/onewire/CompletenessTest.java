@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,8 @@ package org.openhab.binding.onewire;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,7 +23,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.onewire.internal.OwBindingConstants;
-import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BAE091xSensorThingHandler;
@@ -42,9 +38,8 @@ import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
 @NonNullByDefault
 public class CompletenessTest {
     // internal/temporary types, DS2409 (MicroLAN Coupler), DS2431 (EEPROM)
-    private static final Set<OwSensorType> IGNORED_SENSOR_TYPES = Collections
-            .unmodifiableSet(Stream.of(OwSensorType.DS2409, OwSensorType.DS2431, OwSensorType.EDS, OwSensorType.MS_TH_S,
-                    OwSensorType.BAE, OwSensorType.BAE0911, OwSensorType.UNKNOWN).collect(Collectors.toSet()));
+    private static final Set<OwSensorType> IGNORED_SENSOR_TYPES = Set.of(OwSensorType.DS2409, OwSensorType.DS2431,
+            OwSensorType.EDS, OwSensorType.MS_TH_S, OwSensorType.BAE, OwSensorType.BAE0911, OwSensorType.UNKNOWN);
 
     private static final Set<OwSensorType> THINGHANDLER_SENSOR_TYPES = Collections.unmodifiableSet(Stream
             .of(AdvancedMultisensorThingHandler.SUPPORTED_SENSOR_TYPES,
@@ -87,26 +82,6 @@ public class CompletenessTest {
             if (!OwBindingConstants.THING_LABEL_MAP.containsKey(sensorType)
                     && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
                 fail("missing label for sensor type " + sensorType.name());
-            }
-        }
-    }
-
-    @Test
-    public void acceptedItemTypeMapCompleteness() throws OwException {
-        List<String> channels = Arrays.stream(OwBindingConstants.class.getDeclaredFields())
-                .filter(f -> Modifier.isStatic(f.getModifiers()))
-                .filter(f -> f.getName().startsWith("CHANNEL") && !f.getName().startsWith("CHANNEL_TYPE")).map(f -> {
-                    try {
-                        return (String) f.get(null);
-                    } catch (IllegalAccessException e) {
-                        fail("unexpected");
-                        return null;
-                    }
-                }).collect(Collectors.toList());
-
-        for (String channel : channels) {
-            if (!OwBindingConstants.ACCEPTED_ITEM_TYPES_MAP.containsKey(channel)) {
-                fail("missing accepted item type for channel " + channel);
             }
         }
     }

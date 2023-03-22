@@ -10,6 +10,7 @@ The Netatmo binding integrates the following Netatmo products:
 - _Doorbell_
 - _Smoke Detector_
 - _Smart Door Sensor_
+- _Carbon Monoxide Detector_
 
 See <https://www.netatmo.com/> for details on their product.
 
@@ -47,10 +48,8 @@ The Account bridge has the following configuration elements:
 | clientId          | String | Yes      | Client ID provided for the application you created on <http://dev.netatmo.com/createapp>                               |
 | clientSecret      | String | Yes      | Client Secret provided for the application you created                                                                 |
 | webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                    |
+| webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                               |
 | reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                        |
-| refreshToken      | String | Yes*     | The refresh token provided by Netatmo API after the granting process. Can be saved in case of file based configuration |
-
-(*) Strictly said this parameter is not mandatory at first run, until you grant your binding on Netatmo Connect. Once present, you'll not have to grant again.
 
 **Supported channels for the Account bridge thing:**
 
@@ -67,9 +66,11 @@ The Account bridge has the following configuration elements:
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
 1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green.
 1. The bridge configuration will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required. So you can consult this token by opening the Thing page in MainUI, this is the value of the advanced parameter named “Refresh Token”.
-1. If you're using file based .things config file, copy the provided refresh token in the **refreshToken** parameter of your thing definition (example below).
 
 Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your things.
+
+Starting on 2023/04/17 - Netatmo API requires an update of the refreshToken provided by the oAuth mechanism every three hours.
+Once authentication process has been done, current refreshToken is stored in `/OPENHAB_USERDATA/netatmo` folder.
 
 ## List of supported things
 
@@ -93,6 +94,8 @@ Now that you have got your bridge _ONLINE_ you can now start a scan with the bin
 | room            | Thing  | NARoom         | A room in your house.                                                                                 | id                                                                        |
 | valve           | Thing  | NRV            | A valve controlling a radiator.                                                                       | id                                                                        |
 | tag             | Thing  | NACamDoorTag   | A door / window sensor                                                                                | id                                                                        |
+| smoke-detector  | Thing  | NSD            | A Smoke Detector                                                                                      | id                                                                        |
+| co-detector     | Thing  | NCO            | A Carbon Monoxide Alarm                                                                               | id                                                                        |
 
 ### Webhook
 
@@ -100,14 +103,14 @@ Netatmo servers can send push notifications to the Netatmo Binding by using a ca
 The webhook URL is setup at Netatmo Account level using "Webhook Address" parameter.
 You will define here public way to access your openHAB server:
 
-```text
+```
 http(s)://xx.yy.zz.ww:443
 ```
 
 Your Netatmo App will be configured automatically by the bridge to the endpoint:
 
-```text
-http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_>
+```
+http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_><webHookPostfix>
 ```
 
 Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h ban-time when webhook does not answer 5 times.
@@ -536,7 +539,7 @@ Warnings:
 | live          | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
 | signal        | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
 | signal        | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
-| presence      | floodlight           | Switch       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
+| presence      | floodlight           | String       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
 | last-event    | type                 | String       | Read-only  | Type of event                                                                                                                               |
 | last-event    | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
 | last-event    | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
@@ -641,12 +644,28 @@ All these channels are read only.
 | last-event    | subtype    | String       | Sub-type of event                                |
 | last-event    | message    | String       | Last event message from this person              |
 
+### Netatmo Smart Carbon Monoxide Detector
+
+All these channels are read only.
+
+**Supported channels for the Carbon Monoxide Detector thing:**
+
+| Channel Group | Channel Id | Item Type    | Description                                      |
+| ------------- | ---------- | ------------ | ------------------------------------------------ |
+| signal        | strength   | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value      | Number:Power | Signal strength in dBm                           |
+| timestamp     | last-seen  | DateTime     | Last time the module reported its presence       |
+| last-event    | type       | String       | Type of event                                    |
+| last-event    | time       | DateTime     | Moment of the last event for this detector       |
+| last-event    | subtype    | String       | Sub-type of event                                |
+| last-event    | message    | String       | Last event message from this detector            |
+
 ## Configuration Examples
 
 ### things/netatmo.things
 
 ```java
-Bridge netatmo:account:myaccount "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
+Bridge netatmo:account:myaccount "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy"] {
     Bridge weather-station inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
         outdoor outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
             Channels:

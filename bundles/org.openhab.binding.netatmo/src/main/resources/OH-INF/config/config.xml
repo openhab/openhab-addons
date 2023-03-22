@@ -17,16 +17,14 @@
 			<context>password</context>
 		</parameter>
 
-		<parameter name="refreshToken" type="text">
-			<label>@text/config.refreshToken.label</label>
-			<description>@text/config.refreshToken.description</description>
-			<context>password</context>
-			<advanced>true</advanced>
-		</parameter>
-
 		<parameter name="webHookUrl" type="text" required="false">
 			<label>@text/config.webHookUrl.label</label>
 			<description>@text/config.webHookUrl.description</description>
+		</parameter>
+
+		<parameter name="webHookPostfix" type="text" required="false">
+			<label>@text/config.webHookPostfix.label</label>
+			<description>@text/config.webHookPostfix.description</description>
 		</parameter>
 
 		<parameter name="reconnectInterval" type="integer" unit="s">

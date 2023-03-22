@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,14 +18,15 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 import java.net.URI;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.AlarmEventCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
@@ -36,14 +37,12 @@ import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.SmokeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ApiBridgeChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.DoorTagChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EnergyChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventDoorbellChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventPersonChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PersonChannelHelper;
@@ -59,13 +58,14 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.WindChannelHel
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * This enum all handled Netatmo modules and devices along with their capabilities
+ * This enum describes all Netatmo modules and devices along with their capabilities.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public enum ModuleType {
     UNKNOWN(FeatureArea.NONE, "", null, Set.of()),
+
     ACCOUNT(FeatureArea.NONE, "", null, Set.of(), new ChannelGroup(ApiBridgeChannelHelper.class, GROUP_MONITORING)),
 
     HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
@@ -140,13 +140,15 @@ public enum ModuleType {
             new ChannelGroup(RoomChannelHelper.class, GROUP_TYPE_ROOM_PROPERTIES, GROUP_TYPE_ROOM_TEMPERATURE),
             new ChannelGroup(SetpointChannelHelper.class, GROUP_SETPOINT)),
 
-    SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", HOME, Set.of(SmokeCapability.class, ChannelHelperCapability.class),
-            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP,
-            new ChannelGroup(EventChannelHelper.class, GROUP_SMOKE_LAST_EVENT));
+    SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", HOME, Set.of(AlarmEventCapability.class, ChannelHelperCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT),
+
+    CO_DETECTOR(FeatureArea.SECURITY, "NCO", HOME, Set.of(AlarmEventCapability.class, ChannelHelperCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT);
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
-    private final @Nullable ModuleType bridgeType;
+    private final Optional<ModuleType> bridgeType;
     public final Set<ChannelGroup> channelGroups;
     public final Set<Class<? extends Capability>> capabilities;
     public final ThingTypeUID thingTypeUID;
@@ -155,7 +157,7 @@ public enum ModuleType {
 
     ModuleType(FeatureArea feature, String apiName, @Nullable ModuleType bridge,
             Set<Class<? extends Capability>> capabilities, ChannelGroup... channelGroups) {
-        this.bridgeType = bridge;
+        this.bridgeType = Optional.ofNullable(bridge);
         this.feature = feature;
         this.capabilities = capabilities;
         this.apiName = apiName;
@@ -167,21 +169,16 @@ public enum ModuleType {
         return !channelGroups.contains(ChannelGroup.SIGNAL);
     }
 
-    public boolean isABridge() {
-        for (ModuleType mt : ModuleType.values()) {
-            if (this.equals(mt.bridgeType)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isABridge() { // I am a bridge if any module references me as being so
+        return AS_SET.stream().anyMatch(mt -> this.equals(mt.getBridge()));
     }
 
     public List<String> getExtensions() {
-        return channelGroups.stream().map(cg -> cg.extensions).flatMap(Set::stream).collect(Collectors.toList());
+        return channelGroups.stream().map(cg -> cg.extensions).flatMap(Set::stream).toList();
     }
 
-    public Set<String> getGroupTypes() {
-        return channelGroups.stream().map(cg -> cg.groupTypes).flatMap(Set::stream).collect(Collectors.toSet());
+    public List<String> getGroupTypes() {
+        return channelGroups.stream().map(cg -> cg.groupTypes).flatMap(Set::stream).toList();
     }
 
     public int[] getSignalLevels() {
@@ -191,29 +188,29 @@ public enum ModuleType {
                     : WIFI_SIGNAL_LEVELS;
         }
         throw new IllegalArgumentException(
-                "This should not be called for module type : " + name() + ", please file a bug report.");
+                "getSignalLevels should not be called for module type : '%s', please file a bug report."
+                        .formatted(name()));
     }
 
     public ModuleType getBridge() {
-        ModuleType bridge = bridgeType;
-        return bridge != null ? bridge : ModuleType.UNKNOWN;
+        return bridgeType.orElse(UNKNOWN);
     }
 
     public URI getConfigDescription() {
         return URI.create(BINDING_ID + ":"
                 + (equals(ACCOUNT) ? "api_bridge"
                         : equals(HOME) ? "home"
-                                : (isLogical() ? "virtual"
-                                        : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
+                                : (isLogical() ? "virtual" : UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
     }
 
     public int getDepth() {
-        ModuleType parent = bridgeType;
-        return parent == null ? 1 : 1 + parent.getDepth();
+        ModuleType parent = getBridge();
+        return parent == UNKNOWN ? 1 : parent.getDepth() + 1;
     }
 
     public static ModuleType from(ThingTypeUID thingTypeUID) {
-        return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException());
+        return AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No known ModuleType matched '%s'".formatted(thingTypeUID.toString())));
     }
 }

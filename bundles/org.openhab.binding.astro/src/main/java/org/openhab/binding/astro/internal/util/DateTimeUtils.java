@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -211,6 +211,14 @@ public class DateTimeUtils {
         return truncCal1.getTimeInMillis() >= truncCal2.getTimeInMillis();
     }
 
+    public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {
+        return adjustTime(cal, getMinutesFromTime(config.earliest));
+    }
+
+    public static Calendar getAdjustedLatest(Calendar cal, AstroChannelConfig config) {
+        return adjustTime(cal, getMinutesFromTime(config.latest));
+    }
+
     /**
      * Applies the config to the given calendar.
      */
@@ -223,11 +231,11 @@ public class DateTimeUtils {
             cCal = cOffset;
         }
 
-        Calendar cEarliest = adjustTime(cCal, getMinutesFromTime(config.earliest));
+        Calendar cEarliest = getAdjustedEarliest(cCal, config);
         if (cCal.before(cEarliest)) {
             return cEarliest;
         }
-        Calendar cLatest = adjustTime(cCal, getMinutesFromTime(config.latest));
+        Calendar cLatest = getAdjustedLatest(cCal, config);
         if (cCal.after(cLatest)) {
             return cLatest;
         }
@@ -242,6 +250,10 @@ public class DateTimeUtils {
             return cTime;
         }
         return cal;
+    }
+
+    public static Calendar createCalendarForToday(int hour, int minute) {
+        return DateTimeUtils.adjustTime(Calendar.getInstance(), hour * 60 + minute);
     }
 
     /**

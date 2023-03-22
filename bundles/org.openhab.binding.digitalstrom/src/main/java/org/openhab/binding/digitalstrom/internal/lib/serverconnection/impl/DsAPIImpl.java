@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,8 +69,8 @@ import com.google.gson.JsonObject;
 /**
  * The {@link DsAPIImpl} is the implementation of the {@link DsAPI}.
  *
- * @author Alexander Betker - initial contributer
- * @author Alex Maier - initial contributer
+ * @author Alexander Betker - Initial contribution
+ * @author Alex Maier - Initial contribution
  * @author Michael Ochel - implements new methods, API updates and change SimpleJSON to GSON, add helper methods and
  *         requests building with constants to {@link SimpleRequestBuilder}
  * @author Matthias Siegele - implements new methods, API updates and change SimpleJSON to GSON, add helper methods and
@@ -281,12 +281,12 @@ public class DsAPIImpl implements DsAPI {
 
     @Override
     public DeviceConfig getDeviceConfig(String token, DSID dSID, String dSUID, String name,
-            DeviceParameterClassEnum class_, Integer index) {
-        if (checkRequiredDevice(dSID, dSUID, name) && class_ != null
+            DeviceParameterClassEnum classEnum, Integer index) {
+        if (checkRequiredDevice(dSID, dSUID, name) && classEnum != null
                 && SimpleRequestBuilder.objectToString(index) != null) {
             String response = transport.execute(SimpleRequestBuilder.buildNewJsonRequest(ClassKeys.DEVICE)
                     .addFunction(FunctionKeys.GET_CONFIG).addDefaultDeviceParameter(token, dSID, dSUID, name)
-                    .addParameter(ParameterKeys.CLASS, class_.getClassIndex().toString())
+                    .addParameter(ParameterKeys.CLASS, classEnum.getClassIndex().toString())
                     .addParameter(ParameterKeys.INDEX, SimpleRequestBuilder.objectToString(index))
                     .buildRequestString());
 

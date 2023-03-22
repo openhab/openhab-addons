@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.HttpTransport;
@@ -334,7 +333,8 @@ public class HttpTransportImpl implements HttpTransport {
     }
 
     private boolean checkNeededSessionToken(String request) {
-        String functionName = StringUtils.substringAfterLast(StringUtils.substringBefore(request, "?"), "/");
+        String requestFirstPart = request.substring(0, request.indexOf("?"));
+        String functionName = requestFirstPart.substring(requestFirstPart.lastIndexOf("/") + 1);
         return !DsAPIImpl.METHODS_MUST_NOT_BE_LOGGED_IN.contains(functionName);
     }
 
@@ -347,9 +347,10 @@ public class HttpTransportImpl implements HttpTransport {
                 correctedRequest = correctedRequest + "?" + ParameterKeys.TOKEN + "=" + sessionToken;
             }
         } else {
-            correctedRequest = StringUtils.replaceOnce(correctedRequest, StringUtils.substringBefore(
-                    StringUtils.substringAfter(correctedRequest, ParameterKeys.TOKEN + "="), "&"), sessionToken);
-
+            String strippedRequest = correctedRequest
+                    .substring(correctedRequest.indexOf(ParameterKeys.TOKEN + "=") + ParameterKeys.TOKEN.length() + 1);
+            strippedRequest = strippedRequest.substring(0, strippedRequest.lastIndexOf("&"));
+            correctedRequest = correctedRequest.replaceFirst(strippedRequest, sessionToken);
         }
         return correctedRequest;
     }

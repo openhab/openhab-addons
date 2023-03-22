@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         try {
             this.ipAddress = InetAddress.getByName(configuration.ipAddress);
         } catch (UnknownHostException e1) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "IP Address not resolvable");
             return;
         }

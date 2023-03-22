@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,8 +42,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,42 +53,34 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = Servlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@HttpWhiteboardServletName(ShellyManagerServlet.SERVLET_URI)
+@HttpWhiteboardServletPattern(ShellyManagerServlet.SERVLET_URI + "/*")
 public class ShellyManagerServlet extends HttpServlet {
     private static final long serialVersionUID = 1393403713585449126L;
     private final Logger logger = LoggerFactory.getLogger(ShellyManagerServlet.class);
 
-    private static final String SERVLET_URI = SHELLY_MANAGER_URI;
+    public static final String SERVLET_URI = SHELLY_MANAGER_URI;
     private final ShellyManager manager;
     private final String className;
 
-    private final HttpService httpService;
-
     @Activate
     public ShellyManagerServlet(@Reference ConfigurationAdmin configurationAdmin,
-            @Reference NetworkAddressService networkAddressService, @Reference HttpService httpService,
-            @Reference HttpClientFactory httpClientFactory, @Reference ShellyHandlerFactory handlerFactory,
-            @Reference ShellyTranslationProvider translationProvider, ComponentContext componentContext,
-            Map<String, Object> config) {
+            @Reference NetworkAddressService networkAddressService, @Reference HttpClientFactory httpClientFactory,
+            @Reference ShellyHandlerFactory handlerFactory, @Reference ShellyTranslationProvider translationProvider,
+            ComponentContext componentContext, Map<String, Object> config) {
         className = substringAfterLast(getClass().toString(), ".");
-        this.httpService = httpService;
         String localIp = getString(networkAddressService.getPrimaryIpv4HostAddress());
         Integer localPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         this.manager = new ShellyManager(configurationAdmin, translationProvider,
                 httpClientFactory.getCommonHttpClient(), localIp, localPort, handlerFactory);
 
-        try {
-            httpService.registerServlet(SERVLET_URI, this, null, httpService.createDefaultHttpContext());
-            // Promote Shelly Manager usage
-            logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort.toString()));
-        } catch (NamespaceException | ServletException | IllegalArgumentException e) {
-            logger.warn("{}: Unable to initialize bindingConfig", className, e);
-        }
+        // Promote Shelly Manager usage
+        logger.info("{}", translationProvider.get("status.managerstarted", localIp, localPort.toString()));
     }
 
     @Deactivate
     protected void deactivate() {
-        httpService.unregister(SERVLET_URI);
         logger.debug("{} stopped", className);
     }
 
@@ -118,7 +111,7 @@ public class ShellyManagerServlet extends HttpServlet {
 
             output = manager.generateContent(path, parameters);
             response.setContentType(output.mimeType);
-            if (output.mimeType.equals("text/html")) {
+            if ("text/html".equals(output.mimeType)) {
                 // Make sure it's UTF-8 encoded
                 response.setCharacterEncoding(UTF_8);
                 print = response.getWriter();
@@ -137,7 +130,7 @@ public class ShellyManagerServlet extends HttpServlet {
                     e);
             response.setContentType("text/html");
             print = response.getWriter();
-            print.write("Exception:" + e.toString() + "<br/>Check openHAB.log for details."
+            print.write("Exception:" + e.toString() + "<br/>Check openhab.log for details."
                     + "<p/><a href=\"/shelly/manager\">Return to Overview</a>");
             logger.debug("{}: {}", className, output);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

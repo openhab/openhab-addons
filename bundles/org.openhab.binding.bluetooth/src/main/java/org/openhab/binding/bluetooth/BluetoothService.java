@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link BluetoothCharacteristic} class defines the BLE Service.
  * <p>
@@ -30,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Cleaned up code
  */
+@NonNullByDefault
 public class BluetoothService {
 
     // The service UUID
@@ -92,11 +96,11 @@ public class BluetoothService {
     }
 
     /**
-     * Get characteristic based on {@link UUID}
+     * Get characteristic based on {@link UUID}, null if it is not known
      *
      * @return the {@link BluetoothCharacteristic} with the requested {@link UUID}
      */
-    public BluetoothCharacteristic getCharacteristic(UUID uuid) {
+    public @Nullable BluetoothCharacteristic getCharacteristic(UUID uuid) {
         return supportedCharacteristics.get(uuid);
     }
 
@@ -185,7 +189,7 @@ public class BluetoothService {
      * @param handle the handle of the characteristic to return
      * @return return the {@link BluetoothCharacteristic} or null if not found
      */
-    public BluetoothCharacteristic getCharacteristicByHandle(int handle) {
+    public @Nullable BluetoothCharacteristic getCharacteristicByHandle(int handle) {
         synchronized (supportedCharacteristics) {
             for (BluetoothCharacteristic characteristic : supportedCharacteristics.values()) {
                 if (characteristic.getHandle() == handle) {
@@ -201,7 +205,7 @@ public class BluetoothService {
      *
      * @return the {@link GattService} relating to this service
      */
-    public GattService getService() {
+    public @Nullable GattService getService() {
         return GattService.getService(uuid);
     }
 
@@ -241,7 +245,7 @@ public class BluetoothService {
         USER_DATA(0x181C),
         WEIGHT_SCALE(0x181D);
 
-        private static Map<UUID, GattService> uuidToServiceMapping;
+        private static @Nullable Map<UUID, GattService> uuidToServiceMapping;
 
         private UUID uuid;
 
@@ -249,18 +253,16 @@ public class BluetoothService {
             this.uuid = BluetoothBindingConstants.createBluetoothUUID(key);
         }
 
-        private static void initMapping() {
-            uuidToServiceMapping = new HashMap<>();
-            for (GattService s : values()) {
-                uuidToServiceMapping.put(s.uuid, s);
+        public static @Nullable GattService getService(UUID uuid) {
+            Map<UUID, GattService> localServiceMapping = uuidToServiceMapping;
+            if (localServiceMapping == null) {
+                localServiceMapping = new HashMap<>();
+                for (GattService s : values()) {
+                    localServiceMapping.put(s.uuid, s);
+                }
+                uuidToServiceMapping = localServiceMapping;
             }
-        }
-
-        public static GattService getService(UUID uuid) {
-            if (uuidToServiceMapping == null) {
-                initMapping();
-            }
-            return uuidToServiceMapping.get(uuid);
+            return localServiceMapping.get(uuid);
         }
 
         /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.OwPageBuffer;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
+import org.openhab.binding.onewire.internal.discovery.OwDiscoveryService;
 import org.openhab.binding.onewire.internal.owserver.OwfsDirectChannelConfig;
 import org.openhab.binding.onewire.internal.owserver.OwserverConnection;
 import org.openhab.binding.onewire.internal.owserver.OwserverConnectionState;
@@ -47,6 +49,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -236,7 +239,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      *
      * @param sensorId the sensor's full ID
      * @return ON if present, OFF if missing
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public State checkPresence(SensorId sensorId) throws OwException {
         synchronized (owserverConnection) {
@@ -249,14 +252,14 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      *
      * @param sensorId the sensor's full ID
      * @return a String containing the sensor type
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public OwSensorType getType(SensorId sensorId) throws OwException {
         OwSensorType sensorType = OwSensorType.UNKNOWN;
         synchronized (owserverConnection) {
             try {
                 sensorType = OwSensorType.valueOf(owserverConnection.readString(sensorId + "/type"));
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException ignored) {
             }
         }
         return sensorType;
@@ -267,7 +270,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      *
      * @param sensorId the sensor's full ID
      * @return a OwPageBuffer object containing the requested information
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public OwPageBuffer readPages(SensorId sensorId) throws OwException {
         synchronized (owserverConnection) {
@@ -281,7 +284,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @return a DecimalType
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public State readDecimalType(SensorId sensorId, OwserverDeviceParameter parameter) throws OwException {
         synchronized (owserverConnection) {
@@ -295,7 +298,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @return a BitSet
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public BitSet readBitSet(SensorId sensorId, OwserverDeviceParameter parameter) throws OwException {
         return BitSet.valueOf(new long[] { ((DecimalType) readDecimalType(sensorId, parameter)).longValue() });
@@ -307,7 +310,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @return a list of DecimalType values
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public List<State> readDecimalTypeArray(SensorId sensorId, OwserverDeviceParameter parameter) throws OwException {
         synchronized (owserverConnection) {
@@ -321,7 +324,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @return a String
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public String readString(SensorId sensorId, OwserverDeviceParameter parameter) throws OwException {
         synchronized (owserverConnection) {
@@ -334,7 +337,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      *
      * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public void writeDecimalType(SensorId sensorId, OwserverDeviceParameter parameter, DecimalType value)
             throws OwException {
@@ -348,7 +351,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      *
      * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public void writeBitSet(SensorId sensorId, OwserverDeviceParameter parameter, BitSet value) throws OwException {
         writeDecimalType(sensorId, parameter, new DecimalType(value.toLongArray()[0]));
@@ -426,5 +429,10 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(OwDiscoveryService.class);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Assigned numbers are used in GAP for inquiry response, EIR data type values, manufacturer-specific data, advertising
@@ -73,7 +74,7 @@ public enum EirDataType {
      * A mapping between the integer code and its corresponding type to
      * facilitate lookup by code.
      */
-    private static Map<Integer, EirDataType> codeMapping = new HashMap<>();
+    private static @Nullable Map<Integer, EirDataType> codeMapping;
 
     private int key;
 
@@ -81,26 +82,24 @@ public enum EirDataType {
         this.key = key;
     }
 
-    private static void initMapping() {
-        for (EirDataType s : values()) {
-            codeMapping.put(s.key, s);
-        }
-    }
-
     /**
-     * Lookup function based on the type code. Returns null if the code does not exist.
+     * Lookup function based on the type code. Returns {@link UNKNOWN} if the code does not exist.
      *
      * @param bluetoothAddressType
      *            the code to lookup
      * @return enumeration value.
      */
-    @SuppressWarnings({ "null", "unused" })
     public static EirDataType getEirPacketType(int eirDataType) {
-        if (codeMapping.isEmpty()) {
-            initMapping();
+        Map<Integer, EirDataType> localCodeMapping = codeMapping;
+        if (localCodeMapping == null) {
+            localCodeMapping = new HashMap<>();
+            for (EirDataType s : values()) {
+                localCodeMapping.put(s.key, s);
+            }
+            codeMapping = localCodeMapping;
         }
 
-        return codeMapping.getOrDefault(eirDataType, UNKNOWN);
+        return localCodeMapping.getOrDefault(eirDataType, UNKNOWN);
     }
 
     /**

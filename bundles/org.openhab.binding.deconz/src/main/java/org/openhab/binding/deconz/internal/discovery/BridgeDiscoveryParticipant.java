@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
             return null;
         }
         URL descriptorURL = device.getIdentity().getDescriptorURL();
-        String UDN = device.getIdentity().getUdn().getIdentifierString();
+        String udn = device.getIdentity().getUdn().getIdentifierString();
 
         // Friendly name is like "name (host)"
         String name = device.getDetails().getFriendlyName();
@@ -75,7 +75,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
         properties.put(CONFIG_HOST, host);
         properties.put(CONFIG_HTTP_PORT, port);
-        properties.put(PROPERTY_UDN, UDN);
+        properties.put(PROPERTY_UDN, udn);
 
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(name)
                 .withRepresentationProperty(PROPERTY_UDN).build();

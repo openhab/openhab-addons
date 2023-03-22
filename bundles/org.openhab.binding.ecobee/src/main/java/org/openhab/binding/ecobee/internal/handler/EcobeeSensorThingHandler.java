@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,11 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecobee.internal.config.EcobeeSensorConfiguration;
 import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorCapabilityDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorDTO;
+import org.openhab.binding.ecobee.internal.util.StringUtils;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -126,7 +126,7 @@ public class EcobeeSensorThingHandler extends BaseThingHandler {
             ThingBuilder thingBuilder;
             thingBuilder = editThing();
             channel = ChannelBuilder.create(uid, getAcceptedItemType(capability.type))
-                    .withLabel("Sensor " + WordUtils.capitalize(capability.type))
+                    .withLabel("Sensor " + StringUtils.capitalizeWords(capability.type))
                     .withType(getChannelTypeUID(capability.type)).build();
             thingBuilder.withChannel(channel);
             updateThing(thingBuilder.build());

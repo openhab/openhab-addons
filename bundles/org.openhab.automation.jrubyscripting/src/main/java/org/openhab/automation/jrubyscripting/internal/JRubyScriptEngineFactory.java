@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptExtensionManagerWrapper;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.service.WatchService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -57,9 +58,9 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     private final javax.script.ScriptEngineFactory factory = new org.jruby.embed.jsr223.JRubyEngineFactory();
 
     private final List<String> scriptTypes = Stream.concat(Objects.requireNonNull(factory.getExtensions()).stream(),
-            Objects.requireNonNull(factory.getMimeTypes()).stream()).collect(Collectors.toUnmodifiableList());
+            Objects.requireNonNull(factory.getMimeTypes()).stream()).toList();
 
-    private JRubyDependencyTracker jrubyDependencyTracker;
+    private final JRubyDependencyTracker jrubyDependencyTracker;
 
     // Adds $ in front of a set of variables so that Ruby recognizes them as global
     // variables
@@ -73,8 +74,9 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     }
 
     @Activate
-    public JRubyScriptEngineFactory(Map<String, Object> config) {
-        jrubyDependencyTracker = new JRubyDependencyTracker(this);
+    public JRubyScriptEngineFactory(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
+            Map<String, Object> config) {
+        jrubyDependencyTracker = new JRubyDependencyTracker(watchService, this);
         modified(config);
     }
 
@@ -89,7 +91,9 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         configuration.update(config, factory);
         // Re-initialize the dependency tracker's watchers.
         jrubyDependencyTracker.deactivate();
-        jrubyDependencyTracker.activate();
+        if (configuration.enableDependencyTracking()) {
+            jrubyDependencyTracker.activate();
+        }
     }
 
     @Override
@@ -119,7 +123,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         importClassesToRuby(scriptEngine, partitionedMap.getOrDefault(true, new HashMap<>()));
 
         Object scriptExtension = scopeValues.get("scriptExtension");
-        if (scriptExtension instanceof ScriptExtensionManagerWrapper) {
+        if (scriptExtension instanceof ScriptExtensionManagerWrapper && configuration.enableDependencyTracking()) {
             ScriptExtensionManagerWrapper wrapper = (ScriptExtensionManagerWrapper) scriptExtension;
             // we inject like this instead of using the script context, because
             // this is executed _before_ the dependency tracker is added to the script

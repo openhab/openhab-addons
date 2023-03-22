@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -101,7 +100,7 @@ public class SmartMeterHandler extends BaseThingHandler {
                     "Parameter 'port' is mandatory and must be configured");
         } else {
             byte[] pullSequence = config.initMessage == null ? null
-                    : HexUtils.hexToBytes(StringUtils.deleteWhitespace(config.initMessage));
+                    : HexUtils.hexToBytes(config.initMessage.replaceAll("\\s+", ""));
             int baudrate = config.baudrate == null ? Baudrate.AUTO.getBaudrate()
                     : Baudrate.fromString(config.baudrate).getBaudrate();
             this.conformity = config.conformity == null ? Conformity.NONE : Conformity.valueOf(config.conformity);

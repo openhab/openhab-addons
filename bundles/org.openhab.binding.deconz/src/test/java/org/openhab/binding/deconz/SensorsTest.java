@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,18 +26,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
-import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
-import org.openhab.binding.deconz.internal.types.ThermostatMode;
-import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -66,7 +61,6 @@ public class SensorsTest {
     public void initialize() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
-        gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
         gson = gsonBuilder.create();
     }
 
@@ -82,7 +76,7 @@ public class SensorsTest {
         SensorThingHandler sensorThingHandler = new SensorThingHandler(sensor, gson);
         sensorThingHandler.setCallback(thingHandlerCallback);
 
-        sensorThingHandler.messageReceived("", sensorMessage);
+        sensorThingHandler.messageReceived(sensorMessage);
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(OnOffType.ON));
     }
 
@@ -100,7 +94,7 @@ public class SensorsTest {
         sensorThingHandler.setCallback(thingHandlerCallback);
 
         // ACT
-        sensorThingHandler.messageReceived("", sensorMessage);
+        sensorThingHandler.messageReceived(sensorMessage);
 
         // ASSERT
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(StringType.valueOf("good")));
@@ -120,39 +114,10 @@ public class SensorsTest {
         sensorThingHandler.setCallback(thingHandlerCallback);
 
         // ACT
-        sensorThingHandler.messageReceived("", sensorMessage);
+        sensorThingHandler.messageReceived(sensorMessage);
 
         // ASSERT
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(new DecimalType(129)));
-    }
-
-    @Test
-    public void thermostatSensorUpdateTest() throws IOException {
-        SensorMessage sensorMessage = DeconzTest.getObjectFromJson("thermostat.json", SensorMessage.class, gson);
-        assertNotNull(sensorMessage);
-
-        ThingUID thingUID = new ThingUID("deconz", "sensor");
-        ChannelUID channelValveUID = new ChannelUID(thingUID, "valve");
-        ChannelUID channelHeatSetPointUID = new ChannelUID(thingUID, "heatsetpoint");
-        ChannelUID channelModeUID = new ChannelUID(thingUID, "mode");
-        ChannelUID channelTemperatureUID = new ChannelUID(thingUID, "temperature");
-        Thing sensor = ThingBuilder.create(THING_TYPE_THERMOSTAT, thingUID)
-                .withChannel(ChannelBuilder.create(channelValveUID, "Number").build())
-                .withChannel(ChannelBuilder.create(channelHeatSetPointUID, "Number").build())
-                .withChannel(ChannelBuilder.create(channelModeUID, "String").build())
-                .withChannel(ChannelBuilder.create(channelTemperatureUID, "Number").build()).build();
-        SensorThermostatThingHandler sensorThingHandler = new SensorThermostatThingHandler(sensor, gson);
-        sensorThingHandler.setCallback(thingHandlerCallback);
-
-        sensorThingHandler.messageReceived("", sensorMessage);
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelValveUID),
-                eq(new QuantityType<>(100.0, Units.PERCENT)));
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelHeatSetPointUID),
-                eq(new QuantityType<>(25, SIUnits.CELSIUS)));
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelModeUID),
-                eq(new StringType(ThermostatMode.AUTO.name())));
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelTemperatureUID),
-                eq(new QuantityType<>(16.5, SIUnits.CELSIUS)));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(new QuantityType<>("129 ppb")));
     }
 
     @Test
@@ -174,7 +139,7 @@ public class SensorsTest {
         SensorThingHandler sensorThingHandler = new SensorThingHandler(sensor, gson);
         sensorThingHandler.setCallback(thingHandlerCallback);
 
-        sensorThingHandler.messageReceived("", sensorMessage);
+        sensorThingHandler.messageReceived(sensorMessage);
 
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelFireUID), eq(OnOffType.OFF));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelBatteryLevelUID), eq(new DecimalType(98)));

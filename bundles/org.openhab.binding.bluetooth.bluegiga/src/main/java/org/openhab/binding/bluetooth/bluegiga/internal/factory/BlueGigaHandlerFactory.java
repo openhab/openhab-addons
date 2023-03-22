@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,7 +88,6 @@ public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
                 bundleContext.registerService(BluetoothAdapter.class.getName(), adapter, new Hashtable<>()));
     }
 
-    @SuppressWarnings("null")
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof BluetoothAdapter) {

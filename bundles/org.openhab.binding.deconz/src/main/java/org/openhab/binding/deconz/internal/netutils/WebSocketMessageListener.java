@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,7 @@ public interface WebSocketMessageListener {
     /**
      * A new message was received
      *
-     * @param sensorID The sensor ID (API endpoint)
      * @param message The received message
      */
-    void messageReceived(String sensorID, DeconzBaseMessage message);
+    void messageReceived(DeconzBaseMessage message);
 }

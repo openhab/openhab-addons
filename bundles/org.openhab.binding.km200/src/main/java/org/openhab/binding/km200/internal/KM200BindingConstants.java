@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,6 @@ import org.openhab.core.thing.ThingTypeUID;
 public class KM200BindingConstants {
 
     public static final String BINDING_ID = "km200";
-    public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:km200:config";
-    public static final String CONFIG_DESCRIPTION_URI_THING = "thing-type:km200:config";
 
     // Bridge UID
     public static final ThingTypeUID THING_TYPE_KMDEVICE = new ThingTypeUID(BINDING_ID, "kmdevice");

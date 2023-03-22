@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,6 @@ import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
-import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.binding.mqtt.homie.ChannelStateHelper;
 import org.openhab.binding.mqtt.homie.ThingHandlerHelper;
@@ -71,9 +70,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ThingTypeRegistry;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.TypeParser;
 
 /**
  * Tests cases for {@link HomieThingHandler}.
@@ -258,25 +255,19 @@ public class HomieThingHandlerTests {
 
         StringType updateValue = new StringType("UPDATE");
         thingHandler.handleCommand(property.channelUID, updateValue);
-
-        assertThat(property.getChannelState().getCache().getChannelState().toString(), is("UPDATE"));
         verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
 
         // Check non writable property
         property.attributes.settable = false;
         property.attributesReceived();
         // Assign old value
-        Value value = property.getChannelState().getCache();
-        Command command = TypeParser.parseCommand(value.getSupportedCommandTypes(), "OLDVALUE");
-        if (command != null) {
-            property.getChannelState().getCache().update(command);
-            // Try to update with new value
-            updateValue = new StringType("SOMETHINGNEW");
-            thingHandler.handleCommand(property.channelUID, updateValue);
-            // Expect old value and no MQTT publish
-            assertThat(property.getChannelState().getCache().getChannelState().toString(), is("OLDVALUE"));
-            verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
-        }
+        property.getChannelState().getCache().update(new StringType("OLDVALUE"));
+        // Try to update with new value
+        updateValue = new StringType("SOMETHINGNEW");
+        thingHandler.handleCommand(property.channelUID, updateValue);
+        // Expect old value and no MQTT publish
+        assertThat(property.getChannelState().getCache().getChannelState().toString(), is("OLDVALUE"));
+        verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
     }
 
     public Object createSubscriberAnswer(InvocationOnMock invocation) {

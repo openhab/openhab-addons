@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ import org.openhab.binding.easee.internal.command.charger.ChargerState;
 import org.openhab.binding.easee.internal.command.charger.GetConfiguration;
 import org.openhab.binding.easee.internal.command.charger.LatestChargingSession;
 import org.openhab.binding.easee.internal.command.charger.SendCommand;
+import org.openhab.binding.easee.internal.command.charger.SendCommandPauseResume;
 import org.openhab.binding.easee.internal.command.charger.SendCommandStartStop;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
@@ -218,6 +219,8 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
                 return new SendCommand(this, chargerId, channel, command);
             case COMMAND_SEND_COMMAND_START_STOP:
                 return new SendCommandStartStop(this, chargerId, channel, command);
+            case COMMAND_SEND_COMMAND_PAUSE_RESUME:
+                return new SendCommandPauseResume(this, chargerId, channel, command);
             default:
                 // this should not happen
                 logger.error("write command '{}' not found for channel '{}'", command.toString(),

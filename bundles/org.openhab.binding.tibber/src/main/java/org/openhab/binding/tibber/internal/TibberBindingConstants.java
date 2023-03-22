@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,7 @@ public class TibberBindingConstants {
     public static final String CURRENT_STARTSAT = "current_startsAt";
     public static final String CURRENT_LEVEL = "current_level";
 
+    public static final String TODAY_PRICES = "today_prices";
     public static final String TOMORROW_PRICES = "tomorrow_prices";
     public static final String DAILY_FROM = "daily_from";
     public static final String DAILY_TO = "daily_to";
@@ -57,8 +58,10 @@ public class TibberBindingConstants {
     public static final String LIVE_TIMESTAMP = "live_timestamp";
     public static final String LIVE_POWER = "live_power";
     public static final String LIVE_LASTMETERCONSUMPTION = "live_lastMeterConsumption";
+    public static final String LIVE_LASTMETERPRODUCTION = "live_lastMeterProduction";
     public static final String LIVE_ACCUMULATEDCONSUMPTION = "live_accumulatedConsumption";
     public static final String LIVE_ACCUMULATEDCOST = "live_accumulatedCost";
+    public static final String LIVE_ACCUMULATEREWARD = "live_accumulatedReward";
     public static final String LIVE_CURRENCY = "live_currency";
     public static final String LIVE_MINPOWER = "live_minPower";
     public static final String LIVE_AVERAGEPOWER = "live_averagePower";

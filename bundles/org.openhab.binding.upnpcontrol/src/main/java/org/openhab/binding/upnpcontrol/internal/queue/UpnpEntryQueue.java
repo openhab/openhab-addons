@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import com.google.gson.JsonParseException;
  * of a current index in the queue. It has convenience methods to play previous/next entries, whereby the queue can be
  * organized to play from first to last (with no repetition), to restart at the start when the end is reached (in a
  * continuous loop), or to random shuffle the entries. Repeat and shuffle are off by default, but can be set using the
- * {@link setRepeat} and {@link setShuffle} methods.
+ * {@link #setRepeat} and {@link #setShuffle} methods.
  *
  * @author Mark Herwege - Initial contribution
  *
@@ -186,7 +186,7 @@ public class UpnpEntryQueue {
     }
 
     /**
-     * @return the index of the next element in the queue that will be served if {@link next} is called, or -1 if
+     * @return the index of the next element in the queue that will be served if {@link #next} is called, or -1 if
      *         nothing to serve for next.
      */
     public synchronized int nextIndex() {
@@ -198,7 +198,7 @@ public class UpnpEntryQueue {
     }
 
     /**
-     * @return the index of the previous element in the queue that will be served if {@link previous} is called, or -1
+     * @return the index of the previous element in the queue that will be served if {@link #previous} is called, or -1
      *         if nothing to serve for next.
      */
     public synchronized int previousIndex() {
@@ -210,7 +210,7 @@ public class UpnpEntryQueue {
     }
 
     /**
-     * @return true if there is an element to server when calling {@link next}.
+     * @return true if there is an element to server when calling {@link #next}.
      */
     public synchronized boolean hasNext() {
         int size = currentQueue.size();
@@ -221,7 +221,7 @@ public class UpnpEntryQueue {
     }
 
     /**
-     * @return true if there is an element to server when calling {@link previous}.
+     * @return true if there is an element to server when calling {@link #previous}.
      */
     public synchronized boolean hasPrevious() {
         int size = currentQueue.size();

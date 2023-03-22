@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,28 +53,28 @@ public class OpenCloseValue extends Value {
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
+    public OpenClosedType parseCommand(Command command) throws IllegalArgumentException {
         if (command instanceof OpenClosedType) {
-            state = (OpenClosedType) command;
+            return (OpenClosedType) command;
         } else {
             final String updatedValue = command.toString();
             if (openString.equals(updatedValue)) {
-                state = OpenClosedType.OPEN;
+                return OpenClosedType.OPEN;
             } else if (closeString.equals(updatedValue)) {
-                state = OpenClosedType.CLOSED;
+                return OpenClosedType.CLOSED;
             } else {
-                state = OpenClosedType.valueOf(updatedValue);
+                return OpenClosedType.valueOf(updatedValue);
             }
         }
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String formatPattern = pattern;
         if (formatPattern == null) {
             formatPattern = "%s";
         }
 
-        return String.format(formatPattern, state == OpenClosedType.OPEN ? openString : closeString);
+        return String.format(formatPattern, command == OpenClosedType.OPEN ? openString : closeString);
     }
 }

@@ -46,6 +46,13 @@
 	</channel-group-type>
 
 	<!-- Units and description on: https://docs.evcc.io/docs/reference/configuration/messaging/#msg -->
+	<channel-type id="batteryCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Capacity</label>
+		<description>Capacity of (home) battery</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="batteryPower">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>

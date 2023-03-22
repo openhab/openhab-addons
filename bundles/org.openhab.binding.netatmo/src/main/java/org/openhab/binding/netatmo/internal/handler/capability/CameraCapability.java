@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,7 +100,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         securityCapability.ifPresent(cap -> {
-            HomeEvent event = cap.getLastDeviceEvent(handler.getId(), moduleType.apiName);
+            HomeEvent event = cap.getDeviceLastEvent(handler.getId(), moduleType.apiName);
             if (event != null) {
                 result.add(event);
                 result.addAll(event.getSubevents());

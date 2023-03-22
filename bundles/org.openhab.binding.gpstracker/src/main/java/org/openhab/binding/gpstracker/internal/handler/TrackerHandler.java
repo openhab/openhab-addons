@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
-import org.openhab.binding.gpstracker.internal.message.LocationMessage;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
 import org.openhab.binding.gpstracker.internal.message.NotificationHandler;
-import org.openhab.binding.gpstracker.internal.message.TransitionMessage;
+import org.openhab.binding.gpstracker.internal.message.dto.LocationMessage;
+import org.openhab.binding.gpstracker.internal.message.dto.TransitionMessage;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.PointType;
@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
 public class TrackerHandler extends BaseThingHandler {
     /**
      * Trigger events
@@ -105,17 +106,17 @@ public class TrackerHandler extends BaseThingHandler {
     /**
      * System location
      */
-    private PointType sysLocation;
+    private @Nullable PointType sysLocation;
 
     /**
      * Unit provider
      */
-    private UnitProvider unitProvider;
+    private @Nullable UnitProvider unitProvider;
 
     /**
      * Last message received from the tracker
      */
-    private LocationMessage lastMessage;
+    private @Nullable LocationMessage lastMessage;
 
     /**
      * Constructor.
@@ -127,7 +128,7 @@ public class TrackerHandler extends BaseThingHandler {
      * @param unitProvider Unit provider
      */
     public TrackerHandler(Thing thing, NotificationBroker notificationBroker, Set<String> regions,
-            PointType sysLocation, UnitProvider unitProvider) {
+            @Nullable PointType sysLocation, @Nullable UnitProvider unitProvider) {
         super(thing);
 
         this.notificationBroker = notificationBroker;
@@ -174,15 +175,15 @@ public class TrackerHandler extends BaseThingHandler {
             ChannelUID systemDistanceChannelUID = new ChannelUID(thing.getUID(), CHANNEL_DISTANCE_SYSTEM_ID);
             Channel systemDistance = thing.getChannel(CHANNEL_DISTANCE_SYSTEM_ID);
             ChannelBuilder channelBuilder = null;
+            String sysLocationString = sysLocation == null ? "unknown" : sysLocation.toFullString();
             if (systemDistance != null) {
-                if (!systemDistance.getConfiguration().get(CONFIG_REGION_CENTER_LOCATION)
-                        .equals(sysLocation.toFullString())) {
+                if (!systemDistance.getConfiguration().get(CONFIG_REGION_CENTER_LOCATION).equals(sysLocationString)) {
                     logger.trace("Existing distance channel for system. Changing system location config parameter: {}",
-                            sysLocation.toFullString());
+                            sysLocationString);
 
                     channelBuilder = callback.editChannel(thing, systemDistanceChannelUID);
                     Configuration configToUpdate = systemDistance.getConfiguration();
-                    configToUpdate.put(CONFIG_REGION_CENTER_LOCATION, sysLocation.toFullString());
+                    configToUpdate.put(CONFIG_REGION_CENTER_LOCATION, sysLocationString);
                     channelBuilder.withConfiguration(configToUpdate);
                 } else {
                     logger.trace("Existing distance channel for system. No change.");
@@ -192,7 +193,7 @@ public class TrackerHandler extends BaseThingHandler {
 
                 Configuration config = new Configuration();
                 config.put(ConfigHelper.CONFIG_REGION_NAME, CHANNEL_DISTANCE_SYSTEM_NAME);
-                config.put(CONFIG_REGION_CENTER_LOCATION, sysLocation.toFullString());
+                config.put(CONFIG_REGION_CENTER_LOCATION, sysLocationString);
                 config.put(ConfigHelper.CONFIG_REGION_RADIUS, CHANNEL_DISTANCE_SYSTEM_RADIUS);
                 config.put(ConfigHelper.CONFIG_ACCURACY_THRESHOLD, 0);
 
@@ -230,26 +231,27 @@ public class TrackerHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType && lastMessage != null) {
+        LocationMessage lastMessageLocal = lastMessage;
+        if (command instanceof RefreshType && lastMessageLocal != null) {
             String channelId = channelUID.getId();
             switch (channelId) {
                 case CHANNEL_LAST_REPORT:
-                    updateBaseChannels(lastMessage, CHANNEL_LAST_REPORT);
+                    updateBaseChannels(lastMessageLocal, CHANNEL_LAST_REPORT);
                     break;
                 case CHANNEL_LAST_LOCATION:
-                    updateBaseChannels(lastMessage, CHANNEL_LAST_LOCATION);
+                    updateBaseChannels(lastMessageLocal, CHANNEL_LAST_LOCATION);
                     break;
                 case CHANNEL_BATTERY_LEVEL:
-                    updateBaseChannels(lastMessage, CHANNEL_BATTERY_LEVEL);
+                    updateBaseChannels(lastMessageLocal, CHANNEL_BATTERY_LEVEL);
                     break;
                 case CHANNEL_GPS_ACCURACY:
-                    updateBaseChannels(lastMessage, CHANNEL_GPS_ACCURACY);
+                    updateBaseChannels(lastMessageLocal, CHANNEL_GPS_ACCURACY);
                     break;
                 default: // distance channels
                     @Nullable
                     Channel channel = thing.getChannel(channelId);
                     if (channel != null) {
-                        updateDistanceChannelFromMessage(lastMessage, channel);
+                        updateDistanceChannelFromMessage(lastMessageLocal, channel);
                     }
             }
         }
@@ -272,7 +274,7 @@ public class TrackerHandler extends BaseThingHandler {
      * @param event Occurred event
      * @param forced Force channel triggering in case the transition event is received from the mobile application.
      */
-    private void triggerRegionChannel(@NonNull String regionName, @NonNull String event, boolean forced) {
+    private void triggerRegionChannel(String regionName, String event, boolean forced) {
         Boolean lastState = lastTriggeredStates.get(regionName);
         Boolean newState = EVENT_ENTER.equals(event);
         if (!newState.equals(lastState) || forced) {
@@ -341,9 +343,10 @@ public class TrackerHandler extends BaseThingHandler {
     }
 
     private double convertToMeters(double valueToConvert) {
-        if (unitProvider != null) {
+        UnitProvider unitProviderLocal = unitProvider;
+        if (unitProviderLocal != null) {
             @Nullable
-            Unit<Length> unit = unitProvider.getUnit(Length.class);
+            Unit<Length> unit = unitProviderLocal.getUnit(Length.class);
             if (unit != null && !SIUnits.METRE.equals(unit)) {
                 double value = ImperialUnits.YARD.getConverterTo(SIUnits.METRE).convert(valueToConvert);
                 logger.trace("Value converted: {}yd->{}m", valueToConvert, value);

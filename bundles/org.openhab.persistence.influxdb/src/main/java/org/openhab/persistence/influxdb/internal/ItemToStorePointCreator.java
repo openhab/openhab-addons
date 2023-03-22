@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,20 +12,20 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_CATEGORY_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_LABEL_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_TYPE_NAME;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
-import org.openhab.core.items.Metadata;
-import org.openhab.core.items.MetadataKey;
-import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 
 /**
  * Logic to create an InfluxDB {@link InfluxPoint} from an openHAB {@link Item}
@@ -35,11 +35,12 @@ import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 @NonNullByDefault
 public class ItemToStorePointCreator {
     private final InfluxDBConfiguration configuration;
-    private final @Nullable MetadataRegistry metadataRegistry;
+    private final InfluxDBMetadataService influxDBMetadataService;
 
-    public ItemToStorePointCreator(InfluxDBConfiguration configuration, @Nullable MetadataRegistry metadataRegistry) {
+    public ItemToStorePointCreator(InfluxDBConfiguration configuration,
+            InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
-        this.metadataRegistry = metadataRegistry;
+        this.influxDBMetadataService = influxDBMetadataService;
     }
 
     public @Nullable InfluxPoint convert(Item item, @Nullable String storeAlias) {
@@ -53,19 +54,17 @@ public class ItemToStorePointCreator {
 
         Object value = InfluxDBStateConvertUtils.stateToObject(state);
 
-        InfluxPoint.Builder point = InfluxPoint.newBuilder(measurementName).withTime(Instant.now()).withValue(value)
-                .withTag(TAG_ITEM_NAME, itemName);
+        InfluxPoint.Builder pointBuilder = InfluxPoint.newBuilder(measurementName).withTime(Instant.now())
+                .withValue(value).withTag(TAG_ITEM_NAME, itemName);
 
-        addPointTags(item, point);
+        addPointTags(item, pointBuilder);
 
-        return point.build();
+        return pointBuilder.build();
     }
 
     private String calculateMeasurementName(Item item, @Nullable String storeAlias) {
         String name = storeAlias != null && !storeAlias.isBlank() ? storeAlias : item.getName();
-
-        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name,
-                item.getName());
+        name = influxDBMetadataService.getMeasurementNameOrDefault(item.getName(), name);
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');
@@ -75,19 +74,9 @@ public class ItemToStorePointCreator {
     }
 
     private State getItemState(Item item) {
-        final State state;
-        final Optional<Class<? extends State>> desiredConversion = calculateDesiredTypeConversionToStore(item);
-        if (desiredConversion.isPresent()) {
-            State convertedState = item.getStateAs(desiredConversion.get());
-            if (convertedState != null) {
-                state = convertedState;
-            } else {
-                state = item.getState();
-            }
-        } else {
-            state = item.getState();
-        }
-        return state;
+        return calculateDesiredTypeConversionToStore(item)
+                .map(desiredClass -> Objects.requireNonNullElseGet(item.getStateAs(desiredClass), item::getState))
+                .orElseGet(item::getState);
     }
 
     private Optional<Class<? extends State>> calculateDesiredTypeConversionToStore(Item item) {
@@ -95,36 +84,22 @@ public class ItemToStorePointCreator {
                 .findFirst().map(commandType -> commandType.asSubclass(State.class));
     }
 
-    private void addPointTags(Item item, InfluxPoint.Builder point) {
+    private void addPointTags(Item item, InfluxPoint.Builder pointBuilder) {
         if (configuration.isAddCategoryTag()) {
-            String categoryName = item.getCategory();
-            if (categoryName == null) {
-                categoryName = "n/a";
-            }
-            point.withTag(TAG_CATEGORY_NAME, categoryName);
+            String categoryName = Objects.requireNonNullElse(item.getCategory(), "n/a");
+            pointBuilder.withTag(TAG_CATEGORY_NAME, categoryName);
         }
 
         if (configuration.isAddTypeTag()) {
-            point.withTag(TAG_TYPE_NAME, item.getType());
+            pointBuilder.withTag(TAG_TYPE_NAME, item.getType());
         }
 
         if (configuration.isAddLabelTag()) {
-            String labelName = item.getLabel();
-            if (labelName == null) {
-                labelName = "n/a";
-            }
-            point.withTag(TAG_LABEL_NAME, labelName);
+            String labelName = Objects.requireNonNullElse(item.getLabel(), "n/a");
+            pointBuilder.withTag(TAG_LABEL_NAME, labelName);
         }
 
-        final MetadataRegistry currentMetadataRegistry = metadataRegistry;
-        if (currentMetadataRegistry != null) {
-            MetadataKey key = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, item.getName());
-            Metadata metadata = currentMetadataRegistry.get(key);
-            if (metadata != null) {
-                metadata.getConfiguration().forEach((tagName, tagValue) -> {
-                    point.withTag(tagName, tagValue.toString());
-                });
-            }
-        }
+        influxDBMetadataService.getMetaData(item.getName())
+                .ifPresent(metadata -> metadata.getConfiguration().forEach(pointBuilder::withTag));
     }
 }

@@ -1,4 +1,3 @@
-
 # KNX Binding
 
 The openHAB KNX binding allows to connect to [KNX Home Automation](https://www.knx.org/) installations.
@@ -10,18 +9,27 @@ The KNX binding then can communicate directly with this gateway.
 Alternatively, a PC running [KNXD](https://github.com/knxd/knxd) (free open source component software) can be put in between which then acts as a broker allowing multiple client to connect to the same gateway.
 Since the protocol is identical, the KNX binding can also communicate with it transparently.
 
+***Attention:*** With the introduction of Unit of Measurement (UoM) support, some data types have changed (see `number` channel below):
+
+- Data type for DPT 5.001 (Percent 8bit, 0 -> 100%) has changed from `PercentType` to `QuantityType`for `number` channels (`dimmer`, `color`, `rollershutter` channels stay with `PercentType`).
+- Data type for DPT 5.004 (Percent 8bit, 0 -> 255%) has changed from `PercentType` to `QuantityType`.
+- Data type for DPT 6.001 (Percent 8bit -128 -> 127%) has changed from `PercentType` to `QuantityType`.
+- Data type for DPT 9.007 (Humidity) has changed from `PercentType` to `QuantityType`.
+
+Rules that check for or compare states and transformations that expect a raw value might need adjustments.
+If you run into trouble with that and need some time, you can disable UoM support on binding level via the `disableUoM` parameter.
+UoM are enabled by default and need to be disabled manually.
+A new setting is activated immediately without restart.
+
 ## Supported Things
 
 The KNX binding supports two types of bridges, and one type of things to access the KNX bus.
 There is an _ip_ bridge to connect to KNX IP Gateways, and a _serial_ bridge for connection over a serial port to a host-attached gateway.
 
-## Binding Configuration
-
-The binding itself does not require any special configuration.
-
 ## Bridges
 
-The following two bridge types are supported. Bridges don't have channels on their own.
+The following two bridge types are supported.
+Bridges don't have channels on their own.
 
 ### IP Gateway
 
@@ -81,20 +89,45 @@ All channels of a device share one configuration parameter defined on device lev
 All readable group addresses are queried by openHAB during startup.
 If readInterval is not specified or set to 0, no further periodic reading will be triggered (default: 0).
 
-#### Standard Channel Types
+#### Channel Types
 
 Standard channels are used most of the time.
 They are used in the common case where the physical state is owned by a device within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or off, or by a temperature sensor which reports the room temperature regularly.
 
-Note: After changing the DPT of already existing Channels, openHAB needs to be restarted for the changes to become effective.
+Control channel types (suffix `-control`) are used for cases where the KNX bus does not own the physical state of a device.
+This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
+When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
 
-##### Channel Type "switch"
+##### Channel Type `color`, `color-control`
 
-| Parameter | Description                         | Default DPT |
-|-----------|-------------------------------------|-------------|
-| ga        | Group address for the binary switch | 1.001       |
+| Parameter        | Description                            | Default DPT |
+|------------------|----------------------------------------|-------------|
+| hsb              | Group address for the color            | 232.600     |
+| switch           | Group address for the binary switch    | 1.001       |
+| position         | Group address brightness               | 5.001       |
+| increaseDecrease | Group address for relative brightness  | 3.007       |
 
-##### Channel Type "dimmer"
+The `hsb` address supports DPT 242.600 and 251.600.
+
+Some RGB/RGBW products (e.g. MDT) support HSB values for DPT 232.600 instead of RGB.
+This is supported as "vendor-specific DPT" with a value of 232.60000.
+
+##### Channel Type `contact`, `contact-control`
+
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 1.009       |
+
+*Attention:* Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e. `1` is mapped to `OPEN` instead of `CLOSE`).
+A change would break all existing installations and is therefore not implemented.
+
+##### Channel Type `datetime`, `datetime-control`
+
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 19.001      |
+
+##### Channel Type `dimmer`, `dimmer-control`
 
 | Parameter        | Description                            | Default DPT |
 |------------------|----------------------------------------|-------------|
@@ -102,7 +135,25 @@ Note: After changing the DPT of already existing Channels, openHAB needs to be r
 | position         | Group address of the absolute position | 5.001       |
 | increaseDecrease | Group address for relative movement    | 3.007       |
 
-##### Channel Type "rollershutter"
+##### Channel Type `number`, `number-control` 
+
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | 9.001       |
+
+Note: The `number` channel has full support for Units Of Measurement (UoM).
+
+Using the UoM feature of openHAB (QuantityType) requires that the DPT value is set correctly.
+Automatic type conversion will be applied if required.
+
+Incoming values from the KNX bus are converted to values with units (e.g. `23 °C`).
+If the channel is linked to the correct item-type (`Number:Temperature` in this case) the display unit can be controlled by item metadata (e.g. `%.1f °F` for 1 digit of precision in Fahrenheit).
+The unit is stripped if the channel is linked to a plain number item (type `Number`). 
+
+Outgoing values with unit are first converted to the unit associated with the DPT (e.g. a value of `10 °F` is converted to `-8.33 °C` if the channel has DPT 9.001).
+Values from plain number channels are sent as-is (without any conversion).
+
+##### Channel Type `rollershutter`, `rollershutter-control`
 
 | Parameter | Description                             | Default DPT |
 |-----------|-----------------------------------------|-------------|
@@ -110,38 +161,23 @@ Note: After changing the DPT of already existing Channels, openHAB needs to be r
 | stopMove  | Group address for stopping              | 1.010       |
 | position  | Group address for the absolute position | 5.001       |
 
-##### Channel Type "contact"
-
-| Parameter | Description   | Default DPT |
-|-----------|---------------|-------------|
-| ga        | Group address | 1.009       |
-
-##### Channel Type "number"
-
-| Parameter | Description   | Default DPT |
-|-----------|---------------|-------------|
-| ga        | Group address | 9.001       |
-
-Note: Using the Units Of Measurement feature of openHAB (Quantitytype) requires that the DPT value is set correctly.
-Automatic type conversion will be applied if required.
-
-##### Channel Type "string"
+##### Channel Type `string`, `string-control`
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 16.001      |
 
-##### Channel Type "datetime"
+##### Channel Type `switch`, `switch-control`
 
-| Parameter | Description   | Default DPT |
-|-----------|---------------|-------------|
-| ga        | Group address | 19.001      |
+| Parameter | Description                         | Default DPT |
+|-----------|-------------------------------------|-------------|
+| ga        | Group address for the binary switch | 1.001       |
 
 #### Control Channel Types
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device.
 This could for example be the case if a lamp from another binding should be controlled by a KNX wall switch.
-If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
+When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
 
 ##### Channel Type "switch-control"
 
@@ -158,6 +194,7 @@ If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, 
 | increaseDecrease | Group address for relative movement                                                                                                           | 3.007       |
 | frequency        | Increase/Decrease frequency in milliseconds in case the binding should handle that (0 if the KNX device sends the commands repeatedly itself) | 0           |
 
+
 ##### Channel Type "rollershutter-control"
 
 | Parameter | Description                             | Default DPT |
@@ -172,11 +209,16 @@ If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, 
 |-----------|---------------|-------------|
 | ga        | Group address | 1.009       |
 
+*Attention:* Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e. `1` is mapped to `OPEN` instead of `CLOSE`).
+A change would break all existing installations and is therefore not implemented.
+
 ##### Channel Type "number-control"
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 9.001       |
+
+For UoM support see the explanations of the `number` channel.
 
 ##### Channel Type "string-control"
 
@@ -223,9 +265,7 @@ It is created by the ETS tool and cannot be changed via the ETS user interface.
 For _Secure tunneling_ with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
 A unique device authentication key, and a specific tunnel identifier and password need to be available.
 
-- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`.
-`tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...).
-`tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
+- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`. `tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...). `tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
 
 ### KNX Data Secure
 
@@ -296,6 +336,7 @@ Bridge knx:ip:bridge [
         readInterval=3600
     ] {
         Type switch        : demoSwitch        "Light"       [ ga="3/0/4+<3/0/5" ]
+        Type color         : demoColorLight    "Color"       [ hsb="6/0/10+<6/0/11", switch="6/0/12+<6/0/13", position="6/0/14+<6/0/15", increaseDecrease="6/0/16+<6/0/17" ]
         Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+4/3/51", stopMove="4/3/52+4/3/53", position="4/3/54+<4/3/55" ]
         Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
         Type number        : demoTemperature   "Temperature" [ ga="9.001:<5/0/0" ]
@@ -322,13 +363,14 @@ Bridge knx:ip:bridge [
 knx.items:
 
 ```java
-Switch        demoSwitch         "Light [%s]"               <light>          { channel="knx:device:bridge:generic:demoSwitch" }
-Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="knx:device:bridge:generic:demoDimmer" }
-Rollershutter demoRollershutter  "Shade [%d %%]"            <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
-Contact       demoContact        "Front Door [%s]"          <frontdoor>      { channel="knx:device:bridge:generic:demoContact" }
-Number        demoTemperature    "Temperature [%.1f °C]"    <temperature>    { channel="knx:device:bridge:generic:demoTemperature" }
-String        demoString         "Message of the day [%s]"                   { channel="knx:device:bridge:generic:demoString" }
-DateTime      demoDatetime       "Alarm [%1$tH:%1$tM]"                       { channel="knx:device:bridge:generic:demoDatetime" }
+Switch              demoSwitch         "Light [%s]"               <light>          { channel="knx:device:bridge:generic:demoSwitch" }
+Color               demoColorLight     "Color [%s]"               <light>          { channel="knx:device:bridge:generic:demoColorLight" }
+Dimmer              demoDimmer         "Dimmer [%d %%]"           <light>          { channel="knx:device:bridge:generic:demoDimmer" }
+Rollershutter       demoRollershutter  "Shade [%d %%]"            <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
+Contact             demoContact        "Front Door [%s]"          <frontdoor>      { channel="knx:device:bridge:generic:demoContact" }
+Number:Temperature  demoTemperature    "Temperature [%.1f °C]"    <temperature>    { channel="knx:device:bridge:generic:demoTemperature" }
+String              demoString         "Message of the day [%s]"                   { channel="knx:device:bridge:generic:demoString" }
+DateTime            demoDatetime       "Alarm [%1$tH:%1$tM]"                       { channel="knx:device:bridge:generic:demoDatetime" }
 ```
 
 knx.sitemap:
@@ -336,13 +378,14 @@ knx.sitemap:
 ```perl
 sitemap knx label="KNX Demo Sitemap" {
   Frame label="Demo Elements" {
-    Switch item=demoSwitch
-    Switch item=demoRollershutter
-    Text   item=demoContact
-    Text   item=demoTemperature
-    Slider item=demoDimmer
-    Text   item=demoString
-    Text   item=demoDatetime
+    Switch      item=demoSwitch
+    Slider      item=demoDimmer
+    Colorpicker item=demoColorLight
+    Default     item=demoRollershutter
+    Text        item=demoContact
+    Text        item=demoTemperature
+    Text        item=demoString
+    Text        item=demoDatetime
   }
 }
 
@@ -363,6 +406,7 @@ Bridge knx:serial:bridge [
     Thing device generic {
         Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]   // '<'  signs are allowed but will be ignored for control Channels
         Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
+        Type color                 : controlColorLight    "Color"                 [ hsb="6/0/10", switch="6/0/12", position="6/0/14", 
         Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
         Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
         Type string-control        : controlString        "Control String"        [ ga="1/4/2" ]

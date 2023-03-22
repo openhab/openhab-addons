@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,6 +99,7 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ct_bulb:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CTBULB, device.getDeviceId());
             case stripe:
+            case strip6:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_STRIPE, device.getDeviceId());
             case desklamp:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_DESKLAMP, device.getDeviceId());
@@ -125,6 +126,7 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ct_bulb:
                 return YeelightBindingConstants.THING_TYPE_CTBULB;
             case stripe:
+            case strip6:
                 return YeelightBindingConstants.THING_TYPE_STRIPE;
             case desklamp:
                 return YeelightBindingConstants.THING_TYPE_DESKLAMP;

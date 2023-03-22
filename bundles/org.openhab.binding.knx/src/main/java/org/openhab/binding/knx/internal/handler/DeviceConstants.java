@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,9 +41,13 @@ public class DeviceConstants {
     public static final int ASSOCIATION_TABLE_OBJECT = 2; // Associationtable Object
     public static final int APPLICATION_PROGRAM_TABLE = 3; // Application Program Object
     public static final int INTERFACE_PROGRAM_OBJECT = 4; // Interface Program Object
+    public static final int ROUTER_OBJECT = 6; // Router Object
     public static final int GROUPOBJECT_OBJECT = 9; // Group Object Object
     public static final int KNXNET_IP_OBJECT = 11; // KNXnet/IP Parameter Object
 
     // Property IDs for device information;
-    public static final int HARDWARE_TYPE = 78;
+    public static final int HARDWARE_TYPE = 78; // to be used with DEVICE_OBJECT
+    public static final int MAX_ROUTED_APDU_LENGTH = 58; // to be used with ADDRESS_TABLE_OBJECT, renamed due to name
+                                                         // conflict in standard (PID.MAX_APDULENGTH used with
+                                                         // DEVICE_OBJECT)
 }

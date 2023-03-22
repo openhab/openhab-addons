@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,8 +31,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  */
 @NonNullByDefault
 public class BlueGigaSetAdvParametersCommand extends BlueGigaCommand {
-    public static int COMMAND_CLASS = 0x06;
-    public static int COMMAND_METHOD = 0x08;
+    public static final int COMMAND_CLASS = 0x06;
+    public static final int COMMAND_METHOD = 0x08;
 
     /**
      * Minimum advertisement interval in units of 625us. Range: 0x20 to 0x4000. Default: 0x200

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,9 +59,11 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof BondBridgeHandler) {
-            bridgeHandler = (BondBridgeHandler) handler;
-            bridgeHandler.setDiscoveryService(this);
-            api = bridgeHandler.getBridgeAPI();
+            @Nullable
+            BondBridgeHandler localHandler = (BondBridgeHandler) handler;
+            bridgeHandler = localHandler;
+            localHandler.setDiscoveryService(this);
+            api = localHandler.getBridgeAPI();
         }
     }
 
@@ -94,7 +96,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
                 for (final String deviceId : deviceList) {
                     BondDevice thisDevice = api.getDevice(deviceId);
                     String deviceName;
-                    if (thisDevice != null && (deviceName = thisDevice.name) != null) {
+                    if (thisDevice.type != null && (deviceName = thisDevice.name) != null) {
                         final ThingUID deviceUid = new ThingUID(thisDevice.type.getThingTypeUID(), bridgeUid, deviceId);
                         final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(deviceUid)
                                 .withBridge(bridgeUid).withLabel(thisDevice.name)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,13 @@ package org.openhab.binding.knx.internal.factory;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.internal.client.SerialTransportAdapter;
 import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
 import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
 import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
@@ -24,6 +28,7 @@ import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -34,6 +39,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -42,18 +48,31 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Simon Kaufmann - Initial contribution and API
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.knx")
 public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_DEVICE,
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE,
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
-    private NetworkAddressService networkAddressService;
+    @Nullable
+    private final NetworkAddressService networkAddressService;
+    private final SerialPortManager serialPortManager;
 
     @Activate
-    public KNXHandlerFactory(final @Reference TranslationProvider translationProvider,
-            final @Reference LocaleProvider localeProvider) {
+    public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
+            final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference SerialPortManager serialPortManager) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
+        this.networkAddressService = networkAddressService;
+        this.serialPortManager = serialPortManager;
+        SerialTransportAdapter.setSerialPortManager(serialPortManager);
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        disableUoM = (boolean) config.getOrDefault(CONFIG_DISABLE_UOM, false);
     }
 
     @Override
@@ -62,8 +81,8 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (THING_TYPE_IP_BRIDGE.equals(thingTypeUID)) {
             ThingUID ipBridgeUID = getIPBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, ipBridgeUID, null);
@@ -75,22 +94,23 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
-        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the KNX binding.");
+        return null;
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(THING_TYPE_IP_BRIDGE)) {
             return new IPBridgeThingHandler((Bridge) thing, networkAddressService);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
-            return new SerialBridgeThingHandler((Bridge) thing);
+            return new SerialBridgeThingHandler((Bridge) thing, serialPortManager);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_DEVICE)) {
             return new DeviceThingHandler(thing);
         }
         return null;
     }
 
-    private ThingUID getIPBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getIPBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration) {
         if (thingUID != null) {
             return thingUID;
         }
@@ -98,21 +118,12 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         return new ThingUID(thingTypeUID, ipAddress);
     }
 
-    private ThingUID getSerialBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
+    private ThingUID getSerialBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration) {
         if (thingUID != null) {
             return thingUID;
         }
         String serialPort = (String) configuration.get(SERIAL_PORT);
         return new ThingUID(thingTypeUID, serialPort);
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.deconz.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link BindingConstants} class defines common constants, which are
@@ -50,6 +51,8 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_CARBONMONOXIDE_SENSOR = new ThingTypeUID(BINDING_ID,
             "carbonmonoxidesensor");
     public static final ThingTypeUID THING_TYPE_AIRQUALITY_SENSOR = new ThingTypeUID(BINDING_ID, "airqualitysensor");
+    public static final ThingTypeUID THING_TYPE_MOISTURE_SENSOR = new ThingTypeUID(BINDING_ID, "moisturesensor");
+
     // Special sensor - Thermostat
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
@@ -75,6 +78,7 @@ public class BindingConstants {
     public static final String CHANNEL_LAST_SEEN = "last_seen";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_CONSUMPTION = "consumption";
+    public static final String CHANNEL_CONSUMPTION_2 = "consumption2";
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_CURRENT = "current";
     public static final String CHANNEL_VALUE = "value";
@@ -101,11 +105,15 @@ public class BindingConstants {
     public static final String CHANNEL_CARBONMONOXIDE = "carbonmonoxide";
     public static final String CHANNEL_AIRQUALITY = "airquality";
     public static final String CHANNEL_AIRQUALITYPPB = "airqualityppb";
+    public static final String CHANNEL_MOISTURE = "moisture";
     public static final String CHANNEL_HEATSETPOINT = "heatsetpoint";
     public static final String CHANNEL_THERMOSTAT_MODE = "mode";
+    public static final String CHANNEL_THERMOSTAT_LOCKED = "locked";
     public static final String CHANNEL_TEMPERATURE_OFFSET = "offset";
+    public static final String CHANNEL_THERMOSTAT_ON = "on";
     public static final String CHANNEL_VALVE_POSITION = "valve";
-    public static final String CHANNEL_WINDOWOPEN = "windowopen";
+    public static final String CHANNEL_WINDOW_OPEN = "windowopen";
+    public static final String CHANNEL_EXTERNAL_WINDOW_OPEN = "externalwindowopen";
 
     // group + light channel ids
     public static final String CHANNEL_SWITCH = "switch";
@@ -121,6 +129,11 @@ public class BindingConstants {
     public static final String CHANNEL_EFFECT_SPEED = "effectSpeed";
     public static final String CHANNEL_SCENE = "scene";
     public static final String CHANNEL_ONTIME = "ontime";
+
+    // channel uids
+    public static final ChannelTypeUID CHANNEL_EFFECT_TYPE_UID = new ChannelTypeUID(BINDING_ID, CHANNEL_EFFECT);
+    public static final ChannelTypeUID CHANNEL_EFFECT_SPEED_TYPE_UID = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_EFFECT_SPEED);
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,16 +19,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.events.ThingEventFactory;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragment;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +49,15 @@ public class DeconzDynamicStateDescriptionProvider extends BaseDynamicStateDescr
 
     private final Map<ChannelUID, StateDescriptionFragment> stateDescriptionFragments = new ConcurrentHashMap<>();
 
+    @Activate
+    public DeconzDynamicStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
+
     /**
      * Set a state description for a channel. This description will be used when preparing the channel state by
      * the framework for presentation. A previous description, if existed, will be replaced.
@@ -59,9 +72,10 @@ public class DeconzDynamicStateDescriptionProvider extends BaseDynamicStateDescr
         if (!stateDescriptionFragment.equals(oldStateDescriptionFragment)) {
             logger.trace("adding state description for channel {}", channelUID);
             stateDescriptionFragments.put(channelUID, stateDescriptionFragment);
-            ItemChannelLinkRegistry itemChannelLinkRegistry = this.itemChannelLinkRegistry;
+            ItemChannelLinkRegistry localItemChannelLinkRegistry = itemChannelLinkRegistry;
             postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
-                    itemChannelLinkRegistry != null ? itemChannelLinkRegistry.getLinkedItemNames(channelUID) : Set.of(),
+                    localItemChannelLinkRegistry != null ? localItemChannelLinkRegistry.getLinkedItemNames(channelUID)
+                            : Set.of(),
                     stateDescriptionFragment, oldStateDescriptionFragment));
         }
     }

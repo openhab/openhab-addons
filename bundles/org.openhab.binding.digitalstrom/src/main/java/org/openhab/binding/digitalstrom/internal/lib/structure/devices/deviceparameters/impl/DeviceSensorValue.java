@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,8 +34,8 @@ import com.google.gson.JsonObject;
  * and
  * timestamp of the last sensor update.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class DeviceSensorValue {
 
@@ -267,6 +267,7 @@ public class DeviceSensorValue {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

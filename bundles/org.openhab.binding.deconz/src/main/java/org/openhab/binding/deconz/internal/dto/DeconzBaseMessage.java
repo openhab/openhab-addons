@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,10 +25,14 @@ import org.openhab.binding.deconz.internal.types.ResourceType;
 @NonNullByDefault
 public class DeconzBaseMessage {
     // For websocket change events
-    public String e = ""; // "changed"
+    public String e = ""; // "changed", "scene-called"
     public ResourceType r = ResourceType.UNKNOWN; // "sensors"
     public String t = ""; // "event"
     public String id = ""; // "3"
+
+    // for scene-recall
+    public String gid = "";
+    public String scid = "";
 
     // for rest API
     public String manufacturername = "";

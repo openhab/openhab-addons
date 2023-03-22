@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Properties;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
@@ -42,16 +44,22 @@ public abstract class IpCameraServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     protected final ThingHandler handler;
     protected final HttpService httpService;
+    protected final Dictionary<Object, Object> initParameters;
 
     public IpCameraServlet(ThingHandler handler, HttpService httpService) {
+        this(handler, httpService, new Properties());
+    }
+
+    public IpCameraServlet(ThingHandler handler, HttpService httpService, Dictionary<Object, Object> initParameters) {
         this.handler = handler;
         this.httpService = httpService;
+        this.initParameters = initParameters;
         startListening();
     }
 
     public void startListening() {
         try {
-            httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, null,
+            httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, initParameters,
                     httpService.createDefaultHttpContext());
         } catch (Exception e) {
             logger.warn("Registering servlet failed:{}", e.getMessage());

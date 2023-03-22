@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import tuwien.auto.calimero.secure.KnxSecureException;
  * directly defined on the bridge
  *
  * @author Karel Goderis - Initial contribution
- * @author Simon Kaufmann - Refactoring & cleanup
+ * @author Simon Kaufmann - Refactoring and cleanup
  */
 @NonNullByDefault
 public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
@@ -53,9 +53,9 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(IPBridgeThingHandler.class);
 
     private @Nullable IPClient client = null;
-    private final NetworkAddressService networkAddressService;
+    private @Nullable final NetworkAddressService networkAddressService;
 
-    public IPBridgeThingHandler(Bridge bridge, NetworkAddressService networkAddressService) {
+    public IPBridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService) {
         super(bridge);
         this.networkAddressService = networkAddressService;
     }
@@ -171,7 +171,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
-            localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
+            if (networkAddressService == null) {
+                logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            } else {
+                localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
+            }
         }
 
         updateStatus(ThingStatus.UNKNOWN);

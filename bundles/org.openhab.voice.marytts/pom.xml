@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.voice.marytts</artifactId>
@@ -17,6 +17,30 @@
   <properties>
     <bnd.importpackage>com.twmacinta.util;resolution:=optional,gnu.trove;resolution:=optional,Jampack;resolution:=optional,net.didion.jwnl*;resolution:=optional,org.apache.http*;resolution:=optional,org.apache.xerces.impl*;resolution:=optional,org.hsqldb;resolution:=optional,org.jdesktop.layout*;resolution:=optional;sun.nio.ch.*</bnd.importpackage>
   </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-maven-plugin</artifactId>
+          <configuration>
+            <bnd><![CDATA[${oh.bndDefaults}
+Require-Capability:
+    osgi.extender:=
+      filter:="(osgi.extender=osgi.serviceloader.processor)",
+    osgi.serviceloader:=
+      filter:="(osgi.serviceloader=marytts.config.MaryConfig)";
+      cardinality:=multiple
+SPI-Provider: marytts.config.MaryConfig
+SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[marytts.config.MaryConfig])
+]]>
+            </bnd>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
   <dependencies>
     <dependency>

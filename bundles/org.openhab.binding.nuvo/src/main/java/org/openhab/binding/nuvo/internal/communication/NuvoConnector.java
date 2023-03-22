@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,14 +43,12 @@ public abstract class NuvoConnector {
     private static final String QUERY = "?";
     private static final String VER_STR_E6 = "#VER\"NV-E6G";
     private static final String VER_STR_GC = "#VER\"NV-I8G";
-    private static final String ALL_OFF = "#ALLOFF";
+    private static final String ALLOFF = "#ALLOFF";
     private static final String MUTE = "#MUTE";
     private static final String PAGE = "#PAGE";
     private static final String RESTART = "#RESTART\"NuVoNet\"";
     private static final String PING = "#PING";
     private static final String PING_RESPONSE = "PING";
-
-    private static final byte[] WAKE_STR = "\r".getBytes(StandardCharsets.US_ASCII);
 
     private static final Pattern SRC_PATTERN = Pattern.compile("^#S(\\d{1})(.*)$");
     private static final Pattern ZONE_PATTERN = Pattern.compile("^#Z(\\d{1,2}),(.*)$");
@@ -88,6 +86,7 @@ public abstract class NuvoConnector {
     private List<NuvoMessageEventListener> listeners = new ArrayList<>();
 
     private boolean isEssentia = true;
+    private boolean isStandbyMode = true;
     private boolean isAnyOhNuvoNet = false;
 
     /**
@@ -275,7 +274,7 @@ public abstract class NuvoConnector {
      *
      * @throws NuvoException - In case of any problem
      */
-    public void sendCommand(@Nullable String command) throws NuvoException {
+    public void sendCommand(String command) throws NuvoException {
         String messageStr = BEGIN_CMD + command + END_CMD;
 
         logger.debug("sending command: {}", messageStr);
@@ -285,11 +284,12 @@ public abstract class NuvoConnector {
             throw new NuvoException("Send command \"" + messageStr + "\" failed: output stream is null");
         }
         try {
-            // Essentia G needs time to wake up when in standby mode
-            // I don't want to track that in the binding, so just do this always
-            if (this.isEssentia) {
-                dataOut.write(WAKE_STR);
-                dataOut.flush();
+            // The Essentia G needs to be awake before processing ON commands when in standby mode
+            // Repeat the command being sent to force it awake
+            // Sending carriage returns as described in the documentation was not working
+            if (isEssentia && isStandbyMode
+                    && (command.endsWith(ON) || NuvoCommand.PAGE_ON.getValue().equals(command))) {
+                messageStr += messageStr;
             }
             dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
@@ -353,7 +353,8 @@ public abstract class NuvoConnector {
             return;
         }
 
-        if (message.equals(ALL_OFF)) {
+        if (message.equals(ALLOFF)) {
+            isStandbyMode = true;
             dispatchKeyValue(TYPE_ALLOFF, BLANK);
             return;
         }
@@ -405,6 +406,9 @@ public abstract class NuvoConnector {
         matcher = ZONE_PATTERN.matcher(message);
         if (matcher.find()) {
             dispatchKeyValue(TYPE_ZONE_UPDATE, matcher.group(1), BLANK, matcher.group(2));
+            if (message.contains(ON)) {
+                isStandbyMode = false;
+            }
             return;
         }
 

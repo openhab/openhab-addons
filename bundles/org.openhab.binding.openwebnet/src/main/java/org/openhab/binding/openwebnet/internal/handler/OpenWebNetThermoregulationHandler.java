@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,7 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_ACTUATORS;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CONDITIONING_VALVES;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_BATTERY_STATUS;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_FAILURE_DISCOVERED;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_REMOTE_CONTROL;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_SCENARIO_PROGRAM_NUMBER;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_WEEKLY_PROGRAM_NUMBER;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_FAN_SPEED;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_FUNCTION;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_HEATING_VALVES;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_LOCAL_OFFSET;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_TEMP_SETPOINT;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,7 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetThermoregulationHandler} is responsible for handling commands/messages for Thermoregulation
+ * The {@link OpenWebNetThermoregulationHandler} is responsible for handling
+ * commands/messages for Thermoregulation
  * Things. It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
@@ -122,12 +107,14 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                         "@text/offline.conf-error-where");
             }
 
-            // reset state of signal channels (they will be setted when specific messages are received)
+            // reset state of signal channels (they will be setted when specific messages
+            // are received)
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL, OnOffType.OFF);
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF, OnOffType.OFF);
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION, OnOffType.OFF);
             updateState(CHANNEL_CU_SCENARIO_PROGRAM_NUMBER, new DecimalType(programNumber));
             updateState(CHANNEL_CU_WEEKLY_PROGRAM_NUMBER, new DecimalType(programNumber));
+            updateState(CHANNEL_CU_FAILURE_DISCOVERED, OnOffType.OFF);
         }
     }
 
@@ -579,15 +566,15 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     }
 
     private Boolean channelExists(String channelID) {
-        return thing.getChannel("openwebnet:" + channelID) != null;
+        return thing.getChannel(channelID) != null;
     }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
         logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
         if (isCentralUnit) {
-            // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with 99-zones central no!
-            // let's assume it's a 99 zone
+            // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with
+            // 99-zones central no! let's assume it's a 99 zone
             try {
                 send(Thermoregulation.requestStatus("#0"));
             } catch (OWNException e) {

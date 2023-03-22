@@ -22,9 +22,11 @@ Access is established through a Tesla account as a bridge.
 
 The account cannot be automatically discovered, but has to be created manually.
 
-Once an account is configured, it is automatically queried for associated vehicles and an Inbox entry is created for each of them.
+Once an account is configured, it is queried for associated vehicles and an Inbox entry is created for each of them.
 
-Note: Vehicles that are asleep might not be discovered, so you might want to wake it up through the Tesla app first.
+Note: Vehicles that are asleep are discovered and put into the Inbox, but their model cannot be determined.
+As an effect, their channels are missing until the vehicle wakes up and can be fully queried.
+A vehicle can be manually woken up by opening the Tesla app and checking the vehicle status in there.
 
 
 ## Bridge Configuration

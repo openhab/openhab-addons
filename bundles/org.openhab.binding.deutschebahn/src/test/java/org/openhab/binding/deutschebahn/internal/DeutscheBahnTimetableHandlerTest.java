@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -186,7 +186,6 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
             verifyChannelsUpdatedToUndef(bridge, 0, callback);
             verifyChannelsUpdatedToUndef(bridge, 1, callback);
             verifyChannelsUpdatedToUndef(bridge, 2, callback);
-
         } finally {
             handler.dispose();
         }
@@ -226,7 +225,6 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
             verifyThingUpdated(bridge, 0, stop01.getId());
             verifyChannelsUpdatedToUndef(bridge, 1, callback);
             verifyChannelsUpdatedToUndef(bridge, 2, callback);
-
         } finally {
             handler.dispose();
         }

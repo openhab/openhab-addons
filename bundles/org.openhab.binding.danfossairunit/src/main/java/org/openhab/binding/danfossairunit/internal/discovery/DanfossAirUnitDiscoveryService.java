@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,9 +33,13 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +60,12 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitDiscoveryService.class);
 
-    public DanfossAirUnitDiscoveryService() {
+    @Activate
+    public DanfossAirUnitDiscoveryService(@Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_IN_SECONDS, true);
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -134,7 +142,7 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
                 ThingUID uid = new ThingUID(THING_TYPE_AIRUNIT, String.valueOf(receivePacket.getAddress().hashCode()));
 
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withRepresentationProperty("host")
-                        .withProperties(properties).withLabel("Danfoss HRV").build();
+                        .withProperties(properties).withLabel("@text/discovery.danfossairunit.label").build();
                 thingDiscovered(result);
 
                 logger.debug("Thing discovered '{}'", result);

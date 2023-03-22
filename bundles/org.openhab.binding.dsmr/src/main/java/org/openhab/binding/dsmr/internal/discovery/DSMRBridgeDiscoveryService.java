@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.dsmr.internal.discovery;
 
 import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_ADDITIONAL_KEY;
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_ADDITIONAL_KEY_DEFAULT;
 import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_DECRYPTION_KEY;
 import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_DECRYPTION_KEY_EMPTY;
 import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.CONFIGURATION_SERIAL_PORT;
@@ -28,13 +29,12 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceRunnable;
-import org.openhab.binding.dsmr.internal.device.DSMREventListener;
 import org.openhab.binding.dsmr.internal.device.DSMRSerialAutoDevice;
 import org.openhab.binding.dsmr.internal.device.DSMRTelegramListener;
-import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
+import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.dsmr")
-public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements DSMREventListener {
+public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements P1TelegramListener {
 
     /**
      * The timeout used to switch baudrate if no valid data is received within that time frame.
@@ -133,7 +133,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
                     logger.debug("Start discovery on serial port: {}", currentScannedPortName);
                     //
                     final DSMRTelegramListener telegramListener = new DSMRTelegramListener("",
-                            CONFIGURATION_ADDITIONAL_KEY);
+                            CONFIGURATION_ADDITIONAL_KEY_DEFAULT);
                     final DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager,
                             portIdentifier.getName(), this, telegramListener, scheduler,
                             BAUDRATE_SWITCH_TIMEOUT_SECONDS);
@@ -173,20 +173,25 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
      * @param telegram the received telegram
      */
     @Override
-    public void handleTelegramReceived(final P1Telegram telegram) {
+    public void telegramReceived(final P1Telegram telegram) {
         final List<CosemObject> cosemObjects = telegram.getCosemObjects();
 
         if (logger.isDebugEnabled()) {
             logger.debug("[{}] Received {} cosemObjects", currentScannedPortName, cosemObjects.size());
         }
-        if (telegram.getTelegramState() == TelegramState.INVALID_ENCRYPTION_KEY) {
+        final ThingUID bridgeThingUID = bridgeDiscovered(THING_TYPE_DSMR_BRIDGE);
+        meterDetector.detectMeters(telegram).getKey().forEach(m -> meterDiscovered(m, bridgeThingUID));
+        stopSerialPortScan();
+    }
+
+    @Override
+    public void onError(final DSMRErrorStatus portEvent, final String message) {
+        if (portEvent == DSMRErrorStatus.INVALID_DECRYPTION_KEY) {
             bridgeDiscovered(THING_TYPE_SMARTY_BRIDGE);
-            stopSerialPortScan();
-        } else if (!cosemObjects.isEmpty()) {
-            final ThingUID bridgeThingUID = bridgeDiscovered(THING_TYPE_DSMR_BRIDGE);
-            meterDetector.detectMeters(telegram).getKey().forEach(m -> meterDiscovered(m, bridgeThingUID));
-            stopSerialPortScan();
+        } else {
+            logger.debug("[{}] Error on port during discovery: {} - {}", currentScannedPortName, portEvent, message);
         }
+        stopSerialPortScan();
     }
 
     /**
@@ -205,7 +210,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
         properties.put(CONFIGURATION_SERIAL_PORT, currentScannedPortName);
         if (smarty) {
             properties.put(CONFIGURATION_DECRYPTION_KEY, CONFIGURATION_DECRYPTION_KEY_EMPTY);
-            properties.put(CONFIGURATION_ADDITIONAL_KEY, CONFIGURATION_ADDITIONAL_KEY);
+            properties.put(CONFIGURATION_ADDITIONAL_KEY, CONFIGURATION_ADDITIONAL_KEY_DEFAULT);
         }
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withThingType(bridgeThingTypeUID).withProperties(properties).withLabel(label).build();
@@ -214,11 +219,5 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
 
         thingDiscovered(discoveryResult);
         return thingUID;
-    }
-
-    @Override
-    public void handleErrorEvent(final DSMRConnectorErrorEvent portEvent) {
-        logger.debug("[{}] Error on port during discovery: {}", currentScannedPortName, portEvent);
-        stopSerialPortScan();
     }
 }

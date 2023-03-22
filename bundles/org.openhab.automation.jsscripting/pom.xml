@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jsscripting</artifactId>
@@ -22,10 +22,9 @@
       !jdk.internal.reflect.*,
       !jdk.vm.ci.services
     </bnd.importpackage>
-    <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 -->
-    <asm.version>6.2.1</asm.version>
+    <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 & armv7l / Zulu 17.0.5+8 -->
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@3.1.2</ohjs.version>
+    <ohjs.version>openhab@4.1.0</ohjs.version>
   </properties>
 
   <build>
@@ -67,11 +66,23 @@
               <goal>npm</goal>
             </goals>
             <configuration>
+              <!--suppress UnresolvedMavenProperty -->
               <arguments>install ${ohjs.version} webpack@5.75.0 webpack-cli@4.10.0</arguments> <!-- webpack-cli >= 5.0.0 doesn't properly process the given entrypoint -->
             </configuration>
           </execution>
           <execution>
-            <id>npx webpack</id>
+            <id>npx webpack (openhab-js globals injection)</id>
+            <goals>
+              <goal>npx</goal>
+            </goals>
+            <configuration>
+              <!--suppress UnresolvedMavenProperty -->
+              <arguments>webpack -c ./node_modules/openhab/@globals-webpack.config.js --entry
+                ./node_modules/openhab/@openhab-globals.js -o ./dist</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npx webpack (openhab-js)</id>
             <goals>
               <goal>npx</goal>
             </goals>
@@ -123,11 +134,6 @@
       <version>${graal.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.graalvm.js</groupId>
-      <artifactId>js-launcher</artifactId>
-      <version>${graal.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.graalvm.sdk</groupId>
       <artifactId>graal-sdk</artifactId>
       <version>${graal.version}</version>
@@ -142,33 +148,7 @@
       <artifactId>js</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <!-- com.ibm.icu.icu4j/69.1 is not required on GraalJS >= 22.0.0 as it moved to org.graalvm.truffle -->
-
-    <!-- include as version required is older than OH provides -->
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-commons</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-tree</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-util</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-analysis</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
+    <!-- GraalJS changelog says that com.ibm.icu/icu4j is not required for GraalJS >= 22.0.0 as it moved to org.graalvm.truffle;
+      but GraalJS >= 22.2.0 requires it, so we'll need to add it when we upgrade -->
   </dependencies>
 </project>

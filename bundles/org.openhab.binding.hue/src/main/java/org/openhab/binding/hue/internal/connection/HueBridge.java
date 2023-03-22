@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,6 +72,7 @@ import org.openhab.binding.hue.internal.dto.SuccessResponse;
 import org.openhab.binding.hue.internal.dto.Util;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.DeviceOffException;
+import org.openhab.binding.hue.internal.exceptions.EmptyResponseException;
 import org.openhab.binding.hue.internal.exceptions.EntityNotAvailableException;
 import org.openhab.binding.hue.internal.exceptions.GroupTableFullException;
 import org.openhab.binding.hue.internal.exceptions.InvalidCommandException;
@@ -252,6 +253,10 @@ public class HueBridge {
 
         handleErrors(result);
 
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("GET request 'lights' returned an unexpected empty reponse");
+        }
+
         Map<String, T> lightMap = safeFromJson(result.body, gsonType);
         List<T> lights = new ArrayList<>();
         lightMap.forEach((id, light) -> {
@@ -274,6 +279,10 @@ public class HueBridge {
         HueResult result = get(getRelativeURL("sensors"));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("GET request 'sensors' returned an unexpected empty reponse");
+        }
 
         Map<String, FullSensor> sensorMap = safeFromJson(result.body, FullSensor.GSON_TYPE);
         List<FullSensor> sensors = new ArrayList<>();
@@ -299,6 +308,10 @@ public class HueBridge {
         HueResult result = get(getRelativeURL("lights/new"));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("GET request 'lights/new' returned an unexpected empty reponse");
+        }
 
         String lastScan = safeFromJson(result.body, NewLightsResponse.class).lastscan;
 
@@ -362,6 +375,11 @@ public class HueBridge {
 
         handleErrors(result);
 
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException(
+                    "GET request 'lights/" + enc(light.getId()) + "' returned an unexpected empty reponse");
+        }
+
         FullHueObject fullLight = safeFromJson(result.body, FullLight.class);
         fullLight.setId(light.getId());
         return fullLight;
@@ -385,6 +403,11 @@ public class HueBridge {
                 gson.toJson(new SetAttributesRequest(name)));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException(
+                    "PUT request 'lights/" + enc(light.getId()) + "' returned an unexpected empty reponse");
+        }
 
         List<SuccessResponse> entries = safeFromJson(result.body, SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
@@ -469,6 +492,10 @@ public class HueBridge {
 
         handleErrors(result);
 
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("GET request 'groups' returned an unexpected empty reponse");
+        }
+
         Map<String, FullGroup> groupMap = safeFromJson(result.body, FullGroup.GSON_TYPE);
         List<FullGroup> groups = new ArrayList<>();
         if (groupMap.get("0") == null) {
@@ -510,6 +537,10 @@ public class HueBridge {
 
         handleErrors(result);
 
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("POST request 'groups' returned an unexpected empty reponse");
+        }
+
         List<SuccessResponse> entries = safeFromJson(result.body, SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
 
@@ -540,6 +571,10 @@ public class HueBridge {
 
         handleErrors(result);
 
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("POST request 'groups' returned an unexpected empty reponse");
+        }
+
         List<SuccessResponse> entries = safeFromJson(result.body, SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
 
@@ -564,6 +599,11 @@ public class HueBridge {
         HueResult result = get(getRelativeURL("groups/" + enc(group.getId())));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException(
+                    "GET request 'groups/" + enc(group.getId()) + "' returned an unexpected empty reponse");
+        }
 
         FullGroup fullGroup = safeFromJson(result.body, FullGroup.class);
         fullGroup.setId(group.getId());
@@ -592,6 +632,11 @@ public class HueBridge {
                 gson.toJson(new SetAttributesRequest(name)));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException(
+                    "PUT request 'groups/" + enc(group.getId()) + "' returned an unexpected empty reponse");
+        }
 
         List<SuccessResponse> entries = safeFromJson(result.body, SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
@@ -647,6 +692,11 @@ public class HueBridge {
                 gson.toJson(new SetAttributesRequest(name, lights)));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException(
+                    "PUT request 'groups/" + enc(group.getId()) + "' returned an unexpected empty reponse");
+        }
 
         List<SuccessResponse> entries = safeFromJson(result.body, SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
@@ -707,6 +757,10 @@ public class HueBridge {
 
         handleErrors(result);
 
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("GET request 'schedules' returned an unexpected empty reponse");
+        }
+
         Map<String, Schedule> scheduleMap = safeFromJson(result.body, Schedule.GSON_TYPE);
         List<Schedule> schedules = new ArrayList<>();
         scheduleMap.forEach((id, schedule) -> {
@@ -760,6 +814,10 @@ public class HueBridge {
         HueResult result = get(getRelativeURL("scenes"));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("GET request 'scenes' returned an unexpected empty reponse");
+        }
 
         Map<String, Scene> sceneMap = safeFromJson(result.body, Scene.GSON_TYPE);
         return sceneMap.entrySet().stream()//
@@ -841,6 +899,10 @@ public class HueBridge {
 
         handleErrors(result);
 
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("POST request (link) returned an unexpected empty reponse");
+        }
+
         List<SuccessResponse> entries = safeFromJson(result.body, SuccessResponse.GSON_TYPE);
         SuccessResponse response = entries.get(0);
 
@@ -864,6 +926,10 @@ public class HueBridge {
         HueResult result = get(getRelativeURL("config"));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("GET request 'config' returned an unexpected empty reponse");
+        }
 
         return safeFromJson(result.body, Config.class);
     }
@@ -911,6 +977,10 @@ public class HueBridge {
         HueResult result = get(getRelativeURL(""));
 
         handleErrors(result);
+
+        if (result.body.isBlank()) {
+            throw new EmptyResponseException("GET request (getFullConfig) returned an unexpected empty reponse");
+        }
 
         FullConfig fullConfig = gson.fromJson(result.body, FullConfig.class);
         return Objects.requireNonNull(fullConfig);
