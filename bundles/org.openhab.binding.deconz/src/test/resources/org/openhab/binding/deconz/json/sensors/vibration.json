@@ -1,0 +1,32 @@
+{
+  "config": {
+    "battery": 100,
+    "on": true,
+    "pending": [],
+    "reachable": true,
+    "sensitivity": null,
+    "sensitivitymax": 21,
+    "temperature": 2600
+  },
+  "ep": 1,
+  "etag": "6c0452972eb8183b5604899c66a3e32f",
+  "lastannounced": null,
+  "lastseen": "2022-09-09T18:13Z",
+  "manufacturername": "LUMI",
+  "modelid": "lumi.vibration.aq1",
+  "name": "Vibration Sensor",
+  "state": {
+    "lastupdated": "2022-09-09T18:13:44.653",
+    "orientation": [
+      3,
+      -1,
+      -87
+    ],
+    "tiltangle": 176,
+    "vibration": true,
+    "vibrationstrength": 110
+  },
+  "swversion": "20180130",
+  "type": "ZHAVibration",
+  "uniqueid": "00:15:8d:00:08:52:a6:2c-01-0101"
+}

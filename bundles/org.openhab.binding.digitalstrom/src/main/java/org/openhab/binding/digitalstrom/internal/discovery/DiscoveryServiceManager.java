@@ -211,7 +211,7 @@ public class DiscoveryServiceManager
                 if (discoveryServices.get(DsDeviceThingTypeProvider.SupportedThingTypes.circuit.toString()) != null) {
                     ((DeviceDiscoveryService) discoveryServices
                             .get(DsDeviceThingTypeProvider.SupportedThingTypes.circuit.toString()))
-                                    .onDeviceAdded(device);
+                            .onDeviceAdded(device);
                 }
             }
         } catch (RuntimeException ex) {
@@ -240,7 +240,7 @@ public class DiscoveryServiceManager
         if (discoveryServices.get(DigitalSTROMBindingConstants.THING_TYPE_ZONE_TEMERATURE_CONTROL.toString()) != null) {
             ((ZoneTemperatureControlDiscoveryService) discoveryServices
                     .get(DigitalSTROMBindingConstants.THING_TYPE_ZONE_TEMERATURE_CONTROL.toString()))
-                            .configChanged(tempControlStatus);
+                    .configChanged(tempControlStatus);
         }
     }
 
