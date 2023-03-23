@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ecovacs"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Ecovacs API account -->
+	<bridge-type id="ecovacsapi">
+		<label>Ecovacs API Account</label>
+		<description>The API account</description>
+
+		<config-description>
+			<parameter name="email" type="text">
+				<label>Email</label>
+				<context>email</context>
+				<description>Email address for logging in to Ecovacs server</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<context>password</context>
+				<description>Password for logging in to Ecovacs server</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="continent" type="text">
+				<label>Continent</label>
+				<description>Continent the account was registered on. Choose the one you are located in, or "World" if none matches.</description>
+				<default>ww</default>
+				<options>
+					<option value="ww">World</option>
+					<option value="eu">Europe</option>
+					<option value="na">North America</option>
+					<option value="as">Asia</option>
+				</options>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
