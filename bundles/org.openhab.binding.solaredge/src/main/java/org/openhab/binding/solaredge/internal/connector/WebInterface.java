@@ -106,27 +106,25 @@ public class WebInterface implements AtomicReferenceTrait {
 
         private void processAuthenticationResult(CommunicationStatus status) {
             String errorMessageCodeFound;
-            String errorMessgaeCodeForbidden;
+            String errorMessgaeCodeForbidden = STATUS_INVALID_SOLAR_ID;
             if (config.isUsePrivateApi()) {
-                errorMessageCodeFound = "login error with private API: invalid token";
-                errorMessgaeCodeForbidden = "login error with private API: invalid solarId";
+                errorMessageCodeFound = STATUS_INVALID_TOKEN;
             } else {
-                errorMessageCodeFound = "login error with public API: unknown error";
-                errorMessgaeCodeForbidden = "login error with public API: invalid api key or solarId is not valid for this api key";
+                errorMessageCodeFound = STATUS_UNKNOWN_ERROR;
             }
 
             switch (status.getHttpCode()) {
                 case OK:
-                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
+                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                     setAuthenticated(true);
                     break;
                 case FOUND:
-                    handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             errorMessageCodeFound);
                     setAuthenticated(false);
                     break;
                 case FORBIDDEN:
-                    handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             errorMessgaeCodeForbidden);
                     setAuthenticated(false);
                     break;
@@ -167,21 +165,15 @@ public class WebInterface implements AtomicReferenceTrait {
         private boolean preCheck() {
             String preCheckStatusMessage = "";
             String localTokenOrApiKey = config.getTokenOrApiKey();
-            String localSolarId = config.getSolarId();
 
-            if (localTokenOrApiKey == null || localTokenOrApiKey.isEmpty()) {
-                preCheckStatusMessage = "please configure token/api_key first";
-            } else if (localSolarId == null || localSolarId.isEmpty()) {
-                preCheckStatusMessage = "please configure solarId first";
-            } else if (config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
-                preCheckStatusMessage = "you will have to use a 'token' and not an 'api key' when using private API";
+            if (config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
+                preCheckStatusMessage = STATUS_INVALID_TOKEN_LENGTH;
             } else if (!config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
-                preCheckStatusMessage = "you will have to use an 'api key' and not a 'token' when using public API";
+                preCheckStatusMessage = STATUS_INVALID_API_KEY_LENGTH;
             } else if (!config.isUsePrivateApi() && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
-                preCheckStatusMessage = "daily request limit (" + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + ") exceeded: "
-                        + calcRequestsPerDay();
+                preCheckStatusMessage = STATUS_REQUEST_LIMIT_EXCEEDED;
             } else if (config.isUsePrivateApi() && !config.isMeterInstalled()) {
-                preCheckStatusMessage = "a meter must be present in order to use the private API";
+                preCheckStatusMessage = STATUS_NO_METER_CONFIGURED;
             } else {
                 return true;
             }

@@ -217,7 +217,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     }
 
     @Override
-    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
     }
 
