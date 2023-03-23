@@ -133,7 +133,7 @@ public class RadioThermostatConnector {
             request.header(HttpHeader.ACCEPT, "text/plain");
             request.header(HttpHeader.CONTENT_TYPE, "text/plain");
             request.content(new StringContentProvider(postJson), "application/json");
-            logger.debug("Sending POST request to '{}', data: {}", resource, postJson);
+            logger.trace("Sending POST request to '{}', data: {}", resource, postJson);
 
             ContentResponse contentResponse = request.send();
             int httpStatus = contentResponse.getStatus();
@@ -142,7 +142,7 @@ public class RadioThermostatConnector {
                 throw new RadioThermostatHttpException("Thermostat HTTP response code was: " + httpStatus);
             }
             output = contentResponse.getContentAsString();
-            logger.debug("Response: {}", output);
+            logger.trace("Response: {}", output);
         } catch (RadioThermostatHttpException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("Error executing thermostat command: {}, {}", postJson, e.getMessage());
         }

@@ -51,7 +51,7 @@
 		</parameter>
 		<parameter name="clockSync" type="boolean">
 			<label>Enable Thermostat Clock Sync</label>
-			<description>Optional Flag to snyc the thermostat's clock with the host system clock</description>
+			<description>Optional Flag to sync the thermostat's clock with the host system clock</description>
 			<default>true</default>
 		</parameter>
 
@@ -63,7 +63,7 @@
 		</parameter>
 
 		<parameter name="monMorningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Monday Morning Heat setpoint</label>
+			<label>Monday Morning Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -76,7 +76,7 @@
 		</parameter>
 
 		<parameter name="monDayHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Monday Day Heat setpoint</label>
+			<label>Monday Day Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -90,7 +90,7 @@
 		</parameter>
 
 		<parameter name="monEveningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Monday Evening Heat setpoint</label>
+			<label>Monday Evening Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -103,7 +103,7 @@
 		</parameter>
 
 		<parameter name="monNightHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Monday Night Heat setpoint</label>
+			<label>Monday Night Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -117,7 +117,7 @@
 		</parameter>
 
 		<parameter name="tueMorningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Tuesday Morning Heat setpoint</label>
+			<label>Tuesday Morning Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -130,7 +130,7 @@
 		</parameter>
 
 		<parameter name="tueDayHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Tuesday Day Heat setpoint</label>
+			<label>Tuesday Day Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -144,7 +144,7 @@
 		</parameter>
 
 		<parameter name="tueEveningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Tuesday Evening Heat setpoint</label>
+			<label>Tuesday Evening Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -157,7 +157,7 @@
 		</parameter>
 
 		<parameter name="tueNightHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Tuesday Night Heat setpoint</label>
+			<label>Tuesday Night Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -165,26 +165,26 @@
 
 		<parameter name="wedMorningHeatTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
 			groupName="heating">
-			<label>Wedensday Morning</label>
-			<description>Wedensday Morning setpoint start time (HH:mm)</description>
+			<label>Wednesday Morning</label>
+			<description>Wednesday Morning setpoint start time (HH:mm)</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedMorningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Wedensday Morning Heat setpoint</label>
+			<label>Wednesday Morning Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedDayHeatTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" groupName="heating">
-			<label>Wedensday Day</label>
-			<description>Wedensday Day setpoint start time (HH:mm)</description>
+			<label>Wednesday Day</label>
+			<description>Wednesday Day setpoint start time (HH:mm)</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedDayHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Wedensday Day Heat setpoint</label>
+			<label>Wednesday Day Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -192,26 +192,26 @@
 
 		<parameter name="wedEveningHeatTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
 			groupName="heating">
-			<label>Wedensday Evening</label>
-			<description>Wedensday Evening setpoint start time (HH:mm)</description>
+			<label>Wednesday Evening</label>
+			<description>Wednesday Evening setpoint start time (HH:mm)</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedEveningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Wedensday Evening Heat setpoint</label>
+			<label>Wednesday Evening Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedNightHeatTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" groupName="heating">
-			<label>Wedensday Night</label>
-			<description>Wedensday Night setpoint start time (HH:mm)</description>
+			<label>Wednesday Night</label>
+			<description>Wednesday Night setpoint start time (HH:mm)</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedNightHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Wedensday Night Heat setpoint</label>
+			<label>Wednesday Night Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -225,7 +225,7 @@
 		</parameter>
 
 		<parameter name="thuMorningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Thursday Morning Heat setpoint</label>
+			<label>Thursday Morning Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -238,7 +238,7 @@
 		</parameter>
 
 		<parameter name="thuDayHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Thursday Day Heat setpoint</label>
+			<label>Thursday Day Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -252,7 +252,7 @@
 		</parameter>
 
 		<parameter name="thuEveningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Thursday Evening Heat setpoint</label>
+			<label>Thursday Evening Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -265,7 +265,7 @@
 		</parameter>
 
 		<parameter name="thuNightHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Thursday Night Heat setpoint</label>
+			<label>Thursday Night Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -279,7 +279,7 @@
 		</parameter>
 
 		<parameter name="friMorningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Friday Morning Heat setpoint</label>
+			<label>Friday Morning Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -292,7 +292,7 @@
 		</parameter>
 
 		<parameter name="friDayHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Friday Day Heat setpoint</label>
+			<label>Friday Day Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -306,7 +306,7 @@
 		</parameter>
 
 		<parameter name="friEveningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Friday Evening Heat setpoint</label>
+			<label>Friday Evening Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -319,7 +319,7 @@
 		</parameter>
 
 		<parameter name="friNightHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Friday Night Heat setpoint</label>
+			<label>Friday Night Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -333,7 +333,7 @@
 		</parameter>
 
 		<parameter name="satMorningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Saturday Morning Heat setpoint</label>
+			<label>Saturday Morning Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -346,7 +346,7 @@
 		</parameter>
 
 		<parameter name="satDayHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Saturday Day Heat setpoint</label>
+			<label>Saturday Day Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -360,7 +360,7 @@
 		</parameter>
 
 		<parameter name="satEveningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Saturday Evening Heat setpoint</label>
+			<label>Saturday Evening Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -373,7 +373,7 @@
 		</parameter>
 
 		<parameter name="satNightHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Saturday Night Heat setpoint</label>
+			<label>Saturday Night Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -387,7 +387,7 @@
 		</parameter>
 
 		<parameter name="sunMorningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Sunday Morning Heat setpoint</label>
+			<label>Sunday Morning Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -400,7 +400,7 @@
 		</parameter>
 
 		<parameter name="sunDayHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Sunday Day Heat setpoint</label>
+			<label>Sunday Day Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -414,7 +414,7 @@
 		</parameter>
 
 		<parameter name="sunEveningHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Sunday Evening Heat setpoint</label>
+			<label>Sunday Evening Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -427,7 +427,7 @@
 		</parameter>
 
 		<parameter name="sunNightHeatTemp" type="integer" min="45" max="95" unit="F" groupName="heating">
-			<label>Sunday Night Heat setpoint</label>
+			<label>Sunday Night Heat Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -441,7 +441,7 @@
 		</parameter>
 
 		<parameter name="monMorningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Monday Morning Cool setpoint</label>
+			<label>Monday Morning Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -454,7 +454,7 @@
 		</parameter>
 
 		<parameter name="monDayCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Monday Day Cool setpoint</label>
+			<label>Monday Day Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -468,7 +468,7 @@
 		</parameter>
 
 		<parameter name="monEveningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Monday Evening Cool setpoint</label>
+			<label>Monday Evening Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -481,7 +481,7 @@
 		</parameter>
 
 		<parameter name="monNightCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Monday Night Cool setpoint</label>
+			<label>Monday Night Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -495,7 +495,7 @@
 		</parameter>
 
 		<parameter name="tueMorningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Tuesday Morning Cool setpoint</label>
+			<label>Tuesday Morning Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -508,7 +508,7 @@
 		</parameter>
 
 		<parameter name="tueDayCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Tuesday Day Cool setpoint</label>
+			<label>Tuesday Day Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -522,7 +522,7 @@
 		</parameter>
 
 		<parameter name="tueEveningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Tuesday Evening Cool setpoint</label>
+			<label>Tuesday Evening Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -535,7 +535,7 @@
 		</parameter>
 
 		<parameter name="tueNightCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Tuesday Night Cool setpoint</label>
+			<label>Tuesday Night Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -543,26 +543,26 @@
 
 		<parameter name="wedMorningCoolTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
 			groupName="cooling">
-			<label>Wedensday Morning</label>
-			<description>Wedensday Morning setpoint start time (HH:mm)</description>
+			<label>Wednesday Morning</label>
+			<description>Wednesday Morning setpoint start time (HH:mm)</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedMorningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Wedensday Morning Cool setpoint</label>
+			<label>Wednesday Morning Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedDayCoolTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" groupName="cooling">
-			<label>Wedensday Day</label>
-			<description>Wedensday Day setpoint start time (HH:mm)</description>
+			<label>Wednesday Day</label>
+			<description>Wednesday Day setpoint start time (HH:mm)</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedDayCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Wedensday Day Cool setpoint</label>
+			<label>Wednesday Day Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -570,26 +570,26 @@
 
 		<parameter name="wedEveningCoolTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
 			groupName="cooling">
-			<label>Wedensday Evening</label>
-			<description>Wedensday Evening setpoint start time (HH:mm)</description>
+			<label>Wednesday Evening</label>
+			<description>Wednesday Evening setpoint start time (HH:mm)</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedEveningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Wedensday Evening Cool setpoint</label>
+			<label>Wednesday Evening Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedNightCoolTime" type="text" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" groupName="cooling">
-			<label>Wedensday Night</label>
-			<description>Wedensday Night setpoint start time (HH:mm)</description>
+			<label>Wednesday Night</label>
+			<description>Wednesday Night setpoint start time (HH:mm)</description>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="wedNightCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Wedensday Night Cool setpoint</label>
+			<label>Wednesday Night Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -603,7 +603,7 @@
 		</parameter>
 
 		<parameter name="thuMorningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Thursday Morning Cool setpoint</label>
+			<label>Thursday Morning Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -616,7 +616,7 @@
 		</parameter>
 
 		<parameter name="thuDayCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Thursday Day Cool setpoint</label>
+			<label>Thursday Day Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -630,7 +630,7 @@
 		</parameter>
 
 		<parameter name="thuEveningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Thursday Evening Cool setpoint</label>
+			<label>Thursday Evening Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -643,7 +643,7 @@
 		</parameter>
 
 		<parameter name="thuNightCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Thursday Night Cool setpoint</label>
+			<label>Thursday Night Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -657,7 +657,7 @@
 		</parameter>
 
 		<parameter name="friMorningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Friday Morning Cool setpoint</label>
+			<label>Friday Morning Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -670,7 +670,7 @@
 		</parameter>
 
 		<parameter name="friDayCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Friday Day Cool setpoint</label>
+			<label>Friday Day Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -684,7 +684,7 @@
 		</parameter>
 
 		<parameter name="friEveningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Friday Evening Cool setpoint</label>
+			<label>Friday Evening Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -697,7 +697,7 @@
 		</parameter>
 
 		<parameter name="friNightCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Friday Night Cool setpoint</label>
+			<label>Friday Night Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -711,7 +711,7 @@
 		</parameter>
 
 		<parameter name="satMorningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Saturday Morning Cool setpoint</label>
+			<label>Saturday Morning Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -724,7 +724,7 @@
 		</parameter>
 
 		<parameter name="satDayCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Saturday Day Cool setpoint</label>
+			<label>Saturday Day Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -738,7 +738,7 @@
 		</parameter>
 
 		<parameter name="satEveningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Saturday Evening Cool setpoint</label>
+			<label>Saturday Evening Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -751,7 +751,7 @@
 		</parameter>
 
 		<parameter name="satNightCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Saturday Night Cool setpoint</label>
+			<label>Saturday Night Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -765,7 +765,7 @@
 		</parameter>
 
 		<parameter name="sunMorningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Sunday Morning Cool setpoint</label>
+			<label>Sunday Morning Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -778,7 +778,7 @@
 		</parameter>
 
 		<parameter name="sunDayCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Sunday Day Cool setpoint</label>
+			<label>Sunday Day Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -792,7 +792,7 @@
 		</parameter>
 
 		<parameter name="sunEveningCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Sunday Evening Cool setpoint</label>
+			<label>Sunday Evening Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>
@@ -805,7 +805,7 @@
 		</parameter>
 
 		<parameter name="sunNightCoolTemp" type="integer" min="45" max="95" unit="F" groupName="cooling">
-			<label>Sunday Night Cool setpoint</label>
+			<label>Sunday Night Cool Setpoint</label>
 			<description>The setpoint in Degrees Fahrenheit</description>
 			<unitLabel>degrees F</unitLabel>
 			<advanced>true</advanced>

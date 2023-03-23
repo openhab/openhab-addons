@@ -6,7 +6,7 @@ Thermostats using a Z-Wave module are not supported but can be used via the open
 The binding retrieves and periodically updates all basic system information from the thermostat.
 The main thermostat functions such as thermostat mode, fan mode, temperature set point and hold mode can be controlled.
 System run-time information and humidity readings are polled less frequently and can be disabled completely if not desired.
-As of openHAB 4.0.0, the heating and cooling program schedules on the thermostat can also be configured.
+The heating and cooling program schedules on the thermostat can also be configured.
 
 ## Supported Things
 
@@ -43,7 +43,8 @@ The time is expressed in 24-hour (HH:mm) format and the time value for each succ
 Once the schedule is populated and the configuration saved, the new schedule will be sent to the thermostat during binding initialization, overwriting its existing schedule.
 
 If one or more time or setpoint fields are left blank in a given schedule and the configuration saved, the Thing will display a configuration error until the entries are corrected.
-A heating or cooling schedule with all fields left blank will be ignored by the binding. In that case, the existing schedule on the thermostat will remain untouched.
+A heating or cooling schedule with all fields left blank will be ignored by the binding.
+In that case, the existing schedule on the thermostat will remain untouched.
 
 If the thermostat schedule is to be managed by openHAB, the thermostat should be de-provisioned from the MyRadioThermostat/EnergyHub cloud service to prevent the openHAB schedule from being overridden.
 

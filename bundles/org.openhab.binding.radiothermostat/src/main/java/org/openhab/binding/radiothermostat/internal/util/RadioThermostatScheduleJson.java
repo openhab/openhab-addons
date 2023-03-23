@@ -120,19 +120,23 @@ public class RadioThermostatScheduleJson {
             return null;
         }
 
-        final Integer morningMin = parseMinutes(morningTime);
-        final Integer dayMin = parseMinutes(dayTime);
-        final Integer eveningMin = parseMinutes(eveningTime);
-        final Integer nightMin = parseMinutes(nightTime);
+        final int morningMin;
+        final int dayMin;
+        final int eveningMin;
+        final int nightMin;
 
-        // if any of the times could not be parsed into minutes, the schedule is invalid
-        if (morningMin == null || dayMin == null || eveningMin == null || nightMin == null) {
+        try {
+            morningMin = parseMinutes(morningTime);
+            dayMin = parseMinutes(dayTime);
+            eveningMin = parseMinutes(eveningTime);
+            nightMin = parseMinutes(nightTime);
+        } catch (NumberFormatException nfe) {
+            // if any of the times could not be parsed into minutes, the schedule is invalid
             return null;
         }
 
         // the minute value for each period must be greater than the previous period otherwise the schedule is invalid
-        if (morningMin.intValue() >= dayMin.intValue() || dayMin.intValue() >= eveningMin.intValue()
-                || eveningMin.intValue() >= nightMin.intValue()) {
+        if (morningMin >= dayMin || dayMin >= eveningMin || eveningMin >= nightMin) {
             return null;
         }
 
@@ -140,16 +144,8 @@ public class RadioThermostatScheduleJson {
                 + eveningTemp + "," + nightMin + "," + nightTemp + "]";
     }
 
-    private @Nullable Integer parseMinutes(String timeStr) {
+    private int parseMinutes(String timeStr) {
         final String[] hourMin = timeStr.split(":");
-        if (hourMin.length == 2) {
-            try {
-                return Integer.parseInt(hourMin[0]) * 60 + Integer.parseInt(hourMin[1]);
-            } catch (NumberFormatException nfe) {
-                return null;
-            }
-        } else {
-            return null;
-        }
+        return Integer.parseInt(hourMin[0]) * 60 + Integer.parseInt(hourMin[1]);
     }
 }
