@@ -33,10 +33,12 @@ import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -45,14 +47,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SolarEdgeBaseHandler} is responsible for handling commands, which are
+ * The {@link SolarEdgeGenericHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler, AtomicReferenceTrait {
-    private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
+public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEdgeHandler, AtomicReferenceTrait {
+    private final Logger logger = LoggerFactory.getLogger(SolarEdgeGenericHandler.class);
 
     private static final long LIVE_POLLING_INITIAL_DELAY = 1;
     private static final long AGGREGATE_POLLING_INITIAL_DELAY = 2;
@@ -72,7 +74,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      */
     private final AtomicReference<@Nullable Future<?>> aggregateDataPollingJobReference;
 
-    public SolarEdgeBaseHandler(Thing thing, HttpClient httpClient) {
+    public SolarEdgeGenericHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.webInterface = new WebInterface(scheduler, this, httpClient);
         this.liveDataPollingJobReference = new AtomicReference<>(null);
@@ -205,5 +207,18 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     @Override
     public SolarEdgeConfiguration getConfiguration() {
         return this.getConfigAs(SolarEdgeConfiguration.class);
+    }
+
+    @Override
+    public List<Channel> getChannels() {
+        return getThing().getChannels();
+    }
+
+    @Override
+    public @Nullable Channel getChannel(String groupId, String channelId) {
+        ThingUID thingUID = this.getThing().getUID();
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID(thingUID, groupId);
+        Channel channel = getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
+        return channel;
     }
 }
