@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solaredge.internal.callback;
+package org.openhab.binding.solaredge.internal.command;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
@@ -31,7 +31,6 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
-import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.CommunicationStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
@@ -47,12 +46,12 @@ import com.google.gson.JsonSyntaxException;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractCommandCallback extends BufferingResponseListener implements SolarEdgeCommand {
+public abstract class AbstractCommand extends BufferingResponseListener implements SolarEdgeCommand {
 
     /**
      * logger
      */
-    protected final Logger logger = LoggerFactory.getLogger(AbstractCommandCallback.class);
+    protected final Logger logger = LoggerFactory.getLogger(AbstractCommand.class);
 
     /**
      * the configuration
@@ -72,27 +71,20 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * listener to provide updates to the WebInterface class
      */
-    private @Nullable StatusUpdateListener listener;
+    private final StatusUpdateListener listener;
 
     /**
      * the constructor
      *
      * @param config
+     * @param listener
+     *
      */
-    public AbstractCommandCallback(SolarEdgeConfiguration config) {
+    public AbstractCommand(SolarEdgeConfiguration config, StatusUpdateListener listener) {
         this.communicationStatus = new CommunicationStatus();
         this.config = config;
-        this.gson = new Gson();
-    }
-
-    /**
-     * the constructor
-     *
-     * @param config
-     */
-    public AbstractCommandCallback(SolarEdgeConfiguration config, StatusUpdateListener listener) {
-        this(config);
         this.listener = listener;
+        this.gson = new Gson();
     }
 
     /**
@@ -163,10 +155,15 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
         return communicationStatus;
     }
 
-    @Override
-    public void updateListenerStatus() {
-        if (listener != null) {
+    /**
+     * updates status of the registered listener.
+     */
+    protected final void updateListenerStatus() {
+        try {
             listener.update(communicationStatus);
+        } catch (Exception ex) {
+            // this should not happen
+            logger.warn("Exception caught: {}", ex.getMessage(), ex);
         }
     }
 
@@ -184,11 +181,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
      * @return Url
      */
     protected abstract String getURL();
-
-    @Override
-    public final void setListener(StatusUpdateListener listener) {
-        this.listener = listener;
-    }
 
     /**
      * just a wrapper as fromJson could return null. This will avoid warnings as eclipse otherwise assumes unnecessary

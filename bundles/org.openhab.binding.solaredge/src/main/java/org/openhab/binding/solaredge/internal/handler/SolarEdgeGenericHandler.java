@@ -30,6 +30,7 @@ import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePrivateApi;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePublicApi;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
+import org.openhab.binding.solaredge.internal.connector.CommunicationStatus;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
 import org.openhab.core.thing.Channel;
@@ -118,12 +119,12 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         SolarEdgeCommand ldu;
 
         if (getConfiguration().isUsePrivateApi()) {
-            ldu = new LiveDataUpdatePrivateApi(this);
+            ldu = new LiveDataUpdatePrivateApi(this, this::updateOnlineStatus);
         } else {
             if (getConfiguration().isMeterInstalled()) {
-                ldu = new LiveDataUpdatePublicApi(this);
+                ldu = new LiveDataUpdatePublicApi(this, this::updateOnlineStatus);
             } else {
-                ldu = new LiveDataUpdateMeterless(this);
+                ldu = new LiveDataUpdateMeterless(this, this::updateOnlineStatus);
             }
         }
         getWebInterface().enqueueCommand(ldu);
@@ -139,20 +140,36 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
             List<SolarEdgeCommand> commands = new ArrayList<>();
 
             if (getConfiguration().isUsePrivateApi()) {
-                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.DAY));
-                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.WEEK));
-                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.MONTH));
-                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.YEAR));
+                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.DAY, this::updateOnlineStatus));
+                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.WEEK, this::updateOnlineStatus));
+                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.MONTH, this::updateOnlineStatus));
+                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.YEAR, this::updateOnlineStatus));
             } else {
-                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.DAY));
-                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.WEEK));
-                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.MONTH));
-                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.YEAR));
+                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.DAY, this::updateOnlineStatus));
+                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.WEEK, this::updateOnlineStatus));
+                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.MONTH, this::updateOnlineStatus));
+                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.YEAR, this::updateOnlineStatus));
             }
 
             for (SolarEdgeCommand command : commands) {
                 getWebInterface().enqueueCommand(command);
             }
+        }
+    }
+
+    private void updateOnlineStatus(CommunicationStatus status) {
+        switch (status.getHttpCode()) {
+            case SERVICE_UNAVAILABLE:
+                setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, status.getMessage());
+                // TODO setAuthenticated(false);
+                break;
+            case OK:
+                // no action needed as the thing is already online.
+                break;
+            default:
+                setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, status.getMessage());
+                // TODO setAuthenticated(false);
+
         }
     }
 

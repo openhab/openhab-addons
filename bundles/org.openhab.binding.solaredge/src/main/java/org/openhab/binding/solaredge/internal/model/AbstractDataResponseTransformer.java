@@ -178,8 +178,9 @@ abstract class AbstractDataResponseTransformer {
             MeterTelemetry... values) {
         double sum = 0.0;
         for (MeterTelemetry value : values) {
-            if (value.value != null) {
-                sum += value.value;
+            Double innerValue = value.value;
+            if (innerValue != null) {
+                sum += innerValue;
             }
         }
         putEnergyType(targetMap, channel, sum, unit);
