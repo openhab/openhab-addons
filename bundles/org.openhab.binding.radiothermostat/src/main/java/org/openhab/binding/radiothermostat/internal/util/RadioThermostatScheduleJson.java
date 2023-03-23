@@ -130,7 +130,7 @@ public class RadioThermostatScheduleJson {
             dayMin = parseMinutes(dayTime);
             eveningMin = parseMinutes(eveningTime);
             nightMin = parseMinutes(nightTime);
-        } catch (NumberFormatException nfe) {
+        } catch (IllegalArgumentException e) {
             // if any of the times could not be parsed into minutes, the schedule is invalid
             return null;
         }
@@ -146,6 +146,10 @@ public class RadioThermostatScheduleJson {
 
     private int parseMinutes(String timeStr) {
         final String[] hourMin = timeStr.split(":");
+        if (hourMin.length != 2) {
+            throw new IllegalArgumentException("HH:mm expected");
+        }
+
         return Integer.parseInt(hourMin[0]) * 60 + Integer.parseInt(hourMin[1]);
     }
 }
