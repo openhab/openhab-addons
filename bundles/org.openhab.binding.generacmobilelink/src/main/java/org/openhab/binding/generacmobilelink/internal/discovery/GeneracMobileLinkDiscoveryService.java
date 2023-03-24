@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.generacmobilelink.internal.discovery;
 
-import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR;
+import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
 import org.openhab.binding.generacmobilelink.internal.dto.Apparatus;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 
@@ -54,12 +54,11 @@ public class GeneracMobileLinkDiscoveryService extends AbstractDiscoveryService 
 
     public void generatorDiscovered(Apparatus apparatus, ThingUID bridgeUID) {
         DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID(GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR, bridgeUID,
-                        String.valueOf(apparatus.apparatusId)))
+                .create(new ThingUID(THING_TYPE_GENERATOR, bridgeUID, String.valueOf(apparatus.apparatusId)))
                 .withLabel("MobileLink Generator " + apparatus.name)
-                .withProperty("serialNumber", String.valueOf(apparatus.serialNumber))
-                .withProperty("generatorId", String.valueOf(apparatus.apparatusId))
-                .withRepresentationProperty("generatorId").withBridge(bridgeUID).build();
+                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, String.valueOf(apparatus.serialNumber))
+                .withProperty(PROPERTY_GENERATOR_ID, String.valueOf(apparatus.apparatusId))
+                .withRepresentationProperty(PROPERTY_GENERATOR_ID).withBridge(bridgeUID).build();
         thingDiscovered(result);
     }
 }

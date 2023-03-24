@@ -13,6 +13,7 @@
 package org.openhab.binding.generacmobilelink.internal.handler;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +34,7 @@ import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
 import org.openhab.binding.generacmobilelink.internal.config.GeneracMobileLinkAccountConfiguration;
 import org.openhab.binding.generacmobilelink.internal.config.GeneracMobileLinkGeneratorConfiguration;
 import org.openhab.binding.generacmobilelink.internal.discovery.GeneracMobileLinkDiscoveryService;
@@ -40,6 +42,7 @@ import org.openhab.binding.generacmobilelink.internal.dto.Apparatus;
 import org.openhab.binding.generacmobilelink.internal.dto.ApparatusDetail;
 import org.openhab.binding.generacmobilelink.internal.dto.SelfAssertedResponse;
 import org.openhab.binding.generacmobilelink.internal.dto.SignInConfig;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -54,6 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -69,7 +73,10 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     private static final String API_BASE = "https://app.mobilelinkgen.com/api";
     private static final String LOGIN_BASE = "https://generacconnectivity.b2clogin.com/generacconnectivity.onmicrosoft.com/B2C_1A_MobileLink_SignIn";
     private static final Pattern SETTINGS_PATTERN = Pattern.compile("^var SETTINGS = (.*);$", Pattern.MULTILINE);
-    private final Gson gson = new GsonBuilder().create();
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
+            (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
+                return ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString());
+            }).create();
     private HttpClient httpClient;
     private GeneracMobileLinkDiscoveryService discoveryService;
     private Map<String, Apparatus> apparatusesCache = new HashMap<String, Apparatus>();
@@ -78,14 +85,19 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
     private @Nullable Future<?> pollFuture;
 
-    public GeneracMobileLinkAccountHandler(Bridge bridge, HttpClient httpClient,
+    public GeneracMobileLinkAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory,
             GeneracMobileLinkDiscoveryService discoveryService) {
         super(bridge);
-        this.httpClient = httpClient;
         this.discoveryService = discoveryService;
+        httpClient = httpClientFactory.createHttpClient(GeneracMobileLinkBindingConstants.BINDING_ID);
         httpClient.setFollowRedirects(true);
         // We have to send a very large amount of cookies which exceeds the default buffer size
         httpClient.setRequestBufferSize(16348);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            throw new IllegalStateException("Error starting custom HttpClient", e);
+        }
     }
 
     @Override
@@ -97,6 +109,11 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopOrRestartPoll(false);
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Could not stop HttpClient", e);
+        }
     }
 
     @Override
@@ -130,7 +147,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
         Future<?> pollFuture = this.pollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(true);
-            pollFuture = null;
+            this.pollFuture = null;
         }
         if (restart) {
             this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshIntervalSeconds, TimeUnit.SECONDS);
@@ -214,7 +231,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             }
             String data = response.getContentAsString();
             logger.debug("getEndpoint {}", data);
-            return gson.fromJson(data, clazz);
+            return GSON.fromJson(data, clazz);
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             throw new IOException(e);
         }
@@ -251,7 +268,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
             String parseSettings = matcher.group(1);
             logger.debug("parseSettings: {}", parseSettings);
-            SignInConfig signInConfig = gson.fromJson(parseSettings, SignInConfig.class);
+            SignInConfig signInConfig = GSON.fromJson(parseSettings, SignInConfig.class);
 
             if (signInConfig == null) {
                 throw new IOException("Could not parse settings string");
@@ -274,7 +291,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                 throw new IOException("SelfAsserted: Bad response status: " + selfAssertedResposne.getStatus());
             }
 
-            SelfAssertedResponse sa = gson.fromJson(selfAssertedResposne.getContentAsString(),
+            SelfAssertedResponse sa = GSON.fromJson(selfAssertedResposne.getContentAsString(),
                     SelfAssertedResponse.class);
 
             if (sa == null) {

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.generacmobilelink.internal.handler;
 
+import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.*;
+
 import java.util.Arrays;
 
 import javax.measure.quantity.Dimensionless;
@@ -34,6 +36,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +52,6 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
     private @Nullable Apparatus apparatus;
     private @Nullable ApparatusDetail apparatusDetail;
 
-    /**
-     * @param thing
-     */
     public GeneracMobileLinkGeneratorHandler(Thing thing) {
         super(thing);
     }
@@ -81,48 +81,52 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
         if (apparatus == null || apparatusDetail == null) {
             return;
         }
-        updateState("heroImageUrl", new StringType(apparatusDetail.heroImageUrl));
-        updateState("statusLabel", new StringType(apparatusDetail.statusLabel));
-        updateState("statusText", new StringType(apparatusDetail.statusText));
-        updateState("activationDate", new DateTimeType(apparatusDetail.activationDate));
-        updateState("deviceSsid", new StringType(apparatusDetail.deviceSsid));
-        updateState("status", new DecimalType(apparatusDetail.apparatusStatus));
-        updateState("isConnected", OnOffType.from(apparatusDetail.isConnected));
-        updateState("isConnecting", OnOffType.from(apparatusDetail.isConnecting));
-        updateState("showWarning", OnOffType.from(apparatusDetail.showWarning));
-        updateState("hasMaintenanceAlert", OnOffType.from(apparatusDetail.hasMaintenanceAlert));
-        updateState("lastSeen", new DateTimeType(apparatusDetail.lastSeen));
-        updateState("connectionTime", new DateTimeType(apparatusDetail.connectionTimestamp));
+        updateState(CHANNEL_HERO_IMAGE_URL, new StringType(apparatusDetail.heroImageUrl));
+        updateState(CHANNEL_STATUS_LABEL, new StringType(apparatusDetail.statusLabel));
+        updateState(CHANNEL_STATUS_TEXT, new StringType(apparatusDetail.statusText));
+        updateState(CHANNEL_ACTIVATION_DATE, new DateTimeType(apparatusDetail.activationDate));
+        updateState(CHANNEL_DEVICE_SSID, new StringType(apparatusDetail.deviceSsid));
+        updateState(CHANNEL_STATUS, new DecimalType(apparatusDetail.apparatusStatus));
+        updateState(CHANNEL_IS_CONNECTED, OnOffType.from(apparatusDetail.isConnected));
+        updateState(CHANNEL_IS_CONNECTING, OnOffType.from(apparatusDetail.isConnecting));
+        updateState(CHANNEL_SHOW_WARNING, OnOffType.from(apparatusDetail.showWarning));
+        updateState(CHANNEL_HAS_MAINTENANCE_ALERT, OnOffType.from(apparatusDetail.hasMaintenanceAlert));
+        updateState(CHANNEL_LAST_SEEN, new DateTimeType(apparatusDetail.lastSeen));
+        updateState(CHANNEL_CONNECTION_TIME, new DateTimeType(apparatusDetail.connectionTimestamp));
         Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 70).findFirst().ifPresent(p -> {
             try {
-                updateState("runHours", new QuantityType<Time>(Integer.parseInt(p.value), Units.HOUR));
+                updateState(CHANNEL_RUN_HOURS, new QuantityType<Time>(Integer.parseInt(p.value), Units.HOUR));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse runHours {}", p.value);
+                updateState(CHANNEL_RUN_HOURS, UnDefType.UNDEF);
             }
         });
         Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 69).findFirst().ifPresent(p -> {
             try {
-                updateState("batteryVoltage",
+                updateState(CHANNEL_BATTERY_VOLTAGE,
                         new QuantityType<ElectricPotential>(Float.parseFloat(p.value), Units.VOLT));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse runHours {}", p.value);
+                updateState(CHANNEL_BATTERY_VOLTAGE, UnDefType.UNDEF);
             }
         });
         Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 31).findFirst().ifPresent(p -> {
             try {
-                updateState("hoursOfProtection", new QuantityType<Time>(Float.parseFloat(p.value), Units.HOUR));
+                updateState(CHANNEL_HOURS_OF_PROTECTION, new QuantityType<Time>(Float.parseFloat(p.value), Units.HOUR));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse hoursOfProtection {}", p.value);
+                updateState(CHANNEL_HOURS_OF_PROTECTION, UnDefType.UNDEF);
             }
         });
         apparatus.properties.stream().filter(p -> p.type == 3).findFirst().ifPresent(p -> {
             try {
                 if (p.value.signalStrength != null) {
-                    updateState("signalStrength", new QuantityType<Dimensionless>(
+                    updateState(CHANNEL_SIGNAL_STRENGH, new QuantityType<Dimensionless>(
                             Integer.parseInt(p.value.signalStrength.replaceAll("%", "")), Units.PERCENT));
                 }
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse signalStrength {}", p.value.signalStrength);
+                updateState(CHANNEL_SIGNAL_STRENGH, UnDefType.UNDEF);
             }
         });
     }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.generacmobilelink.internal.dto;
 
+import java.time.ZonedDateTime;
+
 /**
  * The {@link ApparatusDetail} represents the details of a Generac Apparatus
  *
@@ -23,7 +25,7 @@ public class ApparatusDetail {
     public String serialNumber;
     public int apparatusClassification;
     public String panelId;
-    public String activationDate;
+    public ZonedDateTime activationDate;
     public String deviceType;
     public String deviceSsid;
     public String shortDeviceId;
@@ -37,7 +39,7 @@ public class ApparatusDetail {
     public boolean isConnecting;
     public boolean showWarning;
     public boolean hasMaintenanceAlert;
-    public String lastSeen;
+    public ZonedDateTime lastSeen;
     public String connectionTimestamp;
     public Address address;
     public Property[] properties;
