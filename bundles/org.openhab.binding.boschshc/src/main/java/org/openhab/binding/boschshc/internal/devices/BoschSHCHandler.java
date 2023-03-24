@@ -124,7 +124,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-
         // Initialize device services
         try {
             this.initializeServices();
@@ -304,7 +303,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
             TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels,
             boolean shouldFetchInitialState) throws BoschSHCException {
-
         String deviceId = verifyBoschID();
         service.initialize(getBridgeHandler(), deviceId, stateUpdateListener);
         this.registerService(service, affectedChannels);
@@ -325,7 +323,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     private <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void fetchInitialState(
             TService service, Consumer<TState> stateUpdateListener) {
-
         try {
             @Nullable
             TState serviceState = service.getState();
@@ -353,7 +350,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     protected <TService extends AbstractBoschSHCService> void registerStatelessService(TService service)
             throws BoschSHCException {
-
         String deviceId = verifyBoschID();
         service.initialize(getBridgeHandler(), deviceId);
         // do not register in service list because the service can not receive state updates

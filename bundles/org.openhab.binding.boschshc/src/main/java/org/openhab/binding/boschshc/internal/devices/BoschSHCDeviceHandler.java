@@ -53,7 +53,6 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
 
     @Override
     public void initialize() {
-
         var config = this.config = getConfigAs(BoschSHCConfiguration.class);
 
         String deviceId = config.id;
