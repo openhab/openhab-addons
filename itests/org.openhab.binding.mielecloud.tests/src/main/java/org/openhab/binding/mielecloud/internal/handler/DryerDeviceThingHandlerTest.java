@@ -143,7 +143,7 @@ public class DryerDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
             assertEquals(OnOffType.ON, getChannelState(INFO_STATE));
             assertEquals(OnOffType.OFF, getChannelState(LIGHT_SWITCH));
             assertEquals(OnOffType.OFF, getChannelState(DOOR_STATE));
-            assertEquals(new QuantityType<>(1.5, Units.WATT_HOUR), getChannelState(ENERGY_CONSUMPTION_CURRENT));
+            assertEquals(new QuantityType<>(2.5, Units.WATT_HOUR), getChannelState(ENERGY_CONSUMPTION_CURRENT));
         });
     }
 
