@@ -13,9 +13,7 @@
 package org.openhab.binding.boschshc.internal.discovery;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
@@ -217,17 +215,29 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     }
 
     private String getNiceName(String name, String roomName) {
-        // remove "-" from "-IntrusionDetectionSystem-"
-        String niceName = name.replace("-", "");
-        // convert "IntrusionDetectionSystem" into "Intrusion Detection System"
-        // by splitting the CamelCase string into strings and joining the non-empty parts again.
-        niceName = Arrays.stream(StringUtils.splitByCharacterTypeCamelCase(niceName)).filter(p -> !p.trim().isEmpty())
-                .collect(Collectors.joining(" "));
-        // append roomName for "Room Climate Control", because it appears for each thermostat in each room
-        if (niceName.startsWith("Room Climate Control") && !roomName.isEmpty()) {
-            niceName = niceName + " " + roomName;
+        if (!name.startsWith("-"))
+            return name;
+
+        // convert "-IntrusionDetectionSystem-" into "Intrusion Detection System"
+        // convert "-RoomClimateControl-" into "Room Climate Control myRoomName"
+        final char[] chars = name.toCharArray();
+        StringBuilder niceNameBuilder = new StringBuilder(32);
+        for (int pos = 0; pos < chars.length; pos++) {
+            // skip "-"
+            if (chars[pos] == '-') {
+                continue;
+            }
+            // convert "CamelCase" into "Camel Case", skipping the first Uppercase after the "-"
+            if (pos > 1 && Character.getType(chars[pos]) == Character.UPPERCASE_LETTER) {
+                niceNameBuilder.append(" ");
+            }
+            niceNameBuilder.append(chars[pos]);
         }
-        return niceName;
+        // append roomName for "Room Climate Control", because it appears for each room with a thermostat
+        if (!roomName.isEmpty() && niceNameBuilder.toString().startsWith("Room Climate Control")) {
+            niceNameBuilder.append(" ").append(roomName);
+        }
+        return niceNameBuilder.toString();
     }
 
     protected @Nullable ThingTypeUID getThingTypeUID(Device device) {
