@@ -46,7 +46,7 @@ public class DishwasherDeviceThingHandlerTest extends AbstractMieleThingHandlerT
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_DISHWASHER, DISHWASHER_DEVICE_THING_UID,
-                DishwasherDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                DishwasherDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "1");
     }
 
     @Test

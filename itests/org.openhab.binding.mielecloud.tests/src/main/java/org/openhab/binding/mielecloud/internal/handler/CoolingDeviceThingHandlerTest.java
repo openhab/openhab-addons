@@ -45,7 +45,7 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_FRIDGE_FREEZER, FRIDGE_FREEZER_DEVICE_THING_UID,
-                CoolingDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                CoolingDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "0");
     }
 
     @Test

@@ -46,7 +46,7 @@ public class DryerDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_DRYER, DRYER_DEVICE_THING_UID,
-                DryerDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                DryerDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "1");
     }
 
     @Test

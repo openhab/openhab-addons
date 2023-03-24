@@ -48,7 +48,7 @@ public class WashingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_WASHING_MACHINE, WASHING_MACHINE_THING_UID,
-                WashingDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                WashingDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "1");
     }
 
     @Test
