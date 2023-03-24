@@ -191,7 +191,7 @@ public class RustpotterKSService implements KSService {
         while (!aborted.get()) {
             try {
                 numBytesRead = audioStream.read(audioBuffer, bufferSize - remaining, remaining);
-                if (aborted.get()) {
+                if (aborted.get() || numBytesRead == -1) {
                     break;
                 }
                 if (numBytesRead != remaining) {
