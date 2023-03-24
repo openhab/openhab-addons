@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public final class ChannelTypeUtil {
-    private static final Logger logger = LoggerFactory.getLogger(ChannelTypeUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelTypeUtil.class);
 
     private ChannelTypeUtil() {
         throw new IllegalStateException("ChannelTypeUtil cannot be instantiated.");
@@ -106,7 +106,7 @@ public final class ChannelTypeUtil {
 
             return Optional.of(formatted);
         } catch (ArithmeticException e) {
-            logger.warn("Failed to format {}", value, e);
+            LOGGER.warn("Failed to format {}", value, e);
             return Optional.empty();
         }
     }
@@ -122,7 +122,7 @@ public final class ChannelTypeUtil {
         try {
             return Optional.of((State) new QuantityType<>(value));
         } catch (IllegalArgumentException e) {
-            logger.warn("Failed to convert {} to quantity: {}", value, e.getMessage(), e);
+            LOGGER.warn("Failed to convert {} to quantity: {}", value, e.getMessage(), e);
             return Optional.empty();
         }
     }
