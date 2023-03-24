@@ -196,7 +196,6 @@ public class RustpotterKSService implements KSService {
                 }
                 if (numBytesRead != remaining) {
                     remaining = remaining - numBytesRead;
-                    Thread.sleep(100);
                     continue;
                 }
                 remaining = bufferSize;
@@ -217,7 +216,7 @@ public class RustpotterKSService implements KSService {
                     detection.delete();
                     ksListener.ksEventReceived(new KSpottedEvent());
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 String errorMessage = e.getMessage();
                 ksListener.ksEventReceived(new KSErrorEvent(errorMessage != null ? errorMessage : "Unexpected error"));
             }
