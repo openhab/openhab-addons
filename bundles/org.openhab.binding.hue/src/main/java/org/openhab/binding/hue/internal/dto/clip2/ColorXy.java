@@ -30,19 +30,19 @@ public class ColorXy {
     /**
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */
-    public float[] getXY() throws DTOPresentButEmptyException {
-        PairXy xy = this.xy;
-        if (Objects.nonNull(xy)) {
-            return xy.getXY();
+    public double[] getXY() throws DTOPresentButEmptyException {
+        PairXy pairXy = this.xy;
+        if (Objects.nonNull(pairXy)) {
+            return pairXy.getXY();
         }
         throw new DTOPresentButEmptyException("'color' DTO is present but empty");
     }
 
-    public ColorXy setXY(float[] xyValues) {
-        PairXy xy = this.xy;
-        xy = Objects.nonNull(xy) ? xy : new PairXy();
-        xy.setXY(xyValues);
-        this.xy = xy;
+    public ColorXy setXY(double[] xyValues) {
+        PairXy pairXy = this.xy;
+        pairXy = Objects.nonNull(pairXy) ? pairXy : new PairXy();
+        pairXy.setXY(xyValues);
+        this.xy = pairXy;
         return this;
     }
 }

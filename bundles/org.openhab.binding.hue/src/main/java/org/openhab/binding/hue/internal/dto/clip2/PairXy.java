@@ -18,14 +18,14 @@ package org.openhab.binding.hue.internal.dto.clip2;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class PairXy {
-    private float x;
-    private float y;
+    private double x;
+    private double y;
 
-    public float[] getXY() {
-        return new float[] { x, y };
+    public double[] getXY() {
+        return new double[] { x, y };
     }
 
-    public void setXY(float[] xy) {
+    public void setXY(double[] xy) {
         x = xy.length > 0 ? xy[0] : 0f;
         y = xy.length > 1 ? xy[1] : 0f;
     }

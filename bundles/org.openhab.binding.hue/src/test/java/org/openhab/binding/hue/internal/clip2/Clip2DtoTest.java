@@ -57,6 +57,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -92,38 +93,22 @@ class Clip2DtoTest {
     }
 
     /**
-     * Helper method for checking if expected and actual State values are both of HSBType, and if so, that their
-     * respective Hue, Saturation and Brightness parameter values all lie within 2% of each other. This method is
-     * required in order to eliminate integer rounding artifacts in testing HSB versus the float mathematics of the
-     * underlying ColorXY data.
+     * Helper method for checking if expected and actual HSBType color parameters lie within a given percentage of each
+     * other. This method is required in order to eliminate integer rounding artifacts in JUnit tests when comparing HSB
+     * values. Asserts that the color parameters of expected and actual are within delta percent of each other.
      *
-     * @param expectedState an HSBType containing the expected colour.
-     * @param actualState an HSBType containing the actual colour.
-     * @return true if all the HSB parameters of expected and actual are within 2% of each other.
+     * @param expected an HSBType containing the expected colour.
+     * @param actual an HSBType containing the actual colour.
+     * @param delta the maximum allowed percentage difference between the two (0..99 percent).
      */
-    private boolean hsbEquals(State expectedState, State actualState) {
-        if (!(expectedState instanceof HSBType) || !(actualState instanceof HSBType)) {
-            return false;
+    private static void assertHSBEqual(HSBType expected, HSBType actual, float delta) {
+        if (delta <= 0f || delta > 99f) {
+            throw new IllegalArgumentException("'delta' out of bounds");
         }
-
-        HSBType expectedHSB = (HSBType) expectedState;
-        HSBType actualHSB = (HSBType) actualState;
-
-        int expectedHue = expectedHSB.getHue().intValue();
-        int actualHue = actualHSB.getHue().intValue();
-        int temp = Math.abs(expectedHue - actualHue) % 360;
-        int deltaHue = temp > 180 ? 360 - temp : temp;
-
-        int expectedSaturation = expectedHSB.getSaturation().intValue();
-        int actualSaturation = actualHSB.getSaturation().intValue();
-        int deltaSaturation = Math.abs(expectedSaturation - actualSaturation);
-
-        int expectedBrightness = expectedHSB.getBrightness().intValue();
-        int actualBrightness = actualHSB.getBrightness().intValue();
-        int deltaBrightness = Math.abs(expectedBrightness - actualBrightness);
-
-        // note: hue is on a scale 0..360 so 2% equals 7
-        return (deltaHue <= 7) && (deltaSaturation <= 2) && (deltaBrightness <= 2);
+        double[] exp = ColorUtil.hsbToXY(expected);
+        double[] act = ColorUtil.hsbToXY(actual);
+        double max = delta / 100.0f;
+        assertTrue((Math.abs(exp[0] - act[0]) < max) && (Math.abs(exp[1] - act[1]) < max));
     }
 
     @Test
@@ -249,9 +234,9 @@ class Clip2DtoTest {
                 assertEquals(UnDefType.UNDEF, item.getColorTemperaturePercentState(new MirekSchema()));
                 State state = item.getColorState();
                 assertTrue(state instanceof HSBType);
-                float[] xy = Resource.getColorXY((HSBType) state);
-                assertEquals(0.6367, xy[0], 0.015); // note: rounding errors !!
-                assertEquals(0.3503, xy[1], 0.015); // note: rounding errors !!
+                double[] xy = ColorUtil.hsbToXY((HSBType) state);
+                assertEquals(0.6367, xy[0], 0.01); // note: rounding errors !!
+                assertEquals(0.3503, xy[1], 0.01); // note: rounding errors !!
                 assertEquals(item.getBrightnessState(), ((HSBType) state).getBrightness());
                 Alerts alert = item.getAlert();
                 assertNotNull(alert);
@@ -350,7 +335,8 @@ class Clip2DtoTest {
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
         one.setColor(HSBType.RED);
-        assertTrue(hsbEquals(HSBType.RED, one.getColorState()));
+        assertTrue(one.getColorState() instanceof HSBType);
+        assertHSBEqual(HSBType.RED, (HSBType) one.getColorState(), 1);
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
 
         // null its Dimming field
@@ -364,8 +350,9 @@ class Clip2DtoTest {
 
         // confirm that brightness is no longer valid, and therefore that color has also changed
         assertEquals(UnDefType.NULL, one.getBrightnessState());
-        assertTrue(hsbEquals(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, new PercentType(50)),
-                one.getColorState()));
+        assertTrue(one.getColorState() instanceof HSBType);
+        assertHSBEqual(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, new PercentType(50)),
+                (HSBType) one.getColorState(), 1);
 
         PercentType testBrightness = new PercentType(42);
 
@@ -383,7 +370,9 @@ class Clip2DtoTest {
         assertEquals("AARDVARK", one.getId());
         assertEquals(ResourceType.LIGHT, one.getType());
         assertEquals(testBrightness, one.getBrightnessState());
-        assertTrue(hsbEquals(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, testBrightness), one.getColorState()));
+        assertTrue(one.getColorState() instanceof HSBType);
+        assertHSBEqual(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, testBrightness),
+                (HSBType) one.getColorState(), 1);
     }
 
     @Test
@@ -460,7 +449,8 @@ class Clip2DtoTest {
         for (HSBType color : Set.of(HSBType.WHITE, HSBType.RED, HSBType.GREEN, HSBType.BLUE, cyan, yellow, magenta)) {
             resource.setColor(color);
             State state = resource.getColorState();
-            assertTrue(hsbEquals(color, state));
+            assertTrue(state instanceof HSBType);
+            assertHSBEqual(color, (HSBType) state, 1);
         }
     }
 

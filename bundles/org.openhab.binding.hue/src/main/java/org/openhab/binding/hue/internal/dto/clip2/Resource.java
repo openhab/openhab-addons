@@ -36,6 +36,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -50,31 +51,6 @@ import com.google.gson.annotations.SerializedName;
 public class Resource {
 
     private static final int DELTA = 30;
-
-    /**
-     * Static method to create an HsbType from an array of floats of colour x & y parameters.
-     *
-     * @param xy colour x & y parameters.
-     * @return a new HsbType.
-     */
-    private static HSBType getColorHSB(float[] xy) {
-        return HSBType.fromXY(xy[0], xy[1]);
-    }
-
-    /**
-     * Static method to get the x & y colour parameters of an HsbType instance.
-     *
-     * @param hsb the HsbType.
-     * @return colour x & y parameters.
-     */
-    public static float[] getColorXY(HSBType hsb) {
-        PercentType[] percentTypes = hsb.toXY();
-        float[] floats = new float[percentTypes.length];
-        for (int i = 0; i < floats.length; i++) {
-            floats[i] = percentTypes[i].floatValue() / 100.0f;
-        }
-        return floats;
-    }
 
     /**
      * Static method to get a new percent value depending on the type of command and if relevant the current value.
@@ -272,7 +248,7 @@ public class Resource {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             try {
-                HSBType hsb = getColorHSB(color.getXY());
+                HSBType hsb = ColorUtil.xyToHsv(color.getXY());
                 Dimming dimming = this.dimming;
                 return new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(
                         Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50));
@@ -527,7 +503,7 @@ public class Resource {
             HSBType hsb = (HSBType) command;
             ColorXy col = color;
             Dimming dim = dimming;
-            color = (Objects.nonNull(col) ? col : new ColorXy()).setXY(getColorXY(hsb));
+            color = (Objects.nonNull(col) ? col : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb));
             dimming = (Objects.nonNull(dim) ? dim : new Dimming()).setBrightness(hsb.getBrightness().intValue());
         }
         return this;
