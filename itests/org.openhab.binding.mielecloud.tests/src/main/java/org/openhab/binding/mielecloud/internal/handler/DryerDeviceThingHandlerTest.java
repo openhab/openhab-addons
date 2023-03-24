@@ -91,7 +91,6 @@ public class DryerDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
             assertEquals(NULL_VALUE_STATE, getChannelState(DRYING_TARGET_RAW));
             assertEquals(NULL_VALUE_STATE, getChannelState(LIGHT_SWITCH));
             assertEquals(NULL_VALUE_STATE, getChannelState(DOOR_STATE));
-            assertEquals(NULL_VALUE_STATE, getChannelState(WATER_CONSUMPTION_CURRENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(ENERGY_CONSUMPTION_CURRENT));
         });
     }
