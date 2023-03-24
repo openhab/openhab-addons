@@ -33,6 +33,9 @@ white\ space=using escape
 | `white space` | `using escape` |
 | `anything`    | `default`      |
 
+## Usage as a Thing Channel Transformation
+
+To use the above map on a Channel value coming into your Thing, set the Incoming Value Transformations value to `MAP:binary.map`.
 
 ## Usage as a Profile
 
