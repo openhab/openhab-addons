@@ -146,7 +146,7 @@ public class GatewayPayloadParserTests {
                             + "  \"aoa\": [],"//
                             + "  \"gwts\": \"1659365438\","//
                             + "  \"ts\": \"1659365438\","//
-            // manufacturer is not 99 04 (Ruuvi) but 9904
+            // manufacturer is not 99 04 (Ruuvi) but 99 99
                             + "  \"data\": \"0201061BFF99990512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
                             + "  \"coords\": \"\"" + "}"));
         });
