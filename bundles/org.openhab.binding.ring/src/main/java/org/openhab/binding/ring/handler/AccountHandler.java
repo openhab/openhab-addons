@@ -199,18 +199,20 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
         logger.debug("Initializing Ring Account handler");
         super.initialize();
 
-        Configuration config = getThing().getConfiguration();
-        Integer refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
-        String username = (String) config.get("username");
-        String password = (String) config.get("password");
-        String hardwareId = (String) config.get("hardwareId");
-        String refreshToken = (String) config.get("refreshToken");
+        AccountConfiguration config = getConfigAs(AccountConfiguration.class);
+        Integer refreshInterval = config.refreshInterval;
+        String username = config.username;
+        String password = config.password;
+        String hardwareId = config.hardwareId;
+        String refreshToken = config.refreshToken;
 
-        String twofactorCode = (String) config.get("twofactorCode");
-        videoRetentionCount = ((BigDecimal) config.get("videoRetentionCount")).intValueExact();
-        videoStoragePath = (String) config.get("videoStoragePath");
+        String twofactorCode = config.twofactorCode;
+        videoRetentionCount = config.videoRetentionCount;
+        videoStoragePath = config.videoStoragePath;
 
         try {
+            Configuration updatedConfiguration = getThing().getConfiguration();
+
             if (hardwareId.isEmpty()) {
                 hardwareId = getLocalMAC();
                 if ((hardwareId == null) || hardwareId.isEmpty()) {
@@ -219,16 +221,15 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                     return;
                 }
                 // write hardwareId to thing config
-                config.put("hardwareId", hardwareId);
-                updateConfiguration(config);
+                config.hardwareId = hardwareId;
+                updatedConfiguration.put("hardwareId", config.hardwareId);
             }
-
             restClient = new RestClient();
             userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
                     hardwareId);
-            config.put("refreshToken", userProfile.getRefreshToken());
-            updateConfiguration(config);
-            if ((String) config.get("refreshToken") != userProfile.getRefreshToken()) {
+            config.refreshToken = userProfile.getRefreshToken();
+            updatedConfiguration.put("refreshToken", config.refreshToken);
+            if (config.refreshToken.equals(userProfile.getRefreshToken())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Error saving refresh token to account Thing. See log for details.");
                 logger.error(
@@ -236,8 +237,9 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                         userProfile.getRefreshToken());
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
-            config.remove("twofactorCode");
-            updateConfiguration(config);
+            config.twofactorCode = "";
+            updatedConfiguration.put("twofactorCode", config.twofactorCode);
+            updateConfiguration(updatedConfiguration);
 
             if (this.ringVideoServlet == null) {
                 this.ringVideoServlet = new RingVideoServlet(httpService, videoStoragePath);
@@ -285,11 +287,11 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
             logger.debug(
                     "AuthenticationException in AccountHandler.minuteTick() when trying refreshRegistry, attempting to reconnect {}",
                     e.getMessage());
-            Configuration config = getThing().getConfiguration();
-            String username = (String) config.get("username");
-            String password = (String) config.get("password");
-            String hardwareId = (String) config.get("hardwareId");
-            String refreshToken = (String) config.get("refreshToken");
+            AccountConfiguration config = getConfigAs(AccountConfiguration.class);
+            String username = config.username;
+            String password = config.password;
+            String hardwareId = config.hardwareId;
+            String refreshToken = config.refreshToken;
 
             try {
                 userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, null, hardwareId);
