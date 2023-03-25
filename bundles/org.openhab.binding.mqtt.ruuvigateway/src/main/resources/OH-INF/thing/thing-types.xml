@@ -49,14 +49,14 @@
 	<channel-type id="ruuvitag_ts">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
-		<description>Timestamp when the message from Bluetooth-sensor was received by Gateway (ts)</description>
+		<description>Timestamp when the message from Bluetooth sensor was received by Gateway (ts)</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="ruuvitag_gwts" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Relay Timestamp</label>
-		<description>Timestamp when the message from Bluetooth-sensor was relayed by Gateway (gwts)</description>
+		<description>Timestamp when the message from Bluetooth sensor was relayed by Gateway (gwts)</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
