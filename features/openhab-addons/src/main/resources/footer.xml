@@ -20,7 +20,7 @@
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mqtt</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt/${project.version}</bundle>
-		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.espmilighthub/${project.version}</bundle>		
+		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.espmilighthub/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.generic/${project.version}</bundle>
 		<bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homeassistant/${project.version}</bundle>
 		<bundle start-level="82">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.homie/${project.version}</bundle>
