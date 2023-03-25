@@ -98,7 +98,7 @@ public class DoorbellHandler extends RingDeviceHandler {
 
         if ((device != null) && (!device.getBattery().equals(lastBattery))) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
-            updateState(channelUID, new DecimalType(device.getBattery()));
+            updateState(channelUID, new DecimalType(device.getBattery().toString()));
             lastBattery = device.getBattery();
         }
     }

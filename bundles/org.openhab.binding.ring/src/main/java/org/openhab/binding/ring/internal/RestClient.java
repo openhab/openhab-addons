@@ -265,7 +265,7 @@ public class RestClient {
 
         String refToken = refreshToken;
 
-        if (twofactorCode != null) {
+        if ((twofactorCode != null) && (!twofactorCode.equals(""))) {
             refToken = getAuthCode(twofactorCode, username, password, hardwareId);
         }
 

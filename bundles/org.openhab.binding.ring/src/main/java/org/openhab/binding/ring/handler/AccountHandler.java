@@ -225,11 +225,12 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                 updatedConfiguration.put("hardwareId", config.hardwareId);
             }
             restClient = new RestClient();
+            logger.trace("Logging in with refresh token: {}", refreshToken);
             userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
                     hardwareId);
             config.refreshToken = userProfile.getRefreshToken();
             updatedConfiguration.put("refreshToken", config.refreshToken);
-            if (config.refreshToken.equals(userProfile.getRefreshToken())) {
+            if (!config.refreshToken.equals(userProfile.getRefreshToken())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Error saving refresh token to account Thing. See log for details.");
                 logger.error(

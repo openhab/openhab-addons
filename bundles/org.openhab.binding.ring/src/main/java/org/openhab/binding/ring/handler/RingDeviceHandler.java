@@ -80,7 +80,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
                     updateState(channelUID, enabled);
                     break;
                 case CHANNEL_STATUS_BATTERY:
-                    updateState(channelUID, new DecimalType(device.getBattery()));
+                    updateState(channelUID, new DecimalType(device.getBattery().toString()));
                     break;
                 default:
                     logger.debug("Command received for an unknown channel: {}", channelUID.getId());
