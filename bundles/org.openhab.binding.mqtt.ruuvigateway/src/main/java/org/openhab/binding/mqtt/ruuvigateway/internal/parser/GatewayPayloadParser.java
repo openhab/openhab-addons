@@ -109,8 +109,8 @@ public class GatewayPayloadParser {
                                 + localData);
             }
             byte[] bytes = HexUtils.hexToBytes(localData);
-            if (bytes.length < 4) {
-                // We want at least 4 bytes, ensuring bytes[4] is valid as well as Arrays.copyOfRange(bytes, 5, ...)
+            if (bytes.length < 6) {
+                // We want at least 6 bytes, ensuring bytes[5] is valid as well as Arrays.copyOfRange(bytes, 5, ...)
                 // below
                 // The payload length (might depend on format version ) is validated by parser.parse call
                 throw new IllegalArgumentException("Manufacturerer data is too short");
