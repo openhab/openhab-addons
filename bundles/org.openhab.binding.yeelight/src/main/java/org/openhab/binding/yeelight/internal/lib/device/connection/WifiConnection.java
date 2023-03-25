@@ -130,8 +130,12 @@ public class WifiConnection implements ConnectionBase {
         mDevice.setAutoConnect(false);
         mCmdRun = false;
         try {
-            mConnectThread.interrupt();
-            mSocket.close();
+            if (mConnectThread != null) {
+                mConnectThread.interrupt();
+            }
+            if (mSocket != null) {
+                mSocket.close();
+            }
         } catch (Exception e) {
             logger.debug("Exception while terminating connection", e);
         } finally {
