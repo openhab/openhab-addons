@@ -106,7 +106,8 @@ public class SolarEdgeBindingConstants {
     public static final String STATUS_UNKNOWN_ERROR = "@text/status.unknown.error";
     public static final String STATUS_INVALID_TOKEN_LENGTH = "@text/status.invalid.token.length";
     public static final String STATUS_INVALID_API_KEY_LENGTH = "@text/status.invalid.api.key.length";
-    public static final String STATUS_REQUEST_LIMIT_EXCEEDED = "@text/status.request.limit.exceeded";
+    public static final String STATUS_REQUEST_LIMIT_EXCEEDED = "@text/status.request.limit.exceeded ["
+            + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + "]";
     public static final String STATUS_NO_METER_CONFIGURED = "@text/status.no.meter.configured";
     public static final String STATUS_WAITING_FOR_LOGIN = "@text/status.waiting.for.login";
 
