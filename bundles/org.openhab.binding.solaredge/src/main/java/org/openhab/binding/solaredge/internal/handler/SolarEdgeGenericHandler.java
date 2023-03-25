@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solaredge.internal.handler;
 
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.STATUS_WAITING_FOR_LOGIN;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,9 +96,9 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         SolarEdgeConfiguration config = getConfiguration();
         logger.debug("SolarEdge initialized with configuration: {}", config);
 
-        startPolling();
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
         webInterface.start();
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for web api login");
+        startPolling();
     }
 
     /**
