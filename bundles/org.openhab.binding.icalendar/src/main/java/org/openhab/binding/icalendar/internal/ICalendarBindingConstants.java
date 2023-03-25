@@ -36,7 +36,6 @@ public class ICalendarBindingConstants {
     public static final ThingTypeUID THING_TYPE_LIVE_EVENT = new ThingTypeUID(BINDING_ID, "liveevent");
 
     // List of all Channel ids
-    public static final String CHANNEL_CURRENT_EVENT = "current_event";
     public static final String CHANNEL_CURRENT_EVENT_TITLE = "current_title";
     public static final String CHANNEL_CURRENT_EVENT_START = "current_start";
     public static final String CHANNEL_CURRENT_EVENT_END = "current_end";
@@ -56,10 +55,6 @@ public class ICalendarBindingConstants {
     public static final String CHANNEL_NEXT_EVENT_CONTACT = "next_contact";
     public static final String CHANNEL_LAST_UPDATE = "last_update";
     public static final ChannelTypeUID LAST_UPDATE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "last_update");
-
-    // triggers
-    public static final String TRIGGER_CURRENT_EVENT_START = "START";
-    public static final String TRIGGER_CURRENT_EVENT_END = "END";
 
     // additional constants
     public static final int HTTP_TIMEOUT_SECS = 60;

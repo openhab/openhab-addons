@@ -17,7 +17,6 @@ import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -247,17 +246,6 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
                 updateState(CHANNEL_NEXT_EVENT_CONTACT, UnDefType.UNDEF);
             }
 
-            Instant lastUpdateForTrigger = this.lastUpdate;
-            if (lastUpdateForTrigger != null) {
-                List<Event> starts = cal.getJustBegunEvents(lastUpdateForTrigger, reference);
-                List<Event> ends = cal.getJustEndedEvents(lastUpdateForTrigger, reference);
-                if (starts.size() > 0) {
-                    triggerChannel(CHANNEL_CURRENT_EVENT, TRIGGER_CURRENT_EVENT_START);
-                }
-                if (ends.size() > 0) {
-                    triggerChannel(CHANNEL_CURRENT_EVENT, TRIGGER_CURRENT_EVENT_END);
-                }
-            }
             this.lastUpdate = reference;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

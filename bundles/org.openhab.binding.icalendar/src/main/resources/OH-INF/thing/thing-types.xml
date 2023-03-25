@@ -167,17 +167,6 @@
 		<description>Location of the next event</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="current_event">
-	    <kind>trigger</kind>
-	    <label>Current Event</label>
-        <description>Current Event trigger for START and END</description>
-        <event>
-            <options>
-                <option value="START">start</option>
-                <option value="END">end</option>
-            </options>
-        </event>
-	</channel-type>
 
 	<channel-type id="result_start">
 		<item-type>DateTime</item-type>
@@ -303,7 +292,6 @@
 
 		<channels>
 			<channel id="current_presence" typeId="event_current_presence"/>
-			<channel id="current_event" typeId="current_event"/>
 			<channel id="current_summary" typeId="event_current_summary"/>
 			<channel id="current_start" typeId="event_current_start"/>
 			<channel id="current_end" typeId="event_current_end"/>
