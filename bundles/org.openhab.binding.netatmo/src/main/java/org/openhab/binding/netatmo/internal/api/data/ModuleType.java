@@ -44,7 +44,6 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelH
 import org.openhab.binding.netatmo.internal.handler.channelhelper.DoorTagChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EnergyChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventCameraChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventPersonChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PersonChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PresenceChannelHelper;
