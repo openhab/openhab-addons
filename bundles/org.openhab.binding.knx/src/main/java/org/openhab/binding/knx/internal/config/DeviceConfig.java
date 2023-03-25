@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DeviceConfig {
-
     private String address = "";
     private boolean fetch = false;
     private int pingInterval = 0;

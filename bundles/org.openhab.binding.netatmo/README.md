@@ -10,6 +10,7 @@ The Netatmo binding integrates the following Netatmo products:
 - _Doorbell_
 - _Smoke Detector_
 - _Smart Door Sensor_
+- _Carbon Monoxide Detector_
 
 See <https://www.netatmo.com/> for details on their product.
 
@@ -49,9 +50,6 @@ The Account bridge has the following configuration elements:
 | webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                    |
 | webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                               |
 | reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                        |
-| refreshToken      | String | Yes*     | The refresh token provided by Netatmo API after the granting process. Can be saved in case of file based configuration |
-
-(*) Strictly said this parameter is not mandatory at first run, until you grant your binding on Netatmo Connect. Once present, you'll not have to grant again.
 
 **Supported channels for the Account bridge thing:**
 
@@ -68,9 +66,11 @@ The Account bridge has the following configuration elements:
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
 1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green.
 1. The bridge configuration will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required. So you can consult this token by opening the Thing page in MainUI, this is the value of the advanced parameter named “Refresh Token”.
-1. If you're using file based .things config file, copy the provided refresh token in the **refreshToken** parameter of your thing definition (example below).
 
 Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your things.
+
+Starting on 2023/04/17 - Netatmo API requires an update of the refreshToken provided by the oAuth mechanism every three hours.
+Once authentication process has been done, current refreshToken is stored in `/OPENHAB_USERDATA/netatmo` folder.
 
 ## List of supported things
 
@@ -94,6 +94,8 @@ Now that you have got your bridge _ONLINE_ you can now start a scan with the bin
 | room            | Thing  | NARoom         | A room in your house.                                                                                 | id                                                                        |
 | valve           | Thing  | NRV            | A valve controlling a radiator.                                                                       | id                                                                        |
 | tag             | Thing  | NACamDoorTag   | A door / window sensor                                                                                | id                                                                        |
+| smoke-detector  | Thing  | NSD            | A Smoke Detector                                                                                      | id                                                                        |
+| co-detector     | Thing  | NCO            | A Carbon Monoxide Alarm                                                                               | id                                                                        |
 
 ### Webhook
 
@@ -442,11 +444,31 @@ All these channels except setpoint and setpoint-mode are read only.
 | battery       | low-battery | Switch       | Low battery                                      |
 | battery       | status      | String       | Description of the battery status (*)            |
 
-### Welcome Home
+### Home
 
-All these channels are read only.
+A Home is the Thing holding various modules and devices. They can hold two areas of equipments : Security and Energy.
+Depending on the way it is configured the behaviour will be adapted and available channels can vary.
 
-**Supported channels for the Home thing:**
+**Home Configuration**
+
+The Home thing has the following configuration elements:
+
+| Parameter  | Type   | Required | Description                                                                         |
+| ---------- | ------ | -------- | ----------------------------------------------------------------------------------- |
+| id (1)     | String | No       | If you have a single type of equipment, this id is to be used for the home          |
+| energyId   | String | No       | Id of a home holding energy control devices                                         |
+| securityId | String | No       | Id of a home holding security monitoring devices                                    |
+
+At least one of these parameter must be filled - at most two : 
+* id or securityId
+* id or energyId
+* securityId and energyId
+
+(1) this parameter is only kept for backward compatibility.
+
+All channels are read only.
+
+**Supported channels for the Security Home thing:**
 
 | Channel Group | Channel Id             | Item Type | Description                                      |
 | ------------- | ---------------------- | --------- | ------------------------------------------------ |
@@ -454,9 +476,9 @@ All these channels are read only.
 | security      | unknown-person-count   | Number    | Total number of unknown persons that are at home |
 | security      | unknown-person-picture | Image     | Snapshot of unknown person that is at home       |
 
-All these channels are read only.
+**Supported trigger channels for the Security Home thing:**
 
-**Supported trigger channels for the Home, Presence and Doorbell thing:**
+**Supported trigger channels for the Security Home, Presence and Doorbell thing:**
 
 | Channel Type ID | Options            | Description                                                         |
 |-----------------|--------------------|---------------------------------------------------------------------|
@@ -491,7 +513,7 @@ All these channels are read only.
 Warnings:
 
 - The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
-- Some features like the video surveillance are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
+- Some features like the video monitoring are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
 
 **Supported channels for the Welcome Camera thing:**
 
@@ -539,7 +561,7 @@ Warnings:
 | live           | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
 | signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
 | signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
-| presence       | floodlight           | Switch       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
+| presence       | floodlight           | String       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
 | last-event     | type                 | String       | Read-only  | Type of event                                                                                                                               |
 | last-event     | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
 | last-event     | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
@@ -652,12 +674,28 @@ All these channels are read only.
 | last-event    | subtype    | String       | Sub-type of event                                |
 | last-event    | message    | String       | Last event message from this person              |
 
+### Netatmo Smart Carbon Monoxide Detector
+
+All these channels are read only.
+
+**Supported channels for the Carbon Monoxide Detector thing:**
+
+| Channel Group | Channel Id | Item Type    | Description                                      |
+| ------------- | ---------- | ------------ | ------------------------------------------------ |
+| signal        | strength   | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value      | Number:Power | Signal strength in dBm                           |
+| timestamp     | last-seen  | DateTime     | Last time the module reported its presence       |
+| last-event    | type       | String       | Type of event                                    |
+| last-event    | time       | DateTime     | Moment of the last event for this detector       |
+| last-event    | subtype    | String       | Sub-type of event                                |
+| last-event    | message    | String       | Last event message from this detector            |
+
 ## Configuration Examples
 
 ### things/netatmo.things
 
 ```java
-Bridge netatmo:account:myaccount "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy", refreshToken="zzzzz"] {
+Bridge netatmo:account:myaccount "Netatmo Account" [clientId="xxxxx", clientSecret="yyyy"] {
     Bridge weather-station inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
         outdoor outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
             Channels:

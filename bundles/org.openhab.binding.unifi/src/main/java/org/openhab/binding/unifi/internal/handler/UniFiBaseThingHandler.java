@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.reflect.ParameterizedType;
@@ -81,7 +80,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
      * @return
      */
     @SuppressWarnings("null")
-    private final @Nullable UniFiController getController() {
+    public final @Nullable UniFiController getController() {
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() != null
                 && (bridge.getHandler() instanceof UniFiControllerThingHandler)) {
@@ -90,7 +89,8 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
         return null;
     }
 
-    private @Nullable E getEntity() {
+    @Nullable
+    public E getEntity() {
         final UniFiController controller = getController();
         return controller == null ? null : getEntity(controller.getCache());
     }

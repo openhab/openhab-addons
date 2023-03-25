@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class SomneoBindingConstants {
 
-    private static final String BINDING_ID = "somneo";
+    public static final String BINDING_ID = "somneo";
 
     // List of all Thing properties
     public static final String PROPERTY_VENDOR_NAME = "Philips";

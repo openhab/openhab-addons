@@ -378,7 +378,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         return Collections.singletonList(NuvoThingActions.class);
     }
 
-    public void handleRawCommand(@Nullable String command) {
+    public void handleRawCommand(String command) {
         synchronized (sequenceLock) {
             try {
                 connector.sendCommand(command);

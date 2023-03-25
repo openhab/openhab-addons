@@ -42,7 +42,7 @@ public class CoffeeDeviceThingHandlerTest extends AbstractMieleThingHandlerTest 
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_COFFEE_SYSTEM, COFFEE_SYSTEM_THING_UID,
-                CoffeeSystemThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                CoffeeSystemThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "0");
     }
 
     @Test

@@ -30,9 +30,12 @@ public class BoschSHCServiceState {
     /**
      * gson instance to convert a class to json string and back.
      */
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
 
-    private static final Logger logger = LoggerFactory.getLogger(BoschSHCServiceState.class);
+    /**
+     * Logger marked as transient to exclude the logger from JSON serialization.
+     */
+    private final transient Logger logger = LoggerFactory.getLogger(BoschSHCServiceState.class);
 
     /**
      * State type. Initialized when instance is created.
@@ -67,7 +70,7 @@ public class BoschSHCServiceState {
 
     public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(String json,
             Class<TState> stateClass) {
-        var state = gson.fromJson(json, stateClass);
+        var state = GSON.fromJson(json, stateClass);
         if (state == null || !state.isValid()) {
             return null;
         }
@@ -77,7 +80,7 @@ public class BoschSHCServiceState {
 
     public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(JsonElement json,
             Class<TState> stateClass) {
-        var state = gson.fromJson(json, stateClass);
+        var state = GSON.fromJson(json, stateClass);
         if (state == null || !state.isValid()) {
             return null;
         }

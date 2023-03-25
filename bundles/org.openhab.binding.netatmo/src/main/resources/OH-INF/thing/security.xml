@@ -168,7 +168,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="last-event-smoke">
+	<channel-group-type id="last-event-alarm">
 		<label>Last Event</label>
 		<channels>
 			<channel id="type" typeId="event-type"/>

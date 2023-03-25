@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 abstract class UniFiCache<T extends @Nullable HasId> {
 
     public enum Prefix {
-        ALIAS,
         DESC,
         HOSTNAME,
         ID,

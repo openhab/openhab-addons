@@ -123,7 +123,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     @Override
     protected void beforeNewData() {
         super.beforeNewData();
-        homeCapability.ifPresent(cap -> {
+        securityCapability.ifPresent(cap -> {
             NAObjectMap<HomeDataPerson> persons = cap.getPersons();
             descriptionProvider.setStateOptions(personChannelUID, persons.values().stream()
                     .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
@@ -134,7 +134,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         securityCapability.ifPresent(cap -> {
-            HomeEvent event = cap.getLastDeviceEvent(handler.getId(), moduleType.apiName);
+            HomeEvent event = cap.getDeviceLastEvent(handler.getId(), moduleType.apiName);
             if (event != null) {
                 result.add(event);
                 result.addAll(event.getSubevents());

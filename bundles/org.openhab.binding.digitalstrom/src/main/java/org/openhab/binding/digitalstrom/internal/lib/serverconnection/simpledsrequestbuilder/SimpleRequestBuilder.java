@@ -36,8 +36,8 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
  * <span style="padding-left:14em">{@link #buildRequestString()};<br>
  * </span></i>
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class SimpleRequestBuilder {
 
