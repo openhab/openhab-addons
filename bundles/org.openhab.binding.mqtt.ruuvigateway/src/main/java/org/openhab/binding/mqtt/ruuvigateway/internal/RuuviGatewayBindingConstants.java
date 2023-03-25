@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.ruuvigateway.internal;
 
 import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,7 +51,7 @@ public class RuuviGatewayBindingConstants {
     public static final String CHANNEL_ID_GWTS = "gwts";
     public static final String CHANNEL_ID_GWMAC = "gwmac";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BEACON);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BEACON);
     public static final int RUUVI_GATEWAY_SUBSCRIBE_TIMEOUT_MS = 30000;
 
     // Thing properties
