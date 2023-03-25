@@ -4,11 +4,11 @@ This binding integrates the [Yeelight Lighting Product](https://www.yeelight.com
 
 ## Supported Things
 
-- [Yeelight LED White Bulb](https://www.yeelight.com/zh_CN/product/wifi-led-w) (Thing type `dolphin`)
-- [Yeelight LED Color Bulb](https://www.yeelight.com/zh_CN/product/wifi-led-c) (Thing type `wonder`)
-- [Yeelight LED Color Stripe](https://www.yeelight.com/zh_CN/product/pitaya) (Thing type `stripe`)
-- [Yeelight LED Ceiling Light](https://www.yeelight.com/en_US/product/luna) (Thing type `ceiling`)
-
+- Yeelight LED White Bulb (Thing type `mono`, `mono4`)
+- Yeelight LED Color Bulb (Thing type `color`, `color4`)
+- Yeelight LED Color Stripe (Thing type `stripe`, `strip6`)
+- Yeelight LED Ceiling Light (Thing type `ceiling`, `ceiling1`, `ceiling3`, `ceiling4`, `ceiling11`, `ceil26`)
+- Other (Thing type `ct_bulb`, `desklamp`)
 ## Preconditions
 
 To control Yeelight devices with this binding, you need to connect the device to your local network at first with the Yeelight app.
