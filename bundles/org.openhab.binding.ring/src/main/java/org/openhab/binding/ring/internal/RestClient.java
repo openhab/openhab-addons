@@ -244,7 +244,7 @@ public class RestClient {
                 logger.trace("RestApi getRequest response: {}.", result);
             }
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
-            logger.error("RestApi error in getRequest!", ex);
+            logger.debug("RestApi error in getRequest!", ex);
             // ex.printStackTrace();
         }
         return result;
