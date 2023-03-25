@@ -84,7 +84,7 @@ public class RoomActions implements ThingActions {
             return;
         }
         getEnergyCapability()
-                .ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), temp, endTime, SetpointMode.MANUAL));
+                .ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), SetpointMode.MANUAL, endTime, temp));
     }
 
     @RuleAction(label = "@text/actionSetThermRoomModeSetpointLabel", description = "@text/actionSetThermRoomModeSetpointDesc")
@@ -123,7 +123,7 @@ public class RoomActions implements ThingActions {
 
         long setpointEnd = targetEndTime;
         SetpointMode setpointMode = targetMode;
-        getEnergyCapability().ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), 0, setpointEnd, setpointMode));
+        getEnergyCapability().ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), setpointMode, setpointEnd, 0));
     }
 
     public static void setThermRoomTempSetpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime) {
