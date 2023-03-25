@@ -122,7 +122,11 @@ public abstract class AbstractRingDevice implements RingDevice {
     @SuppressWarnings("unchecked")
     @Override
     public Integer getBattery() {
-        return Integer.parseInt(jsonObject.getOrDefault(ApiConstants.DEVICE_BATTERY, "-1").toString());
+        if (jsonObject.getOrDefault(ApiConstants.DEVICE_BATTERY, "-1") != null) {
+            return Integer.parseInt(jsonObject.getOrDefault(ApiConstants.DEVICE_BATTERY, "-1").toString());
+        } else {
+            return 0;
+        }
     }
 
     /**
