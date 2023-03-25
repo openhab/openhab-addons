@@ -18,12 +18,16 @@ import static org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBinding
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.ruuvigateway.internal.handler.RuuviTagHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link RuuviTagHandlerFactory} is responsible for creating things and thing
@@ -35,16 +39,26 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
 
+    private TranslationProvider translationProvider;
+    private LocaleProvider localeProvider;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
+
+    @Activate
+    public RuuviTagHandlerFactory(final @Reference TranslationProvider translationProvider,
+            final @Reference LocaleProvider localeProvider) {
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new RuuviTagHandler(thing, RUUVI_GATEWAY_SUBSCRIBE_TIMEOUT_MS);
+            return new RuuviTagHandler(translationProvider, localeProvider, thing, RUUVI_GATEWAY_SUBSCRIBE_TIMEOUT_MS);
         }
         return null;
     }
