@@ -34,8 +34,6 @@ For users that prefer manual configuration, we list here the configurable parame
 |-----------|-------------------------------------------|----------|---------|
 | `topic`   | MQTT topic containing the gateway payload | Y        | (N/A)   |
 
-
-
 ## Channels
 
 | Channel ID                | Item Type                | Description                                                              |
@@ -56,7 +54,8 @@ For users that prefer manual configuration, we list here the configurable parame
 | gwts                      | DateTime                 | Timestamp when the message from Bluetooth-sensor was relayed by Gateway  |
 | gwmac                     | String                   | MAC-address of Ruuvi Gateway                                             |
 
-Note: not all channels are always updated. Available fields depend on [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols).
+Note: not all channels are always updated.
+Available fields depend on [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols).
 At the time of writing (2022-09), most Ruuvi Tags use Ruuvi Data Format 5 out of box.
 
 Some measurements might not make any sense.
@@ -71,17 +70,16 @@ To use these examples for textual configuration, you must already have a configu
 This UID will be used in the things file and will replace the text `myBroker`.
 The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
 
-*.things
+### *.things
 
-```
+```java
 Bridge mqtt:broker:myBroker [ host="localhost", secure=false, password="*******", qos=1, username="user"]
 mqtt:ruuvitag_beacon:myTag1  "RuuviTag Sensor Beacon 9ABC" (mqtt:broker:myBroker) [ topic="ruuvi/mygw/DE:AD:BE:EF:AA:01" ]
-
 ```
 
-*.items
+### *.items
 
-```
+```java
 Number:Temperature      temperature "Room Temperature [%.1f %unit%]" { channel="mqtt:ruuvitag_beacon:myTag1:temperature" }
 Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"         { channel="mqtt:ruuvitag_beacon:myTag1:humidity" }
 Number:Pressure         pressure    "Air Pressure [%.0f %unit%]"     { channel="mqtt:ruuvitag_beacon:myTag1:pressure" }
