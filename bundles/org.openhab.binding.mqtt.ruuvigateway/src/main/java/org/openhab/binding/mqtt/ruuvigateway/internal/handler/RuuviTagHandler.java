@@ -41,8 +41,6 @@ import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstan
 import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser;
 import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser.GatewayPayload;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.library.unit.SIUnits;
@@ -54,8 +52,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.HexUtils;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,14 +107,8 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
      */
     private @NonNullByDefault({}) String topic;
 
-    private TranslationProvider translationProvider;
-    private LocaleProvider localeProvider;
-
-    public RuuviTagHandler(@Reference TranslationProvider translationProvider, LocaleProvider localeProvider,
-            Thing thing, int subscribeTimeout) {
+    public RuuviTagHandler(Thing thing, int subscribeTimeout) {
         super(thing, subscribeTimeout);
-        this.translationProvider = translationProvider;
-        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -128,7 +118,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         String topic = (String) configuration.get(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TOPIC);
         if (topic == null || topic.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.missing_topic");
+                    "@text/offline.configuration-error.missing-topic");
             return;
         }
         Object timeout = configuration.get(RuuviGatewayBindingConstants.CONFIGURATION_PROPERTY_TIMEOUT);
@@ -195,18 +185,18 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         updateStatus(ThingStatus.UNKNOWN);
         return connection.subscribe(topic, this).handle((subscriptionSuccess, subscriptionException) -> {
             if (subscriptionSuccess) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.waiting_initial_data");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.waiting-initial-data");
                 heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, heartbeatTimeoutMillisecs,
                         heartbeatTimeoutMillisecs, TimeUnit.MILLISECONDS);
             } else {
                 if (subscriptionException == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "MQTT subscription failed");
+                            "@text/offline.communication-error.mqtt-subscription-failed");
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            getTranslated("offline.communication-error.mqtt_subscription_failed",
-                                    new Object[] { subscriptionException.getClass().getSimpleName(),
-                                            subscriptionException.getMessage() }));
+                            "@text/offline.communication-error.mqtt-subscription-failed-details [\""
+                                    + subscriptionException.getClass().getSimpleName() + "\", \""
+                                    + subscriptionException.getMessage() + "\"]");
                 }
             }
             return null;
@@ -269,7 +259,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
             logger.trace("Received invalid data which could not be parsed to any known Ruuvi Tag data formats ({}): {}",
                     e.getMessage(), new String(payload, StandardCharsets.UTF_8));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    getTranslated("offline.communication-error.parse_error", new Object[] { e.getMessage() }));
+                    "@text/offline.communication-error.parse-error [\"" + e.getMessage() + "\"]");
             return;
         }
         var ruuvitagData = parsed.measurement;
@@ -344,7 +334,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
                 logger.trace("Received Ruuvi Tag data but no fields could be parsed: {}", HexUtils.bytesToHex(payload));
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.parse_error_no_fields");
+                    "@text/offline.communication-error.parse-error-no-fields");
         }
     }
 
@@ -437,11 +427,6 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
             }
             return true;
         }
-    }
-
-    private @Nullable String getTranslated(String key, @Nullable Object... arguments) {
-        return translationProvider.getText(FrameworkUtil.getBundle(this.getClass()), key, null,
-                localeProvider.getLocale(), arguments);
     }
 
 }
