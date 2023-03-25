@@ -128,6 +128,16 @@ public class WifiConnection implements ConnectionBase {
     @Override
     public boolean disconnect() {
         mDevice.setAutoConnect(false);
-        return false;
+        mCmdRun = false;
+        try {
+            mConnectThread.interrupt();
+            mSocket.close();
+        } catch (Exception e) {
+            logger.debug("Exception while terminating connection", e);
+        } finally {
+            mSocket = null;
+            mDevice.setConnectionState(ConnectState.DISCONNECTED);
+        }
+        return true;
     }
 }
