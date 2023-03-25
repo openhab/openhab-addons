@@ -24,7 +24,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link EventCameraChannelHelper} handles specific channels of doorbell events
+ * The {@link EventCameraChannelHelper} handles specific channels of sub-events (presence camera and doorbell).
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -38,7 +38,7 @@ public class EventCameraChannelHelper extends EventChannelHelper {
 
     @Override
     protected @Nullable State internalGetHomeEvent(String channelId, @Nullable String groupId, HomeEvent event) {
-        if (groupId != null && GROUP_SUB_EVENT.startsWith(groupId)) {
+        if (groupId != null && groupId.startsWith(GROUP_SUB_EVENT)) {
             switch (channelId) {
                 case CHANNEL_EVENT_TYPE:
                     return toStringType(event.getEventType());
