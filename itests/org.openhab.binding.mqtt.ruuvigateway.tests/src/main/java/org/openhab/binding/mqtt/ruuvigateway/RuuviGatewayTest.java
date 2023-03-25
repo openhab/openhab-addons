@@ -221,9 +221,7 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         super.beforeEach();
 
         statusSubscriber.statusUpdates.clear();
-        // stateUpdateSubscriber.stateUpdates.clear();
         registerService(statusSubscriber);
-        // registerService(stateUpdateSubscriber);
 
         MQTTTopicDiscoveryService mqttTopicDiscoveryService = getService(MQTTTopicDiscoveryService.class);
         assertNotNull(mqttTopicDiscoveryService);
