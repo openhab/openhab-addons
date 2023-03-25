@@ -76,6 +76,9 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         super.initialize();
         if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thing.getThingTypeUID())) {
             zoneHandlers.add(this);
+            // initially set zone alarm to NONE (it will be set if specific alarm message is
+            // received)
+            updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
         }
     }
 
@@ -129,7 +132,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
-        logger.debug("handleMessage({}) for thing: {} {}", msg, thing.getUID(), ((WhatAlarm) msg.getWhat()).name());
+        logger.debug("handleMessage({}) for: {} {}", msg, thing.getUID(), msg.getWhat());
         super.handleMessage(msg);
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_BUS_ALARM_SYSTEM.equals(thingType)) {
@@ -229,19 +232,25 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         switch (w) {
             case ZONE_ALARM_INTRUSION:
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_INTRUSION));
+                break;
             case ZONE_ALARM_TAMPERING:
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TAMPERING));
+                break;
             case ZONE_ALARM_ANTI_PANIC:
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_ANTI_PANIC));
+                break;
             case ZONE_ALARM_SILENT:
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_SILENT));
+                break;
             case ZONE_ALARM_TECHNICAL:
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TECHNICAL));
+                break;
             case ZONE_ALARM_TECHNICAL_RESET:
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TECHNICAL_RESET));
+                break;
             default:
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
-                logger.debug("Alarm.updateZoneAlarm() Ignoring unsupported WHAT {}.", w);
+                logger.warn("Alarm.updateZoneAlarm() Ignoring unsupported WHAT {} for  zone {}", w, this.deviceWhere);
         }
     }
 
