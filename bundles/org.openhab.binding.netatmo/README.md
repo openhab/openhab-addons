@@ -556,7 +556,7 @@ Warnings:
 | sub-event      | snapshot-url         | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
 | sub-event      | vignette-url         | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
 | sub-event      | snapshot             | Image        | Read-only  | picture of the snapshot                                                                                                                     |
-| sub-event      | vignet               | Image        | Read-only  | picture of the vignette                                                                                                                     |
+| sub-event      | vignette             | Image        | Read-only  | picture of the vignette                                                                                                                     |
 
 (*) This channel is configurable : low, poor, high.
 
@@ -583,7 +583,7 @@ Warnings:
 | sub-event-doorbell  | snapshot-url      | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
 | sub-event-doorbell  | vignette-url      | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
 | sub-event-doorbell  | snapshot          | Image        | Read-only  | picture of the snapshot                                                                                                                     |
-| sub-event-doorbell  | vignet            | Image        | Read-only  | picture of the vignette                                                                                                                     |
+| sub-event-doorbell  | vignette          | Image        | Read-only  | picture of the vignette                                                                                                                     |
 
 Note: live feeds either locally or via VPN are not available in Netatmo API.
 
