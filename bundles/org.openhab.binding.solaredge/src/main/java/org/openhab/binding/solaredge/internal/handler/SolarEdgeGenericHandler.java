@@ -92,7 +92,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     public void initialize() {
         logger.debug("About to initialize SolarEdge");
         SolarEdgeConfiguration config = getConfiguration();
-        logger.debug("Solaredge initialized with configuration: {}", config);
+        logger.debug("SolarEdge initialized with configuration: {}", config);
 
         startPolling();
         webInterface.start();
