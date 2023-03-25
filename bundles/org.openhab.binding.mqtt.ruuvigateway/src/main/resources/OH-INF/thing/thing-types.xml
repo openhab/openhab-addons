@@ -32,7 +32,7 @@
 
 		<config-description>
 			<parameter name="topic" type="text">
-				<label>MQTT topic</label>
+				<label>MQTT Topic</label>
 				<description>MQTT topic containing the payload</description>
 			</parameter>
 		</config-description>
