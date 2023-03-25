@@ -324,6 +324,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         thingName, thingName, message.src, message.dst, discovery);
                 return;
             }
+            if (t.isStopping()) {
+                logger.debug("{}: Thing is shutting down, ignore WebSocket message", thingName);
+                return;
+            }
             if (!t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
                 logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
                 return;

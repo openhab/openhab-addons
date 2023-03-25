@@ -445,7 +445,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (cs.aenergy != null) {
             sm.total = emeter.total = cs.aenergy.total;
             sm.counters = cs.aenergy.byMinute;
-            sm.timestamp = (long) cs.aenergy.minuteTs;
+            if (cs.aenergy.minuteTs != null) {
+                sm.timestamp = (long) cs.aenergy.minuteTs;
+            }
         }
         if (cs.voltage != null) {
             emeter.voltage = cs.voltage;

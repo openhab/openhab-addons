@@ -208,6 +208,11 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
                         response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
             }
+            if (thingHandler.isStopping()) {
+                logger.debug("{}: Thing is shutting down, ignore CoIOT message", thingName);
+                return;
+            }
+
             if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
                 logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
                 thingHandler.incProtErrors();

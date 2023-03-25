@@ -235,7 +235,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (coap != null) {
             coap.stop();
         }
-        requestUpdates(1, true);// force re-initialization
+        stopping = false;
+        reinitializeThing();// force re-initialization
     }
 
     /**
@@ -249,7 +250,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     public boolean initializeThing() throws ShellyApiException {
         // Init from thing type to have a basic profile, gets updated when device info is received from API
-        stopping = false;
         refreshSettings = false;
         lastWakeupReason = "";
         cache.setThingName(thingName);
@@ -695,13 +695,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void reinitializeThing() {
         logger.debug("{}: Re-Initialize Thing", thingName);
-        if (stopping) {
+        if (isStopping()) {
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                 messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
+    }
+
+    @Override
+    public boolean isStopping() {
+        return stopping;
     }
 
     @Override
