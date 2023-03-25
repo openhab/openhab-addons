@@ -444,11 +444,31 @@ All these channels except setpoint and setpoint-mode are read only.
 | battery       | low-battery | Switch       | Low battery                                      |
 | battery       | status      | String       | Description of the battery status (*)            |
 
-### Welcome Home
+### Home
 
-All these channels are read only.
+A Home is the Thing holding various modules and devices. They can hold two areas of equipments : Security and Energy.
+Depending on the way it is configured the behaviour will be adapted and available channels can vary.
 
-**Supported channels for the Home thing:**
+**Home Configuration**
+
+The Home thing has the following configuration elements:
+
+| Parameter  | Type   | Required | Description                                                                         |
+| ---------- | ------ | -------- | ----------------------------------------------------------------------------------- |
+| id (1)     | String | No       | If you have a single type of equipment, this id is to be used for the home          |
+| energyId   | String | No       | Id of a home holding energy control devices                                         |
+| securityId | String | No       | Id of a home holding security monitoring devices                                    |
+
+At least one of these parameter must be filled - at most two : 
+* id or securityId
+* id or energyId
+* securityId and energyId
+
+(1) this parameter is only kept for backward compatibility.
+
+All channels are read only.
+
+**Supported channels for the Security Home thing:**
 
 | Channel Group | Channel Id             | Item Type | Description                                      |
 | ------------- | ---------------------- | --------- | ------------------------------------------------ |
@@ -456,9 +476,7 @@ All these channels are read only.
 | security      | unknown-person-count   | Number    | Total number of unknown persons that are at home |
 | security      | unknown-person-picture | Image     | Snapshot of unknown person that is at home       |
 
-All these channels are read only.
-
-**Supported trigger channels for the Home thing:**
+**Supported trigger channels for the Security Home thing:**
 
 | Channel Type ID  | Options            | Description                                                                                                                                                                      |
 | ---------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -493,7 +511,7 @@ All these channels are read only.
 Warnings:
 
 - The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
-- Some features like the video surveillance are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
+- Some features like the video monitoring are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
 
 **Supported channels for the Welcome Camera thing:**
 

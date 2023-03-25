@@ -89,7 +89,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     @Override
     protected void beforeNewData() {
         super.beforeNewData();
-        homeCapability.ifPresent(cap -> {
+        securityCapability.ifPresent(cap -> {
             NAObjectMap<HomeDataPerson> persons = cap.getPersons();
             descriptionProvider.setStateOptions(personChannelUID, persons.values().stream()
                     .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
