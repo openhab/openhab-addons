@@ -99,14 +99,14 @@ public class AnthemHandler extends BaseThingHandler {
         }
         reconnectIntervalMinutes = configuration.reconnectIntervalMinutes;
         commandDelayMsec = configuration.commandDelayMsec;
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/thing-status-detail-connecting");
         asyncInitializeTask = scheduler.submit(this::connect);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/thing-status-detail-connecting");
     }
 
     @Override
     public void dispose() {
         Future<?> localAsyncInitializeTask = this.asyncInitializeTask;
-        if (localAsyncInitializeTask != null && !localAsyncInitializeTask.isDone()) {
+        if (localAsyncInitializeTask != null) {
             localAsyncInitializeTask.cancel(true);
             this.asyncInitializeTask = null;
         }
@@ -252,7 +252,6 @@ public class AnthemHandler extends BaseThingHandler {
     }
 
     private synchronized void connect() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/thing-status-detail-initializing");
         try {
             AnthemConfiguration configuration = getConfig().as(AnthemConfiguration.class);
             logger.debug("Opening connection to Anthem host {} on port {}", configuration.host, configuration.port);
@@ -275,7 +274,7 @@ public class AnthemHandler extends BaseThingHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/thing-status-detail-openerror");
-            logger.info("Error opening Anthem connection: {}", e.getMessage());
+            logger.debug("Error opening Anthem connection: {}", e.getMessage());
             disconnect();
             scheduleConnectRetry(reconnectIntervalMinutes);
             return;
@@ -314,7 +313,7 @@ public class AnthemHandler extends BaseThingHandler {
         logger.debug("Disconnecting from Anthem");
 
         ScheduledFuture<?> localPollingJob = this.pollingJob;
-        if (localPollingJob != null && !localPollingJob.isDone()) {
+        if (localPollingJob != null) {
             localPollingJob.cancel(true);
             this.pollingJob = null;
         }
@@ -365,8 +364,6 @@ public class AnthemHandler extends BaseThingHandler {
 
     private synchronized void reconnect() {
         logger.debug("Attempting to reconnect to the Anthem");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "@text/thing-status-detail-reconnecting");
         disconnect();
         connect();
     }
@@ -389,7 +386,7 @@ public class AnthemHandler extends BaseThingHandler {
                             "@text/thing-status-detail-interrupted");
                     break;
                 } catch (IOException e) {
-                    logger.warn("Communication error, will try to reconnect. Error: {}", e.getMessage());
+                    logger.debug("Communication error, will try to reconnect. Error: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     // Requeue the command and try to reconnect
                     sendQueue.add(command);
