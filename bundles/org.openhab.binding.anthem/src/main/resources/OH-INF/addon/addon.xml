@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Anthem Binding</name>
 	<description>This is the binding for Anthem AV preamp/processors</description>
+	<connection>local</connection>
 
 </addon:addon>
