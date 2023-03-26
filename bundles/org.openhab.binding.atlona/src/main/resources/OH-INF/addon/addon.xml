@@ -6,4 +6,6 @@
 	<type>binding</type>
 	<name>Atlona Products</name>
 	<description>Binding for Atlona PRO3 HDBaseT Matrix switches.</description>
+	<connection>local</connection>
+
 </addon:addon>

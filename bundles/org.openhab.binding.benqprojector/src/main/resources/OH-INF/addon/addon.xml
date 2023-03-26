@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>BenQ Projector Binding</name>
 	<description>This binding is compatible with BenQ projectors</description>
+	<connection>local</connection>
 
 </addon:addon>
