@@ -6,11 +6,12 @@ A binding for D-Link Smart Home devices.
 
 ### DCH-S150 (WiFi motion sensor)
 
-The binding has been tested with hardware revisions A1 and A2 running firmware version 1.22.
+The binding has been tested with hardware revisions A1 and A2 running firmware version 1.22. 
+The mydlink Home service is now end of life and the device requires a daily reboot (performed by the binding) to keep it responsive.
 
 ## Discovery
 
-The binding can automatically discover devices that have already been added to the Wifi network. Please refer to your mydlink Home app for instructions on how to add your device to your Wifi network.
+The binding can automatically discover devices that have already been added to the Wifi network.
 
 ## Binding Configuration
 
@@ -25,6 +26,7 @@ Once added the configuration must be updated to specify the PIN code located on 
 
 - **ipAddress** - Hostname or IP of the device
 - **pin** - PIN code from the back of the device
+- **rebootHour** - Hour (24h) of the day that the device will be rebooted to ensure that it remains responsive (default is 3).
 
 To manually configure a DCH-S150 Thing you must specify its IP address and PIN code.
 

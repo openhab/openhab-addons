@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.benqprojector.internal.discovery;
 
-import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.DEFAULT_PORT;
-import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.THING_PROPERTY_HOST;
-import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.THING_PROPERTY_PORT;
+import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -59,8 +57,9 @@ public class MulticastListener {
      */
     public MulticastListener(String ipv4Address) throws IOException, SocketException {
         InetAddress ifAddress = InetAddress.getByName(ipv4Address);
+        NetworkInterface netIF = NetworkInterface.getByInetAddress(ifAddress);
         logger.debug("Discovery job using address {} on network interface {}", ifAddress.getHostAddress(),
-                NetworkInterface.getByInetAddress(ifAddress).getName());
+                netIF != null ? netIF.getName() : "UNKNOWN");
         socket = new MulticastSocket(AMX_MULTICAST_PORT);
         socket.setInterface(ifAddress);
         socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_SEC);

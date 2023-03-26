@@ -12,6 +12,7 @@
 			<channel id="current_startsAt" typeId="timestamp"/>
 			<channel id="current_level" typeId="level"/>
 			<channel id="tomorrow_prices" typeId="tomorrow_prices"/>
+			<channel id="today_prices" typeId="today_prices"/>
 			<channel id="daily_from" typeId="timestamp"/>
 			<channel id="daily_to" typeId="timestamp"/>
 			<channel id="daily_cost" typeId="cost"/>
@@ -23,8 +24,10 @@
 			<channel id="live_timestamp" typeId="timestamp"/>
 			<channel id="live_power" typeId="power"/>
 			<channel id="live_lastMeterConsumption" typeId="consumption"/>
+			<channel id="live_lastMeterProduction" typeId="production"/>
 			<channel id="live_accumulatedConsumption" typeId="consumption"/>
 			<channel id="live_accumulatedCost" typeId="cost"/>
+			<channel id="live_accumulatedReward" typeId="reward"/>
 			<channel id="live_currency" typeId="currency"/>
 			<channel id="live_minPower" typeId="power"/>
 			<channel id="live_averagePower" typeId="power"/>
@@ -42,6 +45,7 @@
 		</channels>
 		<properties>
 			<property name="vendor">Tibber</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<config-description>
 			<parameter name="token" type="text" required="true">
@@ -81,6 +85,12 @@
 		<description>Cost at given time interval (e.g. hourly, daily, accumulated since midnight)</description>
 		<state pattern="%.3f"></state>
 	</channel-type>
+	<channel-type id="reward">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Reward</label>
+		<description>Reward at given time interval (e.g. hourly, daily, accumulated since midnight)</description>
+		<state pattern="%.3f"></state>
+	</channel-type>
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
@@ -113,13 +123,19 @@
 	<channel-type id="production">
 		<item-type>Number:Energy</item-type>
 		<label>Total Production</label>
-		<description>Accumulated Production since Midnight</description>
+		<description>Production at given time interval (e.g. last meter reading, accumulated since midnight)</description>
 		<state pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="tomorrow_prices" advanced="true">
 		<item-type>String</item-type>
 		<label>Prices for tomorrow as a JSON array</label>
 		<description>JSON array of tuples startsAt,total, e.g. {["startsAt": "2022-09-10T00:00:00+02:00", "total": 5.332},
-			{"startsAt": ...}]. See binding documantation for full example.</description>
+			{"startsAt": ...}]. See binding documentation for full example.</description>
+	</channel-type>
+	<channel-type id="today_prices" advanced="true">
+		<item-type>String</item-type>
+		<label>Prices for today as a JSON array</label>
+		<description>JSON array of tuples startsAt,total, e.g. {["startsAt": "2022-09-10T00:00:00+02:00", "total": 5.332},
+			{"startsAt": ...}]. See binding documentation for full example.</description>
 	</channel-type>
 </thing:thing-descriptions>

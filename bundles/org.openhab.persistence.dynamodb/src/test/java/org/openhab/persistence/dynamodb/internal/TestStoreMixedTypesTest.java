@@ -54,12 +54,12 @@ public class TestStoreMixedTypesTest extends BaseIntegrationTest {
     }
 
     @BeforeEach
-    private void generateUniqueItemId() {
+    public void generateUniqueItemId() {
         uniqueId = testCounter.getAndIncrement();
     }
 
     @AfterEach
-    private void tearDownLocalItems() {
+    public void tearDownLocalItems() {
         ITEMS.remove(getItemName());
     }
 

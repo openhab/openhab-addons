@@ -40,7 +40,7 @@ public class HobDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_HOB, HOB_DEVICE_THING_UID,
-                HobDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                HobDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "0");
     }
 
     @Test

@@ -3,6 +3,6 @@
 	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 	<type>binding</type>
-	<name>@text/icloud.binding.name</name>
-	<description>@text/icloud.binding.description</description>
+	<name>@text/icloud.addon.name</name>
+	<description>@text/icloud.addon.description</description>
 </addon:addon>

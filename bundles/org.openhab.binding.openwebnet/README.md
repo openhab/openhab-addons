@@ -257,8 +257,15 @@ OPEN command to execute: *5*8#134##
 
 #### `shutter` position
 
-For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN.
-It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically: in this case a _UP >> DOWN >> Position%_ cycle will be performed automatically the first time a Percent command is sent to the shutter.
+For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN. It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically.
+
+_Automatic calibration of `shutterRun`_
+
+If `shutterRun` is set to AUTO a _UP >> DOWN >> Position%_ cycle will be performed automatically the first time a Percent command is sent to the shutter. The binding then relies on the _STOP_ command sent by the actuator at the stop time set in the actuator's advanced configuration in the My Home Suite. Therefore the binding's automatic calibration of `shutterRun` only works correctly if the stop time is set to the time the shutters need to go from full UP to full DOWN. 
+
+Older actuators that come without an ID and do not support advanced configuration via the My Home Suite have a fixed stop time of 60 seconds. In this case auto calibration of the binding cannot be used and `shutterRun` has to be set manually.
+
+_Notes on `shutter` position_
 
 - if `shutterRun` is not set, or is set to `AUTO` but calibration has not been performed yet, then position estimation will remain `UNDEF` (undefined)
 - if `shutterRun` is wrongly set higher than the actual runtime, then position estimation will remain `UNDEF`: try to reduce shutterRun until you find the right value
@@ -519,5 +526,6 @@ Special thanks for helping on testing this binding go to:
 [@feodor](https://community.openhab.org/u/feodor),
 [@aconte80](https://community.openhab.org/u/aconte80),
 [@rubenfuser](https://community.openhab.org/u/rubenfuser),
-[@stamate_viorel](https://community.openhab.org/u/stamate_viorel)
+[@stamate_viorel](https://community.openhab.org/u/stamate_viorel),
+[@marchino](https://community.openhab.org/u/marchino)
 and many others at the fantastic openHAB community!

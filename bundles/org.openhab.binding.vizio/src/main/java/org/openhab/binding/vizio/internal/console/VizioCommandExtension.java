@@ -16,18 +16,13 @@ import static org.openhab.binding.vizio.internal.VizioBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.vizio.internal.VizioException;
-import org.openhab.binding.vizio.internal.communication.VizioCommunicator;
-import org.openhab.binding.vizio.internal.dto.pairing.PairingComplete;
 import org.openhab.binding.vizio.internal.handler.VizioHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
@@ -49,14 +44,11 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
     private static final String SUBMIT_CODE = "submit_code";
 
     private final ThingRegistry thingRegistry;
-    private final HttpClient httpClient;
 
     @Activate
-    public VizioCommandExtension(final @Reference ThingRegistry thingRegistry,
-            final @Reference HttpClientFactory httpClientFactory) {
+    public VizioCommandExtension(final @Reference ThingRegistry thingRegistry) {
         super("vizio", "Interact with the Vizio binding to get an authentication token from the TV.");
         this.thingRegistry = thingRegistry;
-        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -94,25 +86,14 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
                     console.println(
                             "Error! Host Name and Port must be specified in thing configuration before paring.");
                     return;
-                } else if (host.contains(":")) {
-                    // format for ipv6
-                    host = "[" + host + "]";
                 }
-
-                VizioCommunicator communicator = new VizioCommunicator(httpClient, host, port.intValue(), EMPTY);
 
                 switch (args[1]) {
                     case START_PAIRING:
                         try {
-                            Random rng = new Random();
+                            int pairingToken = handler.startPairing(args[2]);
 
-                            int pairingDeviceId = rng.nextInt(100000);
-                            int pairingToken = communicator.starPairing(args[2], pairingDeviceId).getItem()
-                                    .getPairingReqToken();
                             if (pairingToken != -1) {
-                                handler.setPairingDeviceId(pairingDeviceId);
-                                handler.setPairingToken(pairingToken);
-
                                 console.println("Pairing has been started!");
                                 console.println(
                                         "Please note the 4 digit code displayed on the TV and substitute it into the following console command:");
@@ -128,37 +109,29 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
                         break;
                     case SUBMIT_CODE:
                         try {
-                            int pairingDeviceId = handler.getPairingDeviceId();
-                            int pairingToken = handler.getPairingToken();
-
-                            if (pairingDeviceId < 0 || pairingToken < 0) {
-                                console.println("Error! '" + START_PAIRING + "' command must be completed first.");
-                                console.println(
-                                        "Please issue the following command and substitute the desired device name.");
-                                console.println("openhab:vizio " + handler.getThing().getUID() + " " + START_PAIRING
-                                        + " <deviceName>");
-                                break;
-                            }
-
                             Integer.valueOf(args[2]);
-                            PairingComplete authTokenResp = communicator.submitPairingCode(pairingDeviceId, args[2],
-                                    pairingToken);
-                            if (authTokenResp.getItem().getAuthToken() != EMPTY) {
+                            String authToken = handler.submitPairingCode(args[2]);
+
+                            if (authToken != EMPTY) {
                                 console.println("Pairing complete!");
-                                console.println("The auth token: " + authTokenResp.getItem().getAuthToken()
+                                console.println("The auth token: " + authToken
                                         + " was received and will be added to the thing configuration.");
                                 console.println(
                                         "If the thing is provisioned via a file, the token must be manually added to the thing configuration.");
 
-                                handler.setPairingDeviceId(-1);
-                                handler.setPairingToken(-1);
-                                handler.saveAuthToken(authTokenResp.getItem().getAuthToken());
+                                handler.saveAuthToken(authToken);
                             } else {
                                 console.println("Unable to obtain auth token!");
                             }
                         } catch (NumberFormatException nfe) {
                             console.println(
                                     "Error! Pairing code must be numeric. Check console command and try again.");
+                        } catch (IllegalStateException ise) {
+                            console.println("Error! '" + START_PAIRING + "' command must be completed first.");
+                            console.println(
+                                    "Please issue the following command and substitute the desired device name.");
+                            console.println("openhab:vizio " + handler.getThing().getUID() + " " + START_PAIRING
+                                    + " <deviceName>");
                         } catch (VizioException e) {
                             console.println("Error! Unable to complete pairing process.");
                             console.println("Exception was: " + e.getMessage());

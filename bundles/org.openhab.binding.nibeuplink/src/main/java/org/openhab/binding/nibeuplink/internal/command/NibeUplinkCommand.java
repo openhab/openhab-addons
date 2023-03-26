@@ -13,7 +13,6 @@
 package org.openhab.binding.nibeuplink.internal.command;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
@@ -39,12 +38,10 @@ public interface NibeUplinkCommand extends SuccessListener, FailureListener, Con
     void performAction(HttpClient asyncclient);
 
     /**
-     * get the current listener
+     * update the status of the registered listener instance
      *
-     * @return instance of the listener, might be null.
      */
-    @Nullable
-    StatusUpdateListener getListener();
+    void updateListenerStatus();
 
     /**
      * register a listener

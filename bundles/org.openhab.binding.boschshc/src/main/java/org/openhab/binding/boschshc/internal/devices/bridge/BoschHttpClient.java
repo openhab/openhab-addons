@@ -65,13 +65,22 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
-     * Returns the public information URL for the Bosch SHC clients, using port 8446.
+     * Returns the public information URL for the Bosch SHC client addressed with the given IP address, using port 8446
      * See https://github.com/BoschSmartHome/bosch-shc-api-docs/blob/master/postman/README.md
      *
      * @return URL for public information
      */
+    public static String getPublicInformationUrl(String ipAddress) {
+        return String.format("https://%s:8446/smarthome/public/information", ipAddress);
+    }
+
+    /**
+     * Returns the public information URL for the current Bosch SHC client.
+     *
+     * @return URL for public information
+     */
     public String getPublicInformationUrl() {
-        return String.format("https://%s:8446/smarthome/public/information", this.ipAddress);
+        return getPublicInformationUrl(this.ipAddress);
     }
 
     /**
@@ -316,11 +325,12 @@ public class BoschHttpClient extends HttpClient {
             if (errorResponseHandler != null) {
                 throw errorResponseHandler.apply(statusCode, textContent);
             } else {
-                throw new ExecutionException(String.format("Request failed with status code %s", statusCode), null);
+                throw new ExecutionException(String.format("Send request failed with status code %s", statusCode),
+                        null);
             }
         }
 
-        logger.debug("Received response: {} - status: {}", textContent, statusCode);
+        logger.debug("Send request completed with success: {} - status code: {}", textContent, statusCode);
 
         try {
             @Nullable

@@ -193,7 +193,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
             if (enableEvents) {
                 if (eventThread == null) {
-                    eventThread = new Thread(eventRunnable, "openHAB-Tesla-Events-" + getThing().getUID());
+                    eventThread = new Thread(eventRunnable, "OH-binding-" + getThing().getUID() + "-events");
                     eventThread.start();
                 }
             }
@@ -1130,7 +1130,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            eventEndpoint = new TeslaEventEndpoint(webSocketFactory);
+            eventEndpoint = new TeslaEventEndpoint(getThing().getUID(), webSocketFactory);
             eventEndpoint.addEventHandler(new TeslaEventEndpoint.EventHandler() {
                 @Override
                 public void handleEvent(Event event) {
@@ -1212,13 +1212,13 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                     }
                                     if (systemTimeStamp - currentTimeStamp > EVENT_TIMESTAMP_MAX_DELTA) {
                                         logger.trace("Event : The event endpoint will be reset");
-                                        eventEndpoint.close();
+                                        eventEndpoint.closeConnection();
                                     }
                                 }
                                 break;
                             case "data:error":
                                 logger.debug("Event : Received an error: '{}'/'{}'", event.value, event.error_type);
-                                eventEndpoint.close();
+                                eventEndpoint.closeConnection();
                                 break;
                         }
                     }
@@ -1263,7 +1263,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                             "Event : Reached the maximum number of errors ({}) for the current interval ({} seconds)",
                                             EVENT_MAXIMUM_ERRORS_IN_INTERVAL, EVENT_ERROR_INTERVAL_SECONDS);
                                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                                    eventEndpoint.close();
+                                    eventEndpoint.closeConnection();
                                 }
 
                                 if ((System.currentTimeMillis() - eventIntervalTimestamp) > 1000
@@ -1301,6 +1301,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
                 if (Thread.interrupted()) {
                     logger.debug("Event : The event thread was interrupted");
+                    eventEndpoint.close();
                     return;
                 }
             }

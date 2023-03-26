@@ -18,6 +18,7 @@
 		</channel-groups>
 		<properties>
 			<property name="vendor">Danfoss</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>host</representation-property>
 		<config-description>

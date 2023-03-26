@@ -39,7 +39,9 @@
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
     <module>org.openhab.transform.regex</module>
+    <module>org.openhab.transform.rollershutterposition</module>
     <module>org.openhab.transform.scale</module>
+    <module>org.openhab.transform.vat</module>
     <module>org.openhab.transform.xpath</module>
     <module>org.openhab.transform.xslt</module>
     <!-- bindings -->
@@ -74,6 +76,7 @@
     <module>org.openhab.binding.bluetooth.enoceanble</module>
     <module>org.openhab.binding.bluetooth.generic</module>
     <module>org.openhab.binding.bluetooth.govee</module>
+    <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.bondhome</module>
@@ -113,6 +116,7 @@
     <module>org.openhab.binding.echonetlite</module>
     <module>org.openhab.binding.ecobee</module>
     <module>org.openhab.binding.ecotouch</module>
+    <module>org.openhab.binding.ecovacs</module>
     <module>org.openhab.binding.ecowatt</module>
     <module>org.openhab.binding.ekey</module>
     <module>org.openhab.binding.electroluxair</module>
@@ -174,7 +178,6 @@
     <module>org.openhab.binding.icalendar</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.ihc</module>
-    <module>org.openhab.binding.innogysmarthome</module>
     <module>org.openhab.binding.insteon</module>
     <module>org.openhab.binding.ipcamera</module>
     <module>org.openhab.binding.ipobserver</module>
@@ -248,6 +251,7 @@
     <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
+    <module>org.openhab.binding.mynice</module>
     <module>org.openhab.binding.myq</module>
     <module>org.openhab.binding.mystrom</module>
     <module>org.openhab.binding.nanoleaf</module>

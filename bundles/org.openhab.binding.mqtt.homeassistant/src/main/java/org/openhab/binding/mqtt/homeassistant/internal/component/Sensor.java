@@ -90,8 +90,8 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
 
         buildChannel(SENSOR_CHANNEL_ID, value, channelConfiguration.getName(),
                 getListener(componentConfiguration, value))
-                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
-                        .trigger(trigger).build();
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
+                .trigger(trigger).build();
     }
 
     private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,

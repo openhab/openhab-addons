@@ -70,7 +70,6 @@ public abstract class BoschSHCSystemService<TState extends BoschSHCServiceState>
     @Override
     public @Nullable TState getState()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             return null;

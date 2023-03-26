@@ -13,6 +13,8 @@
 package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
@@ -33,8 +36,10 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 
 /**
  * {@link CameraCapability} give to handle Welcome Camera specifics
@@ -78,6 +83,35 @@ public class CameraCapability extends HomeSecurityThingCapability {
     }
 
     @Override
+    protected void updateWebhookEvent(WebhookEvent event) {
+        super.updateWebhookEvent(event);
+
+        final ThingUID thingUid = handler.getThing().getUID();
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TYPE),
+                toStringType(event.getEventType()));
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TIME),
+                toDateTimeType(event.getTime()));
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_SNAPSHOT),
+                toRawType(event.getSnapshotUrl()));
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_SNAPSHOT_URL),
+                toStringType(event.getSnapshotUrl()));
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_VIGNETTE),
+                toRawType(event.getVignetteUrl()));
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_VIGNETTE_URL),
+                toStringType(event.getVignetteUrl()));
+
+        final String message = event.getName();
+        handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_MESSAGE),
+                message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
+
+        // The channel should get triggered at last (after super and sub methods), because this allows rules to access
+        // the new updated data from the other channels.
+        final String eventType = event.getEventType().name();
+        handler.getHomeHandler().ifPresent(homeHandler -> homeHandler.triggerChannel(CHANNEL_HOME_EVENT, eventType));
+        handler.triggerChannel(CHANNEL_HOME_EVENT, eventType);
+    }
+
+    @Override
     public void handleCommand(String channelName, Command command) {
         if (command instanceof OnOffType && CHANNEL_MONITORING.equals(channelName)) {
             securityCapability.ifPresent(cap -> cap.changeStatus(localUrl, OnOffType.ON.equals(command)));
@@ -89,7 +123,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     @Override
     protected void beforeNewData() {
         super.beforeNewData();
-        homeCapability.ifPresent(cap -> {
+        securityCapability.ifPresent(cap -> {
             NAObjectMap<HomeDataPerson> persons = cap.getPersons();
             descriptionProvider.setStateOptions(personChannelUID, persons.values().stream()
                     .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
@@ -100,7 +134,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         securityCapability.ifPresent(cap -> {
-            HomeEvent event = cap.getLastDeviceEvent(handler.getId(), moduleType.apiName);
+            HomeEvent event = cap.getDeviceLastEvent(handler.getId(), moduleType.apiName);
             if (event != null) {
                 result.add(event);
                 result.addAll(event.getSubevents());
