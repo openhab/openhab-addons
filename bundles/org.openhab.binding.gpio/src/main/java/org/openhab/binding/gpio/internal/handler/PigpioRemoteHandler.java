@@ -104,17 +104,16 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                         }
                     }
                 } else {
-                    logger.error("Command received for an unknown channel: {}", channelUID);
+                    logger.warn("Command received for an unknown channel: {}", channelUID);
                 }
             }
         } catch (Exception e) {
-            logger.error("Command exception on channel {} {}", channelUID, e.toString());
+            logger.warn("Command exception on channel {} {}", channelUID, e.toString());
         }
     }
 
     protected PigpioConfiguration config = new PigpioConfiguration();
-    @Nullable
-    protected JPigpio jPigpio = null;
+    protected @Nullable JPigpio jPigpio = null;
 
     @Override
     public void initialize() {
@@ -167,11 +166,9 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                     this.channelHandlers.put(channelUID, handler);
                 }
             } catch (PigpioException e) {
-                logger.warn("Failed to initialize channel {} {}", channelUID, e.toString());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         String.format("Failed to initialize channel {} {}", channelUID, e.getLocalizedMessage()));
             } catch (ChannelConfigurationException e) {
-                logger.error("Invalid configuration for channel {} {}", channelUID, e.toString());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         String.format("Invalid configuration for channel {} {}", channelUID, e.getLocalizedMessage()));
             }
@@ -192,8 +189,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
         logger.debug("gpio jPigpio listening");
     }
 
-    @Nullable
-    private Future<?> connectionJob = null;
+    private @Nullable Future<?> connectionJob = null;
     /**
      * Syncronizes all socket related code
      * to avoid racing.
@@ -272,7 +268,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                         runReconnectActions();
                     }
 
-                    logger.info("Pigpiod connected : {}", this.config.host);
+                    logger.debug("Pigpiod connected : {}", this.config.host);
                 } catch (PigpioException e) {
                     logger.debug("gpio connection poll : failed, {}", e.getErrorCode());
                     if (currentStatus.equals(ThingStatus.ONLINE) || currentStatus.equals(ThingStatus.INITIALIZING)) {

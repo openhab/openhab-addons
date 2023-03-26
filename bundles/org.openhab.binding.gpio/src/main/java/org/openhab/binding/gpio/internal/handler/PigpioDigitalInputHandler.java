@@ -50,10 +50,8 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
     private final GPIOInputConfiguration configuration;
     private final ScheduledExecutorService scheduler;
     private final Integer gpioId;
-    @Nullable
-    private GPIO gpio;
-    @Nullable
-    private Consumer<State> updateStatus;
+    private @Nullable GPIO gpio;
+    private @Nullable Consumer<State> updateStatus;
     private Integer pullupdown = JPigpio.PI_PUD_OFF;
     private final GPIOListener listener;
     private int edgeMode = JPigpio.PI_EITHER_EDGE;
@@ -143,7 +141,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
             } catch (PigpioException e) {
                 // -99999999 is communication related, we will let the Thing connect poll refresh it.
                 if (e.getErrorCode() != -99999999) {
-                    logger.error("Debounce exception :", e);
+                    logger.warn("Debounce exception :", e);
                 }
             }
         }
@@ -169,7 +167,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
         } catch (PigpioException e) {
             // If there is a communication error, the set alert below will throw.
             if (e.getErrorCode() != -99999999) {
-                logger.error("Listen exception :", e);
+                logger.warn("Listen exception :", e);
             }
         }
 
@@ -206,7 +204,7 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
                         // Best effort to remove listener,
                         // the command socket could already be dead.
                         if (e.getErrorCode() != -99999999) {
-                            logger.error("Dispose exception :", e);
+                            logger.warn("Dispose exception :", e);
                         }
                     }
                 }

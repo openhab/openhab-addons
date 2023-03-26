@@ -48,12 +48,9 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
     private final ScheduledExecutorService scheduler;
     private final Integer gpioId;
     private Integer pulseTimeout = -1;
-    @Nullable
-    private String pulseCommand = "";
-    @Nullable
-    private GPIO gpio;
-    @Nullable
-    private Consumer<State> updateStatus;
+    private @Nullable String pulseCommand = "";
+    private @Nullable GPIO gpio;
+    private @Nullable Consumer<State> updateStatus;
 
     /**
      * Constructor for PigpioDigitalOutputHandler
@@ -95,10 +92,8 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
     /**
      * Future to track pulse commands.
      */
-    @Nullable
-    private Future<?> pulseJob = null;
-    @Nullable
-    private OnOffType lastPulseCommand;
+    private @Nullable Future<?> pulseJob = null;
+    private @Nullable OnOffType lastPulseCommand;
 
     /**
      * Used to only keep a single gpio command handle in flight
@@ -191,7 +186,9 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
                 }
             }
         } catch (Exception e) {
-            logger.warn("Pulse command exception, {} command may not have been received :", eCommand.toString(), e);
+            logger.warn(
+                    "Pulse command exception, {} command may not have been received by pigpiod resulting in an unknown state:",
+                    eCommand.toString(), e);
         }
     }
 
