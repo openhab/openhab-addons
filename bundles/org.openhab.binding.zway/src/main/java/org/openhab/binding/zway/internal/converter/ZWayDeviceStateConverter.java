@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.zway.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -41,6 +43,7 @@ import de.fh_zwickau.informatik.sensor.model.devices.types.ToggleButton;
  *
  * @author Patrick Hecker - Initial contribution
  */
+@NonNullByDefault
 public class ZWayDeviceStateConverter {
     public static State toState(Device device, Channel channel) {
         // Store level locally
@@ -52,7 +55,7 @@ public class ZWayDeviceStateConverter {
         } else if (device instanceof Doorlock) {
             return getBinaryState(level.toLowerCase());
         } else if (device instanceof SensorBinary) {
-            if (channel.getAcceptedItemType().equals("Contact")) {
+            if ("Contact".equals(channel.getAcceptedItemType())) {
                 return getDoorlockState(level.toLowerCase());
             } else {
                 return getBinaryState(level.toLowerCase());
@@ -62,8 +65,8 @@ public class ZWayDeviceStateConverter {
         } else if (device instanceof SwitchBinary) {
             return getBinaryState(level.toLowerCase());
         } else if (device instanceof SwitchMultilevel) {
-            if (channel.getAcceptedItemType().equals("Rollershutter")
-                    || channel.getAcceptedItemType().equals("Dimmer")) {
+            if ("Rollershutter".equals(channel.getAcceptedItemType())
+                    || "Dimmer".equals(channel.getAcceptedItemType())) {
                 return getPercentState(level);
             } else {
                 return getMultilevelState(level);
@@ -89,14 +92,14 @@ public class ZWayDeviceStateConverter {
      * @param multilevel sensor value
      * @return transformed openHAB state
      */
-    private static State getMultilevelState(String multilevelValue) {
+    private static State getMultilevelState(@Nullable String multilevelValue) {
         if (multilevelValue != null) {
             return new DecimalType(multilevelValue);
         }
         return UnDefType.UNDEF;
     }
 
-    private static State getPercentState(String multilevelValue) {
+    private static State getPercentState(@Nullable String multilevelValue) {
         if (multilevelValue != null) {
             return new PercentType(multilevelValue);
         }
@@ -109,13 +112,9 @@ public class ZWayDeviceStateConverter {
      * @param binary switch value
      * @return transformed openHAB state
      */
-    private static State getBinaryState(String binarySwitchState) {
+    private static State getBinaryState(@Nullable String binarySwitchState) {
         if (binarySwitchState != null) {
-            if (binarySwitchState.equals("on")) {
-                return OnOffType.ON;
-            } else if (binarySwitchState.equals("off")) {
-                return OnOffType.OFF;
-            }
+            return OnOffType.from(binarySwitchState);
         }
         return UnDefType.UNDEF;
     }
@@ -128,11 +127,11 @@ public class ZWayDeviceStateConverter {
      * @param binary sensor state
      * @return
      */
-    private static State getDoorlockState(String binarySensorState) {
+    private static State getDoorlockState(@Nullable String binarySensorState) {
         if (binarySensorState != null) {
-            if (binarySensorState.equals("on")) {
+            if ("on".equals(binarySensorState)) {
                 return OpenClosedType.OPEN;
-            } else if (binarySensorState.equals("off")) {
+            } else if ("off".equals(binarySensorState)) {
                 return OpenClosedType.CLOSED;
             }
         }
@@ -145,7 +144,7 @@ public class ZWayDeviceStateConverter {
      * @param Z-Way color value
      * @return transformed openHAB state
      */
-    private static State getColorState(Color colorSwitchState) {
+    private static State getColorState(@Nullable Color colorSwitchState) {
         if (colorSwitchState != null && colorSwitchState.getRed() != null && colorSwitchState.getGreen() != null
                 && colorSwitchState.getBlue() != null) {
             HSBType hsbType = HSBType.fromRGB(colorSwitchState.getRed(), colorSwitchState.getGreen(),
