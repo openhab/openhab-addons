@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Hunter Douglas PowerView Binding</name>
 	<description>The Hunter Douglas PowerView binding provides access to the Hunter Douglas line of PowerView shades.</description>
+	<connection>local</connection>
 
 </addon:addon>
