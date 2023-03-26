@@ -55,6 +55,11 @@ public class GPIOBindingConstants {
     public static final String PUD_DOWN = "DOWN";
     public static final String PUD_UP = "UP";
 
+    // Pulse
+    public static final String PULSE_OFF = "OFF";
+    public static final String PULSE_ON = "ON";
+    public static final String PULSE_BLINK = "BLINK";
+
     // Edge modes
     public static final String EDGE_EITHER = "EDGE_EITHER";
     public static final String EDGE_RISING = "EDGE_RISING";

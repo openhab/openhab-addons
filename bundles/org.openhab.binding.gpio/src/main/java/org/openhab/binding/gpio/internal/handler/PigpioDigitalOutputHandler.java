@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gpio.internal.handler;
 
+import static org.openhab.binding.gpio.internal.GPIOBindingConstants.*;
+
 import java.math.BigDecimal;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -83,7 +85,8 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
 
         if (configuration.pulseCommand.length() > 0) {
             this.pulseCommand = configuration.pulseCommand.toUpperCase();
-            if (!"ON".equals(pulseCommand) && !"OFF".equals(pulseCommand) && !"BLINK".equals(pulseCommand)) {
+            if (!PULSE_ON.equals(pulseCommand) && !PULSE_OFF.equals(pulseCommand)
+                    && !PULSE_BLINK.equals(pulseCommand)) {
                 throw new ChannelConfigurationException("Invalid pulseCommand value.");
             }
         }
@@ -147,11 +150,11 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
 
                 if (command instanceof OnOffType) {
                     if (this.pulseCommand != null) {
-                        if ("ON".equals(this.pulseCommand)) {
+                        if (PULSE_ON.equals(this.pulseCommand)) {
                             eCommand = OnOffType.ON;
-                        } else if ("OFF".equals(this.pulseCommand)) {
+                        } else if (PULSE_OFF.equals(this.pulseCommand)) {
                             eCommand = OnOffType.OFF;
-                        } else if ("BLINK".equals(this.pulseCommand)) {
+                        } else if (PULSE_BLINK.equals(this.pulseCommand)) {
                             if (OnOffType.ON.equals(command)) {
                                 eCommand = OnOffType.OFF;
                             } else if (OnOffType.OFF.equals(command)) {
