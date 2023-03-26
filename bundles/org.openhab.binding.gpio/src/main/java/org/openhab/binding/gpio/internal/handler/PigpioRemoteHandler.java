@@ -76,9 +76,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                     return;
                 }
 
-                if (channelHandler instanceof PigpioDigitalInputHandler) {
-                    PigpioDigitalInputHandler inputHandler = (PigpioDigitalInputHandler) channelHandler;
-
+                if (channelHandler instanceof PigpioDigitalInputHandler inputHandler) {
                     try {
                         inputHandler.handleCommand(command);
                     } catch (PigpioException pe) {
@@ -89,9 +87,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                                     pe.getLocalizedMessage());
                         }
                     }
-                } else if (channelHandler instanceof PigpioDigitalOutputHandler) {
-                    PigpioDigitalOutputHandler outputHandler = (PigpioDigitalOutputHandler) channelHandler;
-
+                } else if (channelHandler instanceof PigpioDigitalOutputHandler outputHandler) {
                     try {
                         outputHandler.handleCommand(command);
                     } catch (PigpioException pe) {
