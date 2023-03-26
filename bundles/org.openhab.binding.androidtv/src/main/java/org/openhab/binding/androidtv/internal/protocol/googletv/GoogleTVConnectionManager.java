@@ -1145,6 +1145,12 @@ public class GoogleTVConnectionManager {
                     case "KEY_MENU":
                         message = "52040852" + suffix;
                         break;
+                    case "KEY_PLAY":
+                        message = "5204087E" + suffix;
+                        break;
+                    case "KEY_PAUSE":
+                        message = "5204087F" + suffix;
+                        break;
                     case "KEY_PLAYPAUSE":
                         message = "52040855" + suffix;
                         break;

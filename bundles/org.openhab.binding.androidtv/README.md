@@ -90,6 +90,8 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_HOME
 - KEY_BACK
 - KEY_MENU
+- KEY_PLAY
+- KEY_PAUSE
 - KEY_PLAYPAUSE
 - KEY_STOP
 - KEY_NEXT
