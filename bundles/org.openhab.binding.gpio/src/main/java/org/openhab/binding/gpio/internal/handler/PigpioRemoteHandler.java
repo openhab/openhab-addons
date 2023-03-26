@@ -63,7 +63,6 @@ public class PigpioRemoteHandler extends BaseThingHandler {
      */
     public PigpioRemoteHandler(Thing thing) {
         super(thing);
-        logger.debug("gpio : ctor");
     }
 
     @Override
