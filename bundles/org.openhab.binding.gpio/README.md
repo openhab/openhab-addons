@@ -141,7 +141,8 @@ after a disconnect. This action does not occur on the initial binding connect to
 
 ## Channels
 
-The binding has two channel types. One for gpio input pins, and another for gpio output pins.
+The binding has two channel types. 
+One for gpio input pins, and another for gpio output pins.
 
 | channel               | type   | description                     |
 |-----------------------|--------|---------------------------------|
@@ -150,7 +151,7 @@ The binding has two channel types. One for gpio input pins, and another for gpio
 
 ### GPIO pigpio-digital-input channel configuration
 
-Input channels provide a read-only value of the gpio pin state using the OnOffType datatype.
+Input channels provide a read-only value of the gpio pin state using the `OnOffType` datatype.
 
 GPIO Pin:
 
@@ -191,7 +192,7 @@ mode that gpio inputs are used.
 
 ### GPIO pigpio-digital-output channel configuration
 
-Output channels provide a means of controlling the output value of the gpio pin using the OnOffType datatype.
+Output channels provide a means of controlling the output value of the gpio pin using the `OnOffType` datatype.
 
 GPIO Pin:
 
