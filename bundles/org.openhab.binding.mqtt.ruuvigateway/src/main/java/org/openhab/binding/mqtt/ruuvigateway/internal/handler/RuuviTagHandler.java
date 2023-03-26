@@ -428,5 +428,4 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
             return true;
         }
     }
-
 }
