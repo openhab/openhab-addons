@@ -58,6 +58,7 @@
     <module>org.openhab.binding.amplipi</module>
     <module>org.openhab.binding.androiddebugbridge</module>
     <module>org.openhab.binding.anel</module>
+    <module>org.openhab.binding.anthem</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
