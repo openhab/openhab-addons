@@ -227,7 +227,7 @@ Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level
 
 #### Air Purifier Core 400S / 600S Model
 
-```
+```perl
 Frame {
    Switch item=LoungeAPPower label="Power"
    Text   item=LoungeAPFilterRemainingUse label="Filter Remaining"
@@ -243,7 +243,7 @@ Frame {
 
 #### Air Purifier Core 200S/300S Model
 
-```
+```perl
 Frame {
    Switch item=LoungeAPPower label="Power"
    Text   item=LoungeAPFilterRemainingUse label="Filter Remaining"
@@ -260,7 +260,7 @@ Frame {
 
 #### Air Humidifier Classic 200S / Dual 200S Model
 
-```
+```perl
 Frame {
    Switch item=LoungeAHPower
    Switch item=LoungeAHDisplay
@@ -277,7 +277,7 @@ Frame {
 
 #### Air Humidifier Classic 300S Model
 
-```
+```perl
 Frame {
    Switch item=LoungeAHPower
    Switch item=LoungeAHDisplay
@@ -295,7 +295,7 @@ Frame {
 
 #### Air Humidifier 600S Model
 
-```
+```perl
 Frame {
    Switch item=LoungeAHPower
    Switch item=LoungeAHDisplay
@@ -312,7 +312,7 @@ Frame {
 
 #### Air Humidifier Oasis Mist Smart Model
 
-```
+```perl
 Frame {
    Switch item=LoungeAHPower
    Switch item=LoungeAHDisplay
