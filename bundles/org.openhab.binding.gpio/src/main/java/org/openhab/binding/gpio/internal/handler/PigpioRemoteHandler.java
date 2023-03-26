@@ -417,7 +417,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
             }
             logger.debug("gpio disposed");
         } catch (Exception e) {
-            logger.error("Dispose exception :", e);
+            logger.warn("Dispose exception :", e);
         }
 
         super.dispose();
