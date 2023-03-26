@@ -1,6 +1,6 @@
 # GPIO Binding
 
-This binding adds GPIO support via the pigpiod daemon to OpenHAB.
+This binding adds GPIO support via the pigpiod daemon to openHAB.
 It requires the pigpiod daemon (<http://abyz.me.uk/rpi/pigpio/>) to be installed on the pi that should be controlled.
 
 ## Supported Things
@@ -54,7 +54,7 @@ Host:
 
 ```
 Set Host to the address of the Pi that pigpiod is running on. Default is 127.0.0.1 (IPV4).
-Note: If you are running pigpiod on same host as OpenHAB, set the host to 127.0.0.1 (IPV4) or ::1 (IPV6).
+Note: If you are running pigpiod on same host as openHAB, set the host to 127.0.0.1 (IPV4) or ::1 (IPV6).
 ```
 
 Port:
@@ -114,7 +114,7 @@ This action only occurs once after binding startup.
   Refresh Channel : Issues a refresh command on the output channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state. NOTE: This does
                     not update the gpio pin state on the Pi itself. It only updates the channel state
-                    within OpenHAB.
+                    within openHAB.
 ```
 
 Output Channel Disconnect Connect Action:
@@ -136,7 +136,7 @@ after a disconnect. This action does not occur on the initial binding connect to
   Refresh Channel : Issues a refresh command on the output channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state. NOTE: This does
                     not update the gpio pin state on the Pi itself. It only updates the channel state
-                    within OpenHAB.
+                    within openHAB.
 ```
 
 ## Channels
@@ -148,7 +148,7 @@ The binding has two channel types. One for gpio input pins, and another for gpio
 | pigpio-digital-input  | Switch | Read-only value of the gpio pin |
 | pigpio-digital-output | Switch | Controls the gpio pin           |
 
-### GPIO digital input channel
+### GPIO pigpio-digital-input channel configuration
 
 Input channels provide a read-only value of the gpio pin state using the OnOffType datatype.
 
@@ -189,7 +189,7 @@ the use case is for this, leave at the default value of `Either Edge`. This is t
 mode that gpio inputs are used.
 ```
 
-### GPIO digital output channel
+### GPIO pigpio-digital-output channel configuration
 
 Output channels provide a means of controlling the output value of the gpio pin using the OnOffType datatype.
 
@@ -227,7 +227,7 @@ of time.
   Blink           : Cycles the channel ON, OFF, ON indefinitely with a 50% duty cycle. The Blink
                     operation continues regardless of the commanded channel state. This was originaly
                     developed as a way to flash a status LED to visually confirm that a remote pigpiod
-                    instance has connectivity to OpenHAB.
+                    instance has connectivity to openHAB.
 ```
 
 ## Config file example
@@ -266,14 +266,11 @@ Thing gpio:pigpio-remote:mypi "MyPi GPIO" [ host="192.168.1.5", port=8888,
                 Type pigpio-digital-input  : GPI13 [ gpioId=13,debouncingTime=50,pullupdown="DOWN",invert=false ]
                 Type pigpio-digital-input  : GPI26 [ gpioId=26,debouncingTime=50,pullupdown="OFF",invert=false ]
     } 
-```
+```java
 
 demo.items:
 
 ```
 Switch SampleInput1 {channel="gpio:pigpio-remote:mypi:GPI23"}
 Switch SampleOutput1 {channel="gpio:pigpio-remote:mypi:GPO4"}
-```
-
-
-
+```java
