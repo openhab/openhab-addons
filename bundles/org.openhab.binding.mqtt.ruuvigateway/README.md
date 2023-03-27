@@ -63,7 +63,7 @@ For example, Ruuvi Tag Pro 2in1 does not have a humidity measurement and thus, t
 
 ## Example
 
-Please note that Thing and Item configuration can be done fully in MainUI. 
+Please note that Thing and Item configuration can be done fully in the UI.
 For those who prefer textual configuration, we share this example here.
 
 To use these examples for textual configuration, you must already have a configured a MQTT `broker` thing and know its unique ID.
