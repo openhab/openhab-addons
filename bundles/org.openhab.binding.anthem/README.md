@@ -30,6 +30,8 @@ The Anthem AV processor supports the following channels (some zones/channels are
 
 | Channel                 | Type    | Description  |
 |-------------------------|---------|--------------|
+| *General*               |         |   |
+| general#command         | String  | Send a custom command  |
 | *Main Zone*             |         |   |
 | 1#power                 | Switch  | Power the zone on or off  |
 | 1#volume                | Dimmer  | Increase or decrease the volume level  |
@@ -59,6 +61,8 @@ Thing anthem:anthem:mediaroom "Anthem AVM 60" [ host="192.168.1.100" ]
 ### Items
 
 ```
+String  Anthem_Command                    "Command [%s]"                           { channel="anthem:anthem:mediaroom:general#command" }
+
 Switch  Anthem_Z1_Power                   "Zone 1 Power [%s]"                      { channel="anthem:anthem:mediaroom:1#power" }
 Dimmer  Anthem_Z1_Volume                  "Zone 1 Volume [%s]"                     { channel="anthem:anthem:mediaroom:1#volume" }
 Number  Anthem_Z1_Volume_DB               "Zone 1 Volume dB [%.0f]"                { channel="anthem:anthem:mediaroom:1#volumeDB" }
