@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Siemens RDS Binding</name>
 	<description>This is the binding for Siemens RDS smart thermostats</description>
+	<connection>cloud</connection>
 
 </addon:addon>
