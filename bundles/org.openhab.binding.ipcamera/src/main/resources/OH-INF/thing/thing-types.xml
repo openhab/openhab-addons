@@ -2279,6 +2279,7 @@
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
 			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="cellMotionAlarm" typeId="cellMotionAlarm"/>
 			<channel id="externalMotion" typeId="externalMotion"/>
 			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
 			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
@@ -2525,7 +2526,7 @@
 				<label>Use Continuous PTZ</label>
 				<description>Select if you want Relative (false) or Continuous (true) movements.
 				</description>
-				<default>false</default>
+				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 
