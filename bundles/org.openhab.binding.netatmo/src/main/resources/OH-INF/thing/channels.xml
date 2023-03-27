@@ -58,19 +58,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="camera-event">
-		<kind>trigger</kind>
-		<label>Camera Event</label>
-		<event>
-			<options>
-				<option value="ANIMAL"/>
-				<option value="HUMAN"/>
-				<option value="MOVEMENT"/>
-				<option value="VEHICLE"/>
-			</options>
-		</event>
-	</channel-type>
-
 	<channel-type id="battery-status">
 		<item-type>String</item-type>
 		<label>Battery Status</label>

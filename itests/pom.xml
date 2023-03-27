@@ -28,6 +28,7 @@
     <module>org.openhab.binding.modbus.tests</module>
     <module>org.openhab.binding.mqtt.homeassistant.tests</module>
     <module>org.openhab.binding.mqtt.homie.tests</module>
+    <module>org.openhab.binding.mqtt.ruuvigateway.tests</module>
     <module>org.openhab.binding.nest.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
     <module>org.openhab.binding.systeminfo.tests</module>
