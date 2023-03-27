@@ -178,7 +178,7 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
 
                     lastPulseCommand = eCommand;
 
-                    if ("BLINK".equals(this.pulseCommand) && this.pulseTimeout > 0) {
+                    if (PULSE_BLINK.equals(this.pulseCommand) && this.pulseTimeout > 0) {
                         final OnOffType feCommand = eCommand;
                         if (job != null) {
                             job.cancel(false);
@@ -214,7 +214,7 @@ public class PigpioDigitalOutputHandler implements ChannelHandler {
         synchronized (handleLock) {
             Future<?> job = this.pulseJob;
 
-            if (this.pulseTimeout > 0 && "BLINK".equals(configuration.pulseCommand)) {
+            if (this.pulseTimeout > 0 && PULSE_BLINK.equals(configuration.pulseCommand)) {
                 if (job != null) {
                     job.cancel(false);
                 }
