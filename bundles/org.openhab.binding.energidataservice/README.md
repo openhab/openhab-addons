@@ -318,7 +318,10 @@ var priceMap = actions.getPrices("SpotPrice,NetTariff");
 ### Thing Configuration
 
 ```java
-Thing energidataservice:service:energidataservice "Energi Data Service" [ priceArea="DK1", currencyCode="DKK", gridCompanyGLN="5790001089030" ]
+Thing energidataservice:service:energidataservice "Energi Data Service" [ priceArea="DK1", currencyCode="DKK", gridCompanyGLN="5790001089030" ] {
+    Channels:
+        Number : electricity#current-net-tariff [ chargeTypeCodes="CD,CD R", start="StartOfYear" ]
+}
 ```
 
 ### Item Configuration
