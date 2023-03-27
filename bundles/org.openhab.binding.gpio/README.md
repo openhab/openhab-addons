@@ -260,9 +260,9 @@ Thing gpio:pigpio-remote:mypi "MyPi GPIO" [ host="192.168.1.5", port=8888,
                 Type pigpio-digital-input  : GPI25 [ gpioId=25,debouncingTime=50,pullupdown="UP",invert=true ]
                 Type pigpio-digital-input  : GPI12 [ gpioId=12,debouncingTime=50,pullupdown="UP",invert=true ]
                 Type pigpio-digital-input  : GPI16 [ gpioId=16,debouncingTime=50,pullupdown="UP",invert=true ]
-                Type pigpio-digital-input  : GPI20 [ gpioId=20,debouncingTime=50,pullupdown="UP",invert=true,edgeMode="EDGE_EITHER ] # EITHER,RISING,FALLING
-                Type pigpio-digital-input  : GPI21 [ gpioId=21,debouncingTime=50,pullupdown="UP",invert=true,edgeMode="EDGE_RISING ]
-                Type pigpio-digital-input  : GPI5  [ gpioId=5, debouncingTime=50,pullupdown="UP",invert=true,edgeMode="EDGE_FALLING ]
+                Type pigpio-digital-input  : GPI20 [ gpioId=20,debouncingTime=50,pullupdown="UP",invert=true,edgeMode="EDGE_EITHER" ] # EITHER,RISING,FALLING
+                Type pigpio-digital-input  : GPI21 [ gpioId=21,debouncingTime=50,pullupdown="UP",invert=true,edgeMode="EDGE_RISING" ]
+                Type pigpio-digital-input  : GPI5  [ gpioId=5, debouncingTime=50,pullupdown="UP",invert=true,edgeMode="EDGE_FALLING" ]
                 Type pigpio-digital-input  : GPI6  [ gpioId=6, debouncingTime=50,pullupdown="UP",invert=true ]
                 Type pigpio-digital-input  : GPI13 [ gpioId=13,debouncingTime=50,pullupdown="DOWN",invert=false ]
                 Type pigpio-digital-input  : GPI26 [ gpioId=26,debouncingTime=50,pullupdown="OFF",invert=false ]
