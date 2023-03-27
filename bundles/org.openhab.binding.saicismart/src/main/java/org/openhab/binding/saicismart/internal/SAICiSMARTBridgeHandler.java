@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -124,33 +125,15 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     token = loginResponseMessage.getApplicationData().getToken();
                     vinList = loginResponseMessage.getApplicationData().getVinList();
 
-                    MessageCoder<AlarmSwitchReq> alarmSwitchReqMessageCoder = new MessageCoder<>(AlarmSwitchReq.class);
-
                     // register for all known alarm types (not all might be actually delivered)
-                    AlarmSwitchReq alarmSwitchReq = new AlarmSwitchReq();
-                    alarmSwitchReq.setAlarmSwitchList(Stream.of(MP_AlarmSettingType.EnumType.values())
-                            .map(v -> createAlarmSwitch(v, true)).collect(Collectors.toList()));
-                    alarmSwitchReq.setPin(hashMD5("123456"));
-
-                    Message<AlarmSwitchReq> alarmSwitchMessage = alarmSwitchReqMessageCoder.initializeMessage(uid,
-                            token, null, "521", 513, 1, alarmSwitchReq);
-                    String alarmSwitchRequest = alarmSwitchReqMessageCoder.encodeRequest(alarmSwitchMessage);
-                    String alarmSwitchResponse = sendRequest(alarmSwitchRequest,
-                            "https://tap-eu.soimt.com/TAP.Web/ota.mp");
-                    Message<IASN1PreparedElement> alarmSwitchResponseMessage = new MessageCoder<>(
-                            IASN1PreparedElement.class).decodeResponse(alarmSwitchResponse);
-
-                    logger.debug("Got message: {}",
-                            new GsonBuilder().setPrettyPrinting().create().toJson(alarmSwitchResponseMessage));
-
-                    if (alarmSwitchResponseMessage.getBody().getErrorMessage() != null) {
-                        throw new TimeoutException(new String(alarmSwitchResponseMessage.getBody().getErrorMessage(),
-                                StandardCharsets.UTF_8));
+                    for (MP_AlarmSettingType.EnumType type : MP_AlarmSettingType.EnumType.values()) {
+                        registerAlarmMessage(loginResponseMessage.getBody().getUid(),
+                                loginResponseMessage.getApplicationData().getToken(), type);
                     }
 
                     updateStatus(ThingStatus.ONLINE);
                 } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException
-                        | NoSuchAlgorithmException e) {
+                        | NoSuchAlgorithmException | IOException e) {
                     updateStatus(ThingStatus.OFFLINE);
                     logger.error("Could not login to SAIC iSMART account", e);
                 }
@@ -207,6 +190,36 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    private void registerAlarmMessage(String uid, String token, MP_AlarmSettingType.EnumType type)
+            throws NoSuchAlgorithmException, IOException, URISyntaxException, ExecutionException, InterruptedException,
+            TimeoutException {
+        MessageCoder<AlarmSwitchReq> alarmSwitchReqMessageCoder = new MessageCoder<>(AlarmSwitchReq.class);
+
+        AlarmSwitchReq alarmSwitchReq = new AlarmSwitchReq();
+        alarmSwitchReq
+                .setAlarmSwitchList(Stream.of(type).map(v -> createAlarmSwitch(v, true)).collect(Collectors.toList()));
+        alarmSwitchReq.setPin(hashMD5("123456"));
+
+        Message<AlarmSwitchReq> alarmSwitchMessage = alarmSwitchReqMessageCoder.initializeMessage(uid, token, null,
+                "521", 513, 1, alarmSwitchReq);
+        String alarmSwitchRequest = alarmSwitchReqMessageCoder.encodeRequest(alarmSwitchMessage);
+        String alarmSwitchResponse = sendRequest(alarmSwitchRequest, "https://tap-eu.soimt.com/TAP.Web/ota.mp");
+        final MessageCoder<IASN1PreparedElement> alarmSwitchResMessageCoder = new MessageCoder<>(
+                IASN1PreparedElement.class);
+        Message<IASN1PreparedElement> alarmSwitchResponseMessage = alarmSwitchResMessageCoder
+                .decodeResponse(alarmSwitchResponse);
+
+        logger.debug("Got message: {}",
+                new GsonBuilder().setPrettyPrinting().create().toJson(alarmSwitchResponseMessage));
+
+        if (alarmSwitchResponseMessage.getBody().getErrorMessage() != null) {
+            logger.warn("Could not register for {} messages: {}", type,
+                    new String(alarmSwitchResponseMessage.getBody().getErrorMessage(), StandardCharsets.UTF_8));
+        } else {
+            logger.info("Registered for {} messages", type);
+        }
     }
 
     private static AlarmSwitch createAlarmSwitch(MP_AlarmSettingType.EnumType type, boolean enabled) {
