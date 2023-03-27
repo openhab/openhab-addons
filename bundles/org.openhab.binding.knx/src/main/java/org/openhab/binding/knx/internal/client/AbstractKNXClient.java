@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.client;
 
 import static org.openhab.binding.knx.internal.dpt.DPTUtil.NORMALIZED_DPT;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
@@ -29,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.dpt.ValueEncoder;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
+import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler.CommandExtensionData;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -91,6 +93,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private final int readRetriesLimit;
     private final StatusUpdateCallback statusUpdateCallback;
     private final ScheduledExecutorService knxScheduler;
+    private final CommandExtensionData commandExtensionData;
 
     private @Nullable ProcessCommunicator processCommunicator;
     private @Nullable ProcessCommunicationResponder responseCommunicator;
@@ -137,7 +140,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     };
 
     public AbstractKNXClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
-            int readRetriesLimit, ScheduledExecutorService knxScheduler, StatusUpdateCallback statusUpdateCallback) {
+            int readRetriesLimit, ScheduledExecutorService knxScheduler, CommandExtensionData commandExtensionData,
+            StatusUpdateCallback statusUpdateCallback) {
         this.autoReconnectPeriod = autoReconnectPeriod;
         this.thingUID = thingUID;
         this.responseTimeout = responseTimeout;
@@ -145,6 +149,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         this.readRetriesLimit = readRetriesLimit;
         this.knxScheduler = knxScheduler;
         this.statusUpdateCallback = statusUpdateCallback;
+        this.commandExtensionData = commandExtensionData;
     }
 
     public void initialize() {
@@ -323,9 +328,26 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         IndividualAddress source = event.getSourceAddr();
         byte[] asdu = event.getASDU();
         logger.trace("Received a {} telegram from '{}' to '{}' with value '{}'", task, source, destination, asdu);
+        boolean isHandled = false;
         for (GroupAddressListener listener : groupAddressListeners) {
             if (listener.listensTo(destination)) {
+                isHandled = true;
                 knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);
+            }
+        }
+        // store information about unhandled GAs, can be shown on console using knx:show_unknown_ga
+        if (!isHandled) {
+            logger.trace("Address '{}' is not configured in openHAB", destination);
+            if (!commandExtensionData.unknownGA.containsKey(destination)) {
+                commandExtensionData.unknownGA.put(destination, BigDecimal.valueOf(1));
+            } else {
+                @Nullable
+                BigDecimal counter = commandExtensionData.unknownGA.get(destination);
+                if (counter != null) {
+                    commandExtensionData.unknownGA.put(destination, BigDecimal.valueOf(1).add(counter));
+                } else {
+                    commandExtensionData.unknownGA.put(destination, BigDecimal.valueOf(1));
+                }
             }
         }
     }
