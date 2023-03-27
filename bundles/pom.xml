@@ -250,6 +250,7 @@
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
+    <module>org.openhab.binding.mqtt.ruuvigateway</module>
     <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
