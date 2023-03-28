@@ -181,17 +181,18 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         }
 
         if (jsonState.state != null) {
-            onOffValue.update(new StringType(jsonState.state));
+            onOffValue.update(onOffValue.parseCommand(new StringType(jsonState.state)));
             if (brightnessValue.getChannelState() instanceof UnDefType) {
-                brightnessValue.update((OnOffType) onOffValue.getChannelState());
+                brightnessValue.update(brightnessValue.parseCommand((OnOffType) onOffValue.getChannelState()));
             }
             if (colorValue.getChannelState() instanceof UnDefType) {
-                colorValue.update((OnOffType) onOffValue.getChannelState());
+                colorValue.update(colorValue.parseCommand((OnOffType) onOffValue.getChannelState()));
             }
         }
 
         if (jsonState.brightness != null) {
-            brightnessValue.update(new DecimalType(Objects.requireNonNull(jsonState.brightness)));
+            brightnessValue.update(
+                    brightnessValue.parseCommand(new DecimalType(Objects.requireNonNull(jsonState.brightness))));
             if (colorValue.getChannelState() instanceof HSBType) {
                 HSBType color = (HSBType) colorValue.getChannelState();
                 colorValue.update(new HSBType(color.getHue(), color.getSaturation(),
