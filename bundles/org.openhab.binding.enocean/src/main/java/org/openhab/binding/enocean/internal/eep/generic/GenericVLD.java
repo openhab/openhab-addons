@@ -10,21 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.eep.Generic;
+package org.openhab.binding.enocean.internal.eep.generic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-public class Generic4BS extends GenericEEP {
+@NonNullByDefault
+public class GenericVLD extends GenericEEP {
 
-    public Generic4BS() {
+    public GenericVLD() {
         super();
     }
 
-    public Generic4BS(ERP1Message packet) {
+    public GenericVLD(ERP1Message packet) {
         super(packet);
     }
 }

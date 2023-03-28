@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.Base;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -19,9 +20,10 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class _1BSMessage extends EEP {
 
-    public static final int TeachInBit = 0x08;
+    public static final int TEACHIN_BIT = 0x08;
 
     public _1BSMessage(ERP1Message packet) {
         super(packet);

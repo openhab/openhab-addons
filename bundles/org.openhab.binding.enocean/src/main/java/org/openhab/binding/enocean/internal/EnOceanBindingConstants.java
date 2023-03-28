@@ -576,7 +576,7 @@ public class EnOceanBindingConstants {
 
     // Bridge properties
     public static final String PROPERTY_BASE_ID = "Base ID";
-    public static final String PROPERTY_REMAINING_WRITE_CYCLES_Base_ID = "Remaining Base ID Write Cycles";
+    public static final String PROPERTY_REMAINING_WRITE_CYCLES_BASE_ID = "Remaining Base ID Write Cycles";
     public static final String PROPERTY_APP_VERSION = "APP Version";
     public static final String PROPERTY_API_VERSION = "API Version";
     public static final String PROPERTY_CHIP_ID = "Chip ID";
@@ -594,9 +594,9 @@ public class EnOceanBindingConstants {
     public static final String PARAMETER_ENOCEANID = "enoceanId";
 
     // Channel config parameter
-    public static final String PARAMETER_CHANNEL_TeachInMSG = "teachInMSG";
-    public static final String PARAMETER_CHANNEL_Duration = "duration";
-    public static final String PARAMETER_CHANNEL_SwitchMode = "switchMode";
+    public static final String PARAMETER_CHANNEL_TEACHINMSG = "teachInMSG";
+    public static final String PARAMETER_CHANNEL_DURATION = "duration";
+    public static final String PARAMETER_CHANNEL_SWITCHMODE = "switchMode";
 
     // Manufacturer Ids - used to recognize special EEPs during auto discovery
     public static final int ELTAKOID = 0x00d;
