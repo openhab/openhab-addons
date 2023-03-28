@@ -78,8 +78,7 @@ public class DPTUnits {
             for (Field field : fields) {
                 try {
                     Object o = field.get(null);
-                    if (o instanceof DPT) {
-                        DPT dpt = (DPT) o;
+                    if (o instanceof DPT dpt) {
                         String unit = dpt.getUnit().replaceAll(" ", "");
                         // Calimero provides some units (like "ms⁻²") that can't be parsed by our library because of the
                         // negative exponent

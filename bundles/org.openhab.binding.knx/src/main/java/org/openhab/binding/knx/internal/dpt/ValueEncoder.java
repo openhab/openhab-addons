@@ -87,8 +87,8 @@ public class ValueEncoder {
             DPT dpt = translator.getType();
 
             // check for HSBType first, because it extends PercentType as well
-            if (value instanceof HSBType) {
-                return handleHSBType(dptId, (HSBType) value);
+            if (value instanceof HSBType type) {
+                return handleHSBType(dptId, type);
             } else if (value instanceof OnOffType) {
                 return OnOffType.OFF.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof UpDownType) {
@@ -101,15 +101,15 @@ public class ValueEncoder {
                 return OpenClosedType.CLOSED.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof StopMoveType) {
                 return StopMoveType.STOP.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
-            } else if (value instanceof PercentType) {
-                int intValue = ((PercentType) value).intValue();
+            } else if (value instanceof PercentType type) {
+                int intValue = type.intValue();
                 return "251.600".equals(dptId) ? String.format("- - - %d %%", intValue) : String.valueOf(intValue);
             } else if (value instanceof DecimalType || value instanceof QuantityType<?>) {
                 return handleNumericTypes(dptId, mainNumber, dpt, value);
             } else if (value instanceof StringType) {
                 return value.toString();
-            } else if (value instanceof DateTimeType) {
-                return handleDateTimeType(dptId, (DateTimeType) value);
+            } else if (value instanceof DateTimeType type) {
+                return handleDateTimeType(dptId, type);
             }
         } catch (KNXException e) {
             return null;
