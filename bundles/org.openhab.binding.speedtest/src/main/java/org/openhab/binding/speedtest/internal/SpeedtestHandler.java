@@ -439,7 +439,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                 BufferedReader br = new BufferedReader(isr)) {
             String line;
             while ((line = br.readLine()) != null) {
-                outputBuilder.append(line).append("\n");
+                outputBuilder.append(line).append(System.lineSeparator());
                 logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
             }
         } catch (IOException e) {
