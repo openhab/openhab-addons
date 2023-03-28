@@ -19,10 +19,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.sleepiq.internal.api.dto.Bed;
 import org.openhab.binding.sleepiq.internal.api.dto.FamilyStatusResponse;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationFeaturesResponse;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationStatusResponse;
 import org.openhab.binding.sleepiq.internal.api.dto.LoginInfo;
 import org.openhab.binding.sleepiq.internal.api.dto.PauseModeResponse;
 import org.openhab.binding.sleepiq.internal.api.dto.SleepDataResponse;
 import org.openhab.binding.sleepiq.internal.api.dto.Sleeper;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationActuator;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationActuatorSpeed;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationOutlet;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationOutletOperation;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationPreset;
 import org.openhab.binding.sleepiq.internal.api.enums.Side;
 import org.openhab.binding.sleepiq.internal.api.enums.SleepDataInterval;
 import org.openhab.binding.sleepiq.internal.api.impl.SleepIQImpl;
@@ -31,6 +38,7 @@ import org.openhab.binding.sleepiq.internal.api.impl.SleepIQImpl;
  * This interface is the main API to access the SleepIQ system.
  *
  * @author Gregory Moyer - Initial contribution
+ * @author Mark Hilbush - Added foundation functionality
  */
 @NonNullByDefault
 public interface SleepIQ {
@@ -132,6 +140,68 @@ public interface SleepIQ {
      * @throws SleepIQException
      */
     public void setPauseMode(String bedId, boolean command) throws LoginException, SleepIQException;
+
+    /**
+     * Get the foundation features for a bed
+     *
+     * @param bedId the unique identifier of the bed
+     *
+     * @throws LoginException
+     * @throws SleepIQException
+     */
+    public FoundationFeaturesResponse getFoundationFeatures(String bedId) throws LoginException, SleepIQException;
+
+    /**
+     * Get the foundation status for a bed
+     *
+     * @param bedId the unique identifier of the bed
+     *
+     * @throws LoginException
+     * @throws SleepIQException
+     */
+    public FoundationStatusResponse getFoundationStatus(String bedId) throws LoginException, SleepIQException;
+
+    /**
+     * Set a foundation preset for the side of a bed
+     *
+     * @param bedId the unique identifier of the bed
+     * @param side the chamber of the bed
+     * @param preset the foundation preset
+     * @param speed the speed with which the adjustment is made
+     *
+     * @throws LoginException
+     * @throws SleepIQException
+     */
+    public void setFoundationPreset(String bedId, Side side, FoundationPreset preset, FoundationActuatorSpeed speed)
+            throws LoginException, SleepIQException;
+
+    /**
+     * Set a foundation position for the side of a bed
+     *
+     * @param bedId the unique identifier of the bed
+     * @param side the chamber of the bed
+     * @param actuator the head or foot of the bed
+     * @param position the new position of the actuator
+     * @param speed the speed with which the adjustment is made
+     *
+     * @throws LoginException
+     * @throws SleepIQException
+     */
+    public void setFoundationPosition(String bedId, Side side, FoundationActuator actuator, int position,
+            FoundationActuatorSpeed speed) throws LoginException, SleepIQException;
+
+    /**
+     * Turn a foundation outlet on or off
+     *
+     * @param bedId the unique identifier of the bed
+     * @param outlet the foundation outlet to control
+     * @param operation set the outlet on or off
+     *
+     * @throws LoginException
+     * @throws SleepIQException
+     */
+    public void setFoundationOutlet(String bedId, FoundationOutlet outlet, FoundationOutletOperation operation)
+            throws LoginException, SleepIQException;
 
     /**
      * Create a default implementation instance of this interface. Each call to

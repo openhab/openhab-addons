@@ -32,14 +32,22 @@ import org.openhab.binding.sleepiq.internal.SleepIQBindingConstants;
 import org.openhab.binding.sleepiq.internal.SleepIQConfigStatusMessage;
 import org.openhab.binding.sleepiq.internal.api.Configuration;
 import org.openhab.binding.sleepiq.internal.api.LoginException;
+import org.openhab.binding.sleepiq.internal.api.ResponseFormatException;
 import org.openhab.binding.sleepiq.internal.api.SleepIQ;
 import org.openhab.binding.sleepiq.internal.api.SleepIQException;
 import org.openhab.binding.sleepiq.internal.api.UnauthorizedException;
 import org.openhab.binding.sleepiq.internal.api.dto.Bed;
 import org.openhab.binding.sleepiq.internal.api.dto.BedStatus;
 import org.openhab.binding.sleepiq.internal.api.dto.FamilyStatusResponse;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationFeaturesResponse;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationStatusResponse;
 import org.openhab.binding.sleepiq.internal.api.dto.SleepDataResponse;
 import org.openhab.binding.sleepiq.internal.api.dto.Sleeper;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationActuator;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationActuatorSpeed;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationOutlet;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationOutletOperation;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationPreset;
 import org.openhab.binding.sleepiq.internal.api.enums.Side;
 import org.openhab.binding.sleepiq.internal.api.enums.SleepDataInterval;
 import org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfiguration;
@@ -146,11 +154,15 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      */
     public void registerBedStatusListener(final BedStatusListener listener) {
         bedStatusListeners.add(listener);
-        scheduler.execute(() -> {
+        /*
+         * Delay the initial sleeper and status update to give some time for the property update
+         * to determine if a foundation is installed.
+         */
+        scheduler.schedule(() -> {
             refreshSleepers();
             refreshBedStatus();
             updateListenerManagement();
-        });
+        }, 10L, TimeUnit.SECONDS);
     }
 
     /**
@@ -188,11 +200,8 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param bedId the bed identifier
      * @return the identified {@link Bed} or <code>null</code> if no such bed exists
      */
-    public @Nullable Bed getBed(final @Nullable String bedId) {
+    public @Nullable Bed getBed(final String bedId) {
         logger.debug("CloudHandler: Get bed object for bedId={}", bedId);
-        if (bedId == null) {
-            return null;
-        }
         List<Bed> beds = getBeds();
         if (beds != null) {
             for (Bed bed : beds) {
@@ -211,11 +220,8 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param side the side of the bed
      * @return the sleeper or null if sleeper not found
      */
-    public @Nullable Sleeper getSleeper(@Nullable String bedId, Side side) {
+    public @Nullable Sleeper getSleeper(String bedId, Side side) {
         logger.debug("CloudHandler: Get sleeper object for bedId={}, side={}", bedId, side);
-        if (bedId == null) {
-            return null;
-        }
         List<Sleeper> localSleepers = sleepers;
         if (localSleepers != null) {
             for (Sleeper sleeper : localSleepers) {
@@ -234,10 +240,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param sleepNumber the sleep number multiple of 5 between 5 and 100
      * @param side the chamber to set
      */
-    public void setSleepNumber(@Nullable String bedId, Side side, int sleepNumber) {
-        if (bedId == null) {
-            return;
-        }
+    public void setSleepNumber(String bedId, Side side, int sleepNumber) {
         try {
             cloud.setSleepNumber(bedId, side, sleepNumber);
         } catch (SleepIQException e) {
@@ -251,15 +254,105 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param bedId the bed identifier
      * @param mode turn pause mode on or off
      */
-    public void setPauseMode(@Nullable String bedId, boolean mode) {
-        if (bedId == null) {
-            return;
-        }
+    public void setPauseMode(String bedId, boolean mode) {
         try {
             cloud.setPauseMode(bedId, mode);
         } catch (SleepIQException e) {
             logger.debug("CloudHandler: Exception setting pause mode of bed={}", bedId, e);
         }
+    }
+
+    /**
+     * Get the foundation features of the specified bed
+     *
+     * @param bedId the bed identifier
+     */
+    public @Nullable FoundationFeaturesResponse getFoundationFeatures(String bedId) {
+        try {
+            return cloud.getFoundationFeatures(bedId);
+        } catch (ResponseFormatException e) {
+            logger.debug("CloudHandler: Unable to parse foundation features response for bed={}", bedId);
+        } catch (SleepIQException e) {
+            logger.debug("CloudHandler: Exception getting foundation features, bed={}", bedId, e);
+        }
+        return null;
+    }
+
+    /**
+     * Get the foundation status of the specified bed
+     *
+     * @param bedId the bed identifier
+     */
+    public @Nullable FoundationStatusResponse getFoundationStatus(String bedId) {
+        try {
+            return cloud.getFoundationStatus(bedId);
+        } catch (ResponseFormatException e) {
+            logger.debug("CloudHandler: Unable to parse foundation status response for bed={}", bedId);
+        } catch (SleepIQException e) {
+            logger.debug("CloudHandler: Exception getting foundation status, bed={}: {}", bedId, e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Set a foundation adjustment preset.
+     *
+     * @param bedId the bed identifier
+     * @param side the side of the bed
+     * @param preset the preset to be applied
+     * @param speed the speed with which to make the adjustment
+     */
+    public void setFoundationPreset(String bedId, Side side, FoundationPreset preset, FoundationActuatorSpeed speed) {
+        try {
+            cloud.setFoundationPreset(bedId, side, preset, speed);
+        } catch (ResponseFormatException e) {
+            logger.debug("CloudHandler: ResponseFormatException setting foundation preset for bed={}: {}", bedId,
+                    e.getMessage());
+        } catch (SleepIQException e) {
+            logger.debug("CloudHandler: Exception setting the foundation preset for bed={}", bedId, e);
+        }
+        return;
+    }
+
+    /**
+     * Set a foundation position on head or foot of bed side.
+     *
+     * @param bedId the bed identifier
+     * @param side the side of the bed
+     * @param actuator the head or foot of the bed
+     * @param position the new position of the actuator
+     * @param speed the speed with which to make the adjustment
+     */
+    public void setFoundationPosition(String bedId, Side side, FoundationActuator actuator, int position,
+            FoundationActuatorSpeed speed) {
+        try {
+            cloud.setFoundationPosition(bedId, side, actuator, position, speed);
+        } catch (ResponseFormatException e) {
+            logger.debug("CloudHandler: ResponseFormatException setting foundation position for bed={}: {}", bedId,
+                    e.getMessage());
+        } catch (SleepIQException e) {
+            logger.debug("CloudHandler: Exception setting the foundation position for bed={}", bedId, e);
+        }
+        return;
+    }
+
+    /**
+     * Operate an outlet on the foundation.
+     *
+     * @param bedId the bed identifier
+     * @param outlet the outlet to operate
+     * @param operation the operation (On or Off) performed on the outlet
+     */
+    public void setFoundationOutlet(String bedId, FoundationOutlet outlet, FoundationOutletOperation operation) {
+        try {
+            cloud.setFoundationOutlet(bedId, outlet, operation);
+        } catch (ResponseFormatException e) {
+            logger.debug("CloudHandler: ResponseFormatException setting the foundation outlet for bed={}: {}", bedId,
+                    e.getMessage());
+        } catch (SleepIQException e) {
+            logger.debug("CloudHandler: Exception setting the foundation outlet for bed={}", bedId, e);
+        }
+        return;
     }
 
     /**
@@ -290,21 +383,60 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     }
 
     /**
+     * Update the given foundation properties with features of the given bed foundation.
+     *
+     * @param bed the source of data
+     * @param features the foundation features to update (this may be <code>null</code>)
+     * @return the given map (or a new map if no map was given) with updated/set properties from the supplied bed
+     */
+    public Map<String, String> updateFeatures(final String bedId, final @Nullable FoundationFeaturesResponse features,
+            Map<String, String> properties) {
+        if (features != null) {
+            logger.debug("CloudHandler: Updating foundation properties for bed={}", bedId);
+            properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION, "Installed");
+            properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION_HW_REV,
+                    String.valueOf(features.getBoardHWRev()));
+            properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION_IS_BOARD_AS_SINGLE,
+                    features.isBoardAsSingle() ? "yes" : "no");
+            properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION_HAS_MASSAGE_AND_LIGHT,
+                    features.hasMassageAndLight() ? "yes" : "no");
+            properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION_HAS_FOOT_CONTROL,
+                    features.hasFootControl() ? "yes" : "no");
+            properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION_HAS_FOOT_WARMER,
+                    features.hasFootWarming() ? "yes" : "no");
+            properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION_HAS_UNDER_BED_LIGHT,
+                    features.hasUnderBedLight() ? "yes" : "no");
+        } else {
+            logger.debug("CloudHandler: Foundation not installed on bed={}", bedId);
+            properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION, "Not installed");
+        }
+        return properties;
+    }
+
+    /**
      * Retrieve the latest status on all beds and update all registered listeners
-     * with bed status, sleepers and sleep data.
+     * with bed status, foundation status, sleepers and sleep data.
      */
     private void refreshBedStatus() {
         logger.debug("CloudHandler: Refreshing BED STATUS, updating chanels with status, sleepers, and sleep data");
         try {
             FamilyStatusResponse familyStatus = cloud.getFamilyStatus();
-            if (familyStatus != null && familyStatus.getBeds() != null) {
+            if (familyStatus.getBeds() != null) {
                 updateStatus(ThingStatus.ONLINE);
                 for (BedStatus bedStatus : familyStatus.getBeds()) {
-                    logger.debug("CloudHandler: Informing listeners with bed status for bedId={}",
-                            bedStatus.getBedId());
+                    String bedId = bedStatus.getBedId();
+                    logger.debug("CloudHandler: Informing listeners with bed status for bedId={}", bedId);
                     bedStatusListeners.stream().forEach(l -> l.onBedStateChanged(bedStatus));
-                }
 
+                    // Get foundation status only if bed has a foundation
+                    bedStatusListeners.stream().filter(l -> l.isFoundationInstalled()).forEach(l -> {
+                        try {
+                            l.onFoundationStateChanged(bedId, cloud.getFoundationStatus(bedStatus.getBedId()));
+                        } catch (SleepIQException e) {
+                            logger.debug("CloudHandler: Exception getting foundation status for bedId={}", bedId);
+                        }
+                    });
+                }
                 List<Sleeper> localSleepers = sleepers;
                 if (localSleepers != null) {
                     for (Sleeper sleeper : localSleepers) {
@@ -358,7 +490,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     private void createCloudConnection() throws LoginException {
         SleepIQCloudConfiguration bindingConfig = getConfigAs(SleepIQCloudConfiguration.class);
         Configuration cloudConfig = new Configuration().withUsername(bindingConfig.username)
-                .withPassword(bindingConfig.password).withLogging(logger.isTraceEnabled());
+                .withPassword(bindingConfig.password);
         logger.debug("CloudHandler: Authenticating at the SleepIQ cloud service");
         cloud = SleepIQ.create(cloudConfig, httpClient);
         cloud.login();
