@@ -159,7 +159,7 @@ public class SpeedtestHandler extends BaseThingHandler {
      * This is called to start the refresh job and also to reset that refresh job when a config change is done.
      */
     private void onUpdate() {
-        logger.debug("Polling Interval Set: {} ", pollingInterval);
+        logger.debug("Polling Interval Set: {}", pollingInterval);
         if (pollingInterval > 0) {
             if (pollingJob == null || pollingJob.isCancelled()) {
                 pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, pollingInterval, TimeUnit.MINUTES);
@@ -199,7 +199,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         }
     };
 
-    /*
+    /**
      * Gets the version information from speedtest, this is really for debug in the event they change things
      */
     private boolean getSpeedTestVersion() {
@@ -219,7 +219,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         return false;
     }
 
-    /*
+    /**
      * Get the server list from the speedtest command. Update the properties of the thing so the user
      * can see the list of servers closest to them.
      */
@@ -270,7 +270,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         return false;
     }
 
-    /*
+    /**
      * Get the speedtest data and convert it from JSON and send it to update the channels.
      */
     private void getSpeed() {
@@ -323,7 +323,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         return null;
     }
 
-    /*
+    /**
      * Update the channels
      */
     private void updateChannels() {
@@ -373,7 +373,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                 new StringType(String.valueOf(server)));
     }
 
-    /*
+    /**
      * Checks to make sure the executable for speedtest is valid
      */
     public boolean checkConfig(String execPath) {
@@ -392,7 +392,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         return true;
     }
 
-    /*
+    /**
      * Executes a given command and returns back the String data of stdout.
      */
     private String executeCmd(String commandLine) {

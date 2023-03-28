@@ -14,8 +14,6 @@
 package org.openhab.binding.speedtest.internal;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -67,7 +65,7 @@ public class SpeedtestBindingConstants {
     public static final String PROPERTY_SERVER_LIST9 = "Server List 9";
     public static final String PROPERTY_SERVER_LIST10 = "Server List 10";
 
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(SERVER, PING_JITTER, PING_LATENCY,
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(SERVER, PING_JITTER, PING_LATENCY,
             DOWNLOAD_BANDWIDTH, DOWNLOAD_BYTES, DOWNLOAD_ELAPSED, UPLOAD_BANDWIDTH, UPLOAD_BYTES, UPLOAD_ELAPSED, ISP,
-            INTERFACE_INTERNALIP, INTERFACE_EXTERNALIP, RESULT_URL).collect(Collectors.toSet());
+            INTERFACE_INTERNALIP, INTERFACE_EXTERNALIP, RESULT_URL);
 }
