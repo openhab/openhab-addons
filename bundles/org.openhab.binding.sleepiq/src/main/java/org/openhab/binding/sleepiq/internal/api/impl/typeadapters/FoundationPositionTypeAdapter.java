@@ -16,33 +16,31 @@ import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sleepiq.internal.api.enums.Side;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationPosition;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
 /**
- * The {@link SideTypeAdapter} converts the Side enum to the format expected by the sleepiq API.
+ * The {@link FoundationPositionTypeAdapter} converts the hex string position from the
+ * foundation status response into an integer value. The position is returned by the API
+ * as a two character hex string (e.g. "3f"). The position can be between 0 and 100, inclusive.
  *
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class SideTypeAdapter implements JsonDeserializer<Side>, JsonSerializer<Side> {
+public class FoundationPositionTypeAdapter implements JsonDeserializer<FoundationPosition> {
 
     @Override
-    public JsonElement serialize(Side side, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(side.equals(Side.LEFT) ? "L" : "R");
-    }
-
-    @Override
-    public @Nullable Side deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
+    public @Nullable FoundationPosition deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
-        int key = element.getAsInt();
-        return Side.forValue(key);
+        try {
+            return new FoundationPosition().withFoundationPosition(Integer.parseInt(element.getAsString(), 16));
+        } catch (NumberFormatException e) {
+            // If we can't parse it, just set to 0
+            return new FoundationPosition().withFoundationPosition(Integer.valueOf(0));
+        }
     }
 }

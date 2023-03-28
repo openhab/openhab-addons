@@ -97,6 +97,21 @@ public class SleepIQBindingConstants {
     public static final String CHANNEL_LEFT_MONTHLY_AVG_RESPIRATION_RATE = "left#monthlyAverageRespirationRate";
     public static final String CHANNEL_RIGHT_MONTHLY_AVG_RESPIRATION_RATE = "right#monthlyAverageRespirationRate";
 
+    public static final String CHANNEL_LEFT_FOUNDATION_PRESET = "left#foundationPreset";
+    public static final String CHANNEL_RIGHT_FOUNDATION_PRESET = "right#foundationPreset";
+
+    public static final String CHANNEL_LEFT_POSITION_HEAD = "left#foundationPositionHead";
+    public static final String CHANNEL_RIGHT_POSITION_HEAD = "right#foundationPositionHead";
+
+    public static final String CHANNEL_LEFT_POSITION_FOOT = "left#foundationPositionFoot";
+    public static final String CHANNEL_RIGHT_POSITION_FOOT = "right#foundationPositionFoot";
+
+    public static final String CHANNEL_LEFT_NIGHT_STAND_OUTLET = "left#nightStandOutlet";
+    public static final String CHANNEL_RIGHT_NIGHT_STAND_OUTLET = "right#nightStandOutlet";
+
+    public static final String CHANNEL_LEFT_UNDER_BED_LIGHT = "left#underBedLight";
+    public static final String CHANNEL_RIGHT_UNDER_BED_LIGHT = "right#underBedLight";
+
     // List of non-standard Properties
     public static final String PROPERTY_BASE = "base";
     public static final String PROPERTY_KIDS_BED = "kidsBed";
@@ -105,4 +120,11 @@ public class SleepIQBindingConstants {
     public static final String PROPERTY_PURCHASE_DATE = "purchaseDate";
     public static final String PROPERTY_SIZE = "size";
     public static final String PROPERTY_SKU = "sku";
+    public static final String PROPERTY_FOUNDATION = "foundation";
+    public static final String PROPERTY_FOUNDATION_IS_BOARD_AS_SINGLE = "foundationIsBoardAsSingle";
+    public static final String PROPERTY_FOUNDATION_HAS_MASSAGE_AND_LIGHT = "foundationHasMasssageAndLight";
+    public static final String PROPERTY_FOUNDATION_HAS_FOOT_CONTROL = "foundationHasFootControl";
+    public static final String PROPERTY_FOUNDATION_HAS_FOOT_WARMER = "foundationHasFootWarmer";
+    public static final String PROPERTY_FOUNDATION_HAS_UNDER_BED_LIGHT = "foundationHasUnderBedLight";
+    public static final String PROPERTY_FOUNDATION_HW_REV = "foundationHwRev";
 }

@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sleepiq.internal.api.enums.Side;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationPreset;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -27,22 +27,23 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * The {@link SideTypeAdapter} converts the Side enum to the format expected by the sleepiq API.
+ * The {@link FoundationPresetTypeAdapter} converts the FoundationPreset enum to the
+ * format expected by the sleepiq API.
  *
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class SideTypeAdapter implements JsonDeserializer<Side>, JsonSerializer<Side> {
+public class FoundationPresetTypeAdapter
+        implements JsonDeserializer<FoundationPreset>, JsonSerializer<FoundationPreset> {
 
     @Override
-    public JsonElement serialize(Side side, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(side.equals(Side.LEFT) ? "L" : "R");
+    public JsonElement serialize(FoundationPreset preset, Type typeOfSrc, JsonSerializationContext context) {
+        return new JsonPrimitive(preset.value());
     }
 
     @Override
-    public @Nullable Side deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
+    public @Nullable FoundationPreset deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
-        int key = element.getAsInt();
-        return Side.forValue(key);
+        return FoundationPreset.convertFromStatus(element.getAsString());
     }
 }
