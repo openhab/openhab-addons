@@ -78,7 +78,7 @@ public class MulticastListener {
             socket.leaveGroup(inetSocketAddress, null);
             socket.close();
         } catch (IOException e) {
-            logger.debug("Exception shutting down multicast socket");
+            logger.debug("Exception shutting down multicast socket: {}", e.getMessage());
         }
     }
 
