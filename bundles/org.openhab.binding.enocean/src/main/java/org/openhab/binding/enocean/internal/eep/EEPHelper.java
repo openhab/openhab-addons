@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep;
 
 import javax.measure.quantity.Energy;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTotalusageConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
@@ -26,8 +28,9 @@ import org.openhab.core.types.UnDefType;
  * @author Dominik Vorreiter - initial contribution
  *
  */
+@NonNullByDefault
 public abstract class EEPHelper {
-    public static State validateTotalUsage(State value, State currentState, Configuration config) {
+    public static State validateTotalUsage(State value, @Nullable State currentState, Configuration config) {
         EnOceanChannelTotalusageConfig c = config.as(EnOceanChannelTotalusageConfig.class);
 
         if (c.validateValue && (value instanceof QuantityType) && (currentState instanceof QuantityType)) {
