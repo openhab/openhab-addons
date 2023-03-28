@@ -67,7 +67,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
 
     private final Logger logger = LoggerFactory.getLogger(SleepIQDualBedHandler.class);
 
-    private volatile @Nullable String bedId;
+    private volatile String bedId = "";
 
     private @Nullable Sleeper sleeperLeft;
     private @Nullable Sleeper sleeperRight;
@@ -93,12 +93,13 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect bridge thing found");
             return;
         }
-        bedId = getConfigAs(SleepIQBedConfiguration.class).bedId;
-        if (bedId == null) {
+        String localBedId = getConfigAs(SleepIQBedConfiguration.class).bedId;
+        if (localBedId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Bed id not found in configuration");
             return;
         }
+        bedId = localBedId;
         // Assume the bed has a foundation until we determine otherwise
         setFoundationFeatures(new FoundationFeaturesResponse());
 
@@ -122,7 +123,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         if (cloudHandler != null) {
             cloudHandler.unregisterBedStatusListener(this);
         }
-        bedId = null;
+        bedId = "";
     }
 
     @Override
@@ -246,6 +247,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
             return;
         }
         logger.debug("BedHandler: Updating bed status channels for bed {}", bedId);
+        BedStatus localPreviousStatus = previousStatus;
 
         BedSideStatus left = status.getLeftSide();
         updateState(CHANNEL_LEFT_IN_BED, left.isInBed() ? OnOffType.ON : OnOffType.OFF);
@@ -254,8 +256,8 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         updateState(CHANNEL_LEFT_LAST_LINK, new StringType(left.getLastLink().toString()));
         updateState(CHANNEL_LEFT_ALERT_ID, new DecimalType(left.getAlertId()));
         updateState(CHANNEL_LEFT_ALERT_DETAILED_MESSAGE, new StringType(left.getAlertDetailedMessage()));
-        if (previousStatus != null) {
-            updateSleepDataChannels(previousStatus.getLeftSide(), left, sleeperLeft);
+        if (localPreviousStatus != null) {
+            updateSleepDataChannels(localPreviousStatus.getLeftSide(), left, sleeperLeft);
         }
 
         BedSideStatus right = status.getRightSide();
@@ -265,8 +267,8 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         updateState(CHANNEL_RIGHT_LAST_LINK, new StringType(right.getLastLink().toString()));
         updateState(CHANNEL_RIGHT_ALERT_ID, new DecimalType(right.getAlertId()));
         updateState(CHANNEL_RIGHT_ALERT_DETAILED_MESSAGE, new StringType(right.getAlertDetailedMessage()));
-        if (previousStatus != null) {
-            updateSleepDataChannels(previousStatus.getRightSide(), right, sleeperRight);
+        if (localPreviousStatus != null) {
+            updateSleepDataChannels(localPreviousStatus.getRightSide(), right, sleeperRight);
         }
 
         previousStatus = status;
@@ -296,7 +298,8 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
     }
 
     private boolean isFoundationFootAdjustable() {
-        return foundationFeatures != null ? foundationFeatures.hasFootControl() : false;
+        FoundationFeaturesResponse localFoundationFeatures = foundationFeatures;
+        return localFoundationFeatures != null ? localFoundationFeatures.hasFootControl() : false;
     }
 
     private void setFoundationPosition(String groupId, String channelId, Command command) {

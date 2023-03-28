@@ -200,11 +200,8 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param bedId the bed identifier
      * @return the identified {@link Bed} or <code>null</code> if no such bed exists
      */
-    public @Nullable Bed getBed(final @Nullable String bedId) {
+    public @Nullable Bed getBed(final String bedId) {
         logger.debug("CloudHandler: Get bed object for bedId={}", bedId);
-        if (bedId == null) {
-            return null;
-        }
         List<Bed> beds = getBeds();
         if (beds != null) {
             for (Bed bed : beds) {
@@ -223,11 +220,8 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param side the side of the bed
      * @return the sleeper or null if sleeper not found
      */
-    public @Nullable Sleeper getSleeper(@Nullable String bedId, Side side) {
+    public @Nullable Sleeper getSleeper(String bedId, Side side) {
         logger.debug("CloudHandler: Get sleeper object for bedId={}, side={}", bedId, side);
-        if (bedId == null) {
-            return null;
-        }
         List<Sleeper> localSleepers = sleepers;
         if (localSleepers != null) {
             for (Sleeper sleeper : localSleepers) {
@@ -246,10 +240,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param sleepNumber the sleep number multiple of 5 between 5 and 100
      * @param side the chamber to set
      */
-    public void setSleepNumber(@Nullable String bedId, Side side, int sleepNumber) {
-        if (bedId == null) {
-            return;
-        }
+    public void setSleepNumber(String bedId, Side side, int sleepNumber) {
         try {
             cloud.setSleepNumber(bedId, side, sleepNumber);
         } catch (SleepIQException e) {
@@ -263,10 +254,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param bedId the bed identifier
      * @param mode turn pause mode on or off
      */
-    public void setPauseMode(@Nullable String bedId, boolean mode) {
-        if (bedId == null) {
-            return;
-        }
+    public void setPauseMode(String bedId, boolean mode) {
         try {
             cloud.setPauseMode(bedId, mode);
         } catch (SleepIQException e) {
@@ -279,10 +267,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      *
      * @param bedId the bed identifier
      */
-    public @Nullable FoundationFeaturesResponse getFoundationFeatures(@Nullable String bedId) {
-        if (bedId == null) {
-            return null;
-        }
+    public @Nullable FoundationFeaturesResponse getFoundationFeatures(String bedId) {
         try {
             return cloud.getFoundationFeatures(bedId);
         } catch (ResponseFormatException e) {
@@ -298,10 +283,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      *
      * @param bedId the bed identifier
      */
-    public @Nullable FoundationStatusResponse getFoundationStatus(@Nullable String bedId) {
-        if (bedId == null) {
-            return null;
-        }
+    public @Nullable FoundationStatusResponse getFoundationStatus(String bedId) {
         try {
             return cloud.getFoundationStatus(bedId);
         } catch (ResponseFormatException e) {
@@ -320,11 +302,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param preset the preset to be applied
      * @param speed the speed with which to make the adjustment
      */
-    public void setFoundationPreset(@Nullable String bedId, Side side, FoundationPreset preset,
-            FoundationActuatorSpeed speed) {
-        if (bedId == null) {
-            return;
-        }
+    public void setFoundationPreset(String bedId, Side side, FoundationPreset preset, FoundationActuatorSpeed speed) {
         try {
             cloud.setFoundationPreset(bedId, side, preset, speed);
         } catch (ResponseFormatException e) {
@@ -345,11 +323,8 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param position the new position of the actuator
      * @param speed the speed with which to make the adjustment
      */
-    public void setFoundationPosition(@Nullable String bedId, Side side, FoundationActuator actuator, int position,
+    public void setFoundationPosition(String bedId, Side side, FoundationActuator actuator, int position,
             FoundationActuatorSpeed speed) {
-        if (bedId == null) {
-            return;
-        }
         try {
             cloud.setFoundationPosition(bedId, side, actuator, position, speed);
         } catch (ResponseFormatException e) {
@@ -368,11 +343,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param outlet the outlet to operate
      * @param operation the operation (On or Off) performed on the outlet
      */
-    public void setFoundationOutlet(@Nullable String bedId, FoundationOutlet outlet,
-            FoundationOutletOperation operation) {
-        if (bedId == null) {
-            return;
-        }
+    public void setFoundationOutlet(String bedId, FoundationOutlet outlet, FoundationOutletOperation operation) {
         try {
             cloud.setFoundationOutlet(bedId, outlet, operation);
         } catch (ResponseFormatException e) {
@@ -418,9 +389,9 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param features the foundation features to update (this may be <code>null</code>)
      * @return the given map (or a new map if no map was given) with updated/set properties from the supplied bed
      */
-    public Map<String, String> updateFeatures(final @Nullable String bedId,
-            final @Nullable FoundationFeaturesResponse features, Map<String, String> properties) {
-        if (bedId != null && features != null) {
+    public Map<String, String> updateFeatures(final String bedId, final @Nullable FoundationFeaturesResponse features,
+            Map<String, String> properties) {
+        if (features != null) {
             logger.debug("CloudHandler: Updating foundation properties for bed={}", bedId);
             properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION, "Installed");
             properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION_HW_REV,
@@ -435,7 +406,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
                     features.hasFootWarming() ? "yes" : "no");
             properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION_HAS_UNDER_BED_LIGHT,
                     features.hasUnderBedLight() ? "yes" : "no");
-        } else if (features == null) {
+        } else {
             logger.debug("CloudHandler: Foundation not installed on bed={}", bedId);
             properties.put(SleepIQBindingConstants.PROPERTY_FOUNDATION, "Not installed");
         }

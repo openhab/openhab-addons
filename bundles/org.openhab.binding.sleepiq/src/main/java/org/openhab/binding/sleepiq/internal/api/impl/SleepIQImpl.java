@@ -294,7 +294,6 @@ public class SleepIQImpl implements SleepIQ {
     @Override
     public void setFoundationPosition(String bedId, Side side, FoundationActuator actuator, int position,
             FoundationActuatorSpeed speed) throws LoginException, SleepIQException {
-
         String body = GSON.toJson(new FoundationPositionRequest().withSide(side).withPosition(position)
                 .withFoundationActuator(actuator).withFoundationActuatorSpeed(speed), FoundationPositionRequest.class);
         logger.debug("SleepIQ: setFoundationPosition: Request body={}", body);
