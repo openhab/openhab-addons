@@ -6,7 +6,7 @@
 	<channel-type id="last_updated">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
-		<description>The date and time when the sensor was last updated.</description>
+		<description>The date and time when the thing was last updated.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>

@@ -87,10 +87,10 @@
 				<label>Application Key</label>
 				<description>A registered Hue Bridge application key that allows access to the API.</description>
 			</parameter>
-			<parameter name="checkSeconds" type="integer" min="600" step="60" unit="s">
+			<parameter name="checkMinutes" type="integer" min="10" step="1" unit="m">
 				<label>Connection Check Interval</label>
-				<description>Seconds between retrying the HTTP 2 and SSE connections. Default is 3600.</description>
-				<default>3600</default>
+				<description>Minutes between retrying the HTTP 2 and SSE connections. Default is 60.</description>
+				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="useSelfSignedCertificate" type="boolean">

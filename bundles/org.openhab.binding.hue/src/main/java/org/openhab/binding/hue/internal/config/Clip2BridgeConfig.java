@@ -26,6 +26,6 @@ public class Clip2BridgeConfig {
 
     public @Nullable String ipAddress;
     public @Nullable String applicationKey;
-    public int checkSeconds = 3600;
+    public int checkMinutes = 60;
     public boolean useSelfSignedCertificate = true;
 }
