@@ -424,7 +424,7 @@
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
-		
+
 		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
