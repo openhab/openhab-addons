@@ -38,6 +38,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -107,7 +109,7 @@ public class Resource {
     private @Nullable @SerializedName("power_state") Power powerState;
     private @Nullable @SerializedName("relative_rotary") RelativeRotary relativeRotary;
     private @Nullable List<ResourceReference> children;
-    private @Nullable String status;
+    private @Nullable JsonElement status;
 
     /**
      * Constructor
@@ -415,6 +417,14 @@ public class Resource {
         return Objects.nonNull(services) ? services : List.of();
     }
 
+    public JsonObject getStatus() {
+        JsonElement status = this.status;
+        if (Objects.nonNull(status) && status.isJsonObject()) {
+            return status.getAsJsonObject();
+        }
+        return new JsonObject();
+    }
+
     public State getSwitch() {
         try {
             OnState on = this.on;
@@ -452,8 +462,11 @@ public class Resource {
     }
 
     public @Nullable ZigbeeStatus getZigbeeStatus() {
-        String status = this.status;
-        return Objects.nonNull(status) ? ZigbeeStatus.of(status) : null;
+        JsonElement status = this.status;
+        if (Objects.nonNull(status) && status.isJsonPrimitive()) {
+            return ZigbeeStatus.of(status.getAsString());
+        }
+        return null;
     }
 
     public boolean hasFullState() {

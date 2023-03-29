@@ -25,9 +25,9 @@ Please note that the devices need to be registered with the Hue Bridge before it
 Bridges are accessed by means of the "CLIP" ('Connected Lighting Interface Protocol') Application Program Interface ('API').
 There are two versions of CLIP - namely CLIP v2 and CLIP v1, which are referred to as API v2 and API v1 in the links below.
 Signify has stated that any new features (such as dynamic scenes) will only be available on API v2, and in the long term API v1 will eventually be removed.
-Older v1 (round) bridges do not support API v2.
 The API v2 has more features, e.g. it supports Server Sent Events 'SSE' which means that it is much faster to receive status updates in openHAB.
 For this reason it is recommended to use API v2 for new openHAB installations.
+But unfortunately the API v2 is not supported by older v1 (round) bridges, nor by newer v2 (square-ish) bridges if their firmware is under v1948086000.
 
 ## Discovery
 

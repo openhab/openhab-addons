@@ -203,7 +203,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         } else {
             // default delay, set via configuration parameter, used as heart-beat 'just-in-case'
             Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
-            milliSeconds = config.checkSeconds * 1000;
+            milliSeconds = config.checkMinutes * 60000;
             if (retryConnection) {
                 // exponential back off delay used during attempts to reconnect
                 int backOffDelay = 60000 * (int) Math.pow(2, RECONNECT_MAX_TRIES - connectRetriesRemaining);
@@ -384,7 +384,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             String ipAddress = config.ipAddress;
             if (Objects.isNull(ipAddress) || ipAddress.isEmpty()) {
-                logger.debug("initializeAssets() invalid ip address '{}'", config.ipAddress);
+                logger.warn("initializeAssets() invalid ip address '{}'", config.ipAddress);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-no-ip-address");
                 return;
@@ -392,13 +392,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             try {
                 if (!Clip2Bridge.isClip2Supported(ipAddress)) {
-                    logger.debug("initializeAssets() hub does not support clip 2");
+                    logger.warn("initializeAssets() hub does not support clip 2");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.clip2.conf-error-clip2-not-supported");
                     return;
                 }
             } catch (IOException e) {
-                logger.debug("initializeAssets() communication error on '{}'", ipAddress, e);
+                logger.warn("initializeAssets() communication error on '{}'", ipAddress, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.communication-error");
                 return;

@@ -370,7 +370,7 @@ public class Clip2Bridge implements Closeable {
     private static final String FORMAT_URL_REGISTER = "http://%s/api";
     private static final String FORMAT_URL_EVENTS = "https://%s/eventstream/clip/v2";
 
-    private static final int CLIP2_MINIMUM_VERSION = 1948086000;
+    private static final long CLIP2_MINIMUM_VERSION = 1948086000L;
 
     public static final int TIMEOUT_SECONDS = 10;
     private static final int CHECK_ALIVE_SECONDS = 300;
@@ -396,7 +396,7 @@ public class Clip2Bridge implements Closeable {
         if (Objects.nonNull(config)) {
             String swVersion = config.swversion;
             if (Objects.nonNull(swVersion)) {
-                if (Integer.parseInt(swVersion) >= CLIP2_MINIMUM_VERSION) {
+                if (Long.parseLong(swVersion) >= CLIP2_MINIMUM_VERSION) {
                     return true;
                 }
             }

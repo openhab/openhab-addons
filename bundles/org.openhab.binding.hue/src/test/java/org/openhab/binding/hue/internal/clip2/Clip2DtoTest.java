@@ -61,6 +61,7 @@ import org.openhab.core.util.ColorUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
@@ -455,17 +456,37 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testSseEvent() {
+    void testSseLightOrGroupEvent() {
         String json = load("event");
         List<Event> eventList = GSON.fromJson(json, Event.EVENT_LIST_TYPE);
         assertNotNull(eventList);
-        assertEquals(2, eventList.size());
+        assertEquals(3, eventList.size());
         Event event = eventList.get(0);
         List<Resource> resources = event.getData();
         assertEquals(9, resources.size());
         for (Resource r : resources) {
-            assertNotEquals(ResourceType.ERROR, r.getType());
+            ResourceType type = r.getType();
+            assertTrue(ResourceType.LIGHT == type || ResourceType.GROUPED_LIGHT == type);
         }
+    }
+
+    @Test
+    void testSseSceneEvent() {
+        String json = load("event");
+        List<Event> eventList = GSON.fromJson(json, Event.EVENT_LIST_TYPE);
+        assertNotNull(eventList);
+        assertEquals(3, eventList.size());
+        Event event = eventList.get(2);
+        List<Resource> resources = event.getData();
+        assertEquals(6, resources.size());
+        Resource resource = resources.get(1);
+        assertEquals(ResourceType.SCENE, resource.getType());
+        JsonObject status = resource.getStatus();
+        assertNotNull(status);
+        JsonElement active = status.get("active");
+        assertNotNull(active);
+        assertTrue(active.isJsonPrimitive());
+        assertEquals("inactive", active.getAsString());
     }
 
     @Test
