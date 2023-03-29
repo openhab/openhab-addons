@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
@@ -45,7 +44,7 @@ public class A5_09_0D extends A5_09 {
             Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if (CHANNEL_TVOC.equals(channelId)) {
-            return new QuantityType<>(EEPHelper.calculateScaledValue(getDB_2Value(), 0, 100, 0, 200), Units.PERCENT);
+            return EEPHelper.calculateState(getDB2Value(), 0, 100, 0, 200, Units.PERCENT);
         }
 
         return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);

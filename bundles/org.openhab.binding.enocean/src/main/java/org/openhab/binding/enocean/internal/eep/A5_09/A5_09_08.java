@@ -33,6 +33,6 @@ public class A5_09_08 extends A5_09 {
 
     @Override
     protected int getUnscaledCO2Value() {
-        return getDB_1Value();
+        return getDB1Value();
     }
 }

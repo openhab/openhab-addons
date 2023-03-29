@@ -61,7 +61,7 @@ public class A5_09_05 extends A5_09 {
     }
 
     protected String getVOCID() {
-        int vocId = getDB_1Value();
+        int vocId = getDB1Value();
         String[] VOCIdentifications = getVOCIdentifications();
         if (vocId == 255) {
             return VOCIdentifications[VOCIdentifications.length - 1];

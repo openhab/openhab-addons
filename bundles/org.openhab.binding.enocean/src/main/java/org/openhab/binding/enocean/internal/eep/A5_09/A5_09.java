@@ -22,7 +22,6 @@ import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -57,7 +56,7 @@ public abstract class A5_09 extends _4BSMessage {
     }
 
     protected int getUnscaledCOValue() {
-        return getDB_2Value();
+        return getDB2Value();
     }
 
     // CO2
@@ -78,7 +77,7 @@ public abstract class A5_09 extends _4BSMessage {
     }
 
     protected int getUnscaledCO2Value() {
-        return getDB_2Value();
+        return getDB2Value();
     }
 
     // Temperature
@@ -99,7 +98,7 @@ public abstract class A5_09 extends _4BSMessage {
     }
 
     protected int getUnscaledTemperatureValue() {
-        return getDB_1Value();
+        return getDB1Value();
     }
 
     // Humidity
@@ -120,7 +119,7 @@ public abstract class A5_09 extends _4BSMessage {
     }
 
     protected int getUnscaledHumidityValue() {
-        return getDB_3Value();
+        return getDB3Value();
     }
 
     // Battery
@@ -141,7 +140,7 @@ public abstract class A5_09 extends _4BSMessage {
     }
 
     private int getUnscaledBatteryVoltageValue() {
-        return getDB_3Value();
+        return getDB3Value();
     }
 
     @Override
@@ -149,24 +148,21 @@ public abstract class A5_09 extends _4BSMessage {
             Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if (CHANNEL_CO.equals(channelId)) {
-            double scaledCO = EEPHelper.calculateScaledValue(getUnscaledCOValue(), getScaledCOMin(), getScaledCOMax(),
-                    getUnscaledCOMin(), getUnscaledCOMax());
-            return new QuantityType<>(scaledCO, Units.PARTS_PER_MILLION);
+            return EEPHelper.calculateState(getUnscaledCOValue(), getScaledCOMin(), getScaledCOMax(),
+                    getUnscaledCOMin(), getUnscaledCOMax(), Units.PARTS_PER_MILLION);
         } else if (CHANNEL_CO2.equals(channelId)) {
-            double scaledCO2 = EEPHelper.calculateScaledValue(getUnscaledCO2Value(), getScaledCO2Min(),
-                    getScaledCO2Max(), getUnscaledCO2Min(), getUnscaledCO2Max());
-            return new QuantityType<>(scaledCO2, Units.PARTS_PER_MILLION);
+            return EEPHelper.calculateState(getUnscaledCO2Value(), getScaledCO2Min(), getScaledCO2Max(),
+                    getUnscaledCO2Min(), getUnscaledCO2Max(), Units.PARTS_PER_MILLION);
         } else if (CHANNEL_TEMPERATURE.equals(channelId)) {
-            double scaledTemp = EEPHelper.calculateScaledValue(getUnscaledTemperatureValue(), getScaledTemperatureMin(),
-                    getScaledTemperatureMax(), getUnscaledTemperatureMin(), getUnscaledTemperatureMax());
-            return new QuantityType<>(scaledTemp, SIUnits.CELSIUS);
+            return EEPHelper.calculateState(getUnscaledTemperatureValue(), getScaledTemperatureMin(),
+                    getScaledTemperatureMax(), getUnscaledTemperatureMin(), getUnscaledTemperatureMax(),
+                    SIUnits.CELSIUS);
         } else if (CHANNEL_HUMIDITY.equals(channelId)) {
             return new DecimalType((getUnscaledHumidityValue() * 100.0) / getUnscaledHumidityMax());
         } else if (CHANNEL_BATTERY_VOLTAGE.equals(channelId)) {
-            double scaledBatteryVoltage = EEPHelper.calculateScaledValue(getUnscaledBatteryVoltageValue(),
-                    getScaledBatteryVoltageMin(), getScaledBatteryVoltageMax(), getUnscaledBatteryVoltageMin(),
-                    getUnscaledBatteryVoltageMax());
-            return new QuantityType<>(scaledBatteryVoltage, Units.VOLT);
+            return EEPHelper.calculateState(getUnscaledBatteryVoltageValue(), getScaledBatteryVoltageMin(),
+                    getScaledBatteryVoltageMax(), getUnscaledBatteryVoltageMin(), getUnscaledBatteryVoltageMax(),
+                    Units.VOLT);
         }
 
         return UnDefType.UNDEF;

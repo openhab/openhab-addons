@@ -54,7 +54,7 @@ public class A5_09_0C extends A5_09_05 {
 
         if (CHANNEL_VOC.equals(channelId)) {
             double scaledVOC = getUnscaledVOCValue() * getScalingFactor();
-            if (getBit(getDB_0(), 2)) {
+            if (getBit(getDB0(), 2)) {
                 return new QuantityType<>(scaledVOC, Units.MICROGRAM_PER_CUBICMETRE);
             }
             return new QuantityType<>(scaledVOC, Units.PARTS_PER_BILLION);

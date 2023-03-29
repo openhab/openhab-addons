@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep;
 
+import javax.measure.Unit;
 import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,18 +69,26 @@ public abstract class EEPHelper {
         return value;
     }
 
-    public static double calculateScaledValue(int unscaledValue, double scaledMin, double scaledMax, double unscaledMin,
-            double unscaledMax) {
-
-        // Validation checkup
+    public static boolean validateUnscaledValue(int unscaledValue, double unscaledMin, double unscaledMax) {
         if (unscaledValue < unscaledMin) {
-            logger.warn("Unscaled value ({}) lower than the minimum allowed ({})", unscaledValue, unscaledMin);
-            return 0;
+            logger.debug("Unscaled value ({}) lower than the minimum allowed ({})", unscaledValue, unscaledMin);
+            return false;
         } else if (unscaledValue > unscaledMax) {
-            logger.warn("Unscaled value ({}) bigger than the maximum allowed ({})", unscaledValue, unscaledMax);
-            return 0;
+            logger.debug("Unscaled value ({}) bigger than the maximum allowed ({})", unscaledValue, unscaledMax);
+            return false;
         }
 
-        return scaledMin + ((unscaledValue * (scaledMax - scaledMin)) / (unscaledMax - unscaledMin));
+        return true;
+    }
+
+    public static State calculateState(int unscaledValue, double scaledMin, double scaledMax, double unscaledMin,
+            double unscaledMax, Unit<?> unit) {
+
+        if (!validateUnscaledValue(unscaledValue, unscaledMin, unscaledMax)) {
+            return UnDefType.UNDEF;
+        }
+
+        double scaledValue = scaledMin + ((unscaledValue * (scaledMax - scaledMin)) / (unscaledMax - unscaledMin));
+        return new QuantityType<>(scaledValue, unit);
     }
 }
