@@ -85,7 +85,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | contact                         | D5-00             | 0x01                    | contact                                                     | Eltako FTK(E) & TF-FKB  | Discovery |
 | temperatureSensor               | A5-02             | 0x01-30                 | temperature                                                 | Thermokon SR65          | Discovery |
 | temperatureHumiditySensor       | A5-04             | 0x01-03                 | humidity, temperature                                       | Eltako FTSB             | Discovery |
-| gasSensor                       | A5-09             | 0x02,04,05, 08,09,0C,0D | co, co2, TVOC, VOC, VOCId, humidity, temperature            | Nexelec, Eltako FLGTF55 | Discovery |
+| gasSensor                       | A5-09             | 0x02,04,05, 08,09,0C,0D | co, co2, totalVolatileOrganicCompounds, volatileOrganicCompounds, volatileOrganicCompoundsId, humidity, temperature | Nexelec, Eltako FLGTF55 | Discovery |
 | occupancySensor                 | A5-07             | 0x01-03                 | illumination, batteryVoltage, motionDetection               | NodON PIR-2-1-01        | Discovery |
 | lightTemperatureOccupancySensor | A5-08             | 0x01-03                 | illumination, temperature, occupancy, motionDetection       | Eltako FABH             | Discovery |
 | lightSensor                     | A5-06             | 0x01                    | illumination                                                | Eltako TF-AHDSB         | Discovery |
