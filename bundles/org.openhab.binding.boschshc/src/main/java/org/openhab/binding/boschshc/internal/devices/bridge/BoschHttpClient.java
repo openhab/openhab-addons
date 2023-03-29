@@ -258,7 +258,7 @@ public class BoschHttpClient extends HttpClient {
         } catch (ExecutionException e) {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
             // => usually the pairing failed, because hardware button was not pressed.
-            logger.trace("Pairing failed - Details: {}", e.getMessage(), e);
+            logger.trace("Pairing failed - Details: {}", e.getMessage());
             logger.warn("Pairing failed. Was the Bosch Smart Home Controller button pressed?");
             return false;
         }
