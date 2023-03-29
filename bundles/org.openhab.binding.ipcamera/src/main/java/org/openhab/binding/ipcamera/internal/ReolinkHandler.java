@@ -120,10 +120,12 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.logger.debug("The GetAiStateResponse could not be parsed");
                         return;
                     }
-                    if (aiResponse[0].value.dog_cat.alarm_state == 1) {
-                        ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
+                    if (aiResponse[0].value.dog_cat != null) {
+                        if (aiResponse[0].value.dog_cat.alarm_state == 1) {
+                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
+                        }
                     }
                     if (aiResponse[0].value.face.alarm_state == 1) {
                         ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);

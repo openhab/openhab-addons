@@ -2458,12 +2458,12 @@
 				</description>
 			</parameter>
 
-			<parameter name="nvrChannel" type="integer" required="true" min="0" max="255" groupName="Settings">
+			<parameter name="nvrChannel" type="integer" required="true" min="-1" max="255" groupName="Settings">
 				<label>NVR Input Channel</label>
-				<description>Set this to 0 if it is a stand alone camera, or to the input channel number of your NVR that the camera
+				<description>Set this to -1 if it is a stand alone camera, or to the input channel number of your NVR that the camera
 					is connected to.
 				</description>
-				<default>0</default>
+				<default>-1</default>
 			</parameter>
 
 			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
