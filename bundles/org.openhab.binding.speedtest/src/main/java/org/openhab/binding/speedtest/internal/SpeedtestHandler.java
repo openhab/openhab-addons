@@ -205,7 +205,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     private boolean getSpeedTestVersion() {
         String versionString = doExecuteRequest(" -V", String.class);
         if ((versionString != null) && !versionString.isEmpty()) {
-            int newLI = versionString.indexOf("\n");
+            int newLI = versionString.indexOf(System.lineSeparator());
             String versionLine = versionString.substring(0, newLI);
             if (versionString.indexOf("Speedtest by Ookla") > -1) {
                 logger.debug("Speedtest Version: {}", versionLine);
