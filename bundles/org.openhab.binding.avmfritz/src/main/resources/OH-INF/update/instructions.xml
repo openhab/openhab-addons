@@ -115,12 +115,12 @@
 
 	<thing-type uid="avmfritz:FRITZ_DECT_500">
 		<instruction-set targetVersion="1">
-			<update-channel id="color_temperature">
+			<add-channel id="color_temperature">
 				<type>system:color-temperature</type>
-			</update-channel>
-			<update-channel id="color_temperature_abs">
+			</add-channel>
+			<add-channel id="color_temperature_abs">
 				<type>system:color-temperature-abs</type>
-			</update-channel>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
