@@ -11,11 +11,11 @@
 		<channels>
 			<channel id="content" typeId="content-channel"/>
 			<channel id="level" typeId="level-channel"/>
-			<channel id="fillIndicator" typeId="fill-indicator-channel"/>
-			<channel id="rawContent" typeId="raw-content-channel"/>
-			<channel id="rawLevel" typeId="raw-level-channel"/>
-			<channel id="pumpRuns" typeId="pump-runs-channel"></channel>
-			<channel id="pumpRuntime" typeId="pump-runtime-channel"></channel>
+			<channel id="fill-indicator" typeId="fill-indicator-channel"/>
+			<channel id="raw-content" typeId="raw-content-channel"/>
+			<channel id="raw-level" typeId="raw-level-channel"/>
+			<channel id="pump-runs" typeId="pump-runs-channel"></channel>
+			<channel id="pump-runtime" typeId="pump-runtime-channel"></channel>
 			<channel id="measure" typeId="measure-channel"/>
 		</channels>
 
