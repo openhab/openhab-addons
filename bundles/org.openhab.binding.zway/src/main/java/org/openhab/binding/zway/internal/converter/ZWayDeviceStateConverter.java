@@ -114,7 +114,11 @@ public class ZWayDeviceStateConverter {
      */
     private static State getBinaryState(@Nullable String binarySwitchState) {
         if (binarySwitchState != null) {
-            return OnOffType.from(binarySwitchState);
+            if ("on".equals(binarySwitchState)) {
+                return OnOffType.ON;
+            } else if ("off".equals(binarySwitchState)) {
+                return OnOffType.OFF;
+            }
         }
         return UnDefType.UNDEF;
     }
