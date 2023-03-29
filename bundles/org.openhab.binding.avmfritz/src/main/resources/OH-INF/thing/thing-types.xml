@@ -421,6 +421,10 @@
 			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		
 		<representation-property>ain</representation-property>
 
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
