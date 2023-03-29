@@ -45,6 +45,22 @@ public abstract class _4BSMessage extends EEP {
     public static final byte TEACHIN_BIT = 0x08;
     public static final byte LRN_TYPE_MASK = (byte) 0x80;
 
+    public long getDBByOffsetSizeValue(int offset, int size) {
+        if ((offset < 0 || offset > 31) || (size < 1 || size > 32 - offset)) {
+            logger.warn("4BSMessage get DB value by offset: {} and size: {}", offset, size);
+            return 0;
+        }
+
+        long msg = (((long) bytes[0] & 0xFF) << 24) | (((long) bytes[1] & 0xFF) << 16) | (((long) bytes[2] & 0xFF) << 8)
+                | bytes[3];
+        msg = (msg >> (32 - offset - size)) & ((1 << size) - 1);
+
+        logger.debug("_4BSMessage get DB value message bytes {} {} {} {} resulted in {} with offset: {} and size: {}",
+                bytes[0], bytes[1], bytes[2], bytes[3], msg, offset, size);
+
+        return msg;
+    }
+
     public byte getDB0() {
         return bytes[3];
     }
