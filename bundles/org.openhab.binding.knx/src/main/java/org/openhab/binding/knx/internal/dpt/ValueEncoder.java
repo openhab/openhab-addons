@@ -90,17 +90,17 @@ public class ValueEncoder {
             if (value instanceof HSBType type) {
                 return handleHSBType(dptId, type);
             } else if (value instanceof OnOffType) {
-                return OnOffType.OFF.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
+                return OnOffType.OFF == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof UpDownType) {
-                return UpDownType.UP.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
+                return UpDownType.UP == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof IncreaseDecreaseType) {
                 DPT valueDPT = ((DPTXlator3BitControlled.DPT3BitControlled) dpt).getControlDPT();
-                return IncreaseDecreaseType.DECREASE.equals(value) ? valueDPT.getLowerValue() + " 5"
+                return IncreaseDecreaseType.DECREASE == value ? valueDPT.getLowerValue() + " 5"
                         : valueDPT.getUpperValue() + " 5";
             } else if (value instanceof OpenClosedType) {
-                return OpenClosedType.CLOSED.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
+                return OpenClosedType.CLOSED == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof StopMoveType) {
-                return StopMoveType.STOP.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
+                return StopMoveType.STOP == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof PercentType type) {
                 int intValue = type.intValue();
                 return "251.600".equals(dptId) ? String.format("- - - %d %%", intValue) : String.valueOf(intValue);
