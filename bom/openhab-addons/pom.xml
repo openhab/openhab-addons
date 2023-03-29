@@ -118,6 +118,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.anthem</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.astro</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -714,11 +719,6 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.ihc</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.innogysmarthome</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

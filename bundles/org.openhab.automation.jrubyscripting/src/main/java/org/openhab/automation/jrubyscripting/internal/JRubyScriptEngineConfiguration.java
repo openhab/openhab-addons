@@ -79,9 +79,9 @@ public class JRubyScriptEngineConfiguration {
                     new OptionalConfigurationElement(OptionalConfigurationElement.Type.RUBY_ENVIRONMENT,
                             DEFAULT_RUBYLIB, "RUBYLIB")),
 
-            Map.entry(GEMS_CONFIG_KEY, new OptionalConfigurationElement("")),
+            Map.entry(GEMS_CONFIG_KEY, new OptionalConfigurationElement("openhab-scripting=~>5.0.0")),
 
-            Map.entry(REQUIRE_CONFIG_KEY, new OptionalConfigurationElement("")),
+            Map.entry(REQUIRE_CONFIG_KEY, new OptionalConfigurationElement("openhab/dsl")),
 
             Map.entry(CHECK_UPDATE_CONFIG_KEY, new OptionalConfigurationElement("true")),
 
