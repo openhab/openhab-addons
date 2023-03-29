@@ -36,7 +36,7 @@ If the maximum content has not been set the fill-indicator channel will not cont
 | content        | Number:Volume               | R          | This is the measured content          |
 | level          | Number:Length               | R          | This is the measured level            |
 | raw-content    | Number:Volume               | R          | This is the measured raw content data |
-| rawLevel       | Number:Length               | R          | This is the measured raw level data   |
+| raw-level      | Number:Length               | R          | This is the measured raw level data   |
 | fill-indicator | Number:Dimensionless        | R          | This is the fill level in percentage  |
 | measure        | Switch                      | W          | This starts a measurement             |
 | pump-runs      | Number                      | R          | This is the total runs number         |
