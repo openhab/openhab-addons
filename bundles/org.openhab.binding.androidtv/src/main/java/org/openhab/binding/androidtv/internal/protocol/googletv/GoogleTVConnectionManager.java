@@ -62,8 +62,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.AndroidTVHandler;
 import org.openhab.binding.androidtv.internal.utils.AndroidTVPKI;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -1316,6 +1319,22 @@ public class GoogleTVConnectionManager {
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(keyPress)));
                 }
             }
+        } else if (CHANNEL_PLAYER.equals(channelUID.getId())) {
+            String message = "";
+            if (command == PlayPauseType.PAUSE || command == OnOffType.OFF) {
+                message = "5204087F1003";
+            } else if (command == PlayPauseType.PLAY || command == OnOffType.ON) {
+                message = "5204087E1003";
+            } else if (command == NextPreviousType.NEXT) {
+                message = "520408571003";
+            } else if (command == NextPreviousType.PREVIOUS) {
+                message = "520408581003";
+            } else if (command == RewindFastforwardType.FASTFORWARD) {
+                message = "5204085A1003";
+            } else if (command == RewindFastforwardType.REWIND) {
+                message = "520408591003";
+            }
+            sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(message)));
         }
     }
 

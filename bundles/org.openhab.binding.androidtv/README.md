@@ -53,6 +53,7 @@ Thing androidtv:googletv:theater [ ipAddress="192.168.1.3" ]
 | app        | String | App Control                 |    RO    |    RW    |
 | appname    | String | App Name                    |    N/A   |    RW    |
 | appurl     | String | App URL                     |    N/A   |    RW    |
+| player     | Player | Player Control              |    RW    |    RW    |
 | power      | Switch | Power Control               |    RW    |    RW    |
 | volume     | Dimmer | Volume Control              |    RO    |    RO    |
 | mute       | Switch | Mute Control                |    RW    |    RW    |
@@ -66,6 +67,7 @@ String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:shieldtv:livingro
 String ShieldTV_APP "APP [%s]" { channel = "androidtv:shieldtv:livingroom:app" }
 String ShieldTV_APPNAME "APPNAME [%s]" { channel = "androidtv:shieldtv:livingroom:appname" }
 String ShieldTV_APPURL "APPURL [%s]" { channel = "androidtv:shieldtv:livingroom:appurl" }
+Player ShieldTV_PLAYER "PLAYER [%s]" { channel = "androidtv:shieldtv:livingroom:player" }
 Switch ShieldTV_POWER "POWER [%s]" { channel = "androidtv:shieldtv:livingroom:power" }
 Dimmer ShieldTV_VOLUME "VOLUME [%s]" { channel = "androidtv:shieldtv:livingroom:volume" }
 Switch ShieldTV_MUTE "MUTE [%s]" { channel = "androidtv:shieldtv:livingroom:mute" }
@@ -75,6 +77,7 @@ String GoogleTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:googletv:theater
 String GoogleTV_KEYCODE "KEYCODE [%s]" { channel = "androidtv:googletv:theater:keycode" }
 String GoogleTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:googletv:theater:pincode" }
 String GoogleTV_APP "APP [%s]" { channel = "androidtv:googletv:theater:app" }
+Player GoogleTV_PLAYER "PLAYER [%s]" { channel = "androidtv:googletv:livingroom:player" }
 Switch GoogleTV_POWER "POWER [%s]" { channel = "androidtv:googletv:theater:power" }
 Dimmer GoogleTV_VOLUME "VOLUME [%s]" { channel = "androidtv:googletv:theater:volume" }
 Switch GoogleTV_MUTE "MUTE [%s]" { channel = "androidtv:googletv:theater:mute" }
@@ -147,6 +150,7 @@ String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:shieldtv:livingro
 String ShieldTV_APP "APP [%s]" { channel = "androidtv:shieldtv:livingroom:app" }
 String ShieldTV_APPNAME "APPNAME [%s]" { channel = "androidtv:shieldtv:livingroom:appname" }
 String ShieldTV_APPURL "APPURL [%s]" { channel = "androidtv:shieldtv:livingroom:appurl" }
+Player ShieldTV_PLAYER "PLAYER [%s]" { channel = "androidtv:shieldtv:livingroom:player" }
 Switch ShieldTV_POWER "POWER [%s]" { channel = "androidtv:shieldtv:livingroom:power" }
 Dimmer ShieldTV_VOLUME "VOLUME [%s]" { channel = "androidtv:shieldtv:livingroom:volume" }
 Switch ShieldTV_MUTE "MUTE [%s]" { channel = "androidtv:shieldtv:livingroom:mute" }
@@ -156,6 +160,7 @@ String GoogleTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:googletv:theater
 String GoogleTV_KEYCODE "KEYCODE [%s]" { channel = "androidtv:googletv:theater:keycode" }
 String GoogleTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:googletv:theater:pincode" }
 String GoogleTV_APP "APP [%s]" { channel = "androidtv:googletv:theater:app" }
+Player GoogleTV_PLAYER "PLAYER [%s]" { channel = "androidtv:googletv:livingroom:player" }
 Switch GoogleTV_POWER "POWER [%s]" { channel = "androidtv:googletv:theater:power" }
 Dimmer GoogleTV_VOLUME "VOLUME [%s]" { channel = "androidtv:googletv:theater:volume" }
 Switch GoogleTV_MUTE "MUTE [%s]" { channel = "androidtv:googletv:theater:mute" }

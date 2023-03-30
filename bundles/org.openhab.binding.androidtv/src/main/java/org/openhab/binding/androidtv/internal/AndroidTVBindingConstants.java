@@ -52,6 +52,7 @@ public class AndroidTVBindingConstants {
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_MUTE = "mute";
+    public static final String CHANNEL_PLAYER = "player";
 
     // List of all config properties
     public static final String IPADDRESS = "ipAddress";
