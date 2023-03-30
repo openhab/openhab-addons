@@ -420,15 +420,15 @@ public class GoogleTVConnectionManager {
 
             @Override
             public X509Certificate @Nullable [] getAcceptedIssuers() {
-                X509Certificate[] X509ClientChain = shimX509ClientChain;
-                if (X509ClientChain != null && logger.isTraceEnabled()) {
+                X509Certificate[] x509ClientChain = shimX509ClientChain;
+                if (x509ClientChain != null && logger.isTraceEnabled()) {
                     logger.debug("Returning shimX509ClientChain for getAcceptedIssuers");
-                    for (int cert = 0; cert < X509ClientChain.length; cert++) {
-                        logger.trace("Subject DN: {}", X509ClientChain[cert].getSubjectX500Principal());
-                        logger.trace("Issuer DN: {}", X509ClientChain[cert].getIssuerX500Principal());
-                        logger.trace("Serial number: {}", X509ClientChain[cert].getSerialNumber());
+                    for (int cert = 0; cert < x509ClientChain.length; cert++) {
+                        logger.trace("Subject DN: {}", x509ClientChain[cert].getSubjectX500Principal());
+                        logger.trace("Issuer DN: {}", x509ClientChain[cert].getIssuerX500Principal());
+                        logger.trace("Serial number: {}", x509ClientChain[cert].getSerialNumber());
                     }
-                    return X509ClientChain;
+                    return x509ClientChain;
                 } else {
                     logger.debug("Returning empty certificate for getAcceptedIssuers");
                     return new X509Certificate[0];
