@@ -21,6 +21,8 @@ import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for physical Bosch devices with configurable IDs (as opposed to system services, which have static IDs).
@@ -42,12 +44,14 @@ import org.openhab.core.thing.ThingStatusDetail;
 @NonNullByDefault
 public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /**
      * Bosch SHC configuration loaded from openHAB configuration.
      */
     private @Nullable BoschSHCConfiguration config;
 
-    public BoschSHCDeviceHandler(Thing thing) {
+    protected BoschSHCDeviceHandler(Thing thing) {
         super(thing);
     }
 
