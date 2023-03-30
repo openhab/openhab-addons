@@ -18,6 +18,7 @@ import static org.openhab.binding.icloud.internal.ICloudBindingConstants.THING_T
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -442,17 +443,14 @@ public class TestICloud {
 
             @Override
             public void validateConfigurationParameters(Channel channel, Map<String, Object> configurationParameters) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void validateConfigurationParameters(Thing thing, Map<String, Object> configurationParameters) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void thingUpdated(Thing thing) {
-                // TODO Auto-generated method stub
             }
 
             @Override
@@ -462,70 +460,58 @@ public class TestICloud {
 
             @Override
             public void stateUpdated(ChannelUID channelUID, State state) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void postCommand(ChannelUID channelUID, Command command) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void migrateThingType(Thing thing, ThingTypeUID thingTypeUID, Configuration configuration) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public boolean isChannelLinked(ChannelUID channelUID) {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
             public @Nullable ConfigDescription getConfigDescription(ThingTypeUID thingTypeUID) {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public @Nullable ConfigDescription getConfigDescription(ChannelTypeUID channelTypeUID) {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public @Nullable Bridge getBridge(ThingUID bridgeUID) {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public ChannelBuilder editChannel(Thing thing, ChannelUID channelUID) {
-                // TODO Auto-generated method stub
-                return null;
+                return ChannelBuilder.create(channelUID); // dummy implementation, probably won't work.
             }
 
             @Override
             public List<ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
                     ChannelGroupTypeUID channelGroupTypeUID) {
-                // TODO Auto-generated method stub
-                return null;
+                return new ArrayList<ChannelBuilder>(); // dummy implementation, probably won't work.
             }
 
             @Override
             public ChannelBuilder createChannelBuilder(ChannelUID channelUID, ChannelTypeUID channelTypeUID) {
-                // TODO Auto-generated method stub
-                return null;
+                return ChannelBuilder.create(channelUID); // dummy implementation, probably won't work.
             }
 
             @Override
             public void configurationUpdated(Thing thing) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void channelTriggered(Thing thing, ChannelUID channelUID, String event) {
-                // TODO Auto-generated method stub
             }
         });
         handler.initialize();
