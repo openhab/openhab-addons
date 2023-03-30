@@ -136,7 +136,7 @@ public class TapoLightStrip extends TapoDevice {
         newState.put(JSON_KEY_ON, true);
         newState.put(JSON_KEY_HUE, command.getHue().intValue());
         newState.put(JSON_KEY_SATURATION, command.getSaturation().intValue());
-        newState.put(JSON_KEY_BRIGHTNES, command.getBrightness().intValue();
+        newState.put(JSON_KEY_BRIGHTNES, command.getBrightness().intValue());
         connector.sendDeviceCommands(newState);
     }
 
