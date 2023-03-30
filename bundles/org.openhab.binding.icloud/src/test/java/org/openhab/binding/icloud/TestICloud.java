@@ -241,7 +241,7 @@ public class TestICloud {
                              "scdPh": "",
                              "locationCapable": true,
                              "trackingInfo": null,
-                             "name": "Simon iPad",
+                             "name": "My iPad",
                              "isMac": false,
                              "thisDevice": false,
                              "deviceClass": "iPad",
@@ -344,7 +344,7 @@ public class TestICloud {
                              "scdPh": "",
                              "locationCapable": true,
                              "trackingInfo": null,
-                             "name": "Simon iPad",
+                             "name": "iPad Air without ID",
                              "isMac": false,
                              "thisDevice": false,
                              "deviceClass": "iPad",
@@ -370,7 +370,7 @@ public class TestICloud {
                              "locFoundEnabled": false,
                              "snd": null,
                              "lostDevice": null,
-                             "deviceDisplayName": "iPad Air without ID",
+                             "deviceDisplayName": "iPad",
                              "prsId": null,
                              "audioChannels": [
 
