@@ -453,7 +453,6 @@ public class TestICloud {
             @Override
             public void thingUpdated(Thing thing) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
