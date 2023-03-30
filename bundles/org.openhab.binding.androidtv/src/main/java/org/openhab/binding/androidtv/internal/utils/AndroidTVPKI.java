@@ -118,9 +118,14 @@ public class AndroidTVPKI {
 
     public String encrypt(String data, Key key, String cipher) throws Exception {
         byte[] dataInBytes = data.getBytes();
-        encryptionCipher.init(Cipher.ENCRYPT_MODE, key);
-        byte[] encryptedBytes = encryptionCipher.doFinal(dataInBytes);
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+        Cipher encryptionCipher = this.encryptionCipher;
+        if (encryptionCipher != null) {
+            encryptionCipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] encryptedBytes = encryptionCipher.doFinal(dataInBytes);
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+        } else {
+            return "";
+        }
     }
 
     public String decrypt(String encryptedData, Key key) throws Exception {
@@ -130,10 +135,15 @@ public class AndroidTVPKI {
     public String decrypt(String encryptedData, Key key, String cipher) throws Exception {
         byte[] dataInBytes = Base64.getDecoder().decode(encryptedData);
         Cipher decryptionCipher = Cipher.getInstance(cipher);
-        GCMParameterSpec spec = new GCMParameterSpec(dataLength, encryptionCipher.getIV());
-        decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
-        byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
-        return new String(decryptedBytes);
+        Cipher encryptionCipher = this.encryptionCipher;
+        if (encryptionCipher != null) {
+            GCMParameterSpec spec = new GCMParameterSpec(dataLength, encryptionCipher.getIV());
+            decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
+            byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
+            return new String(decryptedBytes);
+        } else {
+            return "";
+        }
     }
 
     public void setPrivKey(String privKey, byte[] keyString) throws Exception {

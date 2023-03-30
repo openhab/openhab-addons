@@ -108,6 +108,9 @@ public class AndroidTVHandler extends BaseThingHandler {
         String statusMessage = "";
         boolean failed = false;
 
+        GoogleTVConnectionManager googletvConnectionManager = this.googletvConnectionManager;
+        ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+
         if (googletvConnectionManager != null) {
             if (!googletvConnectionManager.getLoggedIn()) {
                 statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
@@ -140,8 +143,9 @@ public class AndroidTVHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Protocols Starting");
 
         GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
+        String ipAddress = googletvConfig.ipAddress;
 
-        if (googletvConfig.ipAddress == null || googletvConfig.ipAddress.isEmpty()) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "googletv address not specified");
             return;
         }
@@ -150,8 +154,9 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
+            ipAddress = shieldtvConfig.ipAddress;
 
-            if (shieldtvConfig.ipAddress == null || shieldtvConfig.ipAddress.isEmpty()) {
+            if (ipAddress == null || ipAddress.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "shieldtv address not specified");
                 return;
@@ -173,6 +178,9 @@ public class AndroidTVHandler extends BaseThingHandler {
             // REFRESH causes issues on some channels. Block for now until implemented.
             return;
         }
+
+        GoogleTVConnectionManager googletvConnectionManager = this.googletvConnectionManager;
+        ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
 
         if (CHANNEL_DEBUG.equals(channelUID.getId())) {
             if (command instanceof StringType) {
@@ -238,6 +246,10 @@ public class AndroidTVHandler extends BaseThingHandler {
                 monitorThingStatusJob.cancel(true);
             }
         }
+
+        GoogleTVConnectionManager googletvConnectionManager = this.googletvConnectionManager;
+        ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+
         if (shieldtvConnectionManager != null) {
             shieldtvConnectionManager.dispose();
         }

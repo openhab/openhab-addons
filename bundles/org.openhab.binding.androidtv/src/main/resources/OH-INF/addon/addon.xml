@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>AndroidTV Binding</name>
 	<description>This is the addon for AndroidTV.</description>
+	<connection>local</connection>
 
 </addon:addon>

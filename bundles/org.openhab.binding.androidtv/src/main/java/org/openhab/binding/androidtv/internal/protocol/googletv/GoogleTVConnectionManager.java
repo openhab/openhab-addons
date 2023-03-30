@@ -166,7 +166,7 @@ public class GoogleTVConnectionManager {
         this.connectionManager = this;
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
-        initalize();
+        initialize();
     }
 
     public GoogleTVConnectionManager(AndroidTVHandler handler, GoogleTVConfiguration config,
@@ -177,7 +177,7 @@ public class GoogleTVConnectionManager {
         this.connectionManager = connectionManager;
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
-        initalize();
+        initialize();
     }
 
     public String getThingID() {
@@ -324,7 +324,6 @@ public class GoogleTVConnectionManager {
     }
 
     private boolean servicePing() {
-        double execStartTimeInMS = System.currentTimeMillis();
         int timeout = 500;
 
         SocketAddress socketAddress = new InetSocketAddress(config.ipAddress, config.port);
@@ -421,14 +420,15 @@ public class GoogleTVConnectionManager {
 
             @Override
             public X509Certificate @Nullable [] getAcceptedIssuers() {
-                if (shimX509ClientChain != null && logger.isTraceEnabled()) {
+                X509Certificate[] X509ClientChain = shimX509ClientChain;
+                if (X509ClientChain != null && logger.isTraceEnabled()) {
                     logger.debug("Returning shimX509ClientChain for getAcceptedIssuers");
-                    for (int cert = 0; cert < shimX509ClientChain.length; cert++) {
-                        logger.trace("Subject DN: {}", shimX509ClientChain[cert].getSubjectX500Principal());
-                        logger.trace("Issuer DN: {}", shimX509ClientChain[cert].getIssuerX500Principal());
-                        logger.trace("Serial number: {}", shimX509ClientChain[cert].getSerialNumber());
+                    for (int cert = 0; cert < X509ClientChain.length; cert++) {
+                        logger.trace("Subject DN: {}", X509ClientChain[cert].getSubjectX500Principal());
+                        logger.trace("Issuer DN: {}", X509ClientChain[cert].getIssuerX500Principal());
+                        logger.trace("Serial number: {}", X509ClientChain[cert].getSerialNumber());
                     }
-                    return shimX509ClientChain;
+                    return X509ClientChain;
                 } else {
                     logger.debug("Returning empty certificate for getAcceptedIssuers");
                     return new X509Certificate[0];
@@ -437,7 +437,7 @@ public class GoogleTVConnectionManager {
         } };
     }
 
-    private void initalize() {
+    private void initialize() {
         SSLContext sslContext;
 
         String folderName = OpenHAB.getUserDataFolder() + "/androidtv";
@@ -492,7 +492,7 @@ public class GoogleTVConnectionManager {
             if (!config.shim) {
                 asyncInitializeTask = scheduler.submit(this::connect);
             } else {
-                shimAsyncInitializeTask = scheduler.submit(this::shimInitalize);
+                shimAsyncInitializeTask = scheduler.submit(this::shimInitialize);
             }
         } catch (NoSuchAlgorithmException | IOException e) {
             setStatus(false, "Error initializing keystore");
@@ -533,13 +533,14 @@ public class GoogleTVConnectionManager {
                     Thread.currentThread().interrupt();
                     return;
                 } catch (IOException e) {
-                    if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE))
-                            && (!config.shim)) {
+                    String message = e.getMessage();
+                    if ((message != null) && (message.contains("certificate_unknown"))
+                            && (!config.mode.equals(PIN_MODE)) && (!config.shim)) {
                         setStatus(false, "PIN Process Incomplete");
                         logger.debug("{} - GoogleTV PIN Process Incomplete", handler.getThingID());
                         reconnectTaskCancel(true);
                         startChildConnectionManager(this.config.port + 1, PIN_MODE);
-                    } else if ((e.getMessage().contains("certificate_unknown")) && (config.shim)) {
+                    } else if ((message != null) && (message.contains("certificate_unknown")) && (config.shim)) {
                         logger.debug("Shim cert_unknown I/O error while connecting: {}", e.getMessage());
                         Socket shimServerSocket = this.shimServerSocket;
                         if (shimServerSocket != null) {
@@ -585,7 +586,7 @@ public class GoogleTVConnectionManager {
         }
     }
 
-    public void shimInitalize() {
+    public void shimInitialize() {
         synchronized (connectionLock) {
             AndroidTVPKI shimPKI = new AndroidTVPKI();
             byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
@@ -622,12 +623,12 @@ public class GoogleTVConnectionManager {
                         startChildConnectionManager(this.config.port + 1, PIN_MODE);
                     }
                     SSLSocket serverSocket = (SSLSocket) sslServerSocket.accept();
-                    logger.trace("shimInitalize accepted {}", config.port);
+                    logger.trace("shimInitialize accepted {}", config.port);
                     try {
                         serverSocket.startHandshake();
-                        logger.trace("shimInitalize startHandshake {}", config.port);
+                        logger.trace("shimInitialize startHandshake {}", config.port);
                         connect();
-                        logger.trace("shimInitalize connected {}", config.port);
+                        logger.trace("shimInitialize connected {}", config.port);
 
                         SSLSession session = serverSocket.getSession();
                         Certificate[] cchain2 = session.getPeerCertificates();
@@ -645,7 +646,10 @@ public class GoogleTVConnectionManager {
 
                         if (this.config.mode.equals(PIN_MODE)) {
                             this.shimX509ClientChain = shimX509ClientChain;
-                            connectionManager.setShimX509ClientChain(shimX509ClientChain);
+                            GoogleTVConnectionManager connectionManager = this.connectionManager;
+                            if (connectionManager != null) {
+                                connectionManager.setShimX509ClientChain(shimX509ClientChain);
+                            }
                         }
 
                         if (cchain3 != null) {
@@ -918,12 +922,14 @@ public class GoogleTVConnectionManager {
             logger.debug("Interrupted while reading");
             setStatus(false, "Interrupted");
         } catch (IOException e) {
-            if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE)) && (!config.shim)) {
+            String message = e.getMessage();
+            if ((message != null) && (message.contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE))
+                    && (!config.shim)) {
                 setStatus(false, "PIN Process Incomplete");
                 logger.debug("{} - GoogleTV PIN Process Incomplete", handler.getThingID());
                 reconnectTaskCancel(true);
                 startChildConnectionManager(this.config.port + 1, PIN_MODE);
-            } else if ((e.getMessage().contains("certificate_unknown")) && (config.shim)) {
+            } else if ((message != null) && (message.contains("certificate_unknown")) && (config.shim)) {
                 logger.debug("Shim cert_unknown I/O error while reading from stream: {}", e.getMessage());
                 Socket shimServerSocket = this.shimServerSocket;
                 if (shimServerSocket != null) {
@@ -1069,10 +1075,12 @@ public class GoogleTVConnectionManager {
     }
 
     public void finishPinProcess() {
-        if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {
+        GoogleTVConnectionManager connectionManager = this.connectionManager;
+        GoogleTVConnectionManager childConnectionManager = this.childConnectionManager;
+        if ((connectionManager != null) && (config.mode.equals(PIN_MODE)) && (!config.shim)) {
             disconnect(false);
             connectionManager.finishPinProcess();
-        } else if ((config.mode.equals(DEFAULT_MODE)) && (!config.shim)) {
+        } else if ((childConnectionManager != null) && (config.mode.equals(DEFAULT_MODE)) && (!config.shim)) {
             childConnectionManager.dispose();
             reconnect();
         }
@@ -1225,6 +1233,9 @@ public class GoogleTVConnectionManager {
         } else if (CHANNEL_PINCODE.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 try {
+                    Certificate[] shimClientChain = this.shimClientChain;
+                    Certificate[] shimServerChain = this.shimServerChain;
+                    Certificate[] shimClientLocalChain = this.shimClientLocalChain;
                     if (config.mode.equals(DEFAULT_MODE)) {
                         if ((!isLoggedIn) && (command.toString().equals("REQUEST"))
                                 && (childConnectionManager == null)) {
@@ -1238,13 +1249,18 @@ public class GoogleTVConnectionManager {
                                 logger.trace("InterruptedException", e);
                             }
                         }
-                        childConnectionManager.handleCommand(channelUID, command);
+                        GoogleTVConnectionManager childConnectionManager = this.childConnectionManager;
+                        if (childConnectionManager != null) {
+                            childConnectionManager.handleCommand(channelUID, command);
+                        } else {
+                            logger.debug("{} - Child Connection Manager unavailable.", handler.getThingID());
+                        }
                     } else if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {
                         if (!isLoggedIn) {
                             if (command.toString().equals("REQUEST")) {
                                 sendCommand(new GoogleTVCommand(
                                         GoogleTVRequest.encodeMessage(GoogleTVRequest.pinRequest(command.toString()))));
-                            } else {
+                            } else if (shimServerChain != null) {
                                 this.pinHash = GoogleTVUtils.validatePIN(command.toString(), androidtvPKI.getCert(),
                                         shimServerChain[0]);
                                 sendCommand(new GoogleTVCommand(
@@ -1252,10 +1268,12 @@ public class GoogleTVConnectionManager {
                             }
                         }
                     } else if ((config.mode.equals(PIN_MODE)) && (config.shim)) {
-                        this.pinHash = GoogleTVUtils.validatePIN(command.toString(), androidtvPKI.getCert(),
-                                shimServerChain[0]);
-                        this.shimPinHash = GoogleTVUtils.validatePIN(command.toString(), shimClientChain[0],
-                                shimClientLocalChain[0]);
+                        if ((shimClientChain != null) && (shimServerChain != null) && (shimClientLocalChain != null)) {
+                            this.pinHash = GoogleTVUtils.validatePIN(command.toString(), androidtvPKI.getCert(),
+                                    shimServerChain[0]);
+                            this.shimPinHash = GoogleTVUtils.validatePIN(command.toString(), shimClientChain[0],
+                                    shimClientLocalChain[0]);
+                        }
                     }
                 } catch (CertificateException e) {
                     logger.trace("PIN CertificateException", e);
@@ -1305,17 +1323,18 @@ public class GoogleTVConnectionManager {
         this.disposing = true;
 
         Future<?> asyncInitializeTask = this.asyncInitializeTask;
-        if (asyncInitializeTask != null && !asyncInitializeTask.isDone()) {
+        if (asyncInitializeTask != null) {
             asyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
         }
         Future<?> shimAsyncInitializeTask = this.shimAsyncInitializeTask;
-        if (shimAsyncInitializeTask != null && !shimAsyncInitializeTask.isDone()) {
+        if (shimAsyncInitializeTask != null) {
             shimAsyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
         }
         ScheduledFuture<?> deviceHealthJob = this.deviceHealthJob;
         if (deviceHealthJob != null) {
             deviceHealthJob.cancel(true);
         }
+        GoogleTVConnectionManager childConnectionManager = this.childConnectionManager;
         if (childConnectionManager != null) {
             childConnectionManager.dispose();
         }

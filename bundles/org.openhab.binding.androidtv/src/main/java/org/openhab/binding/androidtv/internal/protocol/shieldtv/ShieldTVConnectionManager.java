@@ -150,7 +150,7 @@ public class ShieldTVConnectionManager {
         this.handler = handler;
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
-        initalize();
+        initialize();
     }
 
     public void setHostName(String hostName) {
@@ -252,7 +252,6 @@ public class ShieldTVConnectionManager {
     }
 
     private boolean servicePing() {
-        double execStartTimeInMS = System.currentTimeMillis();
         int timeout = 500;
 
         SocketAddress socketAddress = new InetSocketAddress(config.ipAddress, config.port);
@@ -341,7 +340,7 @@ public class ShieldTVConnectionManager {
         } };
     }
 
-    private void initalize() {
+    private void initialize() {
         SSLContext sslContext;
 
         String folderName = OpenHAB.getUserDataFolder() + "/androidtv";
@@ -395,7 +394,7 @@ public class ShieldTVConnectionManager {
             if (!config.shim) {
                 asyncInitializeTask = scheduler.submit(this::connect);
             } else {
-                shimAsyncInitializeTask = scheduler.submit(this::shimInitalize);
+                shimAsyncInitializeTask = scheduler.submit(this::shimInitialize);
             }
         } catch (NoSuchAlgorithmException | IOException e) {
             setStatus(false, "Error initializing keystore");
@@ -470,7 +469,7 @@ public class ShieldTVConnectionManager {
         }
     }
 
-    public void shimInitalize() {
+    public void shimInitialize() {
         synchronized (connectionLock) {
             AndroidTVPKI shimPKI = new AndroidTVPKI();
             byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
@@ -1201,11 +1200,11 @@ public class ShieldTVConnectionManager {
         this.disposing = true;
 
         Future<?> asyncInitializeTask = this.asyncInitializeTask;
-        if (asyncInitializeTask != null && !asyncInitializeTask.isDone()) {
+        if (asyncInitializeTask != null) {
             asyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
         }
         Future<?> shimAsyncInitializeTask = this.shimAsyncInitializeTask;
-        if (shimAsyncInitializeTask != null && !shimAsyncInitializeTask.isDone()) {
+        if (shimAsyncInitializeTask != null) {
             shimAsyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
         }
         ScheduledFuture<?> deviceHealthJob = this.deviceHealthJob;

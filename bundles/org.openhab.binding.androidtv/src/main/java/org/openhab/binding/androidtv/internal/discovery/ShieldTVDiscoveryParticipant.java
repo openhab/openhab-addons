@@ -57,7 +57,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Nullable
     @Override
     public DiscoveryResult createResult(@Nullable ServiceInfo service) {
-        if (!service.hasData()) {
+        if ((service == null) || !service.hasData()) {
             return null;
         }
 
@@ -77,18 +77,26 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         logger.trace("ShieldTV mDNS service property SERVER_CAPABILITY: {}", serverCapability);
 
         final ThingUID uid = getThingUID(service);
-        final String id = uid.getId();
-        final String label = service.getName() + " (" + id + ")";
-        final Map<String, Object> properties = new HashMap<>(2);
+        if (uid != null) {
+            final String id = uid.getId();
+            final String label = service.getName() + " (" + id + ")";
+            final Map<String, Object> properties = new HashMap<>(2);
 
-        properties.put(IPADDRESS, ipAddress);
+            properties.put(IPADDRESS, ipAddress);
 
-        return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+            return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+        } else {
+            return null;
+        }
     }
 
     @Nullable
     @Override
     public ThingUID getThingUID(@Nullable ServiceInfo service) {
+        if ((service == null) || !service.hasData()) {
+            return null;
+        }
+
         return new ThingUID(THING_TYPE_SHIELDTV, service.getPropertyString("SERVER").substring(8));
     }
 }
