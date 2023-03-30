@@ -48,7 +48,7 @@
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
 /bundles/org.openhab.binding.bondhome/ @ccutrer
 /bundles/org.openhab.binding.boschindego/ @jofleck @jlaur
-/bundles/org.openhab.binding.boschshc/ @stefan-kaestle @coeing @GerdZanker
+/bundles/org.openhab.binding.boschshc/ @david-pace @GerdZanker
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
 /bundles/org.openhab.binding.broadlinkthermostat/ @flo-02-mu
 /bundles/org.openhab.binding.bsblan/ @hypetsch
