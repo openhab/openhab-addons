@@ -124,6 +124,12 @@ Thing ipcamera:hikvision:West "West Camera"
 - For MJPEG to work, you need to set the first sub-stream to be MJPEG format for the default settings to work, otherwise you can override the default with mjpegUrl with a valid URL for MJPEG streams.
 - Be sure to update to the latest firmware for your camera as Instar have made a lot of improvements recently, including adding MQTT features (MQTT is not needed for this binding to work).
 
+### Reolink
+
+- NVR's made by Reolink may have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF.
+This binding will use the Reolink API for polling the alarms if the nvrChannel is 0 or higher.
+To use ONVIF events for the alarms, you can set nvrChannel to -1.
+
 ## Discovery
 
 The discovery feature of openHAB can be used to find and setup any ONVIF cameras.
