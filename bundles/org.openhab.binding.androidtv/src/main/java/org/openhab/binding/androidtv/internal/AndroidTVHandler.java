@@ -201,7 +201,6 @@ public class AndroidTVHandler extends BaseThingHandler {
                 } else if (command.toString().startsWith("SHIELDTV") && (shieldtvConnectionManager != null)) {
                     shieldtvConnectionManager.handleCommand(channelUID, command);
                 }
-
             }
             return;
         }
@@ -219,7 +218,6 @@ public class AndroidTVHandler extends BaseThingHandler {
                     shieldtvConnectionManager.handleCommand(channelUID, command);
                     return;
                 }
-
             }
         }
 
