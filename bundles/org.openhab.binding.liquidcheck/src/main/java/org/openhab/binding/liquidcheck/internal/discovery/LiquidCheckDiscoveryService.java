@@ -97,7 +97,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         try {
             httpClient.stop();
         } catch (Exception e) {
-            logger.debug("Couldn't stop client: ", e.getMessage());
+            logger.debug("Couldn't stop client: {}", e.getMessage());
         }
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
