@@ -96,6 +96,7 @@ public class RestClient {
 
     private String postRequest(String resourceUrl, String data, String oauth_token) throws AuthenticationException {
         String result = null;
+        logger.trace("RestClient - postRequest: {} - {} - {}", resourceUrl, data, oauth_token);
         try {
             byte[] postData = data.getBytes(StandardCharsets.UTF_8);
             StringBuilder output = new StringBuilder();
@@ -177,6 +178,7 @@ public class RestClient {
      */
     private String getRequest(String resourceUrl, Profile profile) throws AuthenticationException {
         String result = null;
+        logger.trace("RestClient - getRequest: {}", resourceUrl);
         try {
             StringBuilder output = new StringBuilder();
             URL url = new URL(resourceUrl);// + "?" + data);
@@ -265,6 +267,10 @@ public class RestClient {
 
         String refToken = refreshToken;
 
+        logger.trace("RestClient - getAuthenticatedProfile {} - {} - {} - {} - {}", username,
+                (password.equals("") || (password == null) ? "EMPTY" : "NOTEMPTY"), refreshToken, twofactorCode,
+                hardwareId);
+
         if ((twofactorCode != null) && (!twofactorCode.equals(""))) {
             refToken = getAuthCode(twofactorCode, username, password, hardwareId);
         }
@@ -288,6 +294,9 @@ public class RestClient {
      */
     private JSONObject get_oauth_token(String username, String password, String refreshToken)
             throws AuthenticationException, ParseException {
+
+        logger.trace("RestClient - get_oauth_token {} - {} - {}", username,
+                (password.equals("") || (password == null) ? "EMPTY" : "NOTEMPTY"), refreshToken);
 
         String result = null;
         JSONObject oauth_token = null;
@@ -402,7 +411,7 @@ public class RestClient {
     }
 
     public Boolean refresh_session(String refreshToken) {
-
+        logger.trace("RestClient - refresh_session {}", refreshToken);
         String result = null;
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
         try {
@@ -494,6 +503,8 @@ public class RestClient {
 
     private String getAuthCode(String authCode, String username, String password, String hardwareId)
             throws AuthenticationException {
+        logger.trace("RestClient - getAuthCode {} - {} - {} - {}", authCode, username,
+                (password.equals("") || (password == null) ? "EMPTY" : "NOTEMPTY"), hardwareId);
         String result = "";
 
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
