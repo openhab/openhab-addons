@@ -17,7 +17,7 @@ Sensors can be (for example) light level sensors, temperature sensors, or motion
 ### Bridge
 
 The Hue Bridge requires the IP address as a configuration value in order for the binding to know where to access it.
-It requies an 'application key' to authenticate against the Hue Bridge.
+It requires an 'application key' to authenticate against the Hue Bridge.
 This may be copied from an API v1 installation, or it may be automatically generated (press button to authenticate).
 Please note that the generated application key cannot be written automatically to the `.things` file, and has to be set manually.
 The generated application key can be found, after pressing the authentication button on the bridge, with the following console command: `openhab:hue <bridgeUID> applicationkey`.
@@ -36,8 +36,8 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopasdfgh
 
 ### Devices, Rooms, and Zones
 
-Apart from the Bridge, there are three other types of thing -- namely Devices `device`, `room`, and `zone`.
-Device things represent physical hardware devices in the system, whereas `room` and `zone` things represent logical groups of lights, either in a room or a zone.
+Apart from the Bridge, there are three other types of thing -- namely `device`, `room`, and `zone`.
+Device things represent physical hardware devices in the system, whereas `room` and `zone` things represent sets of physical lights, either in a room or a zone.
 
 All things are identified by a unique Resource Identifier string that the Hue Bridge assigns to them e.g. `d1ae958e-8908-449a-9897-7f10f9b8d4c2`.
 Thus, all it needs for manual configuration is this single value like
@@ -48,10 +48,10 @@ device officelamp "Lamp 1" @ "Office" [ resourceId="d1ae958e-8908-449a-9897-7f10
 zone kitchenLights "Kitchen Down Lights" @ "Kitchen" [ resourceId="7f10f9b8-8908-449a-9897-d4c2d1ae958e" ]
 ```
 
-You can get a list of all devices in the bridge and their respective Resource Ids by entering the following console command: `openhab:hue <bridgeUID> devices`
+You can get a list of all devices in the bridge and their respective Resource Ids by entering the following console command: `openhab:hue <bridgeUID> things`
 See [console command](#console-command-for-finding-resourceids)
 
-The configuration of all things (as described above) is the same regardless of whether the device contains a light, a button, or (one or more) sensors.
+The configuration of all things (as described above) is the same regardless of whether it is a device containing a light, a button, or (one or more) sensors, or whether it is a room or zone.
 
 ### Channels for Devices
 
@@ -135,7 +135,7 @@ The console command usage is `openhab:hue <brigeUID> things`.
 An exampe of such a console command, and its respective output, is shown below..
 
 ```text
-openhab> openhab:hue hue:clip2:g24 devices
+openhab> openhab:hue hue:clip2:g24 things
 Bridge hue:clip2:g24 "Philips Hue Bridge" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
   Thing device 11111111-2222-3333-4444-555555555555 "Standard Lamp L" [resourceId="11111111-2222-3333-4444-555555555555"] // Hue color lamp
   Thing device 11111111-2222-3333-4444-666666666666 "Kitchen Wallplate Switch" [resourceId="11111111-2222-3333-4444-666666666666"] // Hue wall switch module
@@ -143,7 +143,7 @@ Bridge hue:clip2:g24 "Philips Hue Bridge" [ipAddress="192.168.1.234", applicatio
 }
 ```
 
-The `openhab:hue <brigeUID> things` produces an output that can be used to directly create a `.things' file, as shown below..
+The `openhab:hue <brigeUID> things` command produces an output that can be used to directly create a `.things' file, as shown below..
 
 ```text
 openhab> openhab:hue hue:clip2:g24 things > myThingsFile.things

@@ -87,7 +87,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference BRIDGE_HOME = new ResourceReference().setType(ResourceType.BRIDGE_HOME);
     private static final ResourceReference SCENE = new ResourceReference().setType(ResourceType.SCENE);
 
-    private static final Set<ResourceReference> POLL_RESOURCE_REFERENCES = Set.of(DEVICE, ROOM, ZONE, BRIDGE_HOME);
+    private static final Set<ResourceReference> POLL_RESOURCE_SET = Set.of(DEVICE, ROOM, ZONE, BRIDGE_HOME);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -458,9 +458,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (assetsLoaded) {
             scheduler.submit(() -> {
                 logger.debug("onResourcesEvent() resource count {}", resources.size());
-                resources.forEach(resource -> {
-                    onResource(resource);
-                });
+                resources.forEach(resource -> onResource(resource));
             });
         }
     }
@@ -653,7 +651,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private void updateThings() throws ApiException, AssetNotLoadedException {
         logger.debug("updateThings()");
         Clip2Bridge bridge = getClip2Bridge();
-        for (ResourceReference reference : POLL_RESOURCE_REFERENCES) {
+        for (ResourceReference reference : POLL_RESOURCE_SET) {
             bridge.getResources(reference).getResources().forEach(resource -> onResource(resource));
         }
     }
