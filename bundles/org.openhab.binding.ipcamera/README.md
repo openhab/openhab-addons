@@ -35,6 +35,7 @@ Some cameras allow the key frame to be created every second or a different amoun
 
 These cameras do not have the ability to create H.264 streams and hence can not be used with HLS, however all other features should work.
 Due to many custom firmwares available, you may need to ask the firmware developer what the URLs are for snapshots and MJPEG streams if they have changed the defaults from what the Arduino IDE sample code uses.
+Another limitation is that they can only provide a single stream at a time, so you need to setup the `ffmpegInput` to use the ipcamera.mjpeg feed from the openHAB server and change `ffmpegInputOptions` to "-f mjpeg" so FFmpeg knows the input is in mjpeg format and not h264.
 
 Example:
 
@@ -46,7 +47,8 @@ Thing ipcamera:generic:Esp32Cam
     snapshotUrl="http://192.168.1.181/capture",
     mjpegUrl="http://192.168.1.181:81/stream",
     ffmpegInputOptions="-f mjpeg",
-    ffmpegOutput="/tmp/Esp32Camera/", ffmpegInput="http://192.168.1.181:81/stream"
+    ffmpegOutput="/tmp/Esp32Camera/",
+    ffmpegInput="http://192.168.1.3:8080/ipcamera/{cameraUID}/ipcamera.mjpeg"
 ]
 ```
 
@@ -127,7 +129,7 @@ Thing ipcamera:hikvision:West "West Camera"
 ### Reolink
 
 - NVR's made by Reolink may have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF.
-This binding will use the Reolink API for polling the alarms if the nvrChannel is 0 or higher.
+- This binding will use the Reolink API for polling the alarms if the nvrChannel is 0 or higher.
 To use ONVIF events for the alarms, you can set nvrChannel to -1.
 
 ## Discovery
