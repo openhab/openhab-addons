@@ -30,7 +30,7 @@ public class LightLevel {
     private @SerializedName("light_level") int lightLevel;
     private @SerializedName("light_level_valid") boolean lightLevelValid;
 
-    public int getLightlevel() {
+    public int getLightLevel() {
         return lightLevel;
     }
 
@@ -38,7 +38,7 @@ public class LightLevel {
         return lightLevelValid;
     }
 
-    public State getLightlevelState() {
+    public State getLightLevelState() {
         return lightLevelValid ? new DecimalType(lightLevel) : UnDefType.UNDEF;
     }
 

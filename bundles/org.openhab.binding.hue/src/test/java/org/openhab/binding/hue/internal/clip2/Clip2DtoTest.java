@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hue.internal.dto.ApiVersion;
 import org.openhab.binding.hue.internal.dto.clip2.ActionEntry;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
 import org.openhab.binding.hue.internal.dto.clip2.Button;
@@ -147,10 +146,7 @@ class Clip2DtoTest {
                 assertEquals("Philips hue", productData.getProductName());
                 assertNull(productData.getHardwarePlatformType());
                 assertTrue(productData.getCertified());
-                ApiVersion ver = productData.getSoftwareVersion();
-                assertEquals(1, ver.getMajor());
-                assertEquals(53, ver.getMinor());
-                assertEquals(1953188020, ver.getMicro());
+                assertEquals("1.53.1953188020", productData.getSoftwareVersion());
                 break;
             }
         }
@@ -302,7 +298,7 @@ class Clip2DtoTest {
         assertTrue(enabled);
         LightLevel lightLevel = item.getLightLevel();
         assertNotNull(lightLevel);
-        assertEquals(12725, lightLevel.getLightlevel());
+        assertEquals(12725, lightLevel.getLightLevel());
         assertTrue(lightLevel.isLightLevelValid());
     }
 

@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link HueBindingConstants} class defines common constants, which are
@@ -132,11 +133,12 @@ public class HueBindingConstants {
     // thing types for CLIP 2
     public static final ThingTypeUID THING_TYPE_CLIP2 = new ThingTypeUID(BINDING_ID, "clip2");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
-    public static final ThingTypeUID THING_TYPE_GROUPED_LIGHT = new ThingTypeUID(BINDING_ID, "groupedLight");
+    public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
+    public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
 
     // channels for CLIP 2
-    public static final String CHANNEL_2_BATTERY_LEVEL = "batterylevel";
-    public static final String CHANNEL_2_BATTERY_LOW = "batterylow";
+    public static final String CHANNEL_2_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_2_BATTERY_LOW = "batteryLow";
     public static final String CHANNEL_2_BUTTON_LAST_EVENT = "buttonLastEvent";
     public static final String CHANNEL_2_COLOR_TEMPERATURE = "colorTemperature";
     public static final String CHANNEL_2_COLOR_TEMPERATURE_ABS = "colorTemperatureAbs";
@@ -153,7 +155,7 @@ public class HueBindingConstants {
     public static final String CLIP2_PROPERTY_SUFFIX = " (api2)";
 
     /*
-     * Map of API v1 channel id's against API v2 channel id's where, if the v1 channel exists in the system, then we
+     * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we
      * should try to replicate the channel/item links from the v1 channel into the respective v2 channel.
      */
     public static final Map<String, String> REPLICATE_CHANNEL_ID_MAP = Stream.of(new String[][] { //
@@ -170,4 +172,6 @@ public class HueBindingConstants {
             { CHANNEL_BATTERY_LOW, CHANNEL_2_BATTERY_LOW }, //
             { CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED }, //
     }).collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
+
+    public static final ChannelTypeUID SCENE_CHANNEL_TYPE_UID = new ChannelTypeUID(BINDING_ID, "scene");
 }

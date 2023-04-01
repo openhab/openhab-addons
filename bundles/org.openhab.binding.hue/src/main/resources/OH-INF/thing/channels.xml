@@ -233,4 +233,30 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="lightSwitch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch the light on/off.</description>
+	</channel-type>
+
+	<channel-type id="groupSwitch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch on/off all the lights in the zone or room.</description>
+	</channel-type>
+
+	<channel-type id="lightBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Adjust the brightness of the light.</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="groupBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Adjust the brightness of all the lights in the zone or room.</description>
+		<category>Light</category>
+	</channel-type>
+
 </thing:thing-descriptions>

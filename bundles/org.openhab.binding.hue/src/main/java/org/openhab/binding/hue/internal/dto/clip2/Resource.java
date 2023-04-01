@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -137,9 +135,9 @@ public class Resource {
     }
 
     /**
-     * Method that uses reflection to copy fields from an other Resource instance into this instance. If the field in
-     * this instance is null and the same field in the other instance is not null, then the value from the other
-     * instance is copied to this instance.
+     * Method that copies fields from an other Resource instance into this instance. If the field in this instance is
+     * null and the same field in the other instance is not null, then the value from the other instance is copied to
+     * this instance.
      *
      * Usage: For color light resources, a full DTO requires both a Dimmer and a ColorXy field, but the SSE event DTOs
      * only provide one or the other field, and never both. This method allows the binding to import the missing field
@@ -149,17 +147,11 @@ public class Resource {
      * @return this instance.
      */
     public Resource copyMissingFieldsFrom(Resource other) {
-        for (String fieldName : Set.of("dimming", "color")) {
-            try {
-                Field field = getClass().getDeclaredField(fieldName);
-                Object thisField = field.get(this);
-                Object otherField = field.get(other);
-                if (Objects.isNull(thisField) && Objects.nonNull(otherField)) {
-                    field.setAccessible(true);
-                    field.set(this, otherField);
-                }
-            } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-            }
+        if (Objects.isNull(this.dimming) && Objects.nonNull(other.dimming)) {
+            this.dimming = other.dimming;
+        }
+        if (Objects.isNull(this.color) && Objects.nonNull(other.color)) {
+            this.color = other.color;
         }
         return this;
     }
@@ -334,7 +326,7 @@ public class Resource {
 
     public State getLightLevelState() {
         LightLevel light = this.light;
-        return Objects.nonNull(light) ? light.getLightlevelState() : UnDefType.NULL;
+        return Objects.nonNull(light) ? light.getLightLevelState() : UnDefType.NULL;
     }
 
     public @Nullable MetaData getMetaData() {

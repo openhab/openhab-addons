@@ -67,10 +67,6 @@
 		<label>Hue API v2 Bridge</label>
 		<description>The Hue Bridge represents a Philips Hue Bridge supporting API v2.</description>
 
-		<channels>
-			<channel id="scene" typeId="scene"/>
-		</channels>
-
 		<properties>
 			<property name="vendor">Signify</property>
 		</properties>

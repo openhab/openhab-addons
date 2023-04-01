@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -73,7 +72,8 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
 
     private final ThingRegistry thingRegistry;
 
-    public static final Set<ResourceType> SUPPORTED_RESOURCES = Set.of(ResourceType.DEVICE, ResourceType.GROUPED_LIGHT);
+    public static final Set<ResourceType> SUPPORTED_RESOURCES = Set.of(ResourceType.DEVICE, ResourceType.ROOM,
+            ResourceType.ZONE);
 
     @Activate
     public HueCommandExtension(final @Reference ThingRegistry thingRegistry) {
@@ -126,10 +126,10 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                             return;
                     }
                 } else if (clip2BridgeHandler != null) {
-                    String applicationKey = clip2BridgeHandler.consoleGetApplicationKey();
+                    String applicationKey = clip2BridgeHandler.getApplicationKey();
                     applicationKey = Objects.nonNull(applicationKey) ? applicationKey : "undefined";
 
-                    String ipAddress = clip2BridgeHandler.consoleGetIpAddress();
+                    String ipAddress = clip2BridgeHandler.getIpAddress();
                     ipAddress = Objects.nonNull(ipAddress) ? ipAddress : "undefined";
 
                     switch (args[1]) {
@@ -140,7 +140,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                         case SCENES:
                             console.println(String.format(FMT_BRIDGE, thing.getUID(), ipAddress, applicationKey));
                             List<Resource> scenes = clip2BridgeHandler
-                                    .consoleGetResources(new ResourceReference().setType(ResourceType.SCENE));
+                                    .getResourcesConsole(new ResourceReference().setType(ResourceType.SCENE));
                             if (scenes.isEmpty()) {
                                 console.println("no scenes found");
                             } else {
@@ -156,44 +156,26 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
 
                             for (ResourceType resourceType : SUPPORTED_RESOURCES) {
                                 List<Resource> resources = clip2BridgeHandlerFinal
-                                        .consoleGetResources(new ResourceReference().setType(resourceType));
+                                        .getResourcesConsole(new ResourceReference().setType(resourceType));
 
                                 if (!resources.isEmpty()) {
                                     console.println(String.format(FMT_COMMENT, resourceType.toString()));
                                     Map<String, String> lines = new TreeMap<>();
 
-                                    resources.forEach(resource -> {
+                                    for (Resource resource : resources) {
                                         MetaData metaData = resource.getMetaData();
-                                        // do not list the bridge itself
-                                        if (Objects.isNull(metaData)
-                                                || (metaData.getArchetype() != Archetype.BRIDGE_V2)) {
-
-                                            String label = resource.getName();
-                                            String comment = resource.getProductName();
-
-                                            if (ResourceType.GROUPED_LIGHT == resourceType) {
-                                                ResourceReference owner = resource.getOwner();
-                                                if (Objects.nonNull(owner)) {
-                                                    Optional<Resource> ownerResource = clip2BridgeHandlerFinal
-                                                            .consoleGetResources(owner).stream().findFirst();
-                                                    if (ownerResource.isPresent()) {
-                                                        Resource ownerRes = ownerResource.get();
-                                                        ResourceType ownerType = ownerRes.getType();
-                                                        if (ownerType == ResourceType.BRIDGE_HOME) {
-                                                            label = "Bridge (Home)";
-                                                        } else {
-                                                            label = String.format("%s (%s)", ownerRes.getName(),
-                                                                    ownerType.toString());
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            lines.put(label,
-                                                    String.format(FMT_THING,
-                                                            resourceType.name().replace("_", "").toLowerCase(),
-                                                            resource.getId(), label, resource.getId(), comment));
+                                        if (Objects.nonNull(metaData)
+                                                && (metaData.getArchetype() == Archetype.BRIDGE_V2)) {
+                                            // do not list the bridge itself
+                                            continue;
                                         }
-                                    });
+                                        String id = resource.getId();
+                                        String label = resource.getName();
+                                        String comment = resource.getProductName();
+
+                                        lines.put(label, String.format(FMT_THING, resourceType.name().toLowerCase(), id,
+                                                label, id, comment));
+                                    }
                                     lines.entrySet().forEach(entry -> console.println(entry.getValue()));
                                 }
                             }
@@ -212,7 +194,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                 buildCommandUsage("<bridgeUID> " + APPLICATION_KEY, "show the API v2 application key"),
                 buildCommandUsage("<bridgeUID> " + SCENES, "list all the scenes with their id"),
                 buildCommandUsage("<bridgeUID> " + THINGS,
-                        "list all the API v2 device and grouped light things with their id"),
+                        "list all the API v2 device, room, and zone, things with their id"),
                 buildCommandUsage("<groupThingUID> " + SCENES, "list all the scenes from this group with their id") });
     }
 

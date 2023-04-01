@@ -176,7 +176,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
             return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new Clip2ThingHandler(thing, thingRegistry, itemChannelLinkRegistry);
+            return new Clip2ThingHandler(thing, thingRegistry, itemChannelLinkRegistry, i18nProvider, localeProvider);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
                     stateDescriptionProvider, i18nProvider, localeProvider);

@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.ApiVersion;
 import org.openhab.binding.hue.internal.dto.clip2.enums.Archetype;
 
 import com.google.gson.annotations.SerializedName;
@@ -54,8 +53,8 @@ public class ProductData {
         return certified != null ? certified : false;
     }
 
-    public ApiVersion getSoftwareVersion() {
-        return ApiVersion.of(softwareVersion);
+    public String getSoftwareVersion() {
+        return softwareVersion != null ? softwareVersion : "";
     }
 
     public @Nullable String getHardwarePlatformType() {

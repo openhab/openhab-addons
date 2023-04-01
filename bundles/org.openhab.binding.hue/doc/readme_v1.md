@@ -6,14 +6,14 @@
 
 Almost all available Hue devices are supported by this binding.
 This includes not only the "Friends of Hue", but also products like the LivingWhites adapter.
-Additionally, it is possible to use OSRAM Lightify devices as well as other ZigBee Light Link compatible products, including the IKEA TRÅDFRI lights (when updated).
-Beside bulbs and luminaires the Hue binding also supports some ZigBee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
+Additionally, it is possible to use OSRAM Lightify devices as well as other Zigbee Light Link compatible products, including the IKEA TRÅDFRI lights (when updated).
+Beside bulbs and luminaires the Hue binding also supports some Zigbee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
 Please note that the devices need to be registered with the Hue Bridge before it is possible for this binding to use them.
 
-The Hue binding supports all seven types of lighting devices defined for ZigBee Light Link ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf).
+The Hue binding supports all seven types of lighting devices defined for Zigbee Light Link ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf).
 These are:
 
-| Device type              | ZigBee Device ID | Thing type |
+| Device type              | Zigbee Device ID | Thing type |
 |--------------------------|------------------|------------|
 | On/Off Light             | 0x0000           | 0000       |
 | On/Off Plug-in Unit      | 0x0010           | 0010       |
@@ -37,13 +37,13 @@ The following matrix lists the capabilities (channels) for each type:
 |  0210       |    X   |            |   X   |          X        |
 |  0220       |    X   |     X      |       |          X        |
 
-Beside bulbs and luminaires the Hue binding supports some ZigBee sensors.
+Beside bulbs and luminaires the Hue binding supports some Zigbee sensors.
 Currently only Hue specific sensors are tested successfully (e.g. Hue Motion Sensor, Hue Dimmer Switch, Hue Tap, CLIP Sensor).
 The Hue Motion Sensor registers a `ZLLLightLevel` sensor (0106), a `ZLLPresence` sensor (0107) and a `ZLLTemperature` sensor (0302) in one device.
 The Hue CLIP Sensor saves scene states with status or flag for HUE rules.
-They are presented by the following ZigBee Device ID and _Thing type_:
+They are presented by the following Zigbee Device ID and _Thing type_:
 
-| Device type                 | ZigBee Device ID | Thing type     |
+| Device type                 | Zigbee Device ID | Thing type     |
 |-----------------------------|------------------|----------------|
 | Light Sensor                | 0x0106           | 0106           |
 | Occupancy Sensor            | 0x0107           | 0107           |
@@ -72,7 +72,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ]
 ```
 
 A user to authenticate against the Hue Bridge is automatically generated.
-Please note that the generated user name cannot be written automatically to the `.thing` file, and has to be set manually.
+Please note that the generated user name cannot be written automatically to the `.things` file, and has to be set manually.
 The generated user name can be found, after pressing the authentication button on the bridge, with the following console command: `hue <bridgeUID> username`.
 The user name can be set using the `userName` configuration value, e.g.:
 
