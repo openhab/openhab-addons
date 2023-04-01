@@ -102,7 +102,7 @@ public class TapoDeviceInfo {
     }
 
     private void setData() {
-        this.brightness = jsonObjectToInt(jsonObject, JSON_KEY_BRIGHTNES);
+        this.brightness = jsonObjectToInt(jsonObject, JSON_KEY_BRIGHTNESS);
         this.colorTemp = jsonObjectToInt(jsonObject, JSON_KEY_COLORTEMP, BULB_MIN_COLORTEMP);
         this.deviceId = jsonObjectToString(jsonObject, JSON_KEY_ID);
         this.deviceOn = jsonObjectToBool(jsonObject, JSON_KEY_ON);
