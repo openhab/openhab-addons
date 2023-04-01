@@ -106,7 +106,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
                 updateState(CHANNEL_BATTERY_VOLTAGE,
                         new QuantityType<ElectricPotential>(Float.parseFloat(p.value), Units.VOLT));
             } catch (NumberFormatException e) {
-                logger.debug("Could not parse runHours {}", p.value);
+                logger.debug("Could not parse batteryVoltage {}", p.value);
                 updateState(CHANNEL_BATTERY_VOLTAGE, UnDefType.UNDEF);
             }
         });

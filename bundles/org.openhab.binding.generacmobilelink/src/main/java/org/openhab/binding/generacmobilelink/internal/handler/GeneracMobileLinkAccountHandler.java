@@ -166,11 +166,13 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         } catch (SessionExpiredException e) {
             logger.debug("Session expired", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/thing.generacmobilelink.account.offline.communication-error.session-expired");
             loggedIn = false;
-        } catch (InvalidCreendialsException e) {
+        } catch (InvalidCredentialsException e) {
             logger.debug("Credentials Invalid", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid Credentials");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/thing.generacmobilelink.account.offline.configuration-error.invalid-credentials");
             loggedIn = false;
             // we don't want to continue polling with bad credentials
             stopOrRestartPoll(false);
@@ -243,7 +245,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
      * @throws IOException if there is a problem communicating or parsing the responses
      * @throws InvalidCreendialsException If Azure rejects the login credentials.
      */
-    private synchronized void login() throws IOException, InvalidCreendialsException {
+    private synchronized void login() throws IOException, InvalidCredentialsException {
         logger.debug("Attempting login");
         GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
         refreshIntervalSeconds = config.refreshInterval;
@@ -283,15 +285,15 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                     .header("X-Csrf-Token", signInConfig.csrf).param("tx", "StateProperties=" + signInConfig.transId)
                     .param("p", "B2C_1A_SignUpOrSigninOnline").content(new FormContentProvider(fields));
 
-            ContentResponse selfAssertedResposne = selfAssertedRequest.send();
+            ContentResponse selfAssertedResponse = selfAssertedRequest.send();
 
-            logger.debug("selfAssertedRequest response {}", selfAssertedResposne.getStatus());
+            logger.debug("selfAssertedRequest response {}", selfAssertedResponse.getStatus());
 
-            if (selfAssertedResposne.getStatus() != 200) {
-                throw new IOException("SelfAsserted: Bad response status: " + selfAssertedResposne.getStatus());
+            if (selfAssertedResponse.getStatus() != 200) {
+                throw new IOException("SelfAsserted: Bad response status: " + selfAssertedResponse.getStatus());
             }
 
-            SelfAssertedResponse sa = GSON.fromJson(selfAssertedResposne.getContentAsString(),
+            SelfAssertedResponse sa = GSON.fromJson(selfAssertedResponse.getContentAsString(),
                     SelfAssertedResponse.class);
 
             if (sa == null) {
@@ -299,7 +301,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             }
 
             if (!"200".equals(sa.status)) {
-                throw new InvalidCreendialsException("Invalid Credentials: " + sa.message);
+                throw new InvalidCredentialsException("Invalid Credentials: " + sa.message);
             }
 
             Request confirmedRequest = httpClient.newRequest(LOGIN_BASE + "/api/CombinedSigninAndSignup/confirmed")
@@ -367,10 +369,10 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
         return true;
     }
 
-    private class InvalidCreendialsException extends Exception {
+    private class InvalidCredentialsException extends Exception {
         private static final long serialVersionUID = 1L;
 
-        public InvalidCreendialsException(String message) {
+        public InvalidCredentialsException(String message) {
             super(message);
         }
     }

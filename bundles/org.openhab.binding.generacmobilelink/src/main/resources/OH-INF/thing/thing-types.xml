@@ -69,7 +69,7 @@
 	<channel-type id="heroImageUrl">
 		<item-type>String</item-type>
 		<label>Hero Image URL</label>
-		<description>URL to a image of the generator.</description>
+		<description>URL to an image of the generator.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="activationDate">
@@ -123,7 +123,7 @@
 	<channel-type id="runHours">
 		<item-type>Number:Time</item-type>
 		<label>Run Hours</label>
-		<description>Number of Hours Run.</description>
+		<description>Number of hours run.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="batteryVoltage">
@@ -141,7 +141,7 @@
 	<channel-type id="signalStrength">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Signal Strength</label>
-		<description>The WiFi signal strength of the generator</description>
+		<description>The Wi-Fi signal strength of the generator</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
