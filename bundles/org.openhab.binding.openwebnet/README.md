@@ -261,15 +261,16 @@ For Percent commands and position feedback to work correctly, the `shutterRun` T
 
 ##### Automatic calibration of `shutterRun`
 
-When `shutterRun` is set to `AUTO`, a  _UP >> DOWN >> Position%_ cycle will be performed automatically the first time a Percent command is sent to the shutter: this way the binding will calculate the shutter "run time" and set the `shutterRun` parameter accordingly.
-Note that there is a "stop time" parameter that is usually set on the physical actuator (eg. F411U2) either via virtual configuration (MyHOME_Suite: parameter "Stop time" or "M") or physical configuration (jumpers): check the actuator instructions to configure correctly this parameter before doing an automatic calibration of `shutterRun`.
-If the "stop time" of the physical actuator is wrongly set or cannot be modified to the actual "run time", auto calibration cannot be used and `shutterRun` has to be set manually.
+When `shutterRun` is set to `AUTO`, a  _UP >> DOWN >> Position%_  cycle will be performed automatically the first time a Percent command is sent to the shutter: this way the binding will calculate the shutter "run time" and set the `shutterRun` parameter accordingly.
+
+**NOTE**
+A "stop time" parameter is usually set on the physical actuator (eg. F411U2) either via virtual configuration (MyHOME_Suite: parameters named "Stop time" or "M") or physical configuration (jumpers): check the actuator instructions to configure correctly this parameter on the actuator before performing auto calibration. If the "stop time" on the physical actuator is wrongly set or cannot be modified to the actual "run time" of the shutter, auto calibration cannot be used and `shutterRun` should be set manually to the actual runtime of the shutters.
 
 ##### Position estimation of the shutter
 
 - if `shutterRun` is not set, or is set to `AUTO` but calibration has not been performed yet, then position estimation will remain `UNDEF` (undefined)
-- if `shutterRun` is wrongly set *higher* than the actual runtime, then position estimation will remain `UNDEF`: try to reduce `shutterRun` until you find the right value
-- before adding/configuring roller shutter Things it is suggested to have all roller shutters `UP`, otherwise the Percent command won’t work until the roller shutter is fully rolled up
+- if `shutterRun` is wrongly set *higher* than the actual runtime or the "stop time" of the actuator (see NOTE above), then position estimation will remain `UNDEF`: try to reduce `shutterRun` until you find the right value
+- before adding/configuring roller shutter Things it is suggested to have all roller shutters `UP`, otherwise the Percent command will not work until the roller shutter is fully rolled up
 - if OH is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronise again its position with the binding
 - the shutter position is estimated based on UP/DOWN timings: an error of ±2% is normal
 
@@ -527,5 +528,7 @@ Special thanks for helping on testing this binding go to:
 [@aconte80](https://community.openhab.org/u/aconte80),
 [@rubenfuser](https://community.openhab.org/u/rubenfuser),
 [@stamate_viorel](https://community.openhab.org/u/stamate_viorel),
-[@marchino](https://community.openhab.org/u/marchino)
+[@marchino](https://community.openhab.org/u/marchino),
+[@the-ninth](https://community.openhab.org/u/the-ninth)
+
 and many others at the fantastic openHAB community!
