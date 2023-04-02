@@ -206,19 +206,19 @@ public class SonnenHandler extends BaseThingHandler {
 
             if (dataPM != null && dataPM.length >= 2) {
                 switch (channelId) {
-                    case ENERGYIMPORTEDSTATEPRODUCTION:
+                    case CHANNELENERGYIMPORTEDSTATEPRODUCTION:
                         state = new QuantityType<Energy>(dataPM[0].getKwhImported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
-                    case ENERGYEXPORTEDSTATEPRODUCTION:
+                    case CHANNELENERGYEXPORTEDSTATEPRODUCTION:
                         state = new QuantityType<Energy>(dataPM[0].getKwhExported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
-                    case ENERGYIMPORTEDSTATECONSUMPTION:
+                    case CHANNELENERGYIMPORTEDSTATECONSUMPTION:
                         state = new QuantityType<Energy>(dataPM[1].getKwhImported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
-                    case ENERGYEXPORTEDSTATECONSUMPTION:
+                    case CHANNELENERGYEXPORTEDSTATECONSUMPTION:
                         state = new QuantityType<Energy>(dataPM[1].getKwhExported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;

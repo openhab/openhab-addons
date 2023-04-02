@@ -2,8 +2,8 @@
 
 The binding for sonnen communicates with a sonnen battery.
 More information about the sonnen battery can be found [here](https://sonnen.de/).
-The binding supports now the old deprecated V1 from sonnen as well as V2 which requires a Authentication token.
-More infromation about the V2 Api can be found http://LOCAL-SYSTEM-IP/api/doc.html
+The binding supports the old deprecated V1 from sonnen as well as V2 which requires an authentication token.
+More infromation about the V2 API can be found `http://LOCAL-SYSTEM-IP/api/doc.html`
 
 ## Supported Things
 
@@ -39,8 +39,8 @@ The following channels are yet supported:
 | flowProductionBatteryState     | Switch        | read   | Indicates if there is a current flow from Production towards Battery                    |
 | energyImportedStateProduction  | Number:Energy | read   | Indicates the imported kWh Production                                                   |
 | energyExportedStateProduction  | Number:Energy | read   | Indicates the exported kWh Production                                                   |
-| energyImportedStateConsumption | Number:Energy | read   | Indicates the imported kWh Production                                                   |
-| energyExportedStateConsumption | Number:Energy | read   | Indicates the exported kWh Production                                                   |
+| energyImportedStateConsumption | Number:Energy | read   | Indicates the imported kWh Consumption                                                  |
+| energyExportedStateConsumption | Number:Energy | read   | Indicates the exported kWh Consumption                                                  |
 
 ## Full Example
 
