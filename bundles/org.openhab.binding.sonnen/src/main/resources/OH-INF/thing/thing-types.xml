@@ -25,8 +25,10 @@
 			<channel id="flowGridBatteryState" typeId="flowGridBatteryState"/>
 			<channel id="flowProductionBatteryState" typeId="flowProductionBatteryState"/>
 			<channel id="flowProductionGridState" typeId="flowProductionGridState"/>
-			<channel id="energyImportedState" typeId="energyImportedState"/>
-			<channel id="energyExportedState" typeId="energyExportedState"/>
+			<channel id="energyImportedStateProduction" typeId="energyImportedStateProduction"/>
+			<channel id="energyExportedStateProduction" typeId="energyExportedStateProduction"/>
+			<channel id="energyImportedStateConsumption" typeId="energyImportedStateConsumption"/>
+            <channel id="energyExportedStateConsumption" typeId="energyExportedStateConsumption"/>
 		</channels>
 
 		<config-description>
@@ -142,16 +144,28 @@
 		<description>Indicates if there is a current flow from production towards grid.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="energyImportedState">
+	<channel-type id="energyImportedStateProduction">
 		<item-type>Number:Energy</item-type>
-		<label>kWh Imported per Day</label>
-		<description>Indicates the imported kWh per day, starting every day at midnight.</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<label>kWh Imported Production</label>
+		<description>Indicates the imported kWh Production.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="energyExportedState">
+	<channel-type id="energyExportedStateProduction">
 		<item-type>Number:Energy</item-type>
-		<label>kWh Exported per Day</label>
-		<description>Indicates the exported kWh per day, starting every day at midnight.</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<label>kWh Exported Production</label>
+		<description>Indicates the exported kWh Production.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+	<channel-type id="energyImportedStateConsumption">
+        <item-type>Number:Energy</item-type>
+        <label>kWh Imported Consumption</label>
+        <description>Indicates the imported kWh Consumption.</description>
+        <state readOnly="true" pattern="%.1f %unit%"/>
+    </channel-type>
+    <channel-type id="energyExportedStateConsumption">
+        <item-type>Number:Energy</item-type>
+        <label>kWh Exported Consumption</label>
+        <description>Indicates the exported kWh Consumption.</description>
+        <state readOnly="true" pattern="%.1f %unit%"/>
+    </channel-type>
 </thing:thing-descriptions>

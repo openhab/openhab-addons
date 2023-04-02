@@ -47,6 +47,9 @@ public class SonnenBindingConstants {
     public static final String CHANNELFLOWPRODUCTIONGRIDSTATE = "flowProductionGridState";
 
     // List of new Channel ids for PowerMeter API
-    public static final String ENERGYIMPORTEDSTATE = "energyImportedState";
-    public static final String ENERGYEXPORTEDSTATE = "energyExportedState";
+    public static final String ENERGYIMPORTEDSTATEPRODUCTION = "energyImportedStateProduction";
+    public static final String ENERGYEXPORTEDSTATEPRODUCTION = "energyExportedStateProduction";
+    public static final String ENERGYIMPORTEDSTATECONSUMPTION = "energyImportedStateConsumption";
+    public static final String ENERGYEXPORTEDSTATECONSUMPTION = "energyExportedStateConsumption";
+
 }
