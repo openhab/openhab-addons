@@ -146,12 +146,12 @@
 		<item-type>Number:Energy</item-type>
 		<label>kWh Imported per Day</label>
 		<description>Indicates the imported kWh per day, starting every day at midnight.</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="energyExportedState">
 		<item-type>Number:Energy</item-type>
 		<label>kWh Exported per Day</label>
 		<description>Indicates the exported kWh per day, starting every day at midnight.</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
