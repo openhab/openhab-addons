@@ -34,19 +34,12 @@ import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * Discovery service to find resource things on a Hue Bridge that is running CLIP 2.
@@ -54,15 +47,11 @@ import org.osgi.service.component.annotations.Reference;
  * @author Andrew Fiddian-Green - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, configurationPid = "discovery.hue.api2")
 public class Clip2ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     public static final int DISCOVERY_TIMEOUT_SECONDS = 20;
     public static final int DISCOVERY_INTERVAL_SECONDS = 600;
-    private static final String ALL_LIGHTS_KEY = "discovery.group.all_lights.label";
 
-    public final LocaleProvider localeProvider;
-    public final TranslationProvider translationProvider;
     /**
      * Map of resource types and respective thing types that shall be discovered.
      */
@@ -75,13 +64,9 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
     private @Nullable Clip2BridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> discoveryTask;
 
-    @Activate
-    public Clip2ThingDiscoveryService(final @Reference LocaleProvider localeProvider,
-            final @Reference TranslationProvider translationProvider) {
+    public Clip2ThingDiscoveryService() {
         super(Set.of(HueBindingConstants.THING_TYPE_DEVICE, HueBindingConstants.THING_TYPE_ROOM,
                 HueBindingConstants.THING_TYPE_ZONE), DISCOVERY_TIMEOUT_SECONDS, true);
-        this.localeProvider = localeProvider;
-        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -127,12 +112,9 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                         String label = resource.getName();
                         String legacyThingUID = null;
 
+                        // special zone 'all lights'
                         if (resource.getType() == ResourceType.BRIDGE_HOME) {
-                            // the bridge home is a special zone for the whole home
-                            label = translationProvider.getText(
-                                    FrameworkUtil.getBundle(Clip2ThingDiscoveryService.class), ALL_LIGHTS_KEY,
-                                    ALL_LIGHTS_KEY, localeProvider.getLocale());
-                            continue;
+                            label = bridgeHandler.getLocalizedText(HueBindingConstants.ALL_LIGHTS_KEY);
                         }
 
                         Optional<Thing> legacyThingOptional = getLegacyThing(resource.getIdV1());

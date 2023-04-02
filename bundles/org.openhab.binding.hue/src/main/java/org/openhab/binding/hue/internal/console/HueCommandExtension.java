@@ -73,7 +73,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
     private final ThingRegistry thingRegistry;
 
     public static final Set<ResourceType> SUPPORTED_RESOURCES = Set.of(ResourceType.DEVICE, ResourceType.ROOM,
-            ResourceType.ZONE);
+            ResourceType.ZONE, ResourceType.BRIDGE_HOME);
 
     @Activate
     public HueCommandExtension(final @Reference ThingRegistry thingRegistry) {
@@ -172,9 +172,17 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                         String id = resource.getId();
                                         String label = resource.getName();
                                         String comment = resource.getProductName();
+                                        String type = resourceType.name().toLowerCase();
 
-                                        lines.put(label, String.format(FMT_THING, resourceType.name().toLowerCase(), id,
-                                                label, id, comment));
+                                        // special zone 'all lights'
+                                        if (resource.getType() == ResourceType.BRIDGE_HOME) {
+                                            label = clip2BridgeHandler
+                                                    .getLocalizedText(HueBindingConstants.ALL_LIGHTS_KEY);
+                                            type = "Zone";
+                                            comment = type;
+                                        }
+
+                                        lines.put(label, String.format(FMT_THING, type, id, label, id, comment));
                                     }
                                     lines.entrySet().forEach(entry -> console.println(entry.getValue()));
                                 }

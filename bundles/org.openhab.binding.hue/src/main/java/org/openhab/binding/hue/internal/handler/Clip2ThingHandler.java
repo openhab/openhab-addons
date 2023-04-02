@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
-import org.openhab.binding.hue.internal.discovery.Clip2ThingDiscoveryService;
 import org.openhab.binding.hue.internal.dto.clip2.ColorTemperature2;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
@@ -63,7 +62,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +76,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(HueBindingConstants.THING_TYPE_DEVICE,
             HueBindingConstants.THING_TYPE_ROOM, HueBindingConstants.THING_TYPE_ZONE);
-
-    public static final String SCENE_ACTIVATE_KEY = "scene.channel.activate";
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -120,8 +117,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
-    private final TranslationProvider translationProvider;
+    private final Bundle bundle;
     private final LocaleProvider localeProvider;
+    private final TranslationProvider translationProvider;
 
     private Resource thisResource;
 
@@ -134,7 +132,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> updateContributorsTask;
 
     public Clip2ThingHandler(Thing thing, ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry,
-            TranslationProvider translationProvider, LocaleProvider localeProvider) {
+            Bundle bundle, LocaleProvider localeProvider, TranslationProvider translationProvider) {
         super(thing);
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -150,8 +148,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
-        this.translationProvider = translationProvider;
+        this.bundle = bundle;
         this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -183,6 +182,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
         }
         throw new AssetNotLoadedException("Bridge handler missing");
+    }
+
+    /**
+     * Return a localized text.
+     *
+     * @param key the i18n text key.
+     * @return the localized text.
+     */
+    public String getLocalizedText(String key) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale());
+        return Objects.nonNull(result) ? result : key;
     }
 
     /**
@@ -687,9 +697,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             ResourceReference group = scene.getGroup();
             if (Objects.nonNull(group) && resourceId.equals(group.getId())) {
                 String label = scene.getName();
-                String description = translationProvider.getText(
-                        FrameworkUtil.getBundle(Clip2ThingDiscoveryService.class), SCENE_ACTIVATE_KEY,
-                        SCENE_ACTIVATE_KEY, localeProvider.getLocale(), label);
+                String description = getLocalizedText(HueBindingConstants.SCENE_ACTIVATE_KEY);
                 ChannelUID channelUID = new ChannelUID(thingUID, scene.getId());
                 Channel channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH)
                         .withType(HueBindingConstants.SCENE_CHANNEL_TYPE_UID).withLabel(label)

@@ -174,4 +174,7 @@ public class HueBindingConstants {
     }).collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
 
     public static final ChannelTypeUID SCENE_CHANNEL_TYPE_UID = new ChannelTypeUID(BINDING_ID, "scene");
+
+    public static final String SCENE_ACTIVATE_KEY = "scene.channel.activate";
+    public static final String ALL_LIGHTS_KEY = "discovery.group.all_lights.label";
 }

@@ -43,6 +43,8 @@ import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.thing.Bridge;
@@ -59,6 +61,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -93,6 +96,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     private final HttpClientFactory httpClientFactory;
     private final ThingRegistry thingRegistry;
+    private final Bundle bundle;
+    private final LocaleProvider localeProvider;
+    private final TranslationProvider translationProvider;
 
     private @Nullable Clip2Bridge clip2Bridge;
     private @Nullable ScheduledFuture<?> checkConnectionTask;
@@ -103,10 +109,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private int applKeyRetriesRemaining;
     private int connectRetriesRemaining;
 
-    public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry) {
+    public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
+            Bundle bundle, LocaleProvider localeProvider, TranslationProvider translationProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.thingRegistry = thingRegistry;
+        this.bundle = bundle;
+        this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
     }
 
     /**
@@ -224,8 +234,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (thing.getStatus() == ThingStatus.ONLINE && (childHandler instanceof Clip2ThingHandler)) {
             logger.debug("childHandlerInitialized() {}", childThing.getUID());
             try {
-                ResourceReference reference = ((Clip2ThingHandler) childHandler).getResourceReference();
-                getClip2Bridge().getResources(reference).getResources().forEach(r -> onResource(r));
+                updateThings();
+                updateThingsSceneChannels();
             } catch (ApiException | AssetNotLoadedException e) {
                 // exceptions should not occur here; but log anyway (just in case)
                 logger.warn("childHandlerInitialized() {}", e.getMessage(), e);
@@ -299,6 +309,17 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public @Nullable String getIpAddress() {
         Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
         return config.ipAddress;
+    }
+
+    /**
+     * Return a localized text.
+     *
+     * @param key the i18n text key.
+     * @return the localized text.
+     */
+    public String getLocalizedText(String key) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale());
+        return Objects.nonNull(result) ? result : key;
     }
 
     /**

@@ -174,9 +174,11 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
-            return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry);
+            return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry,
+                    getBundleContext().getBundle(), localeProvider, i18nProvider);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new Clip2ThingHandler(thing, thingRegistry, itemChannelLinkRegistry, i18nProvider, localeProvider);
+            return new Clip2ThingHandler(thing, thingRegistry, itemChannelLinkRegistry, getBundleContext().getBundle(),
+                    localeProvider, i18nProvider);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
                     stateDescriptionProvider, i18nProvider, localeProvider);

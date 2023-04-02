@@ -408,9 +408,9 @@ public class Clip2Bridge implements Closeable {
         http2Client = httpClientFactory.createHttp2Client("hue-clip2", httpClient.getSslContextFactory());
         http2Client.setConnectTimeout(Clip2Bridge.TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
-        this.applicationKey = applicationKey;
         this.bridgeHandler = bridgeHandler;
         this.hostName = hostName;
+        this.applicationKey = applicationKey;
         baseUrl = String.format(FORMAT_URL_RESOURCE, hostName);
         eventUrl = String.format(FORMAT_URL_EVENTS, hostName);
         registrationUrl = String.format(FORMAT_URL_REGISTER, hostName);
@@ -565,43 +565,6 @@ public class Clip2Bridge implements Closeable {
         } catch (HttpUnauthorizedException e) {
             throw new ApiException("getResources() unauthorized error", e);
         }
-    }
-
-    /**
-     * Helper class to create a HeadersFrame for a standard HTTP GET request.
-     *
-     * @param url the server url.
-     * @param acceptContentType the accepted content type for the response.
-     * @return the HeadersFrame.
-     */
-    private HeadersFrame prepareHeaders(String url, String acceptContentType) {
-        return prepareHeaders(url, acceptContentType, "GET", -1, null);
-    }
-
-    /**
-     * Helper class to create a HeadersFrame for a more exotic HTTP request.
-     *
-     * @param url the server url.
-     * @param acceptContentType the accepted content type for the response.
-     * @param method the HTTP request method.
-     * @param contentLength the length of the content e.g. for a PUT call.
-     * @param contentType the respective content type.
-     * @return the HeadersFrame.
-     */
-    private HeadersFrame prepareHeaders(String url, String acceptContentType, String method, long contentLength,
-            @Nullable String contentType) {
-        HttpFields fields = new HttpFields();
-        fields.put(HttpHeader.ACCEPT, acceptContentType);
-        if (contentType != null) {
-            fields.put(HttpHeader.CONTENT_TYPE, contentType);
-        }
-        if (contentLength >= 0) {
-            fields.putLongField(HttpHeader.CONTENT_LENGTH, contentLength);
-        }
-        fields.put(HttpHeader.USER_AGENT, APPLICATION_ID);
-        fields.put(APPLICATION_KEY, applicationKey);
-        return new HeadersFrame(new MetaData.Request(method, new HttpURI(url), HttpVersion.HTTP_2, fields), null,
-                contentLength <= 0);
     }
 
     /**
@@ -825,6 +788,43 @@ public class Clip2Bridge implements Closeable {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new ApiException("Error opening HTTP 2 session", e);
         }
+    }
+
+    /**
+     * Helper class to create a HeadersFrame for a standard HTTP GET request.
+     *
+     * @param url the server url.
+     * @param acceptContentType the accepted content type for the response.
+     * @return the HeadersFrame.
+     */
+    private HeadersFrame prepareHeaders(String url, String acceptContentType) {
+        return prepareHeaders(url, acceptContentType, "GET", -1, null);
+    }
+
+    /**
+     * Helper class to create a HeadersFrame for a more exotic HTTP request.
+     *
+     * @param url the server url.
+     * @param acceptContentType the accepted content type for the response.
+     * @param method the HTTP request method.
+     * @param contentLength the length of the content e.g. for a PUT call.
+     * @param contentType the respective content type.
+     * @return the HeadersFrame.
+     */
+    private HeadersFrame prepareHeaders(String url, String acceptContentType, String method, long contentLength,
+            @Nullable String contentType) {
+        HttpFields fields = new HttpFields();
+        fields.put(HttpHeader.ACCEPT, acceptContentType);
+        if (contentType != null) {
+            fields.put(HttpHeader.CONTENT_TYPE, contentType);
+        }
+        if (contentLength >= 0) {
+            fields.putLongField(HttpHeader.CONTENT_LENGTH, contentLength);
+        }
+        fields.put(HttpHeader.USER_AGENT, APPLICATION_ID);
+        fields.put(APPLICATION_KEY, applicationKey);
+        return new HeadersFrame(new MetaData.Request(method, new HttpURI(url), HttpVersion.HTTP_2, fields), null,
+                contentLength <= 0);
     }
 
     /**
