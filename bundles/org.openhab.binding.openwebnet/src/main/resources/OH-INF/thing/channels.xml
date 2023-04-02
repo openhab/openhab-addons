@@ -465,6 +465,12 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Zone State</label>
 		<description>Alarm zone is active (ON) or inactive (OFF) (read only).</description>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Alarm Time stamp</label>
+		<description>Alarm zone timestamp (read only)</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -14,11 +14,15 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -43,6 +47,8 @@ import org.slf4j.LoggerFactory;
  * {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
+ * @author Giovanni Fabiani - further improvements
+ *
  */
 @NonNullByDefault
 public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
@@ -206,6 +212,9 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             logger.debug("Alarm.updateZone() WHAT is null. Frame={}", msg);
             return;
         }
+
+        String timeStamp = String.valueOf(getThing().getChannel("timestamp"));
+
         switch (w) {
             case ZONE_DISENGAGED:
             case ZONE_ENGAGED:
@@ -217,6 +226,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             case ZONE_ALARM_SILENT:
             case ZONE_ALARM_TECHNICAL:
             case ZONE_ALARM_TECHNICAL_RESET:
+                updateTimeStamp(timeStamp);
                 updateZoneAlarm(w);
                 break;
             default:
@@ -252,6 +262,31 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
                 logger.warn("Alarm.updateZoneAlarm() Ignoring unsupported WHAT {} for  zone {}", w, this.deviceWhere);
         }
+    }
+
+    protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp) {
+        updateTimeStamp(lastUpdatedTimeStamp, CHANNEL_ALARM_ZONE_TIMESTAMP);
+    }
+
+    protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp, ChannelUID cuid) {
+        if (lastUpdatedTimeStamp != null) {
+            try {
+                logger.trace("Parsing date {} for channel {}", lastUpdatedTimeStamp, cuid);
+                ZonedDateTime zdt = ZonedDateTime.parse(lastUpdatedTimeStamp);
+                ZonedDateTime zdtLocal = zdt.withZoneSameInstant(ZoneId.systemDefault());
+                logger.trace("Parsing datetime successful. Using date. {}", new DateTimeType(zdtLocal));
+                updateState(cuid, new DateTimeType(zdtLocal));
+            } catch (IllegalArgumentException e) {
+                logger.warn("Parsing date failed: {}.", e.getMessage(), e);
+            }
+        } else {
+            logger.debug("Timestamp is null!");
+        }
+    }
+
+    protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp, String channel) {
+        ChannelUID cuid = new ChannelUID(getThing().getUID(), channel);
+        updateTimeStamp(lastUpdatedTimeStamp, cuid);
     }
 
     private void resetAllZonesAlarmState() {
