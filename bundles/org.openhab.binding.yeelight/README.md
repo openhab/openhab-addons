@@ -4,16 +4,17 @@ This binding integrates the [Yeelight Lighting Product](https://www.yeelight.com
 
 ## Supported Things
 
-| Device                                                                                 | Thing ID   | Device model                      |
-|----------------------------------------------------------------------------------------|------------|-----------------------------------|
-| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/)          | `ceiling`  | `ceiling`, `ceiling3`             |
-| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/)          | `ceiling1` | `ceiling1`, `ceiling11`, `ceil26` |
-| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/)          | `ceiling4` | `ceiling4`                        |
-| [Yeelight LED Color Bulb](https://us.yeelight.com/category/smart-bulb/)                | `wonder`   | `color`, `color4`                 |
-| [Yeelight LED White Bulb](https://us.yeelight.com/category/smart-bulb/)                | `dolhin`   | `mono`                            |
-| [Yeelight LED White Bulb v2](https://us.yeelight.com/category/smart-bulb/)             | `ct_bulb`  | `ct_bulb`                         |
-| [Yeelight LED Color Stripe](https://us.yeelight.com/shop/yeelight-led-lightstrip-pro/) | `stripe`   | `stripe`, `strip6`                |
-| [Yeelight Mi LED Desk Lamp](https://us.yeelight.com/category/table-lighting/)          | `desklamp` | `desklamp`                        |
+| Device                                                                        | Thing type ID | Device model                      |
+|-------------------------------------------------------------------------------|---------------|-----------------------------------|
+| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/) | `ceiling`     | `ceiling`, `ceiling3`             |
+| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/) | `ceiling1`    | `ceiling1`, `ceiling11`, `ceil26` |
+| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/) | `ceiling4`    | `ceiling4`                        |
+| [Yeelight LED Color Bulb](https://us.yeelight.com/category/smart-bulb/)       | `wonder`      | `color`, `color4`                 |
+| [Yeelight LED White Bulb](https://us.yeelight.com/category/smart-bulb/)       | `dolphin`     | `mono`                            |
+| [Yeelight LED White Bulb v2](https://us.yeelight.com/category/smart-bulb/)    | `ct_bulb`     | `ct_bulb`                         |
+| [Yeelight LED Color Stripe](https://us.yeelight.com/category/led-strip/)      | `stripe`      | `stripe`, `strip6`                |
+| [Yeelight Mi LED Desk Lamp](https://us.yeelight.com/category/table-lighting/) | `desklamp`    | `desklamp`                        |
+
 ## Preconditions
 
 To control Yeelight devices with this binding, you need to connect the device to your local network at first with the Yeelight app.
