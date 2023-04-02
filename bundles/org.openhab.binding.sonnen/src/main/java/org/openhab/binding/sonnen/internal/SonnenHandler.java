@@ -204,7 +204,7 @@ public class SonnenHandler extends BaseThingHandler {
                 dataPM = serviceCommunication.getPowerMeterData();
             }
 
-            if (dataPM != null) {
+            if (dataPM != null && dataPM.length >= 2) {
                 switch (channelId) {
                     case ENERGYIMPORTEDSTATEPRODUCTION:
                         state = new QuantityType<Energy>(dataPM[0].getKwhImported(), Units.KILOWATT_HOUR);
