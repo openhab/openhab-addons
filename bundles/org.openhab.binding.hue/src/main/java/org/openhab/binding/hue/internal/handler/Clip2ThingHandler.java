@@ -188,10 +188,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Return a localized text.
      *
      * @param key the i18n text key.
+     * @param arguments for parameterized translation.
      * @return the localized text.
      */
-    public String getLocalizedText(String key) {
-        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale());
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
         return Objects.nonNull(result) ? result : key;
     }
 
@@ -697,7 +698,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             ResourceReference group = scene.getGroup();
             if (Objects.nonNull(group) && resourceId.equals(group.getId())) {
                 String label = scene.getName();
-                String description = getLocalizedText(HueBindingConstants.SCENE_ACTIVATE_KEY);
+                String description = getLocalizedText(HueBindingConstants.SCENE_ACTIVATE_KEY, label);
                 ChannelUID channelUID = new ChannelUID(thingUID, scene.getId());
                 Channel channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH)
                         .withType(HueBindingConstants.SCENE_CHANNEL_TYPE_UID).withLabel(label)
