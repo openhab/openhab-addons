@@ -212,7 +212,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                 return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unsupported type of Speedtest recognized, Speedtest CLI tool from Ookla is REQUIRED (https://www.speedtest.net/). Please check installation/configuration.");
+                        "@text/offline.configuration-error.type");
                 return false;
             }
         }
@@ -301,7 +301,7 @@ public class SpeedtestHandler extends BaseThingHandler {
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Speedtest is not returning valid results.");
+                    "@text/offline.configuration-error.results");
         }
     }
 
@@ -380,13 +380,13 @@ public class SpeedtestHandler extends BaseThingHandler {
         File file = new File(execPath);
         if (!checkFileExists(file)) { // Check if entered path exists
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Speedtest executable not found. Please check configuration.");
+                    "@text/offline.configuration-error.file");
             return false;
         }
 
         if (!checkFileExecutable(file)) { // Check if speedtest is executable
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Speedtest CLI tool not executable. Please check installation/configuration.");
+                    "@text/offline.configuration-error.exec");
             return false;
         }
         return true;
