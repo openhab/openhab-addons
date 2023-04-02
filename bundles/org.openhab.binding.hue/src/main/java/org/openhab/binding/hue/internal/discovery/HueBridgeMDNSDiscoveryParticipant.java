@@ -121,7 +121,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                 String label = String.format("%s (%s)", service.getName(), host);
                 String legacyThingUID = null;
 
-                if (uid.getAsString().startsWith(HueBindingConstants.CLIP2_THING_TYPE_PREFIX)) {
+                if (new ThingUID(HueBindingConstants.THING_TYPE_CLIP2, uid.getId()).equals(uid)) {
                     Optional<Thing> legacyThingOptional = getLegacyThing(host);
                     if (legacyThingOptional.isPresent()) {
                         Thing legacyThing = legacyThingOptional.get();

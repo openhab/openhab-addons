@@ -151,7 +151,6 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_TEMPERATURE_ENABLED = "temperatureEnabled";
     public static final String CHANNEL_2_ZIGBEE_STATUS = "zigbeeStatus";
 
-    public static final String CLIP2_THING_TYPE_PREFIX = "hue:clip2:";
     public static final String CLIP2_PROPERTY_SUFFIX = " (api2)";
 
     /*
