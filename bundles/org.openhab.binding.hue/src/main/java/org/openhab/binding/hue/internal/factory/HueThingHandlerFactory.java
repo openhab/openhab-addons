@@ -50,8 +50,6 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The factory for all varieties of Hue thing handlers.
@@ -77,8 +75,6 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                     TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
                     ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toUnmodifiableSet());
-
-    private final Logger logger = LoggerFactory.getLogger(HueThingHandlerFactory.class);
 
     private final HttpClientFactory httpClientFactory;
     private final HueStateDescriptionProvider stateDescriptionProvider;
