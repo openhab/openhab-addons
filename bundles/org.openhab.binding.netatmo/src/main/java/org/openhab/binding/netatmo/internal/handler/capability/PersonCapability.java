@@ -56,7 +56,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
     @Override
     protected void beforeNewData() {
         super.beforeNewData();
-        homeCapability.ifPresent(cap -> {
+        securityCapability.ifPresent(cap -> {
             Stream<HomeDataModule> cameras = cap.getModules().values().stream()
                     .filter(module -> module.getType() == ModuleType.WELCOME);
             descriptionProvider.setStateOptions(cameraChannelUID,

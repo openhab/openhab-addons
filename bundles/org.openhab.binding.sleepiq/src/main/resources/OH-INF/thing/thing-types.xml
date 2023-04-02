@@ -68,6 +68,10 @@
 			<channel-group id="right" typeId="chamberGroupType"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<config-description>
 			<parameter name="bedId" type="text" required="true">
 				<label>Bed ID</label>
@@ -101,6 +105,11 @@
 			<channel id="monthlySleepIQ" typeId="monthlySleepIQType"/>
 			<channel id="monthlyAverageHeartRate" typeId="monthlyAverageHeartRateType"/>
 			<channel id="monthlyAverageRespirationRate" typeId="monthlyAverageRespirationRateType"/>
+			<channel id="foundationPreset" typeId="foundationPresetType"/>
+			<channel id="foundationPositionHead" typeId="foundationPositionHeadType"/>
+			<channel id="foundationPositionFoot" typeId="foundationPositionFootType"/>
+			<channel id="nightStandOutlet" typeId="nightStandOutletType"/>
+			<channel id="underBedLight" typeId="underBedLightType"/>
 		</channels>
 	</channel-group-type>
 
@@ -230,6 +239,45 @@
 		<label>Monthly Avg Respiration Rate</label>
 		<description>The average respiration rate for the past month</description>
 		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="foundationPresetType">
+		<item-type>Number</item-type>
+		<label>Preset</label>
+		<description>Bed position preset</description>
+		<state readOnly="false" min="1" max="6" step="1" pattern="%d">
+			<options>
+				<option value="1">Favorite</option>
+				<option value="2">Read</option>
+				<option value="3">Watch TV</option>
+				<option value="4">Flat</option>
+				<option value="5">Zero G</option>
+				<option value="6">Snore</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="foundationPositionHeadType">
+		<item-type>Number</item-type>
+		<label>Head Position</label>
+		<description>The position of the adjustable head</description>
+		<state readOnly="false" min="0" max="100" step="1" pattern="%d"/>
+	</channel-type>
+	<channel-type id="foundationPositionFootType">
+		<item-type>Number</item-type>
+		<label>Foot Position</label>
+		<description>The position of the adjustable foot</description>
+		<state readOnly="false" min="0" max="100" step="1" pattern="%d"/>
+	</channel-type>
+	<channel-type id="nightStandOutletType">
+		<item-type>Switch</item-type>
+		<label>Night Stand</label>
+		<description>The night stand outlet</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="underBedLightType">
+		<item-type>Switch</item-type>
+		<label>Under Bed Light</label>
+		<description>The under bed lighting</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

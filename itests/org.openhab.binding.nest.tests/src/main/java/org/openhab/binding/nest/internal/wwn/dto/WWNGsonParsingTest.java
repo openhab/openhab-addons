@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial contribution
  * @author Wouter Born - Increase test coverage
  */
+@NonNullByDefault
 public class WWNGsonParsingTest {
 
     private final Logger logger = LoggerFactory.getLogger(WWNGsonParsingTest.class);

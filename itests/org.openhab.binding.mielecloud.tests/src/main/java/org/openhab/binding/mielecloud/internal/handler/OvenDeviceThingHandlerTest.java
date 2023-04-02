@@ -46,7 +46,7 @@ public class OvenDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_OVEN, OVEN_DEVICE_THING_UID,
-                OvenDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                OvenDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "0");
     }
 
     @Test

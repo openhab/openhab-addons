@@ -58,19 +58,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="camera-event">
-		<kind>trigger</kind>
-		<label>Camera Event</label>
-		<event>
-			<options>
-				<option value="ANIMAL"/>
-				<option value="HUMAN"/>
-				<option value="MOVEMENT"/>
-				<option value="VEHICLE"/>
-			</options>
-		</event>
-	</channel-type>
-
 	<channel-type id="battery-status">
 		<item-type>String</item-type>
 		<label>Battery Status</label>
@@ -375,12 +362,13 @@
 				<option value="MISSED_CALL">Call has not been answered by anyone</option>
 				<option value="HUSH">Smoke detector status</option>
 				<option value="SMOKE">Smoke detection</option>
-				<option value="TAMPERED">Smoke Detector tamper</option>
+				<option value="TAMPERED">Detector tamper</option>
 				<option value="WIFI_STATUS">Wifi status</option>
 				<option value="BATTERY_STATUS">Battery status</option>
 				<option value="DETECTION_CHAMBER_STATUS">Detection chamber status</option>
 				<option value="SOUND_TEST">Sound test</option>
 				<option value="NEW_DEVICE">A device has been added</option>
+				<option value="CO_DETECTED">Carbon Monoxide detection</option>
 			</options>
 		</state>
 	</channel-type>
@@ -408,8 +396,8 @@
 				<option value="MOVEMENT_ANIMAL">Animal seen</option>
 				<option value="SOUND_TEST_OK">Alarm test successful</option>
 				<option value="SOUND_TEST_ERROR">Alarm test failed</option>
-				<option value="DETECTOR_READY">Smoke detector installed</option>
-				<option value="DETECTOR_TAMPERED">Smoke detector tampered</option>
+				<option value="DETECTOR_READY">Detector installed</option>
+				<option value="DETECTOR_TAMPERED">Detector tampered</option>
 				<option value="DETECTION_CHAMBER_CLEAN">Detection chamber clean</option>
 				<option value="DETECTION_CHAMBER_DIRTY">Detection chamber dusty</option>
 				<option value="BATTERY_LOW">Battery low</option>
@@ -418,6 +406,9 @@
 				<option value="SMOKE_DETECTED">Smoke detected</option>
 				<option value="WIFI_STATUS_OK">Wi-Fi status ok</option>
 				<option value="WIFI_STATUS_ERROR">Wi-Fi status error</option>
+				<option value="CO_OK">Carbon Monoxide OK</option>
+				<option value="CO_PRE_ALARM">Carbon Monoxide Pre-alarm</option>
+				<option value="CO_ALARM">Carbon Monoxide alarrm</option>
 			</options>
 		</state>
 	</channel-type>
