@@ -28,7 +28,7 @@
 			<channel id="energyImportedStateProduction" typeId="energyImportedStateProduction"/>
 			<channel id="energyExportedStateProduction" typeId="energyExportedStateProduction"/>
 			<channel id="energyImportedStateConsumption" typeId="energyImportedStateConsumption"/>
-            <channel id="energyExportedStateConsumption" typeId="energyExportedStateConsumption"/>
+			<channel id="energyExportedStateConsumption" typeId="energyExportedStateConsumption"/>
 		</channels>
 
 		<config-description>
@@ -157,15 +157,15 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="energyImportedStateConsumption">
-        <item-type>Number:Energy</item-type>
-        <label>kWh Imported Consumption</label>
-        <description>Indicates the imported kWh Consumption.</description>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
-    <channel-type id="energyExportedStateConsumption">
-        <item-type>Number:Energy</item-type>
-        <label>kWh Exported Consumption</label>
-        <description>Indicates the exported kWh Consumption.</description>
-        <state readOnly="true" pattern="%.1f %unit%"/>
-    </channel-type>
+		<item-type>Number:Energy</item-type>
+		<label>kWh Imported Consumption</label>
+		<description>Indicates the imported kWh Consumption.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="energyExportedStateConsumption">
+		<item-type>Number:Energy</item-type>
+		<label>kWh Exported Consumption</label>
+		<description>Indicates the exported kWh Consumption.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>

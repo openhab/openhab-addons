@@ -51,5 +51,4 @@ public class SonnenBindingConstants {
     public static final String ENERGYEXPORTEDSTATEPRODUCTION = "energyExportedStateProduction";
     public static final String ENERGYIMPORTEDSTATECONSUMPTION = "energyImportedStateConsumption";
     public static final String ENERGYEXPORTEDSTATECONSUMPTION = "energyExportedStateConsumption";
-
 }
