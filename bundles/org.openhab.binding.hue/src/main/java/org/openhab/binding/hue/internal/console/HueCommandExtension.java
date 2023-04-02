@@ -28,6 +28,8 @@ import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.exceptions.ApiException;
+import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
@@ -139,25 +141,32 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
 
                         case SCENES:
                             console.println(String.format(FMT_BRIDGE, thing.getUID(), ipAddress, applicationKey));
-                            List<Resource> scenes = clip2BridgeHandler
-                                    .getResourcesConsole(new ResourceReference().setType(ResourceType.SCENE));
-                            if (scenes.isEmpty()) {
-                                console.println("no scenes found");
-                            } else {
-                                scenes.forEach(scene -> console
-                                        .println(String.format(FMT_SCENE, scene.getId(), scene.getName())));
+                            try {
+                                List<Resource> scenes = clip2BridgeHandler
+                                        .getResources(new ResourceReference().setType(ResourceType.SCENE))
+                                        .getResources();
+                                if (scenes.isEmpty()) {
+                                    console.println("no scenes found");
+                                } else {
+                                    scenes.forEach(scene -> console
+                                            .println(String.format(FMT_SCENE, scene.getId(), scene.getName())));
+                                }
+                            } catch (ApiException | AssetNotLoadedException e) {
                             }
                             console.println("}");
                             return;
 
                         case THINGS:
                             console.println(String.format(FMT_BRIDGE, thing.getUID(), ipAddress, applicationKey));
-                            final Clip2BridgeHandler clip2BridgeHandlerFinal = clip2BridgeHandler;
 
                             for (ResourceType resourceType : SUPPORTED_RESOURCES) {
-                                List<Resource> resources = clip2BridgeHandlerFinal
-                                        .getResourcesConsole(new ResourceReference().setType(resourceType));
-
+                                List<Resource> resources;
+                                try {
+                                    resources = clip2BridgeHandler
+                                            .getResources(new ResourceReference().setType(resourceType)).getResources();
+                                } catch (ApiException | AssetNotLoadedException e) {
+                                    continue;
+                                }
                                 if (!resources.isEmpty()) {
                                     console.println(String.format(FMT_COMMENT, resourceType.toString()));
                                     Map<String, String> lines = new TreeMap<>();

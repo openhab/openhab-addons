@@ -339,20 +339,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Return a list of resources for the console app.
-     *
-     * @param reference the resource reference to return.
-     * @return list of resources of the given type.
-     */
-    public List<Resource> getResourcesConsole(ResourceReference reference) {
-        try {
-            return getClip2Bridge().getResources(reference).getResources();
-        } catch (ApiException | AssetNotLoadedException e) {
-        }
-        return List.of();
-    }
-
-    /**
      * Getter for the scheduler.
      *
      * @return the scheduler.
