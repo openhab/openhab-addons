@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
+ * @author Giovanni Fabiani - Added timestamp
  */
 @NonNullByDefault
 public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
@@ -234,7 +235,6 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     private void updateZoneAlarm(WhatAlarm w) {
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         DateTimeFormatter format = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
-
         switch (w) {
             case ZONE_ALARM_INTRUSION:
                 updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_INTRUSION + " " + now.format(format)));
