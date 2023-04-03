@@ -68,7 +68,6 @@ ring:stickup:<ring_device_id>           "Ring Stickup Camera"       [ refreshInt
 ring.items:
 
 ```java
-Switch     RingAccountStatus              "Ring Account Status"             { channel="ring:account:ringAccount:control#status" }
 Switch     RingAccountEnabled             "Ring Account Polling Enabled"    { channel="ring:account:ringAccount:control#enabled" }
 String     RingEventVideoURL              "Ring Event URL"                  { channel="ring:account:ringAccount:event#url" }
 DateTime   RingEventCreated               "Ring Event Created"              { channel="ring:account:ringAccount:event#createdAt" } 
@@ -76,14 +75,11 @@ String     RingEventKind                  "Ring Event Kind"                 { ch
 String     RingEventDeviceID              "Ring Device ID"                  { channel="ring:account:ringAccount:event#doorbotId" }
 String     RingEventDeviceDescription     "Ring Device Description"         { channel="ring:account:ringAccount:event#doorbotDescription" }
 
-Switch     RingDoorbellStatus             "Ring Doorbell Status"            { channel="ring:doorbell:<ring_device_id>:control#status" }
 Switch     RingDoorbellEnabled            "Ring Doorbell Polling Enabled"   { channel="ring:doorbell:<ring_device_id>:control#enabled" }
 Number     RingDoorbellBattery            "Ring Doorbell Battery [%s]%"     { channel="ring:doorbell:<ring_device_id>:status#battery"}
 
-Switch     RingChimeStatus                "Ring Chime Status"               { channel="ring:chime:<ring_device_id>:control#status" }
 Switch     RingChimeEnabled               "Ring Chime Polling Enabled"      { channel="ring:chime:<ring_device_id>:control#enabled" }
 
-Switch     RingStickupStatus             "Ring Stickup Status"            { channel="ring:stickup:<ring_device_id>:control#status" }
 Switch     RingStickupEnabled            "Ring Stickup Polling Enabled"   { channel="ring:stickup:<ring_device_id>:control#enabled" }
 Number     RingStickupBattery            "Ring Stickup Battery [%s]%"     { channel="ring:stickup:<ring_device_id>:status#battery"}
 
