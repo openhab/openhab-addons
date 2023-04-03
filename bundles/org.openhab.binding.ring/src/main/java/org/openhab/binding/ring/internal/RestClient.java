@@ -267,11 +267,18 @@ public class RestClient {
 
         String refToken = refreshToken;
 
-        logger.trace("RestClient - getAuthenticatedProfile {} - {} - {} - {} - {}", username,
-                (password.equals("") || (password == null) ? "EMPTY" : "NOTEMPTY"), refreshToken, twofactorCode,
-                hardwareId);
+        logger.trace("RestClient - getAuthenticatedProfile U:{} - P:{} - R:{} - 2:{} - H:{}",
+                (username.equals("") || (username == null) ? (username == null ? "NULL" : "STRINGEMPTY") : "NOTEMPTY"),
+                (password.equals("") || (password == null) ? "EMPTY" : "NOTEMPTY"),
+                (refreshToken.equals("") || (refreshToken == null) ? (refreshToken == null ? "NULL" : "STRINGEMPTY")
+                        : "NOTEMPTY"),
+                (twofactorCode.equals("") || (twofactorCode == null) ? (twofactorCode == null ? "NULL" : "STRINGEMPTY")
+                        : "NOTEMPTY"),
+                (hardwareId.equals("") || (hardwareId == null) ? (hardwareId == null ? "NULL" : "STRINGEMPTY")
+                        : "NOTEMPTY"));
 
         if ((twofactorCode != null) && (!twofactorCode.equals(""))) {
+            logger.trace("RestClient - getAuthenticatedProfile - valid 2fa - run getAuthCode");
             refToken = getAuthCode(twofactorCode, username, password, hardwareId);
         }
 
@@ -503,8 +510,12 @@ public class RestClient {
 
     private String getAuthCode(String authCode, String username, String password, String hardwareId)
             throws AuthenticationException {
-        logger.trace("RestClient - getAuthCode {} - {} - {} - {}", authCode, username,
-                (password.equals("") || (password == null) ? "EMPTY" : "NOTEMPTY"), hardwareId);
+        logger.trace("RestClient - getAuthCode {} - {} - {} - {}",
+                (authCode.equals("") || (authCode == null) ? (authCode == null ? "NULL" : "STRINGEMPTY") : "NOTEMPTY"),
+                (username.equals("") || (username == null) ? (username == null ? "NULL" : "STRINGEMPTY") : "NOTEMPTY"),
+                (password.equals("") || (password == null) ? (password == null ? "NULL" : "STRINGEMPTY") : "NOTEMPTY"),
+                (hardwareId.equals("") || (hardwareId == null) ? (hardwareId == null ? "NULL" : "STRINGEMPTY")
+                        : "NOTEMPTY"));
         String result = "";
 
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
