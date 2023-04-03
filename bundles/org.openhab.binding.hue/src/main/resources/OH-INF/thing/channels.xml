@@ -237,12 +237,7 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Switch the light on/off.</description>
-	</channel-type>
-
-	<channel-type id="groupSwitch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch on/off all the lights in the zone or room.</description>
+		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="lightBrightness">
@@ -252,11 +247,25 @@
 		<category>Light</category>
 	</channel-type>
 
+	<channel-type id="groupSwitch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch on/off all the lights in the zone or room.</description>
+		<category>Switch</category>
+	</channel-type>
+
 	<channel-type id="groupBrightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Adjust the brightness of all the lights in the zone or room.</description>
 		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="groupScene">
+		<item-type>String</item-type>
+		<label>Scene</label>
+		<description>Activate the scene for the lights in the zone or room.</description>
+		<category>MediaControl</category>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
+import org.openhab.binding.hue.internal.handler.Clip2StateDescriptionProvider;
 import org.openhab.binding.hue.internal.handler.Clip2ThingHandler;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
@@ -78,6 +79,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
     private final HueStateDescriptionProvider stateDescriptionProvider;
+    private final Clip2StateDescriptionProvider clip2StateDescriptionProvider;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
     private final ThingRegistry thingRegistry;
@@ -86,11 +88,13 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public HueThingHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference HueStateDescriptionProvider stateDescriptionProvider,
+            final @Reference Clip2StateDescriptionProvider clip2StateDescriptionProvider,
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
             final @Reference ThingRegistry thingRegistry,
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry) {
         this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.clip2StateDescriptionProvider = clip2StateDescriptionProvider;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.thingRegistry = thingRegistry;
@@ -173,8 +177,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry,
                     getBundleContext().getBundle(), localeProvider, i18nProvider);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new Clip2ThingHandler(thing, thingRegistry, itemChannelLinkRegistry, getBundleContext().getBundle(),
-                    localeProvider, i18nProvider);
+            return new Clip2ThingHandler(thing, clip2StateDescriptionProvider, thingRegistry, itemChannelLinkRegistry);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
                     stateDescriptionProvider, i18nProvider, localeProvider);

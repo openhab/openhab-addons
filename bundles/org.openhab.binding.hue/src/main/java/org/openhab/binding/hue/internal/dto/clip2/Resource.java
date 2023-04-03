@@ -568,12 +568,10 @@ public class Resource {
         return this;
     }
 
-    public Resource setRecall(Command command) {
-        if (OnOffType.ON.equals(command)) {
-            Recall recall = new Recall();
-            recall.setAction(RecallAction.ACTIVE);
-            this.recall = recall;
-        }
+    public Resource setRecall() {
+        Recall recall = new Recall();
+        recall.setAction(RecallAction.ACTIVE);
+        this.recall = recall;
         return this;
     }
 

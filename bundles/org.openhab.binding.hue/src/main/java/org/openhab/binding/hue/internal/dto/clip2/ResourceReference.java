@@ -39,6 +39,11 @@ public class ResourceReference {
     private @Nullable String rid;
     private @NonNullByDefault({}) String rtype;
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return (obj instanceof ResourceReference) && (rid != null) && rid.equals(((ResourceReference) obj).rid);
+    }
+
     public @Nullable String getId() {
         return rid;
     }

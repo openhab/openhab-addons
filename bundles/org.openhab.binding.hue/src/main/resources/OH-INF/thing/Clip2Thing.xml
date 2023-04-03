@@ -55,6 +55,7 @@
 		<channels>
 			<channel id="brightness" typeId="groupBrightness"/>
 			<channel id="switch" typeId="groupSwitch"/>
+			<channel id="scene" typeId="groupScene"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
@@ -62,7 +63,7 @@
 		<config-description>
 			<parameter name="resourceId" type="text" required="true">
 				<label>Resource Id</label>
-				<description>Unique Resource Id of the light group in the Hue bridge</description>
+				<description>Unique Resource Id of the room in the Hue bridge</description>
 			</parameter>
 		</config-description>
 
@@ -80,6 +81,7 @@
 		<channels>
 			<channel id="brightness" typeId="groupBrightness"/>
 			<channel id="switch" typeId="groupSwitch"/>
+			<channel id="scene" typeId="groupScene"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
@@ -87,7 +89,7 @@
 		<config-description>
 			<parameter name="resourceId" type="text" required="true">
 				<label>Resource Id</label>
-				<description>Unique Resource Id of the light group in the Hue bridge</description>
+				<description>Unique Resource Id of the zone in the Hue bridge</description>
 			</parameter>
 		</config-description>
 

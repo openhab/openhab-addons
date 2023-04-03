@@ -38,11 +38,8 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -54,15 +51,14 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,9 +113,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
-    private final Bundle bundle;
-    private final LocaleProvider localeProvider;
-    private final TranslationProvider translationProvider;
+    private final Clip2StateDescriptionProvider stateDescriptionProvider;
 
     private Resource thisResource;
 
@@ -127,12 +121,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean hasConnectivityIssue;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
-    private boolean updateSceneChannelsDone;
 
     private @Nullable ScheduledFuture<?> updateContributorsTask;
 
-    public Clip2ThingHandler(Thing thing, ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry,
-            Bundle bundle, LocaleProvider localeProvider, TranslationProvider translationProvider) {
+    public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
+            ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -148,9 +141,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
-        this.bundle = bundle;
-        this.localeProvider = localeProvider;
-        this.translationProvider = translationProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -182,18 +173,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
         }
         throw new AssetNotLoadedException("Bridge handler missing");
-    }
-
-    /**
-     * Return a localized text.
-     *
-     * @param key the i18n text key.
-     * @param arguments for parameterized translation.
-     * @return the localized text.
-     */
-    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
-        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
-        return Objects.nonNull(result) ? result : key;
     }
 
     /**
@@ -229,44 +208,32 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
 
-        if (HueBindingConstants.SCENE_CHANNEL_TYPE_UID.equals(channel.getChannelTypeUID())) {
-            if (OnOffType.ON.equals(command)) {
-                String id = channelUID.getIdWithoutGroup();
-                Resource putResource = new Resource(ResourceType.SCENE).setId(id).setRecall(command);
-                try {
-                    getBridgeHandler().putResource(putResource);
-                } catch (ApiException | AssetNotLoadedException e) {
-                    logger.warn("handleSceneCommand() exception:{}, id:{}, command:{}", e.getMessage(), id, command, e);
-                }
-                scheduler.schedule(() -> updateState(channelUID, OnOffType.OFF), 3, TimeUnit.SECONDS);
-            }
-            return;
-        }
-
-        Resource putResource;
-        ResourceType putResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
+        ResourceType lightResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
                 : ResourceType.GROUPED_LIGHT;
+
+        Resource putResource = null;
+        String putResourceId = null;
 
         switch (channelUID.getId()) {
             case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE:
-                putResource = new Resource(putResourceType).setColorTemperaturePercent(command,
-                        mirekSchemaFrom(putResourceType));
+                putResource = new Resource(lightResourceType).setColorTemperaturePercent(command,
+                        mirekSchemaFrom(lightResourceType));
                 break;
 
             case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE_ABS:
-                putResource = new Resource(putResourceType).setColorTemperatureKelvin(command);
+                putResource = new Resource(lightResourceType).setColorTemperatureKelvin(command);
                 break;
 
             case HueBindingConstants.CHANNEL_COLOR:
-                putResource = new Resource(putResourceType).setColor(command);
+                putResource = new Resource(lightResourceType).setColor(command);
                 break;
 
             case HueBindingConstants.CHANNEL_BRIGHTNESS:
-                putResource = new Resource(putResourceType).setBrightness(command);
+                putResource = new Resource(lightResourceType).setBrightness(command);
                 break;
 
             case HueBindingConstants.CHANNEL_SWITCH:
-                putResource = new Resource(putResourceType).setSwitch(command);
+                putResource = new Resource(lightResourceType).setSwitch(command);
                 break;
 
             case HueBindingConstants.CHANNEL_2_TEMPERATURE_ENABLED:
@@ -281,22 +248,32 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
                 break;
 
+            case HueBindingConstants.CHANNEL_SCENE:
+                if (command instanceof StringType) {
+                    putResourceId = ((StringType) command).toString();
+                    putResource = new Resource(ResourceType.SCENE).setRecall();
+                }
+                break;
+
             default:
-                logger.warn("handleCommand() unknown channel, channelUID:{}", channelUID);
-                return; // <= nota bene !!
         }
 
-        putResourceType = putResource.getType();
-        String putResourceId = commandResourceIds.get(putResourceType);
-        if (Objects.nonNull(putResourceId)) {
-            try {
-                getBridgeHandler().putResource(putResource.setId(putResourceId));
-            } catch (ApiException | AssetNotLoadedException e) {
-                logger.warn("handleCommand() error {}", e.getMessage(), e);
-            }
-        } else {
-            logger.warn("handleCommand() resource not found, putResourceType:{}, channelUID:{}, command:{}",
-                    putResourceType, channelUID, command);
+        if (putResource == null) {
+            logger.warn("handleCommand() unsupported channelUID:{}, command:{}", channelUID, command);
+            return;
+        }
+
+        putResourceId = putResourceId != null ? putResourceId : commandResourceIds.get(putResource.getType());
+        if (putResourceId == null) {
+            logger.warn("handleCommand() channelUID:{}, command:{}, putResourceType:{} => missing resource ID",
+                    channelUID, command, putResource.getType());
+            return;
+        }
+
+        try {
+            getBridgeHandler().putResource(putResource.setId(putResourceId));
+        } catch (ApiException | AssetNotLoadedException e) {
+            logger.warn("handleCommand() error {}", e.getMessage(), e);
         }
     }
 
@@ -321,7 +298,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         hasConnectivityIssue = false;
         updatePropertiesDone = false;
         updateDependenciesDone = false;
-        updateSceneChannelsDone = false;
     }
 
     /**
@@ -424,19 +400,29 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Set the active list of channels by removing any that had initially been created by the thing XML declaration, but
      * which in fact did not have data returned from the bridge i.e. channels which are not in the supportedChannelIds
-     * set.
+     * set. Also warn if there are channels in the supportedChannelIds set which are not in the thing.
      */
     private void updateChannelList() {
         if (!disposing) {
-            logger.debug("updateChannelList() called");
-            if (!supportedChannelIds.isEmpty()) {
-                for (Channel channel : thing.getChannels()) {
-                    String channelId = channel.getUID().getId();
-                    if (!supportedChannelIds.contains(channelId)) {
-                        logger.debug("setChannels() unused channel '{}' removed from {}", channelId, thing.getUID());
-                        updateThing(editThing().withoutChannels(channel).build());
+            logger.debug("updateChannelList() supportedChannelIds.size():{}", supportedChannelIds.size());
+            if (logger.isWarnEnabled()) {
+                for (String requiredChannelId : supportedChannelIds) {
+                    if (thing.getChannel(requiredChannelId) == null) {
+                        logger.warn("updateChannelList() required channel '{}' missing => please recreate thing!",
+                                new ChannelUID(thing.getUID(), requiredChannelId));
                     }
                 }
+            }
+            List<Channel> removeChannels = new ArrayList<>();
+            for (Channel actualChannel : thing.getChannels()) {
+                ChannelUID actualChannelUID = actualChannel.getUID();
+                if (!supportedChannelIds.contains(actualChannelUID.getId())) {
+                    logger.debug("updateChannelList() unused channel '{}' removed", actualChannelUID);
+                    removeChannels.add(actualChannel);
+                }
+            }
+            if (!removeChannels.isEmpty()) {
+                updateThing(editThing().withoutChannels(removeChannels).build());
             }
         }
     }
@@ -573,6 +559,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             try {
                 updateLookups();
                 updateContributors();
+                updateSceneChannel();
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
                 updateDependenciesDone = true;
@@ -675,41 +662,20 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * For room or zone things, iterate over the given list of scene Resources and for those scenes where the scene
-     * group refers to this thing, dynamically create the respective scene channels.
+     * Check if the bridge contains scenes for this thing, and if so, include a scene channel in the supported channel
+     * list and populate its respective state options list.
      *
-     * @param scenes list of scene resources.
+     * @throws AssetNotLoadedException if one of the assets is not loaded.
+     * @throws ApiException if a communication error occurred.
      */
-    public void updateSceneChannels(List<Resource> scenes) {
-        if (updateSceneChannelsDone || (thisResource.getType() == ResourceType.DEVICE)) {
-            return;
+    private void updateSceneChannel() throws AssetNotLoadedException, ApiException {
+        List<Resource> scenes = getBridgeHandler().getScenes(getResourceReference());
+        logger.debug("updateSceneChannel() scenes.size():{}", scenes.size());
+        if (!scenes.isEmpty()) {
+            supportedChannelIds.add(HueBindingConstants.CHANNEL_SCENE);
+            stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_SCENE),
+                    scenes.stream().map(s -> new StateOption(s.getId(), s.getName())).collect(Collectors.toList()));
         }
-        logger.debug("updateSceneChannels()");
-        List<Channel> channels = new ArrayList<Channel>(thing.getChannels());
-
-        // remove prior scene channels
-        channels.removeIf(channel -> HueBindingConstants.SCENE_CHANNEL_TYPE_UID.equals(channel.getChannelTypeUID()));
-
-        ThingUID thingUID = thing.getUID();
-        String resourceId = thisResource.getId();
-
-        // add current scene channels
-        for (Resource scene : scenes) {
-            ResourceReference group = scene.getGroup();
-            if (Objects.nonNull(group) && resourceId.equals(group.getId())) {
-                String label = scene.getName();
-                String description = getLocalizedText(HueBindingConstants.SCENE_ACTIVATE_KEY, label);
-                ChannelUID channelUID = new ChannelUID(thingUID, scene.getId());
-                Channel channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH)
-                        .withType(HueBindingConstants.SCENE_CHANNEL_TYPE_UID).withLabel(label)
-                        .withDescription(Objects.requireNonNull(description)).build();
-                channels.add(channel);
-            }
-        }
-
-        // update the thing
-        updateThing(editThing().withChannels(channels).build());
-        updateSceneChannelsDone = true;
     }
 
     /**
