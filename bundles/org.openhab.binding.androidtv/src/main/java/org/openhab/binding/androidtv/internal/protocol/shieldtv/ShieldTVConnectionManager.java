@@ -967,7 +967,7 @@ public class ShieldTVConnectionManager {
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("{} - Command received: {}", handler.getThingID(), channelUID.getId().toString());
+        logger.debug("{} - Command received: {}", handler.getThingID(), channelUID.getId().toString());
 
         if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
             if (command instanceof StringType) {
