@@ -107,7 +107,7 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
 
     @Override
     public void handleRemoval() {
-        updateStatus(ThingStatus.REMOVING);
+        updateStatus(ThingStatus.OFFLINE);
         final String id = getThing().getUID().getId();
         final RingDeviceRegistry registry = RingDeviceRegistry.getInstance();
         try {
