@@ -161,7 +161,7 @@ public class GoogleTVMessageParser {
                 String remoteServer = GoogleTVRequest.encodeMessage(remoteServerSb.toString());
                 String remoteServerVersion = GoogleTVRequest.encodeMessage(remoteServerVersionSb.toString());
 
-                logger.trace("{} - {} \"{}\" \"{}\" {} {} {}", callback.getThingID(), preamble, model, manufacturer,
+                logger.debug("{} - {} \"{}\" \"{}\" {} {} {}", callback.getThingID(), preamble, model, manufacturer,
                         androidVersion, remoteServer, remoteServerVersion);
 
                 callback.setModel(model);
@@ -255,7 +255,7 @@ public class GoogleTVMessageParser {
 
                 String preamble = preambleSb.toString();
                 String model = GoogleTVRequest.encodeMessage(modelSb.toString());
-                logger.trace("{} - Device Update: {} \"{}\" {} {} {} {}", callback.getThingID(), preamble, model,
+                logger.debug("{} - Device Update: {} \"{}\" {} {} {} {}", callback.getThingID(), preamble, model,
                         audioMode, volMax, volCurr, volMute);
                 callback.setAudioMode(audioMode);
 
@@ -263,7 +263,7 @@ public class GoogleTVMessageParser {
                 // PIN Process Messages. Only used on 6467.
                 if (msg.startsWith(MESSAGE_PINSUCCESS)) {
                     // PIN Process Successful
-                    logger.trace("{} - PIN Process Successful!", callback.getThingID());
+                    logger.debug("{} - PIN Process Successful!", callback.getThingID());
                     callback.finishPinProcess();
                 } else {
                     // 080210c801a201081204080310061801
@@ -317,10 +317,10 @@ public class GoogleTVMessageParser {
                 String preamble = preambleSb.toString();
                 String appName = GoogleTVRequest.encodeMessage(appNameSb.toString());
 
-                logger.trace("{} - Current App: {} {}", callback.getThingID(), preamble, appName);
+                logger.debug("{} - Current App: {} {}", callback.getThingID(), preamble, appName);
                 callback.setCurrentApp(appName);
             } else {
-                logger.debug("{} - Unknown payload received. {} {}", callback.getThingID(), len, msg);
+                logger.info("{} - Unknown payload received. {} {}", callback.getThingID(), len, msg);
             }
         } catch (Exception e) {
             logger.debug("{} - Message Parser Exception on {}", callback.getThingID(), msg);

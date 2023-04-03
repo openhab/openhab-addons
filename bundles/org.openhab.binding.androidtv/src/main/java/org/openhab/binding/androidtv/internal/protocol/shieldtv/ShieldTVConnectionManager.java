@@ -197,11 +197,14 @@ public class ShieldTVConnectionManager {
                 handler.updateChannelState(CHANNEL_APPNAME, new StringType(appName));
             } else {
                 logger.info("Unknown Android App: {}", currentApp);
+                handler.updateChannelState(CHANNEL_APPNAME, new StringType(""));
             }
 
             if (appURLDB.get(currentApp) != null) {
                 appURL = appURLDB.get(currentApp);
                 handler.updateChannelState(CHANNEL_APPURL, new StringType(appURL));
+            } else {
+                handler.updateChannelState(CHANNEL_APPURL, new StringType(""));
             }
         }
     }
@@ -274,11 +277,11 @@ public class ShieldTVConnectionManager {
         } else {
             isOnline = true;
         }
-        logger.trace("{} - Device Health - Online: {} - Logged In: {}", handler.getThingID(), isOnline, isLoggedIn);
+        logger.debug("{} - Device Health - Online: {} - Logged In: {}", handler.getThingID(), isOnline, isLoggedIn);
         if (isOnline != this.isOnline) {
             this.isOnline = isOnline;
             if (isOnline) {
-                logger.trace("{} - Device is back online.  Attempting reconnection.", handler.getThingID());
+                logger.debug("{} - Device is back online.  Attempting reconnection.", handler.getThingID());
                 reconnect();
             }
         }
@@ -532,7 +535,7 @@ public class ShieldTVConnectionManager {
     }
 
     private void scheduleConnectRetry(long waitSeconds) {
-        logger.debug("{} - Scheduling ShieldTV connection retry in {} seconds", handler.getThingID(), waitSeconds);
+        logger.trace("{} - Scheduling ShieldTV connection retry in {} seconds", handler.getThingID(), waitSeconds);
         connectRetryJob = scheduler.schedule(this::connect, waitSeconds, TimeUnit.SECONDS);
     }
 
@@ -653,7 +656,6 @@ public class ShieldTVConnectionManager {
         try {
             while (!Thread.currentThread().isInterrupted() && writer != null) {
                 ShieldTVCommand command = sendQueue.take();
-                // logger.trace("Sending ShieldTV command {}", command);
 
                 try {
                     BufferedWriter writer = this.writer;
@@ -759,7 +761,7 @@ public class ShieldTVConnectionManager {
                 thisMsg = fixMessage(Integer.toHexString(reader.read()));
                 if (HARD_DROP.equals(thisMsg)) {
                     // Shield has crashed the connection. Disconnect hard.
-                    logger.trace("{} - readerThreadJob received ffffffff.  Disconnecting hard.", handler.getThingID());
+                    logger.debug("{} - readerThreadJob received ffffffff.  Disconnecting hard.", handler.getThingID());
                     this.isLoggedIn = false;
                     reconnect();
                     break;
@@ -1162,7 +1164,7 @@ public class ShieldTVConnectionManager {
             if (command instanceof StringType) {
                 if (!isLoggedIn) {
                     // Do PIN for shieldtv protocol
-                    logger.trace("{} - ShieldTV PIN Process Started", handler.getThingID());
+                    logger.debug("{} - ShieldTV PIN Process Started", handler.getThingID());
                     String pin = ShieldTVRequest.pinRequest(command.toString());
                     String message = ShieldTVRequest.encodeMessage(pin);
                     sendCommand(new ShieldTVCommand(message));

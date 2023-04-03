@@ -55,7 +55,6 @@ public class ShieldTVMessageParser {
 
         logger.trace("{} - Received ShieldTV message from: {} - Message: {}", callback.getThingID(),
                 callback.getHostName(), msg);
-        // logger.trace("Encoded message: {}", ShieldTVRequest.encodeMessage(msg));
 
         callback.validMessageReceived();
 
@@ -91,7 +90,7 @@ public class ShieldTVMessageParser {
                     hostname.append(st);
                 }
                 logger.trace("{} - Shield Hostname: {} {}", callback.getThingID(), hostname, length);
-                logger.trace("{} - Shield Hostname Encoded: {}", callback.getThingID(),
+                logger.debug("{} - Shield Hostname Encoded: {}", callback.getThingID(),
                         ShieldTVRequest.encodeMessage(hostname.toString()));
 
                 callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
@@ -175,13 +174,11 @@ public class ShieldTVMessageParser {
                     }
                 }
 
-                logger.trace("{} - Hostname: {}", callback.getThingID(),
-                        ShieldTVRequest.encodeMessage(hostname.toString()));
-                logger.trace("{} - ipAddress: {}", callback.getThingID(),
-                        ShieldTVRequest.encodeMessage(ipAddress.toString()));
-                logger.trace("{} - deviceId: {}", callback.getThingID(),
-                        ShieldTVRequest.encodeMessage(deviceId.toString()));
-                logger.trace("{} - arch: {}", callback.getThingID(), ShieldTVRequest.encodeMessage(arch.toString()));
+                logger.debug("{} - Hostname: {} - ipAddress: {} - deviceId: {} - arch: {}", callback.getThingID(),
+                        ShieldTVRequest.encodeMessage(hostname.toString()),
+                        ShieldTVRequest.encodeMessage(ipAddress.toString()),
+                        ShieldTVRequest.encodeMessage(deviceId.toString()),
+                        ShieldTVRequest.encodeMessage(arch.toString()));
 
                 callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
                 callback.setDeviceID(ShieldTVRequest.encodeMessage(deviceId.toString()));
@@ -270,7 +267,7 @@ public class ShieldTVMessageParser {
                             appSBDN.append(st);
                         }
                     } else {
-                        logger.debug("Second Entry");
+                        logger.trace("Second Entry");
                     }
 
                     // App Name
@@ -312,8 +309,8 @@ public class ShieldTVMessageParser {
                     String appDN = ShieldTVRequest.encodeMessage(appSBDN.toString());
                     String appName = ShieldTVRequest.encodeMessage(appSBName.toString());
                     String appURL = ShieldTVRequest.encodeMessage(appSBURL.toString());
-                    logger.debug("{} - AppPrepend: {} AppDN: {}", callback.getThingID(), appPrepend, appDN);
-                    logger.debug("{} - AppName: {} AppURL: {}", callback.getThingID(), appName, appURL);
+                    logger.debug("{} - AppPrepend: {} AppDN: {} AppName: {} AppURL: {}", callback.getThingID(),
+                            appPrepend, appDN, appName, appURL);
                     appNameDB.put(appDN, appName);
                     appURLDB.put(appDN, appURL);
                 }
@@ -367,7 +364,7 @@ public class ShieldTVMessageParser {
                 // Timeout
                 // 080a 12 1108b510 12 0c0804 12 08 54696d65206f7574 180a
                 // 080a 12 1108b510 12 0c0804 12 LEN Timeout 180a
-                logger.debug("{} - Timeout", callback.getThingID());
+                logger.debug("{} - Timeout {}", callback.getThingID(), msg);
             } else if (msg.startsWith(MESSAGE_APP_SUCCESS) && msg.startsWith(MESSAGE_APP_GET_SUCCESS, 10)) {
                 // Get current app command successful. Usually paired with 0807 reply below.
             } else if (msg.startsWith(MESSAGE_APP_SUCCESS) && msg.startsWith(MESSAGE_APP_CURRENT, 10)) {
@@ -381,6 +378,8 @@ public class ShieldTVMessageParser {
                 for (int i = 36; i < 36 + length; i++) {
                     appName.append(charArray[i]);
                 }
+                logger.debug("{} - Current App: {}", callback.getThingID(),
+                        ShieldTVRequest.encodeMessage(appName.toString()));
                 callback.setCurrentApp(ShieldTVRequest.encodeMessage(appName.toString()));
             } else if (msg.startsWith(MESSAGE_LOWPRIV) && msg.startsWith(MESSAGE_CERT, 10)) {
                 // Certificate Reply
@@ -426,6 +425,9 @@ public class ShieldTVMessageParser {
 
                     logger.trace("{} - Cert pubKey:  {} {}", callback.getThingID(), msg.length() - privLen - 4,
                             pubKey.toString());
+
+                    logger.debug("{} - Cert Pair Received privLen: {} pubLen: {}", callback.getThingID(), privLen,
+                            msg.length() - privLen - 4);
 
                     byte[] privKeyB64Byte = DatatypeConverter.parseHexBinary(privKey.toString());
                     byte[] pubKeyB64Byte = DatatypeConverter.parseHexBinary(pubKey.toString());
