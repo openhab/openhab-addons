@@ -16,8 +16,7 @@
 		<channels>
 			<!-- read only -->
 			<channel id="state" typeId="alarmZoneState"/>
-			<channel id="alarm" typeId="AlarmZoneState"/>
-			<channel id="timestamp" typeId="AlarmZoneState"/>
+			<channel id="alarm" typeId="zoneAlarm"/>
 		</channels>
 
 		<properties>

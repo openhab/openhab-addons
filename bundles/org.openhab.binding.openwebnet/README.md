@@ -405,7 +405,6 @@ Switch              iAlarm_System_Network       "Alarm network"                (
 String              iAlarm_System_Battery       "Alarm battery"                (gAlarm)         { channel="openwebnet:bus_alarm_system:mybridge:Alarm_Sys:battery" }
 Switch              iAlarm_Zone_3_State         "Zone 3 state"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:state" }
 String              iAlarm_Zone_3_Alarm         "Zone 3 alarm"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:alarm" }
-DateTime            iAlarm_Zone_3_Timestamp     "Zone 3 timestamp"             (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:timestamp" }
 ```
 
 Example items linked to OpenWebNet Zigbee devices:
@@ -462,7 +461,6 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
          Default item=iAlarm_System_Battery     label="Battery"            icon="battery"
          Switch  item=iAlarm_Zone_3_State       label="Zone 3 state"
          Default item=iAlarm_Zone_3_Alarm       label="Zone 3 alarm"       icon="siren"
-         Default item=iAlarm_Zone_3_Timestamp   label="Zone 3 timestamp"      
     }
 }
 ```
