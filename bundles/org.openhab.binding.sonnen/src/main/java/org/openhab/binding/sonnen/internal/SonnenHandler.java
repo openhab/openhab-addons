@@ -113,7 +113,7 @@ public class SonnenHandler extends BaseThingHandler {
     private boolean updateBatteryData() {
         String error = "";
         if (sonnenAPIV2) {
-            error = serviceCommunication.refreshBatteryConnectionAPICALLV2();
+            error = serviceCommunication.refreshBatteryConnectionAPICALLV2(arePowerMeterChannelsLinked());
         } else {
             error = serviceCommunication.refreshBatteryConnectionAPICALLV1();
         }
@@ -200,7 +200,7 @@ public class SonnenHandler extends BaseThingHandler {
             // other production. E.g. 4_1.kwh_imported represents the total production since the
             // battery was installed.
             SonnenJsonPowerMeterDataDTO[] dataPM = null;
-            if (config.powerMeter) {
+            if (arePowerMeterChannelsLinked()) {
                 dataPM = serviceCommunication.getPowerMeterData();
             }
 
@@ -286,6 +286,20 @@ public class SonnenHandler extends BaseThingHandler {
             }
         } else {
             update(null, channelId);
+        }
+    }
+
+    private boolean arePowerMeterChannelsLinked() {
+        if (isLinked(CHANNELENERGYIMPORTEDSTATEPRODUCTION)) {
+            return true;
+        } else if (isLinked(CHANNELENERGYEXPORTEDSTATEPRODUCTION)) {
+            return true;
+        } else if (isLinked(CHANNELENERGYIMPORTEDSTATECONSUMPTION)) {
+            return true;
+        } else if (isLinked(CHANNELENERGYEXPORTEDSTATECONSUMPTION)) {
+            return true;
+        } else {
+            return false;
         }
     }
 

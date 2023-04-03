@@ -51,7 +51,7 @@ public class SonnenJSONCommunication {
      *
      * @return an empty string if no error occurred, the error message otherwise.
      */
-    public String refreshBatteryConnectionAPICALLV2() {
+    public String refreshBatteryConnectionAPICALLV2(boolean powerMeter) {
         String result = "";
         String urlStr = "http://" + config.hostIP + "/api/v2/status";
         Properties httpHeader = new Properties();
@@ -64,7 +64,7 @@ public class SonnenJSONCommunication {
             }
             batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
 
-            if (config.powerMeter) {
+            if (powerMeter) {
                 response = HttpUtil.executeUrl("GET", "http://" + config.hostIP + "/api/v2/powermeter", httpHeader,
                         null, "application/json", 10000);
                 logger.debug("PowerMeterData = {}", response);
