@@ -41,7 +41,7 @@ public class Doorbell extends AbstractRingDevice {
     @Override
     public DiscoveryResult getDiscoveryResult() {
         DiscoveryResult result = DiscoveryResultBuilder.create(new ThingUID("ring:doorbell:" + getId()))
-                .withLabel("Ring Video Doorbell").build();
+                .withLabel("Ring Video Doorbell - " + getDescription()).build();
         return result;
     }
 }

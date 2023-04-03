@@ -62,6 +62,9 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         if (device.getClass().equals(deviceClass)) {
             device.setRegistrationStatus(RingDeviceRegistry.Status.CONFIGURED);
             device.setRingDeviceHandler(this);
+            thing.setProperty("Description", device.getDescription());
+            thing.setProperty("Kind", device.getKind());
+            thing.setProperty("Device ID", device.getDeviceId());
         } else {
             throw new IllegalDeviceClassException(
                     "Class '" + deviceClass.getName() + "' expected but '" + device.getClass().getName() + "' found.");

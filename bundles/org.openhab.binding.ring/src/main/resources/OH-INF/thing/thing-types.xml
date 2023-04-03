@@ -70,6 +70,11 @@
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 		</channel-groups>
+		<properties>
+			<property name="Description">unknown</property>
+			<property name="Device ID">unknown</property>
+			<property name="Kind">unknown</property>
+		</properties>
 		<config-description>
 			<parameter name="offOffset" type="decimal">
 				<label>Offset in minutes to switch off</label>
@@ -92,6 +97,11 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<properties>
+			<property name="Description">unknown</property>
+			<property name="Device ID">unknown</property>
+			<property name="Kind">unknown</property>
+		</properties>
 		<config-description>
 			<parameter name="offOffset" type="decimal">
 				<label>Offset in minutes to switch off</label>
@@ -114,6 +124,11 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<properties>
+			<property name="Description">unknown</property>
+			<property name="Device ID">unknown</property>
+			<property name="Kind">unknown</property>
+		</properties>
 		<config-description>
 			<parameter name="offOffset" type="decimal">
 				<label>Offset in minutes to switch off</label>
@@ -184,13 +199,6 @@
 		<label>The kind of event</label>
 		<description>The kind of event, usually 'motion' or 'ding'</description>
 	</channel-type>
-	<!--
-		<channel-type id="status">
-		<item-type>Switch</item-type>
-		<label>Status</label>
-		<description>On or off</description>
-		</channel-type>
-	-->
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
 		<label>Account Polling Enabled (on=yes, off=no)</label>
