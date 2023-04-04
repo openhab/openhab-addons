@@ -1586,7 +1586,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
                 break;
             case REOLINK_THING:
-                if (cameraConfig.getNvrChannel() > -1) {
+                if (cameraConfig.getNvrChannel() > 0) {
                     sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + "&user="
                             + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
                     sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + "&user="
@@ -1733,19 +1733,19 @@ public class IpCameraHandler extends BaseThingHandler {
                     reolinkAuth = "&user=" + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword();
                 }
                 if (snapshotUri.isEmpty()) {
-                    if (cameraConfig.getNvrChannel() < 0) {
+                    if (cameraConfig.getNvrChannel() < 1) {
                         snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=0&rs=openHAB" + reolinkAuth;
                     } else {
-                        snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel()
+                        snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + (cameraConfig.getNvrChannel() - 1)
                                 + "&rs=openHAB" + reolinkAuth;
                     }
                 }
                 if (rtspUri.isEmpty()) {
-                    if (cameraConfig.getNvrChannel() < 0) {
+                    if (cameraConfig.getNvrChannel() < 1) {
                         rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_01_main";
                     } else {
                         rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0" + cameraConfig.getNvrChannel()
-                                + 1 + "_main";
+                                + "_main";
                     }
                 }
                 break;

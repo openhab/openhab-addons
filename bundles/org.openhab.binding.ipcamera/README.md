@@ -128,12 +128,9 @@ Thing ipcamera:hikvision:West "West Camera"
 
 ### Reolink
 
-- NVR's made by Reolink have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF or newer firmwares to do this via their app or web browser.
+- NVR's made by Reolink have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF or newer firmwares may be able to do this via their app or web UI.
 
-- This binding will use the Reolink API for polling the alarms if the `nvrChannel` is 0 or higher.
-To use ONVIF events for the alarms, you can set `nvrChannel` to -1.
-
-- Some NVR units start at channel 0 and others at 1, so try both if the URLs do not match up.
+- This binding will use the Reolink API for polling the alarms if the `nvrChannel` is 1 or higher and does not need ONVIF to be enabled. To use ONVIF event methods for the alarms, you can set `nvrChannel` to 0.
 
 ## Discovery
 
