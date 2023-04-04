@@ -161,6 +161,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     private void onUpdate() {
         logger.debug("Polling Interval Set: {}", pollingInterval);
         if (pollingInterval > 0) {
+            ScheduledFuture<?> pollingJob = this.pollingJob;
             if (pollingJob == null || pollingJob.isCancelled()) {
                 pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, pollingInterval, TimeUnit.MINUTES);
             }
@@ -171,6 +172,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing Speedtest Handler Thing");
         isRunning = false;
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
             pollingJob = null;
