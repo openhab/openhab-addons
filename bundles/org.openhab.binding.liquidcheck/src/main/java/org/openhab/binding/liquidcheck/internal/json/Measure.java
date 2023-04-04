@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Measure {
     public double level = 0.0;
-    public int content = 0;
+    public double content = 0.0;
     public Raw raw = new Raw();
     public int age = 0;
 }
