@@ -230,7 +230,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                 updatedConfiguration.put("hardwareId", config.hardwareId);
             }
             restClient = new RestClient();
-            logger.trace("Logging in with refresh token: {}", RingUtils.sanitizeData(refreshToken));
+            logger.debug("Logging in with refresh token: {}", RingUtils.sanitizeData(refreshToken));
             userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
                     hardwareId);
             config.refreshToken = userProfile.getRefreshToken();

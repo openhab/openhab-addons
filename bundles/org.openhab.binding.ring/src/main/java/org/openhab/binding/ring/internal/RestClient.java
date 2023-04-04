@@ -269,13 +269,13 @@ public class RestClient {
 
         String refToken = refreshToken;
 
-        logger.trace("RestClient - getAuthenticatedProfile U:{} - P:{} - R:{} - 2:{} - H:{}",
+        logger.debug("RestClient - getAuthenticatedProfile U:{} - P:{} - R:{} - 2:{} - H:{}",
                 RingUtils.sanitizeData(username), RingUtils.sanitizeData(password),
                 RingUtils.sanitizeData(refreshToken), RingUtils.sanitizeData(twofactorCode),
                 RingUtils.sanitizeData(hardwareId));
 
         if ((twofactorCode != null) && (!twofactorCode.equals(""))) {
-            logger.trace("RestClient - getAuthenticatedProfile - valid 2fa - run getAuthCode");
+            logger.debug("RestClient - getAuthenticatedProfile - valid 2fa - run getAuthCode");
             refToken = getAuthCode(twofactorCode, username, password, hardwareId);
         }
 
@@ -299,7 +299,7 @@ public class RestClient {
     private JSONObject get_oauth_token(String username, String password, String refreshToken)
             throws AuthenticationException, ParseException {
 
-        logger.trace("RestClient - get_oauth_token {} - {} - {}", RingUtils.sanitizeData(username),
+        logger.debug("RestClient - get_oauth_token {} - {} - {}", RingUtils.sanitizeData(username),
                 RingUtils.sanitizeData(password), RingUtils.sanitizeData(refreshToken));
 
         String result = null;
@@ -311,13 +311,13 @@ public class RestClient {
             map.put("client_id", "ring_official_android");
             map.put("scope", "client");
             if (refreshToken == null || refreshToken.equals("")) {
-                logger.trace("RestClient - get_oauth_token - refreshToken null or empty {}",
+                logger.debug("RestClient - get_oauth_token - refreshToken null or empty {}",
                         RingUtils.sanitizeData(refreshToken));
                 map.put("grant_type", "password");
                 map.put("username", username);
                 map.put("password", password);
             } else {
-                logger.trace("RestClient - get_oauth_token - refreshToken NOT null or empty {}",
+                logger.debug("RestClient - get_oauth_token - refreshToken NOT null or empty {}",
                         RingUtils.sanitizeData(refreshToken));
                 map.put("grant_type", "refresh_token");
                 map.put("refresh_token", refreshToken);
@@ -368,7 +368,7 @@ public class RestClient {
             OutputStream os = conn.getOutputStream();
             os.write(out);
 
-            logger.debug("RestApi get_oauth_token: {}, response code: {}, message {}.", resourceUrl,
+            logger.debug("RestClient get_oauth_token: {}, response code: {}, message {}.", resourceUrl,
                     conn.getResponseCode(), conn.getResponseMessage());
 
             switch (conn.getResponseCode()) {
@@ -392,7 +392,7 @@ public class RestClient {
             conn.disconnect();
 
             oauth_token = (JSONObject) new JSONParser().parse(result);
-            logger.trace("RestApi response: {}.", RingUtils.sanitizeData(result));
+            logger.debug("RestClient response: {}.", RingUtils.sanitizeData(result));
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
             logger.error("RestApi: Error in get_oauth_token!", ex);
             // ex.printStackTrace();
@@ -415,7 +415,7 @@ public class RestClient {
     }
 
     public Boolean refresh_session(String refreshToken) {
-        logger.trace("RestClient - refresh_session {}", RingUtils.sanitizeData(refreshToken));
+        logger.debug("RestClient - refresh_session {}", RingUtils.sanitizeData(refreshToken));
         String result = null;
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
         try {
@@ -507,7 +507,7 @@ public class RestClient {
 
     private String getAuthCode(String authCode, String username, String password, String hardwareId)
             throws AuthenticationException {
-        logger.trace("RestClient - getAuthCode A:{} - U:{} - P:{} - H:{}", RingUtils.sanitizeData(authCode),
+        logger.debug("RestClient - getAuthCode A:{} - U:{} - P:{} - H:{}", RingUtils.sanitizeData(authCode),
                 RingUtils.sanitizeData(username), RingUtils.sanitizeData(password), RingUtils.sanitizeData(hardwareId));
 
         String result = "";
@@ -593,7 +593,7 @@ public class RestClient {
 
             JSONObject refToken = (JSONObject) new JSONParser().parse(result);
             result = refToken.get("refresh_token").toString();
-            logger.trace("RestApi response: {}.", result);
+            logger.debug("RestClient - getAuthCode response: {}.", RingUtils.sanitizeData(result));
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
             logger.error("Error getting auth code!", ex);
         } catch (ParseException e) {
