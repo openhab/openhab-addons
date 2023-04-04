@@ -25,6 +25,7 @@ import org.openhab.core.types.Command;
  * location and current date and timezone.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  *
  */
 

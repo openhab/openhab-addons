@@ -17,6 +17,7 @@ package org.openhab.binding.ring.internal.errors;
  * password is used to get access to the Ring account.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class AuthenticationException extends Exception {

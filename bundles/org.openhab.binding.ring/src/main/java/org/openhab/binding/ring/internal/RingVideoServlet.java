@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * Main OSGi service and HTTP servlet for Ring Video
  *
  * @author Peter Mietlowski (zolakk) - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 @Component(service = HttpServlet.class)
 public class RingVideoServlet extends HttpServlet {

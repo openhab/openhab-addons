@@ -25,6 +25,7 @@ import org.openhab.binding.ring.internal.RingAccount;
  *
  * @author Wim Vissers - Initial contribution
  * @author Chris Milbert - stickupcam contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class RingDevices {

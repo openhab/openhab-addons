@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * Singleton registry of found devices.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class RingDeviceRegistry {

@@ -35,6 +35,7 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public abstract class RingDeviceHandler extends AbstractRingHandler {

@@ -21,6 +21,7 @@ import java.util.Map;
  * Builder for http request or post parameters.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class ParamBuilder {

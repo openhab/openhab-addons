@@ -18,6 +18,7 @@ package org.openhab.binding.ring.internal.errors;
  * E.g. if a Doorbell is expected, but a Chime is returned.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class IllegalDeviceClassException extends Exception {

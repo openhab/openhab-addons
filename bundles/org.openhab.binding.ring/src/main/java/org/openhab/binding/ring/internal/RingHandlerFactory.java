@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wim Vissers - Initial contribution
  * @author Chris Milbert - Stickupcam contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 @Component(service = { ThingHandlerFactory.class,

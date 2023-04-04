@@ -17,6 +17,7 @@ package org.openhab.binding.ring.internal.errors;
  * the device registry with an id that is not registered.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class DeviceNotFoundException extends Exception {

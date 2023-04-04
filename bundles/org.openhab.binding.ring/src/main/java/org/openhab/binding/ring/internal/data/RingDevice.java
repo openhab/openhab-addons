@@ -21,6 +21,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
  * Interface common to all Ring devices.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 public interface RingDevice {
 

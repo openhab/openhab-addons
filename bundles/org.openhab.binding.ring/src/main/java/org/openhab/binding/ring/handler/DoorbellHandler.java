@@ -32,6 +32,7 @@ import org.openhab.core.types.Command;
  * The handler for a Ring Video Doorbell.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  *
  */
 

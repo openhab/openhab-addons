@@ -14,6 +14,7 @@ package org.openhab.binding.ring.internal.data;
 
 /**
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 public enum Feature {
 

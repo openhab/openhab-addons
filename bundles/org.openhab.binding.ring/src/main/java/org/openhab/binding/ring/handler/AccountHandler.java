@@ -32,6 +32,7 @@ import org.openhab.binding.ring.internal.data.RingDevices;
 import org.openhab.binding.ring.internal.data.RingEvent;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
+import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -51,12 +52,15 @@ import org.osgi.service.http.HttpService;
  *
  * @author Wim Vissers - Initial contribution
  * @author Peter Mietlowski - oAuth upgrade and additional maintenance
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class AccountHandler extends AbstractRingHandler implements RingAccount {
 
     private ScheduledFuture<?> jobTokenRefresh = null;
+    private ScheduledFuture<?> eventRefresh = null;
     private Runnable runnableToken = null;
+    private Runnable runnableEvent = null;
     private @Nullable RingVideoServlet ringVideoServlet;
     private @Nullable HttpService httpService;
     /**
@@ -225,7 +229,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                 updatedConfiguration.put("hardwareId", config.hardwareId);
             }
             restClient = new RestClient();
-            logger.trace("Logging in with refresh token: {}", refreshToken);
+            logger.trace("Logging in with refresh token: {}", RingUtils.sanitizeData(refreshToken));
             userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
                     hardwareId);
             config.refreshToken = userProfile.getRefreshToken();
@@ -253,7 +257,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
             // "Can not access device as username and/or password are invalid");
             startAutomaticRefresh(refreshInterval);
-            startSessionRefresh(600);
+            startSessionRefresh(refreshInterval);
         } catch (AuthenticationException ex) {
             logger.debug("AuthenticationException when initializing Ring Account handler{}", ex.getMessage());
             if (ex.getMessage().startsWith("Two factor")) {
@@ -326,17 +330,24 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
         } catch (DuplicateIdException ignored) {
             updateStatus(ThingStatus.ONLINE);
         }
-        // } else {
-        // Update the events
+    }
+
+    protected void eventTick() {
         try {
             String id = lastEvents == null || lastEvents.isEmpty() ? "?" : lastEvents.get(0).getEventId();
             lastEvents = restClient.getHistory(userProfile, 1);
+            logger.debug("Event id: {} lastEvents: {}", id, lastEvents.get(0).getEventId().equals(id));
             if (lastEvents != null && !lastEvents.isEmpty() && !lastEvents.get(0).getEventId().equals(id)) {
-                handleCommand(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), RefreshType.REFRESH);
-                handleCommand(new ChannelUID(thing.getUID(), CHANNEL_EVENT_CREATED_AT), RefreshType.REFRESH);
-                handleCommand(new ChannelUID(thing.getUID(), CHANNEL_EVENT_KIND), RefreshType.REFRESH);
-                handleCommand(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_ID), RefreshType.REFRESH);
-                handleCommand(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION), RefreshType.REFRESH);
+                logger.debug("New Event");
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_CREATED_AT),
+                        new DateTimeType(lastEvents.get(0).getCreatedAt()));
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_KIND),
+                        new StringType(lastEvents.get(0).getKind()));
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_ID),
+                        new StringType(lastEvents.get(0).getDoorbot().getId()));
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
+                        new StringType(lastEvents.get(0).getDoorbot().getDescription()));
+                // handleCommand(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), RefreshType.REFRESH);
             }
         } catch (AuthenticationException ex) {
             // registry = null;
@@ -351,13 +362,13 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                     ignored.getMessage());
 
         }
-        // }
     }
 
     /**
      * Refresh the profile every 20 minutes
      */
     protected void startSessionRefresh(int refreshInterval) {
+        logger.debug("startSessionRefresh {}", refreshInterval);
         runnableToken = new Runnable() {
             @Override
             public void run() {
@@ -378,7 +389,21 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
             }
         };
 
-        jobTokenRefresh = scheduler.scheduleWithFixedDelay(runnableToken, 90, refreshInterval, TimeUnit.SECONDS);
+        runnableEvent = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    eventTick();
+                } catch (final Exception e) {
+                    logger.debug("Exception occurred during execution of startAutomaticRefresh(): {}", e.getMessage(),
+                            e);
+                }
+            }
+        };
+
+        jobTokenRefresh = scheduler.scheduleWithFixedDelay(runnableToken, 90, 600, TimeUnit.SECONDS);
+        eventRefresh = scheduler.scheduleWithFixedDelay(runnableEvent, refreshInterval, refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     protected void stopSessionRefresh() {

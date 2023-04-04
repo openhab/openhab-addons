@@ -19,6 +19,7 @@ import org.openhab.core.thing.ThingUID;
 
 /**
  * @author Chris Milbert - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class Stickupcam extends AbstractRingDevice {

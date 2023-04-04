@@ -22,6 +22,7 @@ import org.openhab.binding.ring.internal.RingDeviceRegistry;
  * Interface common to all Ring devices.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public abstract class AbstractRingDevice implements RingDevice {

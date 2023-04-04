@@ -53,6 +53,7 @@ import org.openhab.binding.ring.internal.data.Profile;
 import org.openhab.binding.ring.internal.data.RingDevices;
 import org.openhab.binding.ring.internal.data.RingEvent;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
+import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,7 @@ import org.slf4j.LoggerFactory;
  * @author Wim Vissers - Initial contribution
  * @author Pete Mietlowski - Updated authentication routines
  * @author Chris Milbert - Stickupcam contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class RestClient {
@@ -268,14 +270,9 @@ public class RestClient {
         String refToken = refreshToken;
 
         logger.trace("RestClient - getAuthenticatedProfile U:{} - P:{} - R:{} - 2:{} - H:{}",
-                (username.equals("") || (username == null) ? (username == null ? "NULL" : "STRINGEMPTY") : "NOTEMPTY"),
-                (password.equals("") || (password == null) ? "EMPTY" : "NOTEMPTY"),
-                (refreshToken.equals("") || (refreshToken == null) ? (refreshToken == null ? "NULL" : "STRINGEMPTY")
-                        : "NOTEMPTY"),
-                (twofactorCode.equals("") || (twofactorCode == null) ? (twofactorCode == null ? "NULL" : "STRINGEMPTY")
-                        : "NOTEMPTY"),
-                (hardwareId.equals("") || (hardwareId == null) ? (hardwareId == null ? "NULL" : "STRINGEMPTY")
-                        : "NOTEMPTY"));
+                RingUtils.sanitizeData(username), RingUtils.sanitizeData(password),
+                RingUtils.sanitizeData(refreshToken), RingUtils.sanitizeData(twofactorCode),
+                RingUtils.sanitizeData(hardwareId));
 
         if ((twofactorCode != null) && (!twofactorCode.equals(""))) {
             logger.trace("RestClient - getAuthenticatedProfile - valid 2fa - run getAuthCode");
@@ -302,8 +299,8 @@ public class RestClient {
     private JSONObject get_oauth_token(String username, String password, String refreshToken)
             throws AuthenticationException, ParseException {
 
-        logger.trace("RestClient - get_oauth_token {} - {} - {}", username,
-                (password.equals("") || (password == null) ? "EMPTY" : "NOTEMPTY"), refreshToken);
+        logger.trace("RestClient - get_oauth_token {} - {} - {}", RingUtils.sanitizeData(username),
+                RingUtils.sanitizeData(password), RingUtils.sanitizeData(refreshToken));
 
         String result = null;
         JSONObject oauth_token = null;
@@ -314,10 +311,14 @@ public class RestClient {
             map.put("client_id", "ring_official_android");
             map.put("scope", "client");
             if (refreshToken == null || refreshToken.equals("")) {
+                logger.trace("RestClient - get_oauth_token - refreshToken null or empty {}",
+                        RingUtils.sanitizeData(refreshToken));
                 map.put("grant_type", "password");
                 map.put("username", username);
                 map.put("password", password);
             } else {
+                logger.trace("RestClient - get_oauth_token - refreshToken NOT null or empty {}",
+                        RingUtils.sanitizeData(refreshToken));
                 map.put("grant_type", "refresh_token");
                 map.put("refresh_token", refreshToken);
             }
@@ -325,10 +326,6 @@ public class RestClient {
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
-            // if (refreshToken == null || refreshToken == "") {
-            // conn.setRequestProperty("2fa-support", "true");
-            // conn.setRequestProperty("2fa-code", "");
-            // }
             conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
@@ -395,7 +392,7 @@ public class RestClient {
             conn.disconnect();
 
             oauth_token = (JSONObject) new JSONParser().parse(result);
-            logger.trace("RestApi response: {}.", result);
+            logger.trace("RestApi response: {}.", RingUtils.sanitizeData(result));
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
             logger.error("RestApi: Error in get_oauth_token!", ex);
             // ex.printStackTrace();
@@ -418,7 +415,7 @@ public class RestClient {
     }
 
     public Boolean refresh_session(String refreshToken) {
-        logger.trace("RestClient - refresh_session {}", refreshToken);
+        logger.trace("RestClient - refresh_session {}", RingUtils.sanitizeData(refreshToken));
         String result = null;
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
         try {
@@ -637,13 +634,16 @@ public class RestClient {
             throws AuthenticationException, ParseException {
 
         String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
-        // limit));
-        JSONArray obj = (JSONArray) new JSONParser().parse(jsonResult);
-        List<RingEvent> result = new ArrayList<>(limit);
-        for (Object jsonEvent : obj.toArray()) {
-            result.add(new RingEvent((JSONObject) jsonEvent));
+        if (jsonResult != null) {
+            JSONArray obj = (JSONArray) new JSONParser().parse(jsonResult);
+            List<RingEvent> result = new ArrayList<>(limit);
+            for (Object jsonEvent : obj.toArray()) {
+                result.add(new RingEvent((JSONObject) jsonEvent));
+            }
+            return result;
+        } else {
+            return new ArrayList<>(0);
         }
-        return result;
     }
 
     public String getRecordingURL(String eventId, Profile profile) {

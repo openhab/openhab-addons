@@ -19,6 +19,7 @@ import org.openhab.binding.ring.internal.data.Profile;
  * use of the common services.
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 public interface RingAccount {
 

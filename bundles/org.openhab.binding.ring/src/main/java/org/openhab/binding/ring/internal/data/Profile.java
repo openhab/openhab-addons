@@ -77,6 +77,7 @@ import org.openhab.binding.ring.internal.ApiConstants;
  *
  *
  * @author Wim Vissers - Initial contribution
+ * @author Ben Rosenblum - Updated for OH4 / New Maintainer
  */
 
 public class Profile {
