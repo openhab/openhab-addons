@@ -48,4 +48,12 @@ public class BoschIndegoBindingConstants {
     public static final String GARDEN_MAP = "gardenMap";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INDEGO);
+
+    // Bosch SingleKey ID OAuth2
+    private static final String BSK_BASE_URI = "https://prodindego.b2clogin.com/prodindego.onmicrosoft.com/b2c_1a_signup_signin/oauth2/v2.0/";
+    public static final String BSK_CLIENT_ID = "65bb8c9d-1070-4fb4-aa95-853618acc876";
+    public static final String BSK_AUTH_URI = BSK_BASE_URI + "authorize";
+    public static final String BSK_TOKEN_URI = BSK_BASE_URI + "token";
+    public static final String BSK_REDIRECT_URI = "com.bosch.indegoconnect://login";
+    public static final String BSK_SCOPE = "openid offline_access https://prodindego.onmicrosoft.com/indego-mobile-api/Indego.Mower.User";
 }

@@ -10,11 +10,21 @@ Currently the binding supports  _**indego**_  mowers as a thing type with these 
 
 | Parameter          | Description                                                       | Default |
 |--------------------|-------------------------------------------------------------------|---------|
-| username           | Username for the Bosch Indego account                             |         |
-| password           | Password for the Bosch Indego account                             |         |
 | refresh            | The number of seconds between refreshing device state when idle   | 180     |
 | stateActiveRefresh | The number of seconds between refreshing device state when active | 30      |
 | cuttingTimeRefresh | The number of minutes between refreshing last/next cutting time   | 60      |
+
+### Authorization
+
+To authorize, please follow these steps:
+
+- In your browser, go to the [Bosch SingleKey ID login page](https://prodindego.b2clogin.com/prodindego.onmicrosoft.com/b2c_1a_signup_signin/oauth2/v2.0/authorize?redirect_uri=com.bosch.indegoconnect://login&client_id=65bb8c9d-1070-4fb4-aa95-853618acc876&response_type=code&scope=openid%20offline_access%20https://prodindego.onmicrosoft.com/indego-mobile-api/Indego.Mower.User).
+- Select "Bosch ID", enter your e-mail address and password and clock "Log-in".
+- In your browser, open Developer Tools.
+- With developer tools showing in the right, go to [Bosch SingleKey ID login page](https://prodindego.b2clogin.com/prodindego.onmicrosoft.com/b2c_1a_signup_signin/oauth2/v2.0/authorize?redirect_uri=com.bosch.indegoconnect://login&client_id=65bb8c9d-1070-4fb4-aa95-853618acc876&response_type=code&scope=openid%20offline_access%20https://prodindego.onmicrosoft.com/indego-mobile-api/Indego.Mower.User) again.
+- "Please wait..." should now be displayed.
+- Find the `authresp` and copy the code: `com.bosch.indegoconnect://login/?code=<copy this>`
+- Use the openHAB console to authorize with this code: `openhab:boschindego authorize <paste code>`
 
 ## Channels
 

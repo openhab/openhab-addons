@@ -14,6 +14,7 @@ package org.openhab.binding.boschindego.internal.handler;
 
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -37,6 +38,10 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationE
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -81,9 +86,11 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private final HttpClient httpClient;
+    private final OAuthFactory oAuthFactory;
     private final BoschIndegoTranslationProvider translationProvider;
     private final TimeZoneProvider timeZoneProvider;
 
+    private @NonNullByDefault({}) OAuthClientService oAuthClientService;
     private @NonNullByDefault({}) IndegoController controller;
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
@@ -99,10 +106,11 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private int stateActiveRefreshIntervalSeconds;
     private int currentRefreshIntervalSeconds;
 
-    public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider,
-            TimeZoneProvider timeZoneProvider) {
+    public BoschIndegoHandler(Thing thing, HttpClient httpClient, OAuthFactory oAuthFactory,
+            BoschIndegoTranslationProvider translationProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.oAuthFactory = oAuthFactory;
         this.translationProvider = translationProvider;
         this.timeZoneProvider = timeZoneProvider;
     }
@@ -113,27 +121,37 @@ public class BoschIndegoHandler extends BaseThingHandler {
         BoschIndegoConfiguration config = getConfigAs(BoschIndegoConfiguration.class);
         stateInactiveRefreshIntervalSeconds = (int) config.refresh;
         stateActiveRefreshIntervalSeconds = (int) config.stateActiveRefresh;
-        String username = config.username;
-        String password = config.password;
 
-        if (username == null || username.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.missing-username");
-            return;
-        }
-        if (password == null || password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.missing-password");
-            return;
-        }
+        this.oAuthClientService = oAuthFactory.createOAuthClientService(this.getThing().getUID().getAsString(),
+                BSK_TOKEN_URI, BSK_AUTH_URI, BSK_CLIENT_ID, null, BSK_SCOPE, false);
 
-        controller = new IndegoController(httpClient, username, password);
+        controller = new IndegoController(httpClient, oAuthClientService);
 
         updateStatus(ThingStatus.UNKNOWN);
         previousStateCode = Optional.empty();
         rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds);
         this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
                 config.cuttingTimeRefresh, TimeUnit.MINUTES);
+    }
+
+    public void authorize(String authCode) throws IndegoAuthenticationException {
+        logger.info("Attempting to authorize using authorization code");
+
+        try {
+            oAuthClientService.getAccessTokenResponseByAuthorizationCode(authCode, BSK_REDIRECT_URI);
+        } catch (OAuthException | OAuthResponseException | IOException e) {
+            throw new IndegoAuthenticationException("Failed to authorize by authorization code " + authCode, e);
+        }
+
+        logger.info("Authorization completed successfully");
+
+        // Trigger immediate state refresh.
+        ScheduledFuture<?> statePollFuture = this.statePollFuture;
+        if (statePollFuture != null) {
+            statePollFuture.cancel(true);
+            this.statePollFuture = null;
+        }
+        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds);
     }
 
     private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds) {
@@ -173,13 +191,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
         this.cuttingTimeFuture = null;
 
-        scheduler.execute(() -> {
-            try {
-                controller.deauthenticate();
-            } catch (IndegoException e) {
-                logger.debug("Deauthentication failed", e);
-            }
-        });
+        this.oAuthFactory.ungetOAuthService(this.getThing().getUID().getAsString());
     }
 
     @Override
@@ -280,6 +292,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         try {
             refreshState();
         } catch (IndegoAuthenticationException e) {
+            logger.warn("Failed to authenticate: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.authentication-failure");
         } catch (IndegoTimeoutException e) {

@@ -24,15 +24,6 @@
 			<channel id="gardenMap" typeId="gardenMap"/>
 		</channels>
 		<config-description>
-			<parameter name="username" type="text" required="true">
-				<label>Username</label>
-				<description>Username for the Bosch Indego account.</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password for the Bosch Indego account.</description>
-			</parameter>
 			<parameter name="refresh" type="integer" min="60">
 				<label>Idle Refresh Interval</label>
 				<description>The number of seconds between refreshing device state when idle.</description>
