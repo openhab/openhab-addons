@@ -14,10 +14,6 @@
 
   <name>openHAB Add-ons :: Bundles :: FolderWatcher Binding</name>
 
-  <properties>
-    <dep.noembedding>commons-net</dep.noembedding>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>commons-net</groupId>
