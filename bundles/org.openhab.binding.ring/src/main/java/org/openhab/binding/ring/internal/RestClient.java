@@ -507,9 +507,8 @@ public class RestClient {
 
     private String getAuthCode(String authCode, String username, String password, String hardwareId)
             throws AuthenticationException {
-        logger.trace("RestClient - getAuthCode A:{} - U:{} - P:{} - H:{}",
-                RingUtils.sanitizeData(authCode), RingUtils.sanitizeData(username),
-                RingUtils.sanitizeData(password), RingUtils.sanitizeData(hardwareId));
+        logger.trace("RestClient - getAuthCode A:{} - U:{} - P:{} - H:{}", RingUtils.sanitizeData(authCode),
+                RingUtils.sanitizeData(username), RingUtils.sanitizeData(password), RingUtils.sanitizeData(hardwareId));
 
         String result = "";
 
