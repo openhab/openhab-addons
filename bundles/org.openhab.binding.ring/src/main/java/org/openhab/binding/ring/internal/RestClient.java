@@ -507,12 +507,10 @@ public class RestClient {
 
     private String getAuthCode(String authCode, String username, String password, String hardwareId)
             throws AuthenticationException {
-        logger.trace("RestClient - getAuthCode {} - {} - {} - {}",
-                (authCode.equals("") || (authCode == null) ? (authCode == null ? "NULL" : "STRINGEMPTY") : "NOTEMPTY"),
-                (username.equals("") || (username == null) ? (username == null ? "NULL" : "STRINGEMPTY") : "NOTEMPTY"),
-                (password.equals("") || (password == null) ? (password == null ? "NULL" : "STRINGEMPTY") : "NOTEMPTY"),
-                (hardwareId.equals("") || (hardwareId == null) ? (hardwareId == null ? "NULL" : "STRINGEMPTY")
-                        : "NOTEMPTY"));
+        logger.trace("RestClient - getAuthCode A:{} - U:{} - P:{} - H:{}",
+                RingUtils.sanitizeData(authCode), RingUtils.sanitizeData(username),
+                RingUtils.sanitizeData(password), RingUtils.sanitizeData(hardwareId));
+
         String result = "";
 
         String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
