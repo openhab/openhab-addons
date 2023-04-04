@@ -57,7 +57,7 @@ public class S3Actions {
     public S3Actions(HttpClientFactory httpClientFactory, String bucketName, String region) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         try {
-            this.bucketUri = new URL("https://" + bucketName + ".s3." + region + ".amazonaws.com");
+            this.bucketUri = new URL("http://" + bucketName + ".s3." + region + ".amazonaws.com");
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unable to parse service endpoint: " + e.getMessage());
         }
@@ -70,7 +70,7 @@ public class S3Actions {
             String awsSecretKey) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         try {
-            this.bucketUri = new URL("https://" + bucketName + ".s3." + region + ".amazonaws.com");
+            this.bucketUri = new URL("http://" + bucketName + ".s3." + region + ".amazonaws.com");
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unable to parse service endpoint: " + e.getMessage());
         }
@@ -141,7 +141,7 @@ public class S3Actions {
                     params.clear();
                     headers.clear();
                     params.put("continuation-token", continueToken);
-                    returnList.addAll(listObjectsV2(prefix, params, headers));
+                    returnList.addAll(listObjectsV2(prefix, headers, params));
                 }
             }
         }
