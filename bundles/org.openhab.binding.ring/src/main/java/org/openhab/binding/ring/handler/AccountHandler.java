@@ -387,7 +387,9 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                                 null, hardwareId);
                     }
                 } catch (Exception e) {
-                    logger.debug("SessionRefresh: Exception occurred during execution: {}", e.getMessage(), e);
+                    logger.debug(
+                            "AccountHandler - startSessionRefresh - Exception occurred during execution of refreshRegistry(): {}",
+                            e.getMessage(), e);
                 }
             }
         };
@@ -398,8 +400,9 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                 try {
                     eventTick();
                 } catch (final Exception e) {
-                    logger.debug("Exception occurred during execution of startAutomaticRefresh(): {}", e.getMessage(),
-                            e);
+                    logger.debug(
+                            "AccountHandler - startSessionRefresh - Exception occurred during execution of eventTick(): {}",
+                            e.getMessage(), e);
                 }
             }
         };

@@ -81,8 +81,8 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
                 try {
                     minuteTick();
                 } catch (final Exception e) {
-                    logger.debug("Exception occurred during execution of startAutomaticRefresh(): {}", e.getMessage(),
-                            e);
+                    logger.debug("AbstractHandler - Exception occurred during execution of startAutomaticRefresh(): {}",
+                            e.getMessage(), e);
                 }
             }
         };
