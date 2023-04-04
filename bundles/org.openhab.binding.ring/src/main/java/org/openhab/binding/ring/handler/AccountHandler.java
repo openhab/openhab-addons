@@ -349,7 +349,8 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
                         new StringType(lastEvents.get(0).getDoorbot().getDescription()));
                 StringBuilder vidUrl = new StringBuilder();
-                vidUrl.append(ApiConstants.URL_RECORDING_START).append(id).append(ApiConstants.URL_RECORDING_END);
+                vidUrl.append(ApiConstants.URL_RECORDING_START).append(lastEvents.get(0).getEventId())
+                        .append(ApiConstants.URL_RECORDING_END);
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), new StringType(vidUrl.toString()));
             }
         } catch (AuthenticationException ex) {
