@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.parser.ParseException;
+import org.openhab.binding.ring.internal.ApiConstants;
 import org.openhab.binding.ring.internal.RestClient;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
@@ -347,7 +348,9 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                         new StringType(lastEvents.get(0).getDoorbot().getId()));
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
                         new StringType(lastEvents.get(0).getDoorbot().getDescription()));
-                // handleCommand(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), RefreshType.REFRESH);
+                StringBuilder vidUrl = new StringBuilder();
+                vidUrl.append(ApiConstants.URL_RECORDING_START).append(id).append(ApiConstants.URL_RECORDING_END);
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), new StringType(vidUrl.toString()));
             }
         } catch (AuthenticationException ex) {
             // registry = null;
