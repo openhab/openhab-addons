@@ -418,6 +418,10 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
             jobTokenRefresh.cancel(true);
             jobTokenRefresh = null;
         }
+        if (eventRefresh != null) {
+            eventRefresh.cancel(true);
+            eventRefresh = null;
+        }
     }
 
     String getLocalMAC() throws Exception {
