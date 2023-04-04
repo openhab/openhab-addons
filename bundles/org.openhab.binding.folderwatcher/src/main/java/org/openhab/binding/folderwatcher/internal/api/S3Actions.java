@@ -39,8 +39,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import io.micrometer.core.lang.Nullable;
-
 /**
  * The {@link S3Actions} class contains AWS S3 API implementation.
  *
@@ -55,8 +53,6 @@ public class S3Actions {
     private String region;
     private String awsAccessKey;
     private String awsSecretKey;
-    private @Nullable Map<String, String> headers = new HashMap<String, String>();
-    private @Nullable Map<String, String> params = new HashMap<String, String>();
 
     public S3Actions(HttpClientFactory httpClientFactory, String bucketName, String region) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
@@ -83,7 +79,16 @@ public class S3Actions {
         this.awsSecretKey = awsSecretKey;
     }
 
-    public List<String> listObjectsV2(String prefix) throws Exception {
+    public List<String> listBucket(String prefix) throws Exception {
+        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<String, String>();
+        headers.clear();
+        params.clear();
+        return listObjectsV2(prefix, headers, params);
+    }
+
+    private List<String> listObjectsV2(String prefix, Map<String, String> headers, Map<String, String> params)
+            throws Exception {
         params.put("list-type", "2");
         params.put("prefix", prefix);
         if (!awsAccessKey.isEmpty() || !awsSecretKey.isEmpty()) {
@@ -136,7 +141,7 @@ public class S3Actions {
                     params.clear();
                     headers.clear();
                     params.put("continuation-token", continueToken);
-                    returnList.addAll(listObjectsV2(prefix));
+                    returnList.addAll(listObjectsV2(prefix, params, headers));
                 }
             }
         }

@@ -103,7 +103,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
     private boolean refreshS3BucketInformation() {
         List<String> currentS3Listing = new ArrayList<>();
         try {
-            currentS3Listing = s3.listObjectsV2(config.s3Path);
+            currentS3Listing = s3.listBucket(config.s3Path);
             List<String> difS3Listing = new ArrayList<>(currentS3Listing);
             difS3Listing.removeAll(previousS3Listing);
             difS3Listing.forEach(file -> triggerChannel(CHANNEL_NEWFILE, file));
