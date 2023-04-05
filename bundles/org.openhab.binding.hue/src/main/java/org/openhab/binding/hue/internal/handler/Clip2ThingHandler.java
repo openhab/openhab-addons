@@ -345,24 +345,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     public void onResource(Resource resource) {
         if (!disposing) {
-            logger.debug("onResource(..) {}", resource);
+            boolean resourceConsumed = false;
             if (thisResource.getId().equals(resource.getId())) {
                 if (resource.hasFullState()) {
                     thisResource = resource;
                     if (!updatePropertiesDone) {
                         updateProperties(resource);
+                        resourceConsumed = true;
                     }
                 }
                 if (!updateDependenciesDone) {
+                    resourceConsumed = true;
                     scheduler.submit(() -> updateDependencies());
                 }
             }
             String cacheId = resource.getId();
             Resource cacheResource = contributorsCache.get(cacheId);
             if (Objects.nonNull(cacheResource)) {
+                resourceConsumed = true;
                 resource.copyMissingFieldsFrom(cacheResource);
                 updateChannels(resource);
                 contributorsCache.put(cacheId, resource);
+            }
+            if (resourceConsumed) {
+                logger.debug("onResource() {} >> {} ", resource, thisResource);
             }
         }
     }

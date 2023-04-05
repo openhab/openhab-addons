@@ -460,7 +460,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @param resource the given resource.
      */
     private void onResource(Resource resource) {
-        logger.debug("onResource() {}", resource);
         getThing().getThings().forEach(thing -> {
             ThingHandler handler = thing.getHandler();
             if (handler instanceof Clip2ThingHandler) {
