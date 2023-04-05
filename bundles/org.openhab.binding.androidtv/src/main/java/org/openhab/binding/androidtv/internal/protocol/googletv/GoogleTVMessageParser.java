@@ -80,8 +80,12 @@ public class GoogleTVMessageParser {
                 // 24 636f6d2e676f6f676c652e616e64726f69642e74762e72656d6f74652e73657276696365 32
                 // 0d352e322e343733323534313333
 
-                callback.sendCommand(
-                        new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4))));
+                if (callback.getLoggedIn()) {
+                    logger.warn("{} - Unexpected Login Message: {}", callback.getThingID(), msg);
+                } else {
+                    callback.sendCommand(
+                            new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4))));
+                }
 
                 String st = "";
                 int length = 0;
