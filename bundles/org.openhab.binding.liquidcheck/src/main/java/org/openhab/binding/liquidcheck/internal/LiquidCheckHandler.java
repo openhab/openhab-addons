@@ -109,10 +109,8 @@ public class LiquidCheckHandler extends BaseThingHandler {
 
         scheduler.execute(() -> {
             this.client = new LiquidCheckHttpClient(config, httpClient);
-            Initialize init = new Initialize(this.client);
-            while (!init.initialized) {
-                scheduler.scheduleWithFixedDelay(init, 0, config.refreshInterval, TimeUnit.SECONDS);
-            }
+            PollingForData pollingRunnable = new PollingForData(this.client);
+            polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval, TimeUnit.SECONDS);
         });
     }
 
@@ -122,30 +120,6 @@ public class LiquidCheckHandler extends BaseThingHandler {
         if (null != polling) {
             polling.cancel(true);
             this.polling = null;
-        }
-    }
-
-    private class Initialize implements Runnable {
-
-        private final LiquidCheckHttpClient client;
-        private boolean initialized = false;
-
-        public Initialize(LiquidCheckHttpClient client) {
-            this.client = client;
-        }
-
-        @Override
-        public void run() {
-            boolean thingReachable = this.client.isConnected();
-            if (thingReachable) {
-                this.initialized = true;
-                updateStatus(ThingStatus.ONLINE);
-                PollingForData pollingRunnable = new PollingForData(this.client);
-                polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval,
-                        TimeUnit.SECONDS);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
         }
     }
 

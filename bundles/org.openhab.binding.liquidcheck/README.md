@@ -25,7 +25,7 @@ If the maximum content has not been set the fill-indicator channel will not cont
 | Name             | Type    | Description                              | Default | Required | Advanced |
 |------------------|---------|------------------------------------------|---------|----------|----------|
 | hostname         | text    | Hostname or IP address of the device     | N/A     | yes      | no       |
-| maxContent       | integer | Maximum Content of the container         | 1       | no       | no       |
+| maxContent       | integer | Maximal content of the container         | 1       | no       | no       |
 | refreshInterval  | integer | Interval the device is polled in seconds | 60      | no       | yes      |
 | connectionTimeout| integer | Timeout after a request has been sent    | 5       | no       | yes      |
 

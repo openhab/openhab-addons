@@ -95,7 +95,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
             @Override
             public void run() {
                 try {
-                    List<InetAddress> addresses = getIPv4Adresses();
+                    List<InetAddress> addresses = getIPv4Addresses();
                     List<InetAddress> hosts = findActiveHosts(addresses);
                     for (InetAddress host : hosts) {
                         Request request = httpClient.newRequest("http://" + host.getHostAddress() + "/infos.json")
