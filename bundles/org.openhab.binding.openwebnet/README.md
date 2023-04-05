@@ -221,13 +221,13 @@ OPEN command to execute: *5*8#134##
 
 ### Alarm channels
 
-| Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type   | Description                                                           | Read/Write  |
-|------------------------------|----------------------------------------|-------------|-----------------------------------------------------------------------|:-----------:|
-| `state`                      | `bus_alarm_system`, `bus_alarm_zone`   | Switch      | Alarm system or zone is active (`ON`) or inactive (`OFF`)             |      R      |
-| `network`                    | `bus_alarm_system`                     | Switch      | Alarm system network state (`ON` = network ok, `OFF` = no network)    |      R      |
-| `battery`                    | `bus_alarm_system`                     | String      | Alarm system battery state (`OK`, `FAULT`, `UNLOADED`)                |      R      |
-| `armed`                      | `bus_alarm_system`                     | Switch      | Alarm system is armed (`ON`) or disarmed (`OFF`)                      |      R      |
-| `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`SILENT`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |
+| Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type   | Description                                                                                                                                        | Read/Write  |
+|------------------------------|----------------------------------------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|
+| `state`                      | `bus_alarm_system`, `bus_alarm_zone`   | Switch      | Alarm system or zone is active (`ON`) or inactive (`OFF`)                                                                                          |      R      |
+| `network`                    | `bus_alarm_system`                     | Switch      | Alarm system network state (`ON` = network ok, `OFF` = no network)                                                                                 |      R      |
+| `battery`                    | `bus_alarm_system`                     | String      | Alarm system battery state (`OK`, `FAULT`, `UNLOADED`)                                                                                             |      R      |
+| `armed`                      | `bus_alarm_system`                     | Switch      | Alarm system is armed (`ON`) or disarmed (`OFF`)                                                                                                   |      R      |
+| `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`SILENT`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) as well as the date and time  time of the event (YY/MM/DD hh:mm:ss) |      R      |
 
 ### Thermo channels
 
