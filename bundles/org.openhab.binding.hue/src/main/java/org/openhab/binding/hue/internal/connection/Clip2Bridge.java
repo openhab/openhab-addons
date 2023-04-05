@@ -106,10 +106,25 @@ public class Clip2Bridge implements Closeable {
      */
     private abstract class BaseStreamListenerAdapter<T> extends Stream.Listener.Adapter {
         protected final CompletableFuture<T> completable = new CompletableFuture<T>();
+        protected byte[] cachedBytes = new byte[0];
         private String contentType = "UNDEFINED";
 
         protected T awaitResult() throws ExecutionException, InterruptedException, TimeoutException {
             return completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        }
+
+        /**
+         * Return the concatenation of the bytes from the given byte array and the given ByteBuffer.
+         *
+         * @param firstPart the array that will become the first part of the result.
+         * @param secondPart the buffer whose bytes will become the second part of the result.
+         * @return a byte array containing the concatenation of the first and second parts.
+         */
+        protected byte[] combineBytes(byte[] firstPart, ByteBuffer secondPart) {
+            byte[] result = new byte[firstPart.length + secondPart.capacity()];
+            System.arraycopy(firstPart, 0, result, 0, firstPart.length);
+            secondPart.position(0).get(result, firstPart.length, secondPart.capacity());
+            return result;
         }
 
         /**
@@ -166,16 +181,20 @@ public class Clip2Bridge implements Closeable {
      * <li>onTimeout()</li>
      */
     private class ContentStreamListenerAdapter extends BaseStreamListenerAdapter<String> {
-        protected final StringBuilder contentResult = new StringBuilder();
 
         @Override
         public void onData(@Nullable Stream stream, @Nullable DataFrame frame, @Nullable Callback callback) {
             Objects.requireNonNull(frame);
             Objects.requireNonNull(callback);
             synchronized (this) {
-                contentResult.append(StandardCharsets.UTF_8.decode(frame.getData()).toString());
+                byte[] receivedBytes = combineBytes(cachedBytes, frame.getData());
                 if (frame.isEndStream() && !completable.isDone()) {
-                    completable.complete(contentResult.toString().trim());
+                    completable.complete(new String(receivedBytes, StandardCharsets.UTF_8).trim());
+                    if (cachedBytes.length > 0) {
+                        cachedBytes = new byte[0];
+                    }
+                } else {
+                    cachedBytes = receivedBytes;
                 }
             }
             callback.succeeded();
@@ -210,19 +229,6 @@ public class Clip2Bridge implements Closeable {
      * <li>onReset()</li>
      */
     private class EventStreamListenerAdapter extends BaseStreamListenerAdapter<Boolean> {
-        private final StringBuilder eventContent = new StringBuilder();
-
-        /**
-         * Publish the event buffer contents (if any) and flush it.
-         * Note: this method synchronized by the `OnData()` method.
-         */
-        private void flush() {
-            if (!eventContent.isEmpty()) {
-                onEventData(eventContent.toString());
-                eventContent.setLength(0);
-            }
-        }
-
         @Override
         public void onClosed(@Nullable Stream stream) {
             handleHttp2Error(Http2Error.CLOSED);
@@ -236,15 +242,35 @@ public class Clip2Bridge implements Closeable {
                 completable.complete(Boolean.TRUE);
             }
             synchronized (this) {
-                for (String line : StandardCharsets.UTF_8.decode(frame.getData()).toString().split("\\R", -1)) {
-                    if (line.isBlank() || line.startsWith("hi") || line.startsWith("id: ")) {
-                        flush();
-                    } else if (line.startsWith("data: ")) {
-                        flush();
-                        eventContent.append(line.substring(6));
-                    } else if (!eventContent.isEmpty()) {
-                        eventContent.append(line);
+                byte[] receivedBytes = combineBytes(cachedBytes, frame.getData());
+                String receivedString = new String(receivedBytes, StandardCharsets.UTF_8);
+                String[] receivedLines = receivedString.split("\\R", -1);
+                int receivedLineCount = receivedLines.length;
+
+                // two blank lines mark the end of an SSE packet
+                boolean endOfPacket = (receivedLineCount > 1) && receivedLines[receivedLineCount - 2].isBlank()
+                        && receivedLines[receivedLineCount - 1].isBlank();
+
+                if (endOfPacket) {
+                    if (cachedBytes.length > 0) {
+                        cachedBytes = new byte[0];
                     }
+                    // append any 'data' field values to the event message
+                    StringBuilder eventMessage = new StringBuilder();
+                    for (String receivedLine : receivedLines) {
+                        if (receivedLine.startsWith("data:")) {
+                            String dataFieldValue = receivedLine.substring(5).trim();
+                            if (!eventMessage.isEmpty()) {
+                                eventMessage.append("\n");
+                            }
+                            eventMessage.append(dataFieldValue);
+                        }
+                    }
+                    if (!eventMessage.isEmpty()) {
+                        onEventData(eventMessage.toString());
+                    }
+                } else {
+                    cachedBytes = receivedBytes;
                 }
             }
             callback.succeeded();
