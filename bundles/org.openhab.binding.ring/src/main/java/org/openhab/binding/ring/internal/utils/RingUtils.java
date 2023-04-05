@@ -25,7 +25,12 @@ import org.eclipse.jdt.annotation.Nullable;
 public class RingUtils {
 
     public static String sanitizeData(@Nullable String sensitive) {
-        return (sensitive.equals("") || (sensitive == null) ? (sensitive == null ? "NULL" : "STRINGEMPTY")
-                : "NOTEMPTY");
+        if (sensitive == null) {
+            return "NULL";
+        } else if (sensitive.equals("")) {
+            return "STRINGEMPTY";
+        } else {
+            return "NOTEMPTY";
+        }
     }
 }

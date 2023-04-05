@@ -337,21 +337,26 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
         try {
             String id = lastEvents == null || lastEvents.isEmpty() ? "?" : lastEvents.get(0).getEventId();
             lastEvents = restClient.getHistory(userProfile, 1);
-            logger.debug("Event id: {} lastEvents: {}", id, lastEvents.get(0).getEventId().equals(id));
-            if (lastEvents != null && !lastEvents.isEmpty() && !lastEvents.get(0).getEventId().equals(id)) {
-                logger.debug("New Event");
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_CREATED_AT),
-                        new DateTimeType(lastEvents.get(0).getCreatedAt()));
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_KIND),
-                        new StringType(lastEvents.get(0).getKind()));
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_ID),
-                        new StringType(lastEvents.get(0).getDoorbot().getId()));
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
-                        new StringType(lastEvents.get(0).getDoorbot().getDescription()));
-                StringBuilder vidUrl = new StringBuilder();
-                vidUrl.append(ApiConstants.URL_RECORDING_START).append(lastEvents.get(0).getEventId())
-                        .append(ApiConstants.URL_RECORDING_END);
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), new StringType(vidUrl.toString()));
+            if (lastEvents != null && !lastEvents.isEmpty()) {
+                logger.debug("AccountHandler - eventTick - Event id: {} lastEvents: {}", id,
+                        lastEvents.get(0).getEventId().equals(id));
+                if (!lastEvents.get(0).getEventId().equals(id)) {
+                    logger.debug("AccountHandler - eventTick - New Event {}", lastEvents.get(0).getEventId());
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_CREATED_AT),
+                            new DateTimeType(lastEvents.get(0).getCreatedAt()));
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_KIND),
+                            new StringType(lastEvents.get(0).getKind()));
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_ID),
+                            new StringType(lastEvents.get(0).getDoorbot().getId()));
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
+                            new StringType(lastEvents.get(0).getDoorbot().getDescription()));
+                    StringBuilder vidUrl = new StringBuilder();
+                    vidUrl.append(ApiConstants.URL_RECORDING_START).append(lastEvents.get(0).getEventId())
+                            .append(ApiConstants.URL_RECORDING_END);
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), new StringType(vidUrl.toString()));
+                }
+            } else {
+                logger.debug("AccountHandler - eventTick - lastEvents null");
             }
         } catch (AuthenticationException ex) {
             // registry = null;
