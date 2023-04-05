@@ -87,7 +87,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                                 logger.warn("Starting the measurement was not successful!");
                             }
                         } else {
-                            logger.warn("The object commandResponse is null!");
+                            logger.debug("The object commandResponse is null!");
                         }
                     }
                 } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
@@ -107,7 +107,6 @@ public class LiquidCheckHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
         scheduler.execute(() -> {
             this.client = new LiquidCheckHttpClient(config, httpClient);
             Initialize init = new Initialize(this.client);

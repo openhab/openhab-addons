@@ -142,7 +142,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      * @return A list of all available IPv4 Adresses that are registered
      * @throws SocketException
      */
-    private List<InetAddress> getIPv4Adresses() throws SocketException {
+    private List<InetAddress> getIPv4Addresses() throws SocketException {
         Iterator<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces().asIterator();
         List<InetAddress> addresses = new ArrayList<>();
         // Get IPv4 addresses from all network interfaces
