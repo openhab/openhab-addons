@@ -61,7 +61,7 @@ public class ResponseTest {
             assertThat(response.header.payloadVersion, is(equalTo("1")));
             assertThat(response.header.authorization, is(equalTo("1C9DC262BE70-00038BC8-TX0K103HIXCXVLTBMVKVXFF")));
             assertThat(response.payload.measure.level, is(equalTo(2.23)));
-            assertThat(response.payload.measure.content, is(equalTo(9265)));
+            assertThat(response.payload.measure.content, is(equalTo(9265.0)));
             assertThat(response.payload.measure.age, is(equalTo(1981)));
             assertThat(response.payload.measure.raw.level, is(equalTo(2.2276)));
             assertThat(response.payload.measure.raw.content, is(equalTo(9255.3193)));
