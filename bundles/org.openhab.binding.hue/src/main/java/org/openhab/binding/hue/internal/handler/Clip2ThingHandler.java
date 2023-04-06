@@ -731,7 +731,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     legacyLinkedChannelUIDs.addAll(legacyThing.getChannels().stream().map(Channel::getUID)
                             .filter(legacyChannelUID -> HueBindingConstants.REPLICATE_CHANNEL_ID_MAP.containsKey(
                                     legacyChannelUID.getId()) && itemChannelLinkRegistry.isLinked(legacyChannelUID))
-                            .toList());
+                            .collect(Collectors.toList()));
                 }
 
                 Map<String, String> newProperties = new HashMap<>(properties);
