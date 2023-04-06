@@ -12,14 +12,19 @@
  */
 package org.openhab.binding.hue.internal.connection;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +34,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 
@@ -106,25 +112,10 @@ public class Clip2Bridge implements Closeable {
      */
     private abstract class BaseStreamListenerAdapter<T> extends Stream.Listener.Adapter {
         protected final CompletableFuture<T> completable = new CompletableFuture<T>();
-        protected byte[] cachedBytes = new byte[0];
         private String contentType = "UNDEFINED";
 
         protected T awaitResult() throws ExecutionException, InterruptedException, TimeoutException {
             return completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        }
-
-        /**
-         * Return the concatenation of the bytes from the given byte array and the given ByteBuffer.
-         *
-         * @param firstPart the array that will become the first part of the result.
-         * @param secondPart the buffer whose bytes will become the second part of the result.
-         * @return a byte array containing the concatenation of the first and second parts.
-         */
-        protected byte[] combineBytes(byte[] firstPart, ByteBuffer secondPart) {
-            byte[] result = new byte[firstPart.length + secondPart.capacity()];
-            System.arraycopy(firstPart, 0, result, 0, firstPart.length);
-            secondPart.position(0).get(result, firstPart.length, secondPart.capacity());
-            return result;
         }
 
         /**
@@ -181,20 +172,17 @@ public class Clip2Bridge implements Closeable {
      * <li>onTimeout()</li>
      */
     private class ContentStreamListenerAdapter extends BaseStreamListenerAdapter<String> {
+        private final DataFrameCollector content = new DataFrameCollector();
 
         @Override
         public void onData(@Nullable Stream stream, @Nullable DataFrame frame, @Nullable Callback callback) {
             Objects.requireNonNull(frame);
             Objects.requireNonNull(callback);
             synchronized (this) {
-                byte[] receivedBytes = combineBytes(cachedBytes, frame.getData());
+                content.append(frame.getData());
                 if (frame.isEndStream() && !completable.isDone()) {
-                    completable.complete(new String(receivedBytes, StandardCharsets.UTF_8).trim());
-                    if (cachedBytes.length > 0) {
-                        cachedBytes = new byte[0];
-                    }
-                } else {
-                    cachedBytes = receivedBytes;
+                    completable.complete(content.contentAsString().trim());
+                    content.reset();
                 }
             }
             callback.succeeded();
@@ -209,6 +197,37 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onTimeout(@Nullable Stream stream, @Nullable Throwable x) {
             handleHttp2Error(Http2Error.TIMEOUT);
+        }
+    }
+
+    /**
+     * Class to collect incoming ByteBuffer data from HTTP 2 Data frames.
+     */
+    private static class DataFrameCollector {
+        private byte[] buffer = new byte[512];
+        private int usedSize = 0;
+
+        public void append(ByteBuffer data) {
+            int dataCapacity = data.capacity();
+            int neededSize = usedSize + dataCapacity;
+            if (neededSize > buffer.length) {
+                int newSize = (dataCapacity < 4096) ? neededSize : Math.max(2 * buffer.length, neededSize);
+                buffer = Arrays.copyOf(buffer, newSize);
+            }
+            data.get(buffer, usedSize, dataCapacity);
+            usedSize += dataCapacity;
+        }
+
+        public String contentAsString() {
+            return new String(buffer, 0, usedSize, StandardCharsets.UTF_8);
+        }
+
+        public Reader contentStreamReader() {
+            return new InputStreamReader(new ByteArrayInputStream(buffer, 0, usedSize), StandardCharsets.UTF_8);
+        }
+
+        public void reset() {
+            usedSize = 0;
         }
     }
 
@@ -229,6 +248,8 @@ public class Clip2Bridge implements Closeable {
      * <li>onReset()</li>
      */
     private class EventStreamListenerAdapter extends BaseStreamListenerAdapter<Boolean> {
+        private final DataFrameCollector eventData = new DataFrameCollector();
+
         @Override
         public void onClosed(@Nullable Stream stream) {
             handleHttp2Error(Http2Error.CLOSED);
@@ -238,36 +259,33 @@ public class Clip2Bridge implements Closeable {
         public void onData(@Nullable Stream stream, @Nullable DataFrame frame, @Nullable Callback callback) {
             Objects.requireNonNull(frame);
             Objects.requireNonNull(callback);
-            if (!completable.isDone()) {
-                completable.complete(Boolean.TRUE);
-            }
             synchronized (this) {
-                byte[] receivedBytes = combineBytes(cachedBytes, frame.getData());
-                String receivedString = new String(receivedBytes, StandardCharsets.UTF_8);
-                String[] receivedLines = receivedString.split("\\R", -1);
-                int receivedLineCount = receivedLines.length;
+                eventData.append(frame.getData());
+                BufferedReader reader = new BufferedReader(eventData.contentStreamReader());
+                @SuppressWarnings("null")
+                List<String> receivedLines = reader.lines().collect(Collectors.toList());
 
-                // two blank lines mark the end of an SSE packet
-                boolean endOfPacket = (receivedLineCount > 1) && receivedLines[receivedLineCount - 2].isBlank()
-                        && receivedLines[receivedLineCount - 1].isBlank();
+                // a blank line marks the end of an SSE message
+                boolean endOfMessage = !receivedLines.isEmpty()
+                        && receivedLines.get(receivedLines.size() - 1).isBlank();
 
-                if (endOfPacket) {
-                    if (cachedBytes.length > 0) {
-                        cachedBytes = new byte[0];
+                if (endOfMessage) {
+                    eventData.reset();
+                    // receipt of ANY message means the event stream is established
+                    if (!completable.isDone()) {
+                        completable.complete(Boolean.TRUE);
                     }
                     // append any 'data' field values to the event message
-                    String eventMessage = null;
+                    StringBuilder eventContent = new StringBuilder();
                     for (String receivedLine : receivedLines) {
                         if (receivedLine.startsWith("data:")) {
-                            String fieldValue = receivedLine.substring(5).trim();
-                            eventMessage = Objects.isNull(eventMessage) ? fieldValue : "\n" + fieldValue;
+                            eventContent.append(receivedLine.substring(5).trim());
                         }
                     }
-                    if (Objects.nonNull(eventMessage)) {
-                        onEventData(eventMessage);
+                    // note: StringBuilder.isEmpty() only available from Java 15+
+                    if (eventContent.length() > 0) {
+                        onEventData(eventContent.toString());
                     }
-                } else {
-                    cachedBytes = receivedBytes;
                 }
             }
             callback.succeeded();
