@@ -13,6 +13,8 @@ All parts together represents a smart home controller for Z-Wave.
 
 The entire infrastructure is maintained and developed by [Z-Wave.Me](https://www.z-wave.me/) with the help of a large community.
 
+A detailed step-by-step description of the binding configuration is also available on the [Z-Wave.Me Support site](https://help.z-wave.me/en/knowledge_base/art/149/cat/88/)
+
 Please note the **known issues** below.
 
 ### Approach
