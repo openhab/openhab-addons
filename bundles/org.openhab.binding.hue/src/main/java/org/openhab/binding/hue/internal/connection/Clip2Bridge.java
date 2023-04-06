@@ -278,13 +278,13 @@ public class Clip2Bridge implements Closeable {
                     // append any 'data' field values to the event message
                     StringBuilder eventContent = new StringBuilder();
                     for (String receivedLine : receivedLines) {
-                        if (receivedLine.startsWith("data:")) {
-                            eventContent.append(receivedLine.substring(5).trim());
+                        if (receivedLine.startsWith("data: ")) {
+                            eventContent.append(receivedLine.substring(6));
                         }
                     }
                     // note: StringBuilder.isEmpty() only available from Java 15+
                     if (eventContent.length() > 0) {
-                        onEventData(eventContent.toString());
+                        onEventData(eventContent.toString().trim());
                     }
                 }
             }
