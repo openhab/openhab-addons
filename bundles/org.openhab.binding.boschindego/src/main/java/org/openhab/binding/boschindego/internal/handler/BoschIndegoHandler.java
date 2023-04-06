@@ -14,7 +14,6 @@ package org.openhab.binding.boschindego.internal.handler;
 
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -29,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschindego.internal.BoschIndegoTranslationProvider;
 import org.openhab.binding.boschindego.internal.DeviceStatus;
-import org.openhab.binding.boschindego.internal.IndegoController;
+import org.openhab.binding.boschindego.internal.IndegoDeviceController;
 import org.openhab.binding.boschindego.internal.config.BoschIndegoConfiguration;
 import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
@@ -39,9 +38,6 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.openhab.core.auth.client.oauth2.OAuthException;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -52,11 +48,14 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -86,16 +85,14 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private final HttpClient httpClient;
-    private final OAuthFactory oAuthFactory;
     private final BoschIndegoTranslationProvider translationProvider;
     private final TimeZoneProvider timeZoneProvider;
 
     private @NonNullByDefault({}) OAuthClientService oAuthClientService;
-    private @NonNullByDefault({}) IndegoController controller;
+    private @NonNullByDefault({}) IndegoDeviceController controller;
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimeFuture;
-    private boolean propertiesInitialized;
     private Optional<Integer> previousStateCode = Optional.empty();
     private @Nullable RawType cachedMap;
     private Instant cachedMapTimestamp = Instant.MIN;
@@ -106,62 +103,66 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private int stateActiveRefreshIntervalSeconds;
     private int currentRefreshIntervalSeconds;
 
-    public BoschIndegoHandler(Thing thing, HttpClient httpClient, OAuthFactory oAuthFactory,
-            BoschIndegoTranslationProvider translationProvider, TimeZoneProvider timeZoneProvider) {
+    public BoschIndegoHandler(Thing thing, HttpClient httpClient, BoschIndegoTranslationProvider translationProvider,
+            TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.httpClient = httpClient;
-        this.oAuthFactory = oAuthFactory;
         this.translationProvider = translationProvider;
         this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Indego handler");
         BoschIndegoConfiguration config = getConfigAs(BoschIndegoConfiguration.class);
         stateInactiveRefreshIntervalSeconds = (int) config.refresh;
         stateActiveRefreshIntervalSeconds = (int) config.stateActiveRefresh;
 
-        this.oAuthClientService = oAuthFactory.createOAuthClientService(this.getThing().getUID().getAsString(),
-                BSK_TOKEN_URI, BSK_AUTH_URI, BSK_CLIENT_ID, null, BSK_SCOPE, false);
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.missing-brige");
+            return;
+        }
 
-        controller = new IndegoController(httpClient, oAuthClientService);
+        ThingHandler handler = bridge.getHandler();
+        if (handler instanceof BoschAccountHandler accountHandler) {
+            this.oAuthClientService = accountHandler.getOAuthClientService();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.missing-brige");
+            return;
+        }
+
+        this.updateProperty(Thing.PROPERTY_SERIAL_NUMBER, config.serialNumber);
+
+        controller = new IndegoDeviceController(httpClient, oAuthClientService, config.serialNumber);
 
         updateStatus(ThingStatus.UNKNOWN);
         previousStateCode = Optional.empty();
-        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds);
+        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, false);
         this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
                 config.cuttingTimeRefresh, TimeUnit.MINUTES);
     }
 
-    public void authorize(String authCode) throws IndegoAuthenticationException {
-        logger.info("Attempting to authorize using authorization code");
-
-        try {
-            oAuthClientService.getAccessTokenResponseByAuthorizationCode(authCode, BSK_REDIRECT_URI);
-        } catch (OAuthException | OAuthResponseException | IOException e) {
-            throw new IndegoAuthenticationException("Failed to authorize by authorization code " + authCode, e);
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
+                && getThing().getStatusInfo().getStatus() == ThingStatus.OFFLINE) {
+            // Trigger immediate state refresh upon authorization success.
+            rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, true);
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-
-        logger.info("Authorization completed successfully");
-
-        // Trigger immediate state refresh.
-        ScheduledFuture<?> statePollFuture = this.statePollFuture;
-        if (statePollFuture != null) {
-            statePollFuture.cancel(true);
-            this.statePollFuture = null;
-        }
-        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds);
     }
 
-    private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds) {
+    private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds, boolean force) {
         ScheduledFuture<?> statePollFuture = this.statePollFuture;
         if (statePollFuture != null) {
-            if (refreshIntervalSeconds == currentRefreshIntervalSeconds) {
+            if (!force && refreshIntervalSeconds == currentRefreshIntervalSeconds) {
                 // No change.
                 return false;
             }
-            statePollFuture.cancel(false);
+            statePollFuture.cancel(force);
         }
         logger.debug("Scheduling state refresh job with {}s interval and {}s delay", refreshIntervalSeconds,
                 delaySeconds);
@@ -174,7 +175,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Indego handler");
         ScheduledFuture<?> pollFuture = this.statePollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(true);
@@ -190,8 +190,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
             pollFuture.cancel(true);
         }
         this.cuttingTimeFuture = null;
-
-        this.oAuthFactory.ungetOAuthService(this.getThing().getUID().getAsString());
     }
 
     @Override
@@ -304,11 +302,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     private void refreshState() throws IndegoAuthenticationException, IndegoException {
-        if (!propertiesInitialized) {
-            getThing().setProperty(Thing.PROPERTY_SERIAL_NUMBER, controller.getSerialNumber());
-            propertiesInitialized = true;
-        }
-
         DeviceStateResponse state = controller.getState();
         DeviceStatus deviceStatus = DeviceStatus.fromCode(state.state);
         updateState(state);
@@ -364,7 +357,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } else {
             refreshIntervalSeconds = stateInactiveRefreshIntervalSeconds;
         }
-        if (rescheduleStatePoll(refreshIntervalSeconds, refreshIntervalSeconds)) {
+        if (rescheduleStatePoll(refreshIntervalSeconds, refreshIntervalSeconds, false)) {
             // After job has been rescheduled, request operating data one last time on next poll.
             // This is needed to update battery values after a charging cycle has completed.
             operatingDataTimestamp = Instant.MIN;

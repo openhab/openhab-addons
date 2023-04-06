@@ -15,8 +15,8 @@ package org.openhab.binding.boschindego.internal;
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -31,18 +31,8 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
-import org.openhab.binding.boschindego.internal.dto.PredictiveAdjustment;
-import org.openhab.binding.boschindego.internal.dto.PredictiveStatus;
-import org.openhab.binding.boschindego.internal.dto.request.SetStateRequest;
-import org.openhab.binding.boschindego.internal.dto.response.DeviceCalendarResponse;
-import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
 import org.openhab.binding.boschindego.internal.dto.response.ErrorResponse;
-import org.openhab.binding.boschindego.internal.dto.response.LocationWeatherResponse;
 import org.openhab.binding.boschindego.internal.dto.response.Mower;
-import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
-import org.openhab.binding.boschindego.internal.dto.response.PredictiveLastCuttingResponse;
-import org.openhab.binding.boschindego.internal.dto.response.PredictiveNextCuttingResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
@@ -61,21 +51,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 /**
- * Controller for communicating with a Bosch Indego device through Bosch services.
- * This class provides methods for retrieving state information as well as controlling
- * the device.
- * 
- * The implementation is based on zazaz-de/iot-device-bosch-indego-controller, but
- * rewritten from scratch to use Jetty HTTP client for HTTP communication and GSON for
- * JSON parsing. Thanks to Oliver Schünemann for providing the original implementation.
+ * Controller for communicating with a Bosch Indego services.
  * 
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
 public class IndegoController {
 
+    protected static final String SERIAL_NUMBER_SUBPATH = "alms/";
+
     private static final String BASE_URL = "https://api.indego-cloud.iot.bosch-si.com/api/v1/";
-    private static final String SERIAL_NUMBER_SUBPATH = "alms/";
     private static final String CONTENT_TYPE_HEADER = "application/json";
 
     private static final String BEARER = "Bearer ";
@@ -85,18 +70,30 @@ public class IndegoController {
     private final HttpClient httpClient;
     private final OAuthClientService oAuthClientService;
     private final String userAgent;
-    private String serialNumber = "";
 
     /**
      * Initialize the controller instance.
      * 
-     * @param username the username for authenticating
-     * @param password the password
+     * @param httpClient the HttpClient for communicating with the service
+     * @param oAuthClientService the OAuthClientService for authorization
      */
     public IndegoController(HttpClient httpClient, OAuthClientService oAuthClientService) {
         this.httpClient = httpClient;
         this.oAuthClientService = oAuthClientService;
         userAgent = "openHAB " + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+    }
+
+    /**
+     * Gets serial numbers of all the associated Indego devices.
+     *
+     * @return the serial numbers of the devices
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public Collection<String> getSerialNumbers() throws IndegoAuthenticationException, IndegoException {
+        Mower[] mowers = getRequest(SERIAL_NUMBER_SUBPATH, Mower[].class);
+
+        return Arrays.stream(mowers).map(m -> m.serialNumber).toList();
     }
 
     private String getAuthorizationUrl() {
@@ -142,7 +139,7 @@ public class IndegoController {
      * @throws IndegoTimeoutException if device cannot be reached (gateway timeout error)
      * @throws IndegoException if any communication or parsing error occurred
      */
-    private <T> T getRequest(String path, Class<? extends T> dtoClass)
+    protected <T> T getRequest(String path, Class<? extends T> dtoClass)
             throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         int status = 0;
         try {
@@ -209,7 +206,7 @@ public class IndegoController {
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    private RawType getRawRequest(String path) throws IndegoAuthenticationException, IndegoException {
+    protected RawType getRawRequest(String path) throws IndegoAuthenticationException, IndegoException {
         int status = 0;
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET)
@@ -270,7 +267,7 @@ public class IndegoController {
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    private void putRequestWithAuthentication(String path, Object requestDto)
+    protected void putRequestWithAuthentication(String path, Object requestDto)
             throws IndegoAuthenticationException, IndegoException {
         putPostRequest(HttpMethod.PUT, path, requestDto);
     }
@@ -282,7 +279,7 @@ public class IndegoController {
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    private void postRequest(String path) throws IndegoAuthenticationException, IndegoException {
+    protected void postRequest(String path) throws IndegoAuthenticationException, IndegoException {
         putPostRequest(HttpMethod.POST, path, null);
     }
 
@@ -295,7 +292,7 @@ public class IndegoController {
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
-    private void putPostRequest(HttpMethod method, String path, @Nullable Object requestDto)
+    protected void putPostRequest(HttpMethod method, String path, @Nullable Object requestDto)
             throws IndegoAuthenticationException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(method)
@@ -370,244 +367,8 @@ public class IndegoController {
      * @throws TimeoutException if send times out
      * @throws ExecutionException if execution fails
      */
-    private synchronized ContentResponse sendRequest(Request request)
+    protected synchronized ContentResponse sendRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
         return request.send();
-    }
-
-    /**
-     * Gets serial number of the associated Indego device
-     *
-     * @return the serial number of the device
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public synchronized String getSerialNumber() throws IndegoAuthenticationException, IndegoException {
-        if (!serialNumber.isEmpty()) {
-            return serialNumber;
-        }
-
-        Mower[] mowers = getRequest(SERIAL_NUMBER_SUBPATH, Mower[].class);
-        serialNumber = mowers[0].serialNumber;
-
-        return serialNumber;
-    }
-
-    /**
-     * Queries the device state from the server.
-     * 
-     * @return the device state
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public DeviceStateResponse getState() throws IndegoAuthenticationException, IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state", DeviceStateResponse.class);
-    }
-
-    /**
-     * Queries the device state from the server. This overload will return when the state
-     * has changed, or the timeout has been reached.
-     * 
-     * @param timeout Maximum time to wait for response
-     * @return the device state
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public DeviceStateResponse getState(Duration timeout) throws IndegoAuthenticationException, IndegoException {
-        return getRequest(
-                SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state?longpoll=true&timeout=" + timeout.getSeconds(),
-                DeviceStateResponse.class);
-    }
-
-    /**
-     * Queries the device operating data from the server.
-     * Server will request this directly from the device, so operation might be slow.
-     * 
-     * @return the device state
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoTimeoutException if device cannot be reached (gateway timeout error)
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public OperatingDataResponse getOperatingData()
-            throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/operatingData",
-                OperatingDataResponse.class);
-    }
-
-    /**
-     * Queries the map generated by the device from the server.
-     * 
-     * @return the garden map
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public RawType getMap() throws IndegoAuthenticationException, IndegoException {
-        return getRawRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/map");
-    }
-
-    /**
-     * Queries the calendar.
-     * 
-     * @return the calendar
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public DeviceCalendarResponse getCalendar() throws IndegoAuthenticationException, IndegoException {
-        DeviceCalendarResponse calendar = getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/calendar",
-                DeviceCalendarResponse.class);
-        return calendar;
-    }
-
-    /**
-     * Sends a command to the Indego device.
-     * 
-     * @param command the control command to send to the device
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoInvalidCommandException if the command was not processed correctly
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public void sendCommand(DeviceCommand command)
-            throws IndegoAuthenticationException, IndegoInvalidCommandException, IndegoException {
-        SetStateRequest request = new SetStateRequest();
-        request.state = command.getActionCode();
-        putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/state", request);
-    }
-
-    /**
-     * Queries the predictive weather forecast.
-     * 
-     * @return the weather forecast DTO
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public LocationWeatherResponse getWeather() throws IndegoAuthenticationException, IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/weather",
-                LocationWeatherResponse.class);
-    }
-
-    /**
-     * Queries the predictive adjustment.
-     * 
-     * @return the predictive adjustment
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public int getPredictiveAdjustment() throws IndegoAuthenticationException, IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/useradjustment",
-                PredictiveAdjustment.class).adjustment;
-    }
-
-    /**
-     * Sets the predictive adjustment.
-     * 
-     * @param adjust the predictive adjustment
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public void setPredictiveAdjustment(final int adjust) throws IndegoAuthenticationException, IndegoException {
-        final PredictiveAdjustment adjustment = new PredictiveAdjustment();
-        adjustment.adjustment = adjust;
-        putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/useradjustment",
-                adjustment);
-    }
-
-    /**
-     * Queries predictive moving.
-     * 
-     * @return predictive moving
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public boolean getPredictiveMoving() throws IndegoAuthenticationException, IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive",
-                PredictiveStatus.class).enabled;
-    }
-
-    /**
-     * Sets predictive moving.
-     * 
-     * @param enable
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public void setPredictiveMoving(final boolean enable) throws IndegoAuthenticationException, IndegoException {
-        final PredictiveStatus status = new PredictiveStatus();
-        status.enabled = enable;
-        putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive", status);
-    }
-
-    /**
-     * Queries predictive last cutting as {@link Instant}.
-     * 
-     * @return predictive last cutting
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public @Nullable Instant getPredictiveLastCutting() throws IndegoAuthenticationException, IndegoException {
-        try {
-            return getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/lastcutting",
-                    PredictiveLastCuttingResponse.class).getLastCutting();
-        } catch (IndegoInvalidResponseException e) {
-            if (e.getHttpStatusCode() == HttpStatus.NO_CONTENT_204) {
-                return null;
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Queries predictive next cutting as {@link Instant}.
-     * 
-     * @return predictive next cutting
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public @Nullable Instant getPredictiveNextCutting() throws IndegoAuthenticationException, IndegoException {
-        try {
-            return getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/nextcutting",
-                    PredictiveNextCuttingResponse.class).getNextCutting();
-        } catch (IndegoInvalidResponseException e) {
-            if (e.getHttpStatusCode() == HttpStatus.NO_CONTENT_204) {
-                return null;
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Queries predictive exclusion time.
-     * 
-     * @return predictive exclusion time DTO
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public DeviceCalendarResponse getPredictiveExclusionTime() throws IndegoAuthenticationException, IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar",
-                DeviceCalendarResponse.class);
-    }
-
-    /**
-     * Sets predictive exclusion time.
-     * 
-     * @param calendar calendar DTO
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public void setPredictiveExclusionTime(final DeviceCalendarResponse calendar)
-            throws IndegoAuthenticationException, IndegoException {
-        putRequestWithAuthentication(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/predictive/calendar", calendar);
-    }
-
-    /**
-     * Request map position updates for the next ({@link count} * {@link interval}) number of seconds.
-     * 
-     * @param count Number of updates
-     * @param interval Number of seconds between updates
-     * @throws IndegoAuthenticationException if request was rejected as unauthorized
-     * @throws IndegoException if any communication or parsing error occurred
-     */
-    public void requestPosition(int count, int interval) throws IndegoAuthenticationException, IndegoException {
-        postRequest(SERIAL_NUMBER_SUBPATH + this.getSerialNumber() + "/requestPosition?count=" + count + "&interval="
-                + interval);
     }
 }

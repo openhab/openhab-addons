@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
-import org.openhab.binding.boschindego.internal.handler.BoschIndegoHandler;
+import org.openhab.binding.boschindego.internal.handler.BoschAccountHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
 import org.openhab.core.io.console.StringsCompleter;
@@ -61,9 +61,9 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
 
         for (Thing thing : thingRegistry.getAll()) {
             ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof BoschIndegoHandler indegoHandler) {
+            if (thingHandler instanceof BoschAccountHandler accountHandler) {
                 try {
-                    indegoHandler.authorize(args[1]);
+                    accountHandler.authorize(args[1]);
                 } catch (IndegoAuthenticationException e) {
                     console.println("Authorization error: " + e.getMessage());
                 }
