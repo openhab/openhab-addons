@@ -187,8 +187,8 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                         if (resource.getType() == ResourceType.BRIDGE_HOME) {
                                             label = clip2BridgeHandler
                                                     .getLocalizedText(HueBindingConstants.ALL_LIGHTS_KEY);
-                                            type = "Zone";
-                                            comment = type;
+                                            comment = "Zone";
+                                            type = comment.toLowerCase();
                                         }
 
                                         lines.put(label, String.format(FMT_THING, type, id, label, id, comment));
