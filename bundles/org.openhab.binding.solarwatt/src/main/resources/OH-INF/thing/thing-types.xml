@@ -111,7 +111,7 @@
 		</supported-bridge-type-refs>
 
 		<label>SmartHeater</label>
-		<description>smart heater for the production of hot water.</description>
+		<description>Smart heater for the production of hot water.</description>
 
 		<representation-property>IdName</representation-property>
 
