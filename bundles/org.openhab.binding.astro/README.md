@@ -272,7 +272,7 @@ Thing method only applies to Sun thing type.
 
 ```java
  val totalRadiation = sunActions.getTotalRadiation(ZonedDateTime.now)
- logInfo("AstroActions", "Currently, the total sun radiation is {}",   totalRadiation.toString)
+ logInfo("AstroActions", "Currently, the total sun radiation is {}", totalRadiation.toString)
 ```
 
 ## Tips
