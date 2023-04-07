@@ -163,7 +163,8 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             updateGeneratorThings();
         } catch (IOException e) {
             logger.debug("Could not update devices", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/thing.generacmobilelink.account.offline.communication-error.io-exception");
         } catch (SessionExpiredException e) {
             logger.debug("Session expired", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -234,7 +235,10 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             String data = response.getContentAsString();
             logger.debug("getEndpoint {}", data);
             return GSON.fromJson(data, clazz);
-        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException(e);
+        } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
             throw new IOException(e);
         }
     }
@@ -319,7 +323,10 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             if (!submitPage(loginString)) {
                 throw new IOException("Error parsing HTML submit form");
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException | JsonSyntaxException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException(e);
+        } catch (ExecutionException | TimeoutException | JsonSyntaxException e) {
             throw new IOException(e);
         }
     }
