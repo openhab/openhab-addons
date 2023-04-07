@@ -141,7 +141,7 @@ public class AstroActions implements ThingActions {
         return ((AstroActions) actions).getAzimuth(date);
     }
 
-    public static @Nullable QuantityType<Angle> getTotalRadiation(ThingActions actions, @Nullable ZonedDateTime date) {
+    public static @Nullable QuantityType<Intensity> getTotalRadiation(ThingActions actions, @Nullable ZonedDateTime date) {
         return ((AstroActions) actions).getTotalRadiation(date);
     }
 
