@@ -233,7 +233,7 @@ public class TagExecutorHandler extends BaseThingHandler implements CalendarUpda
         for (Event event : events) {
 
             // loop through all command tags in the event
-            for (CommandTag cmdTag : event.commandTags) {
+            for (CommandTag cmdTag : event.extractTags()) {
 
                 // only process the BEGIN resp. END tags
                 if (cmdTag.getTagType() != execTime) {

@@ -13,7 +13,7 @@
 package org.openhab.binding.icalendar.internal.logic;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,11 +23,11 @@ import org.eclipse.jdt.annotation.Nullable;
  * A single event.
  *
  * @author Michael Wodniok - Initial contribution
- * @author Andrew Fiddian-Green - Added support for event description
+ * @author Andrew Fiddian-Green - Added support for event 
+ * @author Michael Wodniok - Moved CommandTag paring to separate method for doing it only on demand.
  */
 @NonNullByDefault
 public class Event implements Comparable<Event> {
-    public final List<CommandTag> commandTags = new ArrayList<>();
     public final Instant end;
     public final Instant start;
     @Nullable
@@ -54,14 +54,6 @@ public class Event implements Comparable<Event> {
         if (description == null || description.isEmpty()) {
             return;
         }
-
-        String[] lines = description.replace("<p>", "").replace("</p>", "\n").split("\n");
-        for (String line : lines) {
-            CommandTag tag = CommandTag.createCommandTag(line);
-            if (tag != null) {
-                commandTags.add(tag);
-            }
-        }
     }
 
     public Event(String title, Instant start, Instant end, String description) {
@@ -70,12 +62,7 @@ public class Event implements Comparable<Event> {
 
     @Override
     public String toString() {
-        String[] tagStrings = new String[this.commandTags.size()];
-        for (int i = 0; i < tagStrings.length; i++) {
-            tagStrings[i] = this.commandTags.get(i).toString();
-        }
-        return "Event(title: " + this.title + ", start: " + this.start.toString() + ", end: " + this.end.toString()
-                + ", commandTags: List(" + String.join(", ", tagStrings) + ")";
+        return "Event(title: " + this.title + ", start: " + this.start.toString() + ", end: " + this.end.toString();
     }
 
     @Override
@@ -91,5 +78,26 @@ public class Event implements Comparable<Event> {
     @Override
     public int compareTo(Event o) {
         return start.compareTo(o.start);
+    }
+
+    /**
+     * extracts the command tags from an events description.
+     * 
+     * @return A list of CommandTags.
+     */
+    public List<CommandTag> extractTags() {
+        List<CommandTag> rtn = new LinkedList<CommandTag>();
+        @Nullable
+        String description = this.description;
+        if (description != null) {
+            String[] lines = description.replace("<p>", "").replace("</p>", "\n").split("\n");
+            for (String line : lines) {
+                CommandTag tag = CommandTag.createCommandTag(line);
+                if (tag != null) {
+                    rtn.add(tag);
+                }
+            }
+        }
+        return rtn;
     }
 }

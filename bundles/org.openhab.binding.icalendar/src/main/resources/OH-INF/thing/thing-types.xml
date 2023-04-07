@@ -11,9 +11,9 @@
 		<channels>
 			<channel id="last_update" typeId="last_update"/>
 		</channels>
-		
+
 		<properties>
-		  <property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>

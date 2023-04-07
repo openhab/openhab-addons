@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.icalendar.internal.logic;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -233,7 +238,7 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(events);
         assertEquals(eventCount, events.size());
         for (Event event : events) {
-            List<CommandTag> cmdTags = event.commandTags;
+            List<CommandTag> cmdTags = event.extractTags();
             assertEquals(tagsPerEvent, cmdTags.size());
             int beginTags = 0;
             for (CommandTag cmdTag : cmdTags) {
@@ -253,7 +258,7 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(events);
         assertEquals(eventCount, events.size());
         for (Event event : events) {
-            List<CommandTag> cmdTags = event.commandTags;
+            List<CommandTag> cmdTags = event.extractTags();
             assertEquals(tagsPerEvent, cmdTags.size());
             int beginTags = 0;
             for (CommandTag cmdTag : cmdTags) {
@@ -285,7 +290,7 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(events);
         assertEquals(eventCount, events.size());
         for (Event event : events) {
-            List<CommandTag> cmdTags = event.commandTags;
+            List<CommandTag> cmdTags = event.extractTags();
             assertEquals(tagsPerEvent, cmdTags.size());
             int endTags = 0;
             for (CommandTag cmdTag : cmdTags) {
@@ -316,7 +321,7 @@ public class BiweeklyPresentableCalendarTest {
                 Instant.parse("2020-01-28T16:05:00Z"));
         assertNotNull(events);
         assertTrue(!events.isEmpty());
-        List<CommandTag> cmdTags = events.get(0).commandTags;
+        List<CommandTag> cmdTags = events.get(0).extractTags();
         assertTrue(!cmdTags.isEmpty());
         CommandTag cmd = cmdTags.get(0);
         // accept correct, empty or null configuration codes
@@ -331,7 +336,7 @@ public class BiweeklyPresentableCalendarTest {
                 Instant.parse("2020-01-28T19:35:00Z"));
         assertNotNull(events);
         assertEquals(1, events.size());
-        cmdTags = events.get(0).commandTags;
+        cmdTags = events.get(0).extractTags();
         assertEquals(11, cmdTags.size());
 
         // BEGIN:Calendar_Test_Color:ON:abc
@@ -396,7 +401,7 @@ public class BiweeklyPresentableCalendarTest {
                 Instant.parse("2020-01-28T20:20:00Z"));
         assertNotNull(events);
         assertEquals(1, events.size());
-        cmdTags = events.get(0).commandTags;
+        cmdTags = events.get(0).extractTags();
         assertEquals(11, cmdTags.size());
 
         // BEGIN:Calendar_Test_Color:0%:abc
@@ -459,7 +464,7 @@ public class BiweeklyPresentableCalendarTest {
                 Instant.parse("2020-01-28T20:35:00Z"));
         assertNotNull(events);
         assertEquals(1, events.size());
-        cmdTags = events.get(0).commandTags;
+        cmdTags = events.get(0).extractTags();
         assertEquals(11, cmdTags.size());
 
         // BEGIN:Calendar_Test_Color:240,100,100:abc
@@ -522,7 +527,7 @@ public class BiweeklyPresentableCalendarTest {
                 Instant.parse("2020-01-28T20:50:00Z"));
         assertNotNull(events);
         assertEquals(1, events.size());
-        cmdTags = events.get(0).commandTags;
+        cmdTags = events.get(0).extractTags();
         // Test Series #6 contains only "bad" command tags as follows..
 
         // tags with wrong case prefix..
@@ -569,7 +574,7 @@ public class BiweeklyPresentableCalendarTest {
                 Instant.parse("2020-01-28T21:05:00Z"));
         assertNotNull(events);
         assertEquals(1, events.size());
-        cmdTags = events.get(0).commandTags;
+        cmdTags = events.get(0).extractTags();
         assertEquals(8, cmdTags.size());
 
         // <p>BEGIN:Calendar_Test_Temperature:12.3°C:abc</p>
