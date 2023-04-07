@@ -9,15 +9,12 @@
 		<description>Calendar based on an iCal calendar.</description>
 
 		<channels>
-			<channel id="current_title" typeId="event_current_title"/>
-			<channel id="current_start" typeId="event_current_start"/>
-			<channel id="current_end" typeId="event_current_end"/>
-			<channel id="current_presence" typeId="event_current_presence"/>
-			<channel id="next_title" typeId="event_next_title"/>
-			<channel id="next_start" typeId="event_next_start"/>
-			<channel id="next_end" typeId="event_next_end"/>
 			<channel id="last_update" typeId="last_update"/>
 		</channels>
+		
+		<properties>
+		  <property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter-group name="source">
@@ -49,10 +46,6 @@
 				<description>The maximum size of the calendar in Megabytes</description>
 				<default>16</default>
 				<unitLabel>MB</unitLabel>
-			</parameter>
-			<parameter name="authorizationCode" type="text" required="false" groupName="parsing">
-				<label>Command Authorization Code</label>
-				<description>Authorization Code to allow the execution of Command Tags (may be empty)</description>
 			</parameter>
 		</config-description>
 
@@ -347,6 +340,25 @@
 				<default>TEXT</default>
 				<label>Value Type</label>
 				<description>"text" checks the value for containment, "regular expression" matches whole value</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="tagexecutor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="calendar"/>
+		</supported-bridge-type-refs>
+		<label>Tag Executor</label>
+		<description>Executes command tags of events</description>
+
+		<config-description>
+			<parameter-group name="parsing">
+				<label>Parsing settings</label>
+			</parameter-group>
+
+			<parameter name="authorizationCode" type="text" required="false" groupName="parsing">
+				<label>Command Authorization Code</label>
+				<description>Authorization Code to allow the execution of Command Tags (may be empty)</description>
 			</parameter>
 		</config-description>
 	</thing-type>

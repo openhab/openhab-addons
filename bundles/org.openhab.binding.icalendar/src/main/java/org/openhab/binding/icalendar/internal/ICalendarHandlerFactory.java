@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.icalendar.internal.handler.EventFilterHandler;
 import org.openhab.binding.icalendar.internal.handler.ICalendarHandler;
 import org.openhab.binding.icalendar.internal.handler.LiveEventHandler;
+import org.openhab.binding.icalendar.internal.handler.TagExecutorHandler;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -92,6 +93,8 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
             return new EventFilterHandler(thing, tzProvider);
         } else if (thingTypeUID.equals(THING_TYPE_LIVE_EVENT)) {
             return new LiveEventHandler(thing, tzProvider);
+        } else if (thingTypeUID.equals(THING_TYPE_TAG_EXECUTOR)) {
+            return new TagExecutorHandler(thing, eventPublisher);
         }
         return null;
     }

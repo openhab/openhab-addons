@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="icalendar:calendar">
+		<instruction-set targetVersion="1">
+			<remove-channel id="current_title"/>
+			<remove-channel id="current_start"/>
+			<remove-channel id="current_end"/>
+			<remove-channel id="current_presence"/>
+			<remove-channel id="next_title"/>
+			<remove-channel id="next_start"/>
+			<remove-channel id="next_end"/>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,16 +31,9 @@ import org.openhab.binding.icalendar.internal.config.ICalendarConfiguration;
 import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateListener;
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
 import org.openhab.binding.icalendar.internal.logic.CalendarException;
-import org.openhab.binding.icalendar.internal.logic.CommandTag;
-import org.openhab.binding.icalendar.internal.logic.CommandTagType;
-import org.openhab.binding.icalendar.internal.logic.Event;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.events.EventPublisher;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -72,18 +64,14 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
 
     private final File calendarFile;
     private @Nullable ICalendarConfiguration configuration;
-    private final EventPublisher eventPublisherCallback;
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandler.class);
     private final TimeZoneProvider tzProvider;
     private @Nullable ScheduledFuture<?> pullJobFuture;
     private @Nullable AbstractPresentableCalendar runtimeCalendar;
-    private @Nullable ScheduledFuture<?> updateJobFuture;
-    private Instant updateStatesLastCalledTime;
     private @Nullable Instant calendarDownloadedTime;
 
-    public ICalendarHandler(Bridge bridge, HttpClient httpClient, EventPublisher eventPublisher,
-            TimeZoneProvider tzProvider) {
+    public ICalendarHandler(Bridge bridge, HttpClient httpClient, TimeZoneProvider tzProvider) {
         super(bridge);
         this.httpClient = httpClient;
         final File cacheFolder = new File(new File(OpenHAB.getUserDataFolder(), "cache"),
@@ -94,17 +82,11 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
         }
         calendarFile = new File(cacheFolder,
                 getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
-        eventPublisherCallback = eventPublisher;
-        updateStatesLastCalledTime = Instant.now();
         this.tzProvider = tzProvider;
     }
 
     @Override
     public void dispose() {
-        final ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
-        if (currentUpdateJobFuture != null) {
-            currentUpdateJobFuture.cancel(true);
-        }
         final ScheduledFuture<?> currentPullJobFuture = pullJobFuture;
         if (currentPullJobFuture != null) {
             currentPullJobFuture.cancel(true);
@@ -114,13 +96,6 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
-            case CHANNEL_CURRENT_EVENT_PRESENT:
-            case CHANNEL_CURRENT_EVENT_TITLE:
-            case CHANNEL_CURRENT_EVENT_START:
-            case CHANNEL_CURRENT_EVENT_END:
-            case CHANNEL_NEXT_EVENT_TITLE:
-            case CHANNEL_NEXT_EVENT_START:
-            case CHANNEL_NEXT_EVENT_END:
             case CHANNEL_LAST_UPDATE:
                 if (command instanceof RefreshType) {
                     updateStates();
@@ -218,61 +193,6 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
         return runtimeCalendar;
     }
 
-    private void executeEventCommands(List<Event> events, CommandTagType execTime) {
-        // no begun or ended events => exit quietly as there is nothing to do
-        if (events.isEmpty()) {
-            return;
-        }
-
-        final ICalendarConfiguration syncConfiguration = configuration;
-        if (syncConfiguration == null) {
-            logger.debug("Configuration not instantiated!");
-            return;
-        }
-        // loop through all events in the list
-        for (Event event : events) {
-
-            // loop through all command tags in the event
-            for (CommandTag cmdTag : event.commandTags) {
-
-                // only process the BEGIN resp. END tags
-                if (cmdTag.getTagType() != execTime) {
-                    continue;
-                }
-                if (!cmdTag.isAuthorized(syncConfiguration.authorizationCode)) {
-                    logger.warn("Event: {}, Command Tag: {} => Command not authorized!", event.title,
-                            cmdTag.getFullTag());
-                    continue;
-                }
-
-                final Command cmdState = cmdTag.getCommand();
-                if (cmdState == null) {
-                    logger.warn("Event: {}, Command Tag: {} => Error creating Command State!", event.title,
-                            cmdTag.getFullTag());
-                    continue;
-                }
-
-                // (try to) execute the command
-                try {
-                    eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdState));
-                    if (logger.isDebugEnabled()) {
-                        String cmdType = cmdState.getClass().toString();
-                        int index = cmdType.lastIndexOf(".") + 1;
-                        if ((index > 0) && (index < cmdType.length())) {
-                            cmdType = cmdType.substring(index);
-                        }
-                        logger.debug("Event: {}, Command Tag: {} => {}.postUpdate({}: {})", event.title,
-                                cmdTag.getFullTag(), cmdTag.getItemName(), cmdType, cmdState);
-                    }
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    logger.warn("Event: {}, Command Tag: {} => Unable to push command to target item!", event.title,
-                            cmdTag.getFullTag());
-                    logger.debug("Exception occured while pushing to item!", e);
-                }
-            }
-        }
-    }
-
     /**
      * Migration for last_update-channel as this change is compatible to previous instances.
      */
@@ -313,67 +233,12 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
         try (final FileInputStream fileStream = new FileInputStream(calendarFile)) {
             final AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(fileStream);
             runtimeCalendar = calendar;
-            rescheduleCalendarStateUpdate();
             calendarDownloadedTime = Instant.ofEpochMilli(calendarFile.lastModified());
         } catch (IOException | CalendarException e) {
             logger.warn("Loading calendar failed: {}", e.getMessage());
             return false;
         }
         return true;
-    }
-
-    /**
-     * Reschedules the next update of the states.
-     */
-    private void rescheduleCalendarStateUpdate() {
-        final ScheduledFuture<?> currentUpdateJobFuture = updateJobFuture;
-        if (currentUpdateJobFuture != null) {
-            if (!(currentUpdateJobFuture.isCancelled() || currentUpdateJobFuture.isDone())) {
-                currentUpdateJobFuture.cancel(true);
-            }
-            updateJobFuture = null;
-        }
-        final AbstractPresentableCalendar currentCalendar = runtimeCalendar;
-        if (currentCalendar == null) {
-            return;
-        }
-        final Instant now = Instant.now();
-        Instant nextRegularUpdate = null;
-        if (currentCalendar.isEventPresent(now)) {
-            final Event currentEvent = currentCalendar.getCurrentEvent(now);
-            if (currentEvent == null) {
-                logger.debug(
-                        "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
-                return;
-            }
-            nextRegularUpdate = currentEvent.end;
-        }
-
-        final Event nextEvent = currentCalendar.getNextEvent(now);
-        final ICalendarConfiguration currentConfig = this.configuration;
-        if (currentConfig == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Something is broken, the configuration is not available.");
-            return;
-        }
-        if (nextEvent != null) {
-            if (nextRegularUpdate == null || nextEvent.start.isBefore(nextRegularUpdate)) {
-                nextRegularUpdate = nextEvent.start;
-            }
-        }
-
-        if (nextRegularUpdate != null) {
-            updateJobFuture = scheduler.schedule(() -> {
-                ICalendarHandler.this.updateStates();
-                ICalendarHandler.this.rescheduleCalendarStateUpdate();
-            }, nextRegularUpdate.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-            logger.debug("Scheduled update in {} seconds", nextRegularUpdate.getEpochSecond() - now.getEpochSecond());
-        } else {
-            updateJobFuture = scheduler.schedule(() -> {
-                ICalendarHandler.this.rescheduleCalendarStateUpdate();
-            }, 1L, TimeUnit.DAYS);
-            logger.debug("Scheduled reschedule in 1 day");
-        }
     }
 
     /**
@@ -386,55 +251,10 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             updateStatus(ThingStatus.OFFLINE);
         } else {
             updateStatus(ThingStatus.ONLINE);
-
-            final Instant now = Instant.now();
-            if (calendar.isEventPresent(now)) {
-                updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.ON);
-                final Event currentEvent = calendar.getCurrentEvent(now);
-                if (currentEvent == null) {
-                    logger.warn("Unexpected inconsistency of internal API. Not Updating event details.");
-                } else {
-                    updateState(CHANNEL_CURRENT_EVENT_TITLE, new StringType(currentEvent.title));
-                    updateState(CHANNEL_CURRENT_EVENT_START,
-                            new DateTimeType(currentEvent.start.atZone(tzProvider.getTimeZone())));
-                    updateState(CHANNEL_CURRENT_EVENT_END,
-                            new DateTimeType(currentEvent.end.atZone(tzProvider.getTimeZone())));
-                }
-            } else {
-                updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.OFF);
-                updateState(CHANNEL_CURRENT_EVENT_TITLE, UnDefType.UNDEF);
-                updateState(CHANNEL_CURRENT_EVENT_START, UnDefType.UNDEF);
-                updateState(CHANNEL_CURRENT_EVENT_END, UnDefType.UNDEF);
-            }
-
-            final Event nextEvent = calendar.getNextEvent(now);
-            if (nextEvent != null) {
-                updateState(CHANNEL_NEXT_EVENT_TITLE, new StringType(nextEvent.title));
-                updateState(CHANNEL_NEXT_EVENT_START,
-                        new DateTimeType(nextEvent.start.atZone(tzProvider.getTimeZone())));
-                updateState(CHANNEL_NEXT_EVENT_END, new DateTimeType(nextEvent.end.atZone(tzProvider.getTimeZone())));
-            } else {
-                updateState(CHANNEL_NEXT_EVENT_TITLE, UnDefType.UNDEF);
-                updateState(CHANNEL_NEXT_EVENT_START, UnDefType.UNDEF);
-                updateState(CHANNEL_NEXT_EVENT_END, UnDefType.UNDEF);
-            }
-
             final Instant lastUpdate = calendarDownloadedTime;
             updateState(CHANNEL_LAST_UPDATE,
                     (lastUpdate != null ? new DateTimeType(lastUpdate.atZone(tzProvider.getTimeZone()))
                             : UnDefType.UNDEF));
-
-            // process all Command Tags in all Calendar Events which ENDED since updateStates was last called
-            // the END Event tags must be processed before the BEGIN ones
-            executeEventCommands(calendar.getJustEndedEvents(updateStatesLastCalledTime, now), CommandTagType.END);
-
-            // process all Command Tags in all Calendar Events which BEGAN since updateStates was last called
-            // the END Event tags must be processed before the BEGIN ones
-            executeEventCommands(calendar.getJustBegunEvents(updateStatesLastCalledTime, now), CommandTagType.BEGIN);
-
-            // save time when updateStates was previously called
-            // the purpose is to prevent repeat command execution of events that have already been executed
-            updateStatesLastCalledTime = now;
         }
     }
 

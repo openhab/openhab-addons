@@ -34,6 +34,7 @@ public class ICalendarBindingConstants {
     public static final ThingTypeUID THING_TYPE_CALENDAR = new ThingTypeUID(BINDING_ID, "calendar");
     public static final ThingTypeUID THING_TYPE_FILTERED_EVENTS = new ThingTypeUID(BINDING_ID, "eventfilter");
     public static final ThingTypeUID THING_TYPE_LIVE_EVENT = new ThingTypeUID(BINDING_ID, "liveevent");
+    public static final ThingTypeUID THING_TYPE_TAG_EXECUTOR = new ThingTypeUID(BINDING_ID, "tagexecutor");
 
     // List of all Channel ids
     public static final String CHANNEL_CURRENT_EVENT_TITLE = "current_title";
