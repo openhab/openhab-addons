@@ -176,7 +176,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
     }
 
