@@ -266,7 +266,8 @@ Example :
 ```
 
 ### getTotalRadiation(timeStamp)
-Retrieves the total radiation(QuantityType) of the sun at the requested instant.
+
+Retrieves the total radiation (QuantityType<Intensity>) of the sun at the requested instant.
 Thing method only applies to Sun thing type.
 
 ```java
