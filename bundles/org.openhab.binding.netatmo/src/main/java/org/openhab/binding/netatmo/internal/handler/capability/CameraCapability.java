@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +106,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
         // The channel should get triggered at last (after super and sub methods), because this allows rules to access
         // the new updated data from the other channels.
         final String eventType = event.getEventType().name();
-        handler.getHomeHandler().ifPresent(homeHandler -> homeHandler.triggerChannel(CHANNEL_HOME_EVENT, eventType));
+        handler.recurseUpToHomeHandler(handler)
+                .ifPresent(homeHandler -> homeHandler.triggerChannel(CHANNEL_HOME_EVENT, eventType));
         handler.triggerChannel(CHANNEL_HOME_EVENT, eventType);
     }
 

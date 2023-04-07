@@ -47,7 +47,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
     private final Logger logger = LoggerFactory.getLogger(HomeCapability.class);
     private final Set<FeatureArea> featureAreas = new HashSet<>();
     private final NetatmoDescriptionProvider descriptionProvider;
-    private Set<String> homeIds = Set.of();
+    private final Set<String> homeIds = new HashSet<>();
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler, HomeApi.class);
@@ -58,7 +58,13 @@ public class HomeCapability extends RestCapability<HomeApi> {
     public void initialize() {
         super.initialize();
         HomeConfiguration config = handler.getConfiguration().as(HomeConfiguration.class);
-        homeIds = Set.of(config.getId(), config.energyId, config.securityId);
+        homeIds.add(config.getId());
+        if (!config.energyId.isBlank()) {
+            homeIds.add(config.energyId);
+        }
+        if (!config.securityId.isBlank()) {
+            homeIds.add(config.securityId);
+        }
     }
 
     @Override
