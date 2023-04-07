@@ -111,6 +111,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private final List<ChannelUID> legacyLinkedChannelUIDs = new ArrayList<>();
 
+    /**
+     * A map of scene IDs and respective scene names of scenes supported by this thing.
+     */
+    private final Map<String, String> supportedScenes = new ConcurrentHashMap<>();
+
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
@@ -153,6 +158,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             task.cancel(true);
         }
         updateContributorsTask = null;
+        supportedScenes.clear();
         supportedChannelIds.clear();
         commandResourceIds.clear();
         contributorsCache.clear();
@@ -366,6 +372,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 resource.copyMissingFieldsFrom(cacheResource);
                 updateChannels(resource);
                 contributorsCache.put(cacheId, resource);
+            } else if (supportedScenes.containsKey(cacheId)) {
+                resourceConsumed = true;
+                updateChannels(resource);
             }
             if (resourceConsumed) {
                 logger.debug("onResource() {} >> {} ", resource, thisResource);
@@ -495,6 +504,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case ZIGBEE_CONNECTIVITY:
                 updateConnectivityState(resource);
                 updateState(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS, resource.getZigbeeState(), fullUpdate);
+                break;
+
+            case SCENE:
+                updateSceneChannelState(resource);
                 break;
 
             default:
@@ -675,13 +688,35 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @throws ApiException if a communication error occurred.
      */
     private void updateSceneChannel() throws AssetNotLoadedException, ApiException {
-        List<Resource> scenes = getBridgeHandler().getScenes(getResourceReference());
+        Map<String, String> scenes = getBridgeHandler().getScenes(getResourceReference()).stream()
+                .collect(Collectors.toMap(Resource::getId, Resource::getName));
         logger.debug("updateSceneChannel() scenes.size():{}", scenes.size());
         if (!scenes.isEmpty()) {
             supportedChannelIds.add(HueBindingConstants.CHANNEL_SCENE);
             stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_SCENE),
-                    scenes.stream().map(s -> new StateOption(s.getId(), s.getName())).collect(Collectors.toList()));
+                    scenes.entrySet().stream().map(e -> new StateOption(e.getKey(), e.getValue()))
+                            .collect(Collectors.toList()));
         }
+        supportedScenes.clear();
+        supportedScenes.putAll(scenes);
+    }
+
+    /**
+     * Set the new state for the scene channel based on the given scene resource. If the given scene resource ID is in
+     * the supported scenes map, and if the scene is active (i.e. to be correct NOT inactive) the state is a StringType
+     * containing the name of that scene. Otherwise it is UnDefType.NULL
+     *
+     * @param sceneResource the given scene Resource.
+     */
+    private void updateSceneChannelState(Resource sceneResource) {
+        String sceneName = supportedScenes.get(sceneResource.getId());
+        State state = null;
+        if (Objects.nonNull(sceneName)) {
+            if (Boolean.TRUE.equals(sceneResource.getSceneActive())) {
+                state = new StringType(sceneName);
+            }
+        }
+        updateState(HueBindingConstants.CHANNEL_SCENE, state != null ? state : UnDefType.NULL, true);
     }
 
     /**

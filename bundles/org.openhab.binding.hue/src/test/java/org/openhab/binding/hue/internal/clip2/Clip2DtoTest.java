@@ -483,6 +483,8 @@ class Clip2DtoTest {
         assertNotNull(active);
         assertTrue(active.isJsonPrimitive());
         assertEquals("inactive", active.getAsString());
+        Boolean isActive = resource.getSceneActive();
+        assertEquals(Boolean.FALSE, isActive);
     }
 
     @Test

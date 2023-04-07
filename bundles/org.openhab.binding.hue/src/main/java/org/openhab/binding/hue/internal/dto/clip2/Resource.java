@@ -404,6 +404,17 @@ public class Resource {
         return Objects.nonNull(relativeRotary) ? relativeRotary.getStepsState() : UnDefType.NULL;
     }
 
+    public @Nullable Boolean getSceneActive() {
+        JsonElement status = this.status;
+        if (Objects.nonNull(status) && status.isJsonObject()) {
+            JsonElement active = ((JsonObject) status).get("active");
+            if (Objects.nonNull(active) && active.isJsonPrimitive()) {
+                return !"inactive".equals(active.getAsString());
+            }
+        }
+        return null;
+    }
+
     public List<ResourceReference> getServiceReferences() {
         List<ResourceReference> services = this.services;
         return Objects.nonNull(services) ? services : List.of();
