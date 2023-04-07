@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * A single event.
  *
  * @author Michael Wodniok - Initial contribution
- * @author Andrew Fiddian-Green - Added support for event 
+ * @author Andrew Fiddian-Green - Added support for event
  * @author Michael Wodniok - Moved CommandTag paring to separate method for doing it only on demand.
  */
 @NonNullByDefault
