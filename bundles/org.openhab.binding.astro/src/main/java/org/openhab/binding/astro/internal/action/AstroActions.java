@@ -89,7 +89,7 @@ public class AstroActions implements ThingActions {
     }
 
     @RuleAction(label = "get the total sun radiation", description = "Get the total sun radiation for a given time.")
-    public @Nullable @ActionOutput(name = "getTotalRadiation", label = "TotalRadiation", type = "org.openhab.core.library.types.QuantityType<org.openhab.core.library.dimension.Intensity>") QuantityType<Intensity> getTotalRadiation(
+    public @Nullable @ActionOutput(name = "getTotalRadiation", label = "Total Radiation", type = "org.openhab.core.library.types.QuantityType<org.openhab.core.library.dimension.Intensity>") QuantityType<Intensity> getTotalRadiation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getTotalRadiation' called");
         AstroThingHandler theHandler = this.handler;
@@ -141,7 +141,7 @@ public class AstroActions implements ThingActions {
         return ((AstroActions) actions).getAzimuth(date);
     }
 
-    public static @Nullable QuantityType<Intensity> getTotalRadiation(ThingActions actions, @Nullable ZonedDateTime date) {
+    public static @Nullable QuantityType<Angle> getTotalRadiation(ThingActions actions, @Nullable ZonedDateTime date) {
         return ((AstroActions) actions).getTotalRadiation(date);
     }
 
