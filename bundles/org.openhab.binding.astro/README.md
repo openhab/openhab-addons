@@ -265,6 +265,15 @@ Example :
  logInfo("AstroActions", "{} will be positioned at elevation {} - azimuth {}",sunEvent, elevation.toString,azimuth.toString)
 ```
 
+### getTotalRadiation(timeStamp)
+Retrieves the total radiation(QuantityType) of the sun at the requested instant.
+Thing method only applies to Sun thing type.
+
+```java
+ val totalRadiation = sunActions.getTotalRadiation(ZonedDateTime.now)
+ logInfo("AstroActions", "Currently, the total sun radiation is {}",   totalRadiation.toString)
+```
+
 ## Tips
 
 Do not worry if for example the "astro dawn" is undefined at your location.
