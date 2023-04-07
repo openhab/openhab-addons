@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.icalendar.internal;
 
-import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.THING_TYPE_CALENDAR;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.THING_TYPE_FILTERED_EVENTS;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.THING_TYPE_LIVE_EVENT;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.THING_TYPE_TAG_EXECUTOR;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - EventPublisher code
  * @author Michael Wodniok - Added FilteredEvent item type/handler
- * @author Michael Wodniok - Added LiveEvent item type/handler
+ * @author Michael Wodniok - Added LiveEvent and TagExecutor item type/handler
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.icalendar", service = ThingHandlerFactory.class)

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.icalendar.internal.handler;
 
-import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_LAST_UPDATE;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.LAST_UPDATE_TYPE_UID;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
  * @author Michael Wodniok - Added last_update-channel and additional needed handling of it
  * @author Michael Wodniok - Changed calculation of Future for refresh of channels
+ * @author Michael Wodniok - moved out live event channels and command tag execution
  */
 @NonNullByDefault
 public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdateListener {
