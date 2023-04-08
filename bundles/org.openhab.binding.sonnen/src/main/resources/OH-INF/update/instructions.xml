@@ -18,6 +18,6 @@
 			<add-channel id="energyExportedStateConsumption">
 				<type>sonnen:energyExportedStateConsumption</type>
 			</add-channel>
-		</instruction-set>		
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>
