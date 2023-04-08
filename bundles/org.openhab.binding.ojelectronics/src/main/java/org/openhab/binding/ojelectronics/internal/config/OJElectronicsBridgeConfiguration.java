@@ -13,6 +13,7 @@
 package org.openhab.binding.ojelectronics.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The configuration for {@link org.openhab.binding.ojelectronics.internal.OJElectronicsCloudHandler}
@@ -52,17 +53,29 @@ public class OJElectronicsBridgeConfiguration {
      */
     public int softwareVersion = 1060;
 
+    private @Nullable String restApiUrl;
+
     /*
      * Gets the Api-URL
      */
-    public String getApiUrl() {
-        return apiUrl.replace("/api", "") + "/api";
+    public String getRestApiUrl() {
+        String localRestApiUrl = restApiUrl;
+        if (localRestApiUrl == null) {
+            localRestApiUrl = restApiUrl = apiUrl.replace("/api", "") + "/api";
+        }
+        return localRestApiUrl;
     }
+
+    private @Nullable String signalRApiUrl;
 
     /*
      * Gets the SignalR Notification URL
      */
     public String getSignalRUrl() {
-        return apiUrl.replace("/api", "") + "/ocd5notification";
+        String localSignalRApiUrl = signalRApiUrl;
+        if (localSignalRApiUrl == null) {
+            localSignalRApiUrl = signalRApiUrl = apiUrl.replace("/api", "") + "/ocd5notification";
+        }
+        return localSignalRApiUrl;
     }
 }

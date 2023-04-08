@@ -82,7 +82,7 @@ public final class UpdateService {
             return;
         }
         String jsonPayload = gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey));
-        Request request = httpClient.POST(configuration.getApiUrl() + "/Thermostat/UpdateThermostat")
+        Request request = httpClient.POST(configuration.getRestApiUrl() + "/Thermostat/UpdateThermostat")
                 .param("sessionid", sessionId).header(HttpHeader.CONTENT_TYPE, "application/json")
                 .content(new StringContentProvider(jsonPayload));
         logger.trace("updateThermostat payload for themostat with serial {} is {}", thermostat.serialNumber,

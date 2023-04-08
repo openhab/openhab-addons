@@ -68,7 +68,7 @@ public class SignInService {
     public void signIn(Consumer<String> signInDone, Consumer<@Nullable String> connectionLosed, Runnable unauthorized) {
         logger.trace("Trying to sign in");
 
-        Request request = httpClient.POST(config.getApiUrl() + "/UserProfile/SignIn")
+        Request request = httpClient.POST(config.getRestApiUrl() + "/UserProfile/SignIn")
                 .header(HttpHeader.CONTENT_TYPE, "application/json")
                 .content(new StringContentProvider(gson.toJson(getPostSignInQueryModel())))
                 .timeout(1, TimeUnit.MINUTES);

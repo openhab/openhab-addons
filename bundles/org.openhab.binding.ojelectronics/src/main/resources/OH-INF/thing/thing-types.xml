@@ -27,12 +27,6 @@
 				<advanced>true</advanced>
 				<default>https://OWD5-OJ001-App.ojelectronics.com</default>
 			</parameter>
-			<parameter name="refreshDelayInSeconds" type="integer" required="true" min="15" unit="s">
-				<label>Refresh Delay</label>
-				<description>Refresh delay in seconds.</description>
-				<advanced>true</advanced>
-				<default>30</default>
-			</parameter>
 			<parameter name="customerId" type="integer" required="true">
 				<label>Customer ID</label>
 				<description>Customer ID</description>

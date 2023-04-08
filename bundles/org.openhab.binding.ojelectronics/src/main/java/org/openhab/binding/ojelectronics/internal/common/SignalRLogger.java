@@ -31,7 +31,7 @@ public class SignalRLogger implements Logger {
 
     @Override
     public void log(@Nullable String message, @Nullable LogLevel level) {
-        if ((message == null) || (level == null)) {
+        if (message == null || level == null) {
             return;
         }
         switch (level) {

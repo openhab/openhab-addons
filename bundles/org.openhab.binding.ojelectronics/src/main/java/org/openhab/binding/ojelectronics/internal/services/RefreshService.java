@@ -179,7 +179,7 @@ public final class RefreshService implements AutoCloseable {
                         } else if (status == HttpStatus.OK_200) {
                             initializationDone(Objects.requireNonNull(getContentAsString()));
                             final Connection localSignalRConnection = signalRConnection;
-                            if (shouldStartSignalRService && (localSignalRConnection != null)) {
+                            if (shouldStartSignalRService && localSignalRConnection != null) {
                                 localSignalRConnection.start();
                             }
                         } else {
@@ -196,7 +196,7 @@ public final class RefreshService implements AutoCloseable {
     }
 
     private Request createRequest() {
-        Request request = httpClient.newRequest(config.getApiUrl() + "/Group/GroupContents")
+        Request request = httpClient.newRequest(config.getRestApiUrl() + "/Group/GroupContents")
                 .param("sessionid", sessionId).param("apiKey", config.apiKey).method(HttpMethod.GET);
         return request;
     }
