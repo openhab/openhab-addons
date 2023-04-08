@@ -247,7 +247,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
      * Attempts to login through a Microsoft Azure implicit grant oauth flow
      *
      * @throws IOException if there is a problem communicating or parsing the responses
-     * @throws InvalidCreendialsException If Azure rejects the login credentials.
+     * @throws InvalidCredentialsException If Azure rejects the login credentials.
      */
     private synchronized void login() throws IOException, InvalidCredentialsException {
         logger.debug("Attempting login");
