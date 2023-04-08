@@ -10,25 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ojelectronics.internal.models.groups;
+package org.openhab.binding.ojelectronics.internal.models.thermostat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Model for events
+ * Model for realtime values of a thermostat
  *
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class Event {
+public class ThermostatRealTimeValuesModel extends ThermostatModelBase {
 
-    public int scheduleType;
+    public int action;
 
-    public String clock = "";
+    public int floorTemperature;
 
-    public int temperature;
+    public boolean heating;
 
-    public boolean active;
+    public int id;
 
-    public boolean eventIsOnNextDay;
+    public boolean online;
+
+    public int roomTemperature;
+
+    public int sensorAppl;
 }

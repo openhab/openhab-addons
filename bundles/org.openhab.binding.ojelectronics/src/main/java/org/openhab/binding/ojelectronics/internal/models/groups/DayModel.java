@@ -16,15 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ojelectronics.internal.models.ResponseModelBase;
 
 /**
- * Model for the response of a content group
+ * Model for a day
  *
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class GroupContentResponseModel extends ResponseModelBase {
+public class DayModel {
 
-    public List<GroupContentModel> groupContents = new ArrayList<GroupContentModel>();
+    public int weekDayGrpNo;
+
+    public List<EventModel> events = new ArrayList<>();
 }
