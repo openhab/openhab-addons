@@ -30,6 +30,10 @@
 			<channel id="energyImportedStateConsumption" typeId="energyImportedStateConsumption"/>
 			<channel id="energyExportedStateConsumption" typeId="energyExportedStateConsumption"/>
 		</channels>
+		<properties>
+            <property name="vendor">sonnen</property>
+            <property name="thingTypeVersion">1</property>
+        </properties>
 
 		<config-description>
 			<parameter name="hostIP" type="text" required="true">
