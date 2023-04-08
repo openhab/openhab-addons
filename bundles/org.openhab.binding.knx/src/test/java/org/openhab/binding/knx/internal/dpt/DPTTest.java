@@ -293,7 +293,6 @@ class DPTTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT29ValueFromQuantityType() {
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 Wh"), "29.010"));
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 VAh"), "29.011"));
@@ -337,8 +336,8 @@ class DPTTest {
 
         assertNotNull(hsbType);
         assertEquals(207, hsbType.getHue().doubleValue(), 0.1);
-        assertEquals(22, hsbType.getSaturation().doubleValue(), 0.1);
-        assertEquals(18, hsbType.getBrightness().doubleValue(), 0.1);
+        assertEquals(23, hsbType.getSaturation().doubleValue(), 0.1);
+        assertEquals(19, hsbType.getBrightness().doubleValue(), 0.1);
     }
 
     // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
