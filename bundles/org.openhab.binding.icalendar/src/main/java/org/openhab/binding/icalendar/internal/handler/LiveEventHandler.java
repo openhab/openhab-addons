@@ -12,7 +12,21 @@
  */
 package org.openhab.binding.icalendar.internal.handler;
 
-import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_CURRENT_EVENT_COMMENT;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_CURRENT_EVENT_CONTACT;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_CURRENT_EVENT_DESCRIPTION;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_CURRENT_EVENT_END;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_CURRENT_EVENT_LOCATION;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_CURRENT_EVENT_PRESENT;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_CURRENT_EVENT_START;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_CURRENT_EVENT_SUMMARY;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_NEXT_EVENT_COMMENT;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_NEXT_EVENT_CONTACT;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_NEXT_EVENT_DESCRIPTION;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_NEXT_EVENT_END;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_NEXT_EVENT_LOCATION;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_NEXT_EVENT_START;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.CHANNEL_NEXT_EVENT_SUMMARY;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -58,7 +72,6 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
     private final TimeZoneProvider tzProvider;
     private @Nullable ScheduledFuture<?> updateFuture;
     private @Nullable AbstractPresentableCalendar calendar;
-    private @Nullable Instant lastUpdate;
 
     public LiveEventHandler(Thing thing, TimeZoneProvider tzProvider) {
         super(thing);
@@ -113,7 +126,6 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
-        lastUpdate = null;
         updateStatus(ThingStatus.UNKNOWN);
         retrieveCalendar();
         updateStates();
@@ -245,8 +257,6 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
                 updateState(CHANNEL_NEXT_EVENT_COMMENT, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_CONTACT, UnDefType.UNDEF);
             }
-
-            this.lastUpdate = reference;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Calendar has not been retrieved yet.");

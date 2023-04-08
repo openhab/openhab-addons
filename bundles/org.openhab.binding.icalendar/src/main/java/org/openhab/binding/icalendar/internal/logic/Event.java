@@ -71,8 +71,9 @@ public class Event implements Comparable<Event> {
             return false;
         }
         final Event otherEvent = (Event) other;
-        return (this.title.equals(otherEvent.title) && this.start.equals(otherEvent.start)
-                && this.end.equals(otherEvent.end));
+        String title = this.title;
+        return (this.start.equals(otherEvent.start) && this.end.equals(otherEvent.end)
+                && ((title == null && otherEvent.title == null) || (title != null && title.equals(otherEvent.title))));
     }
 
     @Override
