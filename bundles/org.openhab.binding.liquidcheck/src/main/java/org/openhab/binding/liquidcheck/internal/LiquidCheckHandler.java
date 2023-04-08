@@ -65,7 +65,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
     private Map<String, String> oldProps = new HashMap<>();
 
     private LiquidCheckConfiguration config = new LiquidCheckConfiguration();
-    private LiquidCheckHttpClient client = new LiquidCheckHttpClient(config, new HttpClient());
+    private @Nullable LiquidCheckHttpClient client;
 
     private @Nullable ScheduledFuture<?> polling;
 
@@ -79,7 +79,8 @@ public class LiquidCheckHandler extends BaseThingHandler {
         if (channelUID.getId().equals(MEASURE_CHANNEL)) {
             if (command instanceof OnOffType) {
                 try {
-                    if (client.isConnected()) {
+                    LiquidCheckHttpClient client = this.client;
+                    if (client != null && client.isConnected()) {
                         String response = client.measureCommand();
                         CommData commandResponse = new Gson().fromJson(response, CommData.class);
                         if (commandResponse != null) {
@@ -106,12 +107,10 @@ public class LiquidCheckHandler extends BaseThingHandler {
         oldProps = thing.getProperties();
 
         updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(() -> {
-            this.client = new LiquidCheckHttpClient(config, httpClient);
-            PollingForData pollingRunnable = new PollingForData(this.client);
-            polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval, TimeUnit.SECONDS);
-        });
+        var client = new LiquidCheckHttpClient(config, httpClient);
+        this.client = client;
+        PollingForData pollingRunnable = new PollingForData(client);
+        polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override

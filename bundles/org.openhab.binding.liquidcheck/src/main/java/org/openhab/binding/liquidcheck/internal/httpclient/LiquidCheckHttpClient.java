@@ -49,7 +49,6 @@ public class LiquidCheckHttpClient {
     public LiquidCheckHttpClient(LiquidCheckConfiguration config, HttpClient client) {
         this.config = config;
         this.client = client;
-        startClient();
     }
 
     /**
@@ -85,14 +84,6 @@ public class LiquidCheckHttpClient {
                 "{\"header\":{\"namespace\":\"Device.Control\",\"name\":\"StartMeasure\",\"messageId\":\"1\",\"payloadVersion\":\"1\"},\"payload\":null}"));
         ContentResponse response = request.send();
         return response.getContentAsString();
-    }
-
-    public void startClient() {
-        try {
-            client.start();
-        } catch (Exception e) {
-            logger.warn("Couldn't start client: {}", e.getMessage());
-        }
     }
 
     /**
