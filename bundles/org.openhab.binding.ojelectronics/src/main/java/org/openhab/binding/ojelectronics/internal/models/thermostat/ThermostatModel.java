@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ojelectronics.internal.models;
+package org.openhab.binding.ojelectronics.internal.models.thermostat;
 
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ojelectronics.internal.models.groups.Schedule;
+import org.openhab.binding.ojelectronics.internal.models.groups.ScheduleModel;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,13 +26,11 @@ import com.google.gson.annotations.SerializedName;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class Thermostat {
+public class ThermostatModel extends ThermostatModelBase {
 
     public int id;
 
     public int action;
-
-    public String serialNumber = "";
 
     public String groupName = "";
 
@@ -53,7 +51,7 @@ public class Thermostat {
 
     public int regulationMode;
 
-    public @Nullable Schedule schedule;
+    public @Nullable ScheduleModel schedule;
 
     public int comfortSetpoint;
 

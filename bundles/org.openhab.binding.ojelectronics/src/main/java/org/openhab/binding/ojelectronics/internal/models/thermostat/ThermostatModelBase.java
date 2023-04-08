@@ -10,21 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ojelectronics.internal.models.groups;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.openhab.binding.ojelectronics.internal.models.thermostat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ojelectronics.internal.models.ResponseModelBase;
 
 /**
- * Model for the response of a content group
+ * Base-Model for thermostat models
  *
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class GroupContentResponseModel extends ResponseModelBase {
+public class ThermostatModelBase {
 
-    public List<GroupContentModel> groupContents = new ArrayList<GroupContentModel>();
+    public String serialNumber = "";
 }

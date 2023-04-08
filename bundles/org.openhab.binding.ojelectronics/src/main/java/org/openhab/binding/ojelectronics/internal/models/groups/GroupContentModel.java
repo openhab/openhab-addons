@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ojelectronics.internal.models.Thermostat;
+import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModel;
 
 /**
  * Model for content of a group
@@ -25,7 +25,7 @@ import org.openhab.binding.ojelectronics.internal.models.Thermostat;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class GroupContent {
+public class GroupContentModel {
 
     public int action;
 
@@ -33,11 +33,11 @@ public class GroupContent {
 
     public String groupName = "";
 
-    public List<Thermostat> thermostats = new ArrayList<Thermostat>();
+    public List<ThermostatModel> thermostats = new ArrayList<ThermostatModel>();
 
     public int regulationMode;
 
-    public @Nullable Schedule schedule;
+    public @Nullable ScheduleModel schedule;
 
     public int comfortSetpoint;
 
