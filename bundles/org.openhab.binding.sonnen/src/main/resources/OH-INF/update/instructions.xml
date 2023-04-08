@@ -5,7 +5,7 @@
 
 	<thing-type uid="sonnen:sonnenbattery">
 
-		<instruction-set targetVersion="1">
+		<instruction-set targetVersion="1.1">
 			<add-channel id="energyImportedStateProduction">
 				<type>sonnen:energyImportedStateProduction</type>
 			</add-channel>
@@ -19,7 +19,8 @@
 				<type>sonnen:energyExportedStateConsumption</type>
 			</add-channel>
 		</instruction-set>
-
+		<properties>
+			<property name="thingTypeVersion">1.1</property>
+		</properties>
 	</thing-type>
-
 </update:update-descriptions>
