@@ -70,7 +70,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
         String newVpnUrl = newData.getVpnUrl();
         if (newVpnUrl != null && !newVpnUrl.equals(vpnUrl)) {
             // This will also decrease the number of requests emitted toward Netatmo API.
-            localUrl = newData.isLocal() ? securityCapability.map(cap -> cap.ping(newVpnUrl)).orElse(null) : null;
+            localUrl = newData.isLocal() ? getSecurityCapability().map(cap -> cap.ping(newVpnUrl)).orElse(null) : null;
             cameraHelper.setUrls(newVpnUrl, localUrl);
             eventHelper.setUrls(newVpnUrl, localUrl);
         }
@@ -114,7 +114,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     @Override
     public void handleCommand(String channelName, Command command) {
         if (command instanceof OnOffType && CHANNEL_MONITORING.equals(channelName)) {
-            securityCapability.ifPresent(cap -> cap.changeStatus(localUrl, OnOffType.ON.equals(command)));
+            getSecurityCapability().ifPresent(cap -> cap.changeStatus(localUrl, OnOffType.ON.equals(command)));
         } else {
             super.handleCommand(channelName, command);
         }
@@ -123,7 +123,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     @Override
     protected void beforeNewData() {
         super.beforeNewData();
-        securityCapability.ifPresent(cap -> {
+        getSecurityCapability().ifPresent(cap -> {
             NAObjectMap<HomeDataPerson> persons = cap.getPersons();
             descriptionProvider.setStateOptions(personChannelUID, persons.values().stream()
                     .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
@@ -133,7 +133,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     @Override
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
-        securityCapability.ifPresent(cap -> {
+        getSecurityCapability().ifPresent(cap -> {
             HomeEvent event = cap.getDeviceLastEvent(handler.getId(), moduleType.apiName);
             if (event != null) {
                 result.add(event);
