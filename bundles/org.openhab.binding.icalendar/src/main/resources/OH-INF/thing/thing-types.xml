@@ -20,9 +20,6 @@
 			<parameter-group name="source">
 				<label>Source Settings</label>
 			</parameter-group>
-			<parameter-group name="parsing">
-				<label>Parsing Settings</label>
-			</parameter-group>
 			<parameter name="url" type="text" required="true" groupName="source">
 				<label>URL</label>
 				<description>URL for downloading iCalendar events</description>
@@ -51,12 +48,6 @@
 
 	</bridge-type>
 
-	<channel-type id="event_current_title">
-		<item-type>String</item-type>
-		<label>Current Event Title</label>
-		<description>Title of the currently present event</description>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="event_current_start">
 		<item-type>DateTime</item-type>
 		<label>Current Event Start</label>
@@ -73,12 +64,6 @@
 		<item-type>Switch</item-type>
 		<label>Current Event Presence</label>
 		<description>Current presence of an event</description>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="event_next_title">
-		<item-type>String</item-type>
-		<label>Next Event Title</label>
-		<description>Title of the next starting event in calendar</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_next_start">
@@ -310,7 +295,8 @@
 			</parameter-group>
 
 			<parameter name="offset" type="integer" groupName="general" unit="s">
-				<label>The offset of this thing related to now in seconds</label>
+				<label>Event offset</label>
+				<description>The offset of this thing related to now in seconds</description>
 				<advanced>true</advanced>
 				<default>0</default>
 			</parameter>
