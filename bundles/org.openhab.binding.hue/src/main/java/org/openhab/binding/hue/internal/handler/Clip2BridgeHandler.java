@@ -15,7 +15,6 @@ package org.openhab.binding.hue.internal.handler;
 import static org.openhab.binding.hue.internal.HueBindingConstants.THING_TYPE_CLIP2;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -106,8 +104,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> checkConnectionTask;
     private @Nullable ServiceRegistration<?> trustManagerRegistration;
     private @Nullable Clip2ThingDiscoveryService discoveryService;
-
-    private List<Resource> sceneCache = new ArrayList<>();
 
     private boolean assetsLoaded;
     private int applKeyRetriesRemaining;
@@ -238,6 +234,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (thing.getStatus() == ThingStatus.ONLINE && (childHandler instanceof Clip2ThingHandler)) {
             logger.debug("childHandlerInitialized() {}", childThing.getUID());
             try {
+                updateScenes();
                 updateThings();
             } catch (ApiException | AssetNotLoadedException e) {
                 // exceptions should not occur here; but log anyway (just in case)
@@ -249,7 +246,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("dispose() {}", this);
-        sceneCache.clear();
         if (assetsLoaded) {
             assetsLoaded = false;
             scheduler.submit(() -> disposeAssets());
@@ -340,14 +336,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("getResources() {}", reference);
         checkAssetsLoaded();
         return getClip2Bridge().getResources(reference);
-    }
-
-    /**
-     * Return that subset of scenes in the scene cache which relate to the given room or zone ResourceReference
-     */
-    public List<Resource> getScenes(ResourceReference resourceReference) {
-        return sceneCache.stream().filter(scene -> resourceReference.equals(scene.getGroup()))
-                .collect(Collectors.toList());
     }
 
     /**
@@ -531,6 +519,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             connectRetriesRemaining = RECONNECT_MAX_TRIES;
             updateStatus(ThingStatus.ONLINE);
             try {
+                updateScenes();
                 updateThings();
                 Clip2ThingDiscoveryService discoveryService = this.discoveryService;
                 if (Objects.nonNull(discoveryService)) {
@@ -601,14 +590,20 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Load the scene cache.
+     * Get the full list of scene resources from the bridge, and notify all child things.
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
      */
-    private void updateSceneCache() throws ApiException, AssetNotLoadedException {
-        sceneCache = getClip2Bridge().getResources(SCENE).getResources();
-        logger.debug("updateSceneCache() sceneCache.size():{}", sceneCache.size());
+    private void updateScenes() throws ApiException, AssetNotLoadedException {
+        logger.debug("updateScenes()");
+        List<Resource> scenes = getClip2Bridge().getResources(SCENE).getResources();
+        getThing().getThings().forEach(thing -> {
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof Clip2ThingHandler) {
+                ((Clip2ThingHandler) handler).updateScenes(scenes);
+            }
+        });
     }
 
     /**
@@ -619,7 +614,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         try {
             checkAssetsLoaded();
             updateProperties();
-            updateSceneCache();
             updateStatus(ThingStatus.UNKNOWN);
             getClip2Bridge().open();
         } catch (ApiException e) {

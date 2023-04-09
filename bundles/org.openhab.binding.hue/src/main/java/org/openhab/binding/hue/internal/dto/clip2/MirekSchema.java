@@ -26,14 +26,16 @@ public class MirekSchema {
     private static final int MIN = 153;
     private static final int MAX = 500;
 
+    public static final MirekSchema DEFAULT_SCHEMA = new MirekSchema();
+
     private @SerializedName("mirek_minimum") int mirekMinimum = MIN;
     private @SerializedName("mirek_maximum") int mirekMaximum = MAX;
 
-    public int getMirekMinimum() {
-        return mirekMinimum;
-    }
-
     public int getMirekMaximum() {
         return mirekMaximum;
+    }
+
+    public int getMirekMinimum() {
+        return mirekMinimum;
     }
 }

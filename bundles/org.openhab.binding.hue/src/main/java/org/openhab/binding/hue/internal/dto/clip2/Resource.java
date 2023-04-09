@@ -35,6 +35,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
+import org.openhab.core.util.ColorUtil.Gamut;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -135,23 +136,40 @@ public class Resource {
     }
 
     /**
-     * Method that copies fields from an other Resource instance into this instance. If the field in this instance is
-     * null and the same field in the other instance is not null, then the value from the other instance is copied to
-     * this instance.
-     *
-     * Usage: For color light resources, a full DTO requires both a Dimmer and a ColorXy field, but the SSE event DTOs
-     * only provide one or the other field, and never both. This method allows the binding to import the missing field
-     * from a prior cache copy of the resource into itself, in order to create the required full DTO.
+     * Method that copies required fields from another Resource instance into this instance. If the field in this
+     * instance is null and the same field in the other instance is not null, then the value from the other instance is
+     * copied to this instance. This method allows 'hasSparseData' resources to expand themselves to include necessary
+     * fields taken over from a previously cached full data DTO.
      *
      * @param other the other resource instance.
      * @return this instance.
      */
     public Resource copyMissingFieldsFrom(Resource other) {
+        // dimming
         if (Objects.isNull(this.dimming) && Objects.nonNull(other.dimming)) {
             this.dimming = other.dimming;
         }
+        // color
         if (Objects.isNull(this.color) && Objects.nonNull(other.color)) {
             this.color = other.color;
+        }
+        // gamut
+        ColorXy oC = other.color;
+        Gamut oG = Objects.nonNull(oC) ? oC.getGamut() : null;
+        if (Objects.nonNull(oG)) {
+            ColorXy tC = this.color;
+            this.color = (Objects.nonNull(tC) ? tC : new ColorXy()).setGamut(oG);
+        }
+        // mirek schema
+        ColorTemperature2 oCT = other.colorTemperature;
+        MirekSchema oMS = Objects.nonNull(oCT) ? oCT.getMirekSchema() : null;
+        if (Objects.nonNull(oMS)) {
+            ColorTemperature2 tCT = this.colorTemperature;
+            this.colorTemperature = (Objects.nonNull(tCT) ? tCT : new ColorTemperature2()).setMirekSchema(oMS);
+        }
+        // metadata
+        if (Objects.isNull(this.metadata) && Objects.nonNull(other.metadata)) {
+            this.metadata = other.metadata;
         }
         return this;
     }
@@ -242,7 +260,9 @@ public class Resource {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             try {
-                HSBType hsb = ColorUtil.xyToHsv(color.getXY());
+                Gamut gamut = color.getGamut();
+                gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
+                HSBType hsb = ColorUtil.xyToHsb(color.getXY(), gamut);
                 Dimming dimming = this.dimming;
                 return new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(
                         Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50));
@@ -273,16 +293,15 @@ public class Resource {
     }
 
     /**
-     * Get the colour temperature in percent based on the passed MirekSchema scale.
+     * Get the colour temperature in percent.
      *
-     * @param mirekSchema the MirekSchema to be used in the scaling.
      * @return a PercentType with the colour temperature percentage.
      */
-    public State getColorTemperaturePercentState(MirekSchema mirekSchema) {
-        ColorTemperature2 colorTemp = colorTemperature;
-        if (Objects.nonNull(colorTemp)) {
+    public State getColorTemperaturePercentState() {
+        ColorTemperature2 colorTemperature = this.colorTemperature;
+        if (Objects.nonNull(colorTemperature)) {
             try {
-                Integer percent = colorTemp.getPercent(mirekSchema);
+                Integer percent = colorTemperature.getPercent();
                 if (Objects.nonNull(percent)) {
                     return new PercentType(percent);
                 }
@@ -304,6 +323,11 @@ public class Resource {
     public State getEnabledState() {
         Boolean enabled = this.enabled;
         return Objects.nonNull(enabled) ? OnOffType.from(enabled.booleanValue()) : UnDefType.NULL;
+    }
+
+    public @Nullable Gamut getGamut() {
+        ColorXy color = this.color;
+        return Objects.nonNull(color) ? color.getGamut() : null;
     }
 
     public @Nullable ResourceReference getGroup() {
@@ -335,10 +359,7 @@ public class Resource {
 
     public @Nullable MirekSchema getMirekSchema() {
         ColorTemperature2 colorTemp = this.colorTemperature;
-        if (Objects.nonNull(colorTemp)) {
-            return colorTemp.getMirekSchema();
-        }
-        return null;
+        return Objects.nonNull(colorTemp) ? colorTemp.getMirekSchema() : null;
     }
 
     public @Nullable Motion getMotion() {
@@ -511,15 +532,16 @@ public class Resource {
      * Set the color from an HSBType. Put its Hue & Saturation parts in the 'ColorXy' JSON element, and put its
      * Brightness part in the 'Dimming' JSON element.
      *
-     * @param command an HSBType with the new color value
+     * @param command an HSBType with the new color value.
+     * @param gamut the color Gamut for the conversion.
      * @return this resource instance.
      */
-    public Resource setColor(Command command) {
+    public Resource setColor(Command command, Gamut gamut) {
         if (command instanceof HSBType) {
             HSBType hsb = (HSBType) command;
             ColorXy col = color;
             Dimming dim = dimming;
-            color = (Objects.nonNull(col) ? col : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb));
+            color = (Objects.nonNull(col) ? col : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut));
             dimming = (Objects.nonNull(dim) ? dim : new Dimming()).setBrightness(hsb.getBrightness().intValue());
         }
         return this;
@@ -577,6 +599,13 @@ public class Resource {
     public Resource setId(String id) {
         this.id = id;
         return this;
+    }
+
+    public void setMirekSchema(@Nullable MirekSchema schema) {
+        ColorTemperature2 colorTemperature = this.colorTemperature;
+        if (Objects.nonNull(colorTemperature)) {
+            colorTemperature.setMirekSchema(schema);
+        }
     }
 
     public Resource setRecall() {

@@ -13,7 +13,7 @@
 package org.openhab.binding.hue.internal.dto.clip2;
 
 /**
- * DTO that contains an x and y pair of floats.
+ * DTO that contains an x and y pair of doubles.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -25,8 +25,9 @@ public class PairXy {
         return new double[] { x, y };
     }
 
-    public void setXY(double[] xy) {
+    public PairXy setXY(double[] xy) {
         x = xy.length > 0 ? xy[0] : 0f;
         y = xy.length > 1 ? xy[1] : 0f;
+        return this;
     }
 }

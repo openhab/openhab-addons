@@ -17,6 +17,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
+import org.openhab.core.util.ColorUtil.Gamut;
 
 /**
  * DTO for colour X/Y of a light.
@@ -26,6 +27,12 @@ import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 @NonNullByDefault
 public class ColorXy {
     private @Nullable PairXy xy;
+    private @Nullable Gamut2 gamut;
+
+    public @Nullable Gamut getGamut() {
+        Gamut2 gamut = this.gamut;
+        return Objects.nonNull(gamut) ? gamut.getGamut() : null;
+    }
 
     /**
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
@@ -36,6 +43,15 @@ public class ColorXy {
             return pairXy.getXY();
         }
         throw new DTOPresentButEmptyException("'color' DTO is present but empty");
+    }
+
+    public ColorXy setGamut(@Nullable Gamut gamut) {
+        if (Objects.nonNull(gamut)) {
+            this.gamut = new Gamut2().setGamut(gamut);
+        } else {
+            this.gamut = null;
+        }
+        return this;
     }
 
     public ColorXy setXY(double[] xyValues) {

@@ -92,25 +92,6 @@ class Clip2DtoTest {
         return "";
     }
 
-    /**
-     * Helper method for checking if expected and actual HSBType color parameters lie within a given percentage of each
-     * other. This method is required in order to eliminate integer rounding artifacts in JUnit tests when comparing HSB
-     * values. Asserts that the color parameters of expected and actual are within delta percent of each other.
-     *
-     * @param expected an HSBType containing the expected colour.
-     * @param actual an HSBType containing the actual colour.
-     * @param delta the maximum allowed percentage difference between the two (0..99 percent).
-     */
-    private static void assertHSBEqual(HSBType expected, HSBType actual, float delta) {
-        if (delta <= 0f || delta > 99f) {
-            throw new IllegalArgumentException("'delta' out of bounds");
-        }
-        double[] exp = ColorUtil.hsbToXY(expected);
-        double[] act = ColorUtil.hsbToXY(actual);
-        double max = delta / 100.0f;
-        assertTrue((Math.abs(exp[0] - act[0]) < max) && (Math.abs(exp[1] - act[1]) < max));
-    }
-
     @Test
     void testButton() {
         String json = load(ResourceType.BUTTON.name().toLowerCase());
@@ -228,7 +209,7 @@ class Clip2DtoTest {
                 assertEquals(ResourceType.LIGHT, item.getType());
                 assertEquals(OnOffType.OFF, item.getSwitch());
                 assertEquals(new PercentType(93), item.getBrightnessState());
-                assertEquals(UnDefType.UNDEF, item.getColorTemperaturePercentState(new MirekSchema()));
+                assertEquals(UnDefType.UNDEF, item.getColorTemperaturePercentState());
                 State state = item.getColorState();
                 assertTrue(state instanceof HSBType);
                 double[] xy = ColorUtil.hsbToXY((HSBType) state);
@@ -252,24 +233,27 @@ class Clip2DtoTest {
                 assertEquals(454, mirekSchema.getMirekMaximum());
 
                 // test color temperature percent value on light's own scale
-                assertEquals(new PercentType(96), item.getColorTemperaturePercentState(mirekSchema));
+                assertEquals(new PercentType(96), item.getColorTemperaturePercentState());
                 assertEquals(QuantityType.valueOf("2257 K"), item.getColorTemperatureKelvinState());
 
                 // test color temperature percent value on the default (full) scale
-                assertEquals(new PercentType(84), item.getColorTemperaturePercentState(new MirekSchema()));
+                MirekSchema temp = item.getMirekSchema();
+                item.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
+                assertEquals(new PercentType(84), item.getColorTemperaturePercentState());
                 assertEquals(QuantityType.valueOf("2257 K"), item.getColorTemperatureKelvinState());
+                item.setMirekSchema(temp);
 
                 // change colour temperature
                 item.setColorTemperaturePercent(PercentType.ZERO, mirekSchema);
-                assertEquals(PercentType.ZERO, item.getColorTemperaturePercentState(mirekSchema));
+                assertEquals(PercentType.ZERO, item.getColorTemperaturePercentState());
                 assertEquals(QuantityType.valueOf("6536 K"), item.getColorTemperatureKelvinState());
 
                 item.setColorTemperaturePercent(PercentType.HUNDRED, mirekSchema);
-                assertEquals(PercentType.HUNDRED, item.getColorTemperaturePercentState(mirekSchema));
+                assertEquals(PercentType.HUNDRED, item.getColorTemperaturePercentState());
                 assertEquals(QuantityType.valueOf("2203 K"), item.getColorTemperatureKelvinState());
 
                 item.setColorTemperatureKelvin(QuantityType.valueOf("4000 K"));
-                assertEquals(new PercentType(32), item.getColorTemperaturePercentState(mirekSchema));
+                assertEquals(new PercentType(32), item.getColorTemperaturePercentState());
                 assertEquals(QuantityType.valueOf("4000 K"), item.getColorTemperatureKelvinState());
 
                 assertEquals(UnDefType.NULL, item.getColorState());
@@ -331,9 +315,9 @@ class Clip2DtoTest {
         // create resource one
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
-        one.setColor(HSBType.RED);
+        one.setColor(HSBType.RED, ColorUtil.DEFAULT_GAMUT);
         assertTrue(one.getColorState() instanceof HSBType);
-        assertHSBEqual(HSBType.RED, (HSBType) one.getColorState(), 1);
+        assertTrue(HSBType.RED.closeTo((HSBType) one.getColorState(), 0.01));
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
 
         // null its Dimming field
@@ -348,8 +332,8 @@ class Clip2DtoTest {
         // confirm that brightness is no longer valid, and therefore that color has also changed
         assertEquals(UnDefType.NULL, one.getBrightnessState());
         assertTrue(one.getColorState() instanceof HSBType);
-        assertHSBEqual(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, new PercentType(50)),
-                (HSBType) one.getColorState(), 1);
+        assertTrue((new HSBType(DecimalType.ZERO, PercentType.HUNDRED, new PercentType(50)))
+                .closeTo((HSBType) one.getColorState(), 0.01));
 
         PercentType testBrightness = new PercentType(42);
 
@@ -368,8 +352,8 @@ class Clip2DtoTest {
         assertEquals(ResourceType.LIGHT, one.getType());
         assertEquals(testBrightness, one.getBrightnessState());
         assertTrue(one.getColorState() instanceof HSBType);
-        assertHSBEqual(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, testBrightness),
-                (HSBType) one.getColorState(), 1);
+        assertTrue((new HSBType(DecimalType.ZERO, PercentType.HUNDRED, testBrightness))
+                .closeTo((HSBType) one.getColorState(), 0.01));
     }
 
     @Test
@@ -444,10 +428,10 @@ class Clip2DtoTest {
         HSBType magenta = new HSBType("300,100,100");
 
         for (HSBType color : Set.of(HSBType.WHITE, HSBType.RED, HSBType.GREEN, HSBType.BLUE, cyan, yellow, magenta)) {
-            resource.setColor(color);
+            resource.setColor(color, ColorUtil.DEFAULT_GAMUT);
             State state = resource.getColorState();
             assertTrue(state instanceof HSBType);
-            assertHSBEqual(color, (HSBType) state, 1);
+            assertTrue(color.closeTo((HSBType) state, 0.01));
         }
     }
 
