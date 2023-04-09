@@ -12,13 +12,11 @@
  */
 package org.openhab.io.imperihome.internal.model.device;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
+import org.openhab.core.util.ColorUtil;
 import org.openhab.io.imperihome.internal.model.param.DeviceParam;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
 import org.openhab.io.imperihome.internal.util.StringUtils;
@@ -48,19 +46,21 @@ public class RgbLightDevice extends AbstractEnergyLinkDevice {
         // State can be of UndefType, even with the getStateAs above
         if (isHsbState) {
             HSBType hsbState = (HSBType) state;
-            PercentType[] rgb = hsbState.toRGB();
+            int[] rgb;
+            if (hsbState != null) {
+                rgb = ColorUtil.hsbToRgb(hsbState);
+            } else {
+                rgb = new int[] { 0, 0, 0 };
+            }
 
             // Set state to ON if any channel > 0
-            boolean isOn = rgb[0].doubleValue() > 0 || rgb[1].doubleValue() > 0 || rgb[2].doubleValue() > 0;
+            boolean isOn = rgb[0] > 0 || rgb[1] > 0 || rgb[2] > 0;
             if (isOn) {
                 status = true;
             }
 
             // Build hex string
-            int r = convertPercentToByte(rgb[0]) & 0xFF;
-            int g = convertPercentToByte(rgb[1]) & 0xFF;
-            int b = convertPercentToByte(rgb[2]) & 0xFF;
-            color = (isOn ? "FF" : "00") + toHex(r) + toHex(g) + toHex(b);
+            color = (isOn ? "FF" : "00") + toHex(rgb[0]) + toHex(rgb[1]) + toHex(rgb[2]);
         }
 
         State pState = item.getStateAs(PercentType.class);
@@ -81,10 +81,5 @@ public class RgbLightDevice extends AbstractEnergyLinkDevice {
     private String toHex(int value) {
         String hex = Integer.toHexString(value);
         return StringUtils.padLeft(hex, 2, "0");
-    }
-
-    private int convertPercentToByte(PercentType percent) {
-        return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).intValue();
     }
 }
