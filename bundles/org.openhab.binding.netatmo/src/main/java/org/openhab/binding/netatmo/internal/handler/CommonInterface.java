@@ -121,13 +121,12 @@ public interface CommonInterface {
                 .filter(channel -> ChannelKind.STATE.equals(channel.getKind()) && isLinked(channel.getUID()));
     }
 
-    default Optional<CommonInterface> getHomeHandler() {
-        CommonInterface bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            return bridgeHandler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(bridgeHandler)
-                    : Optional.empty();
+    default Optional<CommonInterface> recurseUpToHomeHandler(@Nullable CommonInterface handler) {
+        if (handler == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return handler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(handler)
+                : recurseUpToHomeHandler(handler.getBridgeHandler());
     }
 
     default List<CommonInterface> getActiveChildren() {
@@ -146,7 +145,8 @@ public interface CommonInterface {
     }
 
     default <T extends RestCapability<?>> Optional<T> getHomeCapability(Class<T> clazz) {
-        return getHomeHandler().map(handler -> handler.getCapabilities().get(clazz)).orElse(Optional.empty());
+        return recurseUpToHomeHandler(this).map(handler -> handler.getCapabilities().get(clazz))
+                .orElse(Optional.empty());
     }
 
     default void setNewData(NAObject newData) {
