@@ -39,14 +39,14 @@ To obtain the Global Location Number of your grid company:
 
 ### Channel Group `electricity`
 
-| Channel                         | Type   | Description                                                                                    | Advanced |
-|---------------------------------|--------|------------------------------------------------------------------------------------------------|----------|
-| current-spot-price              | Number | Spot price in DKK or EUR per kWh for current hour                                              | no       |
-| current-net-tariff              | Number | Net tariff in DKK per kWh for current hour. Only available when `gridCompanyGLN` is configured | no       |
-| current-system-tariff           | Number | System tariff in DKK per kWh for current hour                                                  | no       |
-| current-electricity-tax         | Number | Electricity tax in DKK per kWh for current hour                                                | no       |
-| current-transmission-net-tariff | Number | Transmission net tariff in DKK per kWh for current hour                                        | no       |
-| hourly-prices                   | String | JSON array with hourly prices from 12 hours ago and onward                                     | yes      |
+| Channel                 | Type   | Description                                                                           | Advanced |
+|-------------------------|--------|---------------------------------------------------------------------------------------|----------|
+| spot-price              | Number | Current spot price in DKK or EUR per kWh                                              | no       |
+| net-tariff              | Number | Current net tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
+| system-tariff           | Number | Current system tariff in DKK per kWh                                                  | no       |
+| electricity-tax         | Number | Current electricity tax in DKK per kWh                                                | no       |
+| transmission-net-tariff | Number | Current transmission net tariff in DKK per kWh                                        | no       |
+| hourly-prices           | String | JSON array with hourly prices from 12 hours ago and onward                            | yes      |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
@@ -63,13 +63,13 @@ To include VAT for items linked to the `Number` channels, the [VAT profile](http
 This must be installed separately.
 Once installed, simply select "Value-Added Tax" as Profile when linking an item.
 
-#### Current Net Tariff
+#### Net Tariff
 
-Discounts are automatically taken into account for channel `current-net-tariff` so that it represents the actual price.
+Discounts are automatically taken into account for channel `net-tariff` so that it represents the actual price.
 
 The tariffs are downloaded using pre-configured filters for the different [Grid Company GLN's](#global-location-number-of-the-grid-company).
 If your company is not in the list, or the filters are not working, they can be manually overridden.
-To override filters, the channel `current-net-tariff` has the following configuration parameters:
+To override filters, the channel `net-tariff` has the following configuration parameters:
 
 | Name            | Type    | Description                                                                                                                | Default | Required | Advanced |
 |-----------------|---------|----------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
@@ -320,19 +320,19 @@ var priceMap = actions.getPrices("SpotPrice,NetTariff");
 ```java
 Thing energidataservice:service:energidataservice "Energi Data Service" [ priceArea="DK1", currencyCode="DKK", gridCompanyGLN="5790001089030" ] {
     Channels:
-        Number : electricity#current-net-tariff [ chargeTypeCodes="CD,CD R", start="StartOfYear" ]
+        Number : electricity#net-tariff [ chargeTypeCodes="CD,CD R", start="StartOfYear" ]
 }
 ```
 
 ### Item Configuration
 
 ```java
-Group:Number:SUM CurrentTotalPrice "Current Total Price" <price>
-Number CurrentSpotPrice "Current Spot Price" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-spot-price" [profile="transform:VAT"] }
-Number CurrentNetTariff "Current Net Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-net-tariff" [profile="transform:VAT"] }
-Number CurrentSystemTariff "Current System Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-system-tariff" [profile="transform:VAT"] }
-Number CurrentElectricityTax "Current Electricity Tax" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-electricity-tax" [profile="transform:VAT"] }
-Number CurrentTransmissionNetTariff "Current Transmission Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-transmission-net-tariff" [profile="transform:VAT"] }
+Group:Number:SUM TotalPrice "Current Total Price" <price>
+Number SpotPrice "Current Spot Price" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#spot-price" [profile="transform:VAT"] }
+Number NetTariff "Current Net Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#net-tariff" [profile="transform:VAT"] }
+Number SystemTariff "Current System Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#system-tariff" [profile="transform:VAT"] }
+Number ElectricityTax "Current Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
+Number TransmissionNetTariff "Current Transmission Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-net-tariff" [profile="transform:VAT"] }
 String HourlyPrices "Hourly Prices" <price> { channel="energidataservice:service:energidataservice:electricity#hourly-prices" }
 ```
 

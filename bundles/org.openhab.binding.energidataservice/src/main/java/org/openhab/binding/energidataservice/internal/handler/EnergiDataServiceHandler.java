@@ -166,30 +166,30 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     private void refreshElectricityPrices() {
         RetryStrategy retryPolicy;
         try {
-            if (isLinked(CHANNEL_CURRENT_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
+            if (isLinked(CHANNEL_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
                 downloadSpotPrices();
             }
 
-            if (isLinked(CHANNEL_CURRENT_NET_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
+            if (isLinked(CHANNEL_NET_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
                 downloadNetTariffs();
             }
 
-            if (isLinked(CHANNEL_CURRENT_SYSTEM_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
+            if (isLinked(CHANNEL_SYSTEM_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
                 downloadSystemTariffs();
             }
 
-            if (isLinked(CHANNEL_CURRENT_ELECTRICITY_TAX) || isLinked(CHANNEL_HOURLY_PRICES)) {
+            if (isLinked(CHANNEL_ELECTRICITY_TAX) || isLinked(CHANNEL_HOURLY_PRICES)) {
                 downloadElectricityTaxes();
             }
 
-            if (isLinked(CHANNEL_CURRENT_TRANSMISSION_NET_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
+            if (isLinked(CHANNEL_TRANSMISSION_NET_TARIFF) || isLinked(CHANNEL_HOURLY_PRICES)) {
                 downloadTransmissionNetTariffs();
             }
 
             updateStatus(ThingStatus.ONLINE);
             updatePrices();
 
-            if (isLinked(CHANNEL_CURRENT_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
+            if (isLinked(CHANNEL_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
                 if (cacheManager.getNumberOfFutureSpotPrices() < 13) {
                     retryPolicy = RetryPolicyFactory.whenExpectedSpotPriceDataMissing(DAILY_REFRESH_TIME_CET,
                             NORD_POOL_TIMEZONE);
@@ -303,7 +303,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     }
 
     private DatahubTariffFilter getNetTariffFilter() {
-        Channel channel = getThing().getChannel(CHANNEL_CURRENT_NET_TARIFF);
+        Channel channel = getThing().getChannel(CHANNEL_NET_TARIFF);
         if (channel == null) {
             return DatahubTariffFilterFactory.getNetTariffByGLN(config.gridCompanyGLN);
         }
@@ -336,21 +336,21 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         cacheManager.cleanup();
 
         updateCurrentSpotPrice();
-        updateCurrentTariff(CHANNEL_CURRENT_NET_TARIFF, cacheManager.getNetTariff());
-        updateCurrentTariff(CHANNEL_CURRENT_SYSTEM_TARIFF, cacheManager.getSystemTariff());
-        updateCurrentTariff(CHANNEL_CURRENT_ELECTRICITY_TAX, cacheManager.getElectricityTax());
-        updateCurrentTariff(CHANNEL_CURRENT_TRANSMISSION_NET_TARIFF, cacheManager.getTransmissionNetTariff());
+        updateCurrentTariff(CHANNEL_NET_TARIFF, cacheManager.getNetTariff());
+        updateCurrentTariff(CHANNEL_SYSTEM_TARIFF, cacheManager.getSystemTariff());
+        updateCurrentTariff(CHANNEL_ELECTRICITY_TAX, cacheManager.getElectricityTax());
+        updateCurrentTariff(CHANNEL_TRANSMISSION_NET_TARIFF, cacheManager.getTransmissionNetTariff());
         updateHourlyPrices();
 
         reschedulePriceUpdateJob();
     }
 
     private void updateCurrentSpotPrice() {
-        if (!isLinked(CHANNEL_CURRENT_SPOT_PRICE)) {
+        if (!isLinked(CHANNEL_SPOT_PRICE)) {
             return;
         }
         BigDecimal spotPrice = cacheManager.getSpotPrice();
-        updateState(CHANNEL_CURRENT_SPOT_PRICE, spotPrice != null ? new DecimalType(spotPrice) : UnDefType.UNDEF);
+        updateState(CHANNEL_SPOT_PRICE, spotPrice != null ? new DecimalType(spotPrice) : UnDefType.UNDEF);
     }
 
     private void updateCurrentTariff(String channelId, @Nullable BigDecimal tariff) {
