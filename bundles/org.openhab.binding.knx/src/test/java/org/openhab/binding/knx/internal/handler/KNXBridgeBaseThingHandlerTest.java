@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 
-import tuwien.auto.calimero.secure.KnxSecureException;
+import io.calimero.secure.KnxSecureException;
 
 /**
  *

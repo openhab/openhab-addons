@@ -14,8 +14,8 @@ package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
 
 /**
  * Callback interface for KNX bus messages

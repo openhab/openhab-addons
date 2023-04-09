@@ -29,8 +29,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 
-import tuwien.auto.calimero.knxnetip.SecureConnection;
-import tuwien.auto.calimero.secure.KnxSecureException;
+import io.calimero.knxnetip.SecureConnection;
+import io.calimero.secure.KnxSecureException;
 
 /**
  * The {@link KNXBridgeBaseThingHandler} is responsible for handling commands, which are

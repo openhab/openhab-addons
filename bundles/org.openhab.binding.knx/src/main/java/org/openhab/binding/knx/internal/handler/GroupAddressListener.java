@@ -15,7 +15,7 @@ package org.openhab.binding.knx.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.knx.internal.client.BusMessageListener;
 
-import tuwien.auto.calimero.GroupAddress;
+import io.calimero.GroupAddress;
 
 /**
  * The {@link GroupAddressListener} is an interface that needs to be

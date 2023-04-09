@@ -32,8 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import aQute.bnd.annotation.spi.ServiceProvider;
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.serial.spi.SerialCom;
+import io.calimero.KNXException;
+import io.calimero.serial.spi.SerialCom;
 
 /**
  * The {@link SerialTransportAdapter} provides org.openhab.core.io.transport.serial

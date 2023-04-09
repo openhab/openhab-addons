@@ -15,7 +15,7 @@ package org.openhab.binding.knx.internal.client;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import tuwien.auto.calimero.datapoint.Datapoint;
+import io.calimero.datapoint.Datapoint;
 
 /**
  * Information about a data point which is queued to be read from the KNX bus.
