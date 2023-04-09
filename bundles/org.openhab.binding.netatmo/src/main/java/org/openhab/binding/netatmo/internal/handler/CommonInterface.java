@@ -122,9 +122,11 @@ public interface CommonInterface {
     }
 
     default Optional<CommonInterface> recurseUpToHomeHandler(@Nullable CommonInterface handler) {
-        return handler == null ? Optional.empty()
-                : handler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(handler)
-                        : recurseUpToHomeHandler(handler.getBridgeHandler());
+        if (handler == null) {
+            return Optional.empty();
+        }
+        return handler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(handler)
+                : recurseUpToHomeHandler(handler.getBridgeHandler());
     }
 
     default List<CommonInterface> getActiveChildren() {

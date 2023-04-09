@@ -68,6 +68,12 @@ public class HomeCapability extends RestCapability<HomeApi> {
     }
 
     @Override
+    public void dispose() {
+        homeIds.clear();
+        super.dispose();
+    }
+
+    @Override
     protected void updateHomeData(HomeData home) {
         if (hasArea(FeatureArea.SECURITY) && !handler.getCapabilities().containsKey(SecurityCapability.class)) {
             handler.getCapabilities().put(new SecurityCapability(handler));
