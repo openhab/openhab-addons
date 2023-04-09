@@ -326,6 +326,10 @@ class DPTTest {
         assertEquals(173.6, hsbType.getHue().doubleValue(), 0.1);
         assertEquals(17.6, hsbType.getSaturation().doubleValue(), 0.1);
         assertEquals(26.3, hsbType.getBrightness().doubleValue(), 0.1);
+
+        String encoded = ValueEncoder.encode(hsbType, "232.60000");
+        assertNotNull(encoded);
+        assertEquals(encoded, "r:" + data[0] + " g:" + data[1] + " b:" + data[2]);
     }
 
     @Test

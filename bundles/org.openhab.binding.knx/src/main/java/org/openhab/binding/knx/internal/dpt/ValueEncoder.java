@@ -154,7 +154,7 @@ public class ValueEncoder {
             case "232.60000":
                 // MDT specific: mis-use 232.600 for hsv instead of rgb
                 int hue = hsb.getHue().toBigDecimal().multiply(BigDecimal.valueOf(255))
-                        .divide(BigDecimal.valueOf(360), 2, RoundingMode.HALF_UP).intValue();
+                        .divide(BigDecimal.valueOf(360), 0, RoundingMode.HALF_UP).intValue();
                 return "r:" + hue + " g:" + convertPercentToByte(hsb.getSaturation()) + " b:"
                         + convertPercentToByte(hsb.getBrightness());
             case "242.600":
@@ -250,6 +250,6 @@ public class ValueEncoder {
      */
     private static int convertPercentToByte(PercentType percent) {
         return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).intValue();
+                .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).intValue();
     }
 }
