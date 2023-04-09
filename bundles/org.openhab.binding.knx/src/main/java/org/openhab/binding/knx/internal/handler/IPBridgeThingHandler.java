@@ -171,12 +171,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
-            if (networkAddressService == null) {
+            final var localNetworkAddressService = networkAddressService;
+            if (localNetworkAddressService == null) {
                 logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE);
                 return;
             } else {
-                localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
+                localEndPoint = new InetSocketAddress(localNetworkAddressService.getPrimaryIpv4HostAddress(), 0);
             }
         }
 

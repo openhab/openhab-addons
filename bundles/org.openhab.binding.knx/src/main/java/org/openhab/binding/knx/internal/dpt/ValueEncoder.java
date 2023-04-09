@@ -188,14 +188,20 @@ public class ValueEncoder {
                     || DPTXlator2ByteFloat.DPT_KELVIN_PER_PERCENT.getID().equals(dptId)) {
                 // match unicode character or °C
                 if (value.toString().contains(SIUnits.CELSIUS.getSymbol()) || value.toString().contains("°C")) {
-                    unit = unit.replace("K", "°C");
+                    if (unit != null) {
+                        unit = unit.replace("K", "°C");
+                    }
                 } else if (value.toString().contains("°F")) {
-                    unit = unit.replace("K", "°F");
+                    if (unit != null) {
+                        unit = unit.replace("K", "°F");
+                    }
                     value = ((QuantityType<?>) value).multiply(BigDecimal.valueOf(5.0 / 9.0));
                 }
             } else if (DPTXlator4ByteFloat.DPT_LIGHT_QUANTITY.getID().equals(dptId)) {
                 if (!value.toString().contains("J")) {
-                    unit = unit.replace("J", "lm*s");
+                    if (unit != null) {
+                        unit = unit.replace("J", "lm*s");
+                    }
                 }
             } else if (DPTXlator4ByteFloat.DPT_ELECTRIC_FLUX.getID().equals(dptId)) {
                 // use alternate definition of flux
