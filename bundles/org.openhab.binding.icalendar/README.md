@@ -6,11 +6,18 @@ Furthermore it is possible to embed `command tags` in the calendar event descrip
 
 ## Supported Things
 
-The primary thing type is the calendar.
+The base thing type is the calendar.
 It is based on a single iCalendar file and implemented as bridge.
+The bridge just downloads the calendar regulary and provides little metadata about it.
 There can be multiple things having different properties representing different calendars.
 
-Each calendar can have event filters which allow to get multiple events, maybe filtered by additional criteria. Time based filtering is done by each event's start.
+Each calendar-bridge may be attached to things of types `eventfilter`, `liveevent` or `tagexecutor`.
+
+Event filters (`eventfilter`) allow to get multiple events, maybe filtered by additional criteria. Time based filtering is done by each event's start.
+
+Live event displays (`liveevent`) show details about the current event and the next one, allowing to be filtered by some textual fields and set off by a configured time.
+
+The tag executor (`tagexecutor`) allows to directly fire commands for changing items.
 
 ## Thing Configuration
 
@@ -25,7 +32,6 @@ Each `calendar` thing requires the following configuration parameters:
 | `username`          | The username for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `password`.                                                | optional                      |
 | `password`          | The password for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `username`.                                                | optional                      |
 | `maxSize`           | The maximum size of the iCal-file in Mebibytes.                                                                                                                                           | mandatory (default available) |
-| `authorizationCode` | The authorization code to permit the execution of embedded command tags. If set, the binding checks that the authorization code in the command tag matches before executing any commands. | optional                      |
 
 ### Configuration for `eventfilter`
 
@@ -43,22 +49,34 @@ Each `eventfilter` thing requires a bridge of type `calendar` and has following 
 | `textEventValue` | The text to filter events with.                                                                                                                                                                | optional                                   |
 | `textValueType`  | The type of the text to filter with. Valid values: `TEXT` (field must contain value, case insensitive), `REGEX` (field must match value, completely, dot matches all, usually case sensitive). | optional/required for text-based filtering |
 
+### Configuration for `liveevent`
+
+Each `liveevent` thing requires a bridge of type `calendar` and has following configuration options:
+
+| parameter name | description | optional |
+|----------------|-------------|----------|
+| `offset` | The offset of the display related to "now" | optional, default: `0` |
+| `textEventField` | A field to filter the events text-based. Valid values: `SUMMARY`, `DESCRIPTION`, `COMMENT`, `CONTACT` and `LOCATION` (as described in RFC 5545). | optional/required for text-based filtering |
+| `textEventValue` | The text to filter events with. | optional |
+| `textValueType`  | The type of the text to filter with. Valid values: `TEXT` (field must contain value, case insensitive), `REGEX` (field must match value, completely, dot matches all, usually case sensitive). | optional/required for text-based filtering |
+
+### Configuration for `tagexecutor`
+
+Each `tagexecutor` thing requires a bridge of type `calendar` and has following configuration options:
+
+| parameter name | description | optional |
+|----------------|-------------|----------|
+| `authorizationCode` | The authorization code to permit the execution of embedded command tags. If set, the binding checks that the authorization code in the command tag matches before executing any commands. | optional |
+
 ## Channels
 
 ### Channels for `calendar`
 
-The channels of `calendar` describe the current and the next forthcoming event.
+The channels of `calendar` only contain metadata about the calendar.
 They are all read-only.
 
 | Channel           | Type      | Description                                                                         |
 |-------------------|-----------|-------------------------------------------------------------------------------------|
-| current_presence  | Switch    | Current presence of an event, `ON` if there is currently an event, `OFF` otherwise  |
-| current_title     | String    | Title of a currently present event                                                  |
-| current_start     | DateTime  | Start of a currently present event                                                  |
-| current_end       | DateTime  | End of a currently present event                                                    |
-| next_title        | String    | Title of the next event                                                             |
-| next_start        | DateTime  | Start of the next event                                                             |
-| next_end          | DateTime  | End of the next event                                                               |
 | last_update       | DateTime  | The time and date of the last successful update of the calendar                     |
 
 ### Channels for `eventfilter`
@@ -83,9 +101,32 @@ The scheme replaces `<no>` by the results index, beginning at `0`. An `eventfilt
 - `result_2#end`
 - `result_2#title`
 
+### Channels for `liveevent`
+
+The channels describe the current and next event.
+All are read-only.
+
+| Channel | Type | Description |
+|---------|------|-------------|
+| current_presence | Switch | Current presence of an event, `ON` if there is currently an event, `OFF` otherwise |
+| current_summary | String | Summary of a currently present event, in many calendars this is the title of an event |
+| current_start | DateTime | Start of a currently present event |
+| current_end | DateTime | End of a currently present event |
+| current_comment | String | Comment of a currently present event |
+| current_contact | String | Contact of a currently present event |
+| current_description | String | Description of a currently present event, in many calendars this is the content of an event |
+| current_location | String | Location of a currently present event |
+| next_summary | String | Summary of the next event, in many calendars this is the title of an event |
+| next_start | DateTime | Start of the next event |
+| next_end | DateTime | End of the next event |
+| next_comment | String | Comment of the next event |
+| next_contact | String | Contact of the next event |
+| next_description | String | Description of the next event, in many calendars this is the content of an event |
+| next_location | String | Location of the next event |
+
 ## Command Tags
 
-Each calendar event may include one or more command tags in its description text.
+Each calendar event may include one or more command tags in its description text and will be interpreted by the `tagexecutor` thing.
 These command tags are used to issue commands directly to other items in the system when the event begins or ends.
 A command tag must consist of at least three fields.
 A fourth field is optional.
@@ -123,15 +164,17 @@ All required information must be provided in the thing definition, either via UI
 ```java
 Bridge icalendar:calendar:deadbeef    "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60 ]
 Thing  icalendar:eventfilter:feedd0d0 "Tomorrows events" (icalendar:calendar:deadbeef) [ maxEvents=1, datetimeUnit="DAY", datetimeStart=1, datetimeEnd=2, datetimeRound=true ]
+Thing  icalendar:liveevent:a0a0a0a0   "Current Events" (icalendar:calendar:deadbeef)
+Thing  icalendar:tagexecutor:e2e2e2e2 "Executor" (icalendar:calendar:deadbeef)
 ```
 
 Link the channels as usual to items:
 
 ```java
-String   current_event_name        "current event [%s]"                       <calendar> { channel="icalendar:calendar:deadbeef:current_title" }
-DateTime current_event_until       "current until [%1$tT, %1$tY-%1$tm-%1$td]" <calendar> { channel="icalendar:calendar:deadbeef:current_end" }
-String   next_event_name           "next event [%s]"                          <calendar> { channel="icalendar:calendar:deadbeef:next_title" }
-DateTime next_event_at             "next at [%1$tT, %1$tY-%1$tm-%1$td]"       <calendar> { channel="icalendar:calendar:deadbeef:next_start" }
+String   current_event_name        "current event [%s]"                       <calendar> { channel="icalendar:liveevent:a0a0a0a0:current_title" }
+DateTime current_event_until       "current until [%1$tT, %1$tY-%1$tm-%1$td]" <calendar> { channel="icalendar:liveevent:a0a0a0a0:current_end" }
+String   next_event_name           "next event [%s]"                          <calendar> { channel="icalendar:liveevent:a0a0a0a0:next_title" }
+DateTime next_event_at             "next at [%1$tT, %1$tY-%1$tm-%1$td]"       <calendar> { channel="icalendar:liveevent:a0a0a0a0:next_start" }
 String   first_event_name_tomorrow "first event [%s]"                         <calendar> { channel="icalendar:eventfilter:feedd0d0:result_0#title" }
 DateTime first_event_at_tomorrow   "first at [%1$tT, %1$tY-%1$tm-%1$td]"      <calendar> { channel="icalendar:eventfilter:feedd0d0:result_0#begin" }
 ```
@@ -170,3 +213,5 @@ END:Calendar_Test_Switch:OFF
 ## Breaking changes
 
 In OH3 `calendar` was changed from Thing to Bridge. You need to recreate calendars (or replace `Thing` by `Bridge` in your `.things` file).
+
+In OH4 `calendar`'s functionality was extracted to `liveevent` and `tagexecutor`. You need to add the corresponding things and link the live event channels.
