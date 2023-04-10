@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>LG webOS Binding</name>
 	<description>Binding to connect LG's WebOS based smart TVs</description>
-
+	<connection>local</connection>
 
 </addon:addon>

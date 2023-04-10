@@ -6,6 +6,7 @@
 	<type>voice</type>
 	<name>VoiceRSS Text-to-Speech</name>
 	<description>VoiceRSS is an Internet based TTS service hosted at https://api.voicerss.org.</description>
+	<connection>cloud</connection>
 
 	<service-id>org.openhab.voice.voicerss</service-id>
 
