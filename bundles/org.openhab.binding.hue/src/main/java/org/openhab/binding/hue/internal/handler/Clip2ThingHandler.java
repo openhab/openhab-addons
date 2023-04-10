@@ -94,6 +94,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final Map<ResourceType, String> commandResourceIds = new ConcurrentHashMap<>();
 
     /**
+     * A cached map of friendly names versus resource IDs for the scenes that are associated with this thing.
+     */
+    private final Map<String, String> sceneCommandResourceIds = new ConcurrentHashMap<>();
+
+    /**
      * Button devices contain one or more physical buttons, each of which is represented by a BUTTON resource DTO with
      * its own unique resourceId, and a respective controlId that indicates which button it is in the device. e.g. a
      * dimmer pad has four buttons (controlId's 1..4) each represented by a BUTTON resource DTO with a unique
@@ -115,9 +120,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final List<ChannelUID> legacyLinkedChannelUIDs = new ArrayList<>();
 
     /**
-     * A temporary transfer buffer of scene resources supported by this thing.
+     * A temporary transfer buffer of scene resources that is used to buffer the list of associated scenes during the
+     * initialization phase.
      */
-    private final List<Resource> scenesBuffer = Collections.synchronizedList(new ArrayList<>());
+    private final List<Resource> temporaryAssociatedScenesList = Collections.synchronizedList(new ArrayList<>());
 
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
@@ -161,7 +167,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             task.cancel(true);
         }
         updateContributorsTask = null;
-        scenesBuffer.clear();
+        temporaryAssociatedScenesList.clear();
+        legacyLinkedChannelUIDs.clear();
+        sceneCommandResourceIds.clear();
         supportedChannelIds.clear();
         commandResourceIds.clear();
         contributorsCache.clear();
@@ -301,8 +309,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case HueBindingConstants.CHANNEL_SCENE:
                 if (command instanceof StringType) {
-                    putResourceId = ((StringType) command).toString();
-                    putResource = new Resource(ResourceType.SCENE).setRecall();
+                    putResourceId = sceneCommandResourceIds.get(((StringType) command).toString());
+                    if (Objects.nonNull(putResourceId)) {
+                        putResource = new Resource(ResourceType.SCENE).setRecall();
+                    }
                 }
                 break;
 
@@ -606,15 +616,29 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (!disposing) {
             logger.debug("updateLookups() called");
             contributorsCache.clear();
+            commandResourceIds.clear();
+            sceneCommandResourceIds.clear();
+
+            // get supported services
             List<ResourceReference> services = thisResource.getServiceReferences();
+
+            // add supported services to contributorsCache
             contributorsCache.putAll(services.stream()
                     .collect(Collectors.toMap(ResourceReference::getId, r -> new Resource(r.getType()))));
-            contributorsCache
-                    .putAll(scenesBuffer.stream().collect(Collectors.toMap(Resource::getId, Function.identity())));
-            commandResourceIds.clear();
+
+            // add associated scenes to contributorsCache
+            contributorsCache.putAll(temporaryAssociatedScenesList.stream()
+                    .collect(Collectors.toMap(Resource::getId, Function.identity())));
+
+            // add supported services to commandResourceIds
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
-            scenesBuffer.clear();
+
+            // add associated scenes to sceneCommandResourceIds
+            sceneCommandResourceIds.putAll(temporaryAssociatedScenesList.stream()
+                    .collect(Collectors.toMap(Resource::getName, Resource::getId)));
+
+            temporaryAssociatedScenesList.clear();
         }
     }
 
@@ -703,24 +727,29 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Process the incoming list of scene resources to find those scenes which apply to this thing. And and if there
-     * are, include a scene channel in the supported channel list, populate its respective state options list, and store
-     * the scenes in our temporary scene list.
+     * Process the incoming list of scene resources to find those scenes which are associated with this thing. And if
+     * there are any, include a scene channel in the supported channel list, populate its respective state options list,
+     * and store the scenes in our temporary associated scenes list.
      *
      * @param scenes the full list of scene resources.
      */
     public void updateScenes(List<Resource> scenes) {
-        ResourceReference reference = getResourceReference();
-        scenesBuffer.clear();
-        scenesBuffer.addAll(
-                scenes.stream().filter(scene -> reference.equals(scene.getGroup())).collect(Collectors.toList()));
-        if (!scenesBuffer.isEmpty()) {
+        ResourceReference thisReference = getResourceReference();
+
+        temporaryAssociatedScenesList.clear();
+        temporaryAssociatedScenesList.addAll(
+                scenes.stream().filter(scene -> thisReference.equals(scene.getGroup())).collect(Collectors.toList()));
+
+        if (!temporaryAssociatedScenesList.isEmpty()) {
             supportedChannelIds.add(HueBindingConstants.CHANNEL_SCENE);
             stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_SCENE),
-                    scenesBuffer.stream().map(scene -> new StateOption(scene.getId(), scene.getName()))
-                            .collect(Collectors.toList()));
+                    temporaryAssociatedScenesList.stream().map(scene -> {
+                        String sceneFriendlyName = scene.getName();
+                        return new StateOption(sceneFriendlyName, sceneFriendlyName);
+                    }).collect(Collectors.toList()));
         }
-        logger.debug("updateScenes() scenesTemp.size():{}", scenesBuffer.size());
+
+        logger.debug("updateScenes() found {} associated scenes", temporaryAssociatedScenesList.size());
     }
 
     /**

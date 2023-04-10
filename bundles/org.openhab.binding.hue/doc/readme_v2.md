@@ -38,6 +38,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopasdfgh
 
 Apart from the Bridge, there are three other types of thing -- namely `device`, `room`, and `zone`.
 Device things represent physical hardware devices in the system, whereas `room` and `zone` things represent sets of physical lights, either in a room or a zone.
+In addition to regular rooms and zones, there is a 'super' `zone` that allows you to control all of the lights in the system.
 
 All things are identified by a unique Resource Identifier string that the Hue Bridge assigns to them e.g. `d1ae958e-8908-449a-9897-7f10f9b8d4c2`.
 Thus, all it needs for manual configuration is this single value like
@@ -105,28 +106,19 @@ So (for example) the channel value `1002` ((1 * 1000) + 2) means that the second
 The `rotarySteps` channel value is the number of steps corresponding to the last movement of a rotary dial.
 A positive number means the dial was rotated clock-wise, whereas a negative number means it was roated counter-clockwise.
 
-### Channels for Rooms and Zones, and the Bridge
+### Channels for Rooms and Zones
 
-Room and Zone things control the lights in a given zone or room.
-In addition the bridge thing has a 'super' zone to to control all of the lights in the system.
-Room, Zone and Bridge things support the following channels:
+Room and Zone things allow you to control the lights in a given zone or room.
+They support the following channels:
 
 | Channel Type ID     | Item Type          | Description                                                                           |
 |---------------------|--------------------|---------------------------------------------------------------------------------------|
 | switch              | Switch             | This channel supports switching the lights on and off.                                |
 | brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
+| scene<sup>1)</sup>  | String             | Setting the string to a valid scene friendly name activates the respective scene.     |
 
-In addition to the above channels, Room and Zone things may also contain Scene channels.
-Scene channels allow activation of scenes to set the state of all the various lights within the respective zone or room.
-The exact list of scene channels in a given thing is determined at run time when the system is started.
-It depends on the scenes that have actually been configured in the Hue Bridge.
-The scene channel description is as follows:
-
-| Channel Type ID     | Item Type          | Description                                                                           |
-|---------------------|--------------------|---------------------------------------------------------------------------------------|
-| scene               | Switch             | Setting this channel to `ON` activates the scene on the lights in the room or zone.   |
-
-Note: after a scene channel has been commanded `ON`, it will automatically reset itself again to `OFF`, after a few seconds, so it can be re-used.
+<sup>1)</sup> The scene channel is optional.
+If the respective room or zone has no scenes associated with it, the channel will not be shown.
 
 ## Console Command for finding ResourceIds
 
