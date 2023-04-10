@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>Sonos Binding</name>
 	<description>This is the binding for the Sonos multi-room audio system.</description>
+	<connection>local</connection>
 
 	<config-description>
 		<parameter name="opmlUrl" type="text">
