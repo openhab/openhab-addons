@@ -40,6 +40,7 @@ public class DatahubTariffFilterFactory {
     private static final String GLN_IKAST_E1_NET = "5790000682102";
     private static final String GLN_KONSTANT = "5790000704842";
     private static final String GLN_L_NET = "5790001090111";
+    private static final String GLN_MIDTFYNS_ELFORSYNING = "5790001089023";
     private static final String GLN_N1 = "5790001089030";
     private static final String GLN_N1_RANDERS = "5790000681372";
     private static final String GLN_NETSELSKABET_ELVAERK = "5790000681075";
@@ -59,6 +60,7 @@ public class DatahubTariffFilterFactory {
     private static final String NOTE_NET_TARIFF = "Nettarif";
     private static final String NOTE_NET_TARIFF_C = NOTE_NET_TARIFF + " C";
     private static final String NOTE_NET_TARIFF_C_HOUR = NOTE_NET_TARIFF_C + " time";
+    private static final String NOTE_NET_TARIFF_C_FLEX = NOTE_NET_TARIFF_C + " Flex";
     private static final String NOTE_SYSTEM_TARIFF = "Systemtarif";
     private static final String NOTE_ELECTRICITY_TAX = "Elafgift";
     private static final String NOTE_TRANSMISSION_NET_TARIFF = "Transmissions nettarif";
@@ -100,6 +102,9 @@ public class DatahubTariffFilterFactory {
                         Set.of(), DateQueryParameter.of(KONSTANT_CUTOFF_DATE));
             case GLN_L_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("4010")), Set.of(NOTE_NET_TARIFF_C_HOUR));
+            case GLN_MIDTFYNS_ELFORSYNING:
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TNT15000")), Set.of(NOTE_NET_TARIFF_C_FLEX),
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
             case GLN_N1:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("CD"), ChargeTypeCode.of("CD R")), Set.of(),
                         DateQueryParameter.of(N1_CUTOFF_DATE));
