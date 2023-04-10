@@ -3,7 +3,7 @@
 Z-Way is a software to configure and control a Z-Wave network.
 The software comes with a full stack from Z-Wave transceiver with certified firmware to a REST API on high level.
 
-Z-Way comes in three parts [cf. [Z-Wave.Me]([Z-Wave.Me](https://www.z-wave.me/index.php?id=1))]:
+[Z-Way](https://www.z-wave.me/z-way) comes in three parts:
 
 - a firmware that runs on the Z-Wave transceiver chip
 - the communication stack that runs on different host Operating Systems
@@ -11,7 +11,9 @@ Z-Way comes in three parts [cf. [Z-Wave.Me]([Z-Wave.Me](https://www.z-wave.me/in
 
 All parts together represents a smart home controller for Z-Wave.
 
-The entire infrastructure is maintained and developed by [Z-Wave.Me](https://www.z-wave.me/index.php?id=1) with the help of a large community.
+The entire infrastructure is maintained and developed by [Z-Wave.Me](https://www.z-wave.me/) with the help of a large community.
+
+A detailed step-by-step description of the binding configuration is also available on the [Z-Wave.Me Support site](https://help.z-wave.me/en/knowledge_base/art/149/cat/88/)
 
 Please note the **known issues** below.
 

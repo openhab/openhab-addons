@@ -53,6 +53,7 @@ Tibber Pulse (optional):
 | Current 1-3             | Current per Phase                        | True      |
 | Power Production        | Live Power Production                    | True      |
 | Accumulated Production  | Accumulated Production since Midnight    | True      |
+| Last Meter Production   | Last Recorded Meter Production           | True      |
 | Min Power Production    | Min Power Production since Midnight      | True      |
 | Max Power Production    | Max Power Production since Midnight      | True      |
 
@@ -226,6 +227,8 @@ DateTime                   TibberAPIHourlyFrom                   "Timestamp - Ho
 DateTime                   TibberAPIHourlyTo                     "Timestamp - Hourly To"                     {channel="tibber:tibberapi:7cfae492:hourly_to"}
 Number:Dimensionless       TibberAPIHourlyCost                   "Total Hourly Cost [%.2f NOK]"              {channel="tibber:tibberapi:7cfae492:hourly_cost"}
 Number:Energy              TibberAPIHourlyConsumption            "Total Hourly Consumption [%.2f kWh]"       {channel="tibber:tibberapi:7cfae492:hourly_consumption"}
+String                     TibberAPITomorrowPrices               "Price per hour tomorrow JSON array"        {channel="tibber:tibberapi:7cfae492:tomorrow_prices"}
+String                     TibberAPITodayPrices                  "Price per hour today JSON array"           {channel="tibber:tibberapi:7cfae492:today_prices"}
 DateTime                   TibberAPILiveTimestamp                "Timestamp - Live Measurement"              {channel="tibber:tibberapi:7cfae492:live_timestamp"}
 Number:Power               TibberAPILivePower                    "Live Power Consumption [%.0f W]"           {channel="tibber:tibberapi:7cfae492:live_power"}
 Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
@@ -243,9 +246,8 @@ Number:ElectricCurrent     TibberAPILiveCurrent1                 "Live Current P
 Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current Phase 2 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current2"}
 Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current3"}
 Number:Power               TibberAPILivePowerProduction          "Live Power Production [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_powerProduction"}
+Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
+Number:Energy              TibberAPILiveLastMeterProduction      "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_lastMeterProduction"}
 Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
 Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
-Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
-String                     TibberAPITomorrowPrices               "Price per hour tomorrow JSON array"        {channel="tibber:tibberapi:7cfae492:tomorrow_prices"}
-String                     TibberAPITodayPrices                  "Price per hour today JSON array"           {channel="tibber:tibberapi:7cfae492:today_prices"}
 ```

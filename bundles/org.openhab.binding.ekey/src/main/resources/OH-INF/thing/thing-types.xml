@@ -41,6 +41,11 @@
 				<description>@text/thing-type.config.ekey.delimiter.description</description>
 				<default>_</default>
 			</parameter>
+			<parameter name="natIp" type="text" required="false">
+				<context>network-address</context>
+				<label>@text/thing-type.config.ekey.natIp.label</label>
+				<description>@text/thing-type.config.ekey.natIp.description</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

@@ -6,7 +6,7 @@ The information are requested from the timetable api of Deutsche Bahn developer 
 ## Supported Things
 
 - **timetable** The timetable bridge connects to the timetable api and provides information for the next trains that will arrive or depart at the configured station.
-- **train** The train thing represents one trains within the configured timetable. This may be an arrival or a departure.
+- **train** The train thing represents one train within the configured timetable. This may be an arrival or a departure.
 
 ## Thing Configuration
 
@@ -362,7 +362,3 @@ slots:
                       font-weight: bold
                       text-align: right
 ```
-
-Using the widget for displaying the next four departures:
-
-![Departures Hannover HBF](doc/Abfahrten_HannoverHBF.png "openHAB page with four widgets displaying the next departures at Hannover HBF")

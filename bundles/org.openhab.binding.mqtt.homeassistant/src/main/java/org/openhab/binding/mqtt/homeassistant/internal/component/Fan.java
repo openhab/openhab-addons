@@ -56,9 +56,9 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
         buildChannel(SWITCH_CHANNEL_ID, value, channelConfiguration.getName(),
                 componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                                channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                        .build();
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos(), channelConfiguration.commandTemplate)
+                .build();
     }
 }

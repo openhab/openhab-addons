@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Monoprice Whole House Audio Binding</name>
 	<description>Controls Monoprice and Dayton Audio Whole House Amplifiers.</description>
+	<connection>local</connection>
 
 </addon:addon>

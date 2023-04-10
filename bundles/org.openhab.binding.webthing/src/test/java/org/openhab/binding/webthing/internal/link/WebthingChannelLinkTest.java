@@ -140,7 +140,7 @@ public class WebthingChannelLinkTest {
         performDataTypeMappingTest("targettemp_prop", 18.6, new DecimalType(18.6), 23.2, new DecimalType(23.2));
         performDataTypeMappingTest("open_prop", true, OpenClosedType.OPEN, false, OpenClosedType.CLOSED);
         performDataTypeMappingTest("colortemp_prop", 10, new PercentType(10), 60, new PercentType(60));
-        performDataTypeMappingTest("color_prop", "#f2fe00", new HSBType("62,100,99"), "#ff0000",
+        performDataTypeMappingTest("color_prop", "#f2fe00", new HSBType("63,100,100"), "#ff0000",
                 new HSBType("0.0,100.0,100.0"));
         performDataTypeMappingTest("colormode_prop", "color", new StringType("color"), "temperature",
                 new StringType("temperature"));

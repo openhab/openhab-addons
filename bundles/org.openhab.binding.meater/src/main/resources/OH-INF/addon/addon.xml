@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>MEATER Binding</name>
 	<description>This is the binding for MEATER probe.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

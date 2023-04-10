@@ -107,14 +107,20 @@ In addition there are some optional Configuration Parameters.
 
 Notes:
 
-1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number.
-  For an example, see the Thing definition for 'Bathroom_Roof_Window' below.
+1. To enable a complete inversion of all parameter values use the property `inverted` or add a trailing star to the eight-byte serial number.
 
 1. Somfy devices do not provide a valid serial number to the Velux KLF200 Bridge.
   For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
   This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
   The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
   For an example, see the Thing definition for 'Living_Room_Awning' below.
+
+The impact of the `inverted` parameter on the open/close position of the device, when a command is sent, is shown in the table below..
+
+| Inverted Parameter | UP Button Pressed | DOWN Button Pressed | Slider Position 0% | Slider Position 100% | Switch Command OFF | Switch Command ON |
+|--------------------|-------------------|---------------------|--------------------|----------------------|--------------------|-------------------|
+| `inverted` = false | Device is open    | Device is closed    | Device is open     | Device is closed     | Device is open     | Device is closed  |
+| `inverted` = true  | Device is closed  | Device is open      | Device is closed   | Device is open       | Device is closed   | Device is open    |
 
 ### Thing Configuration for "scene"
 
@@ -261,7 +267,7 @@ The bridge Thing provides the following properties.
 ```java
 Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.1.xxx", password="secret"] {
     // Velux (standard) window (with serial number)
-    Thing window Bathroom_Roof_Window "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70", inverted=true]
+    Thing window Bathroom_Roof_Window "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70"]
 
     // Somfy (non-standard) rollershutter (without serial number)
     Thing rollershutter Living_Room_Awning "Living Room Awning" @ "Living Room" [serial="00:00:00:00:00:00:00:00", name="Living Room Awning"]

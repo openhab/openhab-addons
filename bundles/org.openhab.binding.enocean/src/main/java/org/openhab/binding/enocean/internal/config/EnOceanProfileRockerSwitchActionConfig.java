@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This {@link EnOceanProfileRockerSwitchActionConfig} config class is used for rockerSwitchAction profiles to define in
  * which case it should react.
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanProfileRockerSwitchActionConfig {
 
     public String channelAFilter;

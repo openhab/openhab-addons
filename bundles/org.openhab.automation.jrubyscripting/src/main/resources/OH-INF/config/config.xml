@@ -26,14 +26,16 @@
 		<parameter name="gems" type="text" required="false" groupName="gems">
 			<label>Ruby Gems</label>
 			<description><![CDATA[A comma separated list of Ruby Gems to install. Versions may be constrained by separating with an
-			    <tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>4.0</tt>".
+			    <tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>5.0.0</tt>".
 				]]></description>
+			<default>openhab-scripting=~>5.0.0</default>
 		</parameter>
 
 		<parameter name="require" type="text" required="false" groupName="gems">
 			<label>Require Scripts</label>
 			<description>A comma separated list of script names to be required by the JRuby Scripting Engine before running user
 				scripts.</description>
+			<default>openhab/dsl</default>
 		</parameter>
 
 		<parameter name="check_update" type="boolean" required="true" groupName="gems">

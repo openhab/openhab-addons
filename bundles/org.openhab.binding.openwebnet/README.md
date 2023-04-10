@@ -526,5 +526,6 @@ Special thanks for helping on testing this binding go to:
 [@feodor](https://community.openhab.org/u/feodor),
 [@aconte80](https://community.openhab.org/u/aconte80),
 [@rubenfuser](https://community.openhab.org/u/rubenfuser),
-[@stamate_viorel](https://community.openhab.org/u/stamate_viorel)
+[@stamate_viorel](https://community.openhab.org/u/stamate_viorel),
+[@marchino](https://community.openhab.org/u/marchino)
 and many others at the fantastic openHAB community!
