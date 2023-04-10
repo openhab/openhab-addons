@@ -27,21 +27,21 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ColorTemperature2 {
-    private @Nullable Integer mirek;
+    private @Nullable Long mirek;
     private @Nullable @SerializedName("mirek_schema") MirekSchema mirekSchema;
 
     /**
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */
-    public @Nullable Float getKelvin() throws DTOPresentButEmptyException {
-        Integer mirek = this.mirek;
+    public @Nullable Double getKelvin() throws DTOPresentButEmptyException {
+        Long mirek = this.mirek;
         if (Objects.nonNull(mirek)) {
-            return getReciprocal(mirek.floatValue());
+            return getReciprocal(mirek.doubleValue());
         }
         throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
     }
 
-    public @Nullable Integer getMirek() {
+    public @Nullable Long getMirek() {
         return mirek;
     }
 
@@ -55,28 +55,28 @@ public class ColorTemperature2 {
      * @return the percentage of the mirekSchema range.
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */
-    public @Nullable Integer getPercent() throws DTOPresentButEmptyException {
-        Integer mirek = this.mirek;
+    public @Nullable Double getPercent() throws DTOPresentButEmptyException {
+        Long mirek = this.mirek;
         if (Objects.nonNull(mirek)) {
             MirekSchema mirekSchema = this.mirekSchema;
             mirekSchema = Objects.nonNull(mirekSchema) ? mirekSchema : MirekSchema.DEFAULT_SCHEMA;
-            float min = mirekSchema.getMirekMinimum();
-            float max = mirekSchema.getMirekMaximum();
-            float percent = (100f * (mirek.floatValue() - min)) / (max - min);
-            return Math.round(Math.max(0, Math.min(100, percent)));
+            double min = mirekSchema.getMirekMinimum();
+            double max = mirekSchema.getMirekMaximum();
+            double percent = (100f * (mirek.doubleValue() - min)) / (max - min);
+            return Math.max(0, Math.min(100, percent));
         }
         throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
     }
 
-    private float getReciprocal(float value) {
-        return Math.round(1000000f / value);
+    private double getReciprocal(double value) {
+        return 1000000f / value;
     }
 
-    public void setKelvin(float kelvin) {
+    public void setKelvin(double kelvin) {
         setMirek(getReciprocal(kelvin));
     }
 
-    public void setMirek(float mirek) {
+    public void setMirek(double mirek) {
         this.mirek = Math.round(mirek);
     }
 
@@ -90,10 +90,10 @@ public class ColorTemperature2 {
      *
      * @param mirekSchema the reference MirekSchema.
      */
-    public void setPercent(int percent, MirekSchema mirekSchema) {
-        float min = mirekSchema.getMirekMinimum();
-        float max = mirekSchema.getMirekMaximum();
-        float offset = (max - min) * Float.valueOf(percent) / 100f;
+    public void setPercent(double percent, MirekSchema mirekSchema) {
+        double min = mirekSchema.getMirekMinimum();
+        double max = mirekSchema.getMirekMaximum();
+        double offset = (max - min) * percent / 100f;
         setMirek(min + offset);
     }
 }

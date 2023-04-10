@@ -25,21 +25,21 @@ import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
  */
 @NonNullByDefault
 public class Dimming {
-    private @Nullable Float brightness;
+    private @Nullable Double brightness;
 
     /**
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */
-    public int getBrightness() throws DTOPresentButEmptyException {
-        Float brightness = this.brightness;
+    public double getBrightness() throws DTOPresentButEmptyException {
+        Double brightness = this.brightness;
         if (Objects.nonNull(brightness)) {
-            return Math.round(brightness);
+            return brightness;
         }
         throw new DTOPresentButEmptyException("'dimming' DTO is present but empty");
     }
 
-    public Dimming setBrightness(int brightness) {
-        this.brightness = Float.valueOf(brightness);
+    public Dimming setBrightness(double brightness) {
+        this.brightness = brightness;
         return this;
     }
 }

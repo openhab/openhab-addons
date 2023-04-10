@@ -31,7 +31,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
-import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
@@ -60,8 +59,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.util.ColorUtil;
-import org.openhab.core.util.ColorUtil.Gamut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,45 +190,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Look up the cached color Gamut. Check the commandResourceIds to see if we have a LIGHT resource entry, and if so
-     * get its respective resource from the contributorsCache, and if that exists, return its respective Gamut. Or
-     * otherwise return the default Gamut.
+     * Do a double lookup to get the cached resource that matches the given ResourceType.
      *
-     * @return a Gamut.
+     * @param resourceType the type to search for.
+     * @return the Resource, or null if not found.
      */
-    private Gamut getCachedGamut() {
-        String lightResourceId = commandResourceIds.get(ResourceType.LIGHT);
-        if (Objects.nonNull(lightResourceId)) {
-            Resource cachedLight = contributorsCache.get(lightResourceId);
-            if (Objects.nonNull(cachedLight)) {
-                Gamut gamut = cachedLight.getGamut();
-                if (Objects.nonNull(gamut)) {
-                    return gamut;
-                }
-            }
-        }
-        return ColorUtil.DEFAULT_GAMUT;
-    }
-
-    /**
-     * Look up the cached MirekSchema. Check the commandResourceIds to see if we have a LIGHT resource entry, and if so
-     * get its respective resource from the contributorsCache, and if that exists, return its respective MirekSchema. Or
-     * otherwise return the default MirekSchema.
-     *
-     * @return a MirekSchema.
-     */
-    private MirekSchema getCachedMirekSchema() {
-        String lightResourceId = commandResourceIds.get(ResourceType.LIGHT);
-        if (Objects.nonNull(lightResourceId)) {
-            Resource cachedLight = contributorsCache.get(lightResourceId);
-            if (Objects.nonNull(cachedLight)) {
-                MirekSchema mirekSchema = cachedLight.getMirekSchema();
-                if (Objects.nonNull(mirekSchema)) {
-                    return mirekSchema;
-                }
-            }
-        }
-        return MirekSchema.DEFAULT_SCHEMA;
+    private @Nullable Resource getCachedResource(ResourceType resourceType) {
+        String commandResourceId = commandResourceIds.get(resourceType);
+        return Objects.nonNull(commandResourceId) ? contributorsCache.get(commandResourceId) : null;
     }
 
     /**
@@ -276,7 +242,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE:
                 putResource = new Resource(lightResourceType).setColorTemperaturePercent(command,
-                        getCachedMirekSchema());
+                        getCachedResource(ResourceType.LIGHT));
                 break;
 
             case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE_ABS:
@@ -284,7 +250,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case HueBindingConstants.CHANNEL_COLOR:
-                putResource = new Resource(lightResourceType).setColor(command, getCachedGamut());
+                putResource = new Resource(lightResourceType).setColor(command, getCachedResource(ResourceType.LIGHT));
                 break;
 
             case HueBindingConstants.CHANNEL_BRIGHTNESS:

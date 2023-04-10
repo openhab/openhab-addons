@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,8 +69,8 @@ public class Resource {
             return OnOffType.ON.equals(command) ? PercentType.HUNDRED : PercentType.ZERO;
         } else if (command instanceof IncreaseDecreaseType && current instanceof PercentType) {
             int sign = IncreaseDecreaseType.INCREASE.equals(command) ? 1 : -1;
-            int percent = ((PercentType) current).intValue() + (sign * DELTA);
-            return new PercentType(Math.min(100, Math.max(0, percent)));
+            double percent = ((PercentType) current).doubleValue() + (sign * DELTA);
+            return new PercentType(BigDecimal.valueOf(Math.min(100, Math.max(0, percent))));
         }
         return UnDefType.NULL;
     }
@@ -203,7 +204,8 @@ public class Resource {
     public State getBrightnessState() {
         Dimming dimming = this.dimming;
         try {
-            return Objects.nonNull(dimming) ? new PercentType(dimming.getBrightness()) : UnDefType.NULL;
+            return Objects.nonNull(dimming) ? new PercentType(BigDecimal.valueOf(dimming.getBrightness()))
+                    : UnDefType.NULL;
         } catch (DTOPresentButEmptyException e) {
             return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
         }
@@ -264,8 +266,8 @@ public class Resource {
                 gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
                 HSBType hsb = ColorUtil.xyToHsb(color.getXY(), gamut);
                 Dimming dimming = this.dimming;
-                return new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(
-                        Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50));
+                double b = Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50;
+                return new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(BigDecimal.valueOf(b)));
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
             }
@@ -281,7 +283,7 @@ public class Resource {
         ColorTemperature2 colorTemp = colorTemperature;
         if (Objects.nonNull(colorTemp)) {
             try {
-                Float kelvin = colorTemp.getKelvin();
+                Double kelvin = colorTemp.getKelvin();
                 if (Objects.nonNull(kelvin)) {
                     return new QuantityType<>(kelvin, Units.KELVIN);
                 }
@@ -301,9 +303,9 @@ public class Resource {
         ColorTemperature2 colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
             try {
-                Integer percent = colorTemperature.getPercent();
+                Double percent = colorTemperature.getPercent();
                 if (Objects.nonNull(percent)) {
-                    return new PercentType(percent);
+                    return new PercentType(BigDecimal.valueOf(percent));
                 }
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
@@ -519,7 +521,7 @@ public class Resource {
         if (state instanceof PercentType) {
             Dimming dimming = this.dimming;
             dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
-            dimming.setBrightness(((PercentType) state).intValue());
+            dimming.setBrightness(((PercentType) state).doubleValue());
             if (PercentType.ZERO.equals(state)) {
                 setSwitch(OnOffType.OFF);
             }
@@ -529,20 +531,24 @@ public class Resource {
     }
 
     /**
-     * Set the color from an HSBType. Put its Hue & Saturation parts in the 'ColorXy' JSON element, and put its
-     * Brightness part in the 'Dimming' JSON element.
+     * Set the color from an HSBType. If this resource has its own Gamut then use that, otherwise if the 'other'
+     * parameter is not null and has a Gamut, then use that, and if neither have one then use the default Gamut. Put its
+     * Hue and Saturation parts in the 'ColorXy' JSON element, and its Brightness part in the 'Dimming' JSON element.
      *
      * @param command an HSBType with the new color value.
-     * @param gamut the color Gamut for the conversion.
+     * @param other the reference (light) resource to be used for the Gamut.
      * @return this resource instance.
      */
-    public Resource setColor(Command command, Gamut gamut) {
+    public Resource setColor(Command command, @Nullable Resource other) {
         if (command instanceof HSBType) {
+            Gamut gamut = this.getGamut();
+            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(other) ? other.getGamut() : null;
+            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
             HSBType hsb = (HSBType) command;
             ColorXy col = color;
             Dimming dim = dimming;
             color = (Objects.nonNull(col) ? col : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut));
-            dimming = (Objects.nonNull(dim) ? dim : new Dimming()).setBrightness(hsb.getBrightness().intValue());
+            dimming = (Objects.nonNull(dim) ? dim : new Dimming()).setBrightness(hsb.getBrightness().doubleValue());
         }
         return this;
     }
@@ -554,14 +560,14 @@ public class Resource {
      * @return this resource instance.
      */
     public Resource setColorTemperatureKelvin(Command command) {
-        Integer kelvin = null;
+        Double kelvin = null;
         if (command instanceof QuantityType<?>) {
             QuantityType<?> temperature = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
             if (Objects.nonNull(temperature)) {
-                kelvin = Math.round(temperature.floatValue());
+                kelvin = temperature.doubleValue();
             }
         } else if (command instanceof DecimalType) {
-            kelvin = Math.round(((DecimalType) command).intValue());
+            kelvin = ((DecimalType) command).doubleValue();
         }
         if (Objects.nonNull(kelvin)) {
             ColorTemperature2 colorTemperature = this.colorTemperature;
@@ -573,17 +579,22 @@ public class Resource {
     }
 
     /**
-     * Set the colour temperature in percent based on the passed MirekSchema scale.
+     * Set the color temperature from a PercentType. If this resource has its own MirekSchema then use that, otherwise
+     * if the 'other' parameter is not null and has a MirekSchema, then use that, and if neither have one then use the
+     * default MirekSchema.
      *
      * @param command a PercentType command value.
-     * @param mirekSchema the MirekSchema to be used in the scaling.
+     * @param other the reference (light) resource to be used for the MirekSchema.
      * @return this resource instance.
      */
-    public Resource setColorTemperaturePercent(Command command, MirekSchema mirekSchema) {
+    public Resource setColorTemperaturePercent(Command command, @Nullable Resource other) {
         if (command instanceof PercentType) {
+            MirekSchema schema = this.getMirekSchema();
+            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(other) ? other.getMirekSchema() : null;
+            schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
             ColorTemperature2 colorTemperature = this.colorTemperature;
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature2();
-            colorTemperature.setPercent(((PercentType) command).intValue(), mirekSchema);
+            colorTemperature.setPercent(((PercentType) command).doubleValue(), schema);
             this.colorTemperature = colorTemperature;
         }
         return this;

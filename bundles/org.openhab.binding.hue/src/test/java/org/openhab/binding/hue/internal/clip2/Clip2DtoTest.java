@@ -204,13 +204,16 @@ class Clip2DtoTest {
             assertNotNull(metaData);
             String name = metaData.getName();
             assertNotNull(name);
+            State state;
             if (name.contains("Bay Window Lamp")) {
                 itemFoundCount++;
                 assertEquals(ResourceType.LIGHT, item.getType());
                 assertEquals(OnOffType.OFF, item.getSwitch());
-                assertEquals(new PercentType(93), item.getBrightnessState());
+                state = item.getBrightnessState();
+                assertTrue(state instanceof PercentType);
+                assertEquals(93.0, ((PercentType) state).doubleValue(), 0.1);
                 assertEquals(UnDefType.UNDEF, item.getColorTemperaturePercentState());
-                State state = item.getColorState();
+                state = item.getColorState();
                 assertTrue(state instanceof HSBType);
                 double[] xy = ColorUtil.hsbToXY((HSBType) state);
                 assertEquals(0.6367, xy[0], 0.01); // note: rounding errors !!
@@ -226,34 +229,52 @@ class Clip2DtoTest {
                 itemFoundCount++;
                 assertEquals(ResourceType.LIGHT, item.getType());
                 assertEquals(OnOffType.OFF, item.getSwitch());
-                assertEquals(new PercentType(57), item.getBrightnessState());
+                state = item.getBrightnessState();
+                assertTrue(state instanceof PercentType);
+                assertEquals(56.7, ((PercentType) state).doubleValue(), 0.1);
                 MirekSchema mirekSchema = item.getMirekSchema();
                 assertNotNull(mirekSchema);
                 assertEquals(153, mirekSchema.getMirekMinimum());
                 assertEquals(454, mirekSchema.getMirekMaximum());
 
                 // test color temperature percent value on light's own scale
-                assertEquals(new PercentType(96), item.getColorTemperaturePercentState());
-                assertEquals(QuantityType.valueOf("2257 K"), item.getColorTemperatureKelvinState());
+                state = item.getColorTemperaturePercentState();
+                assertTrue(state instanceof PercentType);
+                assertEquals(96.3, ((PercentType) state).doubleValue(), 0.1);
+                state = item.getColorTemperatureKelvinState();
+                assertTrue(state instanceof QuantityType<?>);
+                assertEquals(2257.3, ((QuantityType<?>) state).doubleValue(), 0.1);
 
                 // test color temperature percent value on the default (full) scale
                 MirekSchema temp = item.getMirekSchema();
                 item.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
-                assertEquals(new PercentType(84), item.getColorTemperaturePercentState());
-                assertEquals(QuantityType.valueOf("2257 K"), item.getColorTemperatureKelvinState());
+                state = item.getColorTemperaturePercentState();
+                assertTrue(state instanceof PercentType);
+                assertEquals(83.6, ((PercentType) state).doubleValue(), 0.1);
+                state = item.getColorTemperatureKelvinState();
+                assertTrue(state instanceof QuantityType<?>);
+                assertEquals(2257.3, ((QuantityType<?>) state).doubleValue(), 0.1);
                 item.setMirekSchema(temp);
 
-                // change colour temperature
-                item.setColorTemperaturePercent(PercentType.ZERO, mirekSchema);
+                // change colour temperature percent to zero
+                item.setColorTemperaturePercent(PercentType.ZERO, null);
                 assertEquals(PercentType.ZERO, item.getColorTemperaturePercentState());
-                assertEquals(QuantityType.valueOf("6536 K"), item.getColorTemperatureKelvinState());
+                state = item.getColorTemperatureKelvinState();
+                assertTrue(state instanceof QuantityType<?>);
+                assertEquals(6535.9, ((QuantityType<?>) state).doubleValue(), 0.1);
 
-                item.setColorTemperaturePercent(PercentType.HUNDRED, mirekSchema);
+                // change colour temperature percent to 100
+                item.setColorTemperaturePercent(PercentType.HUNDRED, null);
                 assertEquals(PercentType.HUNDRED, item.getColorTemperaturePercentState());
-                assertEquals(QuantityType.valueOf("2203 K"), item.getColorTemperatureKelvinState());
+                state = item.getColorTemperatureKelvinState();
+                assertTrue(state instanceof QuantityType<?>);
+                assertEquals(2202.6, ((QuantityType<?>) state).doubleValue(), 0.1);
 
+                // change colour temperature kelvin to 4000 K
                 item.setColorTemperatureKelvin(QuantityType.valueOf("4000 K"));
-                assertEquals(new PercentType(32), item.getColorTemperaturePercentState());
+                state = item.getColorTemperaturePercentState();
+                assertTrue(state instanceof PercentType);
+                assertEquals(32.2, ((PercentType) state).doubleValue(), 0.1);
                 assertEquals(QuantityType.valueOf("4000 K"), item.getColorTemperatureKelvinState());
 
                 assertEquals(UnDefType.NULL, item.getColorState());
@@ -315,7 +336,7 @@ class Clip2DtoTest {
         // create resource one
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
-        one.setColor(HSBType.RED, ColorUtil.DEFAULT_GAMUT);
+        one.setColor(HSBType.RED, null);
         assertTrue(one.getColorState() instanceof HSBType);
         assertTrue(HSBType.RED.closeTo((HSBType) one.getColorState(), 0.01));
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
@@ -428,7 +449,7 @@ class Clip2DtoTest {
         HSBType magenta = new HSBType("300,100,100");
 
         for (HSBType color : Set.of(HSBType.WHITE, HSBType.RED, HSBType.GREEN, HSBType.BLUE, cyan, yellow, magenta)) {
-            resource.setColor(color, ColorUtil.DEFAULT_GAMUT);
+            resource.setColor(color, null);
             State state = resource.getColorState();
             assertTrue(state instanceof HSBType);
             assertTrue(color.closeTo((HSBType) state, 0.01));
