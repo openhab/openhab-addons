@@ -72,7 +72,7 @@ String     status            "YIO Dock status[%s]"     {channel="yioremote:yioRe
 
 ```perl
 sitemap Basic label="YIO Dock" {
-        Switch item= receiverswitch
-        Text item= status
+    Switch item=receiverswitch
+    Text item=status
 }
 ```

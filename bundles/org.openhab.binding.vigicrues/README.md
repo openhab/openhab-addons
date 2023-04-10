@@ -59,7 +59,7 @@ The VigiCrues information that retrieved are made available with these channels:
 | short-comment    | String                    | Description of the alert level                             |
 | comment          | String                    | Detailed informations regarding the ongoing event          |
 
-(*) Each alert level is described by a color :
+(*) Each alert level is described by a color:
 
 | Code | Color  | Description                               |
 |------|--------|-------------------------------------------|

@@ -614,7 +614,7 @@ There are even more values supported by the interface but the extraction for mos
 
 Code snippet to map webservice response to modbus addresses and variable names
 
-```text
+```java
     // Modbus addresses
     // Map MAPADRESSMODBUS maps Vallox names to Modbus addresses, mapAdressReturnBytearray maps Vallox names to byte
     // position in data return statement
@@ -1819,7 +1819,7 @@ Code snippet to map webservice response to modbus addresses and variable names
 
 To get the values the following stub could be implemented in onBinary() in ValloxMVWebSocket
 
-```text
+```java
 for (String key : ValloxMVBindingConstants.MAPADRESSRETURNBYTEARRAY.keySet()) {
     logger.debug("Key: {}, Value: {}", key,
     getNumber(bytes, ValloxMVBindingConstants.MAPADRESSRETURNBYTEARRAY.get(key)));
