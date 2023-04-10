@@ -10,14 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.generacmobilelink.internal.dto;
+package org.openhab.binding.ojelectronics.internal.models.groups;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link LoginResponseDTO} response from the MobileLink API
+ * Model for events
  *
- * @author Dan Cunningham - Initial contribution
+ * @author Christian Kittel - Initial contribution
  */
-public class LoginResponseDTO {
-    public String authToken;
-    public String pushChannelName;
+@NonNullByDefault
+public class EventModel {
+
+    public int scheduleType;
+
+    public String clock = "";
+
+    public int temperature;
+
+    public boolean active;
+
+    public boolean eventIsOnNextDay;
 }

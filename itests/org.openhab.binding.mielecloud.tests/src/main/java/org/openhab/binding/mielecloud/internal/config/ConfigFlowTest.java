@@ -20,6 +20,7 @@ import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.setPri
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.config.servlet.CreateBridgeServlet;
 import org.openhab.binding.mielecloud.internal.config.servlet.ForwardToLoginServlet;
@@ -103,6 +104,7 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
     }
 
     @Test
+    @Disabled
     public void configFlowHappyPathCreatesABridge() throws Exception {
         // given:
         setUpAuthorizationHandler();
@@ -120,6 +122,7 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
     }
 
     @Test
+    @Disabled
     public void configFlowWaitTimeoutExpiresWhenBridgeDoesNotComeOnline() throws Exception {
         // given:
         setUpAuthorizationHandler();

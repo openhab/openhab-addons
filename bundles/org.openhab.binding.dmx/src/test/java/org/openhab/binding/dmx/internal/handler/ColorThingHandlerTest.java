@@ -210,7 +210,7 @@ public class ColorThingHandlerTest extends AbstractDmxThingTestParent {
             assertChannelStateUpdate(CHANNEL_UID_COLOR,
                     state -> assertThat(((HSBType) state).getBrightness().doubleValue(), is(closeTo(30.0, 1))));
             assertChannelStateUpdate(CHANNEL_UID_BRIGHTNESS_R,
-                    state -> assertThat(((PercentType) state).doubleValue(), is(closeTo(19.2, 0.5))));
+                    state -> assertThat(((PercentType) state).doubleValue(), is(closeTo(20.0, 0.5))));
             assertChannelStateUpdate(CHANNEL_UID_BRIGHTNESS_G, state -> assertEquals(PercentType.ZERO, state));
             assertChannelStateUpdate(CHANNEL_UID_BRIGHTNESS_B,
                     state -> assertThat(((PercentType) state).doubleValue(), is(closeTo(29.8, 0.5))));

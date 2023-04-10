@@ -13,11 +13,12 @@
 package org.openhab.binding.generacmobilelink.internal.dto;
 
 /**
- * {@link ErrorResponseDTO} object from the MobileLink API
+ * The {@link SelfAssertedResponse} represents the SelfAssertedResponse object used in login
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class ErrorResponseDTO {
-    public Integer errorCode;
-    public String errorMessage;
+public class SelfAssertedResponse {
+    public String status;
+    public String errorCode;
+    public String message;
 }

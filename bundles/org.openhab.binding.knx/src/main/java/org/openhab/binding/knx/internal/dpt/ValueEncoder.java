@@ -149,8 +149,8 @@ public class ValueEncoder {
     private static String handleHSBType(String dptId, HSBType hsb) {
         switch (dptId) {
             case "232.600":
-                return "r:" + convertPercentToByte(hsb.getRed()) + " g:" + convertPercentToByte(hsb.getGreen()) + " b:"
-                        + convertPercentToByte(hsb.getBlue());
+                int[] rgb = ColorUtil.hsbToRgb(hsb);
+                return String.format("r:%d g:%d b:%d", rgb[0], rgb[1], rgb[2]);
             case "232.60000":
                 // MDT specific: mis-use 232.600 for hsv instead of rgb
                 int hue = hsb.getHue().toBigDecimal().multiply(BigDecimal.valueOf(255))
@@ -161,8 +161,8 @@ public class ValueEncoder {
                 double[] xyY = ColorUtil.hsbToXY(hsb);
                 return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
             case "251.600":
-                return String.format("%d %d %d - %%", hsb.getRed().intValue(), hsb.getGreen().intValue(),
-                        hsb.getBlue().intValue());
+                rgb = ColorUtil.hsbToRgb(hsb);
+                return String.format("%d %d %d - %%", rgb[0], rgb[1], rgb[2]);
             case "5.003":
                 return hsb.getHue().toString();
             default:

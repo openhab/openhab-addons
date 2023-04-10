@@ -10,22 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ojelectronics.internal.models.groups;
 
-import java.util.ArrayList;
-import java.util.List;
+package org.openhab.binding.speedtest.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Model for a day
+ * The {@link SpeedtestConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Christian Kittel - Initial contribution
+ * @author Brian Homeyer - Initial contribution
  */
 @NonNullByDefault
-public class Day {
-
-    public int weekDayGrpNo;
-
-    public List<Event> events = new ArrayList<>();
+public class SpeedtestConfiguration {
+    public int refreshInterval = 60;
+    public String execPath = "";
+    public String serverID = "";
+    public String speedTestVersion = "";
 }

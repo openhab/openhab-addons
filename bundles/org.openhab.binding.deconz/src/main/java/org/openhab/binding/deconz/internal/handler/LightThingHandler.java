@@ -446,7 +446,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 xyY[0] = xy[0];
                 xyY[1] = xy[1];
                 xyY[2] = ((double) bri) / BRIGHTNESS_MAX;
-                updateState(channelUID, ColorUtil.xyToHsv(xyY));
+                updateState(channelUID, ColorUtil.xyToHsb(xyY));
             }
         } else if (bri != null && hue != null && sat != null) {
             updateState(channelUID,
