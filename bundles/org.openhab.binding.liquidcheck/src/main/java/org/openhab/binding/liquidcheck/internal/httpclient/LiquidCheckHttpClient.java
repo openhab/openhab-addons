@@ -49,6 +49,13 @@ public class LiquidCheckHttpClient {
     public LiquidCheckHttpClient(LiquidCheckConfiguration config, HttpClient client) {
         this.config = config;
         this.client = client;
+        if (!client.isStarted()) {
+            try {
+                client.start();
+            } catch (Exception e) {
+                logger.warn("Could not start client. {}", e.getMessage());
+            }
+        }
     }
 
     /**
@@ -63,6 +70,7 @@ public class LiquidCheckHttpClient {
         String uri = "http://" + config.hostname + "/infos.json";
         Request request = client.newRequest(uri).method(HttpMethod.GET)
                 .timeout(config.connectionTimeout, TimeUnit.SECONDS).followRedirects(false);
+        logger.debug("Polling for data");
         ContentResponse response = request.send();
         return response.getContentAsString();
     }
