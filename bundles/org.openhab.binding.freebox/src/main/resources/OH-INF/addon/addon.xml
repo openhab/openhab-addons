@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Freebox Binding</name>
 	<description>The Freebox binding requests your Freebox Server for various operational informations.</description>
+	<connection>local</connection>
 
 </addon:addon>

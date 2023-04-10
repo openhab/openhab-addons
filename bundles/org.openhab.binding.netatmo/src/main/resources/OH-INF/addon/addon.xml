@@ -7,7 +7,7 @@
 	<name>Netatmo Binding</name>
 	<description>The Netatmo binding integrates Weather Station with companion modules, Healthy Home Coach, Thermostat Plug
 		and Welcome Camera.</description>
-
+	<connection>cloud</connection>
 
 	<config-description>
 		<parameter name="readFriends" type="boolean">
