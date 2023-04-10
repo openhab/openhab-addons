@@ -16,10 +16,12 @@ import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstan
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschindego.internal.IndegoController;
+import org.openhab.binding.boschindego.internal.discovery.IndegoDiscoveryService;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -32,6 +34,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +94,11 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(IndegoDiscoveryService.class);
     }
 
     public void authorize(String authCode) throws IndegoAuthenticationException {

@@ -14,16 +14,12 @@ package org.openhab.binding.boschindego.internal;
 
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
-import java.util.Hashtable;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.boschindego.internal.discovery.IndegoDiscoveryService;
 import org.openhab.binding.boschindego.internal.handler.BoschAccountHandler;
 import org.openhab.binding.boschindego.internal.handler.BoschIndegoHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -77,11 +73,7 @@ public class BoschIndegoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            var accountHandler = new BoschAccountHandler((Bridge) thing, httpClient, oAuthFactory);
-            var discoveryService = new IndegoDiscoveryService(accountHandler);
-            bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
-
-            return accountHandler;
+            return new BoschAccountHandler((Bridge) thing, httpClient, oAuthFactory);
         } else if (THING_TYPE_INDEGO.equals(thingTypeUID)) {
             return new BoschIndegoHandler(thing, httpClient, translationProvider, timeZoneProvider);
         }
