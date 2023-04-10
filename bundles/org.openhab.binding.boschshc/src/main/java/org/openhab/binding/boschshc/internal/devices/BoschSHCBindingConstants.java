@@ -82,6 +82,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_SMOKE_CHECK = "smoke-check";
+    public static final String CHANNEL_SILENT_MODE = "silent-mode";
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";
