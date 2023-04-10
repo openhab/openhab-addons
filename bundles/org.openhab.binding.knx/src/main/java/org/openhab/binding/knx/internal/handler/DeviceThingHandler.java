@@ -505,12 +505,12 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
     }
 
     protected void detachFromClient() {
-        final var pollingJobSynced = pollingJob;
+        ScheduledFuture<?> pollingJobSynced = pollingJob;
         if (pollingJobSynced != null) {
             pollingJobSynced.cancel(true);
             pollingJob = null;
         }
-        final var descriptionJobSynced = descriptionJob;
+        ScheduledFuture<?> descriptionJobSynced = descriptionJob;
         if (descriptionJobSynced != null) {
             descriptionJobSynced.cancel(true);
             descriptionJob = null;

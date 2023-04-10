@@ -171,7 +171,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
-            final var localNetworkAddressService = networkAddressService;
+            NetworkAddressService localNetworkAddressService = networkAddressService;
             if (localNetworkAddressService == null) {
                 logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE);
@@ -187,7 +187,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
                 config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), this);
 
-        final var tmpClient = client;
+        IPClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();
         }
@@ -197,7 +197,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void dispose() {
-        final var tmpInitJob = initJob;
+        Future<?> tmpInitJob = initJob;
         if (tmpInitJob != null) {
             while (!tmpInitJob.isDone()) {
                 logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
@@ -210,7 +210,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             }
             initJob = null;
         }
-        final var tmpClient = client;
+        IPClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.dispose();
             client = null;
