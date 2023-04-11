@@ -120,7 +120,7 @@ The following channels are available on all Linky telemeters in standard TIC mod
 | commonLSMGroup#ltarf            | `String`                  | Current pricing label                                                       |
 | commonLSMGroup#east             | `Number:Energy`           | Total active energy withdrawn                                               |
 | commonLSMGroup#easf_XX_         | `Number:Energy`           | Active energy withdrawn from provider on index _XX, XX_ in {01,...,10}      |
-| commonLSMGroup#easd_XX_         | `Number:Energy`           | Active energy withdrawn from distributor on index _XX, XX_ in {01,...,04} |
+| commonLSMGroup#easd_XX_         | `Number:Energy`           | Active energy withdrawn from distributor on index _XX, XX_ in {01,...,04}   |
 | commonLSMGroup#irms1            | `Number:ElectricCurrent`  | RMS Current on phase 1                                                      |
 | commonLSMGroup#urms1            | `Number:Potential`        | RMS Voltage on phase 1                                                      |
 | commonLSMGroup#pref             | `Number:Power`            | Reference apparent power                                                    |
@@ -131,8 +131,8 @@ The following channels are available on all Linky telemeters in standard TIC mod
 | commonLSMGroup#ccasn            | `Number:Power`            | Active charge point N                                                       |
 | commonLSMGroup#ccasnMinus1      | `Number:Power`            | Active charge point N-1                                                     |
 | commonLSMGroup#umoy1            | `Number:Potential`        | Mean Voltage on phase 1                                                     |
-| commonLSMGroup#dpm_X_           | `String`                  | Start of mobile peak period _X, X_ in {1,2,3}                             |
-| commonLSMGroup#fpm_X_           | `String`                  | End of mobile peak period _X, X_ in {1,2,3}                               |
+| commonLSMGroup#dpm_X_           | `String`                  | Start of mobile peak period _X, X_ in {1,2,3}                               |
+| commonLSMGroup#fpm_X_           | `String`                  | End of mobile peak period _X, X_ in {1,2,3}                                 |
 | commonLSMGroup#msg1             | `String`                  | Short message                                                               |
 | commonLSMGroup#msg2             | `String`                  | Very short message                                                          |
 | commonLSMGroup#ntarf            | `String`                  | Index of current pricing                                                    |
@@ -148,7 +148,7 @@ The following channels are available on all Linky telemeters in standard TIC mod
 | commonLSMGroup#umoy1Date        | `DateTime`                | Timestamp of UMOY1 value                                                    |
 | commonLSMGroup#dpm_X_Date       | `DateTime`                | Date of DPM_X_, _X_ in {1,2,3}                                              |
 | commonLSMGroup#fpm_X_Date       | `DateTime`                | Date of FPM_X_, _X_ in {1,2,3}                                              |
-| commonLSMGroup#relais_X_        | `Switch`                  | state of relais _X, X_ in {1,...,8}                                       |
+| commonLSMGroup#relais_X_        | `Switch`                  | state of relais _X, X_ in {1,...,8}                                         |
 
 #### Three phase only channels
 
@@ -159,15 +159,15 @@ These channels are available on the following telemeters:
 
 | Channel                                 | Type                      | Description                                                                       |
 |-----------------------------------------|---------------------------|-----------------------------------------------------------------------------------|
-| threePhasedLSMGroup#irms_X_             | `Number:ElectricCurrent`  | RMS Current on phase _X, X_ in {2,3}                                            |
+| threePhasedLSMGroup#irms_X_             | `Number:ElectricCurrent`  | RMS Current on phase _X, X_ in {2,3}                                              |
 | threePhasedLSMGroup#urms_X_             | `Number:Potential`        | RMS Voltage on phase _X, X_ in {2,3}                                            |
 | threePhasedLSMGroup#umoy_X_             | `Number:Potential`        | Mean Voltage on phase _X, X_ in {2,3}                                           |
 | threePhasedLSMGroup#sinsts_X_           | `Number:Power`            | Instantaneous withdrawn apparent power on phase _X, X_ in {1,2,3}               |
 | threePhasedLSMGroup#smaxsn_X_           | `Number:Power`            | Maximum withdrawn apparent power of the day on phase _X, X_ in {1,2,3}          |
-| commonLSMGroup#umoy_X_Date              | `DateTime`                | Timestamp of UMOY_X_ value, _X_ in {2,3}                                          |
+| commonLSMGroup#umoy_X_Date              | `DateTime`                | Timestamp of UMOY_X_ value, _X_ in {2,3}                                        |
 | threePhasedLSMGroup#smaxsn_X_Minus1     | `Number:Power`            | Maximum withdrawn apparent power on the previous day on phase _X, X_ in {1,2,3} |
-| threePhasedLSMGroup#smaxs_X_nDate       | `DateTime`                | Timestamp of SMAXSN_X_ value, _X_ in {1,2,3}                                      |
-| threePhasedLSMGroup#smaxsn_X_Minus1Date | `DateTime`                | Timestamp of SMAXSN_X_-1 value, _X_ in {1,2,3}                                    |
+| threePhasedLSMGroup#smaxs_X_nDate       | `DateTime`                | Timestamp of SMAXSN_X_ value, _X_ in {1,2,3}                                    |
+| threePhasedLSMGroup#smaxsn_X_Minus1Date | `DateTime`                | Timestamp of SMAXSN_X_-1 value, _X_ in {1,2,3}                                  |
 
 #### Producer only channels
 
@@ -179,7 +179,7 @@ These channels are available on the following telemeters:
 | Channel                           | Type            | Description                                              |
 |-----------------------------------|-----------------|----------------------------------------------------------|
 | producerLSMGroup#eait             | `Number:Energy` | Total active energy injected                             |
-| producerLSMGroup#erq_X_           | `Number:Energy` | Total reactive energy on index _X, X_ in {1,...,4}     |
+| producerLSMGroup#erq_X_           | `Number:Energy` | Total reactive energy on index _X, X_ in {1,...,4}       |
 | producerLSMGroup#sinsti           | `Number:Energy` | Instantaneous injected apparent power                    |
 | producerLSMGroup#smaxin           | `Number:Power`  | Maximum injected apparent power of the day               |
 | producerLSMGroup#smaxinMinus1     | `Number:Power`  | Maximum injected apparent power of the previous day      |
