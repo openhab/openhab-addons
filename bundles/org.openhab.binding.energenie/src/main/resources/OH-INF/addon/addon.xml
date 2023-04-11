@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Energenie Binding</name>
 	<description>This is the binding for Energenie.</description>
-
+	<connection>cloud</connection>
+	
 </addon:addon>
