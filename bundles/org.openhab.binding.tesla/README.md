@@ -28,7 +28,6 @@ Note: Vehicles that are asleep are discovered and put into the Inbox, but their 
 As an effect, their channels are missing until the vehicle wakes up and can be fully queried.
 A vehicle can be manually woken up by opening the Tesla app and checking the vehicle status in there.
 
-
 ## Bridge Configuration
 
 The `account` bridge requires an OAuth2 refresh token as the only parameter `refreshToken`.
@@ -42,7 +41,6 @@ Please note that we in general consider it dangerous to enter your credentials i
 
 When using one of such apps, simply copy and paste the received refresh token into the account configuration.
 
-
 ## Thing Configuration Parameters
 
 The vehicle Thing requires the vehicle's VIN as a configuration parameter `vin`.
@@ -54,8 +52,7 @@ Additionally, the follow optional parameters may be defined.
 | valetpin               | Valet PIN                  | false         | PIN to use when enabling Valet Mode                                          |
 | allowWakeupForCommands | Allow Wake-Up For Commands | false         | Wake up the vehicle to send commands. May cause vehicle to stay awake        |
 
-
-For further flexibility and experimentation, the following advanced parameters may also be set. 
+For further flexibility and experimentation, the following advanced parameters may also be set.
 
 | Parameter Name              | Label                                          | Default Value | Description                                                                                        |
 |-----------------------------|------------------------------------------------|---------------|----------------------------------------------------------------------------------------------------|
@@ -66,12 +63,11 @@ For further flexibility and experimentation, the following advanced parameters m
 | useAdvancedStatesForPolling | Use Console Modes and Occupancy for Inactivity | false         | Use these states to help continue the fast polling of the API                                      |
 
 `allowWakeup` should be used with caution as this determines whether openHAB is allowed to wake up the vehicle in order to retrieve data from it.
-This setting is not recommended as it will result in a significant vampire drain (i.e. energy consumption although the vehicle is parking). 
+This setting is not recommended as it will result in a significant vampire drain (i.e. energy consumption although the vehicle is parking).
 
 `enableEvents` captures and processes data in near real-time for key variables by enabling events streamed by the Tesla back-end system.
 
 `inactivity` setting is ignored and will always be five minutes if homelink is available (car is at home)
-
 
 ## Channels
 
@@ -90,7 +86,6 @@ All vehicles support a huge number of channels - the following list shows the st
 | odometer         | Number:Length      | Odometer           | Odometer of the vehicle                                                                     |
 | speed            | Number:Speed       | Speed              | Vehicle speed                                                                               |
 
-
 Additionally, these advanced channels are available (not all are available on all vehicle types, e.g., the sunroof):
 
 | Channel ID                | Item Type                | Label                         | Description                                                                                                      |
@@ -102,7 +97,7 @@ Additionally, these advanced channels are available (not all are available on al
 | batteryheaternopower      | Switch                   | Battery Heater Power          | Indicates if there is enough power to use the battery heater                                                     |
 | batteryrange              | Number:Length            | Battery Range                 | Range of the battery                                                                                             |
 | calendarenabled           | Switch                   | Calendar Enabled              | Indicates if access to a remote calendar is enabled                                                              |
-| centerdisplay             | Number                   | Central Display State         | Indicates the state of the central display in the vehicle, see [here](https://tesla-api.timdorr.com/vehicle/state/vehiclestate) for valid values |                                                 
+| centerdisplay             | Number                   | Central Display State         | Indicates the state of the central display in the vehicle, see [here](https://tesla-api.timdorr.com/vehicle/state/vehiclestate) for valid values |
 | centerrearseatheater      | Switch                   | Center Rear Seat Heater       | Indicates if the center rear seat heater is switched on                                                          |
 | charge                    | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                                |
 | chargecable               | String                   | Charge Cable                  | Undocumented / To be defined                                                                                     |
@@ -197,13 +192,11 @@ Additionally, these advanced channels are available (not all are available on al
 | wakeup                    | Switch                   | Wake Up                       | Wake up the vehicle from a (deep) sleep                                                                          |
 | wiperbladeheater          | Switch                   | Wiperblade Heater             | Indicates if the wiperblade heater is switched on                                                                |
 
-
-
 ## Example
 
 demo.Things:
 
-```
+```java
 Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
     model3 mycar "My favorite car" [ vin="5YJSA7H25FFP53736"]
 }
@@ -211,7 +204,7 @@ Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
 
 demo.items:
 
-```
+```java
 DateTime            TeslaEventstamp             {channel="model3:myaccount:mycar:eventstamp"}
 String              TeslaState                  {channel="model3:myaccount:mycar:state"}
 Number              TeslaSpeed                  {channel="model3:myaccount:mycar:speed"}
@@ -274,7 +267,7 @@ Number:Temperature  TeslaOutsideTemperature     {channel="model3:myaccount:mycar
 
 demo.sitemap:
 
-```
+```perl
 sitemap main label="Main"
 {
     Text item=TeslaUsableBatteryLevel label="Car" icon="tesla" valuecolor=[<=20="red",>60="green"]
@@ -368,7 +361,7 @@ sitemap main label="Main"
 
 demo.rule (for graphing online status in sitemap above)
 
-```
+```java
 rule "Tesla State Changed"
     when
     Item TeslaState changed
