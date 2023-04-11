@@ -225,14 +225,14 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
         if (cursorArgumentIndex <= 0) {
             return new StringsCompleter(thingRegistry.getAll().stream()
                     .filter(t -> HueBindingConstants.THING_TYPE_BRIDGE.equals(t.getThingTypeUID())
-                            || HueBindingConstants.THING_TYPE_CLIP2.equals(t.getThingTypeUID())
+                            || HueBindingConstants.THING_TYPE_BRIDGE_API2.equals(t.getThingTypeUID())
                             || HueBindingConstants.THING_TYPE_GROUP.equals(t.getThingTypeUID()))
                     .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
                     .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);
             if (thing != null && (HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
-                    || HueBindingConstants.THING_TYPE_CLIP2.equals(thing.getThingTypeUID()))) {
+                    || HueBindingConstants.THING_TYPE_BRIDGE_API2.equals(thing.getThingTypeUID()))) {
                 return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
             } else if (thing != null && HueBindingConstants.THING_TYPE_GROUP.equals(thing.getThingTypeUID())) {
                 return SCENES_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);

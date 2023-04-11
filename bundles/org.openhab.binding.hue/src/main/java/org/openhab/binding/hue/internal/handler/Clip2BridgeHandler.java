@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import static org.openhab.binding.hue.internal.HueBindingConstants.THING_TYPE_CLIP2;
+import static org.openhab.binding.hue.internal.HueBindingConstants.THING_TYPE_BRIDGE_API2;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Clip2BridgeHandler extends BaseBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_CLIP2);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE_API2);
 
     private static final int FAST_SCHEDULE_MILLI_SECONDS = 500;
     private static final int APPLICATION_KEY_MAX_TRIES = 600; // i.e. 300 seconds, 5 minutes

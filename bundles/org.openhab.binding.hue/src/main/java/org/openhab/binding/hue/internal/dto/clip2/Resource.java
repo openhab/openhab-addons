@@ -19,7 +19,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
@@ -217,8 +216,7 @@ public class Resource {
 
     public @Nullable String getBridgeId() {
         String bridgeId = this.bridgeId;
-        return Objects.isNull(bridgeId) || bridgeId.isBlank() ? null
-                : bridgeId + HueBindingConstants.API2_PROPERTY_SUFFIX;
+        return Objects.isNull(bridgeId) || bridgeId.isBlank() ? null : bridgeId;
     }
 
     /**

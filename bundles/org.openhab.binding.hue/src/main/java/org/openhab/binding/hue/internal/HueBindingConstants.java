@@ -130,7 +130,7 @@ public class HueBindingConstants {
     public static final String IP_ADDRESS_MISSING = "missing-ip-address-configuration";
 
     // thing types for API v2
-    public static final ThingTypeUID THING_TYPE_CLIP2 = new ThingTypeUID(BINDING_ID, "bridge-api2");
+    public static final ThingTypeUID THING_TYPE_BRIDGE_API2 = new ThingTypeUID(BINDING_ID, "bridge-api2");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
@@ -154,8 +154,6 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_BATTERY_LOW = "battery-low";
     public static final String CHANNEL_2_ZIGBEE_STATUS = "zigbee-status";
     public static final String CHANNEL_2_LAST_UPDATED = "last-updated";
-
-    public static final String API2_PROPERTY_SUFFIX = " (api2)";
 
     /*
      * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we

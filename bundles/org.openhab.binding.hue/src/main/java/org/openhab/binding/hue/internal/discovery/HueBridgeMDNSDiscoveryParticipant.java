@@ -121,7 +121,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                 String label = String.format("%s (%s)", service.getName(), host);
                 String legacyThingUID = null;
 
-                if (new ThingUID(HueBindingConstants.THING_TYPE_CLIP2, uid.getId()).equals(uid)) {
+                if (new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, uid.getId()).equals(uid)) {
                     Optional<Thing> legacyThingOptional = getLegacyThing(host);
                     if (legacyThingOptional.isPresent()) {
                         Thing legacyThing = legacyThingOptional.get();
@@ -129,8 +129,6 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                         String label2 = legacyThing.getLabel();
                         label = Objects.nonNull(label2) ? label2 : label;
                     }
-                    serial = serial + HueBindingConstants.API2_PROPERTY_SUFFIX;
-                    label = label + HueBindingConstants.API2_PROPERTY_SUFFIX;
                 }
 
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
@@ -170,7 +168,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             id = id.toLowerCase();
             try {
                 return Clip2Bridge.isClip2Supported(service.getHostAddresses()[0])
-                        ? new ThingUID(HueBindingConstants.THING_TYPE_CLIP2, id)
+                        ? new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, id)
                         : new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE, id);
             } catch (IOException e) {
                 // fall through

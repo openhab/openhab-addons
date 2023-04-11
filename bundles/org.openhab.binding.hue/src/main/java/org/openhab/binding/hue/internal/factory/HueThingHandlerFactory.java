@@ -104,7 +104,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
+        if (HueBindingConstants.THING_TYPE_BRIDGE_API2.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
@@ -173,7 +173,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
+        if (HueBindingConstants.THING_TYPE_BRIDGE_API2.equals(thingTypeUID)) {
             return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry,
                     getBundleContext().getBundle(), localeProvider, i18nProvider);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
