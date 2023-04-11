@@ -48,18 +48,17 @@ All devices support some of the following channels:
 |`backgroundColor` | `Color` or `Dimmer`  | This channel supports color control for the ambient light, it is available on `ceiling4`.|
 |`nightlight` | `Switch` | This supports switching to nightlight mode, it is available on `ceiling1` or `ceiling4`.|
 
-
 ## Full Example
 
 Things:
 
-```
+```java
 Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc", duration=1000 ]
 ```
 
 Items:
 
-```
+```java
 Color YeelightLEDColor { channel="yeelight:stripe:1:color" }
 Switch YeelightLEDSwitch { channel="yeelight:stripe:1:color" }
 String YeelightLEDCommand { channel="yeelight:stripe:1:command" }
@@ -67,7 +66,7 @@ String YeelightLEDCommand { channel="yeelight:stripe:1:command" }
 
 Rules:
 
-```
+```java
 rule "Yeelight Custom Command"
 when
         Time is noon

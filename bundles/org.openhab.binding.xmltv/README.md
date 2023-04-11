@@ -1,14 +1,14 @@
 # XmlTV Binding
 
-XMLTV is an XML based file format for describing TV listings. 
-This format is often used by Home Theater software to produce their Electronic Program Guide (http://wiki.xmltv.org/index.php/Main_Page)
+XMLTV is an XML based file format for describing TV listings.
+This format is often used by Home Theater software to produce their Electronic Program Guide (<http://wiki.xmltv.org/index.php/Main_Page>)
 
-The norm allows to separate program display from its building. 
-The building of the XMLTV file itself is taken in charge by so called "grabbers" (http://wiki.xmltv.org/index.php/HowtoUseGrabbers).
+The norm allows to separate program display from its building.
+The building of the XMLTV file itself is taken in charge by so called "grabbers" (<http://wiki.xmltv.org/index.php/HowtoUseGrabbers>).
 
 Some websites provides updated XMLTV files than can be directly downloaded.
 
-Here is a sample for France and Switzerland : https://xmltv.ch/
+Here is a sample for France and Switzerland : <https://xmltv.ch/>
 
 This binding takes an XMLTV file as input and creates a thing for each channel contained in it.
 XmlTV channels are called Media Channels in this binding in order to avoid messing with openHAB Channels.
@@ -74,7 +74,7 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 
 ### xmltv.things
 
-```
+```java
 Bridge xmltv:xmltvfile:france "XmlTV" @ "TV" [filePath="/etc/openhab/scripts/tvguide.xml"]
 {
     Thing channel france2 "France 2" @ "TV" [channelId="C4.api.telerama.fr", offset=0, refresh=60]
@@ -83,6 +83,6 @@ Bridge xmltv:xmltvfile:france "XmlTV" @ "TV" [filePath="/etc/openhab/scripts/tvg
 
 ### xmltv.items
 
-```
+```java
 String france2_title "Titre" {channel="xmltv:channel:france:france2:currentprog#progTitle"}
 ```

@@ -54,14 +54,14 @@ No binding configuration required.
 
 ### demo.things
 
-```
+```java
 Thing windcentrale:mill:geert  [ millId=1 ]
 Thing windcentrale:mill:reiger [ millId=131, wd=3, refreshInterval=60 ]
 ```
 
 ### demo.items
 
-```
+```java
 Group                 gReiger                 "Windcentrale Reiger"              <wind>
 
 Number                ReigerWindSpeed         "Wind speed [%d Bft]"              <wind>  (gReiger) { channel="windcentrale:mill:reiger:windSpeed" }
