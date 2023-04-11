@@ -7,5 +7,6 @@
 	<name>Linky Binding</name>
 	<description>Retrieves your energy consumption data from Enedis website</description>
 	<connection>cloud</connection>
+	<countries>fr</countries>
 
 </addon:addon>
