@@ -62,8 +62,8 @@
 		</config-description>
 	</bridge-type>
 
-	<!-- CLIP 2 Bridge -->
-	<bridge-type id="clip2">
+	<!-- API v2 Bridge -->
+	<bridge-type id="bridge-api2">
 		<label>Hue API v2 Bridge</label>
 		<description>The Hue Bridge represents a Philips Hue Bridge supporting API v2.</description>
 

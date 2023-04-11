@@ -218,7 +218,7 @@ public class Resource {
     public @Nullable String getBridgeId() {
         String bridgeId = this.bridgeId;
         return Objects.isNull(bridgeId) || bridgeId.isBlank() ? null
-                : bridgeId + HueBindingConstants.CLIP2_PROPERTY_SUFFIX;
+                : bridgeId + HueBindingConstants.API2_PROPERTY_SUFFIX;
     }
 
     /**

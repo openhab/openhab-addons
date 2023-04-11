@@ -162,7 +162,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         switch (thingStatus) {
             case CONFIGURATION_ERROR:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.clip2.conf-error-press-pairing-button");
+                        "@text/offline.api2.conf-error-press-pairing-button");
                 if (applKeyRetriesRemaining > 0) {
                     try {
                         registerApplicationKey();
@@ -174,14 +174,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                                 "@text/offline.communication-error");
                     } catch (IllegalStateException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "@text/offline.clip2.conf-error-read-only");
+                                "@text/offline.api2.conf-error-read-only");
                     } catch (AssetNotLoadedException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                                "@text/offline.clip2.conf-error-assets-not-loaded");
+                                "@text/offline.api2.conf-error-assets-not-loaded");
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.clip2.conf-error-creation-applicationkey");
+                            "@text/offline.api2.conf-error-creation-applicationkey");
                 }
                 break;
 
@@ -193,7 +193,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             case BRIDGE_UNINITIALIZED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "@text/offline.clip2.conf-error-assets-not-loaded");
+                        "@text/offline.api2.conf-error-assets-not-loaded");
                 break;
 
             case NONE:
@@ -394,7 +394,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 if (!Clip2Bridge.isClip2Supported(ipAddress)) {
                     logger.warn("initializeAssets() hub does not support clip 2");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.clip2.conf-error-clip2-not-supported");
+                            "@text/offline.api2.conf-error-clip2-not-supported");
                     return;
                 }
             } catch (IOException e) {
@@ -409,7 +409,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.clip2.conf-error-certificate-load");
+                        "@text/offline.api2.conf-error-certificate-load");
                 return;
             }
 
@@ -623,11 +623,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         } catch (AssetNotLoadedException e) {
             logger.debug("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.clip2.conf-error-assets-not-loaded");
+                    "@text/offline.api2.conf-error-assets-not-loaded");
         } catch (HttpUnauthorizedException e) {
             logger.debug("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.clip2.conf-error-access_denied");
+                    "@text/offline.api2.conf-error-access_denied");
         }
     }
 

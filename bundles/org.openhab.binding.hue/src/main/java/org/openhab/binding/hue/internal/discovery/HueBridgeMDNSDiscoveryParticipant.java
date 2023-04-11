@@ -129,8 +129,8 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                         String label2 = legacyThing.getLabel();
                         label = Objects.nonNull(label2) ? label2 : label;
                     }
-                    serial = serial + HueBindingConstants.CLIP2_PROPERTY_SUFFIX;
-                    label = label + HueBindingConstants.CLIP2_PROPERTY_SUFFIX;
+                    serial = serial + HueBindingConstants.API2_PROPERTY_SUFFIX;
+                    label = label + HueBindingConstants.API2_PROPERTY_SUFFIX;
                 }
 
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //

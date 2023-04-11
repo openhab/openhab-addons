@@ -245,19 +245,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         getCachedResource(ResourceType.LIGHT));
                 break;
 
-            case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE_ABS:
+            case HueBindingConstants.CHANNEL_2_COLOR_TEMP_KELVIN:
                 putResource = new Resource(lightResourceType).setColorTemperatureKelvin(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_COLOR:
+            case HueBindingConstants.CHANNEL_2_COLOR:
                 putResource = new Resource(lightResourceType).setColor(command, getCachedResource(ResourceType.LIGHT));
                 break;
 
-            case HueBindingConstants.CHANNEL_BRIGHTNESS:
+            case HueBindingConstants.CHANNEL_2_BRIGHTNESS:
                 putResource = new Resource(lightResourceType).setBrightness(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_SWITCH:
+            case HueBindingConstants.CHANNEL_2_SWITCH:
                 putResource = new Resource(lightResourceType).setSwitch(command);
                 break;
 
@@ -273,7 +273,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_SCENE:
+            case HueBindingConstants.CHANNEL_2_SCENE:
                 if (command instanceof StringType) {
                     putResourceId = sceneCommandResourceIds.get(((StringType) command).toString());
                     if (Objects.nonNull(putResourceId)) {
@@ -313,7 +313,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (Objects.isNull(resourceId) || resourceId.isEmpty()) {
             logger.debug("initialize() configuration resourceId is bad");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.clip2.conf-error-resource-id-bad");
+                    "@text/offline.api2.conf-error-resource-id-bad");
             return;
         }
         thisResource.setId(resourceId);
@@ -449,14 +449,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case LIGHT:
                 updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE, resource.getColorTemperaturePercentState(),
                         fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE_ABS,
-                        resource.getColorTemperatureKelvinState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_COLOR, resource.getColorState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMP_KELVIN, resource.getColorTemperatureKelvinState(),
+                        fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_COLOR, resource.getColorState(), fullUpdate);
                 // fall through for brightness and switch channels
 
             case GROUPED_LIGHT:
-                updateState(HueBindingConstants.CHANNEL_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_SWITCH, resource.getSwitch(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_SWITCH, resource.getSwitch(), fullUpdate);
                 break;
 
             case LIGHT_LEVEL:
@@ -477,7 +477,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case TEMPERATURE:
-                updateState(HueBindingConstants.CHANNEL_TEMPERATURE, resource.getTemperatureState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_TEMPERATURE, resource.getTemperatureState(), fullUpdate);
                 updateState(HueBindingConstants.CHANNEL_2_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
@@ -514,7 +514,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (hasConnectivityIssue) {
                 if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/offline.clip2.communication-error.zigbee-connectivity-issue");
+                            "@text/offline.api2.comm-error.zigbee-connectivity-issue");
                     // change all channel states, except the Zigbee channel itself, to undefined
                     for (String channelId : supportedChannelIds) {
                         if (!HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS.equals(channelId)) {
@@ -570,7 +570,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             } catch (AssetNotLoadedException e) {
                 logger.debug("updateDependencies() {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.clip2.conf-error-assets-not-loaded");
+                        "@text/offline.api2.conf-error-assets-not-loaded");
             }
         }
     }

@@ -3,93 +3,93 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- CLIP 2 device thing -->
+	<!-- API v2 device thing -->
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="clip2"/>
+			<bridge-type-ref id="bridge-api2"/>
 		</supported-bridge-type-refs>
 
 		<label>Hue Device</label>
 		<description>A Hue API v2 device with channels depending on its actual capabilities.</description>
 
 		<channels>
-			<channel id="brightness" typeId="lightBrightness"/>
+			<channel id="brightness" typeId="light-brightness"/>
 			<channel id="color" typeId="system.color"/>
-			<channel id="colorTemperature" typeId="system.color-temperature"/>
-			<channel id="colorTemperatureAbs" typeId="system.color-temperature-abs"/>
-			<channel id="switch" typeId="lightSwitch"/>
-			<channel id="buttonLastEvent" typeId="buttonLastEvent"/>
-			<channel id="rotarySteps" typeId="rotarySteps"/>
+			<channel id="color-temperature" typeId="system.color-temperature"/>
+			<channel id="color-temp-kelvin" typeId="system.color-temperature-abs"/>
+			<channel id="switch" typeId="light-switch"/>
+			<channel id="button-last-event" typeId="button-last-event"/>
+			<channel id="rotary-steps" typeId="rotary-steps"/>
 			<channel id="motion" typeId="system.motion"/>
-			<channel id="motionEnabled" typeId="motionEnabled"/>
-			<channel id="lightLevel" typeId="light_level"/>
-			<channel id="lightLevelEnabled" typeId="lightLevelEnabled"/>
+			<channel id="motion-enabled" typeId="motion-enabled"/>
+			<channel id="light-level" typeId="light_level"/>
+			<channel id="light-level-enabled" typeId="light-level-enabled"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="temperatureEnabled" typeId="temperatureEnabled"/>
-			<channel id="batteryLevel" typeId="system.battery-level"/>
-			<channel id="batteryLow" typeId="system.low-battery"/>
-			<channel id="zigbeeStatus" typeId="zigbeeStatus"/>
-			<channel id="lastUpdated" typeId="last_updated"/>
+			<channel id="temperature-enabled" typeId="temperature-enabled"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="battery-low" typeId="system.low-battery"/>
+			<channel id="zigbee-status" typeId="zigbee-status"/>
+			<channel id="last-updated" typeId="thing-last-updated"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
 
 		<config-description>
 			<parameter name="resourceId" type="text" required="true">
-				<label>Resource Id</label>
-				<description>Unique Resource Id of the device in the Hue bridge</description>
+				<label>Resource ID</label>
+				<description>Unique Resource ID of the device in the Hue bridge</description>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<!-- CLIP 2 room thing -->
+	<!-- API v2 room thing -->
 	<thing-type id="room">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="clip2"/>
+			<bridge-type-ref id="bridge-api2"/>
 		</supported-bridge-type-refs>
 
 		<label>Hue Room Light Group</label>
 		<description>A group of Hue API v2 lights that are located in a single room.</description>
 
 		<channels>
-			<channel id="brightness" typeId="groupBrightness"/>
-			<channel id="switch" typeId="groupSwitch"/>
-			<channel id="scene" typeId="groupScene"/>
+			<channel id="brightness" typeId="group-brightness"/>
+			<channel id="switch" typeId="group-switch"/>
+			<channel id="scene" typeId="group-scene"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
 
 		<config-description>
 			<parameter name="resourceId" type="text" required="true">
-				<label>Resource Id</label>
-				<description>Unique Resource Id of the room in the Hue bridge</description>
+				<label>Resource ID</label>
+				<description>Unique Resource ID of the room in the Hue bridge</description>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<!-- CLIP 2 zone thing -->
+	<!-- API v2 zone thing -->
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="clip2"/>
+			<bridge-type-ref id="bridge-api2"/>
 		</supported-bridge-type-refs>
 
 		<label>Hue Zone Light Group</label>
 		<description>A group of Hue API v2 lights that are located in a zone.</description>
 
 		<channels>
-			<channel id="brightness" typeId="groupBrightness"/>
-			<channel id="switch" typeId="groupSwitch"/>
-			<channel id="scene" typeId="groupScene"/>
+			<channel id="brightness" typeId="group-brightness"/>
+			<channel id="switch" typeId="group-switch"/>
+			<channel id="scene" typeId="group-scene"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
 
 		<config-description>
 			<parameter name="resourceId" type="text" required="true">
-				<label>Resource Id</label>
-				<description>Unique Resource Id of the zone in the Hue bridge</description>
+				<label>Resource ID</label>
+				<description>Unique Resource ID of the zone in the Hue bridge</description>
 			</parameter>
 		</config-description>
 

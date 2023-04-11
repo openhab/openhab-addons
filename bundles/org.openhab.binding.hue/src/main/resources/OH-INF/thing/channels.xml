@@ -6,7 +6,7 @@
 	<channel-type id="last_updated">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
-		<description>The date and time when the thing was last updated.</description>
+		<description>The date and time when the sensor was last updated.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -183,35 +183,35 @@
 	</channel-type>
 
 	<!-- CLIP 2 Channels -->
-	<channel-type id="buttonLastEvent">
+	<channel-type id="button-last-event">
 		<item-type>Number</item-type>
 		<label>Button Last Event</label>
 		<description>Numeric code (e.g. 1003) representing the last push button event.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="motionEnabled">
+	<channel-type id="motion-enabled">
 		<item-type>Switch</item-type>
 		<label>Motion Enabled</label>
 		<description>Motion detector enabled.</description>
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="lightLevelEnabled">
+	<channel-type id="light-level-enabled">
 		<item-type>Switch</item-type>
 		<label>Light Level Enabled</label>
 		<description>Light level sensor enabled.</description>
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="temperatureEnabled">
+	<channel-type id="temperature-enabled">
 		<item-type>Switch</item-type>
 		<label>Temperature Sensor Enabled</label>
 		<description>Temperature sensor enabled.</description>
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="zigbeeStatus">
+	<channel-type id="zigbee-status">
 		<item-type>String</item-type>
 		<label>Zigbee Status</label>
 		<description>Zigbee connection status.</description>
@@ -226,46 +226,54 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="rotarySteps">
+	<channel-type id="rotary-steps">
 		<item-type>Number</item-type>
 		<label>Rotary Steps</label>
 		<description>The last 'steps' value (e.g. +/-30) of a rotary dial.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lightSwitch">
+	<channel-type id="light-switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Switch the light on/off.</description>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="lightBrightness">
+	<channel-type id="light-brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Adjust the brightness of the light.</description>
 		<category>Light</category>
 	</channel-type>
 
-	<channel-type id="groupSwitch">
+	<channel-type id="group-switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Switch on/off all the lights in the zone or room.</description>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="groupBrightness">
+	<channel-type id="group-brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Adjust the brightness of all the lights in the zone or room.</description>
 		<category>Light</category>
 	</channel-type>
 
-	<channel-type id="groupScene">
+	<channel-type id="group-scene">
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<description>Activate the scene for the lights in the zone or room.</description>
 		<category>MediaControl</category>
+	</channel-type>
+
+	<channel-type id="thing-last-updated">
+		<item-type>DateTime</item-type>
+		<label>Last Updated</label>
+		<description>The date and time when the thing was last updated.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 </thing:thing-descriptions>

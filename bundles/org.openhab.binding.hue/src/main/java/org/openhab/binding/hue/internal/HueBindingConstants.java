@@ -109,7 +109,7 @@ public class HueBindingConstants {
     public static final String FADETIME = "fadetime";
     public static final String GROUP_ID = "groupId";
 
-    // property names for CLIP 2
+    // property names for API v2
     public static final String PROPERTY_RESOURCE_ID = "resourceId";
     public static final String PROPERTY_RESOURCE_TYPE = "resourceType";
     public static final String PROPERTY_RESOURCE_NAME = "resourceName";
@@ -129,47 +129,52 @@ public class HueBindingConstants {
     // Config status messages
     public static final String IP_ADDRESS_MISSING = "missing-ip-address-configuration";
 
-    // thing types for CLIP 2
-    public static final ThingTypeUID THING_TYPE_CLIP2 = new ThingTypeUID(BINDING_ID, "clip2");
+    // thing types for API v2
+    public static final ThingTypeUID THING_TYPE_CLIP2 = new ThingTypeUID(BINDING_ID, "bridge-api2");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
 
-    // channels for CLIP 2
-    public static final String CHANNEL_2_BATTERY_LEVEL = "batteryLevel";
-    public static final String CHANNEL_2_BATTERY_LOW = "batteryLow";
-    public static final String CHANNEL_2_BUTTON_LAST_EVENT = "buttonLastEvent";
-    public static final String CHANNEL_2_COLOR_TEMPERATURE = "colorTemperature";
-    public static final String CHANNEL_2_COLOR_TEMPERATURE_ABS = "colorTemperatureAbs";
-    public static final String CHANNEL_2_LAST_UPDATED = "lastUpdated";
-    public static final String CHANNEL_2_LIGHT_LEVEL = "lightLevel";
-    public static final String CHANNEL_2_LIGHT_LEVEL_ENABLED = "lightLevelEnabled";
+    // channels for API v2
+    public static final String CHANNEL_2_BRIGHTNESS = CHANNEL_BRIGHTNESS;
+    public static final String CHANNEL_2_COLOR = CHANNEL_COLOR;
+    public static final String CHANNEL_2_SWITCH = CHANNEL_SWITCH;
+    public static final String CHANNEL_2_SCENE = CHANNEL_SCENE;
+    public static final String CHANNEL_2_COLOR_TEMPERATURE = "color-temperature";
+    public static final String CHANNEL_2_COLOR_TEMP_KELVIN = "color-temp-kelvin";
+    public static final String CHANNEL_2_BUTTON_LAST_EVENT = "button-last-event";
+    public static final String CHANNEL_2_ROTARY_STEPS = "rotary-steps";
     public static final String CHANNEL_2_MOTION = "motion";
-    public static final String CHANNEL_2_MOTION_ENABLED = "motionEnabled";
-    public static final String CHANNEL_2_ROTARY_STEPS = "rotarySteps";
-    public static final String CHANNEL_2_TEMPERATURE_ENABLED = "temperatureEnabled";
-    public static final String CHANNEL_2_ZIGBEE_STATUS = "zigbeeStatus";
+    public static final String CHANNEL_2_MOTION_ENABLED = "motion-enabled";
+    public static final String CHANNEL_2_LIGHT_LEVEL = "light-level";
+    public static final String CHANNEL_2_LIGHT_LEVEL_ENABLED = "light-level-enabled";
+    public static final String CHANNEL_2_TEMPERATURE = CHANNEL_TEMPERATURE;
+    public static final String CHANNEL_2_TEMPERATURE_ENABLED = "temperature-enabled";
+    public static final String CHANNEL_2_BATTERY_LEVEL = "battery-level";
+    public static final String CHANNEL_2_BATTERY_LOW = "battery-low";
+    public static final String CHANNEL_2_ZIGBEE_STATUS = "zigbee-status";
+    public static final String CHANNEL_2_LAST_UPDATED = "last-updated";
 
-    public static final String CLIP2_PROPERTY_SUFFIX = " (api2)";
+    public static final String API2_PROPERTY_SUFFIX = " (api2)";
 
     /*
      * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we
      * should try to replicate the channel/item links from the v1 channel into the respective v2 channel.
      */
     public static final Map<String, String> REPLICATE_CHANNEL_ID_MAP = Stream.of(new String[][] { //
-            { CHANNEL_BRIGHTNESS, CHANNEL_BRIGHTNESS }, //
-            { CHANNEL_COLOR, CHANNEL_COLOR }, //
+            { CHANNEL_BRIGHTNESS, CHANNEL_2_BRIGHTNESS }, //
+            { CHANNEL_COLOR, CHANNEL_2_COLOR }, //
+            { CHANNEL_SWITCH, CHANNEL_2_SWITCH }, //
+            { CHANNEL_SCENE, CHANNEL_2_SCENE }, //
             { CHANNEL_COLORTEMPERATURE, CHANNEL_2_COLOR_TEMPERATURE }, //
-            { CHANNEL_COLORTEMPERATURE_ABS, CHANNEL_2_COLOR_TEMPERATURE_ABS }, //
-            { CHANNEL_SWITCH, CHANNEL_SWITCH }, //
+            { CHANNEL_COLORTEMPERATURE_ABS, CHANNEL_2_COLOR_TEMP_KELVIN }, //
             { CHANNEL_DIMMER_SWITCH, CHANNEL_2_BUTTON_LAST_EVENT }, //
             { CHANNEL_LIGHT_LEVEL, CHANNEL_2_LIGHT_LEVEL }, //
             { CHANNEL_PRESENCE, CHANNEL_2_MOTION }, //
-            { CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE }, //
+            { CHANNEL_TEMPERATURE, CHANNEL_2_TEMPERATURE }, //
             { CHANNEL_BATTERY_LEVEL, CHANNEL_2_BATTERY_LEVEL }, //
             { CHANNEL_BATTERY_LOW, CHANNEL_2_BATTERY_LOW }, //
-            { CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED }, //
-            { CHANNEL_SCENE, CHANNEL_SCENE }, //
+            { CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED } //
     }).collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all_lights.label";

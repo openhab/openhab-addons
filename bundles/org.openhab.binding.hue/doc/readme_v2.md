@@ -63,28 +63,28 @@ Device things support some of the following channels:
 | switch              | Switch             | This channel supports switching the device on and off.                                |
 | color               | Color              | This channel supports full color control with hue, saturation and brightness values.  |
 | brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
-| colorTemperature    | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).  |
-| colorTemperatureAbs | Number:Temperature | This channel supports adjusting the color temperature in Kelvin.                      |
-| buttonLastEvent     | Number             | This channel shows which button was last pressed in the device.                       |
-| rotarySteps         | Number             | This channel shows the number of rotary steps of the last rotary dial movement.       |
+| color-temperature   | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).  |
+| color-temp-kelvin   | Number:Temperature | This channel supports adjusting the color temperature in Kelvin.                      |
+| button-last-event   | Number             | This channel shows which button was last pressed in the device.                       |
+| rotary-steps        | Number             | This channel shows the number of rotary steps of the last rotary dial movement.       |
 | motion              | Switch             | This channel shows if motion has been detected by the sensor.                         |
-| motionEnabled       | Switch             | This channel supports enabling / disabling the motion sensor.                         |
-| lightLevel          | Number             | This channel shows the current light level measured by the sensor.                    |
-| lightLevelEnabled   | Switch             | This channel supports enabling / disabling the light level sensor.                    |
+| motion-enabled      | Switch             | This channel supports enabling / disabling the motion sensor.                         |
+| light-level         | Number             | This channel shows the current light level measured by the sensor.                    |
+| light-level-enabled | Switch             | This channel supports enabling / disabling the light level sensor.                    |
 | temperature         | Number:Temperature | This channel shows the current temperature measured by the sensor.                    |
-| temperatureEnabled  | Switch             | This channel supports enabling / disabling the temperature sensor.                    |
-| lastUpdated         | DateTime           | This channel the date and time when the thing state was last updated.                 |
-| batteryLevel        | Number             | This channel shows the battery level.                                                 |
-| batteryLow          | Switch             | This channel indicates whether the battery is low or not.                             |
-| zigbeeStatus        | String             | This channel provides information about the status of the Zigbee connection.          |
+| temperature-enabled | Switch             | This channel supports enabling / disabling the temperature sensor.                    |
+| battery-level       | Number             | This channel shows the battery level.                                                 |
+| battery-low         | Switch             | This channel indicates whether the battery is low or not.                             |
+| zigbee-status       | String             | This channel provides information about the status of the Zigbee connection.          |
+| last-updated        | DateTime           | This channel the date and time when the thing state was last updated.                 |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
 
-The `zigbeeStatus` indicates the connectivity state of the device.
+The `zigbee-status` indicates the connectivity state of the device.
 If the device has connectivity issues, the thing state will change to 'OFFLINE'
 
-The `buttonLastEvent` channel value is a number that is calculated from the following formula:
+The `button-last-event` channel value is a number that is calculated from the following formula:
 
 ```text
 value = (button_id * 1000) + event_id;
@@ -103,7 +103,7 @@ The `event_id` can have the following values:
 
 So (for example) the channel value `1002` ((1 * 1000) + 2) means that the second button in the device had a short release event.
 
-The `rotarySteps` channel value is the number of steps corresponding to the last movement of a rotary dial.
+The `rotary-steps` channel value is the number of steps corresponding to the last movement of a rotary dial.
 A positive number means the dial was rotated clock-wise, whereas a negative number means it was roated counter-clockwise.
 
 ### Channels for Rooms and Zones
@@ -161,8 +161,8 @@ Color Living_Room_Standard_Lamp_Left_Colour "Living Room Standard Lamp Left Colo
 Dimmer Living_Room_Standard_Lamp_Left_Brightness "Living Room Standard Lamp Left Brightness [%.0f %%]" {channel="hue:device:g24:11111111-2222-3333-4444-555555555555:brightness"}
 Switch Living_Room_Standard_Lamp_Left_Switch "Living Room Standard Lamp Left Switch" (g_Lights_On_Count) {channel="hue:device:g24:11111111-2222-3333-4444-555555555555:switch"}
 
-Number Kitchen_Wallplate_Switch_Last_Event "Kitchen Wallplate Switch Last Event" {channel="hue:device:g24:11111111-2222-3333-4444-666666666666:buttonLastEvent"}
-Switch Kitchen_Wallplate_Switch_Battery_Low_Alarm "Kitchen Wallplate Switch Battery Low Alarm" {channel="hue:device:g24:11111111-2222-3333-4444-666666666666:batteryLow"}
+Number Kitchen_Wallplate_Switch_Last_Event "Kitchen Wallplate Switch Last Event" {channel="hue:device:g24:11111111-2222-3333-4444-666666666666:button-last-event"}
+Switch Kitchen_Wallplate_Switch_Battery_Low_Alarm "Kitchen Wallplate Switch Battery Low Alarm" {channel="hue:device:g24:11111111-2222-3333-4444-666666666666:battery-low"}
 ```
 
 ### demo.sitemap:
