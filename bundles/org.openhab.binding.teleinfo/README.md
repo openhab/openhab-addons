@@ -160,14 +160,14 @@ These channels are available on the following telemeters:
 | Channel                                 | Type                      | Description                                                                       |
 |-----------------------------------------|---------------------------|-----------------------------------------------------------------------------------|
 | threePhasedLSMGroup#irms_X_             | `Number:ElectricCurrent`  | RMS Current on phase _X, X_ in {2,3}                                              |
-| threePhasedLSMGroup#urms_X_             | `Number:Potential`        | RMS Voltage on phase _X, X_ in {2,3}                                            |
-| threePhasedLSMGroup#umoy_X_             | `Number:Potential`        | Mean Voltage on phase _X, X_ in {2,3}                                           |
-| threePhasedLSMGroup#sinsts_X_           | `Number:Power`            | Instantaneous withdrawn apparent power on phase _X, X_ in {1,2,3}               |
-| threePhasedLSMGroup#smaxsn_X_           | `Number:Power`            | Maximum withdrawn apparent power of the day on phase _X, X_ in {1,2,3}          |
-| commonLSMGroup#umoy_X_Date              | `DateTime`                | Timestamp of UMOY_X_ value, _X_ in {2,3}                                        |
-| threePhasedLSMGroup#smaxsn_X_Minus1     | `Number:Power`            | Maximum withdrawn apparent power on the previous day on phase _X, X_ in {1,2,3} |
-| threePhasedLSMGroup#smaxs_X_nDate       | `DateTime`                | Timestamp of SMAXSN_X_ value, _X_ in {1,2,3}                                    |
-| threePhasedLSMGroup#smaxsn_X_Minus1Date | `DateTime`                | Timestamp of SMAXSN_X_-1 value, _X_ in {1,2,3}                                  |
+| threePhasedLSMGroup#urms_X_             | `Number:Potential`        | RMS Voltage on phase _X, X_ in {2,3}                                              |
+| threePhasedLSMGroup#umoy_X_             | `Number:Potential`        | Mean Voltage on phase _X, X_ in {2,3}                                             |
+| threePhasedLSMGroup#sinsts_X_           | `Number:Power`            | Instantaneous withdrawn apparent power on phase _X, X_ in {1,2,3}                 |
+| threePhasedLSMGroup#smaxsn_X_           | `Number:Power`            | Maximum withdrawn apparent power of the day on phase _X, X_ in {1,2,3}            |
+| commonLSMGroup#umoy_X_Date              | `DateTime`                | Timestamp of UMOY_X_ value, _X_ in {2,3}                                          |
+| threePhasedLSMGroup#smaxsn_X_Minus1     | `Number:Power`            | Maximum withdrawn apparent power on the previous day on phase _X, X_ in {1,2,3}   |
+| threePhasedLSMGroup#smaxs_X_nDate       | `DateTime`                | Timestamp of SMAXSN_X_ value, _X_ in {1,2,3}                                      |
+| threePhasedLSMGroup#smaxsn_X_Minus1Date | `DateTime`                | Timestamp of SMAXSN_X_-1 value, _X_ in {1,2,3}                                    |
 
 #### Producer only channels
 
