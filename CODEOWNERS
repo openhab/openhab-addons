@@ -363,7 +363,7 @@
 /bundles/org.openhab.binding.vigicrues/ @clinique
 /bundles/org.openhab.binding.vitotronic/ @steand
 /bundles/org.openhab.binding.vizio/ @mlobstein
-/bundles/org.openhab.binding.volvooncall/ @clinique @Jamstah
+/bundles/org.openhab.binding.volvooncall/ @Jamstah
 /bundles/org.openhab.binding.warmup/ @jamesmelville
 /bundles/org.openhab.binding.weathercompany/ @mhilbush
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo

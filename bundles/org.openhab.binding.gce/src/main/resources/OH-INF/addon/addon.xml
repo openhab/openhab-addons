@@ -7,5 +7,5 @@
 	<name>GCE Electronics Binding</name>
 	<description>Provides access to IPX800 PLC build by GCE.</description>
 	<connection>local</connection>
-    
+
 </addon:addon>
