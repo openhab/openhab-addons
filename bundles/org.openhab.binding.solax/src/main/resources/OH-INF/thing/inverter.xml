@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="inverter">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="localConnect"/>
+		</supported-bridge-type-refs>
+
+		<label>Default Inverter Label</label>
+		<description>The inverter representation in OpenHAB</description>
+
+		<channels>
+			<channel id="inverterOutputPower" typeId="system.electric-power"/>
+			<channel id="inverterCurrent" typeId="system.electric-current"/>
+			<channel id="inverterVoltage" typeId="system.electric-voltage"/>
+			<channel id="inverterFrequency" typeId="frequency"/>
+
+			<channel id="pv1Voltage" typeId="system.electric-voltage"/>
+			<channel id="pv2Voltage" typeId="system.electric-voltage"/>
+			<channel id="pv1Current" typeId="system.electric-current"/>
+			<channel id="pv2Current" typeId="system.electric-current"/>
+			<channel id="pv1Power" typeId="system.electric-power"/>
+			<channel id="pv2Power" typeId="system.electric-power"/>
+			<channel id="pvTotalPower" typeId="system.electric-power"/>
+			<channel id="pvTotalCurrent" typeId="system.electric-current"/>
+
+			<channel id="batteryPower" typeId="system.electric-power"/>
+			<channel id="batteryCurrent" typeId="system.electric-current"/>
+			<channel id="batteryVoltage" typeId="system.electric-voltage"/>
+			<channel id="batteryTemperature" typeId="battery-temperature"/>
+			<channel id="batteryStateOfCharge" typeId="system.battery-level"/>
+
+			<channel id="feedInPower" typeId="system.electric-power"/>
+
+			<channel id="lastUpdateTime" typeId="lastRetrieveTimeStamp"/>
+
+			<channel id="rawData" typeId="rawDataType"/>
+
+			<channel id="onGridTotalYield" typeId="system.electric-power"/>
+			<channel id="onGridDailyYield" typeId="system.electric-power"/>
+			<channel id="onTotalFeedinEnergy" typeId="system.electric-power"/>
+		</channels>
+
+		<properties>
+			<property name="inverterType"/>
+			<property name="serialWifi"/>
+		</properties>
+
+	</thing-type>
+</thing:thing-descriptions>

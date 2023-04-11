@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="localConnect">
+		<label>Solax Local Wifi bridge</label>
+		<description>Solax direct connect to the local Wifi bridge</description>
+
+		<config-description>
+			<parameter name="refresh" type="integer" min="1" max="600">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for accessing the Wifi module (the serial number of the wifi)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<label>Network Address</label>
+				<description>IP address or host name of the wifi</description>
+				<context>network-address</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

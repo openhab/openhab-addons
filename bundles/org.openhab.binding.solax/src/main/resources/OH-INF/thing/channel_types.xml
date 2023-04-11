@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="frequency">
+		<item-type>Number</item-type>
+		<label>Electric frequency</label>
+		<description>Electric Frequency</description>
+	</channel-type>
+	<channel-type id="battery-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<description>Battery Temperature</description>
+	</channel-type>
+	<channel-type id="lastRetrieveTimeStamp">
+		<item-type>DateTime</item-type>
+		<label>Last retrieve time stamp</label>
+		<description>Last time with a successful retrieval of data</description>
+	</channel-type>
+	<channel-type id="rawDataType">
+		<item-type>String</item-type>
+		<label>Raw Data</label>
+		<description>Raw data retrieved from system as JSON</description>
+	</channel-type>
+
+</thing:thing-descriptions>
