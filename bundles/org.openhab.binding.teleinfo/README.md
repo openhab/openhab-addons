@@ -119,7 +119,7 @@ The following channels are available on all Linky telemeters in standard TIC mod
 | commonLSMGroup#ngtf             | `String`                  | Provider schedule name                                                      |
 | commonLSMGroup#ltarf            | `String`                  | Current pricing label                                                       |
 | commonLSMGroup#east             | `Number:Energy`           | Total active energy withdrawn                                               |
-| commonLSMGroup#easf_XX_         | `Number:Energy`           | Active energy withdrawn from provider on index _XX, XX_ in {01,...,10}    |
+| commonLSMGroup#easf_XX_         | `Number:Energy`           | Active energy withdrawn from provider on index _XX, XX_ in {01,...,10}      |
 | commonLSMGroup#easd_XX_         | `Number:Energy`           | Active energy withdrawn from distributor on index _XX, XX_ in {01,...,04} |
 | commonLSMGroup#irms1            | `Number:ElectricCurrent`  | RMS Current on phase 1                                                      |
 | commonLSMGroup#urms1            | `Number:Potential`        | RMS Voltage on phase 1                                                      |
