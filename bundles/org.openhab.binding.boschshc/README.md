@@ -7,7 +7,7 @@ Binding for the Bosch Smart Home.
     - [In-Wall Switch](#in-wall-switch)
     - [Compact Smart Plug](#compact-smart-plug)
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
-    - [Door/Window Contact](#doorwindow-contact)
+    - [Door/Window Contact](#door-window-contact)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
     - [Thermostat](#thermostat)
@@ -116,6 +116,7 @@ Radiator thermostat
 | temperature           | Number:Temperature   | &#9744;  | Current measured temperature.                  |
 | valve-tappet-position | Number:Dimensionless | &#9744;  | Current open ratio of valve tappet (0 to 100). |
 | child-lock            | Switch               | &#9745;  | Indicates if child lock is active.             |
+| silent-mode           | Switch               | &#9745;  | Enables or disables silent mode on thermostats. When enabled, the battery usage is higher. |
 | battery-level         | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery           | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
@@ -193,7 +194,7 @@ A smart bulb connected to the bridge via Zigbee such as a Ledvance Smart+ bulb.
 | brightness      | Dimmer    | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
 | color           | Color     | &#9745;  | The color of the emitted light.                                |
 
-### Smoke detector
+### Smoke Detector
 
 The smoke detector warns you in case of fire.
 
