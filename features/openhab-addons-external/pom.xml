@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
-    <version>3.4.3-SNAPSHOT</version>
+    <version>3.4.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
