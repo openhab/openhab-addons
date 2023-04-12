@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="windcentrale"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Windcentrale Account</label>
+		<description>An account for using the Windcentrale API</description>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>
