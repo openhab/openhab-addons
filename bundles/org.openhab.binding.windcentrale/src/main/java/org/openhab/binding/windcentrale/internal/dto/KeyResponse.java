@@ -10,30 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.windcentrale.internal.config;
+package org.openhab.binding.windcentrale.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The configuration of a Mill thing.
+ * Provides the details required for getting tokens using SRP from the Windcentrale Cognito user pool.
  *
- * @author Wouter Born - Initial contribution, add Mill configuration object
+ * @see https://mijn.windcentrale.nl/api/v0/labels/key?domain=mijn.windcentrale.nl
+ *
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
-public class MillConfig {
+public class KeyResponse {
 
-    /**
-     * Windmill identifier
-     */
-    public int millId = 1;
-
-    /**
-     * Refresh interval for refreshing the data in seconds
-     */
-    public int refreshInterval = 30;
-
-    /**
-     * Number of wind shares ("Winddelen")
-     */
-    public int wd = 1;
+    public String clientId = "";
+    public String region = "";
+    public String userPoolId = "";
 }
