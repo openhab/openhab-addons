@@ -367,7 +367,7 @@
 /bundles/org.openhab.binding.webthing/ @grro
 /bundles/org.openhab.binding.wemo/ @hmerk @jlaur
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
-/bundles/org.openhab.binding.windcentrale/ @marcelrv
+/bundles/org.openhab.binding.windcentrale/ @marcelrv @wborn
 /bundles/org.openhab.binding.wlanthermo/ @CSchlipp
 /bundles/org.openhab.binding.wled/ @Skinah
 /bundles/org.openhab.binding.wolfsmartset/ @BoBiene

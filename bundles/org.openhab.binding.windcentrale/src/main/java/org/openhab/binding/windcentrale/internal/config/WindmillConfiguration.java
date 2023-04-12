@@ -15,17 +15,18 @@ package org.openhab.binding.windcentrale.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The configuration of a Mill thing.
+ * The configuration of a Windcentrale windmill thing.
  *
  * @author Wouter Born - Initial contribution, add Mill configuration object
+ * @author Wouter Born - Add support for new API with authentication
  */
 @NonNullByDefault
-public class MillConfig {
+public class WindmillConfiguration {
 
     /**
-     * Windmill identifier
+     * Windmill name
      */
-    public int millId = 1;
+    public String name = "";
 
     /**
      * Refresh interval for refreshing the data in seconds
@@ -35,5 +36,5 @@ public class MillConfig {
     /**
      * Number of wind shares ("Winddelen")
      */
-    public int wd = 1;
+    public int shares = 1;
 }
