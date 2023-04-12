@@ -140,17 +140,17 @@ public abstract class TapoDevice extends BaseThingHandler {
 
         /* check bridge */
         if (bridge == null || !(bridge instanceof TapoBridgeHandler)) {
-            configErr.raiseError(ERR_NO_BRIDGE);
+            configErr.raiseError(ERR_CONFIG_NO_BRIDGE);
             return configErr;
         }
         /* check ip-address */
         if (!config.ipAddress.matches(IPV4_REGEX)) {
-            configErr.raiseError(ERR_CONF_IP);
+            configErr.raiseError(ERR_CONFIG_IP);
             return configErr;
         }
         /* check credentials */
         if (!bridge.getCredentials().areSet()) {
-            configErr.raiseError(ERR_CONF_CREDENTIALS);
+            configErr.raiseError(ERR_CONFIG_CREDENTIALS);
             return configErr;
         }
         return configErr;

@@ -90,27 +90,25 @@ public class TapoErrorHandler extends Exception {
     /**
      * GET ERROR-MESSAGE
      * 
-     * @param errCode error Number (or constant ERR_CODE )
-     * @return error-message if set constant ERR_CODE_MSG. if not name of ERR_CODE is returned
+     * @param errCode error Number (or constant ERR_API_CODE )
+     * @return error-message if set constant ERR_API_CODE_MSG. if not name of ERR_API_CODE is returned
      */
     private String getErrorMessage(Integer errCode) {
+        String i18nKey = "";
         Field[] fields = TapoErrorConstants.class.getDeclaredFields();
-        /* loop ErrorConstants and search for code in value */
+        /* loop ErrorConstants and search for integer-code in value */
         for (Field f : fields) {
             String constName = f.getName();
             try {
                 Integer val = (Integer) f.get(this);
                 if (val != null && val.equals(errCode)) {
-                    Field constantName = TapoErrorConstants.class.getDeclaredField(constName + "_MSG");
-                    String msg = getValueOrDefault(constantName.get(null), "").toString();
-                    if (msg.length() > 2) {
-                        return msg;
-                    } else {
-                        return infoMessage + " (" + constName + ")";
-                    }
+                    /* convert constatn name to i18n key */
+                    i18nKey = i18nKey.replaceFirst("ERR_", "error-");
+                    i18nKey = constName.replace("_", "-").toLowerCase();
+                    return "@text/" + i18nKey;
                 }
             } catch (Exception e) {
-                // next loop
+                // next loop (not a good idea to raise error in error-handling)
             }
         }
         return infoMessage + " (" + errCode.toString() + ")";

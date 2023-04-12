@@ -97,7 +97,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
             return this.loggedIn();
         } else {
             logger.debug("({}) no ping while login '{}'", uid, this.ipAddress);
-            handleError(new TapoErrorHandler(ERR_DEVICE_OFFLINE, "no ping while login"));
+            handleError(new TapoErrorHandler(ERR_BINDING_DEVICE_OFFLINE, "no ping while login"));
             return false;
         }
     }
@@ -296,7 +296,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleSuccessResponse(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        Integer errorCode = jsonObjectToInt(jsnResult, "error_code", ERR_JSON_DECODE_FAIL);
+        Integer errorCode = jsonObjectToInt(jsnResult, "error_code", ERR_API_JSON_DECODE_FAIL);
         if (errorCode != 0) {
             logger.debug("({}) set deviceInfo not successful: {}", uid, jsnResult);
             this.device.handleConnectionState();
@@ -409,7 +409,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
             }
         }
         logger.debug("({}) sendPayload exception {}", uid, responseBody);
-        handleError(new TapoErrorHandler(ERR_HTTP_RESPONSE));
+        handleError(new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE));
         return new JsonObject();
     }
 
@@ -440,7 +440,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
         } else {
             logger.trace("({})  device is offline (no ping)", uid);
             if (raiseError) {
-                handleError(new TapoErrorHandler(ERR_DEVICE_OFFLINE));
+                handleError(new TapoErrorHandler(ERR_BINDING_DEVICE_OFFLINE));
             }
             logout();
             return false;
