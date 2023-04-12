@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.4.3-SNAPSHOT</version>
+    <version>3.4.3</version>
   </parent>
 
   <artifactId>org.openhab.binding.fmiweather</artifactId>
