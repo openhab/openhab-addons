@@ -133,6 +133,7 @@ public class WindcentraleWindmillHandler extends BaseThingHandler {
         }
 
         updateProperties(getWindmillProperties(windmill));
+        updateStatus(ThingStatus.UNKNOWN);
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, config.refreshInterval, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", config.refreshInterval,

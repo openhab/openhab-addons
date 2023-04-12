@@ -103,7 +103,7 @@ public class WindcentraleAPI {
                 throw exception;
             }
             String response = contentResponse.getContentAsString();
-            logger.debug("Response: {}", response);
+            logger.trace("Response: {}", response);
             requestListeners.forEach(RequestListener::onSuccess);
             return response;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {

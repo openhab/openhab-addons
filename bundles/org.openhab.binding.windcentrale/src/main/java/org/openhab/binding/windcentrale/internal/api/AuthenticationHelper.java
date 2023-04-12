@@ -385,7 +385,7 @@ public class AuthenticationHelper {
                 }
                 throw new InvalidAccessTokenException(message);
             } else {
-                logger.debug("Response: {}", response);
+                logger.trace("Response: {}", response);
             }
             return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

@@ -91,7 +91,7 @@ public class TokenProvider {
                 logger.debug("Could not get Cognito configuration values, using default values. Error (HTTP {}): {}",
                         contentResponse.getStatus(), contentResponse.getReason());
             } else {
-                logger.debug("Response: {}", response);
+                logger.trace("Response: {}", response);
                 KeyResponse keyResponse = Objects.requireNonNullElse(GSON.fromJson(response, KeyResponse.class),
                         new KeyResponse());
                 if (!keyResponse.userPoolId.isEmpty() && !keyResponse.clientId.isEmpty()
