@@ -91,7 +91,7 @@ public class WindcentraleAccountHandler extends BaseBridgeHandler {
         WindcentraleAPI localAPI = api;
         if (localAPI != null) {
             localAPI.dispose();
-            localAPI = null;
+            api = null;
         }
     }
 

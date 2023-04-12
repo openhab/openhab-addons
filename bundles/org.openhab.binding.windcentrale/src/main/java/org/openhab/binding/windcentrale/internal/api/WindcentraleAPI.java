@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WindcentraleAPI {
 
-    private static final String URL_PREFIX = "https://mijn.windcentrale.nl/api/v0";
+    public static final String URL_PREFIX = "https://mijn.windcentrale.nl/api/v0";
     private static final String LIVE_DATA_URL = URL_PREFIX + "/livedata";
     private static final String PROJECTS_URL = URL_PREFIX + "/sustainable/projects";
 

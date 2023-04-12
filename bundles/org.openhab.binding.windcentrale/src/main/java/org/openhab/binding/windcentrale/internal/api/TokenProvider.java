@@ -54,7 +54,7 @@ public class TokenProvider {
 
     private static final String APPLICATION_JSON = "application/json";
     private static final Duration REQUEST_TIMEOUT = Duration.ofMinutes(1);
-    private static final String KEY_URL = "https://mijn.windcentrale.nl/api/v0/labels/key?domain=mijn.windcentrale.nl";
+    private static final String KEY_URL = WindcentraleAPI.URL_PREFIX + "/labels/key?domain=mijn.windcentrale.nl";
 
     private final HttpClientFactory httpClientFactory;
 

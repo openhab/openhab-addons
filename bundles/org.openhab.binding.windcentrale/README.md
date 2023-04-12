@@ -52,17 +52,17 @@ The following windmill names are supported:
 
 ## Channels
 
-| Channel Type ID | Item Type            | Description                         |
-|-----------------|----------------------|-------------------------------------|
-| energy-total    | Number:Energy        | Total energy this year              |
-| power-relative  | Number:Dimensionless | Relative power                      |
-| power-shares    | Number:Power         | Power provided for your wind shares |
-| power-total     | Number:Power         | Total power                         |
-| run-percentage  | Number:Dimensionless | Run percentage this year            |
-| run-time        | Number:Time          | Run time this year                  |
-| timestamp       | DateTime             | Timestamp of the last update        |
-| wind-direction  | String               | Current wind direction              |
-| wind-speed      | Number               | Measured current wind speed (Bft)   |
+| Channel ID     | Item Type            | Description                         |
+|----------------|----------------------|-------------------------------------|
+| energy-total   | Number:Energy        | Total energy this year              |
+| power-relative | Number:Dimensionless | Relative power                      |
+| power-shares   | Number:Power         | Power provided for your wind shares |
+| power-total    | Number:Power         | Total power                         |
+| run-percentage | Number:Dimensionless | Run percentage this year            |
+| run-time       | Number:Time          | Run time this year                  |
+| timestamp      | DateTime             | Timestamp of the last update        |
+| wind-direction | String               | Current wind direction              |
+| wind-speed     | Number               | Measured current wind speed (Bft)   |
 
 ## Example
 
