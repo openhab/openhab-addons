@@ -7,5 +7,5 @@
 	<name>Energi Data Service Binding</name>
 	<description>This is the binding for Energi Data Service.</description>
 	<connection>cloud</connection>
-	<countries>DK,NO,SE</countries>
+	<countries>dk,no,se</countries>
 </addon:addon>
