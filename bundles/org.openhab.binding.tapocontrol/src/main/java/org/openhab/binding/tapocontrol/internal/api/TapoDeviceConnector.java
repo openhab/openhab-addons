@@ -214,11 +214,11 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     /**
      * Query Info from Device and refresh deviceInfo
      *
-     * 
+     *
      * @param ignoreGap ignore gap to last query. query anyway
      */
     public void queryInfo(boolean ignoreGap) {
-        logger.trace("({}) DeviceConnetor_queryInfo from '{}'", uid, deviceURL);
+        logger.trace("({}) DeviceConnector_queryInfo from '{}'", uid, deviceURL);
         queryCommand(DEVICE_CMD_GETINFO, ignoreGap);
     }
 
@@ -227,8 +227,8 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      */
     @Override
     public void queryChildDevices() {
-        logger.trace("({}) DeviceConnetor_queryChildDevices from '{}'", uid, deviceURL);
-        queryCommand(DEVICE_CMD_CHILD_DEVICE_LIST, false);
+        logger.trace("({}) DeviceConnector_queryChildDevices from '{}'", uid, deviceURL);
+        queryCommand(DEVICE_CMD_CHILD_DEVICE_LIST, true);
     }
 
     /**
@@ -240,12 +240,12 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
 
     /**
      * Send Custom DeviceQuery
-     * 
+     *
      * @param queryCommand Command to be queried
      * @param ignoreGap ignore gap to last query. query anyway
      */
     public void queryCommand(String queryCommand, boolean ignoreGap) {
-        logger.trace("({}) DeviceConnetor_queryCommand '{}' from '{}'", uid, queryCommand, deviceURL);
+        logger.trace("({}) DeviceConnector_queryCommand '{}' from '{}'", uid, queryCommand, deviceURL);
         long now = System.currentTimeMillis();
         if (ignoreGap || now > this.lastQuery + TAPO_SEND_MIN_GAP_MS) {
             this.lastQuery = now;
