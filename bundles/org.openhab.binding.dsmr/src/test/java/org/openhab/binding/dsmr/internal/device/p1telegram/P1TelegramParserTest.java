@@ -38,6 +38,8 @@ public class P1TelegramParserTest {
             { "dsmr_42", 39, 0},
             { "dsmr_50", 41, 0},
             { "dsmr_50_austria", 18, 0},
+            { "dsmr_50_austria_minimum_1", 10, 0},
+            { "dsmr_50_austria_minimum_2", 9, 0},
             { "flu5", 21, 0},
             { "flu5_extra", 31, 0},
             { "flu5_invalid_gasmeter", 19, 1},

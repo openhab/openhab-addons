@@ -90,44 +90,45 @@ The information in this paragraph in necessary if you choose to configure the me
 
 Supported meters:
 
-| Meter Thing                                     | Thing type ID                | M-Bus channel | Refresh rate |
-|-------------------------------------------------|------------------------------|---------------|--------------|
-| DSMR V2 / V3 Device                             | `device_v2_v3`               | -1            | 10 seconds   |
-| DSMR V4 Device                                  | `device_v4`                  | -1            | 10 seconds   |
-| DSMR V5 Device                                  | `device_v5`                  | -1            | 10 seconds   |
-| e-MUCS V1.0 Device                              | `device_emucs_v1_0`          | -1            | ?            |
-| ACE4000 GTMM Mk3 Electricity meter              | `electricity_ace4000`        | 0             | 10 seconds   |
-| DSMR V2.1 Electricity meter                     | `electricity_v2_1`           | 0             | 10 seconds   |
-| DSMR V2.2 Electricity meter                     | `electricity_v2_2`           | 0             | 10 seconds   |
-| DSMR V3 Electricity meter                       | `electricity_v3_0`           | 0             | 10 seconds   |
-| DSMR V4.0 Electricity meter                     | `electricity_v4_0`           | 0             | 10 seconds   |
-| DSMR V4.0.4 Electricity meter                   | `electricity_v4_0_4`         | 0             | 10 seconds   |
-| DSMR V4.2 Electricity meter                     | `electricity_v4_2`           | 0             | 10 seconds   |
-| DSMR V5 Electricity meter                       | `electricity_v5_0`           | 0             | 10 seconds   |
-| e-MUCS V1.0 Electricity meter                   | `electricity_emucs_v1_0`     | 0             | ?            |
-| Smarty V1.0 Electricity Meter                   | `electricity_smarty_v1_0`    | 0             | 10 seconds   |
-| ACE4000 GTMM Mk3 Gas meter                      | `gas_ace4000`                | 3             | 1 hour       |
-| DSMR V2.1 Gas meter                             | `gas_v2_1`                   | 0             | 24 hours     |
-| DSMR V2.2 Gas meter                             | `gas_v2_2`                   | 0             | 24 hours     |
-| DSMR V3.0 Gas meter                             | `gas_v3_0`                   | _note 1_      | 1 hour       |
-| e-MUCS V1.0 Gas meter                           | `gas_emucs_v1_0`             | _note 1_      | ?            |
-| ACE4000 GTMM Mk3 Cooling meter                  | `cooling_ace4000`            | 6             | 1 hour       |
-| DSMR V2.2 Cooling meter                         | `cooling_v2_2`               | 0             | 1 hour       |
-| ACE4000 GTMM Mk3 Heating meter                  | `heating_ace4000`            | 4             | 1 hour       |
-| DSMR V2.2 Heating meter                         | `heating_v2_2`               | 0             | 1 hour       |
-| ACE4000 GTMM Mk3 Water meter                    | `water_ace4000`              | 5             | 1 hour       |
-| DSMR V2.2 Water meter                           | `water_v2_2`                 | 0             | 1 hour       |
-| DSMR V3.0 Water meter                           | `water_v3_0`                 | _note 1_      | 1 hour       |
-| ACE4000 GTMM Mk3 1st Slave Electricity meter    | `slave_electricity1_ace4000` | 1             | 1 hour       |
-| ACE4000 GTMM Mk3 2nd Slave Electricity meter    | `slave_electricity2_ace4000` | 2             | 1 hour       |
-| DSMR V4.x Slave Electricity meter               | `slave_electricity_v4`       | _note 1_      | 1 hour       |
-| DSMR V5 Slave Electricity meter                 | `slave_electricity_v5`       | _note 1_      | 5 minutes    |
-| DSMR V3.0 Generic meter                         | `generic_v3_0`               | _note 1_      | 1 hour       |
-| DSMR V3.0 Giga Joule meter (heating or cooling) | `gj_v3_0`                    | _note 1_      | 1 hour       |
-| DSMR V4.x Giga Joule meter (heating or cooling) | `gj_v4`                      | _note 1_      | 1 hour       |
-| DSMR V5 Giga Joule meter (heating or cooling)   | `gj_v5_0`                    | _note 1_      | 5 minutes    |
-| DSMR V4.x m3 meter (gas or water)               | `m3_v4`                      | _note 1_      | 1 hour       |
-| DSMR V5 m3 meter (gas or water)                 | `m3_v5_0`                    | _note 1_      | 5 minutes    |
+| Meter Thing                                     | Thing type ID                     | M-Bus channel | Refresh rate |
+|-------------------------------------------------|-----------------------------------|---------------|--------------|
+| DSMR V2 / V3 Device                             | `device_v2_v3`                    | -1            | 10 seconds   |
+| DSMR V4 Device                                  | `device_v4`                       | -1            | 10 seconds   |
+| DSMR V5 Device                                  | `device_v5`                       | -1            | 10 seconds   |
+| e-MUCS V1.0 Device                              | `device_emucs_v1_0`               | -1            | ?            |
+| ACE4000 GTMM Mk3 Electricity meter              | `electricity_ace4000`             | 0             | 10 seconds   |
+| DSMR V2.1 Electricity meter                     | `electricity_v2_1`                | 0             | 10 seconds   |
+| DSMR V2.2 Electricity meter                     | `electricity_v2_2`                | 0             | 10 seconds   |
+| DSMR V3 Electricity meter                       | `electricity_v3_0`                | 0             | 10 seconds   |
+| DSMR V4.0 Electricity meter                     | `electricity_v4_0`                | 0             | 10 seconds   |
+| DSMR V4.0.4 Electricity meter                   | `electricity_v4_0_4`              | 0             | 10 seconds   |
+| DSMR V4.2 Electricity meter                     | `electricity_v4_2`                | 0             | 10 seconds   |
+| DSMR V5 Electricity meter                       | `electricity_v5_0`                | 0             | 10 seconds   |
+| e-MUCS V1.0 Electricity meter                   | `electricity_emucs_v1_0`          | 0             | ?            |
+| Smarty V1.0 Electricity meter                   | `electricity_smarty_v1_0`         | 0             | 10 seconds   |
+| Austrian Electricity meter                      | `electricity_smarty_v1_0_austria` | 0             | 10 seconds   |
+| ACE4000 GTMM Mk3 Gas meter                      | `gas_ace4000`                     | 3             | 1 hour       |
+| DSMR V2.1 Gas meter                             | `gas_v2_1`                        | 0             | 24 hours     |
+| DSMR V2.2 Gas meter                             | `gas_v2_2`                        | 0             | 24 hours     |
+| DSMR V3.0 Gas meter                             | `gas_v3_0`                        | _note 1_      | 1 hour       |
+| e-MUCS V1.0 Gas meter                           | `gas_emucs_v1_0`                  | _note 1_      | ?            |
+| ACE4000 GTMM Mk3 Cooling meter                  | `cooling_ace4000`                 | 6             | 1 hour       |
+| DSMR V2.2 Cooling meter                         | `cooling_v2_2`                    | 0             | 1 hour       |
+| ACE4000 GTMM Mk3 Heating meter                  | `heating_ace4000`                 | 4             | 1 hour       |
+| DSMR V2.2 Heating meter                         | `heating_v2_2`                    | 0             | 1 hour       |
+| ACE4000 GTMM Mk3 Water meter                    | `water_ace4000`                   | 5             | 1 hour       |
+| DSMR V2.2 Water meter                           | `water_v2_2`                      | 0             | 1 hour       |
+| DSMR V3.0 Water meter                           | `water_v3_0`                      | _note 1_      | 1 hour       |
+| ACE4000 GTMM Mk3 1st Slave Electricity meter    | `slave_electricity1_ace4000`      | 1             | 1 hour       |
+| ACE4000 GTMM Mk3 2nd Slave Electricity meter    | `slave_electricity2_ace4000`      | 2             | 1 hour       |
+| DSMR V4.x Slave Electricity meter               | `slave_electricity_v4`            | _note 1_      | 1 hour       |
+| DSMR V5 Slave Electricity meter                 | `slave_electricity_v5`            | _note 1_      | 5 minutes    |
+| DSMR V3.0 Generic meter                         | `generic_v3_0`                    | _note 1_      | 1 hour       |
+| DSMR V3.0 Giga Joule meter (heating or cooling) | `gj_v3_0`                         | _note 1_      | 1 hour       |
+| DSMR V4.x Giga Joule meter (heating or cooling) | `gj_v4`                           | _note 1_      | 1 hour       |
+| DSMR V5 Giga Joule meter (heating or cooling)   | `gj_v5_0`                         | _note 1_      | 5 minutes    |
+| DSMR V4.x m3 meter (gas or water)               | `m3_v4`                           | _note 1_      | 1 hour       |
+| DSMR V5 m3 meter (gas or water)                 | `m3_v5_0`                         | _note 1_      | 5 minutes    |
 
 _note 1_. The channel of these meters is dependent on the physical installation and corresponds to the M-Bus channel.
 You can ask your supplier / installer for this information or you can retrieve it from the logfiles (see _Determine M-Bus channel_).

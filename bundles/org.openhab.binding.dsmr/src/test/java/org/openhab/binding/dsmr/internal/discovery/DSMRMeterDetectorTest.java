@@ -61,6 +61,8 @@ public class DSMRMeterDetectorTest {
             { "dsmr_42", EnumSet.of(DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
             { "dsmr_50", EnumSet.of(DEVICE_V5, ELECTRICITY_V5_0, M3_V5_0)},
             { "dsmr_50_austria", EnumSet.of(ELECTRICITY_SMARTY_V1_0_AUSTRIA)},
+            { "dsmr_50_austria_minimum_1", EnumSet.of(ELECTRICITY_SMARTY_V1_0_AUSTRIA)},
+            { "dsmr_50_austria_minimum_2", EnumSet.of(ELECTRICITY_SMARTY_V1_0_AUSTRIA)},
             { "flu5", EnumSet.of(DEVICE_EMUCS_V1_0, ELECTRICITY_EMUCS_V1_0, GAS_EMUCS_V1_0)},
             { "flu5_extra", EnumSet.of(DEVICE_EMUCS_V1_0, ELECTRICITY_EMUCS_V1_0, GAS_EMUCS_V1_0)},
             { "Iskra_AM550", EnumSet.of(DEVICE_V5, ELECTRICITY_V5_0, M3_V5_0)},

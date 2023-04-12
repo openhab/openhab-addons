@@ -308,17 +308,16 @@ public enum DSMRMeterType {
     /** Austrian "Smarty" meter */
     ELECTRICITY_SMARTY_V1_0_AUSTRIA(DSMRMeterKind.MAIN_ELECTRICITY, CosemObjectType.UNKNOWN,
             new CosemObjectType[] {
-                    CosemObjectType.EMETER_DELIVERY_TARIFF0, CosemObjectType.EMETER_DELIVERY_TARIFF1,
-                    CosemObjectType.EMETER_DELIVERY_TARIFF2, CosemObjectType.EMETER_PRODUCTION_TARIFF0,
+                    CosemObjectType.EMETER_DELIVERY_TARIFF1, CosemObjectType.EMETER_DELIVERY_TARIFF2,
                     CosemObjectType.EMETER_PRODUCTION_TARIFF1, CosemObjectType.EMETER_PRODUCTION_TARIFF2,
-                    CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION,
-                    CosemObjectType.EMETER_ACTUAL_REACTIVE_DELIVERY, CosemObjectType.EMETER_ACTUAL_REACTIVE_PRODUCTION,
-                    CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q, CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q,
-                    CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE1, CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE2,
-                    CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE1, CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE2,
-    },
+                    CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION },
             new CosemObjectType[] {
-                    CosemObjectType.P1_VERSION_OUTPUT, CosemObjectType.P1_TIMESTAMP,
+                CosemObjectType.P1_VERSION_OUTPUT, CosemObjectType.P1_TIMESTAMP, CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER,
+                CosemObjectType.EMETER_DELIVERY_TARIFF0, CosemObjectType.EMETER_PRODUCTION_TARIFF0,
+                CosemObjectType.EMETER_ACTUAL_REACTIVE_DELIVERY, CosemObjectType.EMETER_ACTUAL_REACTIVE_PRODUCTION,
+                CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q, CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q,
+                CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE1, CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE2,
+                CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE1, CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE2,
     }),
 
     /** Belgium Smart Meter for the e-MUCS specification */
