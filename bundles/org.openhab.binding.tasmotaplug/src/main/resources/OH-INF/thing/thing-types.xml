@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tasmotaplug"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Tasmota Plug Thing -->
+	<thing-type id="plug">
+		<label>Plug</label>
+		<description>
+			Tasmota Smart Plug
+		</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
+				<label>Plug Host Name/IP Address</label>
+				<description>Host Name or IP Address of the Plug</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1" required="false" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the Refresh Interval in Seconds</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>
