@@ -20,12 +20,11 @@ import java.io.OutputStreamWriter;
 import javax.net.ssl.SSLSocket;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link It4WifiConnector} is responsible for connecting reading, writing and disconnecting from the It4Wifi.
+ * The {@link It4WifiConnector} is responsible for reading and writing to the It4Wifi.
  *
  * @author Gaël L'hopital - Initial Contribution
  */
@@ -64,15 +63,19 @@ public class It4WifiConnector extends Thread {
                     }
                 }
             } catch (IOException e) {
-                handler.connectorInterrupted(e.getMessage());
+                handler.communicationError(e.toString());
                 interrupt();
             }
         }
+    }
 
+    @Override
+    public void interrupt() {
         logger.debug("Closing streams");
-
         tryClose(in);
         tryClose(out);
+
+        super.interrupt();
     }
 
     public synchronized void sendCommand(String command) {
@@ -81,17 +84,15 @@ public class It4WifiConnector extends Thread {
             out.write(STX + command + ETX);
             out.flush();
         } catch (IOException e) {
-            handler.connectorInterrupted(e.getMessage());
+            handler.communicationError(e.toString());
         }
     }
 
-    private void tryClose(@Nullable Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (IOException e) {
-                logger.debug("Exception closing stream : {}", e.getMessage());
-            }
+    private void tryClose(Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (IOException e) {
+            logger.debug("Exception closing stream : {}", e.getMessage());
         }
     }
 }

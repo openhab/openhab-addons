@@ -31,7 +31,6 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mynice.internal.config.It4WifiConfiguration;
 import org.openhab.binding.mynice.internal.discovery.MyNiceDiscoveryService;
 import org.openhab.binding.mynice.internal.xml.MyNiceXStream;
@@ -116,6 +115,8 @@ public class It4WifiHandler extends BaseBridgeHandler {
     public void dispose() {
         dataListeners.clear();
 
+        freeKeepAlive();
+
         sslSocket.ifPresent(socket -> {
             try {
                 socket.close();
@@ -127,15 +128,13 @@ public class It4WifiHandler extends BaseBridgeHandler {
 
         connector.ifPresent(c -> scheduler.execute(() -> c.interrupt()));
         connector = Optional.empty();
-        freeKeepAlive();
     }
 
     private void startConnector() {
         It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
         freeKeepAlive();
-        reqBuilder = new RequestBuilder(config.macAddress, config.username);
         try {
-            logger.debug("Initiating connection to IT4Wifi on port {}...", SERVER_PORT);
+            logger.debug("Initiating connection to IT4Wifi {} on port {}...", config.hostname, SERVER_PORT);
 
             SSLSocket localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
             sslSocket = Optional.of(localSocket);
@@ -144,8 +143,9 @@ public class It4WifiHandler extends BaseBridgeHandler {
             It4WifiConnector localConnector = new It4WifiConnector(this, localSocket);
             connector = Optional.of(localConnector);
             localConnector.start();
-            handShaked();
 
+            reqBuilder = new RequestBuilder(config.macAddress, config.username);
+            handShaked();
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
         } catch (IOException e) {
@@ -182,26 +182,23 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 sendCommand(CommandType.VERIFY);
                 return;
             case VERIFY:
-                if (keepAliveJob.isPresent()) { // means we are connected
-                    return;
+                if (keepAliveJob.isEmpty()) { // means we are not connected
+                    switch (response.authentication.perm) {
+                        case admin, user:
+                            sendCommand(CommandType.CONNECT);
+                            return;
+                        case wait:
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                                    "@text/conf-pending-validation");
+                            scheduler.schedule(() -> handShaked(), 15, TimeUnit.SECONDS);
+                            return;
+                    }
                 }
-                switch (response.authentication.perm) {
-                    case admin:
-                    case user:
-                        sendCommand(CommandType.CONNECT);
-                        return;
-                    case wait:
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                "@text/conf-pending-validation");
-                        scheduler.schedule(() -> handShaked(), 15, TimeUnit.SECONDS);
-                        return;
-                    default:
-                        return;
-                }
+                return;
             case CONNECT:
                 String sc = response.authentication.sc;
-                It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
                 if (sc != null) {
+                    It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
                     reqBuilder.setChallenges(sc, response.authentication.id, config.password);
                     keepAliveJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> sendCommand(CommandType.VERIFY),
                             KEEPALIVE_DELAY_S, KEEPALIVE_DELAY_S, TimeUnit.SECONDS));
@@ -211,11 +208,9 @@ public class It4WifiHandler extends BaseBridgeHandler {
             case INFO:
                 updateStatus(ThingStatus.ONLINE);
                 if (thing.getProperties().isEmpty()) {
-                    Map<String, String> properties = Map.of(PROPERTY_VENDOR, response.intf.manuf, PROPERTY_MODEL_ID,
-                            response.intf.prod, PROPERTY_SERIAL_NUMBER, response.intf.serialNr,
-                            PROPERTY_HARDWARE_VERSION, response.intf.versionHW, PROPERTY_FIRMWARE_VERSION,
-                            response.intf.versionFW);
-                    updateProperties(properties);
+                    updateProperties(Map.of(PROPERTY_VENDOR, response.intf.manuf, PROPERTY_MODEL_ID, response.intf.prod,
+                            PROPERTY_SERIAL_NUMBER, response.intf.serialNr, PROPERTY_HARDWARE_VERSION,
+                            response.intf.versionHW, PROPERTY_FIRMWARE_VERSION, response.intf.versionFW));
                 }
                 notifyListeners(response.getDevices());
                 return;
@@ -258,17 +253,16 @@ public class It4WifiHandler extends BaseBridgeHandler {
         sendCommand(reqBuilder.buildMessage(id, t4));
     }
 
-    public void connectorInterrupted(@Nullable String message) {
-        if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            // avoid a status update that generates a WARN while we're already disconnecting
-            return;
-        }
-        if (handshakeAttempts++ <= MAX_HANDSHAKE_ATTEMPTS) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-            startConnector();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-limit");
+    public void communicationError(String message) {
+        // avoid a status update that would generates a WARN while we're already disconnecting
+        if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
             dispose();
+            if (handshakeAttempts++ <= MAX_HANDSHAKE_ATTEMPTS) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                startConnector();
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-limit");
+            }
         }
     }
 }
