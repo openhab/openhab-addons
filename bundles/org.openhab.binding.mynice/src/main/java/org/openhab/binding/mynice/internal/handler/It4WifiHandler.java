@@ -15,14 +15,20 @@ package org.openhab.binding.mynice.internal.handler;
 import static org.openhab.core.thing.Thing.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,21 +60,25 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class It4WifiHandler extends BaseBridgeHandler {
+    private static final int SERVER_PORT = 443;
     private static final int MAX_HANDSHAKE_ATTEMPTS = 3;
     private static final int KEEPALIVE_DELAY_S = 235; // Timeout seems to be at 6 min
 
     private final Logger logger = LoggerFactory.getLogger(It4WifiHandler.class);
     private final List<MyNiceDataListener> dataListeners = new CopyOnWriteArrayList<>();
     private final MyNiceXStream xstream = new MyNiceXStream();
+    private final SSLSocketFactory socketFactory;
 
     private @NonNullByDefault({}) RequestBuilder reqBuilder;
-    private @Nullable It4WifiConnector connector;
-    private @Nullable ScheduledFuture<?> keepAliveJob;
     private List<Device> devices = new ArrayList<>();
     private int handshakeAttempts = 0;
+    private Optional<ScheduledFuture<?>> keepAliveJob = Optional.empty();
+    private Optional<It4WifiConnector> connector = Optional.empty();
+    private Optional<SSLSocket> sslSocket = Optional.empty();
 
-    public It4WifiHandler(Bridge thing) {
+    public It4WifiHandler(Bridge thing, SSLSocketFactory socketFactory) {
         super(thing);
+        this.socketFactory = socketFactory;
     }
 
     @Override
@@ -96,18 +106,27 @@ public class It4WifiHandler extends BaseBridgeHandler {
     public void initialize() {
         if (getConfigAs(It4WifiConfiguration.class).username.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
-        } else {
-            updateStatus(ThingStatus.UNKNOWN);
-            scheduler.execute(() -> startConnector());
+            return;
         }
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> startConnector());
     }
 
     @Override
     public void dispose() {
-        It4WifiConnector localConnector = connector;
-        if (localConnector != null) {
-            localConnector.dispose();
-        }
+        dataListeners.clear();
+
+        sslSocket.ifPresent(socket -> {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                logger.warn("Error closing sslsocket : {}", e.getMessage());
+            }
+        });
+        sslSocket = Optional.empty();
+
+        connector.ifPresent(c -> scheduler.execute(() -> c.interrupt()));
+        connector = Optional.empty();
         freeKeepAlive();
     }
 
@@ -115,17 +134,28 @@ public class It4WifiHandler extends BaseBridgeHandler {
         It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
         freeKeepAlive();
         reqBuilder = new RequestBuilder(config.macAddress, config.username);
-        It4WifiConnector localConnector = new It4WifiConnector(config.hostname, this);
-        localConnector.start();
-        connector = localConnector;
+        try {
+            logger.debug("Initiating connection to IT4Wifi on port {}...", SERVER_PORT);
+
+            SSLSocket localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
+            sslSocket = Optional.of(localSocket);
+            localSocket.startHandshake();
+
+            It4WifiConnector localConnector = new It4WifiConnector(this, localSocket);
+            connector = Optional.of(localConnector);
+            localConnector.start();
+            handShaked();
+
+        } catch (UnknownHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
+        }
     }
 
     private void freeKeepAlive() {
-        ScheduledFuture<?> keepAlive = keepAliveJob;
-        if (keepAlive != null) {
-            keepAlive.cancel(true);
-        }
-        keepAliveJob = null;
+        keepAliveJob.ifPresent(job -> job.cancel(true));
+        keepAliveJob = Optional.empty();
     }
 
     public void received(String command) {
@@ -134,8 +164,8 @@ public class It4WifiHandler extends BaseBridgeHandler {
         if (event.error != null) {
             logger.warn("Error code {} received : {}", event.error.code, event.error.info);
         } else {
-            if (event instanceof Response) {
-                handleResponse((Response) event);
+            if (event instanceof Response responseEvent) {
+                handleResponse(responseEvent);
             } else {
                 notifyListeners(event.getDevices());
             }
@@ -152,7 +182,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 sendCommand(CommandType.VERIFY);
                 return;
             case VERIFY:
-                if (keepAliveJob != null) { // means we are connected
+                if (keepAliveJob.isPresent()) { // means we are connected
                     return;
                 }
                 switch (response.authentication.perm) {
@@ -173,8 +203,8 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
                 if (sc != null) {
                     reqBuilder.setChallenges(sc, response.authentication.id, config.password);
-                    keepAliveJob = scheduler.scheduleWithFixedDelay(() -> sendCommand(CommandType.VERIFY),
-                            KEEPALIVE_DELAY_S, KEEPALIVE_DELAY_S, TimeUnit.SECONDS);
+                    keepAliveJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> sendCommand(CommandType.VERIFY),
+                            KEEPALIVE_DELAY_S, KEEPALIVE_DELAY_S, TimeUnit.SECONDS));
                     sendCommand(CommandType.INFO);
                 }
                 return;
@@ -212,12 +242,8 @@ public class It4WifiHandler extends BaseBridgeHandler {
     }
 
     private void sendCommand(String command) {
-        It4WifiConnector localConnector = connector;
-        if (localConnector != null) {
-            localConnector.sendCommand(command);
-        } else {
-            logger.warn("Tried to send a command when IT4WifiConnector is not initialized.");
-        }
+        connector.ifPresentOrElse(c -> c.sendCommand(command),
+                () -> logger.warn("Tried to send a command when IT4WifiConnector is not initialized."));
     }
 
     public void sendCommand(CommandType command) {
@@ -233,12 +259,16 @@ public class It4WifiHandler extends BaseBridgeHandler {
     }
 
     public void connectorInterrupted(@Nullable String message) {
+        if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            // avoid a status update that generates a WARN while we're already disconnecting
+            return;
+        }
         if (handshakeAttempts++ <= MAX_HANDSHAKE_ATTEMPTS) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             startConnector();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-limit");
-            connector = null;
+            dispose();
         }
     }
 }
