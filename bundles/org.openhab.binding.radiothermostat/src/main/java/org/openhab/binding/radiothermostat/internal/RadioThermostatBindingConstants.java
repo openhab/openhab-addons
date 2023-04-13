@@ -41,6 +41,8 @@ public class RadioThermostatBindingConstants {
     public static final String PROPERTY_IP = "hostName";
     public static final String PROPERTY_ISCT80 = "isCT80";
     public static final String JSON_TIME = "{\"day\":%s,\"hour\":%s,\"minute\":%s}";
+    public static final String JSON_PMA = "{\"line\":1,\"message\":\"%s\"}";
+    public static final String BLANK = "";
 
     public static final String KEY_ERROR = "error";
 
@@ -52,6 +54,7 @@ public class RadioThermostatBindingConstants {
     public static final String TIME_RESOURCE = "tstat/time";
     public static final String HEAT_PROGRAM_RESOURCE = "tstat/program/heat";
     public static final String COOL_PROGRAM_RESOURCE = "tstat/program/cool";
+    public static final String PMA_RESOURCE = "tstat/pma";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RTHERM = new ThingTypeUID(BINDING_ID, "rtherm");
@@ -76,11 +79,16 @@ public class RadioThermostatBindingConstants {
     public static final String YESTERDAY_HEAT_RUNTIME = "yesterday_heat_runtime";
     public static final String YESTERDAY_COOL_RUNTIME = "yesterday_cool_runtime";
     public static final String REMOTE_TEMP = "remote_temp";
+    public static final String PRICE_MESSAGE = "price_message";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE,
-            PROGRAM_MODE, SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP,
-            TODAY_HEAT_RUNTIME, TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, REMOTE_TEMP)
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream
+            .of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE, SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY,
+                    HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME, TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME,
+                    YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, PRICE_MESSAGE)
+            .collect(Collectors.toSet());
+
+    public static final Set<String> NO_UPDATE_CHANNEL_IDS = Stream.of(REMOTE_TEMP, PRICE_MESSAGE)
             .collect(Collectors.toSet());
 
     // Units of measurement of the data delivered by the API

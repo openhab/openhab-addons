@@ -14,7 +14,6 @@ package org.openhab.binding.radiothermostat.internal.handler;
 
 import static org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
@@ -96,8 +95,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private boolean disableLogs = false;
     private boolean clockSync = false;
     private String setpointCmdKeyPrefix = "t_";
-    private String heatProgramJson = "";
-    private String coolProgramJson = "";
+    private String heatProgramJson = BLANK;
+    private String coolProgramJson = BLANK;
 
     public RadioThermostatHandler(Thing thing, RadioThermostatStateDescriptionProvider stateDescriptionProvider,
             HttpClient httpClient) {
@@ -119,7 +118,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         this.disableLogs = config.disableLogs;
         this.clockSync = config.clockSync;
 
-        if (hostName == null || "".equals(hostName)) {
+        if (hostName == null || BLANK.equals(hostName)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-hostname");
             return;
@@ -198,17 +197,17 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             Runnable runnable = () -> {
                 // populate the heat and cool programs on the thermostat from the user configuration,
                 // the commands will be sent each time the refresh job runs until a success response is seen
-                if (!"".equals(heatProgramJson)) {
+                if (!BLANK.equals(heatProgramJson)) {
                     final String response = connector.sendCommand(null, null, heatProgramJson, HEAT_PROGRAM_RESOURCE);
                     if (response.contains("success")) {
-                        heatProgramJson = "";
+                        heatProgramJson = BLANK;
                     }
                 }
 
-                if (!"".equals(coolProgramJson)) {
+                if (!BLANK.equals(coolProgramJson)) {
                     final String response = connector.sendCommand(null, null, coolProgramJson, COOL_PROGRAM_RESOURCE);
                     if (response.contains("success")) {
-                        coolProgramJson = "";
+                        coolProgramJson = BLANK;
                     }
                 }
 
@@ -307,6 +306,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         connector.sendCommand(null, null, rawCommand, DEFAULT_RESOURCE);
     }
 
+    public void handleRawCommand(@Nullable String rawCommand, String resource) {
+        connector.sendCommand(null, null, rawCommand, resource);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -382,6 +385,13 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         connector.sendCommand("rem_temp", String.valueOf(remoteTemp.intValue()), REMOTE_TEMP_RESOURCE);
                     } else {
                         connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
+                    }
+                    break;
+                case PRICE_MESSAGE:
+                    if (!BLANK.equals(cmdStr)) {
+                        connector.sendCommand(null, null, String.format(JSON_PMA, cmdStr), PMA_RESOURCE);
+                    } else {
+                        connector.sendCommand("mode", "0", PMA_RESOURCE);
                     }
                     break;
                 default:
@@ -460,10 +470,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 state = new DateTimeType((ZonedDateTime) value);
             } else if (value instanceof QuantityType<?>) {
                 state = (QuantityType<?>) value;
-            } else if (value instanceof BigDecimal) {
-                state = new DecimalType((BigDecimal) value);
-            } else if (value instanceof Integer) {
-                state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
+            } else if (value instanceof Number) {
+                state = new DecimalType((Number) value);
             } else if (value instanceof String) {
                 state = new StringType(value.toString());
             } else if (value instanceof OnOffType) {
@@ -556,9 +564,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      */
     private void updateAllChannels() {
         // Update all channels from rthermData
-        for (Channel channel : getThing().getChannels()) {
-            updateChannel(channel.getUID().getId(), rthermData);
-        }
+        getThing().getChannels().forEach(channel -> {
+            if (!NO_UPDATE_CHANNEL_IDS.contains(channel.getUID().getId())) {
+                updateChannel(channel.getUID().getId(), rthermData);
+            }
+        });
     }
 
     /**
