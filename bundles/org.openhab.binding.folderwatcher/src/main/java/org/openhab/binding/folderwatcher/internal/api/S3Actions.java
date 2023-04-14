@@ -55,15 +55,7 @@ public class S3Actions {
     private String awsSecretKey;
 
     public S3Actions(HttpClientFactory httpClientFactory, String bucketName, String region) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-        try {
-            this.bucketUri = new URL("http://" + bucketName + ".s3." + region + ".amazonaws.com");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Unable to parse service endpoint: " + e.getMessage());
-        }
-        this.region = region;
-        this.awsAccessKey = "";
-        this.awsSecretKey = "";
+        this(httpClientFactory, bucketName, region, "", "");
     }
 
     public S3Actions(HttpClientFactory httpClientFactory, String bucketName, String region, String awsAccessKey,
@@ -82,8 +74,6 @@ public class S3Actions {
     public List<String> listBucket(String prefix) throws Exception {
         Map<String, String> headers = new HashMap<String, String>();
         Map<String, String> params = new HashMap<String, String>();
-        headers.clear();
-        params.clear();
         return listObjectsV2(prefix, headers, params);
     }
 

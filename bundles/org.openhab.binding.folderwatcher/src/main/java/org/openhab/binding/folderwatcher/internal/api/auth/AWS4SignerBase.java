@@ -33,7 +33,9 @@ import org.openhab.binding.folderwatcher.internal.api.util.HttpUtils;
 
 /**
  * The {@link AWS4SignerBase} class contains based methods for AWS S3 API authentication.
- *
+ * <p>
+ * Based on offical AWS example {@see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-examples-using-sdks.html}
+ * 
  * @author Alexandr Salamatov - Initial contribution
  */
 @NonNullByDefault
@@ -72,8 +74,9 @@ public abstract class AWS4SignerBase {
 
         StringBuilder buffer = new StringBuilder();
         for (String header : sortedHeaders) {
-            if (buffer.length() > 0)
+            if (buffer.length() > 0) {
                 buffer.append(";");
+            }
             buffer.append(header.toLowerCase());
         }
         return buffer.toString();

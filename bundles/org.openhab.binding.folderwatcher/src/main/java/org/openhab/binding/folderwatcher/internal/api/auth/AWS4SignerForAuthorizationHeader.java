@@ -22,7 +22,9 @@ import org.openhab.binding.folderwatcher.internal.api.util.BinaryUtils;
 /**
  * The {@link AWS4SignerForAuthorizationHeader} class contains methods for AWS S3 API authentication using HTTP(S)
  * headers.
- *
+ * <p>
+ * Based on offical AWS example {@see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-examples-using-sdks.html}
+ * 
  * @author Alexandr Salamatov - Initial contribution
  */
 @NonNullByDefault

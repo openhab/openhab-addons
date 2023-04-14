@@ -19,7 +19,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link HttpUtils} class contains metohdos related to HTTP(S).
- *
+ * <p>
+ * Based on offical AWS example {@see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-examples-using-sdks.html}
+ * 
  * @author Alexandr Salamatov - Initial contribution
  */
 @NonNullByDefault

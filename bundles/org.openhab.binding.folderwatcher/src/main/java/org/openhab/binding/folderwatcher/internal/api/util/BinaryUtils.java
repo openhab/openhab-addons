@@ -18,7 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link BinaryUtils} class contains methods for binary interactions.
- *
+ * <p>
+ * Based on offical AWS example {@see https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-examples-using-sdks.html}
+ * 
  * @author Alexandr Salamatov - Initial contribution
  */
 @NonNullByDefault
