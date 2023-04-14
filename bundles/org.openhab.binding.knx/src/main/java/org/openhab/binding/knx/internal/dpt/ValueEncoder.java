@@ -154,7 +154,7 @@ public class ValueEncoder {
             case "232.60000":
                 // MDT specific: mis-use 232.600 for hsv instead of rgb
                 int hue = hsb.getHue().toBigDecimal().multiply(BigDecimal.valueOf(255))
-                        .divide(BigDecimal.valueOf(360), 2, RoundingMode.HALF_UP).intValue();
+                        .divide(BigDecimal.valueOf(360), 0, RoundingMode.HALF_UP).intValue();
                 return "r:" + hue + " g:" + convertPercentToByte(hsb.getSaturation()) + " b:"
                         + convertPercentToByte(hsb.getBrightness());
             case "242.600":
@@ -188,14 +188,20 @@ public class ValueEncoder {
                     || DPTXlator2ByteFloat.DPT_KELVIN_PER_PERCENT.getID().equals(dptId)) {
                 // match unicode character or °C
                 if (value.toString().contains(SIUnits.CELSIUS.getSymbol()) || value.toString().contains("°C")) {
-                    unit = unit.replace("K", "°C");
+                    if (unit != null) {
+                        unit = unit.replace("K", "°C");
+                    }
                 } else if (value.toString().contains("°F")) {
-                    unit = unit.replace("K", "°F");
+                    if (unit != null) {
+                        unit = unit.replace("K", "°F");
+                    }
                     value = ((QuantityType<?>) value).multiply(BigDecimal.valueOf(5.0 / 9.0));
                 }
             } else if (DPTXlator4ByteFloat.DPT_LIGHT_QUANTITY.getID().equals(dptId)) {
                 if (!value.toString().contains("J")) {
-                    unit = unit.replace("J", "lm*s");
+                    if (unit != null) {
+                        unit = unit.replace("J", "lm*s");
+                    }
                 }
             } else if (DPTXlator4ByteFloat.DPT_ELECTRIC_FLUX.getID().equals(dptId)) {
                 // use alternate definition of flux
@@ -250,6 +256,6 @@ public class ValueEncoder {
      */
     private static int convertPercentToByte(PercentType percent) {
         return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).intValue();
+                .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).intValue();
     }
 }
