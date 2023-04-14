@@ -17,6 +17,7 @@ import static java.util.function.Predicate.not;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +31,7 @@ import org.openhab.binding.windcentrale.internal.api.WindcentraleAPI;
 import org.openhab.binding.windcentrale.internal.config.AccountConfiguration;
 import org.openhab.binding.windcentrale.internal.exception.FailedGettingDataException;
 import org.openhab.binding.windcentrale.internal.exception.InvalidAccessTokenException;
+import org.openhab.binding.windcentrale.internal.listener.ThingStatusListener;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -52,6 +54,7 @@ public class WindcentraleAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(WindcentraleAccountHandler.class);
 
     private final HttpClientFactory httpClientFactory;
+    private final List<ThingStatusListener> thingStatusListeners = new CopyOnWriteArrayList<>();
 
     private @Nullable WindcentraleAPI api;
     private @Nullable Exception apiException;
@@ -78,6 +81,11 @@ public class WindcentraleAccountHandler extends BaseBridgeHandler {
     public WindcentraleAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
+    }
+
+    public void addThingStatusListener(ThingStatusListener listener) {
+        thingStatusListeners.add(listener);
+        listener.thingStatusChanged(thing, thing.getStatus());
     }
 
     @Override
@@ -133,6 +141,24 @@ public class WindcentraleAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    public void removeThingStatusListener(ThingStatusListener listener) {
+        thingStatusListeners.remove(listener);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String comment) {
+        ThingStatus oldStatus = thing.getStatus();
+        super.updateStatus(status, detail, comment);
+        ThingStatus newStatus = thing.getStatus();
+
+        if (!oldStatus.equals(newStatus)) {
+            logger.debug("Updating listeners with status {}", status);
+            for (ThingStatusListener listener : thingStatusListeners) {
+                listener.thingStatusChanged(thing, status);
+            }
+        }
     }
 
     private void updateThingStatus() {
