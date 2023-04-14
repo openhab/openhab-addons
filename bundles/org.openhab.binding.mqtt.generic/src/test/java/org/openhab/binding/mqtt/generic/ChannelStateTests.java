@@ -54,6 +54,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * Tests the {@link ChannelState} class.
@@ -262,8 +263,8 @@ public class ChannelStateTests {
         c.processMessage("state", "12,18,231".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
         // rgb -> hsv -> rgb is quite lossy
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("11,18,232"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$d,%2$d,%1$d"), is("232,18,11"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("11,18,231"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$d,%2$d,%1$d"), is("231,18,11"));
     }
 
     @Test
@@ -307,13 +308,13 @@ public class ChannelStateTests {
         assertThat(value.getChannelState().toString(), is("0,0,10"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.322700,0.329000,10.00"));
 
-        HSBType t = HSBType.fromXY(0.3f, 0.6f);
+        HSBType t = ColorUtil.xyToHsb(new double[] { 0.3f, 0.6f });
 
         c.processMessage("state", "0.3,0.6,100".getBytes());
-        assertThat(value.getChannelState(), is(t)); // HSB
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.298700,0.601500,100.00"));
+        assertTrue(((HSBType) value.getChannelState()).closeTo(t, 0.001)); // HSB
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.300000,0.599900,100.00"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$.1f,%2$.4f,%1$.4f"),
-                is("100.0,0.6015,0.2987"));
+                is("100.0,0.5999,0.3000"));
     }
 
     @Test
