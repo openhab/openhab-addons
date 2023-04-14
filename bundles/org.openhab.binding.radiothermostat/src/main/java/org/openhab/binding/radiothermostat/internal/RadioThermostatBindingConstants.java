@@ -79,17 +79,16 @@ public class RadioThermostatBindingConstants {
     public static final String YESTERDAY_HEAT_RUNTIME = "yesterday_heat_runtime";
     public static final String YESTERDAY_COOL_RUNTIME = "yesterday_cool_runtime";
     public static final String REMOTE_TEMP = "remote_temp";
-    public static final String PRICE_MESSAGE = "price_message";
+    public static final String MESSAGE = "message";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream
             .of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE, SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY,
                     HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME, TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME,
-                    YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, PRICE_MESSAGE)
+                    YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, MESSAGE)
             .collect(Collectors.toSet());
 
-    public static final Set<String> NO_UPDATE_CHANNEL_IDS = Stream.of(REMOTE_TEMP, PRICE_MESSAGE)
-            .collect(Collectors.toSet());
+    public static final Set<String> NO_UPDATE_CHANNEL_IDS = Stream.of(REMOTE_TEMP, MESSAGE).collect(Collectors.toSet());
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = ImperialUnits.FAHRENHEIT;

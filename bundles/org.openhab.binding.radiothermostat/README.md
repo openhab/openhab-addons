@@ -88,7 +88,7 @@ The thermostat information that is retrieved is available as these channels:
 | today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                              |
 | yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                          |
 | yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                          |
-| price_message          | String (Send Only)   | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed    |
+| message                | String (Send Only)   | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed    |
 
 ## Full Example
 
@@ -168,7 +168,7 @@ Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channe
 Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
 Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
 Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
-String Therm_Message   "Message: [%s]"                                      { channel="radiothermostat:rtherm:mytherm1:price_message" }
+String Therm_Message   "Message: [%s]"                                      { channel="radiothermostat:rtherm:mytherm1:message" }
 
 // Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
 Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>     { channel="radiothermostat:rtherm:mytherm1:remote_temp" }

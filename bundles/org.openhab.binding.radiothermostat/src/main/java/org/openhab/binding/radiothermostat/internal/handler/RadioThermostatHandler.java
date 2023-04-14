@@ -387,7 +387,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
                     }
                     break;
-                case PRICE_MESSAGE:
+                case MESSAGE:
                     if (!BLANK.equals(cmdStr)) {
                         connector.sendCommand(null, null, String.format(JSON_PMA, cmdStr), PMA_RESOURCE);
                     } else {
