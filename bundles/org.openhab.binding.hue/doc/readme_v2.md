@@ -4,13 +4,14 @@
 
 ## Supported Things
 
-The binding supports `bridge`, `device`, `room`, and `zone` thing types.
-The `bridge` thing type represents the Hue Bridge which is the server for all other things.
-The `device` thing type represents a piece of physical equipment in the home which may contain 
+The binding supports `bridge-api2`, `device`, `room`, and `zone` thing types.
+The `bridge-api2` thing type represents the Hue Bridge which is the server for all other things.
+The `device` thing type represents a piece of physical equipment in the home.
 Such `device` things may contain either a *light*, a *button*, or (one or more) *sensors*.
 Lights can be of any type from a simple on/off light, through dimmable monochrome lights, to full colour dimmable lights.
 Buttons are devices having one or more push buttons.
 Sensors can be (for example) light level sensors, temperature sensors, or motion sensors.
+The `room` and `zone` thing type represents logical groupings of equipment in the home, either within a specific room, or a logical group of equipment.
 
 ## Thing Configuration
 
@@ -24,7 +25,7 @@ The generated application key can be found, after pressing the authentication bu
 The application key can be set using the `applicationKey` configuration value, e.g.:
 
 ```java
-Bridge hue:bridge:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopasdfghjklyxcvbnm1234" ]
+Bridge hue:bridge-api2:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopasdfghjklyxcvbnm1234" ]
 ```
 
 | Parameter                | Description                                                                                        |
@@ -127,8 +128,8 @@ The console command usage is `openhab:hue <brigeUID> things`.
 An exampe of such a console command, and its respective output, is shown below..
 
 ```text
-openhab> openhab:hue hue:clip2:g24 things
-Bridge hue:clip2:g24 "Philips Hue Bridge" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
+openhab> openhab:hue hue:bridge-api2:g24 things
+Bridge hue:bridge-api2:g24 "Philips Hue Bridge" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
   Thing device 11111111-2222-3333-4444-555555555555 "Standard Lamp L" [resourceId="11111111-2222-3333-4444-555555555555"] // Hue color lamp
   Thing device 11111111-2222-3333-4444-666666666666 "Kitchen Wallplate Switch" [resourceId="11111111-2222-3333-4444-666666666666"] // Hue wall switch module
   ..
@@ -138,7 +139,7 @@ Bridge hue:clip2:g24 "Philips Hue Bridge" [ipAddress="192.168.1.234", applicatio
 The `openhab:hue <brigeUID> things` command produces an output that can be used to directly create a `.things' file, as shown below..
 
 ```text
-openhab> openhab:hue hue:clip2:g24 things > myThingsFile.things
+openhab> openhab:hue hue:bridge-api2:g24 things > myThingsFile.things
 ```
 
 ## Full Example
@@ -146,7 +147,7 @@ openhab> openhab:hue hue:clip2:g24 things > myThingsFile.things
 ### demo.things:
 
 ```java
-Bridge hue:clip2:g24 "Philips Hue Hub" @ "Home" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
+Bridge hue:bridge-api2:g24 "Philips Hue Hub" @ "Home" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
     Thing device 11111111-2222-3333-4444-555555555555 "Living Room Standard Lamp Left" @ "Living Room" [resourceId="11111111-2222-3333-4444-555555555555"]
     Thing device 11111111-2222-3333-4444-666666666666 "Kitchen Wallplate Switch" @ "Kitchen" [resourceId="11111111-2222-3333-4444-666666666666"]
 
