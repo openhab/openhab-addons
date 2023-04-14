@@ -57,9 +57,9 @@ This binding currently supports the following events:
 Thing configuration:
 
 ```java
-folderwatcher:localfolder:myLocalFolder [ localDir="/myfolder", pollIntervalLocal=60, listHiddenLocal="false", listRecursiveLocal="false" ]
-folderwatcher:ftpfolder:myFTPFolder [ ftpAddress="X.X.X.X", ftpPort=21, secureMode="EXPLICIT", ftpUsername="username", ftpPassword="password",ftpDir="/myfolder/",listHidden="true",listRecursiveFtp="true",connectionTimeout=33,pollInterval=66,diffHours=25]
-folderwatcher:s3bucket:myS3bucket [ s3BucketName="mypublic-bucket", pollIntervalS3=60, awsRegion="us-west-1", s3Anonymous="true" ]
+folderwatcher:localfolder:myLocalFolder [ localDir="/myfolder", pollIntervalLocal=60, listHiddenLocal="false", listRecursiveLocal="false" ] 
+folderwatcher:ftpfolder:myLocalFolder   [ ftpAddress="X.X.X.X", ftpPort=21, secureMode="EXPLICIT", ftpUsername="username", ftpPassword="password", ftpDir="/myfolder/",  listHidden="true", listRecursiveFtp="true", connectionTimeout=33, pollInterval=66, diffHours=25 ]
+folderwatcher:s3bucket:myS3bucket       [ s3BucketName="mypublic-bucket", pollIntervalS3=60, awsRegion="us-west-1", s3Anonymous="true" ]
 
 ```
 
@@ -70,10 +70,10 @@ FTP example:
 ```java
 rule "New FTP file"
 when 
-    Channel 'folderwatcher:ftpfolder:myLocalFolder:newfile' triggered
+    Channel "folderwatcher:ftpfolder:myLocalFolder:newfile" triggered
 then
 
-    logInfo('NewFTPFile', receivedEvent.toString())
+    logInfo("NewFTPFile", receivedEvent.toString())
 
 end
 ```
@@ -83,10 +83,10 @@ Local folder example:
 ```java
 rule "New Local file"
 when 
-    Channel 'folderwatcher:localfolder:myFTPFolder:newfile' triggered
+    Channel "folderwatcher:localfolder:myFTPFolder:newfile" triggered
 then
 
-    logInfo('NewLocalFile', receivedEvent.toString())
+    logInfo("NewLocalFile", receivedEvent.toString())
 
 end
 ```
@@ -96,10 +96,10 @@ S3 bucket example:
 ```java
 rule "New S3 file"
 when 
-    Channel 'folderwatcher:s3bucket:myS3bucket:newfile' triggered
+    Channel "folderwatcher:s3bucket:myS3bucket:newfile" triggered
 then
 
-    logInfo('NewS3File', receivedEvent.toString())
+    logInfo("NewS3File", receivedEvent.toString())
 
 end
 ```
