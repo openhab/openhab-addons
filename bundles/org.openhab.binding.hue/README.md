@@ -65,9 +65,10 @@ And also, if a legacy API v1 thing exists and has items linked to its channels, 
 
 You need to manually edit your bridge and thing definitions as shown below..
 
-- Bridge definitions change from `hue:bridge:bridgename` to `hue:clip2:bridgename`.
+- Bridge definitions change from `hue:bridge:bridgename` to `hue:bridge-api2:bridgename`.
 - Bridge configuration parameters change `userName` to `applicationKey`.
-- Thing definitions change from `hue:0100:thingname` or `hue:0210:thingname` etc. to `hue:resource:thingname`.
+- Physical thing definitions change from `hue:0100:thingname` or `hue:0210:thingname` etc. to `hue:device:thingname`.
+- Room or zone thing definitions change from `hue:group:thingname` to `hue:room:thingname` resp. `hue:zone:thingname`.
 - Thing configuration parameters change from `lightId` or `sensorId` etc. to `resourceId`.
 
 Notes:
@@ -84,12 +85,15 @@ Bridge hue:bridge:g24 "Philips Hue Hub" @ "Under Stairs" [ipAddress="192.168.1.2
 }
 
 // new (API v2) ...
-Bridge hue:clip2:g24 "Philips Hue Hub (api2)" @ "Home" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
+Bridge hue:bridge-api2:g24 "Philips Hue Hub (api2)" @ "Home" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
     // Device things
     Thing device 11111111-2222-3333-4444-555555555555 "Living Room Standard Lamp Left" @ "Living Room" [resourceId="11111111-2222-3333-4444-555555555555"] // Hue color lamp
     ..
-    // Grouped light things
-    Thing groupedlight 99999999-8888-7777-6666-555555555555 "Back Bedroom (Room)" [resourceId="99999999-8888-7777-6666-555555555555"] // Grouped light
+    // Room things
+    Thing room 99999999-8888-7777-6666-555555555555 "Back Bedroom (Room)" [resourceId="99999999-8888-7777-6666-555555555555"] // Room
+    ..
+    // Zone things
+    Thing zone 99999999-8888-7777-6666-555555555555 "Standard Lamps" [resourceId="99999999-8888-7777-6666-555555555555"] // Zone
     ..
 }
 ```
