@@ -6,4 +6,5 @@
 	<type>binding</type>
 	<name>ELRO Connects Binding</name>
 	<description>This is the binding for the ELRO Connects smart home system.</description>
+	<connection>cloudDiscovery</connection>
 </addon:addon>
