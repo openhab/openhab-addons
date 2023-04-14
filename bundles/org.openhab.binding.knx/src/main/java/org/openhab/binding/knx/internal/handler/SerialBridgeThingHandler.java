@@ -65,7 +65,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
     }
 
     public void initializeLater() {
-        final var tmpClient = client;
+        SerialClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();
         }
@@ -73,7 +73,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void dispose() {
-        final var tmpInitJob = initJob;
+        Future<?> tmpInitJob = initJob;
         if (tmpInitJob != null) {
             if (!tmpInitJob.isDone()) {
                 logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
@@ -87,7 +87,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
             initJob = null;
         }
 
-        final var tmpClient = client;
+        SerialClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.dispose();
             client = null;
