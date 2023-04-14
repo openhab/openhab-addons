@@ -14,8 +14,6 @@ package org.openhab.binding.radiothermostat.internal;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
@@ -82,13 +80,12 @@ public class RadioThermostatBindingConstants {
     public static final String MESSAGE = "message";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream
-            .of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE, SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY,
-                    HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME, TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME,
-                    YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, MESSAGE)
-            .collect(Collectors.toSet());
 
-    public static final Set<String> NO_UPDATE_CHANNEL_IDS = Stream.of(REMOTE_TEMP, MESSAGE).collect(Collectors.toSet());
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE,
+            SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME,
+            TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, MESSAGE);
+
+    public static final Set<String> NO_UPDATE_CHANNEL_IDS = Set.of(REMOTE_TEMP, MESSAGE);
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = ImperialUnits.FAHRENHEIT;

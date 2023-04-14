@@ -118,7 +118,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         this.disableLogs = config.disableLogs;
         this.clockSync = config.clockSync;
 
-        if (hostName == null || BLANK.equals(hostName)) {
+        if (hostName == null || hostName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-hostname");
             return;
@@ -197,14 +197,14 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             Runnable runnable = () -> {
                 // populate the heat and cool programs on the thermostat from the user configuration,
                 // the commands will be sent each time the refresh job runs until a success response is seen
-                if (!BLANK.equals(heatProgramJson)) {
+                if (!heatProgramJson.isEmpty()) {
                     final String response = connector.sendCommand(null, null, heatProgramJson, HEAT_PROGRAM_RESOURCE);
                     if (response.contains("success")) {
                         heatProgramJson = BLANK;
                     }
                 }
 
-                if (!BLANK.equals(coolProgramJson)) {
+                if (!coolProgramJson.isEmpty()) {
                     final String response = connector.sendCommand(null, null, coolProgramJson, COOL_PROGRAM_RESOURCE);
                     if (response.contains("success")) {
                         coolProgramJson = BLANK;
@@ -388,7 +388,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     }
                     break;
                 case MESSAGE:
-                    if (!BLANK.equals(cmdStr)) {
+                    if (!cmdStr.isEmpty()) {
                         connector.sendCommand(null, null, String.format(JSON_PMA, cmdStr), PMA_RESOURCE);
                     } else {
                         connector.sendCommand("mode", "0", PMA_RESOURCE);
@@ -579,11 +579,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private List<StateOption> getFanModeOptions() {
         List<StateOption> fanModeOptions = new ArrayList<>();
 
-        fanModeOptions.add(new StateOption("0", "Auto"));
+        fanModeOptions.add(new StateOption("0", "@text/options.fan-option-auto"));
         if (this.isCT80) {
-            fanModeOptions.add(new StateOption("1", "Auto/Circulate"));
+            fanModeOptions.add(new StateOption("1", "@text/options.fan-option-circulate"));
         }
-        fanModeOptions.add(new StateOption("2", "On"));
+        fanModeOptions.add(new StateOption("2", "@text/options.fan-option-on"));
 
         return fanModeOptions;
     }

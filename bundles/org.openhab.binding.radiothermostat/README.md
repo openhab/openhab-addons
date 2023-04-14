@@ -88,7 +88,7 @@ The thermostat information that is retrieved is available as these channels:
 | today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                              |
 | yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                          |
 | yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                          |
-| message                | String (Send Only)   | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed    |
+| message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed    |
 
 ## Full Example
 
@@ -232,7 +232,7 @@ then
   actions.sendRawCommand('{"hold":1, "t_heat":' + "68" + ', "tmode":1}')
 
   // Also a command can be sent to a specific endpoint on the thermostat by
-  // specifying it as the second arguement to sendRawCommand():
+  // specifying it as the second argument to sendRawCommand():
 
   // Reboot the thermostat
   // actions.sendRawCommand('{"command": "reboot"}', 'sys/command')
@@ -252,7 +252,7 @@ when
 then
   // Display up to 5 numbers in the thermostat's Price Message Area (PMA)
   // A decimal point can be used. CT80 can display a negative '-' number
-  // Send an empty string to clear the number and restore the time display
+  // Send null or empty string to clear the number and restore the time display
   var Number temp = Math.round((OutsideTemp.state as DecimalType).doubleValue).intValue
   Therm_Message.sendCommand(temp)
 end

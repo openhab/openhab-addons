@@ -34,8 +34,11 @@
 			<channel id="message" typeId="message"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:radiothermostat:thermostatconfig"/>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
+		<config-description-ref uri="thing-type:radiothermostat:thermostatconfig"/>
 	</thing-type>
 
 	<channel-type id="temp-temperature">
