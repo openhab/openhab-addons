@@ -31,8 +31,11 @@ import org.openhab.binding.windcentrale.internal.exception.FailedGettingDataExce
 import org.openhab.binding.windcentrale.internal.exception.InvalidAccessTokenException;
 import org.openhab.binding.windcentrale.internal.handler.WindcentraleAccountHandler;
 import org.openhab.binding.windcentrale.internal.handler.WindcentraleWindmillHandler;
+import org.openhab.binding.windcentrale.internal.listener.ThingStatusListener;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -47,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
-public class WindcentraleDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class WindcentraleDiscoveryService extends AbstractDiscoveryService
+        implements ThingHandlerService, ThingStatusListener {
 
     private final Logger logger = LoggerFactory.getLogger(WindcentraleDiscoveryService.class);
     private @NonNullByDefault({}) WindcentraleAccountHandler accountHandler;
@@ -64,6 +68,7 @@ public class WindcentraleDiscoveryService extends AbstractDiscoveryService imple
     public void deactivate() {
         cancelDiscoveryJob();
         super.deactivate();
+        accountHandler.removeThingStatusListener(this);
     }
 
     @Override
@@ -74,12 +79,14 @@ public class WindcentraleDiscoveryService extends AbstractDiscoveryService imple
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof WindcentraleAccountHandler accountHandler) {
+            accountHandler.addThingStatusListener(this);
             this.accountHandler = accountHandler;
         }
     }
 
     @Override
     protected void startScan() {
+        logger.debug("Discover windmills (manual discovery)");
         cancelDiscoveryJob();
         discoveryJob = scheduler.submit(this::discoverWindmills);
     }
@@ -88,6 +95,14 @@ public class WindcentraleDiscoveryService extends AbstractDiscoveryService imple
     protected synchronized void stopScan() {
         cancelDiscoveryJob();
         super.stopScan();
+    }
+
+    @Override
+    public void thingStatusChanged(Thing thing, ThingStatus status) {
+        if (ThingStatus.ONLINE.equals(status)) {
+            logger.debug("Discover windmills (account online)");
+            discoverWindmills();
+        }
     }
 
     private void cancelDiscoveryJob() {
