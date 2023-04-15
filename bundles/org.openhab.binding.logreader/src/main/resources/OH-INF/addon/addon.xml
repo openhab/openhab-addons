@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>LogReader Binding</name>
 	<description>Binding that reads through log files and searches e.g. errors and warnings</description>
+	<connection>local</connection>
 
 </addon:addon>

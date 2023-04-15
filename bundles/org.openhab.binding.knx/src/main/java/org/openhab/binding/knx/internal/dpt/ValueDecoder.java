@@ -310,8 +310,8 @@ public class ValueDecoder {
                 if (stringY == null) {
                     return ColorUtil.xyToHsb(new double[] { x, y });
                 } else {
-                    double Y = Double.parseDouble(stringY.replace(",", "."));
-                    return ColorUtil.xyToHsb(new double[] { x, y, Y });
+                    double pY = Double.parseDouble(stringY.replace(",", "."));
+                    return ColorUtil.xyToHsb(new double[] { x, y, pY });
                 }
             }
         }

@@ -251,7 +251,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             state = ClientState.RUNNING;
             return true;
         } catch (InterruptedException e) {
-            final var lastState = state;
+            ClientState lastState = state;
             state = ClientState.INTERRUPTED;
 
             logger.trace("Bridge {}, connection interrupted", thingUID);
@@ -458,7 +458,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     @Override
     public boolean isConnected() {
-        final var tmpLink = link;
+        KNXNetworkLink tmpLink = link;
         return tmpLink != null && tmpLink.isOpen();
     }
 
