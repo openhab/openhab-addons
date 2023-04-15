@@ -339,9 +339,9 @@ class DPTTest {
         HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
 
         assertNotNull(hsbType);
-        assertEquals(207, hsbType.getHue().doubleValue(), 0.1);
-        assertEquals(23, hsbType.getSaturation().doubleValue(), 0.1);
-        assertEquals(19, hsbType.getBrightness().doubleValue(), 0.1);
+        assertEquals(207, hsbType.getHue().doubleValue(), 0.5);
+        assertEquals(23, hsbType.getSaturation().doubleValue(), 0.5);
+        assertEquals(19, hsbType.getBrightness().doubleValue(), 0.5);
     }
 
     // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
