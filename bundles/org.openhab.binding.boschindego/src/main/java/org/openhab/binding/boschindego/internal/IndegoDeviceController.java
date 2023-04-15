@@ -46,7 +46,8 @@ import org.openhab.core.library.types.RawType;
  * rewritten from scratch to use Jetty HTTP client for HTTP communication and GSON for
  * JSON parsing. Thanks to Oliver Schünemann for providing the original implementation.
  * 
- * @see <a href="https://github.com/zazaz-de/iot-device-bosch-indego-controller">zazaz-de/iot-device-bosch-indego-controller</a>
+ * @see <a href=
+ *      "https://github.com/zazaz-de/iot-device-bosch-indego-controller">zazaz-de/iot-device-bosch-indego-controller</a>
  * 
  * @author Jacob Laursen - Initial contribution
  */
