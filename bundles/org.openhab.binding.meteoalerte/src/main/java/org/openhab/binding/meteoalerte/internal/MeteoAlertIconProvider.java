@@ -104,5 +104,4 @@ public class MeteoAlertIconProvider implements IconProvider {
         }
         return result;
     }
-
 }

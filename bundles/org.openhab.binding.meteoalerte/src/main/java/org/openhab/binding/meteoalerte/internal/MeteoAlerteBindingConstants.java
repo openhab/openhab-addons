@@ -55,5 +55,4 @@ public class MeteoAlerteBindingConstants {
     public static final Map<AlertLevel, State> ALERT_LEVELS = Map.of(AlertLevel.GREEN, DecimalType.ZERO,
             AlertLevel.YELLOW, new DecimalType(1), AlertLevel.ORANGE, new DecimalType(2), AlertLevel.RED,
             new DecimalType(3));
-
 }
