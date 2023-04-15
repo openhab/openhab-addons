@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteHandler;
 import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
@@ -36,6 +35,11 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link MeteoAlertIconProvider} is the class providing binding related icons.
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 @Component(immediate = true, service = { IconProvider.class })
 @NonNullByDefault
 public class MeteoAlertIconProvider implements IconProvider {
@@ -44,7 +48,7 @@ public class MeteoAlertIconProvider implements IconProvider {
     private static final IconSet ICON_SET = new IconSet(BINDING_ID, "Météo Alerte Icons",
             "These are the icons describing weather events", Set.of(Format.SVG));
 
-    private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
     private final ClassLoader classLoader;
 
     @Activate
