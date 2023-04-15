@@ -19,7 +19,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 
 import javax.ws.rs.core.UriBuilder;
@@ -44,7 +43,7 @@ public class AuthenticationApi extends RestManager {
     private List<Scope> grantedScope = List.of();
     private @Nullable String authorization;
 
-    public AuthenticationApi(ApiBridgeHandler bridge, ScheduledExecutorService scheduler) {
+    public AuthenticationApi(ApiBridgeHandler bridge) {
         super(bridge, FeatureArea.NONE);
     }
 

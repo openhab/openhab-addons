@@ -104,7 +104,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final int TIMEOUT_S = 20;
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
-    private final AuthenticationApi connectApi = new AuthenticationApi(this, scheduler);
+    private final AuthenticationApi connectApi = new AuthenticationApi(this);
     private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private final Deque<LocalDateTime> requestsTimestamps = new ArrayDeque<>(200);
     private final BindingConfiguration bindingConf;
