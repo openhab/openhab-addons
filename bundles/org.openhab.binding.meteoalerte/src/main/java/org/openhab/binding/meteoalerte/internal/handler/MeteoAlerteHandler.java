@@ -19,10 +19,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +33,6 @@ import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
 import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -60,18 +61,11 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             + "facet=etat_vent&facet=etat_pluie_inondation&facet=etat_orage&facet=etat_inondation&facet=etat_neige&facet=etat_canicule&"
             + "facet=etat_grand_froid&facet=etat_avalanches&refine.nom_dept=%s";
     private static final int TIMEOUT_MS = 30000;
-    private static final String UNKNOWN_COLOR = "b3b3b3";
-    private static final Map<AlertLevel, String> ALERT_COLORS = Map.ofEntries(Map.entry(AlertLevel.GREEN, "00ff00"),
-            Map.entry(AlertLevel.YELLOW, "ffff00"), Map.entry(AlertLevel.ORANGE, "ff6600"),
-            Map.entry(AlertLevel.RED, "ff0000"), Map.entry(AlertLevel.UNKNOWN, UNKNOWN_COLOR));
-
-    private static final Map<AlertLevel, State> ALERT_LEVELS = Map.ofEntries(
-            Map.entry(AlertLevel.GREEN, DecimalType.ZERO), Map.entry(AlertLevel.YELLOW, new DecimalType(1)),
-            Map.entry(AlertLevel.ORANGE, new DecimalType(2)), Map.entry(AlertLevel.RED, new DecimalType(3)));
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     private final Gson gson;
-    private @Nullable ScheduledFuture<?> refreshJob;
+
+    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private String queryUrl = "";
 
     public MeteoAlerteHandler(Thing thing, Gson gson) {
@@ -88,18 +82,17 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         logger.debug("config refresh = {}", config.refresh);
 
         updateStatus(ThingStatus.UNKNOWN);
-        queryUrl = String.format(URL, config.department);
-        refreshJob = scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES);
+        queryUrl = URL.formatted(config.department);
+        refreshJob = Optional
+                .of(scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES));
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing the Météo Alerte handler.");
-        ScheduledFuture<?> localJob = refreshJob;
-        if (localJob != null) {
-            localJob.cancel(true);
-        }
-        refreshJob = null;
+
+        refreshJob.ifPresent(job -> job.cancel(true));
+        refreshJob = Optional.empty();
     }
 
     @Override
@@ -114,16 +107,15 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             if (queryUrl.isEmpty()) {
                 throw new MalformedURLException("queryUrl not initialized");
             }
-            String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
+            String response = HttpUtil.executeUrl(HttpMethod.GET, queryUrl, TIMEOUT_MS);
             if (response == null) {
                 throw new IOException("Empty response");
             }
             updateStatus(ThingStatus.ONLINE);
-            ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
-            updateChannels(Objects.requireNonNull(apiResponse));
+            updateChannels(Objects.requireNonNull(gson.fromJson(response, ApiResponse.class)));
         } catch (MalformedURLException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("Querying '%s' raised : %s", queryUrl, e.getMessage()));
+                    "Querying '%s' error : %s".formatted(queryUrl, e.getMessage()));
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -135,7 +127,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
      * @param channelId the id identifying the channel to be updated
      */
     private void updateChannels(ApiResponse apiResponse) {
-        apiResponse.getRecords().findFirst().ifPresent((record) -> record.getResponseFieldDTO().ifPresent(fields -> {
+        apiResponse.getRecords().findFirst().ifPresent(record -> record.getResponseFieldDTO().ifPresent(fields -> {
             updateAlert(WIND, fields.getVent());
             updateAlert(RAIN, fields.getPluieInondation());
             updateAlert(STORM, fields.getOrage());
@@ -170,7 +162,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         }
         if (isLinked(channelIcon)) {
             State result = UnDefType.UNDEF;
-            byte[] bytes = getResource(String.format("picto/%s.svg", channelId));
+            byte[] bytes = getResource(String.format("picto/%s.svg", channelId.replace("-", "_")));
             if (bytes != null) {
                 String resource = new String(bytes, StandardCharsets.UTF_8);
                 resource = resource.replaceAll(UNKNOWN_COLOR, ALERT_COLORS.getOrDefault(value, UNKNOWN_COLOR));

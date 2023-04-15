@@ -34,8 +34,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 
 /**
- * The {@link MeteoAlerteHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link MeteoAlerteHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Gaël L'hopital - Initial contribution
  */

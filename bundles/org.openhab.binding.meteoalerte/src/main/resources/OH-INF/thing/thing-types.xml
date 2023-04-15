@@ -9,33 +9,15 @@
 		<description>Fournit les niveaux d'alerte météo pour un département.</description>
 
 		<channels>
-			<channel id="vague-submersion" typeId="alert-level">
-				<label>Etat Vague Submersion</label>
-			</channel>
-			<channel id="vent" typeId="alert-level">
-				<label>Etat Vent</label>
-			</channel>
-			<channel id="pluie-inondation" typeId="alert-level">
-				<label>Etat Pluie Inondation</label>
-			</channel>
-			<channel id="orage" typeId="alert-level">
-				<label>Etat Orage</label>
-			</channel>
-			<channel id="inondation" typeId="alert-level">
-				<label>Etat Inondation</label>
-			</channel>
-			<channel id="neige" typeId="alert-level">
-				<label>Etat Neige</label>
-			</channel>
-			<channel id="canicule" typeId="alert-level">
-				<label>Etat Canicule</label>
-			</channel>
-			<channel id="grand-froid" typeId="alert-level">
-				<label>Etat Grand Froid</label>
-			</channel>
-			<channel id="avalanches" typeId="alert-level">
-				<label>Etat Avalanches</label>
-			</channel>
+			<channel id="vague-submersion" typeId="vague-submersion"/>
+			<channel id="vent" typeId="vent"/>
+			<channel id="pluie-inondation" typeId="pluie-inondation"/>
+			<channel id="orage" typeId="orage"/>
+			<channel id="inondation" typeId="inondation"/>
+			<channel id="neige" typeId="neige"/>
+			<channel id="canicule" typeId="canicule"/>
+			<channel id="grand-froid" typeId="grand-froid"/>
+			<channel id="avalanches" typeId="avalanches"/>
 			<channel id="vague-submersion-icon" typeId="condition-icon">
 				<label>Icône Vague Submersion</label>
 			</channel>
@@ -184,22 +166,145 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="alert-level">
-		<item-type>Number</item-type>
-		<label>Alerte</label>
-		<state readOnly="true">
-			<options>
-				<option value="0">Vert</option>
-				<option value="1">Jaune</option>
-				<option value="2">Orange</option>
-				<option value="3">Rouge</option>
-			</options>
-		</state>
-	</channel-type>
+    <channel-type id="vent">
+        <item-type>Number</item-type>
+        <label>Etat Vent</label>
+        <description>Niveau d'alerte aux évènements éoliens</description>
+        <category>vent</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="orage">
+        <item-type>Number</item-type>
+        <label>Etat Orage</label>
+        <description>Niveau d'alerte aux évènements orageux</description>
+        <category>orage</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="inondation">
+        <item-type>Number</item-type>
+        <label>Etat Inondation</label>
+        <description>Niveau d'alerte aux inondations</description>
+        <category>inondation</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="neige">
+        <item-type>Number</item-type>
+        <label>Etat Neige</label>
+        <description>Niveau d'alerte aux évènements neigeux</description>
+        <category>neige</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="canicule">
+        <item-type>Number</item-type>
+        <label>Etat Canicule</label>
+        <description>Niveau d'alerte aux fortes températures</description>
+        <category>canicule</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="grand-froid">
+        <item-type>Number</item-type>
+        <label>Etat Grand Froid</label>
+        <description>Niveau d'alerte aux températures négatives</description>
+        <category>grand_froid</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="avalanches">
+        <item-type>Number</item-type>
+        <label>Etat Avalanches</label>
+        <description>Niveau d'alerte aux avalanches</description>
+        <category>avalanches</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="vague-submersion">
+        <item-type>Number</item-type>
+        <label>Etat Vague Submersion</label>
+        <description>Niveau d'alerte aux vagues submersion</description>
+        <category>vague_submersion</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="pluie-inondation">
+        <item-type>Number</item-type>
+        <label>Etat Pluie Inondation</label>
+        <description>Niveau d'alerte aux inondations causée par les précipitations</description>
+        <category>pluie_inondation</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Vert</option>
+                <option value="1">Jaune</option>
+                <option value="2">Orange</option>
+                <option value="3">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
 
 	<channel-type id="comment">
 		<item-type>String</item-type>
 		<label>Commentaire</label>
+		<category>text</category>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
