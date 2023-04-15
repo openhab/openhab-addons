@@ -59,13 +59,9 @@ public class AuthenticationApi extends RestManager {
         grantedScope = Stream.of(scope.split(" ")).map(s -> Scope.valueOf(s.toUpperCase())).toList();
     }
 
-    public void disconnect() {
+    public void dispose() {
         authorization = null;
         grantedScope = List.of();
-    }
-
-    public void dispose() {
-        disconnect();
     }
 
     public Optional<String> getAuthorization() {

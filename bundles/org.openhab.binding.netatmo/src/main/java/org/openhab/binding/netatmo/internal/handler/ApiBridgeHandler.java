@@ -231,7 +231,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void prepareReconnection(@Nullable String code, @Nullable String redirectUri) {
-        connectApi.disconnect();
+        connectApi.dispose();
         freeConnectJob();
         connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri),
                 getConfiguration().reconnectInterval, TimeUnit.SECONDS));
