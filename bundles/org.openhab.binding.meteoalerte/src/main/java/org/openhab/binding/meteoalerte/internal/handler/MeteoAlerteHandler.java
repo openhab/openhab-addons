@@ -17,17 +17,14 @@ import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstan
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.HttpMethod;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meteoalerte.internal.MeteoAlertIconProvider;
 import org.openhab.binding.meteoalerte.internal.MeteoAlerteConfiguration;
 import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
 import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
@@ -44,6 +41,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.ui.icon.IconSet.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,13 +62,15 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     private final Gson gson;
+    private final MeteoAlertIconProvider iconProvider;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private String queryUrl = "";
 
-    public MeteoAlerteHandler(Thing thing, Gson gson) {
+    public MeteoAlerteHandler(Thing thing, Gson gson, MeteoAlertIconProvider iconProvider) {
         super(thing);
         this.gson = gson;
+        this.iconProvider = iconProvider;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             if (queryUrl.isEmpty()) {
                 throw new MalformedURLException("queryUrl not initialized");
             }
-            String response = HttpUtil.executeUrl(HttpMethod.GET, queryUrl, TIMEOUT_MS);
+            String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
             if (response == null) {
                 throw new IOException("Empty response");
             }
@@ -143,32 +143,27 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         }));
     }
 
-    private byte @Nullable [] getResource(String iconPath) {
-        ClassLoader classLoader = MeteoAlerteHandler.class.getClassLoader();
-        if (classLoader != null) {
-            try (InputStream stream = classLoader.getResourceAsStream(iconPath)) {
-                return stream != null ? stream.readAllBytes() : null;
-            } catch (IOException e) {
-                logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
-            }
-        }
-        return null;
-    }
-
     private void updateAlert(String channelId, AlertLevel value) {
         String channelIcon = channelId + "-icon";
         if (isLinked(channelId)) {
             updateState(channelId, ALERT_LEVELS.getOrDefault(value, UnDefType.UNDEF));
         }
         if (isLinked(channelIcon)) {
-            State result = UnDefType.UNDEF;
-            byte[] bytes = getResource(String.format("picto/%s.svg", channelId.replace("-", "_")));
-            if (bytes != null) {
-                String resource = new String(bytes, StandardCharsets.UTF_8);
-                resource = resource.replaceAll(UNKNOWN_COLOR, ALERT_COLORS.getOrDefault(value, UNKNOWN_COLOR));
-                result = new RawType(resource.getBytes(StandardCharsets.UTF_8), "image/svg+xml");
+            State state = ALERT_LEVELS.getOrDefault(value, UnDefType.UNDEF);
+            InputStream icon = iconProvider.getIcon(channelId.replace("-", "_"), BINDING_ID, state.toString(),
+                    Format.SVG);
+            try {
+                if (icon == null) {
+                    throw new IOException("Null icon returned");
+                }
+                byte[] bytes = new byte[icon.available()];
+                icon.read(bytes);
+                State result = new RawType(bytes, "image/svg+xml");
+                updateState(channelIcon, result);
+            } catch (IOException e) {
+                logger.warn("Error reading icon resource for channel {} and value {} : {}", channelId, value,
+                        e.getMessage());
             }
-            updateState(channelIcon, result);
         }
     }
 

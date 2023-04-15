@@ -54,6 +54,10 @@
 			</channel>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="department" type="text" required="true">
 				<label>Département</label>
@@ -168,9 +172,9 @@
 
 	<channel-type id="vent">
 		<item-type>Number</item-type>
-		<label>Etat Vent</label>
+		<label>Vent</label>
 		<description>Niveau d'alerte aux évènements éoliens</description>
-		<category>vent</category>
+		<category>oh:meteoalerte:vent</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -183,9 +187,9 @@
 
 	<channel-type id="orage">
 		<item-type>Number</item-type>
-		<label>Etat Orage</label>
+		<label>Orage</label>
 		<description>Niveau d'alerte aux évènements orageux</description>
-		<category>orage</category>
+		<category>oh:meteoalerte:orage</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -198,9 +202,9 @@
 
 	<channel-type id="inondation">
 		<item-type>Number</item-type>
-		<label>Etat Inondation</label>
+		<label>Inondation</label>
 		<description>Niveau d'alerte aux inondations</description>
-		<category>inondation</category>
+		<category>oh:meteoalerte:inondation</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -213,9 +217,9 @@
 
 	<channel-type id="neige">
 		<item-type>Number</item-type>
-		<label>Etat Neige</label>
+		<label>Neige</label>
 		<description>Niveau d'alerte aux évènements neigeux</description>
-		<category>neige</category>
+		<category>oh:meteoalerte:neige</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -228,9 +232,9 @@
 
 	<channel-type id="canicule">
 		<item-type>Number</item-type>
-		<label>Etat Canicule</label>
+		<label>Canicule</label>
 		<description>Niveau d'alerte aux fortes températures</description>
-		<category>canicule</category>
+		<category>oh:meteoalerte:canicule</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -243,9 +247,9 @@
 
 	<channel-type id="grand-froid">
 		<item-type>Number</item-type>
-		<label>Etat Grand Froid</label>
+		<label>Grand Froid</label>
 		<description>Niveau d'alerte aux températures négatives</description>
-		<category>grand_froid</category>
+		<category>oh:meteoalerte:grand_froid</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -258,9 +262,9 @@
 
 	<channel-type id="avalanches">
 		<item-type>Number</item-type>
-		<label>Etat Avalanches</label>
+		<label>Avalanches</label>
 		<description>Niveau d'alerte aux avalanches</description>
-		<category>avalanches</category>
+		<category>oh:meteoalerte:avalanches</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -273,9 +277,9 @@
 
 	<channel-type id="vague-submersion">
 		<item-type>Number</item-type>
-		<label>Etat Vague Submersion</label>
+		<label>Vague Submersion</label>
 		<description>Niveau d'alerte aux vagues submersion</description>
-		<category>vague_submersion</category>
+		<category>oh:meteoalerte:vague_submersion</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -288,9 +292,9 @@
 
 	<channel-type id="pluie-inondation">
 		<item-type>Number</item-type>
-		<label>Etat Pluie Inondation</label>
+		<label>Pluie Inondation</label>
 		<description>Niveau d'alerte aux inondations causée par les précipitations</description>
-		<category>pluie_inondation</category>
+		<category>oh:meteoalerte:pluie_inondation</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -321,4 +325,5 @@
 		<description>Pictogramme associé au niveau d'alerte.</description>
 		<state readOnly="true"/>
 	</channel-type>
+
 </thing:thing-descriptions>

@@ -38,18 +38,21 @@ import com.google.gson.JsonDeserializer;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.meteoalerte")
+@Component(service = ThingHandlerFactory.class)
 @NonNullByDefault
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson;
+    private final MeteoAlertIconProvider iconProvider;
 
     @Activate
-    public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
+    public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
+            @Reference MeteoAlertIconProvider iconProvider) {
         this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
                 (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
                         .parse(json.getAsJsonPrimitive().getAsString())
                         .withZoneSameInstant(timeZoneProvider.getTimeZone()))
                 .create();
+        this.iconProvider = iconProvider;
     }
 
     @Override
@@ -61,6 +64,6 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return supportsThingType(thingTypeUID) ? new MeteoAlerteHandler(thing, gson) : null;
+        return supportsThingType(thingTypeUID) ? new MeteoAlerteHandler(thing, gson, iconProvider) : null;
     }
 }

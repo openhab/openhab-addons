@@ -17,21 +17,25 @@ import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstan
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 import org.openhab.core.ui.icon.IconProvider;
 import org.openhab.core.ui.icon.IconSet;
 import org.openhab.core.ui.icon.IconSet.Format;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,35 +44,55 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(immediate = true, service = { IconProvider.class })
+@Component(service = { IconProvider.class, MeteoAlertIconProvider.class })
 @NonNullByDefault
 public class MeteoAlertIconProvider implements IconProvider {
+    private static final String DEFAULT_LABEL = "Météo Alerte Icons";
+    private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather events provided by Météo Alerte";
+
     private static final Set<String> ICONS = Set.of(WAVE.replace("-", "_"), AVALANCHE, HEAT, FREEZE.replace("-", "_"),
             FLOOD, SNOW, STORM, RAIN.replace("-", "_"), WIND);
-    private static final IconSet ICON_SET = new IconSet(BINDING_ID, "Météo Alerte Icons",
-            "These are the icons describing weather events", Set.of(Format.SVG));
+
+    public static final String UNKNOWN_COLOR = "b3b3b3";
+
+    public static final Map<AlertLevel, String> ALERT_COLORS = Map.of(AlertLevel.GREEN, "00ff00", AlertLevel.YELLOW,
+            "ffff00", AlertLevel.ORANGE, "ff6600", AlertLevel.RED, "ff0000", AlertLevel.UNKNOWN, UNKNOWN_COLOR);
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
-    private final ClassLoader classLoader;
+    private final BundleContext context;
+    private final TranslationProvider i18nProvider;
 
     @Activate
-    public MeteoAlertIconProvider() {
-        classLoader = Objects.requireNonNull(MeteoAlertIconProvider.class.getClassLoader());
+    public MeteoAlertIconProvider(final BundleContext context, final @Reference TranslationProvider i18nProvider) {
+        this.context = context;
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
     public Set<IconSet> getIconSets() {
-        return Set.of(ICON_SET);
+        return getIconSets(null);
     }
 
     @Override
     public Set<IconSet> getIconSets(@Nullable Locale locale) {
-        return getIconSets();
+        String label = getText("label", DEFAULT_LABEL, locale);
+        String description = getText("decription", DEFAULT_DESCRIPTION, locale);
+
+        return Set.of(new IconSet(BINDING_ID, label, description, Set.of(Format.SVG)));
+    }
+
+    private String getText(String entry, String defaultValue, @Nullable Locale locale) {
+        String label = defaultValue;
+        if (locale != null) {
+            label = i18nProvider.getText(context.getBundle(), "iconset." + entry, defaultValue, locale);
+            label = label == null ? defaultValue : label;
+        }
+        return label;
     }
 
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
-        return ICONS.contains(category) && format == Format.SVG ? 7 : null;
+        return ICONS.contains(category.replace(BINDING_ID + ":", "")) && format == Format.SVG ? 7 : null;
     }
 
     @Override
@@ -98,13 +122,15 @@ public class MeteoAlertIconProvider implements IconProvider {
 
     private String getResource(String iconName) {
         String result = "";
-        String iconPath = "picto/%s.svg".formatted(iconName);
-        try (InputStream stream = classLoader.getResourceAsStream(iconPath)) {
+
+        URL iconResource = context.getBundle()
+                .getEntry("icons/%s.svg".formatted(iconName.replace(BINDING_ID + ":", "")));
+        try (InputStream stream = iconResource.openStream()) {
             if (stream != null) {
                 result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
-            logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
+            logger.warn("Unable to load ressource '{}' : {}", iconResource.getPath(), e.getMessage());
         }
         return result;
     }

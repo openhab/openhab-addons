@@ -47,11 +47,6 @@ public class MeteoAlerteBindingConstants {
     public static final String END_TIME = "end-time";
     public static final String COMMENT = "comment";
 
-    public static final String UNKNOWN_COLOR = "b3b3b3";
-
-    public static final Map<AlertLevel, String> ALERT_COLORS = Map.of(AlertLevel.GREEN, "00ff00", AlertLevel.YELLOW,
-            "ffff00", AlertLevel.ORANGE, "ff6600", AlertLevel.RED, "ff0000", AlertLevel.UNKNOWN, UNKNOWN_COLOR);
-
     public static final Map<AlertLevel, State> ALERT_LEVELS = Map.of(AlertLevel.GREEN, DecimalType.ZERO,
             AlertLevel.YELLOW, new DecimalType(1), AlertLevel.ORANGE, new DecimalType(2), AlertLevel.RED,
             new DecimalType(3));
