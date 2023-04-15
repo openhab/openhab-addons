@@ -4,8 +4,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>voice</type>
-	<name>macOS Text-to-Speech</name>
-	<description>The macOS Text-to-Speech (TTS) service uses the macOS "say" command for producing spoken text.</description>
+	<name>Mimic Text-to-Speech</name>
+	<description>The Mimic Text-to-Speech (TTS) service uses the offline open source Text-to-Speech engine designed by
+		Mycroft A.I.</description>
 	<connection>local</connection>
 
 	<service-id>org.openhab.voice.mimictts</service-id>
