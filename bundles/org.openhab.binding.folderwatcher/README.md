@@ -1,12 +1,21 @@
 # FolderWatcher Binding
 
-This binding is intended to monitor FTP, local folder and S3 bucket and its subfolders and notify of new files
+This binding is intended to monitor a local folder, FTP and S3 bucket and their subfolders and notify of new files.
 
 ## Supported Things
 
-The binding support three types of things: `ftpfolder`, `localfolder` and `s3bucket`.
+The binding support three types of things: `localfolder`, `ftpfolder` and `s3bucket`.
 
 ## Thing Configuration
+
+The `localfolder` thing has the following configuration options:
+
+| Parameter          | Name                        | Description                         | Required | Default value |
+| ------------------ | --------------------------- | ----------------------------------- | -------- | ------------- |
+| localDir           | Local Directory             | Local directory to be watched       | yes      | n/a           |
+| listHiddenLocal    | List Hidden                 | Allow listing of hidden files       | yes      | No            |
+| pollIntervalLocal  | Polling interval in seconds | Interval for polling folder changes | yes      | 60            |
+| listRecursiveLocal | List Sub Folders            | Allow listing of sub folders        | yes      | No            |
 
 The `ftpfolder` thing has the following configuration options:
 
@@ -23,15 +32,6 @@ The `ftpfolder` thing has the following configuration options:
 | connectionTimeout | Connection timeout in seconds  | Connection timeout for FTP request  | yes      | 30            |
 | pollInterval      | Polling interval in seconds    | Interval for polling folder changes | yes      | 60            |
 | diffHours         | Time stamp difference in hours | How many hours back to analyze      | yes      | 24            |
-
-The `localfolder` thing has the following configuration options:
-
-| Parameter          | Name                        | Description                         | Required | Default value |
-| ------------------ | --------------------------- | ----------------------------------- | -------- | ------------- |
-| localDir           | Local Directory             | Local directory to be watched       | yes      | n/a           |
-| listHiddenLocal    | List Hidden                 | Allow listing of hidden files       | yes      | No            |
-| pollIntervalLocal  | Polling interval in seconds | Interval for polling folder changes | yes      | 60            |
-| listRecursiveLocal | List Sub Folders            | Allow listing of sub folders        | yes      | No            |
 
 The `s3bucket` thing has the following configuration options:
 
@@ -65,17 +65,6 @@ folderwatcher:s3bucket:myS3bucket       [ s3BucketName="mypublic-bucket", pollIn
 
 ### Using in a rule:
 
-FTP example:
-
-```java
-rule "New FTP file"
-when
-    Channel "folderwatcher:ftpfolder:myLocalFolder:newfile" triggered
-then
-    logInfo("NewFTPFile", receivedEvent.toString())
-end
-```
-
 Local folder example:
 
 ```java
@@ -84,6 +73,17 @@ when
     Channel "folderwatcher:localfolder:myFTPFolder:newfile" triggered
 then
     logInfo("NewLocalFile", receivedEvent.toString())
+end
+```
+
+FTP example:
+
+```java
+rule "New FTP file"
+when
+    Channel "folderwatcher:ftpfolder:myLocalFolder:newfile" triggered
+then
+    logInfo("NewFTPFile", receivedEvent.toString())
 end
 ```
 
