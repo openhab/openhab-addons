@@ -134,7 +134,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Netatmo API bridge handler.");
-        updateStatus(ThingStatus.UNKNOWN);
 
         ApiHandlerConfiguration configuration = getConfiguration();
 
@@ -156,6 +155,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                         configuration.clientId, configuration.clientSecret, FeatureArea.ALL_SCOPES, false)
                 .withGsonBuilder(new GsonBuilder().registerTypeAdapter(AccessTokenResponse.class,
                         new AccessTokenResponseDeserializer()));
+
+        updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> openConnection(null, null));
     }

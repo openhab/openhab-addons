@@ -95,7 +95,7 @@ public final class NetatmoAccessTokenResponse {
     /**
      * Convert Netatmo-specific DTO to standard DTO in core resembling RFC 6749.
      * 
-     * @return
+     * @return response converted into {@link AccessTokenResponse}
      */
     public AccessTokenResponse toStandard() {
         var standardResponse = new AccessTokenResponse();
