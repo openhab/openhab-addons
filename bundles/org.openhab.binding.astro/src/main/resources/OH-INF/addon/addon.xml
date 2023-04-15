@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Astro Binding</name>
 	<description>The Astro binding calculates astronomical data from sun and moon.</description>
+	<connection>local</connection>
 
 </addon:addon>
