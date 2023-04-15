@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Remote openHAB Binding</name>
 	<description>The Remote openHAB binding allows to communicate with remote openHAB servers.</description>
-	<connection>local</connection>
 
 </addon:addon>
