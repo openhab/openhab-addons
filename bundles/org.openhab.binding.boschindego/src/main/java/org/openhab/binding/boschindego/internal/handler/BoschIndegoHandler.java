@@ -120,7 +120,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.missing-brige");
+                    "@text/offline.conf-error.missing-bridge");
             return;
         }
 
@@ -129,7 +129,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             this.oAuthClientService = accountHandler.getOAuthClientService();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.missing-brige");
+                    "@text/offline.conf-error.missing-bridge");
             return;
         }
 
