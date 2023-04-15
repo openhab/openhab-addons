@@ -42,9 +42,11 @@ import org.openhab.core.library.types.RawType;
  * This class provides methods for retrieving state information as well as controlling
  * the device.
  * 
- * The implementation is based on zazaz-de/iot-device-bosch-indego-controller, but
+ * The implementation is based on zazaz-de's iot-device-bosch-indego-controller, but
  * rewritten from scratch to use Jetty HTTP client for HTTP communication and GSON for
  * JSON parsing. Thanks to Oliver Schünemann for providing the original implementation.
+ * 
+ * @see <a href="https://github.com/zazaz-de/iot-device-bosch-indego-controller">zazaz-de/iot-device-bosch-indego-controller</a>
  * 
  * @author Jacob Laursen - Initial contribution
  */
@@ -83,7 +85,7 @@ public class IndegoDeviceController extends IndegoController {
      * Queries the device state from the server. This overload will return when the state
      * has changed, or the timeout has been reached.
      * 
-     * @param timeout Maximum time to wait for response
+     * @param timeout maximum time to wait for response
      * @return the device state
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
@@ -270,8 +272,8 @@ public class IndegoDeviceController extends IndegoController {
     /**
      * Request map position updates for the next ({@link count} * {@link interval}) number of seconds.
      * 
-     * @param count Number of updates
-     * @param interval Number of seconds between updates
+     * @param count number of updates
+     * @param interval number of seconds between updates
      * @throws IndegoAuthenticationException if request was rejected as unauthorized
      * @throws IndegoException if any communication or parsing error occurred
      */
