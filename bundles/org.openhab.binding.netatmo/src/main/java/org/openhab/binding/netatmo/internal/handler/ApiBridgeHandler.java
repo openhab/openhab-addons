@@ -162,6 +162,28 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public void openConnection(@Nullable String code, @Nullable String redirectUri) {
+        authenticate(code, redirectUri);
+
+        logger.debug("Connecting to Netatmo API.");
+
+        ApiHandlerConfiguration configuration = getConfiguration();
+        if (!configuration.webHookUrl.isBlank()) {
+            SecurityApi securityApi = getRestManager(SecurityApi.class);
+            if (securityApi != null) {
+                WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+                        configuration.webHookUrl, configuration.webHookPostfix);
+                servlet.startListening();
+                this.webHookServlet = Optional.of(servlet);
+            }
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+
+        getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).filter(Objects::nonNull)
+                .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
+    }
+
+    private void authenticate(@Nullable String code, @Nullable String redirectUri) {
         OAuthClientService oAuthClientService = this.oAuthClientService;
         if (oAuthClientService == null) {
             logger.debug("ApiBridgeHandler is not ready, OAuthClientService not initialized");
@@ -172,6 +194,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         try {
             if (code != null) {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
+
+                // Dispose grant servlet upon completion of authorization flow.
+                grantServlet.ifPresent(servlet -> servlet.dispose());
+                grantServlet = Optional.empty();
             } else {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             }
@@ -191,32 +217,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        // Dispose grant servlet upon completion of authorization flow.
-        if (code != null) {
-            grantServlet.ifPresent(servlet -> servlet.dispose());
-            grantServlet = Optional.empty();
-        }
-
-        logger.debug("Connecting to Netatmo API.");
-
         connectApi.setAccessToken(accessTokenResponse.getAccessToken());
         connectApi.setScope(accessTokenResponse.getScope());
-
-        ApiHandlerConfiguration configuration = getConfiguration();
-        if (!configuration.webHookUrl.isBlank()) {
-            SecurityApi securityApi = getRestManager(SecurityApi.class);
-            if (securityApi != null) {
-                WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
-                        configuration.webHookUrl, configuration.webHookPostfix);
-                servlet.startListening();
-                this.webHookServlet = Optional.of(servlet);
-            }
-        }
-
-        updateStatus(ThingStatus.ONLINE);
-
-        getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).filter(Objects::nonNull)
-                .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
     }
 
     private void startAuthorizationFlow() {
@@ -298,6 +300,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
+            authenticate(null, null);
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
 
             if (payload != null && contentType != null
