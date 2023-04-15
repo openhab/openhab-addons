@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,9 +61,9 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
 
         for (Thing thing : thingRegistry.getAll()) {
             ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof BoschAccountHandler accountHandler) {
+            if (thingHandler instanceof BoschAccountHandler) {
                 try {
-                    accountHandler.authorize(args[1]);
+                    ((BoschAccountHandler) thingHandler).authorize(args[1]);
                 } catch (IndegoAuthenticationException e) {
                     console.println("Authorization error: " + e.getMessage());
                 }

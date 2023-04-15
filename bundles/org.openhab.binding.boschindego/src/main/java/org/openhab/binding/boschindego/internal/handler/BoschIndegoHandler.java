@@ -125,8 +125,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof BoschAccountHandler accountHandler) {
-            this.oAuthClientService = accountHandler.getOAuthClientService();
+        if (handler instanceof BoschAccountHandler) {
+            this.oAuthClientService = ((BoschAccountHandler) handler).getOAuthClientService();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.missing-bridge");
