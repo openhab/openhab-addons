@@ -59,8 +59,8 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
         this.oAuthFactory = oAuthFactory;
 
-        oAuthClientService = oAuthFactory.createOAuthClientService(this.getThing().getUID().getAsString(),
-                BSK_TOKEN_URI, BSK_AUTH_URI, BSK_CLIENT_ID, null, BSK_SCOPE, false);
+        oAuthClientService = oAuthFactory.createOAuthClientService(getThing().getUID().getAsString(), BSK_TOKEN_URI,
+                BSK_AUTH_URI, BSK_CLIENT_ID, null, BSK_SCOPE, false);
         controller = new IndegoController(httpClient, oAuthClientService);
     }
 
@@ -89,7 +89,7 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        this.oAuthFactory.ungetOAuthService(this.getThing().getUID().getAsString());
+        oAuthFactory.ungetOAuthService(this.getThing().getUID().getAsString());
     }
 
     @Override
