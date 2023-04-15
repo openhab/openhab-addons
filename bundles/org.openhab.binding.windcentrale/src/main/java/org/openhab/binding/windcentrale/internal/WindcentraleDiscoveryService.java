@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,8 @@ public class WindcentraleDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof WindcentraleAccountHandler accountHandler) {
+        if (handler instanceof WindcentraleAccountHandler) {
+            WindcentraleAccountHandler accountHandler = (WindcentraleAccountHandler) handler;
             accountHandler.addThingStatusListener(this);
             this.accountHandler = accountHandler;
         }
