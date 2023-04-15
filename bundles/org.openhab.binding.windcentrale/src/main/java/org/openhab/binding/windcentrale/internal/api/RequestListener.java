@@ -10,30 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.windcentrale.internal.config;
+package org.openhab.binding.windcentrale.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The configuration of a Mill thing.
+ * Interface for listeners that want to monitor if {@link WindcentraleAPI} requests error or succeed.
  *
- * @author Wouter Born - Initial contribution, add Mill configuration object
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
-public class MillConfig {
+public interface RequestListener {
 
-    /**
-     * Windmill identifier
-     */
-    public int millId = 1;
+    void onError(Exception exception);
 
-    /**
-     * Refresh interval for refreshing the data in seconds
-     */
-    public int refreshInterval = 30;
-
-    /**
-     * Number of wind shares ("Winddelen")
-     */
-    public int wd = 1;
+    void onSuccess();
 }
