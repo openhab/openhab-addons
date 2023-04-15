@@ -15,16 +15,15 @@ package org.openhab.binding.boschindego.internal.dto.response;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response from authenticating with server.
+ * Mower serial number and status.
  * 
  * @author Jacob Laursen - Initial contribution
  */
-public class AuthenticationResponse {
-
-    public String contextId;
-
-    public String userId;
+public class Mower {
 
     @SerializedName("alm_sn")
     public String serialNumber;
+
+    @SerializedName("alm_status")
+    public int status;
 }
