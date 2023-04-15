@@ -4,7 +4,7 @@ This binding is intended to monitor FTP, local folder and S3 bucket and its subf
 
 ## Supported Things
 
-Currently the binding support three types of things: `ftpfolder`, `localfolder` and `s3bucket`.
+The binding support three types of things: `ftpfolder`, `localfolder` and `s3bucket`.
 
 ## Thing Configuration
 
@@ -46,7 +46,7 @@ The `s3bucket` thing has the following configuration options:
 | s3Anonymous    | Anonymous Connection | Connect anonymously (works for public buckets)     | yes      | true          |
 ## Events
 
-This binding currently supports the following events:
+This binding supports the following event:
 
 | Channel Type ID | Item Type | Description                |
 |-----------------|-----------|----------------------------|
@@ -72,9 +72,7 @@ rule "New FTP file"
 when
     Channel "folderwatcher:ftpfolder:myLocalFolder:newfile" triggered
 then
-
     logInfo("NewFTPFile", receivedEvent.toString())
-
 end
 ```
 
@@ -85,9 +83,7 @@ rule "New Local file"
 when
     Channel "folderwatcher:localfolder:myFTPFolder:newfile" triggered
 then
-
     logInfo("NewLocalFile", receivedEvent.toString())
-
 end
 ```
 
@@ -98,8 +94,6 @@ rule "New S3 file"
 when
     Channel "folderwatcher:s3bucket:myS3bucket:newfile" triggered
 then
-
     logInfo("NewS3File", receivedEvent.toString())
-
 end
 ```
