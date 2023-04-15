@@ -118,7 +118,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         this.disableLogs = config.disableLogs;
         this.clockSync = config.clockSync;
 
-        if (hostName == null || hostName.isEmpty()) {
+        if (hostName == null || hostName.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-hostname");
             return;
