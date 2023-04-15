@@ -88,6 +88,7 @@ The thermostat information that is retrieved is available as these channels:
 | today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                              |
 | yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                          |
 | yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                          |
+| message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed    |
 
 ## Full Example
 
@@ -158,15 +159,16 @@ Number Therm_FanStatus          "Fan Status [MAP(radiotherm.map):%s_fstus]"     
 Number Therm_Override           "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
 Switch Therm_Hold               "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
 
-Number Therm_Day       "Thermostat Day [%s]"                                 { channel="radiothermostat:rtherm:mytherm1:day" }
-Number Therm_Hour      "Thermostat Hour [%s]"                                { channel="radiothermostat:rtherm:mytherm1:hour" }
-Number Therm_Minute    "Thermostat Minute [%s]"                              { channel="radiothermostat:rtherm:mytherm1:minute" }
+Number Therm_Day       "Thermostat Day [%d]"                                 { channel="radiothermostat:rtherm:mytherm1:day" }
+Number Therm_Hour      "Thermostat Hour [%d]"                                { channel="radiothermostat:rtherm:mytherm1:hour" }
+Number Therm_Minute    "Thermostat Minute [%d]"                              { channel="radiothermostat:rtherm:mytherm1:minute" }
 String Therm_Dstmp     "Thermostat DateStamp [%s]" <time>                    { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
 
 Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime" }
 Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
 Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
 Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
+String Therm_Message   "Message: [%s]"                                      { channel="radiothermostat:rtherm:mytherm1:message" }
 
 // Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
 Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>     { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
@@ -228,5 +230,30 @@ then
   // JSON to send directly to the thermostat's '/tstat' endpoint
   // See RadioThermostat_CT50_Honeywell_Wifi_API_V1.3.pdf for more detail
   actions.sendRawCommand('{"hold":1, "t_heat":' + "68" + ', "tmode":1}')
+
+  // Also a command can be sent to a specific endpoint on the thermostat by
+  // specifying it as the second argument to sendRawCommand():
+
+  // Reboot the thermostat
+  // actions.sendRawCommand('{"command": "reboot"}', 'sys/command')
+
+  // Control the energy LED (CT80 only) [0 = off, 1 = green, 2 = yellow, 4 = red]
+  // actions.sendRawCommand('{"energy_led": 1}', 'tstat/led')
+
+  // Send a message to the User Message Area (CT80 only)
+  // actions.sendRawCommand('{"line": 0, "message": "Hello World!"}', 'tstat/uma')
+
+end
+
+rule "Display outside temp in thermostat message area"
+when
+  // An item containing the current outside temperature
+  Item OutsideTemp changed
+then
+  // Display up to 5 numbers in the thermostat's Price Message Area (PMA)
+  // A decimal point can be used. CT80 can display a negative '-' number
+  // Send null or empty string to clear the number and restore the time display
+  var Number temp = Math.round((OutsideTemp.state as DecimalType).doubleValue).intValue
+  Therm_Message.sendCommand(temp)
 end
 ```
