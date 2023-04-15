@@ -76,7 +76,7 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/light/state", "{ \"color\": {\"r\": 10, \"g\": 20, \"b\": 30 } }");
         assertState(component, Light.COLOR_CHANNEL_ID, HSBType.fromRGB(10, 20, 30));
         publishMessage("zigbee2mqtt/light/state", "{ \"brightness\": 255 }");
-        assertState(component, Light.COLOR_CHANNEL_ID, new HSBType("209.99999999999999,66.6666666666666700,100"));
+        assertState(component, Light.COLOR_CHANNEL_ID, new HSBType("210,67,100"));
 
         sendCommand(component, Light.COLOR_CHANNEL_ID, HSBType.BLUE);
         assertPublished("zigbee2mqtt/light/set/state",
