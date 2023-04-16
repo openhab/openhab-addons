@@ -13,7 +13,6 @@
 package org.openhab.binding.chatgpt.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ChatGPTChannelConfiguration} class contains fields mapping chat channel configuration parameters.
@@ -23,14 +22,11 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ChatGPTChannelConfiguration {
 
-    @Nullable
-    public String model;
+    public String model = "";
 
-    @Nullable
-    public Float temperature;
+    public float temperature;
 
-    @Nullable
-    public String systemMessage;
+    public String systemMessage = "";
 
     int maxTokens;
 }
