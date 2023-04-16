@@ -1,6 +1,7 @@
 # TRÅDFRI Binding
 
 This binding integrates the IKEA TRÅDFRI gateway and devices connected to it (such as dimmable LED bulbs).
+This binding only supports IKEA TRÅDFRI gateway v1.x, it is **not** compatible with DIRIGERA.
 
 ## Supported Things
 
@@ -22,13 +23,12 @@ These are:
 | Non-Colour Controller           | 0x0820           | 0820       |
 | Non-Colour Scene Controller     | 0x0830           | 0830       |
 | Control Outlet                  | 0x0010           | 0010       |
-| Window Covering Device          | 0x0202           | 0202       |
-| Window Covering Controller      | 0x0202           | 0203       |
 
 The following matrix lists the capabilities (channels) for each of the supported lighting device types:
 
 | Thing type  | Brightness | Color | Color Temperature | Battery Level | Battery Low | Power | Position |
 |-------------|:----------:|:-----:|:-----------------:|:-------------:|:-----------:|:-----:|:---------|
+|  0007       |            |       |                   |               |             |       |          |
 |  0010       |            |       |                   |               |             |   X   |          |
 |  0100       |     X      |       |                   |               |             |       |          |
 |  0220       |     X      |       |         X         |               |             |       |          |
@@ -38,6 +38,22 @@ The following matrix lists the capabilities (channels) for each of the supported
 |  0830       |            |       |                   |       X       |      X      |       |          |
 |  0202       |            |       |                   |       X       |      X      |       |     X    |
 |  0203       |            |       |                   |       X       |      X      |       |          |
+
+The following things are also supported even thought they are not standardized in Zigbee Light Link:
+
+| Device type                     | Zigbee Device ID | Thing type |
+|---------------------------------|------------------|------------|
+| Window Covering Device          | 0x0202           | 0202       |
+| Window Covering Controller      | 0x0203           | 0203       |
+| Air Purifier                    | 0x0007           | 0007       |
+
+The following matrix lists the capabilities (channels) for each of the supported non-lighting device types:
+
+| Thing type  | Battery Level | Battery Low | Position | Fan Mode | Lock physical buttons | LED's on/off | Air Quality | Current Fan Speed | Filter status |
+|-------------|:-------------:|:-----------:|:---------|:---------|:----------------------|:-------------|:------------|:------------------|:--------------|
+|  0202       |       X       |      X      |     X    |          |                       |              |             |                   |               |
+|  0203       |       X       |      X      |          |          |                       |              |             |                   |               |
+|  0007       |               |             |          |    X     |          X            |      X       |      X      |         X         |       X       |
 
 ## Thing Configuration
 
@@ -65,17 +81,33 @@ The control outlet supports the `power` channel.
 
 A blind or curtain supports, beside `battery_level` and `battery_low` channels,  a `positon` channel.
 
+An air purifier supports:
+* a `fan_mode` and `fan_speed`, which allows for control and reading of the speed.
+* a `disable_led` and `lock_button`, to disabled the LED's or lock the button on the physical device.
+* a `air_quality_pm25` and `air_quality_rating`, which reads the particulate matter 2.5μm and corresponding indication of air quality.
+* a `filter_check_next` and `filter_check_alarm`, which represents the remaining number of minutes until next filter check and whether it is time to do the filter check now. Filter check must be completed through the TRÅDFRI app.
+* a `filter_uptime`, which represents the current time since last filter change.
+
 Refer to the matrix above.
 
-| Channel Type ID   | Item Type     | Description                                            |
-|-------------------|---------------|--------------------------------------------------------|
-| brightness        | Dimmer        | The brightness of the bulb in percent                  |
-| color_temperature | Dimmer        | color temperature from 0% = cold to 100% = warm        |
-| color             | Color         | full color                                             |
-| battery_level     | Number        | battery level (in %)                                   |
-| battery_low       | Switch        | battery low warning (<=10% = ON, >10% = OFF)           |
-| power             | Switch        | power switch                                           |
-| position          | Rollershutter | position of the blinds from 0% = open to 100% = closed |
+| Channel Type ID    | Item Type      | Description                                                                              |
+|:-------------------|:---------------|:-----------------------------------------------------------------------------------------|
+| brightness         | Dimmer         | The brightness of the bulb in percent                                                    |
+| color_temperature  | Dimmer         | color temperature from 0% = cold to 100% = warm                                          |
+| color              | Color          | full color                                                                               |
+| battery_level      | Number         | battery level (in %)                                                                     |
+| battery_low        | Switch         | battery low warning (<=10% = ON, >10% = OFF)                                             |
+| power              | Switch         | power switch                                                                             |
+| position           | Rollershutter  | position of the blinds from 0% = open to 100% = closed                                   |
+| fan_mode           | Number         | Fan Mode, target speed of the fan (0 = off, 1 = auto, 10..50 = Level 1 to 5)             |
+| fan_speed          | Number         | Current Fan Speed between 0 (off) and 50 (maximum speed)                                 |
+| disable_led        | Switch         | Disables the LED's on the device                                                         |
+| lock_button        | Switch         | Disables the physical button on the device (applications can still make changes)         |
+| air_quality_pm25   | Number         | Density of Particulate Matter of 2.5μm, measured in ppm                                  |
+| air_quality_rating | Number         | Gives a rating about air quality (1 = Good, 2 = OK, 3 = Bad) similar to Tradfri app      |
+| filter_check_next  | Number:Time    | Time in min before the next filter check if > 0, if < 0 you are late checking the filter |
+| filter_check_alarm | Switch         | When ON, you must perform a filter check (i.e. `filter_check_next` is < 0)               |
+| filter_uptime      | Number:Time    | Time elapsed since the last filter change, in min                                        |
 
 ## Full Example
 
@@ -89,6 +121,7 @@ Bridge tradfri:gateway:mygateway [ host="192.168.0.177", code="EHPW5rIJKyXFgjH3"
     0830 myRemoteControl "My Remote Control" [ id=65545 ]
     0010 myControlOutlet "My Control Outlet" [ id=65542 ]
     0202 myBlinds "My Blinds" [ id=65547 ]
+    0007 myAirPurifier "My Air Purifier" [ id=65548 ]
 }
 ```
 
@@ -103,6 +136,15 @@ Number RemoteControlBatteryLevel { channel="tradfri:0830:mygateway:myRemoteContr
 Switch RemoteControlBatteryLow { channel="tradfri:0830:mygateway:myRemoteControl:battery_low" }
 Switch ControlOutlet { channel="tradfri:0010:mygateway:myControlOutlet:power" }
 Rollershutter BlindPosition { channel="tradfri:0202:mygateway:myBlinds:position" }
+Number AirPurifierFanMode { channel="tradfri:0007:mygateway:myAirPurifier:fan_mode" }
+Number AirPurifierFanSpeed { channel="tradfri:0007:mygateway:myAirPurifier:fan_speed" }
+Switch AirPurifierDisableLED { channel="tradfri:0007:mygateway:myAirPurifier:disable_led" }
+Switch AirPurifierLockPhysicalButton { channel="tradfri:0007:mygateway:myAirPurifier:lock_button" }
+Number AirPurifierQualityPM25 { channel="tradfri:0007:mygateway:myAirPurifier:air_quality_pm25" }
+Number AirPurifierQualityRating { channel="tradfri:0007:mygateway:myAirPurifier:air_quality_rating" }
+Number AirPurifierFilterCheckTTL { channel="tradfri:0007:mygateway:myAirPurifier:filter_check_next" }
+Switch AirPurifierFilterCheckAlarm { channel="tradfri:0007:mygateway:myAirPurifier:filter_check_alarm" }
+Number AirPurifierFilterUptime { channel="tradfri:0007:mygateway:myAirPurifier:filter_uptime" }
 ```
 
 demo.sitemap:
@@ -119,6 +161,15 @@ sitemap demo label="Main Menu"
         Switch item=RemoteControlBatteryLow label="Battery Low Warning"
         Switch item=ControlOutlet label="Power Switch"
         Switch item=BlindPosition label="Blind Position [%d]"
+        Selection item=AirPurifierFanMode label="Fan Mode"
+        Text item=AirPurifierFanSpeed label="Current Fan Speed [%d]"
+        Switch item=AirPurifierDisableLED label="Disable LEDs"
+        Switch item=AirPurifierLockPhysicalButton label="Disable Physical Buttons"
+        Text item=AirPurifierQualityPM25 label="PM2.5"
+        Text item=AirPurifierQualityRating label="Air Quality"
+        Text item=AirPurifierFilterCheckTTL label="TTL before next filter check [%d min]"
+        Text item=AirPurifierFilterCheckAlarm label="Need to Check Filter [%s]"
+        Text item=AirPurifierFilterUptime label="Current filter uptime [%d min]"
     }
 }
 ```
