@@ -406,7 +406,7 @@ public enum KaleidescapeMessageHandler {
                     // special case for cover art image
                     if (DETAIL_COVER_URL.equals(metaType)) {
                         handler.updateDetailChannel(metaType, new StringType(value));
-                        if (!value.isEmpty()) {
+                        if (!value.isEmpty() && handler.isChannelLinked(DETAIL + DETAIL_COVER_ART)) {
                             try {
                                 ContentResponse contentResponse = handler.httpClient.newRequest(value).method(GET)
                                         .timeout(10, TimeUnit.SECONDS).send();

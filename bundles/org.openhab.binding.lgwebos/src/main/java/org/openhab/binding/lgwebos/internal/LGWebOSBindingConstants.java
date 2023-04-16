@@ -68,4 +68,7 @@ public class LGWebOSBindingConstants {
     public static final String CHANNEL_MEDIA_STOP = "mediaStop";
     public static final String CHANNEL_APP_LAUNCHER = "appLauncher";
     public static final String CHANNEL_RCBUTTON = "rcButton";
+
+    public static final int DEFAULT_WS_PORT = 3000;
+    public static final int DEFAULT_WSS_PORT = 3001;
 }

@@ -62,6 +62,6 @@ public class PresenceCapability extends CameraCapability {
     }
 
     private void changeFloodlightMode(FloodLightMode mode) {
-        securityCapability.ifPresent(cap -> cap.changeFloodlightMode(handler.getId(), mode));
+        getSecurityCapability().ifPresent(cap -> cap.changeFloodlightMode(handler.getId(), mode));
     }
 }

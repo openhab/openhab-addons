@@ -84,6 +84,7 @@ public class NuvoBindingConstants {
     // misc
     public static final String ON = "ON";
     public static final String OFF = "OFF";
+    public static final String ALLOFF = "ALLOFF";
     public static final String TWO = "2";
     public static final String ONE = "1";
     public static final String ZERO = "0";

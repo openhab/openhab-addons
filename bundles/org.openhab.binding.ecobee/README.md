@@ -151,7 +151,7 @@ The following channels are available on the Ecobee Thermostat.
 | runtime | connected | Switch |     | Connected |
 | runtime | firstConnected | DateTime |     | First Connected |
 | runtime | connectDateTime | DateTime |     | Connected Date Time |
-| runtime | disconnectDateTime | DateTime |     | Disconnected Date Timee |
+| runtime | disconnectDateTime | DateTime |     | Disconnected Date Time |
 | runtime | lastModified | DateTime |     | Last Modified |
 | runtime | lastStatusModified | DateTime |     | Last Status Modified |
 | runtime | runtimeDate | String |     | Runtime Date |

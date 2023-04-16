@@ -16,8 +16,8 @@ package org.openhab.binding.digitalstrom.internal.lib.listener;
  * The {@link SystemStateChangeListener} can be implemented to get informed by digitalSTROM system state changes. It
  * has to be registered by supported classes, e.g. the {@link TemperatureControlManager} or self implemented classes.
  *
- * @author Michael Ochel
- * @author Matthias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public interface SystemStateChangeListener {
 

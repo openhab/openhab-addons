@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanChannelTeachInConfig {
 
-    public String teachInMSG;
-    public String manufacturerId;
+    public String teachInMSG = "";
+    public String manufacturerId = "";
 }

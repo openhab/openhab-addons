@@ -255,12 +255,18 @@ public class GoogleSTTService implements STTService {
         long startTime = System.currentTimeMillis();
         long maxTranscriptionMillis = (config.maxTranscriptionSeconds * 1000L);
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
-        int readBytes = 6400;
-        while (!aborted.get()) {
-            byte[] data = new byte[readBytes];
-            int dataN = audioStream.read(data);
+        final int bufferSize = 6400;
+        int numBytesRead;
+        int remaining = bufferSize;
+        byte[] audioBuffer = new byte[bufferSize];
+        while (!aborted.get() && !responseObserver.isDone()) {
+            numBytesRead = audioStream.read(audioBuffer, bufferSize - remaining, remaining);
             if (aborted.get()) {
                 logger.debug("Stops listening, aborted");
+                break;
+            }
+            if (numBytesRead == -1) {
+                logger.debug("End of stream");
                 break;
             }
             if (isExpiredInterval(maxTranscriptionMillis, startTime)) {
@@ -272,18 +278,17 @@ public class GoogleSTTService implements STTService {
                 logger.debug("Stops listening, max silence time reached");
                 break;
             }
-            if (dataN != readBytes) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
+            if (numBytesRead != remaining) {
+                remaining = remaining - numBytesRead;
                 continue;
             }
+            remaining = bufferSize;
             StreamingRecognizeRequest dataRequest = StreamingRecognizeRequest.newBuilder()
-                    .setAudioContent(ByteString.copyFrom(data)).build();
-            logger.debug("Sending audio data {}", dataN);
+                    .setAudioContent(ByteString.copyFrom(audioBuffer)).build();
+            logger.debug("Sending audio data {}", bufferSize);
             clientStream.send(dataRequest);
         }
+        audioStream.close();
     }
 
     private void sendStreamConfig(ClientStream<StreamingRecognizeRequest> clientStream,
@@ -335,6 +340,7 @@ public class GoogleSTTService implements STTService {
         private float confidenceSum = 0;
         private int responseCount = 0;
         private long lastInputTime = 0;
+        private boolean done = false;
 
         public TranscriptionListener(STTListener sttListener, GoogleSTTConfiguration config, AtomicBoolean aborted) {
             this.sttListener = sttListener;
@@ -374,7 +380,7 @@ public class GoogleSTTService implements STTService {
                     responseCount++;
                     // when in single utterance mode we can just get one final result so complete
                     if (config.singleUtteranceMode) {
-                        onComplete();
+                        done = true;
                     }
                 }
             });
@@ -409,6 +415,10 @@ public class GoogleSTTService implements STTService {
                             new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
                 }
             }
+        }
+
+        public boolean isDone() {
+            return done;
         }
 
         public long getLastInputTime() {

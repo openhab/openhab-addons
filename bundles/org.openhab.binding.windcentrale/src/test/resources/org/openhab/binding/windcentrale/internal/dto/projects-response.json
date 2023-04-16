@@ -1,0 +1,77 @@
+[
+  {
+    "project_name": "De Grote Geert",
+    "project_code": "WND-GG",
+    "project_type": "WIND",
+    "project_ean_number": "123456789012345678",
+    "project_start_date": "2013-01-01",
+    "project_end_date": "2030-09-01",
+    "energy_supplier": "GREENCHOICE",
+    "current_power": 100,
+    "power_percentage": 0,
+    "todays_production": 2000,
+    "total_production": 8000000,
+    "participations": [
+      {
+        "supplier": "Greenchoice",
+        "mutation_date": "2013-01-01",
+        "share": 20,
+        "offered_share": 0,
+        "participation_identifier": "WND-GG-1",
+        "greenchoice_id": "12345",
+        "address": {
+          "street_name": "Kerkstraat",
+          "house_number": "54321",
+          "house_postfix": null,
+          "postal_code": "9999XY",
+          "city": "Amsterdam"
+        },
+        "production": null,
+        "shares": [
+          {
+            "from_date": "2013-01-01",
+            "share": 20
+          }
+        ]
+      },
+      {
+        "supplier": "Greenchoice",
+        "mutation_date": "2022-10-09",
+        "share": 50,
+        "offered_share": 0,
+        "participation_identifier": "WND-GG-2",
+        "greenchoice_id": null,
+        "address": {
+          "street_name": "Kerkstraat",
+          "house_number": "54321",
+          "house_postfix": null,
+          "postal_code": "9999XY",
+          "city": "Amsterdam"
+        },
+        "production": null,
+        "shares": [
+          {
+            "from_date": "2022-10-09",
+            "share": 50
+          }
+        ]
+      }
+    ],
+    "member_offer_settings": [
+      {
+        "from_date": "2021-10-21",
+        "allow_selling": true,
+        "min_price": 0,
+        "max_price": 200
+      }
+    ],
+    "administration_costs": [
+      {
+        "from_date": "2019-09-01",
+        "amount": 15
+      }
+    ],
+    "statutes_location": "https://cdn.servicehouse.nl/cooperation/20120614%20De%20Grote%20Geert%20UA%20Akte%20van%20Oprichting.pdf",
+    "member_agreement_location": "https://cdn.servicehouse.nl/cooperation/leden_en_winddelenovereenkomst_Grote_Geert_v1.pdf"
+  }
+]

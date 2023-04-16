@@ -58,8 +58,8 @@ Setting less than 60 seconds does not make any sense as the heat pump only provi
 (default = 60)
 
 - **houseKeepingInterval**  
-interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600).
-Usually this settings should not be changed.
+  interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600).
+  Usually this settings should not be changed.
 
 ### Examples
 

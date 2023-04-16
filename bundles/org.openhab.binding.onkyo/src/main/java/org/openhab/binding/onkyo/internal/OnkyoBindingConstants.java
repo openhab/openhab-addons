@@ -90,10 +90,10 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_NET_MENU8 = "netmenu#item8";
     public static final String CHANNEL_NET_MENU9 = "netmenu#item9";
 
-    public final static String CHANNEL_AUDIO_IN_INFO = "info#audioIn";
-    public final static String CHANNEL_AUDIO_OUT_INFO = "info#audioOut";
-    public final static String CHANNEL_VIDEO_IN_INFO = "info#videoIn";
-    public final static String CHANNEL_VIDEO_OUT_INFO = "info#videoOut";
+    public static final String CHANNEL_AUDIO_IN_INFO = "info#audioIn";
+    public static final String CHANNEL_AUDIO_OUT_INFO = "info#audioOut";
+    public static final String CHANNEL_VIDEO_IN_INFO = "info#videoIn";
+    public static final String CHANNEL_VIDEO_OUT_INFO = "info#videoOut";
 
     // Used for Discovery service
     public static final String MANUFACTURER = "ONKYO";

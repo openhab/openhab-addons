@@ -64,6 +64,9 @@ public class DLinkMotionSensorHandler extends BaseThingHandler implements DLinkM
             case ONLINE:
                 updateStatus(ThingStatus.ONLINE);
                 break;
+            case REBOOTING:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Device rebooting");
+                break;
             case COMMUNICATION_ERROR:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 break;

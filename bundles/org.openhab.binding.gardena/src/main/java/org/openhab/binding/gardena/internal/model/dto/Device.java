@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class Device {
     private final Logger logger = LoggerFactory.getLogger(Device.class);
 
-    private transient static final String DEVICE_TYPE_PREFIX = "gardena smart";
+    private static final transient String DEVICE_TYPE_PREFIX = "gardena smart";
     public boolean active = true;
     public String id;
     public String deviceType;

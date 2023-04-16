@@ -68,6 +68,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         super(thing, httpClient);
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanExpressions")
     @Override
     protected State getValue(String channelId, GoEStatusResponseBaseDTO goeResponseBase) {
         var state = super.getValue(channelId, goeResponseBase);
@@ -274,11 +275,13 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 }
+                break;
             case TRANSACTION:
                 key = "trx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 }
+                break;
         }
 
         if (key != null && value != null) {

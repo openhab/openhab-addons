@@ -22,7 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class UniFiCommunicationException extends UniFiException {
 
-    private static final long serialVersionUID = -7261308872245069364L;
+    private static final long serialVersionUID = 1L;
+
+    public UniFiCommunicationException(final String message) {
+        super(message);
+    }
 
     public UniFiCommunicationException(final Throwable cause) {
         super(cause);

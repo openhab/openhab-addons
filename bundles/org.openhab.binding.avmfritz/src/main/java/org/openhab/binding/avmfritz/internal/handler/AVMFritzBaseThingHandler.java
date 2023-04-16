@@ -335,8 +335,19 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     private ChannelTypeUID createChannelTypeUID(String channelId) {
         int pos = channelId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR);
         String id = pos > -1 ? channelId.substring(pos + 1) : channelId;
-        return CHANNEL_BATTERY.equals(id) ? DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID()
-                : new ChannelTypeUID(BINDING_ID, id);
+        final ChannelTypeUID channelTypeUID;
+        switch (id) {
+            case CHANNEL_BATTERY:
+                channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID();
+                break;
+            case CHANNEL_VOLTAGE:
+                channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_ELECTRIC_VOLTAGE.getUID();
+                break;
+            default:
+                channelTypeUID = new ChannelTypeUID(BINDING_ID, id);
+                break;
+        }
+        return channelTypeUID;
     }
 
     /**
@@ -347,9 +358,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     private void createChannel(String channelId) {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-            ChannelTypeUID channelTypeUID = createChannelTypeUID(channelId);
-            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
+            final ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+            final ChannelTypeUID channelTypeUID = createChannelTypeUID(channelId);
+            final Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
         }
     }

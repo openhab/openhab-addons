@@ -28,8 +28,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  */
 @NonNullByDefault
 public class BlueGigaAddressGetResponse extends BlueGigaResponse {
-    public static int COMMAND_CLASS = 0x00;
-    public static int COMMAND_METHOD = 0x02;
+    public static final int COMMAND_CLASS = 0x00;
+    public static final int COMMAND_METHOD = 0x02;
 
     /**
      * Bluetooth address of the local device

@@ -190,7 +190,11 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             // we remove any discoveries that have been published for this device
             BluetoothAdapter adapter = device.getAdapter();
             if (discoveryFutures.containsKey(adapter)) {
-                discoveryFutures.remove(adapter).future.thenAccept(result -> retractDiscoveryResult(adapter, result));
+                @Nullable
+                SnapshotFuture ssFuture = discoveryFutures.remove(adapter);
+                if (ssFuture != null) {
+                    ssFuture.future.thenAccept(result -> retractDiscoveryResult(adapter, result));
+                }
             }
             if (discoveryFutures.isEmpty()) {
                 return null;
@@ -253,6 +257,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             if (discoveryFutures.containsKey(adapter)) {
                 // now we need to make sure that we remove the old discovered result if it is different from the new
                 // one.
+
+                @Nullable
                 SnapshotFuture oldSF = discoveryFutures.get(adapter);
                 future = oldSF.future.thenCombine(future, (oldResult, newResult) -> {
                     logger.trace("\n old: {}\n new: {}", oldResult, newResult);

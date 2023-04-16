@@ -39,6 +39,7 @@ public class VerisureBroadbandConnectionsDTO extends VerisureBaseThingDTO {
         return super.hashCode();
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {

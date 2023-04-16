@@ -14,7 +14,7 @@ package org.openhab.binding.unifi.internal.api.dto;
 
 /**
  * Tuple to store both the {@link UniFiPortTable}, which contains the all information related to the port,
- * and the {@link UnfiPortOverrideJsonObject}, which contains the raw json data of the port override.
+ * and the {@link UnfiPortOverrideJsonObject}, which contains the raw JSON data of the port override.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */

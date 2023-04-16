@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanChannelDimmerConfig {
 
     public int rampingTime = 0;

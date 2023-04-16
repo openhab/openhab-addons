@@ -140,7 +140,7 @@ public class VeluxProductPosition {
     }
 
     public static boolean isUnknownOrValid(int position) {
-        return (position == VeluxProductPosition.VPP_UNKNOWN) || isValid(position);
+        return (position == VeluxProductPosition.VPP_VELUX_UNKNOWN) || isValid(position);
     }
 
     /**

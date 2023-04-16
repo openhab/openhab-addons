@@ -348,8 +348,9 @@ public enum Measurand {
         }
 
         public MeasureType getMeasureType(@Nullable ParserCustomizationType customizationType) {
-            if (customizationType == null)
+            if (customizationType == null) {
                 return measureType;
+            }
             return Optional.ofNullable(customizations).map(m -> m.get(customizationType))
                     .map(ParserCustomization::getMeasureType).orElse(measureType);
         }

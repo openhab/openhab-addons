@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="radoneye_rd200">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>RadonEye RD200</label>
+		<description>Indoor radon monitor</description>
+
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="radon" typeId="radoneye_radon"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+			<parameter name="fwVersion" type="integer" min="1" max="2">
+				<label>Firmware Version</label>
+				<description>The major version of the firmware on the device.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="10">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur in seconds.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="radoneye_radon">
+		<item-type>Number:Density</item-type>
+		<label>Radon Current Level</label>
+		<description>Radon gas level</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

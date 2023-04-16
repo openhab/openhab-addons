@@ -28,8 +28,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
  */
 @NonNullByDefault
 public class BlueGigaChannelMapGetResponse extends BlueGigaDeviceResponse {
-    public static int COMMAND_CLASS = 0x03;
-    public static int COMMAND_METHOD = 0x04;
+    public static final int COMMAND_CLASS = 0x03;
+    public static final int COMMAND_METHOD = 0x04;
 
     /**
      * Current Channel Map. Each bit corresponds to one channel. 0-bit corresponds to 0 channel.

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * The {@link Event} represents a digitalSTROM-Event.
  *
- * @author Alexander Betker
+ * @author Alexander Betker - Initial contribution
  */
 public interface Event {
 

@@ -10,6 +10,12 @@
 			<channel id="person-count" typeId="person-count"/>
 			<channel id="unknown-person-count" typeId="unknown-person-count"/>
 			<channel id="unknown-person-picture" typeId="unknown-person-picture"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="security-event">
+		<label>Home Security Event</label>
+		<channels>
 			<channel id="home-event" typeId="home-event"/>
 		</channels>
 	</channel-group-type>
@@ -98,13 +104,35 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="sub-event">
+		<label>Sub Event</label>
+		<channels>
+			<channel id="type" typeId="event-type"/>
+			<channel id="time" typeId="timestamp">
+				<label>Sub-Event Timestamp</label>
+				<description>Moment when the sub-event occurred.</description>
+			</channel>
+			<channel id="message" typeId="message"/>
+			<channel id="snapshot" typeId="event-picture"/>
+			<channel id="snapshot-url" typeId="event-picture-url"/>
+			<channel id="vignette" typeId="event-picture">
+				<label>Vignette</label>
+				<description>Vignette of the Snapshot.</description>
+			</channel>
+			<channel id="vignette-url" typeId="event-picture-url">
+				<label>Vignette URL</label>
+				<description>URL of the vignette.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="sub-event-doorbell">
 		<label>Sub Event</label>
 		<channels>
 			<channel id="type" typeId="event-type"/>
 			<channel id="time" typeId="timestamp">
 				<label>Sub-Event Timestamp</label>
-				<description>Moment when then sub-event occurred.</description>
+				<description>Moment when the sub-event occurred.</description>
 			</channel>
 			<channel id="message" typeId="message"/>
 			<channel id="snapshot" typeId="event-picture"/>
@@ -140,7 +168,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="last-event-smoke">
+	<channel-group-type id="last-event-alarm">
 		<label>Last Event</label>
 		<channels>
 			<channel id="type" typeId="event-type"/>

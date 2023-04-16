@@ -327,7 +327,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             if (statusCode == 503) {
                 // internal communication error
                 // This can happen if the device is not ready yet for communication
-                updateStatus(ThingStatus.UNINITIALIZED);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
                 return;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

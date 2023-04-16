@@ -231,7 +231,7 @@
 	</channel-type>
 	<channel-type id="disconnectDateTime" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Disconnected Date Timee</label>
+		<label>Disconnected Date Time</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastModified" advanced="true">

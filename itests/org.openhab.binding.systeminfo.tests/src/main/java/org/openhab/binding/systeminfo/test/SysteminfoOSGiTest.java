@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Temperature;
@@ -34,8 +35,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
 import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory;
 import org.openhab.binding.systeminfo.internal.SysteminfoThingTypeProvider;
@@ -81,7 +85,10 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -95,6 +102,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class SysteminfoOSGiTest extends JavaOSGiTest {
     private static final String DEFAULT_TEST_THING_NAME = "work";
     private static final String DEFAULT_TEST_ITEM_NAME = "test";
@@ -259,6 +267,22 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         Thing thing = ThingBuilder.create(thingTypeUID, thingUID).withConfiguration(thingConfiguration)
                 .withChannel(channel).build();
         systemInfoThing = thing;
+
+        // TODO: This is a technically not correct work-around as the thing types are currently not made available by
+        // the binding. It should be properly fixes in the binding that thing-types are added to the registry. The
+        // "correct" solution here would be to wait until the thing manager initializes the thing with a missing thing
+        // type, but that would make each test take 120+ s
+        ThingTypeProvider thingTypeProviderMock = mock(ThingTypeProvider.class);
+        when(thingTypeProviderMock.getThingType(ArgumentMatchers.any(ThingTypeUID.class), nullable(Locale.class)))
+                .thenReturn(mock(ThingType.class));
+        registerService(thingTypeProviderMock);
+
+        ChannelType channelTypeMock = mock(ChannelType.class);
+        when(channelTypeMock.getKind()).thenReturn(ChannelKind.STATE);
+        ChannelTypeProvider channelTypeProviderMock = mock(ChannelTypeProvider.class);
+        when(channelTypeProviderMock.getChannelType(ArgumentMatchers.any(ChannelTypeUID.class), nullable(Locale.class)))
+                .thenReturn(channelTypeMock);
+        registerService(channelTypeProviderMock);
 
         ManagedThingProvider managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
         assertThat(managedThingProvider, is(notNullValue()));

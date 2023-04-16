@@ -278,7 +278,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         }
 
         switch (command) {
-
             case PLAYER_STATE_CHANGED:
                 playerStateChanged(eventObject);
                 break;

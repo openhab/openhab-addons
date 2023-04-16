@@ -48,7 +48,7 @@ public class TestICloud {
     private final Logger logger = LoggerFactory.getLogger(TestICloud.class);
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         if (logger instanceof ch.qos.logback.classic.Logger) {
             ((ch.qos.logback.classic.Logger) logger).setLevel(ch.qos.logback.classic.Level.DEBUG);

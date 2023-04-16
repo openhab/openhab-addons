@@ -26,7 +26,7 @@ import org.openhab.core.thing.Thing;
  * @author Roland Edelhoff - Initial contribution
  * @author Björn Lange - Add channel state wrappers
  * @author Benjamin Bolte - Add info state channel and map signal flags from API
- * @author Björn Lange - Add elapsed time channel
+ * @author Björn Lange - Add elapsed time, current water and energy consumption channels
  */
 @NonNullByDefault
 public class DishwasherDeviceThingHandler extends AbstractMieleThingHandler {
@@ -54,6 +54,8 @@ public class DishwasherDeviceThingHandler extends AbstractMieleThingHandler {
         updateState(channel(ERROR_STATE), device.getErrorState());
         updateState(channel(INFO_STATE), device.getInfoState());
         updateState(channel(DOOR_STATE), device.getDoorState());
+        updateState(channel(WATER_CONSUMPTION_CURRENT), device.getCurrentWaterConsumption());
+        updateState(channel(ENERGY_CONSUMPTION_CURRENT), device.getCurrentEnergyConsumption());
     }
 
     @Override

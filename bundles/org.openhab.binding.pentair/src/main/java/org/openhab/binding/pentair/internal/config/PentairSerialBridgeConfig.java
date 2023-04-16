@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.pentair.internal.config;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 /**
  * Configuration parameters for Serial Bridge
  *
@@ -28,6 +26,6 @@ public class PentairSerialBridgeConfig {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("serialPort", serialPort).append("id", id).toString();
+        return getClass().getSimpleName() + "{ serialPort=" + serialPort + ", id=" + id + "}";
     }
 }

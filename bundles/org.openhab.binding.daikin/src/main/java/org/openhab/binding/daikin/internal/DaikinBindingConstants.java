@@ -30,7 +30,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DaikinBindingConstants {
 
-    private static final String BINDING_ID = "daikin";
+    public static final String BINDING_ID = "daikin";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AC_UNIT = new ThingTypeUID(BINDING_ID, "ac_unit");

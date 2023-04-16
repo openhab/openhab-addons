@@ -15,11 +15,15 @@ package org.openhab.binding.gpstracker.internal.message;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gpstracker.internal.message.dto.LocationMessage;
+
 /**
  * Notification broker.
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
 public class NotificationBroker {
     /**
      * Handlers

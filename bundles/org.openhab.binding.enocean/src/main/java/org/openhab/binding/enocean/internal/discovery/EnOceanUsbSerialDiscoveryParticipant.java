@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -35,6 +36,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Aitor Iturrioz - initial contribution
  */
+@NonNullByDefault
 @Component(service = UsbSerialDiscoveryParticipant.class)
 public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryParticipant {
 

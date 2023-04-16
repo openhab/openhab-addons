@@ -32,7 +32,7 @@ import io.github.hapjava.services.impl.HumiditySensorService;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl implements HumiditySensorAccessory {
-    private final static String CONFIG_MULTIPLICATOR = "homekitMultiplicator";
+    private static final String CONFIG_MULTIPLICATOR = "homekitMultiplicator";
 
     public HomekitHumiditySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {

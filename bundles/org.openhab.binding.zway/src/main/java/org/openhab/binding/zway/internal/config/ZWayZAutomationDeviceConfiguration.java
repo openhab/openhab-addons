@@ -14,26 +14,28 @@ package org.openhab.binding.zway.internal.config;
 
 import static org.openhab.binding.zway.internal.ZWayBindingConstants.DEVICE_CONFIG_VIRTUAL_DEVICE_ID;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ZWayZAutomationDeviceConfiguration} class defines the model for a Z-Way device configuration.
  *
  * @author Patrick Hecker - Initial contribution
  */
+@NonNullByDefault
 public class ZWayZAutomationDeviceConfiguration {
-    private String deviceId;
+    private @Nullable String deviceId;
 
-    public String getDeviceId() {
+    public @Nullable String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(String deviceId) {
+    public void setDeviceId(@Nullable String deviceId) {
         this.deviceId = deviceId;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(DEVICE_CONFIG_VIRTUAL_DEVICE_ID, this.getDeviceId()).toString();
+        return getClass().getSimpleName() + "{ " + DEVICE_CONFIG_VIRTUAL_DEVICE_ID + "=" + getDeviceId() + "}";
     }
 }

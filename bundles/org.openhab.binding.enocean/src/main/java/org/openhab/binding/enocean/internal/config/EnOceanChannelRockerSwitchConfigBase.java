@@ -14,10 +14,14 @@ package org.openhab.binding.enocean.internal.config;
 
 import java.security.InvalidParameterException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanChannelRockerSwitchConfigBase {
 
     public String switchMode;
@@ -39,7 +43,7 @@ public class EnOceanChannelRockerSwitchConfigBase {
             return value;
         }
 
-        public static SwitchMode getSwitchMode(String value) {
+        public static SwitchMode getSwitchMode(@Nullable String value) {
             if (value == null) {
                 return SwitchMode.Unkown;
             }
@@ -65,7 +69,7 @@ public class EnOceanChannelRockerSwitchConfigBase {
             this.value = value;
         }
 
-        public static Channel getChannel(String value) {
+        public static Channel getChannel(@Nullable String value) {
             if (value == null) {
                 return Channel.Unkown;
             }

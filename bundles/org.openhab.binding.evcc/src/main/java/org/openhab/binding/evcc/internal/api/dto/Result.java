@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.106.3
+ * This DTO was written for evcc version 0.111.1
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -26,13 +26,16 @@ public class Result {
 
     // "auth" is left out because it does not provide any useful information
 
+    @SerializedName("batteryCapacity")
+    private float batteryCapacity;
+
     @SerializedName("batteryConfigured")
     private boolean batteryConfigured;
 
     @SerializedName("batteryPower")
     private float batteryPower;
 
-    @SerializedName("batterySoC")
+    @SerializedName("batterySoc")
     private float batterySoC;
 
     @SerializedName("gridConfigured")
@@ -47,7 +50,7 @@ public class Result {
     @SerializedName("loadpoints")
     private Loadpoint[] loadpoints;
 
-    @SerializedName("prioritySoC")
+    @SerializedName("prioritySoc")
     private float batteryPrioritySoC;
 
     @SerializedName("pvConfigured")
@@ -58,6 +61,13 @@ public class Result {
 
     @SerializedName("siteTitle")
     private String siteTitle;
+
+    /**
+     * @return battery's capacity
+     */
+    public float getBatteryCapacity() {
+        return batteryCapacity;
+    }
 
     /**
      * @return whether battery is configured

@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
@@ -143,6 +142,6 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
      */
     private boolean isSupportedDeviceModel(final @Nullable String deviceModel) {
         return deviceModel != null && !deviceModel.isBlank() && Arrays.stream(OnkyoModel.values())
-                .anyMatch(model -> StringUtils.startsWithIgnoreCase(deviceModel, model.getId()));
+                .anyMatch(model -> deviceModel.toLowerCase().startsWith(model.getId().toLowerCase()));
     }
 }

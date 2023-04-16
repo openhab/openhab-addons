@@ -56,8 +56,9 @@ public class AggregateDataResponseTransformerPublicApi extends AbstractDataRespo
         if (energyDetails != null) {
             AggregatePeriod timeUnit = energyDetails.timeUnit;
             String unit = energyDetails.unit;
-            if (timeUnit != null && unit != null && energyDetails.meters != null) {
-                for (MeterTelemetries meter : energyDetails.meters) {
+            List<MeterTelemetries> meters = energyDetails.meters;
+            if (timeUnit != null && unit != null && meters != null) {
+                for (MeterTelemetries meter : meters) {
                     String type = meter.type;
                     if (type != null) {
                         if (type.equals(METER_TYPE_PRODUCTION)) {

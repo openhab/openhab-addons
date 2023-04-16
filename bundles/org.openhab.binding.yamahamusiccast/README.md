@@ -41,8 +41,8 @@ No auto discovery
 | volumeDbMin        | Number  | Lowest volume in dB.                                    | true     | false         |
 | volumeDbMax        | Number  | Highest volume in dB.                                   | true     | false         |
 
-Default value for *defaultAfterMCLink* is *NET RADIO* (as *net_radio*) as most of the models have this on board.
-You can also use *RADIO / TUNER* (as *tuner*).
+Default value for _defaultAfterMCLink_ is _NET RADIO_ (as _net_radio_) as most of the models have this on board.
+You can also use _RADIO / TUNER_ (as _tuner_).
 
 ## Channels
 
@@ -69,7 +69,6 @@ You can also use *RADIO / TUNER* (as *tuner*).
 | totalTime      | String               | Total time of current selection: radio, song, track, ...            |
 | mclinkStatus   | String               | Select your Musiccast Server or set to Standalone, Server or Client |
 
-
 | Zones                | description                                          |
 |----------------------|------------------------------------------------------|
 | zone1-4              | Zone 1 to 4 to control Power, Volume, ...            |
@@ -88,11 +87,11 @@ spotify / juke / airplay / radiko / qobuz / mc_link / main_sync / none
 
 Firmware v2
 
-cd / tuner / multi_ch / phono / hdmi1 / hdmi2 / hdmi3 / hdmi4 / hdmi5 / hdmi6 / hdmi7 / 
-hdmi8 / hdmi / av1 / av2 / av3 / av4 / av5 / av6 / av7 / v_aux / aux1 / aux2 / aux / audio1 / 
-audio2 / audio3 / audio4 / **audio5** / audio_cd / audio / optical1 / optical2 / optical / coaxial1 / coaxial2 / 
-coaxial / digital1 / digital2 / digital / line1 / line2 / line3 / line_cd / analog / tv / bd_dvd / 
-usb_dac / usb / bluetooth / server / net_radio / ~~rhapsody~~ /napster / pandora / siriusxm / 
+cd / tuner / multi_ch / phono / hdmi1 / hdmi2 / hdmi3 / hdmi4 / hdmi5 / hdmi6 / hdmi7 /
+hdmi8 / hdmi / av1 / av2 / av3 / av4 / av5 / av6 / av7 / v_aux / aux1 / aux2 / aux / audio1 /
+audio2 / audio3 / audio4 / **audio5** / audio_cd / audio / optical1 / optical2 / optical / coaxial1 / coaxial2 /
+coaxial / digital1 / digital2 / digital / line1 / line2 / line3 / line_cd / analog / tv / bd_dvd /
+usb_dac / usb / bluetooth / server / net_radio / ~~rhapsody~~ /napster / pandora / siriusxm /
 spotify / juke / airplay / radiko / qobuz / **tidal** / **deezer** / mc_link / main_sync / none
 
 ## Sound Program
@@ -109,7 +108,7 @@ mono_movie / movie / enhanced / 2ch_stereo / 5ch_stereo / 7ch_stereo / 9ch_stere
 
 ### Bridge & Thing(s)
 
-```
+```java
 Bridge yamahamusiccast:bridge:virtual "YXC Bridge" {
     Thing device Living "YXC Living" [host="1.2.3.4", defaultAfterMCLink="none", syncVolume=false, volumeDbMin=-80, volumeDbMax=-10]
 }
@@ -117,7 +116,7 @@ Bridge yamahamusiccast:bridge:virtual "YXC Bridge" {
 
 ### Basic setup
 
-```
+```java
 Switch YamahaPower "" {channel="yamahamusiccast:device:virtual:Living:main#power"}
 Switch YamahaMute "" {channel="yamahamusiccast:device:virtual:Living:main#mute"}
 Dimmer YamahaVolume "" {channel="yamahamusiccast:device:virtual:Living:main#volume"}
@@ -130,7 +129,7 @@ String YamahaSoundProgram "" {channel="yamahamusiccast:device:virtual:Living:mai
 
 ### Player controls
 
-```
+```java
 Player YamahaPlayer "" {channel="yamahamusiccast:device:virtual:Living:playerControls#player"}
 String YamahaArt "" {channel="yamahamusiccast:device:virtual:Living:playerControls#albumArt"}
 String YamahaArtist "" {channel="yamahamusiccast:device:virtual:Living:playerControls#artist"}
@@ -141,28 +140,28 @@ String YamahaAlbum "" {channel="yamahamusiccast:device:virtual:Living:playerCont
 ### MusicCast setup
 
 The idea here is to select what device/model will be the master. This needs to be done per device/model which will then be the slave.
-If you want the *Living* to be the master for the *Kitchen*, select *Living - zone (IP)* from the thing *Kitchen*.
-The binding will check if there is already a group active for which *Living* is the master. If yes, this group will be used and *Kitchen* will be added.
+If you want the _Living_ to be the master for the _Kitchen_, select _Living - zone (IP)_ from the thing _Kitchen_.
+The binding will check if there is already a group active for which _Living_ is the master. If yes, this group will be used and _Kitchen_ will be added.
 If not, a new group will be created.
 
-*Device A*: Living with IP 192.168.1.1
-*Device B*: Kitchen with IP 192.168.1.2
+_Device A_: Living with IP 192.168.1.1
+_Device B_: Kitchen with IP 192.168.1.2
 
-Set **mclinkStatus** to *Standalone* to remove the device/model from the current active group. The group will keep on exist with other devices/models.
+Set **mclinkStatus** to _Standalone_ to remove the device/model from the current active group. The group will keep on exist with other devices/models.
 If the device/model is the server, the group will be disbanded.
 
-```
+```java
 String YamahaMCLinkStatus "" {channel="yamahamusiccast:device:Living:main#mclinkStatus"}
 ```
 
-During testing with the Yamaha Musiccast app, when removing a slave from the group, the status of the client remained *client* and **input** stayed on *mclink*. Only when changing input, the slave was set to *standalone*. Therefor you can set the parameter **defaultAfterMCLink** to an input value supported by your device to break the whole Musiccast Link in OH.
+During testing with the Yamaha Musiccast app, when removing a slave from the group, the status of the client remained _client_ and **input** stayed on _mclink_. Only when changing input, the slave was set to _standalone_. Therefor you can set the parameter **defaultAfterMCLink** to an input value supported by your device to break the whole Musiccast Link in OH.
 
 #### How to use this in a rule?
 
 The label uses the format _Thinglabel - zone (IP)_.
 The value which is sent to OH uses the format _IP***zone_.
 
-```
+```java
 sendCommand(Kitchen_YamahaMCServer, "192.168.1.1***main")
 sendCommand(Kitchen_YamahaMCServer, "")
 sendCommand(Kitchen_YamahaMCServer, "server")

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="jsscripting" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>automation</type>
+	<name>JavaScript Scripting</name>
+	<description>This adds a JS (ECMAScript-2021) script engine.</description>
+
+	<service-id>org.openhab.jsscripting</service-id>
+
+</addon:addon>

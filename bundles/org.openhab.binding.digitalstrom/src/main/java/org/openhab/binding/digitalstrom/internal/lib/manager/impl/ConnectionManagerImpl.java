@@ -39,7 +39,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
      * Query to get all enabled application tokens. Can be executed with {@link DsAPI#query(String, String)} or
      * {@link DsAPI#query2(String, String)}.
      */
-    public final String QUERY_GET_ENABLED_APPLICATION_TOKENS = "/system/security/applicationTokens/enabled/*(*)";
+    public static final String QUERY_GET_ENABLED_APPLICATION_TOKENS = "/system/security/applicationTokens/enabled/*(*)";
     private final Logger logger = LoggerFactory.getLogger(ConnectionManagerImpl.class);
 
     private Config config;

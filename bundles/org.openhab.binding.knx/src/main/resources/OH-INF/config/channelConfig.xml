@@ -9,34 +9,43 @@
 	<config-description uri="channel-type:knx:dimmer">
 		<parameter name="switch" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to toggle the dimmer on or off</description>
+			<description>The group address (GA) to toggle the dimmer on or off. Additional listening (status) GAs can be added by
+				concatenating GAs with a "+" (e.g. "1/7/18+2/9/15"). The DPT can be defined by prepending it to the first GA,
+				separated by ":" (e.g. "2.001:1/4/17"). GAs prepended with a "&lt;" (e.g. "&lt;5/1/125") are read from the bus on
+				startup.
+			</description>
 		</parameter>
 		<parameter name="position" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to set the absolute position of the dimmer</description>
+			<description>The group address to set the absolute brightness (see format description above).</description>
 		</parameter>
 		<parameter name="increaseDecrease" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to increase or decrease the dimmer</description>
+			<description>The group address to increase or decrease the dimmer (see format description above).</description>
 		</parameter>
 	</config-description>
 	<config-description uri="channel-type:knx:dimmer-control">
 		<parameter name="switch" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to toggle the dimmer on or off</description>
+			<description>The group address (GA) to toggle the dimmer on or off. Additional listening (status) GAs can be added by
+				concatenating GAs with a "+" (e.g. "1/7/18+2/9/15"). The DPT can be defined by prepending it to the first GA,
+				separated by ":" (e.g. "2.001:1/4/17"). GAs prepended with a "&lt;" (e.g. "&lt;5/1/125") are read from the bus on
+				startup.
+			</description>
 		</parameter>
 		<parameter name="position" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to set the absolute position of the dimmer</description>
+			<description>The group address to set the brightness (see format description above).</description>
 		</parameter>
 		<parameter name="increaseDecrease" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to increase or decrease the dimmer</description>
+			<description>The group address to increase or decrease the dimmer (see format description above).</description>
 		</parameter>
 		<parameter name="frequency" type="integer">
 			<label>Frequency</label>
 			<description>Increase/decrease send frequency if dimming should be handled by the binding (in ms) - set to 0 if the
-				KNX device sends them repeatedly itself</description>
+				KNX device sends them repeatedly itself.
+			</description>
 			<default>0</default>
 		</parameter>
 	</config-description>
@@ -45,42 +54,51 @@
 	<config-description uri="channel-type:knx:color">
 		<parameter name="hsb" type="text" required="false">
 			<label>Color Value</label>
-			<description>The group address(es) in Group Address Notation for the color value</description>
+			<description>The group address (GA) to set the color value. Additional listening (status) GAs can be added by
+				concatenating GAs with a "+" (e.g. "1/7/18+2/9/15"). The DPT can be defined by prepending it to the first GA,
+				separated by ":" (e.g. "2.001:1/4/17"). GAs prepended with a "&lt;" (e.g. "&lt;5/1/125") are read from the bus on
+				startup.
+			</description>
 		</parameter>
 		<parameter name="switch" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to toggle the color on or off</description>
+			<description>The group address to toggle the color on or off (see format description above).</description>
 		</parameter>
 		<parameter name="position" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to set the absolute position of the color</description>
+			<description>The group address to set the absolute brightness (see format description above).</description>
 		</parameter>
 		<parameter name="increaseDecrease" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to increase or decrease the color</description>
+			<description>The group address to increase or decrease the brightness (see format description above).</description>
 		</parameter>
 	</config-description>
 	<config-description uri="channel-type:knx:color-control">
 		<parameter name="hsb" type="text" required="false">
 			<label>Color Value</label>
-			<description>The group address(es) in Group Address Notation for the color value</description>
+			<description>The group address (GA) to set the color value. Additional listening (status) GAs can be added by
+				concatenating GAs with a "+" (e.g. "1/7/18+2/9/15"). The DPT can be defined by prepending it to the first GA,
+				separated by ":" (e.g. "2.001:1/4/17"). GAs prepended with a "&lt;" (e.g. "&lt;5/1/125") are read from the bus on
+				startup.
+			</description>
 		</parameter>
 		<parameter name="switch" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to toggle the color on or off</description>
+			<description>The group address to toggle the color on or off (see format description above).</description>
 		</parameter>
 		<parameter name="position" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to set the absolute position of the color</description>
+			<description>The group address to set the absolute brightness (see format description above).</description>
 		</parameter>
 		<parameter name="increaseDecrease" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to increase or decrease the color</description>
+			<description>The group address to increase or decrease the brightness (see format description above).</description>
 		</parameter>
 		<parameter name="frequency" type="integer">
 			<label>Frequency</label>
 			<description>Increase/decrease send frequency if color should be handled by the binding (in ms) - set to 0 if the KNX
-				device sends them repeatedly itself</description>
+				device sends them repeatedly itself.
+			</description>
 			<default>0</default>
 		</parameter>
 	</config-description>
@@ -89,15 +107,19 @@
 	<config-description uri="channel-type:knx:rollershutter">
 		<parameter name="upDown" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to move the shutter in the DOWN or UP direction</description>
+			<description>The group address (GA) to set the moving direction (up/down). Additional listening (status) GAs can be
+				added by concatenating GAs with a "+" (e.g. "1/7/18+2/9/15"). The DPT can be defined by prepending it to the first
+				GA, separated by ":" (e.g. "2.001:1/4/17"). GAs prepended with a "&lt;" (e.g. "&lt;5/1/125") are read from the bus
+				on startup.
+			</description>
 		</parameter>
 		<parameter name="stopMove" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to start (MOVE) or STOP shutter movement</description>
+			<description>The group address to start (MOVE) or STOP shutter movement (see format description above).</description>
 		</parameter>
 		<parameter name="position" type="text" required="false">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation to set the absolute position of the shutter, in %</description>
+			<description>The group address to set the absolute position of the shutter, in % (see format description above).</description>
 		</parameter>
 	</config-description>
 
@@ -105,7 +127,10 @@
 	<config-description uri="channel-type:knx:single">
 		<parameter name="ga" type="text" required="true">
 			<label>Address</label>
-			<description>The group address(es) in Group Address Notation</description>
+			<description>The group address (GA) for this channel. Additional listening (status) GAs can be added by concatenating
+				GAs with a "+" (e.g. "1/7/18+2/9/15"). The DPT can be defined by prepending it to the first GA, separated by ":"
+				(e.g. "2.001:1/4/17"). GAs prepended with a "&lt;" (e.g. "&lt;5/1/125") are read from the bus on startup.
+			</description>
 		</parameter>
 	</config-description>
 

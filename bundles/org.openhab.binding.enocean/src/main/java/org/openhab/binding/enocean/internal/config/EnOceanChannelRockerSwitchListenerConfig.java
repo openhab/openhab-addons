@@ -12,18 +12,19 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanChannelRockerSwitchListenerConfig extends EnOceanChannelRockerSwitchConfigBase {
 
-    public String enoceanId;
-    public boolean handleSecondAction;
+    public String enoceanId = "";
+    public boolean handleSecondAction = false;
 
     public EnOceanChannelRockerSwitchListenerConfig() {
         super();
-        enoceanId = null;
-        handleSecondAction = false;
     }
 }

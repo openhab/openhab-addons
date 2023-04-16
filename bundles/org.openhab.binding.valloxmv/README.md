@@ -19,7 +19,7 @@ Minimum update interval is limited to 15 sec in order to avoid polling again bef
 | Config                | Description                                           | Type  | Default |
 | :-------------------- |:------------------------------------------------------|:-----:|:-------:|
 | ip                    | IP address of web interface                           |string | n/a     |
-| updateinterval        | Interval in seconds in which the interface is polled  |int    | 60      |    
+| updateinterval        | Interval in seconds in which the interface is polled  |int    | 60      |
 
 ## Channels
 
@@ -67,16 +67,15 @@ Overview of provided channels
 
 ## Example
 
-### Things file ###
+### Things file
 
-```
+```java
 Thing valloxmv:valloxmv:lueftung [ip="192.168.1.3", updateinterval=60]
 ```
 
+### Items file
 
-### Items file ###
-
-```
+```java
 Number State                   "Current state: [%d]"   {channel="valloxmv:valloxmv:lueftung:state"}
 Number FanSpeed                "Fanspeed [%d %%]"  {channel="valloxmv:valloxmv:lueftung:fanspeed"}
 

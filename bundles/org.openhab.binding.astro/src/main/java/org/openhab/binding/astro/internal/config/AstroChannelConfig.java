@@ -25,4 +25,5 @@ public class AstroChannelConfig {
     public int offset = 0;
     public @Nullable String earliest;
     public @Nullable String latest;
+    public boolean forceEvent = false;
 }

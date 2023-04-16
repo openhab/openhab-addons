@@ -15,10 +15,13 @@ package org.openhab.binding.enocean.internal.messages;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class BasePacket {
 
     public enum ESPPacketType {
@@ -65,7 +68,7 @@ public abstract class BasePacket {
 
     protected ESPPacketType packetType;
     protected byte[] data;
-    protected byte[] optionalData;
+    protected byte[] optionalData = new byte[0];
 
     public BasePacket(int dataLength, int optionalDataLength, ESPPacketType packetType, byte[] payload) {
         this(dataLength, optionalDataLength, packetType.value, payload);

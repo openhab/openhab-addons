@@ -95,7 +95,7 @@ public class CommonSetup {
         @SuppressWarnings("unchecked")
         @Override
         public <T> Storage<T> getStorage(String name) {
-            if (name.equals("hueEmulationUsers")) {
+            if ("hueEmulationUsers".equals(name)) {
                 return (Storage<T>) new DummyUsersStorage();
             }
             throw new IllegalStateException();

@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SolarMaxConfiguration {
     public String host = ""; // this will always need to be overridden
     public int portNumber = 12345; // default value is 12345
+    public int deviceAddress = 1; // default value is 1
 
     public int refreshInterval = 15; // default value is 15
 }

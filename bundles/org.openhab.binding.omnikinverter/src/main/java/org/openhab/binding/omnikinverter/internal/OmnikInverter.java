@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -55,7 +54,13 @@ public class OmnikInverter {
     private byte[] generateMagicPacket() {
         ByteBuffer serialByteBuffer = ByteBuffer.allocate(8).putInt(serialNumber).putInt(serialNumber);
         byte[] serialBytes = serialByteBuffer.array();
-        ArrayUtils.reverse(serialBytes);
+
+        // reverse array
+        for (int i = 0; i < serialBytes.length / 2; i++) {
+            byte temp = serialBytes[i];
+            serialBytes[i] = serialBytes[serialBytes.length - i - 1];
+            serialBytes[serialBytes.length - i - 1] = temp;
+        }
 
         byte checksumCount = 115;
         for (byte b : serialBytes) {

@@ -28,8 +28,8 @@ import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
  * <br>
  * To handle the {@link EventItem} the method {@link #handleEvent(EventItem)} has to be implemented.
  *
- * @author Michael Ochel
- * @author Matthias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public interface EventHandler {
 

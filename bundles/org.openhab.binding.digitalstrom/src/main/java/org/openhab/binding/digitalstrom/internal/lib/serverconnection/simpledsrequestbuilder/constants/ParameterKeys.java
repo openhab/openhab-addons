@@ -15,8 +15,8 @@ package org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsr
 /**
  * The {@link ParameterKeys} contains digitalSTROM-JSON parameter keys.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class ParameterKeys {
     public static final String TOKEN = "token";

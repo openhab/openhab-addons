@@ -176,6 +176,20 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         assertThat(component.getChannel(channelId).getState().getCache().getChannelState(), is(state));
     }
 
+    protected void spyOnChannelUpdates(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId) {
+        // It's already thingHandler, but not the spy version
+        component.getChannel(channelId).getState().setChannelStateUpdateListener(thingHandler);
+    }
+
+    /**
+     * Assert a channel triggers
+     */
+    protected void assertTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String trigger) {
+        verify(thingHandler).triggerChannel(eq(component.getChannel(channelId).getChannelUID()), eq(trigger));
+    }
+
     /**
      * Assert that given payload was published exact-once on given topic.
      *

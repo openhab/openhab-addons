@@ -20,16 +20,6 @@
 			<description>Advanced network settings.</description>
 			<advanced>true</advanced>
 		</parameter-group>
-		<parameter-group name="thermostatTargetHeatingCooling">
-			<label>Thermostat Target Heating/Cooling Mapping</label>
-			<description>String values used by your thermostat to set different target heating/cooling modes.</description>
-			<advanced>true</advanced>
-		</parameter-group>
-		<parameter-group name="thermostatCurrentHeatingCooling">
-			<label>Thermostat Current Heating/Cooling Mapping</label>
-			<description>String values used by your thermostat to set different current heating/cooling modes.</description>
-			<advanced>true</advanced>
-		</parameter-group>
 		<parameter name="name" type="text" required="false" groupName="core">
 			<label>Bridge name</label>
 			<description>Name of the HomeKit bridge.</description>
@@ -78,58 +68,6 @@
 			<label>Use Fahrenheit Temperature</label>
 			<description>Defines whether or not to direct HomeKit clients to use fahrenheit temperatures instead of celsius.</description>
 			<default>false</default>
-		</parameter>
-		<parameter name="thermostatTargetModeCool" type="text" required="true"
-			groupName="thermostatTargetHeatingCooling">
-			<label>Cool Value</label>
-			<description>Word used to set the target heatingCoolingMode to COOL (if a thermostat is defined).</description>
-			<default>CoolOn</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="thermostatTargetModeHeat" type="text" required="true"
-			groupName="thermostatTargetHeatingCooling">
-			<label>Heat Value</label>
-			<description>Word used to set the target heatingCoolingMode to HEAT (if a thermostat is defined).</description>
-			<default>HeatOn</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="thermostatTargetModeAuto" type="text" required="true"
-			groupName="thermostatTargetHeatingCooling">
-			<label>Auto Value</label>
-			<description>Word used to set the target heatingCoolingMode to AUTO (if a thermostat is defined).</description>
-			<default>Auto</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="thermostatTargetModeOff" type="text" required="true"
-			groupName="thermostatTargetHeatingCooling">
-			<label>Off Value</label>
-			<description>Word used to set the target heatingCoolingMode to OFF (if a thermostat is defined).</description>
-			<default>Off</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="thermostatCurrentModeHeating" type="text" required="true"
-			groupName="thermostatCurrentHeatingCooling">
-			<label>Heating Value</label>
-			<description>Value for setting target heatingCoolingCurrentMode to HEAT (IE: indicating that the heater is currently
-				warming the home).</description>
-			<default>Heating</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="thermostatCurrentModeCooling" type="text" required="true"
-			groupName="thermostatCurrentHeatingCooling">
-			<label>Cooling Value</label>
-			<description>Value for setting target heatingCoolingCurrentMode to COOL (IE: indicating that the air condition is
-				currently cooling the home).</description>
-			<default>Cooling</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="thermostatCurrentModeOff" type="text" required="true"
-			groupName="thermostatCurrentHeatingCooling">
-			<label>Off Value</label>
-			<description>Value for setting target heatingCoolingCurrentMode to OFF (IE: the hvac is currently idle, because the
-				target temperature has been reached per the mode).</description>
-			<default>Off</default>
-			<advanced>true</advanced>
 		</parameter>
 		<parameter name="useOHmDNS" type="boolean" required="false" groupName="network">
 			<label>Use openHAB mDNS service</label>

@@ -113,11 +113,7 @@ public class DigiplexResponseResolver {
     }
 
     private static boolean toBoolean(char value) {
-        if (value == 'O') {
-            return false;
-        } else {
-            return true;
-        }
+        return value != 'O';
     }
 
     private static DigiplexResponse resolveSystemEvent(String message) {

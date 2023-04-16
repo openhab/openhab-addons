@@ -55,10 +55,6 @@ public class NAThing extends NAObject implements NAModule {
         return localReachable != null ? localReachable : true;
     }
 
-    public void setReachable(boolean reachable) {
-        this.reachable = reachable;
-    }
-
     public @Nullable Dashboard getDashboardData() {
         return dashboardData;
     }

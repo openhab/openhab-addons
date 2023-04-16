@@ -13,6 +13,7 @@ Successfully tested are internet radios:
 - [Roberts Stream 83i and 93i](https://www.robertsradio.com/uk/products/radio/smart-radio/)
 - [Auna Connect 150, Auna KR200, Auna Connect CD](https://www.auna.de/Radios/Internetradios/)
 - [TechniSat DIGITRADIO 350 IR and 850](https://www.technisat.com/en_XX/DAB+-Radios-with-Internetradio/352-10996/)
+- [TechniSat VIOLA 2 C IR](https://www.technisat.com/de_DE/VIOLA-2-C-IR/352-10996-22713/?article=0010/3933)
 - [TTMicro AS Pinell Supersound](https://www.ttmicro.no/radio)
 - [Revo SuperConnect](https://revo.co.uk/products/)
 - [Sangean WFR-28C](https://sg.sangean.com.tw/products/product_category.asp?cid=2)
@@ -77,6 +78,7 @@ This list is just an example how the mapping looks like for some of the devices,
 | Medion MD87180           | Internet Radio | Music Player (USB, LAN) | DAB Radio    | FM Radio     | AUX in    | -        | -            | -            | -          | -         |-       | - | - | - |
 | Medion MD 86988          | Internet Radio | Music Player            | FM Radio     | AUX in       | -         | -        | -            | -            | -          | -         |-       | - | - | - |
 | Technisat DigitRadio 580 | Internet Radio | Spotify                 | -            | Music Player | DAB Radio | FM Radio | AUX in       | CD           | Bluetooth | -         |-        | - | - | - |
+| Technisat VIOLA 2 C IR   | Internet Radio | Podcasts                | DAB Radio    | FM Radio     | -         | -        | -            |              |           | -         |-        | - | - | - |
 | Dual IR 3a               | Internet Radio | Spotify                 | -            | Music Player | DAB Radio | FM Radio | Bluetooth    | -            | -          | -         |-       | - | - | - |
 | Silvercrest SIRD 14 C1   | -              | Napster                 | Deezer       | Qobuz        | Spotify   | TIDAL    | Spotify      | Music Player | DAB Radio | FM Radio  | AUX in | - |  - | - |
 | Silvercrest SIRD 14 C2   | Internet Radio | TIDAL                   | Deezer       | Qobuz        | Spotify   | -        | Music Player | DAB Radio    | FM Radio  | AUX in    |-       | - | - | - |

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="jpa" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>persistence</type>
+	<name>JPA persistence</name>
+	<description>This is the persistence add-on for JPA.</description>
+
+	<service-id>org.openhab.jpa</service-id>
+
+	<config-description>
+		<parameter name="url" type="text" required="true">
+			<label>JDBC connection URL</label>
+		</parameter>
+
+		<parameter name="driver" type="text" required="true">
+			<label>JDBC Driver</label>
+		</parameter>
+
+		<parameter name="user" type="text">
+			<label>User</label>
+		</parameter>
+
+		<parameter name="password" type="text">
+			<context>password</context>
+			<label>Password</label>
+		</parameter>
+	</config-description>
+
+</addon:addon>

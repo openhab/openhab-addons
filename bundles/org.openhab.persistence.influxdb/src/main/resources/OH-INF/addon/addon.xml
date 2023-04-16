@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="influxdb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>persistence</type>
+	<name>InfluxDB persistence</name>
+	<description>This is the persistence add-on for InfluxDB.</description>
+
+	<service-id>org.openhab.influxdb</service-id>
+
+	<config-description-ref uri="persistence:influxdb"/>
+
+</addon:addon>

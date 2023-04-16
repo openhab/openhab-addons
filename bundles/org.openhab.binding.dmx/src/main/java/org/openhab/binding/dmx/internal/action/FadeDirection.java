@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.dmx.internal.action;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link FadeDirection} gives the direction for fading
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 enum FadeDirection {
     UP,
     DOWN

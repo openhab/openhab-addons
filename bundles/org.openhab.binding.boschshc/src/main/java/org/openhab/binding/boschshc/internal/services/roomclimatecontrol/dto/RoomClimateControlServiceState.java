@@ -14,37 +14,39 @@ package org.openhab.binding.boschshc.internal.services.roomclimatecontrol.dto;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlService;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 
 /**
  * State for {@link RoomClimateControlService} to get and set the desired temperature of a room.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 public class RoomClimateControlServiceState extends BoschSHCServiceState {
 
-    private static final String TYPE = "climateControlState";
+    private static final String CLIMATE_CONTROL_STATE_TYPE = "climateControlState";
 
     public RoomClimateControlServiceState() {
-        super(TYPE);
+        super(CLIMATE_CONTROL_STATE_TYPE);
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param setpointTemperature Desired temperature (in degree celsius).
      */
     public RoomClimateControlServiceState(double setpointTemperature) {
-        super(TYPE);
+        super(CLIMATE_CONTROL_STATE_TYPE);
         this.setpointTemperature = setpointTemperature;
     }
 
     /**
      * Desired temperature (in degree celsius).
-     * 
+     *
      * @apiNote Min: 5.0, Max: 30.0.
      * @apiNote Can be set in 0.5 steps.
      */
@@ -52,10 +54,10 @@ public class RoomClimateControlServiceState extends BoschSHCServiceState {
 
     /**
      * Desired temperature state to set for a thing.
-     * 
+     *
      * @return Desired temperature state to set for a thing.
      */
     public State getSetpointTemperatureState() {
-        return new QuantityType<Temperature>(this.setpointTemperature, SIUnits.CELSIUS);
+        return new QuantityType<@NonNull Temperature>(this.setpointTemperature, SIUnits.CELSIUS);
     }
 }

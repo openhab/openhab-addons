@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dmx.internal.action;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
  * @author Davy Vanherbergen - Initial contribution
  * @author Jan N. Klug - Refactoring for ESH
  */
+@NonNullByDefault
 public class ResumeAction extends BaseAction {
 
     @Override

@@ -51,7 +51,7 @@ This is combined with a delta trigger value, which is defaulted to 1 W.
 This means that the channel is only updated when one of the following conditions are met:
 
 1. The rounded value received is equal to the rounded average for the past minute, i.e. this value has stabilized. This introduces a delay for very small changes in consumption, but on the other hand it prevents excessive logging and persistence caused by temporary small changes and rounding.
-2. The rounded value received is more than 1 W from the previous value. So when changes are happening fast, the channel will also be updated fast.
+1. The rounded value received is more than 1 W from the previous value. So when changes are happening fast, the channel will also be updated fast.
 
 | Configuration Parameter    | Description                                                                           |
 |----------------------------|---------------------------------------------------------------------------------------|
@@ -66,7 +66,7 @@ This will cause the channel to be updated the same way as in openHAB versions pr
 
 Devices support some of the following channels:
 
-| Channel Type        | Item Type     | Description                                                                                                                | Available on Thing                                   | 
+| Channel Type        | Item Type     | Description                                                                                                                | Available on Thing                                   |
 |---------------------|---------------|----------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | motionDetection     | Switch        | On if motion is detected, off otherwise. (Motion Sensor only)                                                              | Motion                                               |
 | lastMotionDetected  | DateTime      | Date and Time when the last motion was detected. (Motion Sensor only)                                                      | Motion                                               |
@@ -125,7 +125,7 @@ Devices support some of the following channels:
 
 demo.things:
 
-```
+```java
 wemo:socket:Switch1     "DemoSwitch"   @ "Office"   [udn="Socket-1_0-221242K11xxxxx"]
 wemo:motion:Sensor1     "MotionSensor" @ "Entrance" [udn="Sensor-1_0-221337L11xxxxx"]
 wemo:insight:Insight1   "Insight"      @ "Attic"    [udn="Insight-1_0-xxxxxxxxxxxxxx", currentPowerSlidingSeconds=120, currentPowerDeltaTrigger=2]
@@ -138,7 +138,7 @@ MZ100 94103EA2B278xxxx  "DemoLoght2"   @ "Living"   [ deviceID="94103EA2B278xxxx
 
 demo.items:
 
-```
+```java
 // Switch
 Switch DemoSwitch            { channel="wemo:socket:Switch1:state" }
 
@@ -216,7 +216,7 @@ String heaterRemaining      { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:he
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame {

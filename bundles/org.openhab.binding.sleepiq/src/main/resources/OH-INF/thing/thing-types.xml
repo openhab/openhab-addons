@@ -18,15 +18,15 @@
 				<label>Username</label>
 				<description>Username of a registered SleepIQ account owner</description>
 			</parameter>
-			<parameter name="password" type="text" required="false">
-				<context>password</context>
+			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<description>Password of a registered SleepIQ account owner</description>
+				<context>password</context>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" min="30" step="30" required="true">
+			<parameter name="pollingInterval" type="integer" min="30" step="30">
 				<label>Polling Interval</label>
 				<description>Seconds between fetching values from the cloud service</description>
-				<default>60</default>
+				<default>120</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -68,6 +68,10 @@
 			<channel-group id="right" typeId="chamberGroupType"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<config-description>
 			<parameter name="bedId" type="text" required="true">
 				<label>Bed ID</label>
@@ -86,6 +90,26 @@
 			<channel id="lastLink" typeId="lastLinkType"/>
 			<channel id="alertId" typeId="alertIdType"/>
 			<channel id="alertDetailedMessage" typeId="alertDetailedMessageType"/>
+			<channel id="firstName" typeId="firstNameType"/>
+			<channel id="sleepGoalMinutes" typeId="sleepGoalMinutesType"/>
+			<channel id="privacyMode" typeId="privacyMode"/>
+			<channel id="todaySleepIQ" typeId="todaySleepIQType"/>
+			<channel id="todayAverageHeartRate" typeId="todayAverageHeartRateType"/>
+			<channel id="todayAverageRespirationRate" typeId="todayAverageRespirationRateType"/>
+			<channel id="todayMessage" typeId="todayMessageType"/>
+			<channel id="todaySleepDurationSeconds" typeId="todaySleepDurationSecondsType"/>
+			<channel id="todaySleepInBedSeconds" typeId="todaySleepInBedSecondsType"/>
+			<channel id="todaySleepOutOfBedSeconds" typeId="todaySleepOutOfBedSecondsType"/>
+			<channel id="todaySleepRestfulSeconds" typeId="todaySleepRestfulSecondsType"/>
+			<channel id="todaySleepRestlessSeconds" typeId="todaySleepRestlessSecondsType"/>
+			<channel id="monthlySleepIQ" typeId="monthlySleepIQType"/>
+			<channel id="monthlyAverageHeartRate" typeId="monthlyAverageHeartRateType"/>
+			<channel id="monthlyAverageRespirationRate" typeId="monthlyAverageRespirationRateType"/>
+			<channel id="foundationPreset" typeId="foundationPresetType"/>
+			<channel id="foundationPositionHead" typeId="foundationPositionHeadType"/>
+			<channel id="foundationPositionFoot" typeId="foundationPositionFootType"/>
+			<channel id="nightStandOutlet" typeId="nightStandOutletType"/>
+			<channel id="underBedLight" typeId="underBedLightType"/>
 		</channels>
 	</channel-group-type>
 
@@ -99,7 +123,7 @@
 		<item-type>Number</item-type>
 		<label>Sleep Number</label>
 		<description>The Sleep Number setting of the chamber</description>
-		<state readOnly="true"/>
+		<state readOnly="false" min="5" max="100" step="5" pattern="%d"/>
 	</channel-type>
 	<channel-type id="pressureType">
 		<item-type>Number</item-type>
@@ -125,6 +149,135 @@
 		<label>Alert Detailed Message</label>
 		<description>A detailed message describing an alert condition with the chamber</description>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="firstNameType">
+		<item-type>String</item-type>
+		<label>First Name</label>
+		<description>The first name of the sleeper</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sleepGoalMinutesType">
+		<item-type>Number:Time</item-type>
+		<label>Sleep Goal</label>
+		<description>The goal for the amount of sleep per night (in minutes)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="privacyMode">
+		<item-type>Switch</item-type>
+		<label>Privacy Mode</label>
+		<description>Enable/disable privacy mode</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="todaySleepIQType">
+		<item-type>Number</item-type>
+		<label>Today's Sleep IQ</label>
+		<description>The Sleep Quotient for today</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="todayAverageHeartRateType">
+		<item-type>Number</item-type>
+		<label>Today's Avg Heart Rate</label>
+		<description>The average heart rate for today</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="todayAverageRespirationRateType">
+		<item-type>Number</item-type>
+		<label>Today's Avg Respiration Rate</label>
+		<description>The average respiration rate for today</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="todayMessageType">
+		<item-type>String</item-type>
+		<label>Today's Message</label>
+		<description>The description of today's sleep quality</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="todaySleepDurationSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep Duration</label>
+		<description>The total duration of sleep for today in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="todaySleepInBedSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep In Bed Duration</label>
+		<description>The total duration of time in bed in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="todaySleepOutOfBedSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep Out Of Bed Duration</label>
+		<description>The total duration of time out of bed in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="todaySleepRestfulSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep Restful Duration</label>
+		<description>The total duration of restful sleep for today in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="todaySleepRestlessSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep Restless Duration</label>
+		<description>The total duration of restless sleep for today in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="monthlySleepIQType">
+		<item-type>Number</item-type>
+		<label>Monthly Sleep IQ</label>
+		<description>The overall Sleep Quotient for the past month</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="monthlyAverageHeartRateType">
+		<item-type>Number</item-type>
+		<label>Monthly Avg Heart Rate</label>
+		<description>The average heart rate for the past month</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="monthlyAverageRespirationRateType">
+		<item-type>Number</item-type>
+		<label>Monthly Avg Respiration Rate</label>
+		<description>The average respiration rate for the past month</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="foundationPresetType">
+		<item-type>Number</item-type>
+		<label>Preset</label>
+		<description>Bed position preset</description>
+		<state readOnly="false" min="1" max="6" step="1" pattern="%d">
+			<options>
+				<option value="1">Favorite</option>
+				<option value="2">Read</option>
+				<option value="3">Watch TV</option>
+				<option value="4">Flat</option>
+				<option value="5">Zero G</option>
+				<option value="6">Snore</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="foundationPositionHeadType">
+		<item-type>Number</item-type>
+		<label>Head Position</label>
+		<description>The position of the adjustable head</description>
+		<state readOnly="false" min="0" max="100" step="1" pattern="%d"/>
+	</channel-type>
+	<channel-type id="foundationPositionFootType">
+		<item-type>Number</item-type>
+		<label>Foot Position</label>
+		<description>The position of the adjustable foot</description>
+		<state readOnly="false" min="0" max="100" step="1" pattern="%d"/>
+	</channel-type>
+	<channel-type id="nightStandOutletType">
+		<item-type>Switch</item-type>
+		<label>Night Stand</label>
+		<description>The night stand outlet</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="underBedLightType">
+		<item-type>Switch</item-type>
+		<label>Under Bed Light</label>
+		<description>The under bed lighting</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

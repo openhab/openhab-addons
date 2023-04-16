@@ -125,7 +125,7 @@ public abstract class KaleidescapeConnector {
             try {
                 readerThread.join(3000);
             } catch (InterruptedException e) {
-                logger.warn("Error joining readerThread: {}", e.getMessage());
+                logger.debug("Error joining readerThread: {}", e.getMessage());
             }
         }
     }

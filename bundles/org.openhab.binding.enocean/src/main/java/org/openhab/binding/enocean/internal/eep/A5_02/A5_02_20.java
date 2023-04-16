@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_02;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_02_20 extends A5_02 {
 
     public A5_02_20(ERP1Message packet) {
@@ -46,6 +48,6 @@ public class A5_02_20 extends A5_02 {
 
     @Override
     protected int getUnscaledTemperatureValue() {
-        return getDB_1Value() + ((getDB_2Value() & 0b11) << 8);
+        return getDB1Value() + ((getDB2Value() & 0b11) << 8);
     }
 }

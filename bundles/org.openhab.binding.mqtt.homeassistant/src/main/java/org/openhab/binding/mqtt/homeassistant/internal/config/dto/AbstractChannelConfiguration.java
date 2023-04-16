@@ -55,6 +55,9 @@ public abstract class AbstractChannelConfiguration {
     @SerializedName("availability_template")
     protected @Nullable String availabilityTemplate;
 
+    @SerializedName("enabled_by_default")
+    protected boolean enabledByDefault = true;
+
     /**
      * A list of MQTT topics subscribed to receive availability (online/offline) updates. Must not be used together with
      * availability_topic
@@ -166,6 +169,10 @@ public abstract class AbstractChannelConfiguration {
     @Nullable
     public String getAvailabilityTemplate() {
         return availabilityTemplate;
+    }
+
+    public boolean isEnabledByDefault() {
+        return enabledByDefault;
     }
 
     @Nullable

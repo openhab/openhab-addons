@@ -45,6 +45,7 @@ Number  Temperature "Temperature [%.1f °C]"
 ```
 
 The regex pattern is is defined as follows
+
 * `.*` match any character, zero and unlimited times
 * `=` match the equal sign literally, used to find the position
 *  `()` capture group match 

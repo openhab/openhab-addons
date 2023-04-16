@@ -24,12 +24,12 @@ public interface WebSocketConnectionListener {
     /**
      * Connection successfully established.
      */
-    void connectionEstablished();
+    void webSocketConnectionEstablished();
 
     /**
      * Connection lost. A reconnect timer has been started.
      *
      * @param reason A reason for the disconnection
      */
-    void connectionLost(String reason);
+    void webSocketConnectionLost(String reason);
 }

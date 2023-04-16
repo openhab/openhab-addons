@@ -32,8 +32,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  */
 @NonNullByDefault
 public class BlueGigaWhitelistAppendCommand extends BlueGigaCommand {
-    public static int COMMAND_CLASS = 0x00;
-    public static int COMMAND_METHOD = 0x0A;
+    public static final int COMMAND_CLASS = 0x00;
+    public static final int COMMAND_METHOD = 0x0A;
 
     /**
      * Bluetooth device address to add to the running white list. Maximum of 8 can be stored before

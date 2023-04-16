@@ -80,24 +80,24 @@ public class ColorValue extends Value {
      * Updates the color state.
      */
     @Override
-    public void update(Command command) throws IllegalArgumentException {
+    public HSBType parseCommand(Command command) throws IllegalArgumentException {
         HSBType oldvalue = (state == UnDefType.UNDEF) ? new HSBType() : (HSBType) state;
         if (command instanceof HSBType) {
-            state = (HSBType) command;
+            return (HSBType) command;
         } else if (command instanceof OnOffType) {
             OnOffType boolValue = ((OnOffType) command);
             PercentType minOn = new PercentType(Math.max(oldvalue.getBrightness().intValue(), onBrightness));
-            state = new HSBType(oldvalue.getHue(), oldvalue.getSaturation(),
+            return new HSBType(oldvalue.getHue(), oldvalue.getSaturation(),
                     boolValue == OnOffType.ON ? minOn : new PercentType(0));
         } else if (command instanceof PercentType) {
-            state = new HSBType(oldvalue.getHue(), oldvalue.getSaturation(), (PercentType) command);
+            return new HSBType(oldvalue.getHue(), oldvalue.getSaturation(), (PercentType) command);
         } else {
             final String updatedValue = command.toString();
             if (onValue.equals(updatedValue)) {
                 PercentType minOn = new PercentType(Math.max(oldvalue.getBrightness().intValue(), onBrightness));
-                state = new HSBType(oldvalue.getHue(), oldvalue.getSaturation(), minOn);
+                return new HSBType(oldvalue.getHue(), oldvalue.getSaturation(), minOn);
             } else if (offValue.equals(updatedValue)) {
-                state = new HSBType(oldvalue.getHue(), oldvalue.getSaturation(), new PercentType(0));
+                return new HSBType(oldvalue.getHue(), oldvalue.getSaturation(), new PercentType(0));
             } else {
                 String[] split = updatedValue.split(",");
                 if (split.length != 3) {
@@ -105,18 +105,15 @@ public class ColorValue extends Value {
                 }
                 switch (this.colorMode) {
                     case HSB:
-                        state = new HSBType(updatedValue);
-                        break;
+                        return new HSBType(updatedValue);
                     case RGB:
-                        state = HSBType.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]),
+                        return HSBType.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]),
                                 Integer.parseInt(split[2]));
-                        break;
                     case XYY:
                         HSBType tempState = HSBType.fromXY(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
-                        state = new HSBType(tempState.getHue(), tempState.getSaturation(), new PercentType(split[2]));
-                        break;
+                        return new HSBType(tempState.getHue(), tempState.getSaturation(), new PercentType(split[2]));
                     default:
-                        logger.warn("Non supported color mode");
+                        throw new IllegalArgumentException("Non supported color mode");
                 }
             }
         }
@@ -130,11 +127,7 @@ public class ColorValue extends Value {
      *         ("0.419321,0.505255,100.00").
      */
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
-        if (state == UnDefType.UNDEF) {
-            return "";
-        }
-
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String formatPattern = pattern;
         if (formatPattern == null || "%s".equals(formatPattern)) {
             if (this.colorMode == ColorMode.XYY) {
@@ -144,7 +137,7 @@ public class ColorValue extends Value {
             }
         }
 
-        HSBType hsbState = (HSBType) state;
+        HSBType hsbState = (HSBType) command;
 
         switch (this.colorMode) {
             case HSB:

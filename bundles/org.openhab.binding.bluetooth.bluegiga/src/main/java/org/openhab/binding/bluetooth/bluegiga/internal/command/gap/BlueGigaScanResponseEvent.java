@@ -31,8 +31,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.ScanResponseT
  */
 @NonNullByDefault
 public class BlueGigaScanResponseEvent extends BlueGigaResponse {
-    public static int COMMAND_CLASS = 0x06;
-    public static int COMMAND_METHOD = 0x00;
+    public static final int COMMAND_CLASS = 0x06;
+    public static final int COMMAND_METHOD = 0x00;
 
     /**
      * RSSI value (dBm). Range: -103 to -38

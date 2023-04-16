@@ -60,9 +60,9 @@ import io.github.hapjava.server.impl.HomekitRoot;
 @NonNullByDefault
 public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
-    private final static String REVISION_CONFIG = "revision";
-    private final static String ACCESSORY_COUNT = "accessory_count";
-    private final static String KNOWN_ACCESSORIES = "known_accessories";
+    private static final String REVISION_CONFIG = "revision";
+    private static final String ACCESSORY_COUNT = "accessory_count";
+    private static final String KNOWN_ACCESSORIES = "known_accessories";
     private final ItemRegistry itemRegistry;
     private final HomekitAccessoryRegistry accessoryRegistry = new HomekitAccessoryRegistry();
     private final MetadataRegistry metadataRegistry;
@@ -291,7 +291,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
         try {
             boolean changed = false;
-            boolean removed = false;
             for (final String name : pendingUpdates) {
                 String oldValue = knownAccessories.get(name);
                 accessoryRegistry.remove(name);

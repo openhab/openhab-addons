@@ -33,8 +33,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  */
 @NonNullByDefault
 public class BlueGigaSetAdvDataCommand extends BlueGigaCommand {
-    public static int COMMAND_CLASS = 0x06;
-    public static int COMMAND_METHOD = 0x09;
+    public static final int COMMAND_CLASS = 0x06;
+    public static final int COMMAND_METHOD = 0x09;
 
     /**
      * Advertisement data type. 0 : sets advertisement data. 1 : sets scan response data

@@ -25,6 +25,8 @@
 			<channel id="wirelessClients" typeId="wirelessClients"/>
 			<channel id="wiredClients" typeId="wiredClients"/>
 			<channel id="guestClients" typeId="guestClients"/>
+			<channel id="guestVoucher" typeId="guestVoucher"/>
+			<channel id="guestVouchersGenerate" typeId="guestVouchersGenerate"/>
 		</channels>
 
 		<representation-property>sid</representation-property>
@@ -69,6 +71,8 @@
 		<channels>
 			<!-- common wired + wireless client channels -->
 			<channel id="online" typeId="online"/>
+			<channel id="name" typeId="name"/>
+			<channel id="hostname" typeId="hostname"/>
 			<channel id="site" typeId="site"/>
 			<channel id="macAddress" typeId="macAddress"/>
 			<channel id="ipAddress" typeId="ipAddress"/>
@@ -93,6 +97,8 @@
 		<channels>
 			<!-- common wired + wireless client channels -->
 			<channel id="online" typeId="online"/>
+			<channel id="name" typeId="name"/>
+			<channel id="hostname" typeId="hostname"/>
 			<channel id="site" typeId="site"/>
 			<channel id="macAddress" typeId="macAddress"/>
 			<channel id="ipAddress" typeId="ipAddress"/>
@@ -165,6 +171,25 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="guestVoucher">
+		<item-type>String</item-type>
+		<label>Guest Voucher</label>
+		<description>Guest voucher for access through the guest portal</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="guestVouchersGenerate">
+		<item-type>String</item-type>
+		<label>Generate Guest Vouchers</label>
+		<description>Generate additional guest vouchers for access through the guest portal</description>
+		<command>
+			<options>
+				<option value="GENERATE">Generate</option>
+			</options>
+		</command>
+		<config-description-ref uri="channel-type:unifi:guestVouchersGenerate"/>
+	</channel-type>
+
 	<channel-type id="wlanEnable">
 		<item-type>Switch</item-type>
 		<label>Enable</label>
@@ -227,6 +252,20 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name of the client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="hostname">
+		<item-type>String</item-type>
+		<label>Hostname</label>
+		<description>Hostname of the client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="site">
 		<item-type>String</item-type>
 		<label>Site Name</label>
@@ -279,10 +318,11 @@
 	</channel-type>
 
 	<channel-type id="rssi">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Received Signal Strength Indicator</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
-		<state readOnly="true"></state>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="blocked">

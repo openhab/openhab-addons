@@ -33,7 +33,6 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -336,7 +335,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
         // sensor-events and cached values are
         // shown in °C so we will use this unit for temperature sensors
         String unitShortCut = sensorType.getUnitShortcut();
-        if (unitShortCut.equals("%")) {
+        if ("%".equals(unitShortCut)) {
             unitShortCut = "%%";
         }
         if (sensorType.toString().contains("TEMPERATURE")) {

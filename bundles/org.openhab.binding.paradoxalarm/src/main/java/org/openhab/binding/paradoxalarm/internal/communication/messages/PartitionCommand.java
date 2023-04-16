@@ -32,7 +32,7 @@ public enum PartitionCommand {
     DISARM(6),
     BEEP(8);
 
-    private final static Logger logger = LoggerFactory.getLogger(PartitionCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(PartitionCommand.class);
 
     private int command;
 

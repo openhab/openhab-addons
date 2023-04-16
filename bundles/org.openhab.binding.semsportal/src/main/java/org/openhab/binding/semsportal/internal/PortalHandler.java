@@ -140,7 +140,8 @@ public class PortalHandler extends BaseBridgeHandler {
             loggedIn = true;
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR, "Check username / password");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Check username / password");
         }
     }
 

@@ -40,7 +40,7 @@ public class HoodDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_HOOD, HOOD_DEVICE_THING_UID,
-                HoodDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                HoodDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "0");
     }
 
     @Test

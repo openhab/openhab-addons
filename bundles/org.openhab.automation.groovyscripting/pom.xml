@@ -15,8 +15,8 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: Groovy Scripting</name>
 
   <properties>
-    <bnd.importpackage>com.ibm.icu.*;resolution:=optional,groovy.runtime.metaclass;resolution:=optional,groovyjarjarantlr4.stringtemplate;resolution:=optional,org.abego.treelayout.*;resolution:=optional,org.apache.ivy.*;resolution:=optional,org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
-    <groovy.version>4.0.7</groovy.version>
+    <bnd.importpackage>com.ibm.icu.*;resolution:=optional,groovy.runtime.metaclass;resolution:=optional,groovyjarjarantlr4.stringtemplate;resolution:=optional,org.abego.treelayout.*;resolution:=optional,org.apache.ivy.*;resolution:=optional,org.fusesource.jansi.*;resolution:=optional,org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
+    <groovy.version>4.0.11</groovy.version>
   </properties>
 
   <dependencies>
@@ -34,10 +34,46 @@
     </dependency>
     <dependency>
       <groupId>org.apache.groovy</groupId>
+      <artifactId>groovy-json</artifactId>
+      <version>${groovy.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.groovy</groupId>
       <artifactId>groovy-xml</artifactId>
       <version>${groovy.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.groovy</groupId>
+      <artifactId>groovy-yaml</artifactId>
+      <version>${groovy.version}</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-maven-plugin</artifactId>
+          <configuration>
+            <bnd><![CDATA[${oh.bndDefaults}
+Require-Capability:
+    osgi.extender:=
+      filter:="(osgi.extender=osgi.serviceloader.processor)",
+    osgi.serviceloader:=
+      filter:="(osgi.serviceloader=org.apache.groovy.json.FastStringServiceFactory)";
+      cardinality:=multiple
+SPI-Provider: *
+SPI-Consumer: *
+]]>
+            </bnd>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>

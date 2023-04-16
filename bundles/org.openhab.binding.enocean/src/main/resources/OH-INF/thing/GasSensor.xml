@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="gasSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Gas Sensor</label>
+		<description>Sensor which sends gas measurement data (EEP: A5-09)</description>
+
+		<config-description>
+			<parameter name="enoceanId" type="text" required="true">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+			</parameter>
+			<parameter name="receivingEEPId" type="text" required="true">
+				<label>EEP</label>
+				<description>EEP which is used by sensor</description>
+				<options>
+					<option value="A5_09_02">A5-09-02 CO sensor (temperature sensor optional)</option>
+					<option value="A5_09_04">A5-09-04 CO2 sensor (temperature and humidity sensor optional)</option>
+					<option value="A5_09_05">A5-09-05 VOC Sensor</option>
+					<option value="A5_09_08">A5-09-08 Pure CO2 sensor</option>
+					<option value="A5_09_09">A5-09-09 Pure CO2 sensor with Power Failure Detection</option>
+					<option value="A5_09_0C">A5-09-0C VOC Sensor</option>
+					<option value="A5_09_0D">A5-09-0D VOC, humidity + temperature</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

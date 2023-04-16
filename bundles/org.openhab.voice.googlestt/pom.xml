@@ -14,146 +14,150 @@
 
   <name>openHAB Add-ons :: Bundles :: Voice :: Google Cloud Speech to Text</name>
   <properties>
-    <bnd.importpackage>!*opencensus*,!org.bouncycastle*,!*jboss*,!javax.annotation.*,!net.jpountz.*,!lzma.sdk.*,org.eclipse.jetty.*;resolution:=optional,com.ning.*;resolution:=optional,com.jcraft.*;resolution:=optional,com.google.re2j.*;resolution:=optional,com.google.api.client.*;resolution:=optional,org.conscrypt.*;resolution:=optional,!io.grpc.census.*,com.sun.jndi.dns.*;resolution:=optional,org.apache.log.*;resolution:=optional,org.apache.http.*;resolution:=optional,sun.security.*;resolution:=optional,com.oracle.svm.core.annotate.*;resolution:=optional,*blockhound*;resolution:=optional,com.google.protobuf.nano.*;resolution:=optional,io.grpc.*;resolution:=optional,com.google.protobuf.*;resolution:=optional,io.perfmark.*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>!*opencensus*,!org.bouncycastle*,!*jboss*,!javax.annotation.*,!net.jpountz.*,!lzma.sdk.*,org.eclipse.jetty.*;resolution:=optional,com.ning.*;resolution:=optional,com.jcraft.*;resolution:=optional,com.google.re2j.*;resolution:=optional,com.google.api.client.*;resolution:=optional,org.conscrypt.*;resolution:=optional,!io.grpc.census.*,com.sun.jndi.dns.*;resolution:=optional,org.apache.log.*;resolution:=optional,org.apache.http.*;resolution:=optional,sun.security.*;resolution:=optional,com.oracle.svm.core.annotate.*;resolution:=optional,*blockhound*;resolution:=optional,com.google.protobuf.nano.*;resolution:=optional,io.grpc.*;resolution:=optional,com.google.protobuf.*;resolution:=optional,io.perfmark.*;resolution:=optional,com.google.api.gax.nativeimage;resolution:=optional,org.graalvm.*;resolution:=optional,com.aayushatharva.brotli4j.*;resolution:=optional,com.github.luben.*;resolution:=optional,com.google.auth.appengine;resolution:=optional,com.google.errorprone.annotations;resolution:=optional,com.google.gson.*;resolution:=optional</bnd.importpackage>
   </properties>
   <dependencies>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-speech</artifactId>
-      <version>2.2.2</version>
+      <version>4.7.0</version>
       <scope>compile</scope>
     </dependency>
     <!--cloud-speech deps -->
     <dependency>
       <groupId>com.google.api.grpc</groupId>
       <artifactId>proto-google-common-protos</artifactId>
-      <version>2.7.1</version>
+      <version>2.14.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.http-client</groupId>
       <artifactId>google-http-client</artifactId>
-      <version>1.40.1</version>
+      <version>1.43.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.auth</groupId>
       <artifactId>google-auth-library-credentials</artifactId>
-      <version>1.2.1</version>
+      <version>1.16.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.auth</groupId>
       <artifactId>google-auth-library-oauth2-http</artifactId>
-      <version>1.3.0</version>
+      <version>1.4.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.api.grpc</groupId>
       <artifactId>proto-google-cloud-speech-v1</artifactId>
-      <version>2.2.2</version>
+      <version>4.7.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.19.6</version>
+      <version>3.21.12</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax</artifactId>
-      <version>2.8.1</version>
-      <scope>compile</scope>
+      <version>2.23.3</version>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax-grpc</artifactId>
-      <version>2.8.1</version>
+      <version>2.23.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
+      <artifactId>gax-httpjson</artifactId>
+      <version>0.108.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.api</groupId>
       <artifactId>api-common</artifactId>
-      <version>2.1.2</version>
+      <version>2.6.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.threeten</groupId>
       <artifactId>threetenbp</artifactId>
-      <version>1.5.2</version>
+      <version>1.6.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.perfmark</groupId>
       <artifactId>perfmark-api</artifactId>
-      <version>0.23.0</version>
+      <version>0.26.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
-      <version>1.43.2</version>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
-      <version>1.42.1</version>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf-lite</artifactId>
-      <version>1.42.1</version>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-alts</artifactId>
-      <version>1.43.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-grpclb</artifactId>
-      <version>1.43.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-auth</artifactId>
-      <version>1.43.2</version>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-core</artifactId>
-      <version>1.43.2</version>
+      <version>1.53.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-grpclb</artifactId>
+      <version>1.53.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-auth</artifactId>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-context</artifactId>
-      <version>1.43.2</version>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty-shaded</artifactId>
-      <version>1.43.2</version>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-xds</artifactId>
-      <version>1.43.2</version>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-services</artifactId>
-      <version>1.43.2</version>
+      <version>1.53.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

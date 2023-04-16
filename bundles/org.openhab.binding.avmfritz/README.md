@@ -141,7 +141,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 - `port` (optional, 1 to 65535), no default (derived from protocol: 80 or 443)
 - `password` (optional for call monitoring, but mandatory for AHA features), no default (depends on FRITZ!Box security configuration)
 - `user` (optional), no default (depends on FRITZ!Box security configuration)
-- `pollingInterval` (optional, 5 to 60), default 15 (in seconds)
+- `pollingInterval` (optional, 1 to 60), default 15 (in seconds)
 - `asyncTimeout` (optional, 1000 to 60000), default 10000 (in milliseconds)
 - `syncTimeout` (optional, 500 to 15000), default 2000 (in milliseconds)
 
@@ -152,7 +152,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 - `protocol` (optional, "http" or "https"), default "http"
 - `port` (optional, 1 to 65535), no default (derived from protocol: 80 or 443)
 - `password` (optional), no default (depends on FRITZ!Powerline security configuration)
-- `pollingInterval` (optional, 5 to 60), default 15 (in seconds)
+- `pollingInterval` (optional, 1 to 60), default 15 (in seconds)
 - `asyncTimeout` (optional, 1000 to 60000), default 10000 (in milliseconds)
 - `syncTimeout` (optional, 500 to 15000), default 2000 (in milliseconds)
 

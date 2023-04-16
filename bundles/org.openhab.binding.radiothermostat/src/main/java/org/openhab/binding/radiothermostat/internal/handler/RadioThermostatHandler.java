@@ -14,7 +14,6 @@ package org.openhab.binding.radiothermostat.internal.handler;
 
 import static org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
@@ -41,6 +40,7 @@ import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatHumidityDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatRuntimeDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
+import org.openhab.binding.radiothermostat.internal.util.RadioThermostatScheduleJson;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -95,6 +95,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private boolean disableLogs = false;
     private boolean clockSync = false;
     private String setpointCmdKeyPrefix = "t_";
+    private String heatProgramJson = BLANK;
+    private String coolProgramJson = BLANK;
 
     public RadioThermostatHandler(Thing thing, RadioThermostatStateDescriptionProvider stateDescriptionProvider,
             HttpClient httpClient) {
@@ -116,9 +118,9 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         this.disableLogs = config.disableLogs;
         this.clockSync = config.clockSync;
 
-        if (hostName == null || "".equals(hostName)) {
+        if (hostName == null || hostName.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Thermostat Host Name must be specified");
+                    "@text/offline.configuration-error-hostname");
             return;
         }
 
@@ -150,6 +152,24 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             updateThing(editThing().withChannels(channels).build());
         }
 
+        final RadioThermostatScheduleJson thermostatSchedule = new RadioThermostatScheduleJson(config);
+
+        try {
+            heatProgramJson = thermostatSchedule.getHeatProgramJson();
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error-heating-program");
+            return;
+        }
+
+        try {
+            coolProgramJson = thermostatSchedule.getCoolProgramJson();
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error-cooling-program");
+            return;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
 
         startAutomaticRefresh();
@@ -175,6 +195,22 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
+                // populate the heat and cool programs on the thermostat from the user configuration,
+                // the commands will be sent each time the refresh job runs until a success response is seen
+                if (!heatProgramJson.isEmpty()) {
+                    final String response = connector.sendCommand(null, null, heatProgramJson, HEAT_PROGRAM_RESOURCE);
+                    if (response.contains("success")) {
+                        heatProgramJson = BLANK;
+                    }
+                }
+
+                if (!coolProgramJson.isEmpty()) {
+                    final String response = connector.sendCommand(null, null, coolProgramJson, COOL_PROGRAM_RESOURCE);
+                    if (response.contains("success")) {
+                        coolProgramJson = BLANK;
+                    }
+                }
+
                 // send an async call to the thermostat to get the 'tstat' data
                 connector.getAsyncThermostatData(DEFAULT_RESOURCE);
             };
@@ -191,7 +227,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         ScheduledFuture<?> clockSyncJob = this.clockSyncJob;
         if (clockSyncJob == null || clockSyncJob.isCancelled()) {
             clockSyncJob = null;
-            this.clockSyncJob = scheduler.scheduleWithFixedDelay(this::syncThermostatClock, 1, 60, TimeUnit.MINUTES);
+            this.clockSyncJob = scheduler.schedule(this::syncThermostatClock, 1, TimeUnit.MINUTES);
         }
     }
 
@@ -208,9 +244,13 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             thermDayOfWeek += 7;
         }
 
-        connector.sendCommand(null, null,
+        final String response = connector.sendCommand(null, null,
                 String.format(JSON_TIME, thermDayOfWeek, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)),
                 TIME_RESOURCE);
+
+        // if sync call was successful run again in one hour, if un-successful try again in one minute
+        this.clockSyncJob = scheduler.schedule(this::syncThermostatClock, (response.contains("success") ? 60 : 1),
+                TimeUnit.MINUTES);
     }
 
     /**
@@ -264,6 +304,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     public void handleRawCommand(@Nullable String rawCommand) {
         connector.sendCommand(null, null, rawCommand, DEFAULT_RESOURCE);
+    }
+
+    public void handleRawCommand(@Nullable String rawCommand, String resource) {
+        connector.sendCommand(null, null, rawCommand, resource);
     }
 
     @Override
@@ -343,6 +387,13 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
                     }
                     break;
+                case MESSAGE:
+                    if (!cmdStr.isEmpty()) {
+                        connector.sendCommand(null, null, String.format(JSON_PMA, cmdStr), PMA_RESOURCE);
+                    } else {
+                        connector.sendCommand("mode", "0", PMA_RESOURCE);
+                    }
+                    break;
                 default:
                     logger.warn("Unsupported command: {}", command.toString());
             }
@@ -363,7 +414,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
         if (KEY_ERROR.equals(evtKey)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Error retrieving data from Thermostat ");
+                    "@text/offline.communication-error-get-data");
         } else {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
 
@@ -419,10 +470,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 state = new DateTimeType((ZonedDateTime) value);
             } else if (value instanceof QuantityType<?>) {
                 state = (QuantityType<?>) value;
-            } else if (value instanceof BigDecimal) {
-                state = new DecimalType((BigDecimal) value);
-            } else if (value instanceof Integer) {
-                state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
+            } else if (value instanceof Number) {
+                state = new DecimalType((Number) value);
             } else if (value instanceof String) {
                 state = new StringType(value.toString());
             } else if (value instanceof OnOffType) {
@@ -515,9 +564,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      */
     private void updateAllChannels() {
         // Update all channels from rthermData
-        for (Channel channel : getThing().getChannels()) {
-            updateChannel(channel.getUID().getId(), rthermData);
-        }
+        getThing().getChannels().forEach(channel -> {
+            if (!NO_UPDATE_CHANNEL_IDS.contains(channel.getUID().getId())) {
+                updateChannel(channel.getUID().getId(), rthermData);
+            }
+        });
     }
 
     /**
@@ -528,11 +579,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private List<StateOption> getFanModeOptions() {
         List<StateOption> fanModeOptions = new ArrayList<>();
 
-        fanModeOptions.add(new StateOption("0", "Auto"));
+        fanModeOptions.add(new StateOption("0", "@text/options.fan-option-auto"));
         if (this.isCT80) {
-            fanModeOptions.add(new StateOption("1", "Auto/Circulate"));
+            fanModeOptions.add(new StateOption("1", "@text/options.fan-option-circulate"));
         }
-        fanModeOptions.add(new StateOption("2", "On"));
+        fanModeOptions.add(new StateOption("2", "@text/options.fan-option-on"));
 
         return fanModeOptions;
     }

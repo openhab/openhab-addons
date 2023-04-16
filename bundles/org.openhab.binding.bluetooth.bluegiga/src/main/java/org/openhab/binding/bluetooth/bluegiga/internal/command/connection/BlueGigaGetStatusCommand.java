@@ -28,8 +28,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  */
 @NonNullByDefault
 public class BlueGigaGetStatusCommand extends BlueGigaDeviceCommand {
-    public static int COMMAND_CLASS = 0x03;
-    public static int COMMAND_METHOD = 0x07;
+    public static final int COMMAND_CLASS = 0x03;
+    public static final int COMMAND_METHOD = 0x07;
 
     @Override
     public int[] serialize() {

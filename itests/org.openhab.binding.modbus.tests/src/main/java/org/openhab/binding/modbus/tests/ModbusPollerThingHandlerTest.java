@@ -375,24 +375,6 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
-    public void testInitializeWithNoBridge()
-            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-        Configuration pollerConfig = new Configuration();
-        pollerConfig.put("refresh", 150L);
-        pollerConfig.put("start", 5);
-        pollerConfig.put("length", 13);
-        pollerConfig.put("type", "coil");
-        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).build();
-        addThing(poller);
-        verifyEndpointBasicInitInteraction();
-
-        assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-        assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.BRIDGE_OFFLINE)));
-
-        verifyNoMoreInteractions(mockedModbusManager);
-    }
-
-    @Test
     public void testInitializeWithOfflineBridge()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         Configuration pollerConfig = new Configuration();

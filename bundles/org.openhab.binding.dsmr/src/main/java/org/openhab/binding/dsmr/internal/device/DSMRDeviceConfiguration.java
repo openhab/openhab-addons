@@ -55,7 +55,7 @@ public class DSMRDeviceConfiguration {
     /**
      * Austria smart meter additional decryption key
      */
-    public String additionalKey = DSMRBindingConstants.ADDITIONAL_KEY_DEFAULT;
+    public String additionalKey = DSMRBindingConstants.CONFIGURATION_ADDITIONAL_KEY_DEFAULT;
 
     /**
      * When no message was received after the configured number of seconds action will be taken.

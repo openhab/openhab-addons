@@ -6,23 +6,23 @@
 
 	<channel-type id="fek-temperature-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FFK Temperature</label>
+		<label>FEK Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fek-temperature-setpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FFK Temperature Set Point</label>
+		<label>FEK Temperature Set Point</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-humidity-type">
 		<item-type>Number:Dimensionless</item-type>
-		<label>FFK Humidity</label>
+		<label>FEK Humidity</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-dewpoint-type">
 		<item-type>Number:Temperature</item-type>
-		<label>FFK Dewpoint</label>
+		<label>FEK Dewpoint</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="outdoor-temperature-type">

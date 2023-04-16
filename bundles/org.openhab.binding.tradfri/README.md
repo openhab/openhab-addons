@@ -81,7 +81,7 @@ Refer to the matrix above.
 
 demo.things:
 
-```
+```java
 Bridge tradfri:gateway:mygateway [ host="192.168.0.177", code="EHPW5rIJKyXFgjH3" ] {
     0100 myDimmableBulb "My Dimmable Bulb" [ id=65537 ]    
     0220 myColorTempBulb "My Color Temp Bulb" [ id=65538 ]
@@ -94,7 +94,7 @@ Bridge tradfri:gateway:mygateway [ host="192.168.0.177", code="EHPW5rIJKyXFgjH3"
 
 demo.items:
 
-```
+```java
 Dimmer Light1 { channel="tradfri:0100:mygateway:myDimmableBulb:brightness" }
 Dimmer Light2_Brightness { channel="tradfri:0220:mygateway:myColorTempBulb:brightness" }
 Dimmer Light2_ColorTemperature { channel="tradfri:0220:mygateway:myColorTempBulb:color_temperature" }
@@ -107,7 +107,7 @@ Rollershutter BlindPosition { channel="tradfri:0202:mygateway:myBlinds:position"
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame {

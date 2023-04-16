@@ -16,9 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
-import org.openhab.binding.digitalstrom.internal.lib.event.constants.EventNames;
 import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
-import org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.DeviceConsumptionSensorJob;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceSceneSpec;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceStateUpdate;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;

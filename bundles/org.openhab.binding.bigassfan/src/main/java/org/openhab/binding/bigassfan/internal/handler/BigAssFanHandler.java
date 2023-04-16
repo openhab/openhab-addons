@@ -1024,9 +1024,9 @@ public class BigAssFanHandler extends BaseThingHandler {
             deviceIsConnected = false;
             try {
                 ifAddress = InetAddress.getByName(ipv4Address);
-
+                NetworkInterface netIF = NetworkInterface.getByInetAddress(ifAddress);
                 logger.debug("Handler for {} using address {} on network interface {}", thing.getUID(), ipv4Address,
-                        NetworkInterface.getByInetAddress(ifAddress).getName());
+                        netIF != null ? netIF.getName() : "UNKNOWN");
             } catch (UnknownHostException e) {
                 logger.warn("Handler for {} got UnknownHostException getting local IPv4 net interface: {}",
                         thing.getUID(), e.getMessage(), e);

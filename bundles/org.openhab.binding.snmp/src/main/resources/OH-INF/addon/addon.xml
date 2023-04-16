@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="snmp" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>SNMP Binding</name>
+	<description>This is the binding for SNMP.</description>
+
+	<config-description>
+		<parameter name="port" type="integer" min="0" max="65535">
+			<default>0</default>
+			<label>Incoming SNMP Port</label>
+			<description>Port for receiving traps, set to 0 to disable.</description>
+		</parameter>
+	</config-description>
+
+</addon:addon>

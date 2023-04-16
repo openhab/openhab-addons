@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -41,9 +40,8 @@ public class WemoMotionHandler extends WemoHandler {
     private final Logger logger = LoggerFactory.getLogger(WemoMotionHandler.class);
     private final Map<String, String> stateMap = new ConcurrentHashMap<String, String>();
 
-    public WemoMotionHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, upnpService, wemoHttpCaller);
+    public WemoMotionHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, wemoHttpCaller);
     }
 
     @Override

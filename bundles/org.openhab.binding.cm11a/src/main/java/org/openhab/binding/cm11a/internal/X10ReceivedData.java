@@ -127,6 +127,7 @@ public class X10ReceivedData {
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

@@ -36,6 +36,7 @@ import org.openhab.binding.volvooncall.internal.dto.PostResponse;
 import org.openhab.binding.volvooncall.internal.dto.VocAnswer;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.id.InstanceUUID;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +62,12 @@ public class VocHttpApi {
     private final HttpClient httpClient;
     private final ApiBridgeConfiguration configuration;
 
-    public VocHttpApi(ApiBridgeConfiguration configuration, Gson gson, HttpClient httpClient)
-            throws VolvoOnCallException {
+    public VocHttpApi(String clientName, ApiBridgeConfiguration configuration, Gson gson,
+            HttpClientFactory httpClientFactory) throws VolvoOnCallException {
         this.gson = gson;
         this.cache = new ExpiringCacheMap<>(120 * 1000);
         this.configuration = configuration;
-        this.httpClient = httpClient;
+        this.httpClient = httpClientFactory.createHttpClient(clientName);
 
         httpClient.setUserAgentField(new HttpField(HttpHeader.USER_AGENT, "openhab/voc_binding/" + InstanceUUID.get()));
         try {

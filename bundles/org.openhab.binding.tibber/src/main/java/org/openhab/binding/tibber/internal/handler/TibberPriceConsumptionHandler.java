@@ -33,7 +33,7 @@ public class TibberPriceConsumptionHandler {
 
     public InputStream getInputStream(String homeId) {
         String query = "{\"query\": \"{viewer {home (id: \\\"" + homeId
-                + "\\\") {currentSubscription {priceInfo {current {total startsAt level } tomorrow { startsAt total }}} daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}} hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
+                + "\\\") {currentSubscription {priceInfo {current {total startsAt level } tomorrow { startsAt total } today { startsAt total }}} daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}} hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
         return new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
     }
 

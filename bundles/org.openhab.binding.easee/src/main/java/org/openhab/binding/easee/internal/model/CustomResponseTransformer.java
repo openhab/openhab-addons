@@ -87,9 +87,18 @@ class CustomResponseTransformer {
 
             String rfnc = Utils.getAsString(rawData, CHANNEL_CHARGER_REASON_FOR_NO_CURRENT);
             int reasonForNoCurrent = Integer.valueOf(rfnc == null ? "-1" : rfnc);
-            boolean paused = (val == CHARGER_OP_STATE_WAITING
-                    && reasonForNoCurrent == CHARGER_REASON_FOR_NO_CURRENT_PAUSED);
-
+            boolean paused = false;
+            if (val == CHARGER_OP_STATE_WAITING) {
+                switch (reasonForNoCurrent) {
+                    case CHARGER_REASON_FOR_NO_CURRENT_PAUSED:
+                    case CHARGER_REASON_FOR_NO_CURRENT_DYNAMIC_0KW:
+                        paused = true;
+                        break;
+                    default:
+                        paused = false;
+                        break;
+                }
+            }
             result.put(channel, OnOffType.from(charging || paused));
         }
     }

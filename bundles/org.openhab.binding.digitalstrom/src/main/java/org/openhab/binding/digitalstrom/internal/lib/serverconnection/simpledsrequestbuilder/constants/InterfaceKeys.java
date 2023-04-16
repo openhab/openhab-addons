@@ -15,8 +15,8 @@ package org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsr
 /**
  * The {@link InterfaceKeys} contains digitalSTROM-JSON interface keys.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class InterfaceKeys {
     public static final String JSON = "json";

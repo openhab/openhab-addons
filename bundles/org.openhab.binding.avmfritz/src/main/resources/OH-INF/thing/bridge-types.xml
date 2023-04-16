@@ -31,10 +31,20 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="apply_template" typeId="apply_template"/>
-			<channel id="energy" typeId="energy"/>
-			<channel id="power" typeId="power"/>
+			<channel id="energy" typeId="system.electrical-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>ipAddress</representation-property>
 

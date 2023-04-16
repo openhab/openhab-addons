@@ -22,6 +22,13 @@
 				(WOL) when it receives command ON on channel power. Accepted value is six groups of two hexadecimal digits,
 				separated by hyphens or colons, e.g '3c:cd:93:c2:20:e0'.</description>
 		</parameter>
+		<parameter name="useTLS" type="boolean" required="false">
+			<label>Use TLS</label>
+			<description>Enable Transport Layer Security. This is required by latest firmware versions and should work with older
+				versions as well. In case of compatibility issues it can be disabled.</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

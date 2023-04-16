@@ -438,6 +438,30 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="water_consumption_current">
+		<item-type>Number:Volume</item-type>
+		<label>@text/channel-type.mielecloud.water_consumption_current.label</label>
+		<description>@text/channel-type.mielecloud.water_consumption_current.description</description>
+		<category>Water</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energy_consumption_current">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.mielecloud.energy_consumption_current.label</label>
+		<description>@text/channel-type.mielecloud.energy_consumption_current.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="battery_level">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.battery_level.label</label>

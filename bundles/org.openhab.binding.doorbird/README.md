@@ -78,6 +78,10 @@ The following channels are supported by the binding for the Doorbird A1081 Contr
 | openDoor2                | Switch    | Activates the door 2 relay                        |
 | openDoor3                | Switch    | Activates the door 3 relay                        |
 
+## Audio sink
+
+A doorbird thing automatically registers itself as an audio sink in openHAB. Your rules in openHAB can then play audio or text-to-speech sounds to it. It currently supports only ulaw or wav audio data (the later by converting it to ulaw, adding latency).
+
 ## Profiles
 
 Using the system default switch profile _rawbutton-on-off-switch_ in a _doorbell_ channel item definition will cause ON/OFF

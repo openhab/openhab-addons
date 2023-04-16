@@ -34,8 +34,8 @@ import com.google.gson.JsonObject;
  * and
  * timestamp of the last sensor update.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class DeviceSensorValue {
 
@@ -267,6 +267,7 @@ public class DeviceSensorValue {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

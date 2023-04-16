@@ -32,6 +32,5 @@ public class OSGiScriptExtensionProvider extends ScriptDisposalAwareScriptExtens
     @Override
     protected void initializeTypes(final BundleContext context) {
         addType("bundleContext", k -> context);
-        addType("lifecycle", k -> new Lifecycle());
     }
 }

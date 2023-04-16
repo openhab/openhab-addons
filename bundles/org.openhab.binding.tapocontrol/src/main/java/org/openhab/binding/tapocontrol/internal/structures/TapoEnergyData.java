@@ -60,7 +60,7 @@ public class TapoEnergyData {
      */
     public TapoEnergyData setData(JsonObject jso) {
         /* create empty jsonObject to set efault values if has no energydata */
-        if (jso.has(ENERGY_PROPERTY_POWER)) {
+        if (jso.has(JSON_KEY_ENERGY_POWER)) {
             this.jsonObject = jso;
         } else {
             jsonObject = new JsonObject();
@@ -70,12 +70,12 @@ public class TapoEnergyData {
     }
 
     private void setData() {
-        this.currentPower = (float) jsonObjectToInt(jsonObject, ENERGY_PROPERTY_POWER) / 1000;
+        this.currentPower = (float) jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_POWER) / 1000;
 
-        this.todayEnergy = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_ENERGY_TODAY);
-        this.monthEnergy = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_ENERGY_MONTH);
-        this.todayRuntime = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_RUNTIME_TODAY);
-        this.monthRuntime = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_RUNTIME_MONTH);
+        this.todayEnergy = jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_ENERGY_TODAY);
+        this.monthEnergy = jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_ENERGY_MONTH);
+        this.todayRuntime = jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_RUNTIME_TODAY);
+        this.monthRuntime = jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_RUNTIME_MONTH);
         this.past24h = new Number[24];
         this.past30d = new Number[30];
         this.past1y = new Number[12];

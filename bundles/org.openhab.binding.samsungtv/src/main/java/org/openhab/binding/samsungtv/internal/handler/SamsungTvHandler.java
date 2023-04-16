@@ -242,12 +242,12 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         boolean isOnline = false;
 
         for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
-            if (createService((RemoteDevice) device) == true) {
+            if (createService((RemoteDevice) device)) {
                 isOnline = true;
             }
         }
 
-        if (isOnline == true) {
+        if (isOnline) {
             logger.debug("Device was online");
             putOnline();
         } else {

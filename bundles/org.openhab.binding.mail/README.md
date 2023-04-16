@@ -89,11 +89,11 @@ This binding includes rule actions for sending email.
 Six different actions available:
 
 - `boolean success = sendMail(String recipient, String subject, String text)`
-- `boolean success = sendMailWithAttachment(String recipient, String subject, String text, String URL)`
-- `boolean success = sendMailWithAttachments(String recipient, String subject, String text, List<String> URL)`
+- `boolean success = sendMailWithAttachment(String recipient, String subject, String text, String url)`
+- `boolean success = sendMailWithAttachments(String recipient, String subject, String text, List<String> urlList)`
 - `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent)`
-- `boolean success = sendHtmlMailWithAttachment(String recipient, String subject, String htmlContent, String URL)`
-- `boolean success = sendHtmlMailWithAttachments(String recipient, String subject, String htmlContent, List<String> URL)`
+- `boolean success = sendHtmlMailWithAttachment(String recipient, String subject, String htmlContent, String url)`
+- `boolean success = sendHtmlMailWithAttachments(String recipient, String subject, String htmlContent, List<String> urlList)`
 
 The `sendMail(...)` send a plain text mail (with attachments if supplied).
 The `sendHtmlMail(...)` send a HTML mail (with attachments if supplied).

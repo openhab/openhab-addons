@@ -11,18 +11,21 @@
 		<description>Details about incoming call.</description>
 		<state pattern="%1$s to %2$s" readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="outgoing_call">
 		<item-type>Call</item-type>
 		<label>Outgoing Call</label>
 		<description>Details about outgoing call.</description>
 		<state pattern="%1$s to %2$s" readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="active_call">
 		<item-type>Call</item-type>
 		<label>Active Call</label>
 		<description>Details about active call.</description>
 		<state pattern="%1$s" readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="call_state">
 		<item-type>String</item-type>
 		<label>Call State</label>
@@ -36,6 +39,7 @@
 			</options>
 		</state>
 	</channel-type>
+
 	<channel-type id="apply_template" advanced="true">
 		<item-type>String</item-type>
 		<label>Apply Template</label>
@@ -48,6 +52,7 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>States the mode of the device (MANUAL/AUTOMATIC/VACATION).</description>
+		<category>Heating</category>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="MANUAL">Manual</option>
@@ -107,6 +112,10 @@
 		<label>Current Temperature</label>
 		<description>Current measured temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 
 		<config-description-ref uri="channel-type:avmfritz:temperature"/>
@@ -117,31 +126,11 @@
 		<label>Current Humidity</label>
 		<description>Current measured humidity.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="energy">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Consumption</label>
-		<description>Accumulated energy consumption.</description>
-		<category>Energy</category>
-		<state pattern="%.3f kWh" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="power">
-		<item-type>Number:Power</item-type>
-		<label>Power</label>
-		<description>Current power consumption.</description>
-		<category>Energy</category>
-		<state pattern="%.2f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="voltage">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Voltage</label>
-		<description>Current voltage.</description>
-		<category>Energy</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outlet">
@@ -149,14 +138,10 @@
 		<label>Outlet</label>
 		<description>Switched outlet (ON/OFF).</description>
 		<category>PowerOutlet</category>
-	</channel-type>
-
-	<channel-type id="actual_temp" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Current Temperature</label>
-		<description>Current measured temperature.</description>
-		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="set_temp">
@@ -164,6 +149,10 @@
 		<label>Setpoint Temperature</label>
 		<description>Thermostat Setpoint temperature.</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 

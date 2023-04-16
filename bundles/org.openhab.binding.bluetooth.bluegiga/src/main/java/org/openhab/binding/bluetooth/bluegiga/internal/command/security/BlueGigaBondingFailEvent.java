@@ -29,8 +29,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  */
 @NonNullByDefault
 public class BlueGigaBondingFailEvent extends BlueGigaResponse {
-    public static int COMMAND_CLASS = 0x05;
-    public static int COMMAND_METHOD = 0x01;
+    public static final int COMMAND_CLASS = 0x05;
+    public static final int COMMAND_METHOD = 0x01;
 
     /**
      * Connection handle

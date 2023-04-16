@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="androiddebugbridge" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Android Debug Bridge Binding</name>
+	<description>This is the binding for connect to Android devices using the Android Debug Bridge protocol.</description>
+
+	<config-description>
+		<parameter name="discoveryPort" type="integer" required="true">
+			<label>Discovery Port</label>
+			<description>Port used on discovery to connect to the device through adb.</description>
+			<default>5555</default>
+		</parameter>
+		<parameter name="discoveryReachableMs" type="integer" required="true" unit="ms">
+			<label>Discovery Reachable</label>
+			<description>Milliseconds to wait while discovering to determine if the ip is reachable.</description>
+			<default>3000</default>
+		</parameter>
+		<parameter name="discoveryIpRangeMin" type="integer" required="true" min="0" max="255">
+			<label>Discovery Range IP Min</label>
+			<description>Used to limit the numbers of ips checked while discovering.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="discoveryIpRangeMax" type="integer" required="true" min="0" max="255">
+			<label>Discovery Range IP Max</label>
+			<description>Used to limit the numbers of ips checked while discovering.</description>
+			<default>255</default>
+		</parameter>
+	</config-description>
+</addon:addon>

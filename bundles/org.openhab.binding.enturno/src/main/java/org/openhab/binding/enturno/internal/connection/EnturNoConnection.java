@@ -196,7 +196,7 @@ public class EnturNoConnection {
                 .collect(groupingBy(call -> call.quay.id));
 
         List<DisplayData> processedData = new ArrayList<>();
-        if (departures.keySet().size() > 0) {
+        if (!departures.keySet().isEmpty()) {
             DisplayData processedData01 = getDisplayData(stopPlace, departures, 0);
             processedData.add(processedData01);
         }

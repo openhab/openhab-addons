@@ -20,8 +20,8 @@ import com.google.gson.JsonObject;
  * The {@link DeviceBinaryInput} contains all information of a device binary input, e.g. binary input type id (see
  * {@link DeviceBinarayInputEnum}, state and so on.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  *
  */
 public class DeviceBinaryInput {

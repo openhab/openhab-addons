@@ -19,6 +19,7 @@ import java.util.Set;
 
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nest.internal.wwn.exceptions.InvalidWWNAccessTokenException;
 import org.openhab.binding.nest.internal.wwn.handler.WWNAccountHandler;
 import org.openhab.binding.nest.internal.wwn.handler.WWNRedirectUrlSupplier;
@@ -32,6 +33,7 @@ import org.osgi.service.jaxrs.client.SseEventSourceFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class WWNTestAccountHandler extends WWNAccountHandler {
 
     class NestTestRedirectUrlSupplier extends WWNRedirectUrlSupplier {

@@ -72,17 +72,16 @@ Note: All apikeys and locationids are only examples!
 
 tankerkoenig.things:
 
-```
+```java
 Bridge tankerkoenig:webservice:WebserviceName "MyWebserviceName" [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", refresh= 60, modeOpeningTime =false ] {
         Thing station StationName1 "MyStationName1" @ "GasStations"[ locationid = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" ]
         Thing station StationName2 "MyStationName2" @ "GasStations"[ locationid = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" ]
 }
 ```
 
-
 tankerkoenig.items:
 
-```
+```java
 Switch Station_Holidays "Today is holiday: [%s]" { channel="tankerkoenig:webservice:WebserviceName:holiday"}
 Number E10_1 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:e10" }
 Number E5_1 "E5 [%.3f €]"  { channel="tankerkoenig:station:WebserviceName:StationName1:e5" }
@@ -108,7 +107,7 @@ Set the logging level for the binding to DEBUG (Karaf-Console command: "log:set 
 Create a new Station (in order to start the "initialize" routine).
 Check the openhab.log for entries like:
 
-```
+```text
  2017-06-25 16:02:12.679 [DEBUG] [ig.internal.data.TankerkoenigService] - getTankerkoenigDetailResult IOException:
 java.io.IOException: java.util.concurrent.ExecutionException: javax.net.ssl.SSLHandshakeException: General SSLEngine problem
 ......
@@ -121,15 +120,15 @@ Note: You must restart openHAB after a Java update.
 
 If you receive the error because you are running an old Linux installation which does not have the latest java-versions available in its package-repositories, you may be able to fix the issue using one of the three options below:
 
-   1.) Update the Linux system and install the latest Java version
-   
-   2.) Download the most recent JDK and install it directly on to your system without using a pre-composed package   
+   1. Update the Linux system and install the latest Java version
 
-   3.) Update the cacerts store by importing the missing certificate
-       
+   1. Download the most recent JDK and install it directly on to your system without using a pre-composed package
+
+   1. Update the cacerts store by importing the missing certificate
+
 Check which CA has validated the certificate
 
-Navigate to https://creativecommons.tankerkoenig.de/
+Navigate to <https://creativecommons.tankerkoenig.de/>
 
 Check which CA has validated the certificate
 
@@ -166,6 +165,6 @@ This switch can be set either manually (only suggested for testing!) or by a rul
 
 ## Tankerkönig API
 
-*   <https://creativecommons.tankerkoenig.de/>  (sorry, only available in German)
+- <https://creativecommons.tankerkoenig.de/>  (sorry, only available in German)
 
-*   &lsqb;MTS-K&rsqb;: <https://www.bundeskartellamt.de/DE/Wirtschaftsbereiche/Mineral%C3%B6l/MTS-Kraftstoffe/Verbraucher/verbraucher_node.html>
+- &lsqb;MTS-K&rsqb;: <https://www.bundeskartellamt.de/DE/Wirtschaftsbereiche/Mineral%C3%B6l/MTS-Kraftstoffe/Verbraucher/verbraucher_node.html>

@@ -93,7 +93,7 @@ public class BaseIntegrationTest extends JavaTest {
     protected static final Unit<Dimensionless> DIMENSIONLESS_ITEM_UNIT = Units.ONE;
     private static @Nullable URI endpointOverride;
 
-    protected static UnitProvider UNIT_PROVIDER;
+    protected static final UnitProvider UNIT_PROVIDER;
     static {
         ComponentContext context = Mockito.mock(ComponentContext.class);
         BundleContext bundleContext = Mockito.mock(BundleContext.class);
@@ -192,7 +192,7 @@ public class BaseIntegrationTest extends JavaTest {
      * @param tablePrefix
      * @return new persistence service
      */
-    protected synchronized static DynamoDBPersistenceService newService(@Nullable Boolean legacy, boolean cleanLocal,
+    protected static synchronized DynamoDBPersistenceService newService(@Nullable Boolean legacy, boolean cleanLocal,
             @Nullable URI overrideLocalURI, @Nullable String table, @Nullable String tablePrefix) {
         final DynamoDBPersistenceService service;
         Map<String, Object> config = getConfig(legacy, table, tablePrefix);

@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.dmx.internal.dmxoverethernet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DmxOverEthernetPacket} is an abstract class for
  * DMX over Ethernet packets (ArtNet, sACN)
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public abstract class DmxOverEthernetPacket {
-
     protected int universeId;
     protected int payloadSize;
-    protected byte[] rawPacket;
+    protected byte[] rawPacket = new byte[0];
 
     /**
      * set payload size
@@ -34,7 +36,7 @@ public abstract class DmxOverEthernetPacket {
     /**
      * sets universe, calculates sender name and broadcast-address
      *
-     * @param universe
+     * @param universeId
      */
     public abstract void setUniverse(int universeId);
 

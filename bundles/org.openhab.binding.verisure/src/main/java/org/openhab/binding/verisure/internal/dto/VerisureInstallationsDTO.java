@@ -44,6 +44,7 @@ public class VerisureInstallationsDTO {
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
@@ -92,6 +93,7 @@ public class VerisureInstallationsDTO {
             return result;
         }
 
+        @SuppressWarnings("PMD.SimplifyBooleanReturns")
         @Override
         public boolean equals(@Nullable Object obj) {
             if (this == obj) {

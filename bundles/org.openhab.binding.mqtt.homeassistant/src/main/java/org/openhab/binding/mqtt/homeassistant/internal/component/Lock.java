@@ -60,9 +60,9 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
         buildChannel(SWITCH_CHANNEL_ID,
                 new OnOffValue(channelConfiguration.payloadLock, channelConfiguration.payloadUnlock),
                 channelConfiguration.getName(), componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                                channelConfiguration.getQos())
-                        .build();
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
+                .build();
     }
 }

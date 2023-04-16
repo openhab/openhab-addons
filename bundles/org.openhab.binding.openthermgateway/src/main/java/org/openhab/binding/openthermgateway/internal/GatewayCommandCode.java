@@ -24,7 +24,7 @@ public class GatewayCommandCode {
     public static final String TEMPERATURETEMPORARY = "TT";
     public static final String TEMPERATURECONSTANT = "TC";
     public static final String TEMPERATUREOUTSIDE = "OT";
-    public static final String SETCLOCK = "ST";
+    public static final String SETCLOCK = "SC";
     public static final String HOTWATER = "HW";
     public static final String PRINTREPORT = "PR";
     public static final String PRINTSUMMARY = "PS";

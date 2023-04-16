@@ -40,13 +40,13 @@ This binding provides only the `router` Thing.
 
 `.things` configuration file:
 
-```
+```java
 Thing tplinkrouter:router:myRouter [hostname="192.168.0.1", username="admin", password="myPassword"]
 ```
 
 `.items` configuration file:
 
-```
+```java
 Switch Wifi "Wifi" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#status", autoupdate="false"}
 String WifiSSID "Wifi SSID" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#ssid"}
 String BandWidth "Wifi Bandwidth" <QualityOfService> {channel="tplinkrouter:router:myRouter:wifi#bandwidth"}

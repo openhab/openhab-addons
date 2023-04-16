@@ -69,7 +69,40 @@ The configuration depends on the application, device and version used.
 
 This is a sample of the mediaStateJSONConfig thing configuration - the `label` is optional:
 
-`[{"name": "com.amazon.tv.launcher", "mode": "idle"}, {"name": "org.jellyfin.androidtv", "mode": "wake_lock", "wakeLockPlayStates": [2,3]}, {"name": "com.amazon.firetv.youtube", "label":"YouTube", "mode": "wake_lock", "wakeLockPlayStates": [2]}]`
+```json
+[
+    {
+        "name": "com.amazon.tv.launcher",
+        "mode": "idle",
+        "label": "Home"
+    },
+    {
+        "name": "org.jellyfin.androidtv",
+        "mode": "wake_lock",
+        "label": "Jellyfin",
+        "wakeLockPlayStates": [
+            2,
+            3
+        ]
+    },
+    {
+        "name": "com.amazon.firetv.youtube",
+        "label": "YouTube",
+        "mode": "wake_lock",
+        "wakeLockPlayStates": [
+            2
+        ]
+    },
+    {
+        "name": "com.netflix.ninja",
+        "label": "Netflix",
+        "mode": "wake_lock",
+        "wakeLockPlayStates": [
+            4
+        ]
+    }
+]
+```
 
 ## Record/Send input events
 
@@ -102,17 +135,17 @@ Please note that events could fail if the input method is removed, for example i
 | record-input         | String | Capture events, generate the equivalent command and store it under the provided name                                          |
 | recorded-input       | String | Emulates previously captured input events by name                                                                             |
 | shutdown             | String | Power off/reboot device (allowed values POWER_OFF, REBOOT)                                                                    |
-| awake-state          | OnOff  | Awake state value.                                                                                                            |
+| awake-state          | Switch | Awake state value.                                                                                                            |
 | wake-lock            | Number | Power wake lock value                                                                                                         |
 | screen-state         | Switch | Screen power state                                                                                                            |
 
 ### Start Intent
 
 This channel allows to invoke the 'am start' command, the syntax for it is:
-<package/activity>||<<arg name>> <arg value>||...
+`<package/activity>||<<arg name>> <arg value>||...`
 
 This is a sample:
-com.netflix.ninja/.MainActivity||<a>android.intent.action.VIEW||<d>netflix://title/80025384||<f>0x10000020||<es>amzn_deeplink_data 80025384
+`com.netflix.ninja/.MainActivity||<a>android.intent.action.VIEW||<d>netflix://title/80025384||<f>0x10000020||<es>amzn_deeplink_data 80025384`
 
 Not all the [arguments](https://developer.android.com/studio/command-line/adb#IntentSpec) are supported. Please open an issue or pull request if you need more.
 

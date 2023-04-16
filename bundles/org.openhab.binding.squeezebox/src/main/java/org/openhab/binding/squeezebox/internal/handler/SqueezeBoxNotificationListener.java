@@ -202,6 +202,26 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     }
 
     @Override
+    public void albumArtistChangeEvent(String mac, String albumArtist) {
+    }
+
+    @Override
+    public void trackArtistChangeEvent(String mac, String trackArtist) {
+    }
+
+    @Override
+    public void bandChangeEvent(String mac, String band) {
+    }
+
+    @Override
+    public void composerChangeEvent(String mac, String composer) {
+    }
+
+    @Override
+    public void conductorChangeEvent(String mac, String conductor) {
+    }
+
+    @Override
     public void remoteTitleChangeEvent(String mac, String title) {
     }
 

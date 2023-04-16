@@ -165,6 +165,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
@@ -201,10 +202,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
         if (!Objects.equals(firmwareRevision, other.firmwareRevision)) {
             return false;
         }
-        if (!Objects.equals(softwareRevision, other.softwareRevision)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(softwareRevision, other.softwareRevision);
     }
 
     /**

@@ -522,13 +522,13 @@ A Novy extractor fan.
 
 ##### Channels
 
-| Name            | Channel Type                        | Item Type     | Remarks                                              |
-| --------------- | ----------------------------------- | ------------- | ---------------------------------------------------- |
-| command         | [command](#channels)                | Switch        |                                                      |
-| commandString   | [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER |
-| fanSpeedControl | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN                                   |
-| fanLight        | [fanlight](#channels)               | Switch        |                                                      |
-| signalLevel     | [system.signal-strength](#channels) | Number        |                                                      |
+| Name            | Channel Type                        | Item Type     | Remarks                                                          |
+| --------------- | ----------------------------------- | ------------- | ---------------------------------------------------------------- |
+| command         | [command](#channels)                | Switch        |                                                                  |
+| commandString   | [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER, MOOD_LIGHT |
+| fanSpeedControl | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN                                               |
+| fanLight        | [fanlight](#channels)               | Switch        |                                                                  |
+| signalLevel     | [system.signal-strength](#channels) | Number        |                                                                  |
 
 ##### Configuration Options
 
@@ -930,8 +930,8 @@ You can do this using RFXmngr, or you can do this using openhab:
     ```
 
 1. Activate the device and look at the pulses that are set.
-Look for a higher value in the pulses, that is likely to be a gap for a repeat.
-Take the pulses from before the gap. Make sure there are an even number, and if not, drop a 0 on the end.
+  Look for a higher value in the pulses, that is likely to be a gap for a repeat.
+  Take the pulses from before the gap. Make sure there are an even number, and if not, drop a 0 on the end.
 
 Now you have the pulses, set up a send device:
 

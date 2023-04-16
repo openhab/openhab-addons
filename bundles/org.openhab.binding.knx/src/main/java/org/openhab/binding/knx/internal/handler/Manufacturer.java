@@ -42,6 +42,7 @@ public enum Manufacturer {
     M30(30, "Feller"),
     M32(32, "DEHN & SÖHNE"),
     M33(33, "CRABTREE"),
+    M34(34, "eVoKNX"),
     M36(36, "Paul Hochköpper"),
     M37(37, "Altenburger Electronic"),
     M41(41, "Grässlin"),
@@ -321,7 +322,8 @@ public enum Manufacturer {
     M356(356, "AYPRO Technology"),
     M357(357, "Hefei Ecolite Software"),
     M358(358, "Enno"),
-    M359(359, "Ohosure");
+    M359(359, "Ohosure"),
+    M373(373, "ZF Friedrichshafen AG");
 
     private int code;
     private String name;
@@ -342,6 +344,6 @@ public enum Manufacturer {
                 return c.name;
             }
         }
-        return "Unknown";
+        return "Unknown (" + code + ")";
     }
 }

@@ -18,6 +18,30 @@
     <bnd.importpackage>com.twmacinta.util;resolution:=optional,gnu.trove;resolution:=optional,Jampack;resolution:=optional,net.didion.jwnl*;resolution:=optional,org.apache.http*;resolution:=optional,org.apache.xerces.impl*;resolution:=optional,org.hsqldb;resolution:=optional,org.jdesktop.layout*;resolution:=optional;sun.nio.ch.*</bnd.importpackage>
   </properties>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-maven-plugin</artifactId>
+          <configuration>
+            <bnd><![CDATA[${oh.bndDefaults}
+Require-Capability:
+    osgi.extender:=
+      filter:="(osgi.extender=osgi.serviceloader.processor)",
+    osgi.serviceloader:=
+      filter:="(osgi.serviceloader=marytts.config.MaryConfig)";
+      cardinality:=multiple
+SPI-Provider: marytts.config.MaryConfig
+SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[marytts.config.MaryConfig])
+]]>
+            </bnd>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>com.ibm.icu</groupId>

@@ -71,11 +71,10 @@ public class DefaultSchemaLight extends Light {
         if (channelConfiguration.brightnessStateTopic != null || channelConfiguration.brightnessCommandTopic != null) {
             localBrightnessChannel = brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, brightnessValue,
                     "Brightness", this)
-                            .stateTopic(channelConfiguration.brightnessStateTopic,
-                                    channelConfiguration.brightnessValueTemplate)
-                            .commandTopic(channelConfiguration.brightnessCommandTopic, channelConfiguration.isRetain(),
-                                    channelConfiguration.getQos())
-                            .withFormat("%.0f").commandFilter(this::handleBrightnessCommand).build(false);
+                    .stateTopic(channelConfiguration.brightnessStateTopic, channelConfiguration.brightnessValueTemplate)
+                    .commandTopic(channelConfiguration.brightnessCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos())
+                    .withFormat("%.0f").commandFilter(this::handleBrightnessCommand).build(false);
         }
 
         if (channelConfiguration.whiteCommandTopic != null) {
@@ -111,10 +110,10 @@ public class DefaultSchemaLight extends Light {
             hasColorChannel = true;
             hiddenChannels.add(rgbChannel = buildChannel(RGB_CHANNEL_ID, new ColorValue(ColorMode.RGB, null, null, 100),
                     "RGB state", this)
-                            .stateTopic(channelConfiguration.rgbStateTopic, channelConfiguration.rgbValueTemplate)
-                            .commandTopic(channelConfiguration.rgbCommandTopic, channelConfiguration.isRetain(),
-                                    channelConfiguration.getQos())
-                            .build(false));
+                    .stateTopic(channelConfiguration.rgbStateTopic, channelConfiguration.rgbValueTemplate)
+                    .commandTopic(channelConfiguration.rgbCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos())
+                    .build(false));
         }
 
         if (channelConfiguration.rgbwStateTopic != null || channelConfiguration.rgbwCommandTopic != null) {
@@ -140,9 +139,9 @@ public class DefaultSchemaLight extends Light {
             hiddenChannels.add(
                     xyChannel = buildChannel(XY_CHANNEL_ID, new ColorValue(ColorMode.XYY, null, null, 100), "XY State",
                             this).stateTopic(channelConfiguration.xyStateTopic, channelConfiguration.xyValueTemplate)
-                                    .commandTopic(channelConfiguration.xyCommandTopic, channelConfiguration.isRetain(),
-                                            channelConfiguration.getQos())
-                                    .build(false));
+                            .commandTopic(channelConfiguration.xyCommandTopic, channelConfiguration.isRetain(),
+                                    channelConfiguration.getQos())
+                            .build(false));
         }
 
         if (channelConfiguration.hsStateTopic != null || channelConfiguration.hsCommandTopic != null) {

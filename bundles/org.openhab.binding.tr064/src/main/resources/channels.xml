@@ -65,7 +65,7 @@
 			serviceId="urn:X_AVM-DE_HostFilter-com:serviceId:X_AVM-DE_HostFilter1"/>
 		<getAction name="GetWANAccessByIP" argument="NewDisallow">
 			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"
-				pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$"/>
+				pattern="((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!([\s#]|$))|([\s#]|$))){4}(\s*#.*)*"/>
 		</getAction>
 		<setAction name="DisallowWANAccessByIP" argument="NewDisallow">
 			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"/>
@@ -138,7 +138,8 @@
 		<getAction name="GetInfo" argument="NewEnable"/>
 		<setAction name="SetEnable" argument="NewEnable"/>
 	</channel>
-	<channel name="macOnline" label="MAC Online" description="Online status of the device with the given MAC">
+	<channel name="macOnline" label="MAC Online" description="Online status of the device with the given MAC"
+		advanced="true">
 		<item type="Switch"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1" serviceId="urn:LanDeviceHosts-com:serviceId:Hosts1"/>
 		<getAction name="GetSpecificHostEntry" argument="NewActive">
@@ -146,7 +147,8 @@
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
 	</channel>
-	<channel name="macIP" label="MAC IP" description="IP of the device with the given MAC">
+	<channel name="macOnlineIpAddress" label="MAC Online IP"
+		description="IP of the device with the given MAC (see macOnline)" advanced="true">
 		<item type="String"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1" serviceId="urn:LanDeviceHosts-com:serviceId:Hosts1"/>
 		<getAction name="GetSpecificHostEntry" argument="NewIPAddress">
@@ -154,12 +156,11 @@
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
 	</channel>
-
 	<!-- WLAN Config 1 - 2.4 Ghz -->
 	<channel name="macSignalStrength1" label="MAC Wifi Signal Strength 2.4Ghz"
 		description="Wifi Signal Strength of the device with
 		the given MAC. This is set in case the Device is connected to 2.4Ghz"
-		typeId="system.signal-strength">
+		typeId="system:signal-strength">
 		<item type="Number"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration1"/>
@@ -171,7 +172,7 @@
 	</channel>
 	<channel name="macSpeed1" label="MAC Wifi Speed 2.4Ghz"
 		description="Wifi Speed of the device with
-		the given MAC. This is set in case the Device is connected to 2.4Ghz">
+		the given MAC (see macOnline). This is set in case the Device is connected to 2.4Ghz">
 		<item type="Number:DataTransferRate" unit="Mbit/s" statePattern="%d Mbit/s"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration1"/>
@@ -184,8 +185,8 @@
 	<!-- WLAN Config 2 - 5 Ghz -->
 	<channel name="macSignalStrength2" label="MAC Wifi Signal Strength 5Ghz"
 		description="Wifi Signal Strength of the device with
-		the given MAC. This is set in case the Device is connected to 5Ghz"
-		typeId="system.signal-strength">
+		the given MAC (see macOnline). This is set in case the Device is connected to 5Ghz"
+		typeId="system:signal-strength">
 		<item type="Number"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration2"/>
@@ -197,7 +198,7 @@
 	</channel>
 	<channel name="macSpeed2" label="MAC Wifi Speed 5Ghz"
 		description="Wifi Speed of the device with
-		the given MAC. This is set in case the Device is connected to 5Ghz">
+		the given MAC (see macOnline). This is set in case the Device is connected to 5Ghz">
 		<item type="Number:DataTransferRate" unit="Mbit/s" statePattern="%d Mbit/s"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration2"/>
@@ -244,6 +245,24 @@
 			serviceId="urn:WANCIfConfig-com:serviceId:WANCommonInterfaceConfig1"/>
 		<getAction name="GetTotalBytesSent" argument="NewTotalBytesSent"/>
 	</channel>
+	<channel name="wanCurrentDownstreamBitrate" label="Current Downstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANCIfConfig-com:serviceId:WANCommonInterfaceConfig1"/>
+		<getAction name="X_AVM-DE_GetOnlineMonitor" argument="Newds_current_bps"
+			postProcessor="processCurrentBitrate">
+			<parameter name="NewSyncGroupIndex" fixedValue="0"/>
+		</getAction>
+	</channel>
+	<channel name="wanCurrentUpstreamBitrate" label="Current Upstream Rate">
+		<item type="Number:DataTransferRate" unit="kbit/s" statePattern="%.1f Mbit/s"/>
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
+			serviceId="urn:WANCIfConfig-com:serviceId:WANCommonInterfaceConfig1"/>
+		<getAction name="X_AVM-DE_GetOnlineMonitor" argument="Newus_current_bps"
+			postProcessor="processCurrentBitrate">
+			<parameter name="NewSyncGroupIndex" fixedValue="0"/>
+		</getAction>
+	</channel>
 	<channel name="dslEnable" label="DSL Enable">
 		<item type="Switch"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
@@ -281,28 +300,28 @@
 		<getAction name="GetInfo" argument="NewUpstreamCurrRate"/>
 	</channel>
 	<channel name="dslDownstreamNoiseMargin" label="DSL Downstream Noise Margin">
-		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
+		<item type="Number:Dimensionless" unit="dB" factor="0.1" statePattern="%.1f dB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
-		<getAction name="GetInfo" argument="NewDownstreamNoiseMargin" postProcessor="processDecaDecibel"/>
+		<getAction name="GetInfo" argument="NewDownstreamNoiseMargin"/>
 	</channel>
 	<channel name="dslUpstreamNoiseMargin" label="DSL Upstream Noise Margin">
-		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
+		<item type="Number:Dimensionless" unit="dB" factor="0.1" statePattern="%.1f dB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
-		<getAction name="GetInfo" argument="NewUpstreamNoiseMargin" postProcessor="processDecaDecibel"/>
+		<getAction name="GetInfo" argument="NewUpstreamNoiseMargin"/>
 	</channel>
 	<channel name="dslDownstreamAttenuation" label="DSL Downstream Attenuation">
-		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
+		<item type="Number:Dimensionless" unit="dB" factor="0.1" statePattern="%.1f dB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
-		<getAction name="GetInfo" argument="NewDownstreamAttenuation" postProcessor="processDecaDecibel"/>
+		<getAction name="GetInfo" argument="NewDownstreamAttenuation"/>
 	</channel>
 	<channel name="dslUpstreamAttenuation" label="DSL Upstream Attenuation">
-		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
+		<item type="Number:Dimensionless" unit="dB" factor="0.1" statePattern="%.1f dB"/>
 		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
-		<getAction name="GetInfo" argument="NewUpstreamAttenuation" postProcessor="processDecaDecibel"/>
+		<getAction name="GetInfo" argument="NewUpstreamAttenuation"/>
 	</channel>
 	<channel name="dslFECErrors" label="DSL FEC Errors">
 		<item type="Number:Dimensionless"/>

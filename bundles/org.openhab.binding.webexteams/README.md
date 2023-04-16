@@ -12,13 +12,12 @@ Messages can use markdown syntax, and attachments are supported.
 
 No Things are being discovered by this binding.
 
-
 ## Thing Configuration
 
 Webex Teams supports two main types of app integration:
 
-* Bot: a separate identity that can be used to communicate with people and rooms.
-* Person integration: OAuth integration that allows the binding to act on behalf of a persons.
+- Bot: a separate identity that can be used to communicate with people and rooms.
+- Person integration: OAuth integration that allows the binding to act on behalf of a persons.
 
 Both of these accounts must be first configured on the [Webex Developers](https://developer.webex.com/my-apps) website.
 When creating a person integration, it's important you customize the redirect URL based on your OpenHab installation.
@@ -54,18 +53,17 @@ Note: status and lastactivity are only updated for person integrations
 
 ## Full Example
 
-
 webexteams.things:
 
 Configure a bot account:
 
-```
+```java
 Thing webexteams:account:bot [ token="XXXXXX", roomId="YYYYYY" ]
 ```
 
 Configure a person integration account:
 
-```
+```java
 Thing webexteams:account:person [ clientId="XXXXXX", clientSecret="YYYYYY", roomId="ZZZZZZ" ]
 ```
 
@@ -77,15 +75,13 @@ DSL rules use `getActions` to get a reference to the thing.
 
 This binding includes these rule actions for sending messages:
 
-* `var success = botActions.sendMessage(String markdown)` - Send a message to the default room.
-* `var success = botActions.sendMessage(String markdown, String attach)` - Send a message to the default room, with attachment.
-* `var success = botActions.sendRoomMessage(String roomId, String markdown)` - Send a message to a specific room.
-* `var success = botActions.sendRoomMessage(String roomId, String markdown, String attach)` - Send a message to a specific room, with attachment.
-* `var success = botActions.sendPersonMessage(String personEmail, String markdown)` - Send a direct message to a person.
-* `var success = botActions.sendPersonMessage(String personEmail, String markdown, String attach)` - Send a direct message to a person, with attachment.
+- `var success = botActions.sendMessage(String markdown)` - Send a message to the default room.
+- `var success = botActions.sendMessage(String markdown, String attach)` - Send a message to the default room, with attachment.
+- `var success = botActions.sendRoomMessage(String roomId, String markdown)` - Send a message to a specific room.
+- `var success = botActions.sendRoomMessage(String roomId, String markdown, String attach)` - Send a message to a specific room, with attachment.
+- `var success = botActions.sendPersonMessage(String personEmail, String markdown)` - Send a direct message to a person.
+- `var success = botActions.sendPersonMessage(String personEmail, String markdown, String attach)` - Send a direct message to a person, with attachment.
 
 Sending messages for bot or person accounts works exactly the same.
 Attachments must be URLs.  
 Sending local files is not supported at this moment.
-
-

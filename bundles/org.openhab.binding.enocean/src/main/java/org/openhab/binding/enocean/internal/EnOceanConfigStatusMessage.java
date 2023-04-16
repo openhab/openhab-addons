@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.enocean.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public enum EnOceanConfigStatusMessage {
     PORT_MISSING("missing-port-configuration"),
     SENDERID_MISSING("missing-senderId-configuration"),

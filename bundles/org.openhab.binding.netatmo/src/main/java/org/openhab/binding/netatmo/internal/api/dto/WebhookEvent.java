@@ -13,8 +13,8 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -72,8 +72,8 @@ public class WebhookEvent extends Event {
         return vignetteUrl;
     }
 
-    public List<String> getNAObjectList() {
-        List<String> result = new ArrayList<>();
+    public Set<String> getNAObjectList() {
+        Set<String> result = new LinkedHashSet<>();
         result.add(getCameraId());
         addNotBlank(result, homeId);
         addNotBlank(result, deviceId);
@@ -82,9 +82,9 @@ public class WebhookEvent extends Event {
         return result;
     }
 
-    private void addNotBlank(List<String> list, String value) {
+    private void addNotBlank(Set<String> collection, String value) {
         if (!value.isBlank()) {
-            list.add(value);
+            collection.add(value);
         }
     }
 }

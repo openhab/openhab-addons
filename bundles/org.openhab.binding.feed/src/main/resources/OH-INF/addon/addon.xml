@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="feed" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Feed Binding</name>
+	<description>The Feed Binding downloads Feed data from URL, displays information about the feed (number of Entries,
+		last published date, author, feed title and description, last entry) and tracks for changes in the Feed at intervals.</description>
+
+</addon:addon>

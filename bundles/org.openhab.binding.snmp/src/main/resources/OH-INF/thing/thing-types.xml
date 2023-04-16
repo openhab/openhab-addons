@@ -52,7 +52,92 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
+	</thing-type>
 
+	<thing-type id="target3" extensible="number,string,switch">
+		<label>SNMP v3 Target</label>
+
+		<config-description>
+			<!-- required -->
+			<parameter name="hostname" type="text" required="true">
+				<label>Target Host</label>
+				<description>Hostname or IP address of target host</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="engineId" type="text" required="true">
+				<label>Engine ID</label>
+				<description>The authorization engine ID of this target in hexadecimal notation (22-64 characters)</description>
+			</parameter>
+			<parameter name="user" type="text" required="true">
+				<label>Username</label>
+			</parameter>
+			<!-- optional -->
+			<parameter name="securityModel" type="text">
+				<label>Security Model</label>
+				<options>
+					<option value="NO_AUTH_NO_PRIV">No authentication and no Privacy</option>
+					<option value="AUTH_NO_PRIV">Authentication and no Privacy</option>
+					<option value="AUTH_PRIV">Authentication and Privacy</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>NO_AUTH_NO_PRIV</default>
+			</parameter>
+			<parameter name="authProtocol" type="text">
+				<label>Authentication Protocol</label>
+				<options>
+					<option value="MD5">MD5</option>
+					<option value="SHA">SHA</option>
+					<option value="HMAC128SHA224">HMAC128SHA224</option>
+					<option value="HMAC192SHA256">HMAC192SHA256</option>
+					<option value="HMAC256SHA384">HMAC256SHA384</option>
+					<option value="HMAC384SHA512">HMAC384SHA512</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>MD5</default>
+			</parameter>
+			<parameter name="authPassphrase" type="text">
+				<label>Authentication Passphrase</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="privProtocol" type="text">
+				<label>Privacy Protocol</label>
+				<options>
+					<option value="AES128">AES128</option>
+					<option value="AES192">AES192</option>
+					<option value="AES256">AES256</option>
+					<option value="DES">DES</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>DES</default>
+			</parameter>
+			<parameter name="privPassphrase" type="text">
+				<label>Privacy Passphrase</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1">
+				<label>Refresh Time</label>
+				<description>Refresh time in s (default 60s)</description>
+				<default>60</default>
+			</parameter>
+			<!-- optional advanced -->
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<default>161</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="timeout" type="integer" min="0">
+				<label>Timeout</label>
+				<description>Timeout in ms for a single update request</description>
+				<default>1500</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retries" type="integer" min="0">
+				<label>Retries</label>
+				<description>Number of retries for an update request</description>
+				<default>2</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="number">
@@ -76,6 +161,10 @@
 				<default>READ</default>
 				<limitToOptions>true</limitToOptions>
 			</parameter>
+			<parameter name="unit" type="text">
+				<label>Unit</label>
+				<description>The unit of this value.</description>
+			</parameter>
 			<parameter name="datatype" type="text">
 				<label>Datatype</label>
 				<description>Content data type</description>
@@ -97,12 +186,6 @@
 			<parameter name="exceptionValue" type="integer">
 				<label>Exception Value</label>
 				<description>Value to send if an SNMP exception occurs (default: UNDEF)</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="unit" type="text">
-				<label>Unit Of Measurement</label>
-				<description>Unit of measurement (optional). The unit is used for representing the value in the GUI as well as for
-					converting incoming values (like from '°F' to '°C'). Examples: "°C", "°F"</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

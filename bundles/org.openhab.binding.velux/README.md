@@ -42,7 +42,7 @@ The binding supports the following types of Thing.
 | information   | A Thing that provides overall information about the binding itself.               |      |
 
 1. Only supported in hubs with firmware v0.2.x.x or above
-2. Only needed in hubs with firmware v0.1.x.x (due to note 1. above)
+1. Only needed in hubs with firmware v0.1.x.x (due to note 1. above)
 
 ## Discovery
 
@@ -83,19 +83,19 @@ Normally it differs from the password of the web frontend.
 
 Advice: if you see a significant number of messages per day as follows, you should increase the parameters `retries` or/and `timeoutMsecs`...
 
-```
+```text
  communicate(): socket I/O failed continuously (x times).
 ```
 
 For your convenience you'll see a log entry for the recognized configuration within the log file i.e.
 
-```
+```text
 2018-07-23 20:40:24.746 [INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[ipAddress=192.168.42.1,tcpPort=80,password=********,timeoutMsecs=2000,retries=10]
 ```
 
 ### Thing Configuration for "actuator", "window", "rollershutter"
 
-These types of Thing only supported in the Velux Bridge in API version two or higher (firmware version > 0.2.*.*).
+These types of Thing only supported in the Velux Bridge in API version two or higher (firmware version > 0.2.\*.\*).
 These types of Thing are configured by means of their serial number in the hub.
 In addition there are some optional Configuration Parameters.
 
@@ -107,14 +107,20 @@ In addition there are some optional Configuration Parameters.
 
 Notes:
 
-1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number.
-For an example, see the Thing definition for 'Bathroom_Roof_Window' below.
+1. To enable a complete inversion of all parameter values use the property `inverted` or add a trailing star to the eight-byte serial number.
 
-2. Somfy devices do not provide a valid serial number to the Velux KLF200 Bridge.
-For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
-This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
-The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
-For an example, see the Thing definition for 'Living_Room_Awning' below.
+1. Somfy devices do not provide a valid serial number to the Velux KLF200 Bridge.
+  For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
+  This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
+  The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
+  For an example, see the Thing definition for 'Living_Room_Awning' below.
+
+The impact of the `inverted` parameter on the open/close position of the device, when a command is sent, is shown in the table below..
+
+| Inverted Parameter | UP Button Pressed | DOWN Button Pressed | Slider Position 0% | Slider Position 100% | Switch Command OFF | Switch Command ON |
+|--------------------|-------------------|---------------------|--------------------|----------------------|--------------------|-------------------|
+| `inverted` = false | Device is open    | Device is closed    | Device is open     | Device is closed     | Device is open     | Device is closed  |
+| `inverted` = true  | Device is closed  | Device is open      | Device is closed   | Device is open       | Device is closed   | Device is open    |
 
 ### Thing Configuration for "scene"
 
@@ -258,35 +264,35 @@ The bridge Thing provides the following properties.
 
 ### Things
 
-```
+```java
 Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.1.xxx", password="secret"] {
-	// Velux (standard) window (with serial number)
-    Thing window Bathroom_Roof_Window "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70", inverted=true]
+    // Velux (standard) window (with serial number)
+    Thing window Bathroom_Roof_Window "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70"]
 
-	// Somfy (non-standard) rollershutter (without serial number)
+    // Somfy (non-standard) rollershutter (without serial number)
     Thing rollershutter Living_Room_Awning "Living Room Awning" @ "Living Room" [serial="00:00:00:00:00:00:00:00", name="Living Room Awning"]
 }
 ```
 
-See [velux.things](doc/conf/things/velux.things) for more examples.
+See [things.md](doc/things.md) for more examples.
 
 ### Items
 
-```
+```java
 Rollershutter Bathroom_Roof_Window_Position "Bathroom Roof Window Position [%.0f %%]" {channel="velux:window:g24:w56-36-13-5A-11-2A-05-70:position"}
 ```
 
-See [velux.items](doc/conf/items/velux.items) for more examples.
+See [items.md](doc/items.md) for more examples.
 
 ### Sitemap
 
-```
+```perl
 Frame label="Velux Windows" {
-	Slider item=Bathroom_Roof_Window_Position
+    Slider item=Bathroom_Roof_Window_Position
 }
 ```
 
-See [velux.sitemap](doc/conf/sitemaps/velux.sitemap) for more examples.
+See [sitemaps.md](doc/sitemaps.md) for more examples.
 
 ### Rule for simultaneously moving the main position and the vane position
 
@@ -314,13 +320,13 @@ Example:
 ```java
 rule "Simultaneously Move Main and Vane Positions"
 when
-	...
+    ...
 then
     // note: "velux:klf200:hubid" shall be the thing name of your KLF 200 hub
-	val veluxActions = getActions("velux", "velux:klf200:hubid")
-	if (veluxActions !== null) {
-		val succeeded = veluxActions.moveMainAndVane("velux:rollershutter:hubid:thingid", 75, 25)
-	}
+    val veluxActions = getActions("velux", "velux:klf200:hubid")
+    if (veluxActions !== null) {
+        val succeeded = veluxActions.moveMainAndVane("velux:rollershutter:hubid:thingid", 75, 25)
+    }
 end
 ```
 
@@ -335,32 +341,32 @@ Example:
 ```java
 rule "V_WINDOW_changed"
 when
-	Item V_WINDOW changed
+    Item V_WINDOW changed
 then
-	logInfo("rules.V_WINDOW",	"V_WINDOW_changes() called.")
-	// Get the sensor value
-	val Number windowState = V_WINDOW.state as DecimalType
-	logWarn("rules.V_WINDOW", "Window state is " + windowState + ".")
-	if (windowState < 80) {
-		if (windowState == 0) {
-			logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
-			var int interval = 1
-			createTimer(now.plusMinutes(interval)) [ |
-					logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
-					sendCommand(V_WINDOW, 100)
-					V_WINDOW.postUpdate(100)
-    				logWarn("rules.V_WINDOW:event", "event-V_WINDOW done.")
-        		]
-    		} else {
-			logWarn("rules.V_WINDOW", "V-WINDOW changed to partially open.")
-		}
-    	}
-	// Check type of item
-	logDebug("rules.V_WINDOW",	"V_WINDOW_changes finished.")
+    logInfo("rules.V_WINDOW",    "V_WINDOW_changes() called.")
+    // Get the sensor value
+    val Number windowState = V_WINDOW.state as DecimalType
+    logWarn("rules.V_WINDOW", "Window state is " + windowState + ".")
+    if (windowState < 80) {
+        if (windowState == 0) {
+            logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
+            var int interval = 1
+            createTimer(now.plusMinutes(interval)) [ |
+                    logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
+                    sendCommand(V_WINDOW, 100)
+                    V_WINDOW.postUpdate(100)
+                    logWarn("rules.V_WINDOW:event", "event-V_WINDOW done.")
+                ]
+            } else {
+            logWarn("rules.V_WINDOW", "V-WINDOW changed to partially open.")
+        }
+        }
+    // Check type of item
+    logDebug("rules.V_WINDOW",    "V_WINDOW_changes finished.")
 end
 ```
 
-See [velux.rules](doc/conf/rules/velux.rules) for more examples.
+See [rules.md](doc/rules.md) for more examples.
 
 ### Rule for rebooting the Bridge
 
@@ -375,15 +381,15 @@ Example:
 ```java
 rule "Reboot KLF 200"
 when
-	...
+    ...
 then
-	val veluxActions = getActions("velux", "velux:klf200:myhubname")
-	if (veluxActions !== null) {
-		val isRebooting = veluxActions.rebootBridge()
-		logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
-	} else {
-		logWarn("Rules", "Velux KLF 200 actions not found, check thing ID")
-	}
+    val veluxActions = getActions("velux", "velux:klf200:myhubname")
+    if (veluxActions !== null) {
+        val isRebooting = veluxActions.rebootBridge()
+        logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
+    } else {
+        logWarn("Rules", "Velux KLF 200 actions not found, check thing ID")
+    }
 end
 ```
 
@@ -395,18 +401,18 @@ You can exploit this behaviour in a rule to check regularly if a window has been
 ```java
 rule "Every 10 minutes, check if window is in manual mode"
 when
-	Time cron "0 0/10 * * * ?" // every 10 minutes
+    Time cron "0 0/10 * * * ?" // every 10 minutes
 then
-	if (Velux_Window.state != UNDEF) {
-		// command the window to its actual position; this will either
-		// - succeed: the actual position will not change, or
-		// - fail: the position becomes UNDEF (logged next time this rule executes)
-		Velux_Window.sendCommand(Velux_Window.state)
-	} else {
-		logWarn("Rules", "Velux in Manual mode, trying to close again")
-		// try to close it
-		Velux_Window.sendCommand(0)
-	}
+    if (Velux_Window.state != UNDEF) {
+        // command the window to its actual position; this will either
+        // - succeed: the actual position will not change, or
+        // - fail: the position becomes UNDEF (logged next time this rule executes)
+        Velux_Window.sendCommand(Velux_Window.state)
+    } else {
+        logWarn("Rules", "Velux in Manual mode, trying to close again")
+        // try to close it
+        Velux_Window.sendCommand(0)
+    }
 end
 ```
 
@@ -431,29 +437,29 @@ For those who are interested in more detailed insight of the processing of this 
 
 With Karaf you can use the following command sequence:
 
-```
+```text
 log:set TRACE org.openhab.binding.velux
 log:tail
 ```
 
 This, of course, is possible on command line with the commands:
 
-```
+```text
 % openhab-cli console log:set TRACE org.openhab.binding.velux
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 
 On the other hand, if you prefer a textual configuration, you can append the logging definition with:
 
-```
-	<logger name="org.openhab.binding.velux" level="TRACE">
-		<appender-ref ref="FILE" />
-	</logger>
+```text
+    <logger name="org.openhab.binding.velux" level="TRACE">
+        <appender-ref ref="FILE" />
+    </logger>
 ```
 
 During startup of normal operations, there should be only some few messages within the logfile, like:
 
-```
+```text
 [INFO ] [nal.VeluxValidatedBridgeConfiguration] - veluxConfig[protocol=slip,ipAddress=192.168.45.9,tcpPort=51200,password=********,timeoutMsecs=1000,retries=5,refreshMsecs=15000,isBulkRetrievalEnabled=true]
 [INFO ] [ng.velux.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
 [INFO ] [hab.binding.velux.bridge.slip.SClogin] - velux bridge connection successfully established (login succeeded).
@@ -478,7 +484,7 @@ During startup of normal operations, there should be only some few messages with
 
 However if you have set the configuration parameter isProtocolTraceEnabled to true, you'll see the complete sequence of exchanged messages:
 
-```
+```text
 [INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_PASSWORD_ENTER_REQ.
 [INFO ] [nternal.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
 [INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_PASSWORD_ENTER_CFM.
@@ -559,6 +565,6 @@ All known <B>Velux</B> devices can be handled by this binding.
 However, there might be some new ones which will be reported within the logfiles.
 Therefore, error messages like the one below should be reported to the maintainers so that the new Velux device type can be incorporated.
 
-```
+```text
 [ERROR] [g.velux.things.VeluxProductReference] - PLEASE REPORT THIS TO MAINTAINER: VeluxProductReference(3) has found an unregistered ProductTypeId.
 ```

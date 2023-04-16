@@ -132,7 +132,7 @@ public class RotelSimuConnector extends RotelConnector {
     @Override
     public synchronized void open() throws RotelException {
         logger.debug("Opening simulated connection");
-        readerThread.start();
+        startReaderThread();
         setConnected(true);
         logger.debug("Simulated connection opened");
     }

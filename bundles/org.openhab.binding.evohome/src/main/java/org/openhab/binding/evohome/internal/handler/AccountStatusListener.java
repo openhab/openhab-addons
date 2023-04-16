@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evohome.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingStatus;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.core.thing.ThingStatus;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
+@NonNullByDefault
 public interface AccountStatusListener {
 
     /**

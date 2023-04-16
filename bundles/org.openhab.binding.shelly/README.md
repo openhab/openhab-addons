@@ -1,6 +1,6 @@
 # Shelly Binding
 
-This Binding integrates [Shelly devices](https://shelly.cloud) devloped by Allterco.
+This Binding integrates [Shelly devices](https://shelly.cloud) developed by Allterco.
 
 Allterco provides a rich set of smart home devices. All of them are WiFi enabled (2,4GHz, IPv4 only) and provide a documented API.
 The binding is officially acknowledged by Allterco and openHAB is listed as a reference and directly supports the openHAB community.
@@ -120,10 +120,6 @@ This mode also overrules event settings in the Thing configuration.
 Disabling this feature allows granular control, which event types will be used.
 This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
 In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
-
-'Generation 2:'
-
-### Generation 2 (Plus
 
 ## Firmware
 

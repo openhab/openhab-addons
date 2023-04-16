@@ -25,8 +25,8 @@ import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDActionType;
  */
 @NonNullByDefault
 public class Tr064ChannelConfig {
-    private ChannelTypeDescription channelTypeDescription;
-    private SCPDServiceType service;
+    private final ChannelTypeDescription channelTypeDescription;
+    private final SCPDServiceType service;
     private @Nullable SCPDActionType getAction;
     private String dataType = "";
     private @Nullable String parameter;

@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a loadpoint object of the status response (/api/state).
- * This DTO was written for evcc version 0.106.3
+ * This DTO was written for evcc version 0.111.1
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -24,7 +24,7 @@ public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
     // and from https://docs.evcc.io/docs/reference/configuration/messaging/#msg
 
-    @SerializedName("activePhases")
+    @SerializedName("phasesActive")
     private int activePhases;
 
     @SerializedName("chargeCurrent")
@@ -69,7 +69,7 @@ public class Loadpoint {
     @SerializedName("minCurrent")
     private float minCurrent;
 
-    @SerializedName("minSoC")
+    @SerializedName("minSoc")
     private float minSoC;
 
     @SerializedName("mode")
@@ -84,7 +84,7 @@ public class Loadpoint {
     @SerializedName("pvRemaining")
     private long pvRemaining;
 
-    @SerializedName("targetSoC")
+    @SerializedName("targetSoc")
     private float targetSoC;
 
     @SerializedName("targetTime")
@@ -105,7 +105,7 @@ public class Loadpoint {
     @SerializedName("vehicleRange")
     private float vehicleRange;
 
-    @SerializedName("vehicleSoC")
+    @SerializedName("vehicleSoc")
     private float vehicleSoC;
 
     @SerializedName("vehicleTitle")

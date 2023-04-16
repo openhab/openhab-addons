@@ -1,0 +1,7 @@
+{
+  "AuthFlow": "REFRESH_TOKEN_AUTH",
+  "ClientId": "clientId123",
+  "AuthParameters": {
+    "REFRESH_TOKEN": "refreshToken123"
+  }
+}

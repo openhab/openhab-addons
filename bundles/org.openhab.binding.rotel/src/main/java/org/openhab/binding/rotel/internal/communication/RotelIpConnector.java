@@ -68,7 +68,7 @@ public class RotelIpConnector extends RotelConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            readerThread.start();
+            startReaderThread();
 
             this.clientSocket = clientSocket;
 

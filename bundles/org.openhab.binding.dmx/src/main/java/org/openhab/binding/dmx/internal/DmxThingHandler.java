@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dmx.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -26,7 +27,7 @@ import org.openhab.core.types.State;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public abstract class DmxThingHandler extends BaseThingHandler {
 
     protected ThingStatusDetail dmxHandlerStatus = ThingStatusDetail.HANDLER_CONFIGURATION_PENDING;

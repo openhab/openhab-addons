@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:rollershutter:position">
+		<parameter name="uptime" type="decimal" required="true">
+			<label>Up Time</label>
+			<description>Time it takes for roller shutter to fully open (in seconds).</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="downtime" type="decimal">
+			<label>Down Time</label>
+			<description>Time it takes for roller shutter to extend the full length (in seconds). Defaults to Up Time if not
+				specified.</description>
+		</parameter>
+		<parameter name="precision" type="integer">
+			<label>Precision</label>
+			<description>Minimum movement (in percent) that can be requested. If the requested change is less than this amount,
+				no action will be taken. This may be required for systems where there is a lag in the stop command and
+				consequently
+				it is not possible for fine control of movement. (default = 5)</description>
+			<default>5</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

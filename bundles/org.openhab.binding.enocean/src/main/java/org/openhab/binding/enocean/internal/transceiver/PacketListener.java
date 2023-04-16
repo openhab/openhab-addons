@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.enocean.internal.transceiver;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public interface PacketListener {
 
     public void packetReceived(BasePacket packet);

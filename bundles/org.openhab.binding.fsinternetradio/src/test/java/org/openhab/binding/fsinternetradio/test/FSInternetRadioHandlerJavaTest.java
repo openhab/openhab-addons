@@ -821,10 +821,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
         BigDecimal port = (BigDecimal) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PORT.toString());
         String pin = (String) config.get(FSInternetRadioBindingConstants.CONFIG_PROPERTY_PIN.toString());
 
-        if (ip == null || port.compareTo(BigDecimal.ZERO) == 0 || pin == null || pin.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !(ip == null || port.compareTo(BigDecimal.ZERO) == 0 || pin == null || pin.isEmpty());
     }
 
     @SuppressWarnings("null")

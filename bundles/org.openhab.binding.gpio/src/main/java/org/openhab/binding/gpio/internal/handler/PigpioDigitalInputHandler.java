@@ -66,8 +66,9 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
         } else if (pullupdownStr.equals(GPIOBindingConstants.PUD_UP)) {
             pullupdown = JPigpio.PI_PUD_UP;
         } else {
-            if (!pullupdownStr.equals(GPIOBindingConstants.PUD_OFF))
+            if (!pullupdownStr.equals(GPIOBindingConstants.PUD_OFF)) {
                 throw new InvalidPullUpDownException();
+            }
         }
         gpio = new GPIO(jPigpio, gpioId, JPigpio.PI_INPUT);
         jPigpio.gpioSetAlertFunc(gpio.getPin(), (gpio, level, tick) -> {

@@ -86,6 +86,7 @@ public final class DigitalMessage extends Message {
      * @param portNumber - the portNumber in Range 1-32
      * @return
      */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean hasPortnumber(int portNumber) {
         if (podNumber == 0 && portNumber <= 16) {

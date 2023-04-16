@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Peter Rosenberg - Initial contribution
  */
+@NonNullByDefault
 public class CharacteristicPropertiesTest {
     private BluetoothCharacteristic characteristic = new BluetoothCharacteristic(UUID.randomUUID(), 0);
 

@@ -84,11 +84,11 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
         logger.debug("Device type {}, manufacturer {}, model {}, SN# {}, UDN {}", deviceType, manufacturer, model,
                 serialNumber, udn);
 
-        if (deviceType.equalsIgnoreCase("MediaRenderer")) {
+        if ("MediaRenderer".equalsIgnoreCase(deviceType)) {
             this.logger.debug("Media renderer found: {}, {}", manufacturer, model);
             ThingTypeUID thingTypeUID = THING_TYPE_RENDERER;
             result = new ThingUID(thingTypeUID, device.getIdentity().getUdn().getIdentifierString());
-        } else if (deviceType.equalsIgnoreCase("MediaServer")) {
+        } else if ("MediaServer".equalsIgnoreCase(deviceType)) {
             this.logger.debug("Media server found: {}, {}", manufacturer, model);
             ThingTypeUID thingTypeUID = THING_TYPE_SERVER;
             result = new ThingUID(thingTypeUID, device.getIdentity().getUdn().getIdentifierString());

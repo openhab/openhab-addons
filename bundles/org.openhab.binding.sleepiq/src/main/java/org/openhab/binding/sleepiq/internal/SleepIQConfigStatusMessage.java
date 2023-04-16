@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.sleepiq.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SleepIQConfigStatusMessage} defines the keys to be used for configuration status messages.
  *
  * @author Gregory Moyer - Initial contribution
  *
  */
+@NonNullByDefault
 public interface SleepIQConfigStatusMessage {
     public static final String USERNAME_MISSING = "missing-username-configuration";
     public static final String PASSWORD_MISSING = "missing-password-configuration";

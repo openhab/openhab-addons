@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dmx.internal.Util;
 import org.openhab.binding.dmx.internal.multiverse.Universe;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class SacnPacket extends DmxOverEthernetPacket {
     public static final int SACN_MAX_PACKET_LEN = 638;
     public static final int SACN_MAX_PAYLOAD_SIZE = 512;

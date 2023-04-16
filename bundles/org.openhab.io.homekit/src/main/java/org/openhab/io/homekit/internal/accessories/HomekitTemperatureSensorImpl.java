@@ -61,7 +61,7 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
                 getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
                         BigDecimal.valueOf(HomekitCharacteristicFactory
                                 .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
-                                        .doubleValue());
+                        .doubleValue());
     }
 
     @Override
@@ -70,7 +70,7 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
                 getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
                         BigDecimal.valueOf(HomekitCharacteristicFactory
                                 .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MAX_VALUE)))
-                                        .doubleValue());
+                        .doubleValue());
     }
 
     @Override

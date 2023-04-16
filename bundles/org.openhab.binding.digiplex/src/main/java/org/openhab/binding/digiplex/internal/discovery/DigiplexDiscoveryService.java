@@ -101,11 +101,7 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
 
     private boolean isDefaultName(ZoneLabelResponse response) {
         return ZONE_DEFAULT_NAMES.stream().anyMatch(format -> {
-            if (String.format(format, response.zoneNo).equals(response.zoneName)) {
-                return true;
-            } else {
-                return false;
-            }
+            return String.format(format, response.zoneNo).equals(response.zoneName);
         });
     }
 

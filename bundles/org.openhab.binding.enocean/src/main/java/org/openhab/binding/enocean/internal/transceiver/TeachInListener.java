@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.enocean.internal.transceiver;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public interface TeachInListener extends PacketListener, EventListener {
 
 }

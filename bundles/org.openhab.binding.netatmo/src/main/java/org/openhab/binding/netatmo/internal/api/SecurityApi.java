@@ -122,13 +122,13 @@ public class SecurityApi extends RestManager {
     }
 
     public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder(PATH_STATE);
-        String payload = String.format(PAYLOAD_FLOODLIGHT, homeId, cameraId, mode.name().toLowerCase());
+        UriBuilder uriBuilder = getApiUriBuilder(PATH_STATE);
+        String payload = PAYLOAD_FLOODLIGHT.formatted(homeId, cameraId, mode.name().toLowerCase());
         post(uriBuilder, ApiResponse.Ok.class, payload);
     }
 
     public void setPersonAwayStatus(String homeId, String personId, boolean away) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder(away ? SUB_PATH_PERSON_AWAY : SUB_PATH_PERSON_HOME);
+        UriBuilder uriBuilder = getApiUriBuilder(away ? SUB_PATH_PERSON_AWAY : SUB_PATH_PERSON_HOME);
         String payload = String.format(away ? PAYLOAD_PERSON_AWAY : PAYLOAD_PERSON_HOME, homeId, personId);
         post(uriBuilder, ApiResponse.Ok.class, payload);
     }

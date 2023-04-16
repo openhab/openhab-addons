@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="upb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>UPB Binding</name>
+	<description>The Universal Powerline Bus (UPB) binding reads and writes messages to and from a UPB modem</description>
+
+	<service-id>org.openhab.upb</service-id>
+
+	<config-description>
+		<parameter name="networkId" type="integer" min="0" max="255" required="false">
+			<label>Default Network ID for Devices</label>
+			<description>The ID of the primary UPB network. May be overridden on a per-device basis.</description>
+		</parameter>
+	</config-description>
+</addon:addon>
