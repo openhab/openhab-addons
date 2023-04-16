@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -312,6 +313,34 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Get the v1 legacy Hue thing (if any) which has an Id that matches the idV1 attribute of a v2 thing.
+     *
+     * @param targetIdV1 the idV1 attribute value of a v2 thing.
+     * @return Optional result containing the legacy thing (if found).
+     */
+    public Optional<Thing> getLegacyThing(String targetIdV1) {
+        String config;
+        if (targetIdV1.startsWith("/lights/")) {
+            config = HueBindingConstants.LIGHT_ID;
+        } else if (targetIdV1.startsWith("/sensors/")) {
+            config = HueBindingConstants.SENSOR_ID;
+        } else if (targetIdV1.startsWith("/groups/")) {
+            config = HueBindingConstants.GROUP_ID;
+        } else {
+            config = null;
+        }
+        if (Objects.nonNull(config)) {
+            return thingRegistry.getAll().stream() //
+                    .filter(thing -> HueBindingConstants.V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
+                    .filter(thing -> {
+                        Object id = thing.getConfiguration().get(config);
+                        return id instanceof String && targetIdV1.endsWith("/" + (String) id);
+                    }).findFirst();
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Return a localized text.
      *
      * @param key the i18n text key.
@@ -350,10 +379,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(Clip2ThingDiscoveryService.class);
-    }
-
-    public ThingRegistry getThingRegistry() {
-        return thingRegistry;
     }
 
     @Override

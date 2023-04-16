@@ -122,7 +122,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                 String legacyThingUID = null;
 
                 if (new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, uid.getId()).equals(uid)) {
-                    Optional<Thing> legacyThingOptional = getLegacyThing(host);
+                    Optional<Thing> legacyThingOptional = getLegacyBridge(host);
                     if (legacyThingOptional.isPresent()) {
                         Thing legacyThing = legacyThingOptional.get();
                         legacyThingUID = legacyThing.getUID().getAsString();
@@ -154,7 +154,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
      * @param ipAddress the IP address.
      * @return Optional of a legacy bridge thing.
      */
-    private Optional<Thing> getLegacyThing(String ipAddress) {
+    private Optional<Thing> getLegacyBridge(String ipAddress) {
         return thingRegistry.getAll().stream()
                 .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
                         && ipAddress.equals(thing.getConfiguration().get(HOST)))

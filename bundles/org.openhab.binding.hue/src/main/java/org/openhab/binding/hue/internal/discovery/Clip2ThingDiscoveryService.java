@@ -107,31 +107,35 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                             continue;
                         }
 
-                        String resId = resource.getId();
-                        String resType = resource.getType().toString();
-                        String label = resource.getName();
+                        String resourceId = resource.getId();
+                        String idv1 = resource.getIdV1();
+                        String resourceType = resource.getType().toString();
+                        String resourceName = resource.getName();
+                        String thingId = resourceId;
+                        String thingLabel = resourceName;
                         String legacyThingUID = null;
 
                         // special zone 'all lights'
                         if (resource.getType() == ResourceType.BRIDGE_HOME) {
-                            label = bridgeHandler.getLocalizedText(HueBindingConstants.ALL_LIGHTS_KEY);
+                            thingLabel = bridgeHandler.getLocalizedText(HueBindingConstants.ALL_LIGHTS_KEY);
                         }
 
-                        Optional<Thing> legacyThingOptional = getLegacyThing(resource.getIdV1());
+                        Optional<Thing> legacyThingOptional = bridgeHandler.getLegacyThing(idv1);
                         if (legacyThingOptional.isPresent()) {
                             Thing legacyThing = legacyThingOptional.get();
                             legacyThingUID = legacyThing.getUID().getAsString();
-                            String label2 = legacyThing.getLabel();
-                            label = Objects.nonNull(label2) ? label2 : label;
+                            thingId = legacyThing.getUID().getId();
+                            String legacyLabel = legacyThing.getLabel();
+                            thingLabel = Objects.nonNull(legacyLabel) ? legacyLabel : thingLabel;
                         }
 
                         DiscoveryResultBuilder builder = DiscoveryResultBuilder
-                                .create(new ThingUID(entry.getValue(), bridgeUID, resId)) //
+                                .create(new ThingUID(entry.getValue(), bridgeUID, thingId)) //
                                 .withBridge(bridgeUID) //
-                                .withLabel(label) //
-                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_ID, resId)
-                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_TYPE, resType)
-                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_NAME, label)
+                                .withLabel(thingLabel) //
+                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_ID, resourceId)
+                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_TYPE, resourceType)
+                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_NAME, resourceName)
                                 .withRepresentationProperty(HueBindingConstants.PROPERTY_RESOURCE_ID);
 
                         if (Objects.nonNull(legacyThingUID)) {
@@ -146,37 +150,6 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
             }
         }
         stopScan();
-    }
-
-    /**
-     * Get the v1 legacy Hue thing (if any) which has an Id that matches the idV1 attribute of a v2 thing.
-     *
-     * @param targetId the idV1 attribute value of a v2 thing.
-     * @return Optional result containing the legacy thing (if found).
-     */
-    private Optional<Thing> getLegacyThing(String targetId) {
-        String config;
-        if (targetId.startsWith("/lights/")) {
-            config = HueBindingConstants.LIGHT_ID;
-        } else if (targetId.startsWith("/sensors/")) {
-            config = HueBindingConstants.SENSOR_ID;
-        } else if (targetId.startsWith("/groups/")) {
-            config = HueBindingConstants.GROUP_ID;
-        } else {
-            config = null;
-        }
-        if (Objects.nonNull(config)) {
-            Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
-            if (Objects.nonNull(bridgeHandler)) {
-                return bridgeHandler.getThingRegistry().getAll().stream() //
-                        .filter(thing -> HueBindingConstants.V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
-                        .filter(thing -> {
-                            Object id = thing.getConfiguration().get(config);
-                            return id instanceof String && targetId.endsWith("/" + (String) id);
-                        }).findFirst();
-            }
-        }
-        return Optional.empty();
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -178,21 +179,31 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                             // do not list the bridge itself
                                             continue;
                                         }
-                                        String id = resource.getId();
+                                        String resourceId = resource.getId();
                                         String idv1 = resource.getIdV1();
-                                        String label = resource.getName();
+                                        String thingLabel = resource.getName();
                                         String comment = resource.getProductName();
-                                        String type = resourceType.name().toLowerCase();
+                                        String thingType = resourceType.name().toLowerCase();
+                                        String thingId = resourceId;
 
                                         // special zone 'all lights'
                                         if (resource.getType() == ResourceType.BRIDGE_HOME) {
-                                            label = clip2BridgeHandler
+                                            thingLabel = clip2BridgeHandler
                                                     .getLocalizedText(HueBindingConstants.ALL_LIGHTS_KEY);
                                             comment = "Zone";
-                                            type = comment.toLowerCase();
+                                            thingType = comment.toLowerCase();
                                         }
 
-                                        lines.put(label, String.format(FMT_THING, type, id, label, id, comment, idv1));
+                                        Optional<Thing> legacyThingOptional = clip2BridgeHandler.getLegacyThing(idv1);
+                                        if (legacyThingOptional.isPresent()) {
+                                            Thing legacyThing = legacyThingOptional.get();
+                                            thingId = legacyThing.getUID().getId();
+                                            String legacyLabel = legacyThing.getLabel();
+                                            thingLabel = Objects.nonNull(legacyLabel) ? legacyLabel : thingLabel;
+                                        }
+
+                                        lines.put(thingLabel, String.format(FMT_THING, thingType, thingId, thingLabel,
+                                                resourceId, comment, idv1));
                                     }
                                     lines.entrySet().forEach(entry -> console.println(entry.getValue()));
                                 }
