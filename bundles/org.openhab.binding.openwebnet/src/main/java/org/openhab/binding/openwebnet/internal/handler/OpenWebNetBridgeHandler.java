@@ -14,6 +14,8 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -114,6 +116,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
     private boolean discoveryByActivation;
+    private boolean synchDateTime = true;
 
     public OpenWebNetBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -499,7 +502,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         // GATEWAY MANAGEMENT
         if (msg instanceof GatewayMgmt) {
-            // noop
+            GatewayMgmt gwMsg = (GatewayMgmt) msg;
+            if (synchDateTime && GatewayMgmt.DimGatewayMgmt.DATETIME.equals(gwMsg.getDim())) {
+                checkDateTimeDiff(gwMsg);
+            }
             return;
         }
 
@@ -525,6 +531,31 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         } else {
             logger.debug("BridgeHandler ignoring frame {}. WHO={} is not supported by this binding", baseMsg,
                     baseMsg.getWho());
+        }
+    }
+
+    private void checkDateTimeDiff(GatewayMgmt gwMsg) {
+        try {
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime gwTime = GatewayMgmt.parseDateTime(gwMsg);
+            long diff = Math.abs(Duration.between(now, gwTime).toSeconds());
+            if (diff > 60) {
+                logger.debug("checkDateTimeDiff: difference is more than 60s: {}s", diff);
+                OpenGateway gw = gateway;
+                if (gw != null) {
+                    logger.debug("checkDateTimeDiff: synch DateTime to: {}", now);
+                    try {
+                        gw.send(GatewayMgmt.requestSetDateTime(now));
+                    } catch (OWNException e) {
+                        logger.warn("checkDateTimeDiff: Exception while sending set DateTime command: {}",
+                                e.getMessage());
+                    }
+                }
+            } else {
+                logger.debug("checkDateTimeDiff: DateTime difference: {}s", diff);
+            }
+        } catch (FrameException e) {
+            logger.warn("checkDateTimeDiff: FrameException while parsing {}", e.getMessage());
         }
     }
 
