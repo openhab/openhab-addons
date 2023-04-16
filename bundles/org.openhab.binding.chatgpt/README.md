@@ -12,7 +12,7 @@ The binding supports a single thing type `account`, which corresponds to the Ope
 ## Thing Configuration
 
 The `account` thing requires a single configuration parameter, which is the API key that allows accessing the account.
-API keys can be created and managed under https://platform.openai.com/account/api-keys.
+API keys can be created and managed under <https://platform.openai.com/account/api-keys>.
 
 | Name            | Type    | Description                             | Default | Required | Advanced |
 |-----------------|---------|-----------------------------------------|---------|----------|----------|
