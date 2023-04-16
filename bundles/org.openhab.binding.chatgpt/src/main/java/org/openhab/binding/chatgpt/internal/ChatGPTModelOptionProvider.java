@@ -34,8 +34,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 @NonNullByDefault
 public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOptionProvider {
 
-    @Nullable
-    private ThingHandler thingHandler;
+    private @Nullable ThingHandler thingHandler;
 
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,

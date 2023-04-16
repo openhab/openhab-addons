@@ -32,6 +32,5 @@ public class ChatGPTChannelConfiguration {
     @Nullable
     public String systemMessage;
 
-    @Nullable
-    Integer maxTokens;
+    int maxTokens;
 }

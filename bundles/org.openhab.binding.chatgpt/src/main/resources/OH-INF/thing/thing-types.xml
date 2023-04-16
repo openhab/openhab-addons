@@ -44,12 +44,12 @@
 				<label>System Message</label>
 				<description>The system message helps set the behavior of the assistant.</description>
 			</parameter>
-            <parameter name="maxTokens" type="decimal">
-                <label>Maximum Number of Tokens</label>
-                <description>The maximum number of tokens to generate in the completion.</description>
-                <default>500</default>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="maxTokens" type="decimal">
+				<label>Maximum Number of Tokens</label>
+				<description>The maximum number of tokens to generate in the completion.</description>
+				<default>500</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</channel-type>
 </thing:thing-descriptions>

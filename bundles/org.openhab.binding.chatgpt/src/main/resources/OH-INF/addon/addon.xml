@@ -5,6 +5,7 @@
 
 	<type>binding</type>
 	<name>ChatGPT Binding</name>
-	<description>This is the binding for ChatGPT integration.</description>
+	<description>This binding allows interaction with OpenAI's ChatGPT.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

@@ -13,7 +13,6 @@
 package org.openhab.binding.chatgpt.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ChatGPTConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,6 +22,5 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ChatGPTConfiguration {
 
-    @Nullable
     public String apiKey = "";
 }

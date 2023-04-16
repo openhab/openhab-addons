@@ -16,7 +16,6 @@ import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -66,7 +65,7 @@ public class ChatGPTHandler extends BaseThingHandler {
     private String apiKey = "";
     private String lastPrompt = "";
 
-    private List<String> models = Collections.emptyList();
+    private List<String> models = List.of();
 
     public ChatGPTHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
@@ -150,8 +149,9 @@ public class ChatGPTHandler extends BaseThingHandler {
 
         String apiKey = config.apiKey;
 
-        if (apiKey == null || apiKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No API key configured");
+        if (apiKey.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error");
             return;
         }
 
@@ -175,13 +175,13 @@ public class ChatGPTHandler extends BaseThingHandler {
                             String id = model.get("id").getAsString();
                             modelIds.add(id);
                         }
-                        this.models = Collections.unmodifiableList(modelIds);
+                        this.models = List.copyOf(modelIds);
                     } else {
                         logger.warn("Did not receive a valid JSON response from the models endpoint.");
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Could not connect to OpenAI API");
+                            "@text/offline.communication-error");
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

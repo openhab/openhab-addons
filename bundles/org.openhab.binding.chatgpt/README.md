@@ -29,12 +29,12 @@ It is possible to extend the thing with further channels of type `chat`, so that
 
 Each channel of type `chat` takes the following configuration parameters:
 
-| Name            | Type    | Description                             | Default | Required | Advanced |
-|-----------------|---------|-----------------------------------------|---------|----------|----------|
-| model           | text    | The model to be used for the responses. | N/A     | yes      | no       |
-| temperature     | decimal | A value between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. | 0.5   | no      | no       |
-| systemMessage   | text    | The system message helps set the behavior of the assistant. | N/A     | no      | no       |
-| maxTokens       | decimal | The maximum number of tokens to generate in the completion. | 500     | no      | yes      |
+| Name            | Type    | Description                                                                                                                                                | Default       | Required | Advanced |
+|-----------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|----------|----------|
+| model           | text    | The model to be used for the responses.                                                                                                                    | gpt-3.5-turbo | no       | no       |
+| temperature     | decimal | A value between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. | 0.5           | no       | no       |
+| systemMessage   | text    | The system message helps set the behavior of the assistant.                                                                                                | N/A           | no       | no       |
+| maxTokens       | decimal | The maximum number of tokens to generate in the completion.                                                                                                | 500           | no       | yes      |
 
 
 ## Full Example
