@@ -4,6 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/binding.mielecloud.name</name>
-	<description>@text/binding.mielecloud.description</description>
+	<name>@text/addon.mielecloud.name</name>
+	<description>@text/addon.mielecloud.description</description>
+	<connection>cloud</connection>
+
 </addon:addon>

@@ -58,9 +58,9 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
 
         buildChannel(SWITCH_CHANNEL_ID, value, channelConfiguration.getName(),
                 componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                                channelConfiguration.getQos())
-                        .build();
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
+                .build();
     }
 }

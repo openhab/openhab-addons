@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Epson Projector Binding</name>
 	<description>This binding is compatible with Epson projectors which support the ESC/VP21 protocol</description>
+	<connection>local</connection>
 
 </addon:addon>

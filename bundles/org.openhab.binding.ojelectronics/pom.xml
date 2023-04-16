@@ -13,4 +13,21 @@
   <artifactId>org.openhab.binding.ojelectronics</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: OJElectronics Binding</name>
+
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/com.github.signalr4j/signalr4j -->
+    <dependency>
+      <groupId>com.github.signalr4j</groupId>
+      <artifactId>signalr4j</artifactId>
+      <version>2.0.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket -->
+    <dependency>
+      <groupId>org.java-websocket</groupId>
+      <artifactId>Java-WebSocket</artifactId>
+      <version>1.5.3</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>

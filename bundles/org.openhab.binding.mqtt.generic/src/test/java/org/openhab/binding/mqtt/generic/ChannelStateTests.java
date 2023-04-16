@@ -53,6 +53,7 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.Command;
 
 /**
  * Tests the {@link ChannelState} class.
@@ -234,8 +235,8 @@ public class ChannelStateTests {
 
         c.processMessage("state", "INCREASE".getBytes());
         assertThat(value.getChannelState().toString(), is("55"));
-        assertThat(value.getMQTTpublishValue(null), is("10"));
-        assertThat(value.getMQTTpublishValue("%03.0f"), is("010"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("10"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%03.0f"), is("010"));
     }
 
     @Test
@@ -246,23 +247,23 @@ public class ChannelStateTests {
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue(null), is("25,25,25"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("25,25,25"));
 
         c.processMessage("state", "FOFF".getBytes()); // Custom off state
         assertThat(value.getChannelState().toString(), is("0,0,0"));
-        assertThat(value.getMQTTpublishValue(null), is("0,0,0"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0,0,0"));
 
         c.processMessage("state", "10".getBytes()); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue(null), is("25,25,25"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("25,25,25"));
 
         HSBType t = HSBType.fromRGB(12, 18, 231);
 
         c.processMessage("state", "12,18,231".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
         // rgb -> hsv -> rgb is quite lossy
-        assertThat(value.getMQTTpublishValue(null), is("13,20,229"));
-        assertThat(value.getMQTTpublishValue("%3$d,%2$d,%1$d"), is("229,20,13"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("11,18,232"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$d,%2$d,%1$d"), is("232,18,11"));
     }
 
     @Test
@@ -273,19 +274,19 @@ public class ChannelStateTests {
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue(null), is("0,0,10"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0,0,10"));
 
         c.processMessage("state", "FOFF".getBytes()); // Custom off state
         assertThat(value.getChannelState().toString(), is("0,0,0"));
-        assertThat(value.getMQTTpublishValue(null), is("0,0,0"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0,0,0"));
 
         c.processMessage("state", "10".getBytes()); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue(null), is("0,0,10"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0,0,10"));
 
         c.processMessage("state", "12,18,100".getBytes());
         assertThat(value.getChannelState().toString(), is("12,18,100"));
-        assertThat(value.getMQTTpublishValue(null), is("12,18,100"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("12,18,100"));
     }
 
     @Test
@@ -296,22 +297,23 @@ public class ChannelStateTests {
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue(null), is("0.312716,0.329002,10.00"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.322700,0.329000,10.00"));
 
         c.processMessage("state", "FOFF".getBytes()); // Custom off state
         assertThat(value.getChannelState().toString(), is("0,0,0"));
-        assertThat(value.getMQTTpublishValue(null), is("0.312716,0.329002,0.00"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.000000,0.000000,0.00"));
 
         c.processMessage("state", "10".getBytes()); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue(null), is("0.312716,0.329002,10.00"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.322700,0.329000,10.00"));
 
         HSBType t = HSBType.fromXY(0.3f, 0.6f);
 
         c.processMessage("state", "0.3,0.6,100".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
-        assertThat(value.getMQTTpublishValue(null), is("0.300000,0.600000,100.00"));
-        assertThat(value.getMQTTpublishValue("%3$.1f,%2$.4f,%1$.4f"), is("100.0,0.6000,0.3000"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.298700,0.601500,100.00"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$.1f,%2$.4f,%1$.4f"),
+                is("100.0,0.6015,0.2987"));
     }
 
     @Test
@@ -322,7 +324,7 @@ public class ChannelStateTests {
 
         c.processMessage("state", "46.833974, 7.108433".getBytes());
         assertThat(value.getChannelState().toString(), is("46.833974,7.108433"));
-        assertThat(value.getMQTTpublishValue(null), is("46.833974,7.108433"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("46.833974,7.108433"));
     }
 
     @Test
@@ -339,7 +341,7 @@ public class ChannelStateTests {
         String channelState = value.getChannelState().toString();
         assertTrue(channelState.startsWith(datetime),
                 "Expected '" + channelState + "' to start with '" + datetime + "'");
-        assertThat(value.getMQTTpublishValue(null), is(datetime));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is(datetime));
     }
 
     @Test

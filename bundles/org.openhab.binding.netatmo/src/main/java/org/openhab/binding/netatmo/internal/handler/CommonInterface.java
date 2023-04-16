@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
@@ -32,6 +33,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -107,7 +109,11 @@ public interface CommonInterface {
     }
 
     default String getId() {
-        return (String) getThing().getConfiguration().get(NAThingConfiguration.ID);
+        return getConfiguration().as(NAThingConfiguration.class).getId();
+    }
+
+    default Configuration getConfiguration() {
+        return getThing().getConfiguration();
     }
 
     default Stream<Channel> getActiveChannels() {
@@ -115,13 +121,12 @@ public interface CommonInterface {
                 .filter(channel -> ChannelKind.STATE.equals(channel.getKind()) && isLinked(channel.getUID()));
     }
 
-    default Optional<CommonInterface> getHomeHandler() {
-        CommonInterface bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            return bridgeHandler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(bridgeHandler)
-                    : Optional.empty();
+    default Optional<CommonInterface> recurseUpToHomeHandler(@Nullable CommonInterface handler) {
+        if (handler == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return handler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(handler)
+                : recurseUpToHomeHandler(handler.getBridgeHandler());
     }
 
     default List<CommonInterface> getActiveChildren() {
@@ -135,8 +140,13 @@ public interface CommonInterface {
         return List.of();
     }
 
+    default Stream<CommonInterface> getActiveChildren(FeatureArea area) {
+        return getActiveChildren().stream().filter(child -> child.getModuleType().feature == area);
+    }
+
     default <T extends RestCapability<?>> Optional<T> getHomeCapability(Class<T> clazz) {
-        return getHomeHandler().map(handler -> handler.getCapabilities().get(clazz)).orElse(Optional.empty());
+        return recurseUpToHomeHandler(this).map(handler -> handler.getCapabilities().get(clazz))
+                .orElse(Optional.empty());
     }
 
     default void setNewData(NAObject newData) {
@@ -197,7 +207,6 @@ public interface CommonInterface {
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
             setRefreshCapability();
-            getCapabilities().values().forEach(cap -> cap.initialize());
             getScheduler().schedule(() -> {
                 CommonInterface bridgeHandler = getBridgeHandler();
                 if (bridgeHandler != null) {
@@ -207,9 +216,12 @@ public interface CommonInterface {
         }
     }
 
+    default ModuleType getModuleType() {
+        return ModuleType.from(getThing().getThingTypeUID());
+    }
+
     default void setRefreshCapability() {
-        ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
-        if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
+        if (ModuleType.ACCOUNT.equals(getModuleType().getBridge())) {
             NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
             getCapabilities().put(new RefreshCapability(this, getScheduler(), config.refreshInterval));
         }

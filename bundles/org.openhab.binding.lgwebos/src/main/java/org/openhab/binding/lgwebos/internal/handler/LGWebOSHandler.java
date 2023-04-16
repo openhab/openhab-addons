@@ -135,7 +135,7 @@ public class LGWebOSHandler extends BaseThingHandler
             return;
         }
 
-        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getPort(), scheduler);
+        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getUseTLS(), scheduler);
         s.setListener(this);
         socket = s;
 

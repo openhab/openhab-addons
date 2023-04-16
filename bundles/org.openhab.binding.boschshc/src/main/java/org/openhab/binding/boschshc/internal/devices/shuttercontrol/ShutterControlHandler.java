@@ -28,10 +28,12 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Control of your shutter to take any position you desire.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
@@ -48,6 +50,8 @@ public class ShutterControlHandler extends BoschSHCDeviceHandler {
             return (100 - openPercentage) / 100.0;
         }
     }
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ShutterControlService shutterControlService;
 

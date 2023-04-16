@@ -5,10 +5,6 @@ The metrics service provides:
 * an additional REST endpoint to retrieve openHAB core metrics from. This can be used as scrape target for pull-based monitoring systems like [Prometheus](https://prometheus.io/).
 * optionally configurable services to export openHAB core metrics to push-based monitoring systems like [InfluxDB](https://www.influxdata.com/).
 
-## Precondition
-
-The openHAB core metrics must be available (at least OH version 3.1).
-
 ## Provided metrics
 
 Currently the following metrics are provided: 

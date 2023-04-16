@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>com.sun.nio.*;resolution:=optional,com.sun.security.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.bouncycastle.*;resolution:=optional,org.joda.*;resolution:=optional,sun.management.*;resolution:=optional,sun.nio.*;resolution:=optional,jakarta.annotation;resolution:=optional</bnd.importpackage>
-    <jruby.version>9.3.9.0</jruby.version>
+    <jruby.version>9.4.2.0</jruby.version>
   </properties>
 
   <dependencies>

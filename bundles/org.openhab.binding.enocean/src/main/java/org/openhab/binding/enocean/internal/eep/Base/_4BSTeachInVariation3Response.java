@@ -14,6 +14,7 @@ package org.openhab.binding.enocean.internal.eep.Base;
 
 import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 
@@ -21,6 +22,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
  *
  * @author Dominik Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public class _4BSTeachInVariation3Response extends _4BSMessage {
 
     public _4BSTeachInVariation3Response(ERP1Message packet, boolean teachIn) {

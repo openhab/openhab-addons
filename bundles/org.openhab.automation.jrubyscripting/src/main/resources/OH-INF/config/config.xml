@@ -14,18 +14,28 @@
 		<parameter-group name="environment">
 			<label>Ruby Environment</label>
 			<description>This group defines Ruby's environment.</description>
+			<advanced>true</advanced>
 		</parameter-group>
 
 		<parameter-group name="system">
 			<label>System Properties</label>
 			<description>This group defines JRuby system properties.</description>
+			<advanced>true</advanced>
 		</parameter-group>
 
 		<parameter name="gems" type="text" required="false" groupName="gems">
 			<label>Ruby Gems</label>
 			<description><![CDATA[A comma separated list of Ruby Gems to install. Versions may be constrained by separating with an
-			    <tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>4.0</tt>".
+			    <tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>5.0.0</tt>".
 				]]></description>
+			<default>openhab-scripting=~>5.0.0</default>
+		</parameter>
+
+		<parameter name="require" type="text" required="false" groupName="gems">
+			<label>Require Scripts</label>
+			<description>A comma separated list of script names to be required by the JRuby Scripting Engine before running user
+				scripts.</description>
+			<default>openhab/dsl</default>
 		</parameter>
 
 		<parameter name="check_update" type="boolean" required="true" groupName="gems">
@@ -33,17 +43,8 @@
 			<description>Check RubyGems for updates to the above gems when OpenHAB starts or JRuby settings are changed.
 				Otherwise it will try to fulfill the requirements with locally installed gems, and you can manage them yourself with
 				an external Ruby by setting the same GEM_HOME.</description>
-			<options>
-				<option value="true">Check For Updates</option>
-				<option value="false">Do Not Check For Updates</option>
-			</options>
 			<default>true</default>
-		</parameter>
-
-		<parameter name="require" type="text" required="false" groupName="gems">
-			<label>Require Scripts</label>
-			<description>A comma separated list of script names to be required by the JRuby Scripting Engine before running user
-				scripts.</description>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="gem_home" type="text" required="false" groupName="environment">
@@ -53,12 +54,23 @@
 				a new directory when the addon is updated with a new version of JRuby.
 				Defaults to "<tt>OPENHAB_CONF/automation/ruby/.gem/{RUBY_ENGINE_VERSION}</tt>" when not specified.
 				]]></description>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="rubylib" type="text" required="false" groupName="environment">
 			<label>RUBYLIB</label>
 			<description><![CDATA[Search path for user libraries. Separate each path with a colon (semicolon in Windows). Defaults to
 				"<tt>OPENHAB_CONF/automation/ruby/lib</tt>" when not specified.]]></description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="dependency_tracking" type="boolean" required="true" groupName="environment">
+			<label>Enable Dependency Tracking</label>
+			<description>Dependency tracking allows your scripts to automatically reload when one of its dependencies is updated.
+				You may want to disable dependency tracking if you plan on editing or updating a shared library, but don't want all
+				your scripts to reload until you can test it.</description>
+			<default>true</default>
+			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="local_context" type="text" required="false" groupName="system">
@@ -89,7 +101,6 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-
 
 	</config-description>
 </config-description:config-descriptions>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="speedtest"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="speedtest">
+		<label>Speedtest Binding</label>
+		<description>Binding for Ookla Speedtest (https://www.speedtest.net/)</description>
+		<channels>
+			<channel id="server" typeId="server"/>
+
+			<channel id="pingJitter" typeId="pingJitter"/>
+			<channel id="pingLatency" typeId="pingLatency"/>
+
+			<channel id="downloadBandwidth" typeId="downloadBandwidth"/>
+			<channel id="downloadBytes" typeId="downloadBytes"/>
+			<channel id="downloadElapsed" typeId="downloadElapsed"/>
+
+			<channel id="uploadBandwidth" typeId="uploadBandwidth"/>
+			<channel id="uploadBytes" typeId="uploadBytes"/>
+			<channel id="uploadElapsed" typeId="uploadElapsed"/>
+
+			<channel id="isp" typeId="isp"/>
+
+			<channel id="interfaceInternalIp" typeId="interfaceInternalIp"/>
+			<channel id="interfaceExternalIp" typeId="interfaceExternalIp"/>
+
+			<channel id="resultUrl" typeId="resultUrl"/>
+
+			<channel id="triggerTest" typeId="triggerTest"/>
+		</channels>
+		<properties>
+			<property name="Server List 1"></property>
+			<property name="Server List 2"></property>
+			<property name="Server List 3"></property>
+			<property name="Server List 4"></property>
+			<property name="Server List 5"></property>
+			<property name="Server List 6"></property>
+			<property name="Server List 7"></property>
+			<property name="Server List 8"></property>
+			<property name="Server List 9"></property>
+			<property name="Server List 10"></property>
+		</properties>
+		<config-description>
+			<parameter-group name="config-info">
+				<label>Speedtest Configuration</label>
+			</parameter-group>
+			<parameter name="refreshInterval" type="integer" required="true" groupName="config-info">
+				<label>Refresh Interval</label>
+				<description>How often to test network speed</description>
+				<options>
+					<option value="15">15 minutes</option>
+					<option value="30">30 minutes</option>
+					<option value="60">Every Hour</option>
+					<option value="360">Every 6 Hours</option>
+					<option value="720">Every 12 Hours</option>
+					<option value="1440">Once a Day</option>
+					<option value="0">Don't test automatically</option>
+				</options>
+				<default>60</default>
+			</parameter>
+			<parameter name="execPath" type="text" required="false" groupName="config-info">
+				<label>Executable Path</label>
+				<description>The path of the Ookla Speedtest executable. Linux machines may leave this blank and it defaults to
+					`/usr/bin/speedtest`.</description>
+			</parameter>
+			<parameter name="serverID" type="text" required="false" groupName="config-info">
+				<label>Server ID</label>
+				<description>Optional: A specific server that shall be used for testing. You can pick the server ID from the "Thing
+					Properties". If this is left blank the best option will be selected by Ookla.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="server">
+		<item-type>String</item-type>
+		<label>Server</label>
+		<description>The remote server that the Speedtest was run against</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pingJitter" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Ping Jitter</label>
+		<description>Ping Jitter - the variation in the response time</description>
+		<state readOnly="true" pattern="%.2f ms"></state>
+	</channel-type>
+	<channel-type id="pingLatency">
+		<item-type>Number:Time</item-type>
+		<label>Ping Latency</label>
+		<description>Ping Latency - the reaction time of your internet connection</description>
+		<state readOnly="true" pattern="%.2f ms"></state>
+	</channel-type>
+	<channel-type id="downloadBandwidth">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Download Bandwidth</label>
+		<description>Download bandwidth, e.g. in Mbit/s</description>
+		<state readOnly="true" pattern="%.2f Mbit/s"></state>
+	</channel-type>
+	<channel-type id="downloadBytes" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Downloaded Bytes</label>
+		<description>Amount of data that was used for the last upload bandwidth test</description>
+		<state readOnly="true" pattern="%.0f MB"></state>
+	</channel-type>
+	<channel-type id="downloadElapsed" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Download Elapsed Time</label>
+		<description>Time spent for the last download bandwidth test</description>
+		<state readOnly="true" pattern="%.2f s"></state>
+	</channel-type>
+	<channel-type id="uploadBandwidth">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Upload Bandwidth</label>
+		<description>Upload bandwidth, e.g. in Mbit/s</description>
+		<state readOnly="true" pattern="%.2f Mbit/s"></state>
+	</channel-type>
+	<channel-type id="uploadBytes" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Uploaded Bytes</label>
+		<description>Amount of data that was used for the last upload bandwidth test</description>
+		<state readOnly="true" pattern="%.0f MB"></state>
+	</channel-type>
+	<channel-type id="uploadElapsed" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Upload Elapsed Time</label>
+		<description>Time spent for the last upload bandwidth test</description>
+		<state readOnly="true" pattern="%.2f s"></state>
+	</channel-type>
+	<channel-type id="isp">
+		<item-type>String</item-type>
+		<label>ISP</label>
+		<description>Your Internet Service Provider (ISP) as calculated by Ookla</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="interfaceInternalIp" advanced="true">
+		<item-type>String</item-type>
+		<label>Interface Internal IP</label>
+		<description>IP address of the internal interface that was used for the test</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="interfaceExternalIp" advanced="true">
+		<item-type>String</item-type>
+		<label>Interface External IP</label>
+		<description>IP address of the external interface that was used for the test</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="resultUrl">
+		<item-type>String</item-type>
+		<label>Result URL</label>
+		<description>The URL to the Speedtest results in HTML on the Ookla webserver</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="triggerTest" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Trigger Test</label>
+		<description>Trigger in order to run Speedtest manually</description>
+	</channel-type>
+</thing:thing-descriptions>

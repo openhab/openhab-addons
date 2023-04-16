@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/binding.velux.name</name>
-	<description>@text/binding.velux.description</description>
-
+	<name>@text/addon.velux.name</name>
+	<description>@text/addon.velux.description</description>
+	<connection>local</connection>
 
 </addon:addon>

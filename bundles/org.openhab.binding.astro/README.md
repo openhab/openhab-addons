@@ -130,6 +130,12 @@ OR
 
 sunset is 22:10 but `latest` is set to 20:00 so the event/datetime value is moved 20:00.
 
+**Force event:** For each trigger channel and `start`, `end` datetime value, you can force the `earliest`, `latest` time of the day, when the event is actually not taking place (e.g. astronomic dawn during summer in Sweden)
+e.g `sun#astroDawn earliest=6:00, latest=20:00 forceEvent=true`
+
+astronomic dawn start is null but `earliest` is set to 06:00 so the event/datetime value is set to 06:00.
+
+
 ## Full Example
 
 Things:
@@ -257,6 +263,16 @@ Example :
  val azimuth = sunActions.getAzimuth(sunEventTime)
  val elevation = sunActions.getElevation(sunEventTime)
  logInfo("AstroActions", "{} will be positioned at elevation {} - azimuth {}",sunEvent, elevation.toString,azimuth.toString)
+```
+
+### getTotalRadiation(timeStamp)
+
+Retrieves the total radiation (QuantityType<Intensity>) of the sun at the requested instant.
+Thing method only applies to Sun thing type.
+
+```java
+ val totalRadiation = sunActions.getTotalRadiation(ZonedDateTime.now)
+ logInfo("AstroActions", "Currently, the total sun radiation is {}", totalRadiation.toString)
 ```
 
 ## Tips

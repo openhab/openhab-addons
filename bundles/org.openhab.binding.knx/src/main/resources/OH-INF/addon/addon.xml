@@ -6,5 +6,14 @@
 	<type>binding</type>
 	<name>KNX Binding</name>
 	<description>This binding supports connecting to a KNX bus</description>
+	<connection>local</connection>
+
+	<config-description>
+		<parameter name="disableUoM" type="boolean">
+			<default>false</default>
+			<label>Disable UoM</label>
+			<description>This disables Units of Measurement support for incoming values.</description>
+		</parameter>
+	</config-description>
 
 </addon:addon>

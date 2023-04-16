@@ -65,14 +65,14 @@
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>relative humidity (0-100%)</description>
-		<state readOnly="true" pattern="%d %%"/>
+		<description>Relative humidity (0-100%)</description>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="humidityconf">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>relative humidity (0-100%)</description>
-		<state readOnly="true" pattern="%d %%"/>
+		<description>Relative humidity (0-100%)</description>
+		<state readOnly="true" pattern="%.0f %%"/>
 		<config-description>
 			<parameter name="humiditytype" type="text" required="false">
 				<label>Humidity Sensor-Type</label>

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Public Transport Switzerland Binding</name>
 	<description>Connects to the "Swiss public transport API" to provide real-time public transport information.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

@@ -51,7 +51,7 @@ public class ComponentFactory {
             Gson gson, TransformationServiceProvider transformationServiceProvider) throws ConfigurationException {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
                 channelConfigurationJSON, gson, updateListener, tracker, scheduler)
-                        .transformationProvider(transformationServiceProvider);
+                .transformationProvider(transformationServiceProvider);
         switch (haID.component) {
             case "alarm_control_panel":
                 return new AlarmControlPanel(componentConfiguration);
@@ -65,6 +65,8 @@ public class ComponentFactory {
                 return new Fan(componentConfiguration);
             case "climate":
                 return new Climate(componentConfiguration);
+            case "device_automation":
+                return new DeviceTrigger(componentConfiguration);
             case "light":
                 return Light.create(componentConfiguration);
             case "lock":

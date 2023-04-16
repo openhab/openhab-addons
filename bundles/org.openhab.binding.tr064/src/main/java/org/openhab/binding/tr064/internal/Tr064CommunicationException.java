@@ -37,7 +37,7 @@ public class Tr064CommunicationException extends Exception {
         super(s);
         this.httpError = httpError;
         this.soapError = soapError;
-    };
+    }
 
     public String getSoapError() {
         return soapError;
