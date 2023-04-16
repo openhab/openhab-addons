@@ -17,8 +17,10 @@ import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstan
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,7 @@ import org.openhab.binding.boschindego.internal.DeviceStatus;
 import org.openhab.binding.boschindego.internal.IndegoDeviceController;
 import org.openhab.binding.boschindego.internal.config.BoschIndegoConfiguration;
 import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
+import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
@@ -75,6 +78,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private static final String MAP_POSITION_STROKE_COLOR = "#8c8b6d";
     private static final String MAP_POSITION_FILL_COLOR = "#fff701";
     private static final int MAP_POSITION_RADIUS = 10;
+    private static final Duration DEVICE_PROPERTIES_VALIDITY_PERIOD = Duration.ofDays(1);
 
     private static final Duration MAP_REFRESH_INTERVAL = Duration.ofDays(1);
     private static final Duration OPERATING_DATA_INACTIVE_REFRESH_INTERVAL = Duration.ofHours(6);
@@ -87,6 +91,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final BoschIndegoTranslationProvider translationProvider;
     private final TimeZoneProvider timeZoneProvider;
+    private Instant devicePropertiesUpdated = Instant.MIN;
 
     private @NonNullByDefault({}) OAuthClientService oAuthClientService;
     private @NonNullByDefault({}) IndegoDeviceController controller;
@@ -133,7 +138,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
             return;
         }
 
-        this.updateProperty(Thing.PROPERTY_SERIAL_NUMBER, config.serialNumber);
+        devicePropertiesUpdated = Instant.MIN;
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, config.serialNumber);
 
         controller = new IndegoDeviceController(httpClient, oAuthClientService, config.serialNumber);
 
@@ -306,6 +312,10 @@ public class BoschIndegoHandler extends BaseThingHandler {
         DeviceStatus deviceStatus = DeviceStatus.fromCode(state.state);
         updateState(state);
 
+        if (devicePropertiesUpdated.isBefore(Instant.now().minus(DEVICE_PROPERTIES_VALIDITY_PERIOD))) {
+            refreshDeviceProperties();
+        }
+
         // Update map and start tracking positions if mower is active.
         if (state.mapUpdateAvailable) {
             cachedMapTimestamp = Instant.MIN;
@@ -346,6 +356,24 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
 
         rescheduleStatePollAccordingToState(deviceStatus);
+    }
+
+    private void refreshDeviceProperties() throws IndegoAuthenticationException, IndegoException {
+        DevicePropertiesResponse deviceProperties = controller.getDeviceProperties();
+        Map<String, String> properties = editProperties();
+        if (deviceProperties.firmwareVersion != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, deviceProperties.firmwareVersion);
+        }
+        if (deviceProperties.bareToolNumber != null) {
+            properties.put(PROPERTY_BARE_TOOL_NUMBER, deviceProperties.bareToolNumber);
+        }
+        properties.put(PROPERTY_SERVICE_COUNTER, String.valueOf(deviceProperties.serviceCounter));
+        properties.put(PROPERTY_NEEDS_SERVICE, String.valueOf(deviceProperties.needsService));
+        properties.put(PROPERTY_RENEW_DATE,
+                LocalDateTime.ofInstant(deviceProperties.renewDate, timeZoneProvider.getTimeZone()).toString());
+
+        updateProperties(properties);
+        devicePropertiesUpdated = Instant.now();
     }
 
     private void rescheduleStatePollAccordingToState(DeviceStatus deviceStatus) {

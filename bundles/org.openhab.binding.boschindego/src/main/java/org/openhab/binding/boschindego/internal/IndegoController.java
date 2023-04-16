@@ -15,6 +15,7 @@ package org.openhab.binding.boschindego.internal;
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +34,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.boschindego.internal.dto.response.ErrorResponse;
 import org.openhab.binding.boschindego.internal.dto.response.Mower;
+import org.openhab.binding.boschindego.internal.dto.serialization.InstantDeserializer;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
@@ -48,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 /**
@@ -62,11 +65,10 @@ public class IndegoController {
 
     private static final String BASE_URL = "https://api.indego-cloud.iot.bosch-si.com/api/v1/";
     private static final String CONTENT_TYPE_HEADER = "application/json";
-
     private static final String BEARER = "Bearer ";
 
     private final Logger logger = LoggerFactory.getLogger(IndegoController.class);
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer()).create();
     private final HttpClient httpClient;
     private final OAuthClientService oAuthClientService;
     private final String userAgent;
