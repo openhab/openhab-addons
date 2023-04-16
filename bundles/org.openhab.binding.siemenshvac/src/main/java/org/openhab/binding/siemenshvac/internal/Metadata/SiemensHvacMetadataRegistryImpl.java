@@ -380,8 +380,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         if (channelType != null) {
                                             ChannelDefinition channelDef = new ChannelDefinitionBuilder(id,
                                                     channelType.getUID()).withLabel(dataPoint.getShortDesc())
-                                                            .withDescription(dataPoint.getLongDesc())
-                                                            .withProperties(props).build();
+                                                    .withDescription(dataPoint.getLongDesc()).withProperties(props)
+                                                    .build();
 
                                             channelDefinitions.add(channelDef);
                                         }
