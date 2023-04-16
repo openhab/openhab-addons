@@ -73,7 +73,7 @@ public class AsuswrtInterface extends BaseThingHandler {
         Configuration config = getThing().getConfiguration();
         if (config.containsKey(PROPERTY_INTERFACE_NAME)) {
             this.ifName = config.get(PROPERTY_INTERFACE_NAME).toString();
-            updateProperty(NETWORK_REPRASENTATION_PROPERTY, ifName);
+            updateProperty(NETWORK_REPRESENTATION_PROPERTY, ifName);
             updateChannels();
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -109,8 +109,6 @@ public class AsuswrtInterface extends BaseThingHandler {
 
     /**
      * Update Network Channels
-     * 
-     * @param deviceInfo
      */
     private void updateInterfaceChannels(AsuswrtIpInfo interfaceInfo) {
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_MAC), getStringType(interfaceInfo.getMAC()));
@@ -130,8 +128,6 @@ public class AsuswrtInterface extends BaseThingHandler {
 
     /**
      * Update Traffic Channels
-     * 
-     * @param traffic
      */
     private void updateTrafficChannels(AsuswrtTraffic traffic) {
         updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_CURRENT_RX),
@@ -150,8 +146,6 @@ public class AsuswrtInterface extends BaseThingHandler {
 
     /**
      * fire events when new informations changed
-     * 
-     * @param clientInfo
      */
     public void fireEvents(AsuswrtIpInfo interfaceInfo) {
         Boolean isConnected = interfaceInfo.isConnected();

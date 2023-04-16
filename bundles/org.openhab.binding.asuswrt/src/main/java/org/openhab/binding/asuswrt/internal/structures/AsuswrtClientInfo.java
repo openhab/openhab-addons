@@ -72,48 +72,46 @@ public class AsuswrtClientInfo {
      * @param jsonObject with clientinfo
      */
     public AsuswrtClientInfo(JsonObject jsonObject) {
-        this.traffic = new AsuswrtTraffic(INTERFACE_CLIENT);
+        traffic = new AsuswrtTraffic(INTERFACE_CLIENT);
         setData(jsonObject);
     }
 
     /**
      * SET DATA
      * from jsonData
-     * 
-     * @param jsonObject
      */
     public void setData(JsonObject jsonObject) {
         this.traffic.setData(jsonObject);
-        this.defaultType = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_DEFTYPE, this.defaultType);
-        this.dpiDevice = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPIDEVICE, this.dpiDevice);
-        this.dpiType = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPITYPE, this.dpiType);
-        this.from = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IPFROM, this.from);
-        this.group = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_GROUP, this.group);
-        this.internetMode = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_INETMODE, this.internetMode);
-        this.internetState = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_INETSTATE, this.internetState);
-        this.ip = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IP, this.ip);
-        this.ipMethod = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IPMETHOD, this.ipMethod);
-        this.isGateway = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_IPGATEWAY, this.isGateway);
-        this.isGN = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_GN, this.isGN);
-        this.isITunes = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_ITUNES, this.isITunes);
-        this.isLogin = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_LOGIN, this.isLogin);
-        this.isOnline = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_ONLINE, this.isOnline);
-        this.isPrinter = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_PRINTER, this.isPrinter);
-        this.isWebServer = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_WEBSRV, this.isWebServer);
-        this.isWL = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WIFI, this.isWL);
-        this.keeparp = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_KEEPARP, this.keeparp);
-        this.mac = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_MAC, this.mac);
-        this.macRepeat = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_MACREPEAT, this.macRepeat);
-        this.name = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NAME, this.name);
-        this.nickName = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NICK, this.nickName);
-        this.opMode = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_MODE, this.opMode);
-        this.qosLevel = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_QOSLVL, this.qosLevel);
-        this.rog = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_ROG, this.rog);
-        this.rssi = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RSSI, this.rssi);
-        this.ssid = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_SSID, this.ssid);
-        this.vendor = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_VENDOR, this.vendor);
-        this.wlConnectTime = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_CONNECTTIME, this.wlConnectTime);
-        this.wtfast = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WTFAST, this.wtfast);
+        this.defaultType = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_DEFTYPE, defaultType);
+        this.dpiDevice = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPIDEVICE, dpiDevice);
+        this.dpiType = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPITYPE, dpiType);
+        this.from = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IPFROM, from);
+        this.group = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_GROUP, group);
+        this.internetMode = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_INETMODE, internetMode);
+        this.internetState = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_INETSTATE, internetState);
+        this.ip = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IP, ip);
+        this.ipMethod = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IPMETHOD, ipMethod);
+        this.isGateway = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_IPGATEWAY, isGateway);
+        this.isGN = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_GN, isGN);
+        this.isITunes = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_ITUNES, isITunes);
+        this.isLogin = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_LOGIN, isLogin);
+        this.isOnline = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_ONLINE, isOnline);
+        this.isPrinter = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_PRINTER, isPrinter);
+        this.isWebServer = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_WEBSRV, isWebServer);
+        this.isWL = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WIFI, isWL);
+        this.keeparp = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_KEEPARP, keeparp);
+        this.mac = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_MAC, mac);
+        this.macRepeat = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_MACREPEAT, macRepeat);
+        this.name = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NAME, name);
+        this.nickName = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NICK, nickName);
+        this.opMode = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_MODE, opMode);
+        this.qosLevel = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_QOSLVL, qosLevel);
+        this.rog = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_ROG, rog);
+        this.rssi = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RSSI, rssi);
+        this.ssid = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_SSID, ssid);
+        this.vendor = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_VENDOR, vendor);
+        this.wlConnectTime = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_CONNECTTIME, wlConnectTime);
+        this.wtfast = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WTFAST, wtfast);
     }
 
     /***********************************
@@ -123,130 +121,130 @@ public class AsuswrtClientInfo {
      ************************************/
 
     public AsuswrtTraffic getTraffic() {
-        return this.traffic;
+        return traffic;
     }
 
     public Integer getDefaultType() {
-        return this.defaultType;
+        return defaultType;
     }
 
     public String getDpiDevice() {
-        return this.dpiDevice;
+        return dpiDevice;
     }
 
     public String getDpiType() {
-        return this.dpiType;
+        return dpiType;
     }
 
     public String getIpFrom() {
-        return this.from;
+        return from;
     }
 
     public String getGroup() {
-        return this.group;
+        return group;
     }
 
     public String getInternetMode() {
-        return this.internetMode;
+        return internetMode;
     }
 
     public Boolean getInternetState() {
-        return this.internetState;
+        return internetState;
     }
 
     public String getIP() {
-        return this.ip;
+        return ip;
     }
 
     public String getIpMethod() {
-        return this.ipMethod;
+        return ipMethod;
     }
 
     public Boolean isGateway() {
-        return this.isGateway;
+        return isGateway;
     }
 
     public Boolean isGN() {
-        return this.isGN;
+        return isGN;
     }
 
     public Boolean isITunes() {
-        return this.isITunes;
+        return isITunes;
     }
 
     public Boolean isLogin() {
-        return this.isLogin;
+        return isLogin;
     }
 
     public Boolean isOnline() {
-        return this.isOnline;
+        return isOnline;
     }
 
     public Boolean isPrinter() {
-        return this.isPrinter;
+        return isPrinter;
     }
 
     public Boolean isWebServer() {
-        return this.isWebServer;
+        return isWebServer;
     }
 
     public Integer isWL() {
-        return this.isWL;
+        return isWL;
     }
 
     public Boolean isWiFiConnected() {
-        return this.isWL > 0;
+        return isWL > 0;
     }
 
     public String getKeepArp() {
-        return this.keeparp;
+        return keeparp;
     }
 
     public String getMac() {
-        return this.mac;
+        return mac;
     }
 
     public Boolean getMacRepeat() {
-        return this.macRepeat;
+        return macRepeat;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public String getNickName() {
-        return this.nickName;
+        return nickName;
     }
 
     public Integer getOpMode() {
-        return this.opMode;
+        return opMode;
     }
 
     public String getQosLevel() {
-        return this.qosLevel;
+        return qosLevel;
     }
 
     public Integer getROG() {
-        return this.rog;
+        return rog;
     }
 
     public Integer getRSSI() {
-        return this.rssi;
+        return rssi;
     }
 
     public String getSSID() {
-        return this.ssid;
+        return ssid;
     }
 
     public String getVendor() {
-        return this.vendor;
+        return vendor;
     }
 
     public String getWlanConnectTime() {
-        return this.wlConnectTime;
+        return wlConnectTime;
     }
 
     public Integer getWtFast() {
-        return this.wtfast;
+        return wtfast;
     }
 }

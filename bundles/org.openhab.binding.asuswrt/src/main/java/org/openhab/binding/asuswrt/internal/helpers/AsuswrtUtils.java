@@ -55,7 +55,7 @@ public class AsuswrtUtils {
      * @param value Integer
      * @param lowerLimit
      * @param upperLimit
-     * @return
+     * @return limited value
      */
     public static Integer limitVal(@Nullable Integer value, Integer lowerLimit, Integer upperLimit) {
         if (value == null || value < lowerLimit) {
@@ -75,7 +75,7 @@ public class AsuswrtUtils {
      * @param <T> Type of value
      * @param value value
      * @param defaultValue defaut value
-     * @return
+     * @return value or default
      */
     public static <T> T getValueOrDefault(@Nullable T value, T defaultValue) {
         return value == null ? defaultValue : value;
@@ -101,9 +101,6 @@ public class AsuswrtUtils {
 
     /**
      * unformat MAC-Address replace all division chars
-     * 
-     * @param mac
-     * @return
      */
     public static String unformatMac(String mac) {
         mac = mac.replace("-", "");
@@ -115,9 +112,6 @@ public class AsuswrtUtils {
 
     /**
      * check if isvalid MAC-Address
-     * 
-     * @param mac
-     * @return
      */
     public static boolean isValidMacAddress(String mac) {
         // MAC-Addresses usually are 6 * 2 hex nibbles separated by colons,
@@ -184,7 +178,7 @@ public class AsuswrtUtils {
      * 
      * @param s - string to get value
      * @param defVal - default if is blank or null
-     * @return
+     * @return - string or default val
      */
     public static String stringOrDefault(@Nullable String s, String defVal) {
         if (s == null || s.isEmpty() || s.isBlank()) {
@@ -198,9 +192,6 @@ public class AsuswrtUtils {
      ************************************/
     /**
      * Check if string is valid JSON-Format
-     * 
-     * @param json
-     * @return
      */
     public static boolean isValidJson(String json) {
         try {
@@ -213,6 +204,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * JSON Object to String
      * 
      * @param name parameter name
      * @param defVal - default value;
@@ -227,6 +219,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * JSON Object to String
      * 
      * @param name parameter name
      * @return string value
@@ -258,6 +251,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * JSON Object to Boolean
      * 
      * @param name parameter name
      * @return boolean value
@@ -267,6 +261,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * JSON Object to Integer
      * 
      * @param name parameter name
      * @param defVal - default value;
@@ -286,6 +281,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * JSON Object to Integer
      * 
      * @param name parameter name
      * @return integer value
@@ -295,6 +291,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * JSON Object to Number
      * 
      * @param name parameter name
      * @param defVal - default value;
@@ -309,6 +306,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * JSON Object to Number
      * 
      * @param name parameter name
      * @return number value
@@ -376,6 +374,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * JSON Object to PercentType
      * 
      * @param numVal value 0-100
      * @return PercentType

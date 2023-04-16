@@ -9,8 +9,8 @@
 		<label>Asuswrt Router</label>
 		<description>Router with asuswrt or asuswrt-merlin OS</description>
 		<channel-groups>
-			<channel-group id="sysInfo" typeId="sysInfoGroup"></channel-group>
-			<channel-group id="clientList" typeId="clientListGroup"></channel-group>
+			<channel-group id="sys-info" typeId="sys-info-group"></channel-group>
+			<channel-group id="client-list" typeId="client-list-group"></channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -57,31 +57,31 @@
 
 	<!-- ############################### CHANNEL-GROUPS ############################### -->
 	<!-- System Information -->
-	<channel-group-type id="sysInfoGroup">
+	<channel-group-type id="sys-info-group">
 		<label>System Info</label>
 		<description>System-Information about the device</description>
 		<channels>
-			<channel id="memTotal" typeId="usageDataType">
+			<channel id="mem-total" typeId="usage-data-type">
 				<label>Total Memory</label>
 				<description>Total Memory in MB</description>
 			</channel>
-			<channel id="memUsed" typeId="usageDataType">
+			<channel id="mem-used" typeId="usage-data-type">
 				<label>Used Memory</label>
 				<description>Used Memory in MB</description>
 			</channel>
-			<channel id="memFree" typeId="usageDataType">
+			<channel id="mem-free" typeId="usage-data-type">
 				<label>Free Memory</label>
 				<description>Free Memory in MB</description>
 			</channel>
-			<channel id="memFreePercent" typeId="usageTypePercent">
+			<channel id="mem-free-percent" typeId="usage-type-percent">
 				<label>Free Memory</label>
 				<description>Free Memory in %</description>
 			</channel>
-			<channel id="memUsedPercent" typeId="usageTypePercent">
+			<channel id="mem-used-percent" typeId="usage-type-percent">
 				<label>Used Memory</label>
 				<description>Used Memory in %</description>
 			</channel>
-			<channel id="cpuUsedPercent" typeId="usageTypePercent">
+			<channel id="cpu-used-percent" typeId="usage-type-percent">
 				<label>Total CPU Usage</label>
 				<description>Total CPU usage in percent over all cores</description>
 			</channel>
@@ -89,20 +89,20 @@
 	</channel-group-type>
 
 	<!--CLIENTS -->
-	<channel-group-type id="clientListGroup">
+	<channel-group-type id="client-list-group">
 		<label>Clients</label>
 		<description>Clients connected to router</description>
 		<channels>
-			<channel id="knownClients" typeId="clientsOnlineType">
+			<channel id="known-clients" typeId="clients-online-type">
 				<label>Known Clients</label>
 				<description>Known Clients with Name and MAC-Addresses</description>
 			</channel>
-			<channel id="onlineClients" typeId="clientsOnlineType">
+			<channel id="online-clients" typeId="clients-online-type">
 				<description>Online Clients with Name and MAC-Addresses</description>
 			</channel>
-			<channel id="onlineMACs" typeId="clientsOnlineMacType"></channel>
-			<channel id="onlineClientsCount" typeId="clientsOnlineCountType"></channel>
-			<channel id="clientOnlineEvent" typeId="clientOnlineEventType"></channel>
+			<channel id="online-macs" typeId="clients-online-mac-type"></channel>
+			<channel id="online-clients-count" typeId="clients-online-count-type"></channel>
+			<channel id="client-online-event" typeId="client-online-event-type"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

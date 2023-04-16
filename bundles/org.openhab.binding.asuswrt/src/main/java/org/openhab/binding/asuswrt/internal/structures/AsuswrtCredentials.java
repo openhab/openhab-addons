@@ -36,8 +36,6 @@ public class AsuswrtCredentials {
 
     /**
      * INIT CLASS
-     * 
-     * @param routerConfig
      */
     public AsuswrtCredentials(AsuswrtConfiguration routerConfig) {
         setCredentials(routerConfig.username, routerConfig.password);
@@ -45,9 +43,6 @@ public class AsuswrtCredentials {
 
     /**
      * INIT CLASS
-     * 
-     * @param username
-     * @param password
      */
     public AsuswrtCredentials(String username, String password) {
         setCredentials(username, password);
@@ -61,9 +56,6 @@ public class AsuswrtCredentials {
 
     /**
      * store credentials
-     * 
-     * @param username
-     * @param password
      */
     private void setCredentials(String username, String password) {
         this.username = username;
@@ -73,9 +65,6 @@ public class AsuswrtCredentials {
 
     /**
      * b64 encode string
-     * 
-     * @param string
-     * @return
      */
     private String b64encode(String string) {
         return Base64.getEncoder().encodeToString((string).getBytes());

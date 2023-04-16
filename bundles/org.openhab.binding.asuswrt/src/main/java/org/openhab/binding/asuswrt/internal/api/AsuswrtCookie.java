@@ -35,8 +35,6 @@ public class AsuswrtCookie {
 
     /**
      * Set new cookie
-     * 
-     * @param cookie
      */
     public void setCookie(String cookie) {
         this.cookie = cookie;
@@ -60,8 +58,6 @@ public class AsuswrtCookie {
 
     /**
      * check if cookie is set
-     * 
-     * @return
      */
     public Boolean cookieIsSet() {
         return !this.cookie.isBlank();
@@ -82,8 +78,6 @@ public class AsuswrtCookie {
 
     /**
      * Check if cookie is set and not expired
-     * 
-     * @return
      */
     public Boolean isValid() {
         return !cookieIsExpired() && cookieIsSet();

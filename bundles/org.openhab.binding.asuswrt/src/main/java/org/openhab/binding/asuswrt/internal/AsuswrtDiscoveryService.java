@@ -122,8 +122,6 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
     /**
      * Work with result from get interfaces from router
      * Create DiscoveryResult from interfaceList
-     * 
-     * @param ifList
      */
     public void handleInterfaceScan(AsuswrtInterfaceList ifList) {
         try {
@@ -132,15 +130,13 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception e) {
-            logger.debug("error handling scan results", e);
+            logger.debug("error handling scan reults", e);
         }
     }
 
     /**
      * Work with result from get clients from router
      * Create DiscoveryResult from clientList
-     * 
-     * @param deviceList
      */
     public void handleClientScan(AsuswrtClientList clientList) {
         try {
@@ -160,9 +156,6 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
      ************************************/
     /**
      * Create DiscoveryResult from single interfaceInfo
-     * 
-     * @param interfaceInfo
-     * @return
      */
     public DiscoveryResult createInterfaceResult(AsuswrtIpInfo interfaceInfo) {
         String ifName = interfaceInfo.getName();
@@ -170,7 +163,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
         String label = "AwrtInterface_" + ifName;
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put(NETWORK_REPRASENTATION_PROPERTY, ifName);
+        properties.put(NETWORK_REPRESENTATION_PROPERTY, ifName);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
 
         logger.debug("{} thing discovered: '{}", uid, label);
@@ -178,20 +171,17 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
             ThingUID bridgeUID = router.getUID();
             ThingUID thingUID = new ThingUID(THING_TYPE_INTERFACE, bridgeUID, ifName);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(NETWORK_REPRASENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
+                    .withRepresentationProperty(NETWORK_REPRESENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
                     .build();
         } else {
             ThingUID thingUID = new ThingUID(BINDING_ID, ifName);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(NETWORK_REPRASENTATION_PROPERTY).withLabel(label).build();
+                    .withRepresentationProperty(NETWORK_REPRESENTATION_PROPERTY).withLabel(label).build();
         }
     }
 
     /**
      * Create DiscoveryResult from single clientInfo
-     * 
-     * @param clientInfo
-     * @return
      */
     public DiscoveryResult createClientResult(AsuswrtClientInfo clientInfo) {
         String macAddress = clientInfo.getMac();
@@ -221,12 +211,12 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
             ThingUID bridgeUID = router.getUID();
             ThingUID thingUID = new ThingUID(THING_TYPE_CLIENT, bridgeUID, unformatedMac);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CLIENT_REPRASENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
+                    .withRepresentationProperty(CLIENT_REPRESENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
                     .withBridge(bridgeUID).withLabel(label).build();
         } else {
             ThingUID thingUID = new ThingUID(BINDING_ID, unformatedMac);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CLIENT_REPRASENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
+                    .withRepresentationProperty(CLIENT_REPRESENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
                     .withLabel(label).build();
         }
     }

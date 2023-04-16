@@ -49,8 +49,6 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
 
     /**
      * INIT CLASS
-     * 
-     * @param router router object
      */
     public AsuswrtConnector(AsuswrtRouter router) {
         super(router);
@@ -66,8 +64,6 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
 
     /**
      * Login to router
-     * 
-     * @return
      */
     public Boolean login() {
         String url = getURL("login.cgi");
@@ -194,9 +190,6 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
      ************************************/
     /**
      * Get Target URL
-     * 
-     * @param site
-     * @return
      */
     protected String getURL(String site) {
         String url = routerConfig.hostname;

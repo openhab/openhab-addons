@@ -129,8 +129,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Set DiscoveryService
-     * 
-     * @param discoveryService
      */
     public void setDiscoveryService(AsuswrtDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
@@ -250,8 +248,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * QUERY DEVICE DATA
-     * 
-     * @param asyncRequest
      */
     @SuppressWarnings("null")
     public void queryDeviceData(Boolean asyncRequest) {
@@ -270,8 +266,8 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     /**
      * Set routerInfo-Data and update channels on receiving new data with the associated command
      * 
-     * @param jsonObject
-     * @param command
+     * @param jsonObject jsonObject received
+     * @param command command was sent
      */
     public void dataReceived(JsonObject jsonObject, String command) {
         if (command.contains(CMD_GET_SYSINFO)) {
@@ -284,11 +280,11 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         }
         if (command.contains(CMD_GET_LANINFO)) {
             interfaceList.setData(INTERFACE_LAN, jsonObject);
-            updateChild(THING_TYPE_INTERFACE, NETWORK_REPRASENTATION_PROPERTY, INTERFACE_LAN);
+            updateChild(THING_TYPE_INTERFACE, NETWORK_REPRESENTATION_PROPERTY, INTERFACE_LAN);
         }
         if (command.contains(CMD_GET_WANINFO)) {
             interfaceList.setData(INTERFACE_WAN, jsonObject);
-            updateChild(THING_TYPE_INTERFACE, NETWORK_REPRASENTATION_PROPERTY, INTERFACE_WAN);
+            updateChild(THING_TYPE_INTERFACE, NETWORK_REPRESENTATION_PROPERTY, INTERFACE_WAN);
         }
         if (command.contains(CMD_GET_USAGE) || command.contains(CMD_GET_MEMUSAGE)
                 || command.contains(CMD_GET_CPUUSAGE)) {
@@ -299,10 +295,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Upate RouterStatus
-     * 
-     * @param thingStatus
-     * @param statusDetail
-     * @param text
      */
     public void setState(ThingStatus thingStatus, ThingStatusDetail statusDetail, String text) {
         if (!thingStatus.equals(getThing().getStatus())) {
@@ -319,8 +311,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Upate RouterStatus
-     * 
-     * @param thingStatus
      */
     public void setState(ThingStatus thingStatus) {
         setState(thingStatus, ThingStatusDetail.NONE, "");
@@ -387,8 +377,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      * 
      * If only one property must be changed, there is also a convenient method
      * updateProperty(String name, String value).
-     * 
-     * @param TapoDeviceInfo
      */
     public void devicePropertiesChanged(AsuswrtRouterInfo deviceInfo) {
         /* device properties */
@@ -407,8 +395,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Update all Channels
-     * 
-     * @param deviceInfo
      */
     public void updateChannels(AsuswrtRouterInfo deviceInfo) {
         updateClientChannels(deviceInfo);
@@ -417,8 +403,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Update Channel Usage
-     * 
-     * @param deviceInfo
      */
     public void updateUsageChannels(AsuswrtRouterInfo deviceInfo) {
         updateState(getChannelID(CHANNEL_GROUP_SYSINFO, CHANNEL_MEM_TOTAL),
@@ -437,8 +421,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Update Client Channel
-     * 
-     * @param deviceInfo
      */
     public void updateClientChannels(AsuswrtRouterInfo deviceInfo) {
         updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENTS_KNOWN),
@@ -454,8 +436,8 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     /**
      * Fire Event
      * 
-     * @param channelUID
-     * @param event
+     * @param channelUID chanelUID event belongs to
+     * @param event event-name is fired
      */
     protected void fireEvent(String channel, String event) {
         triggerChannel(channel, event);
@@ -468,8 +450,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      ************************************/
     /**
      * Update all Child-Things with type Client
-     * 
-     * @param AsuswrtRouterInfo
      */
     public void updateClients() {
         updateChildThings(THING_TYPE_CLIENT);
@@ -477,8 +457,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Update all Child-Things with type Interface
-     * 
-     * @param routerInfo
      */
     public void updateInterfaces() {
         updateChildThings(THING_TYPE_INTERFACE);
@@ -486,8 +464,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Update all Child-Things belonging to ThingTypeUID
-     * 
-     * @param clientList AsuswrtClientList
      */
     public void updateChildThings(ThingTypeUID thingTypeToUpdate) {
         ThingTypeUID thingTypeUID;

@@ -67,8 +67,6 @@ public class AsuswrtTraffic {
 
     /**
      * SetData from jsonObject
-     * 
-     * @param jsonObject
      */
     public void setData(JsonObject jsonObject) {
         Integer intRX;
@@ -111,9 +109,6 @@ public class AsuswrtTraffic {
     /**
      * Set Zero Hour Traffic.
      * Save traffic value at new day
-     * 
-     * @param totalRX
-     * @param totalTX
      */
     private void setZeroHourTraffic(Integer totalRX, Integer totalTX) {
         Date now = new Date();
@@ -129,7 +124,7 @@ public class AsuswrtTraffic {
      * 
      * @param jsonObject jsonObejct has values
      * @param jsonMember name of jsonMember value is stored
-     * @return
+     * @return (Long) traffic
      */
     private Integer getTrafficFromHex(JsonObject jsonObject, String jsonMember) {
         Long lngVal;
@@ -151,10 +146,10 @@ public class AsuswrtTraffic {
      * 
      * @param actVal actual Value to calculate
      * @param oldVal old Value to calculate
-     * @return
+     * @return (Double) current traffic
      */
     private Double calculateCurrentTraffic(Integer actVal, Integer oldVal) {
-        if (this.lastUpdate > 0) {
+        if (lastUpdate > 0) {
             Long timeSpan = (System.currentTimeMillis() - this.lastUpdate) / 1000;
             Integer div = 0;
             try {
@@ -177,26 +172,26 @@ public class AsuswrtTraffic {
      ************************************/
 
     public Double getCurrentRX() {
-        return this.curRX;
+        return curRX;
     }
 
     public Double getCurrentTX() {
-        return this.curTX;
+        return curTX;
     }
 
     public Integer getTotalRX() {
-        return this.totalRX;
+        return totalRX;
     }
 
     public Integer getTotalTX() {
-        return this.totalTX;
+        return totalTX;
     }
 
     public Integer getTodayRX() {
-        return this.totalRX - this.zeroHourRX;
+        return totalRX - this.zeroHourRX;
     }
 
     public Integer getTodayTX() {
-        return this.totalTX - this.zeroHourTX;
+        return totalTX - this.zeroHourTX;
     }
 }

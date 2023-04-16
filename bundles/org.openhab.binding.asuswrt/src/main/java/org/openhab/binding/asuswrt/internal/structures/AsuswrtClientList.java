@@ -63,8 +63,6 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
 
     /**
      * Generate new AsuswrtClientlist from jsonData
-     * 
-     * @param jsonObject
      */
     public void setData(JsonObject jsonObject) {
         this.clientList.clear();
@@ -171,11 +169,9 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
 
     /**
      * Return count of clients in list
-     * 
-     * @return
      */
     public Integer getCount() {
-        return this.clientList.size();
+        return clientList.size();
     }
 
     /*
@@ -191,8 +187,6 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
 
     /**
      * Get online clients
-     * 
-     * @return
      */
     public AsuswrtClientList getOnlineClients() {
         AsuswrtClientList clients = new AsuswrtClientList();

@@ -92,8 +92,6 @@ public class AsuswrtClient extends BaseThingHandler {
 
     /**
      * update clientpropedrties
-     * 
-     * @param clientInfo
      */
     public void updateClientProperties(AsuswrtClientInfo clientInfo) {
         logger.trace("({}) clientPropertiesChanged ", uid);
@@ -106,8 +104,6 @@ public class AsuswrtClient extends BaseThingHandler {
 
     /**
      * Update Thing-Channels
-     * 
-     * @param clientInfo
      */
     public void updateClientChannels(AsuswrtClientInfo clientInfo) {
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_STATE), getOnOffType(clientInfo.isOnline()));
@@ -120,8 +116,6 @@ public class AsuswrtClient extends BaseThingHandler {
 
     /**
      * Update Traffic Channels
-     * 
-     * @param traffic
      */
     private void updateTrafficChannels(AsuswrtTraffic traffic) {
         updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_CURRENT_RX),
@@ -140,8 +134,6 @@ public class AsuswrtClient extends BaseThingHandler {
 
     /**
      * fire events when new clientInformations changed
-     * 
-     * @param clientInfo
      */
     private void fireEvents(AsuswrtClientInfo clientInfo) {
         if (checkForStateChange(CHANNEL_GROUP_NETWORK, clientInfo.isOnline())) {
@@ -175,8 +167,6 @@ public class AsuswrtClient extends BaseThingHandler {
 
     /**
      * Get MAC-Address of Client from properties or settings
-     * 
-     * @return
      */
     public String getMac() {
         String mac = "";

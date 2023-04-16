@@ -5,7 +5,7 @@ This binding adds support to read information from ASUS-Routers (Copyright © AS
 ## Supported Things
 
 This binding supports ASUS routers with Asuswrt or [Asuswrt-Merlin](https://www.asuswrt-merlin.net/) firmware.
-Firmware 5.x.x (some DSL models) is NOT supported (not AsusWRT).
+Firmware 5.x.x (some DSL models) is NOT supported (not Asuswrt).
 
 | ThingType     | Name       | Descripion                              |
 |---------------|------------|-----------------------------------------|

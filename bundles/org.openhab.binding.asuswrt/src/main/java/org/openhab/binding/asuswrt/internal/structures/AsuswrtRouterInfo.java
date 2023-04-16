@@ -119,19 +119,19 @@ public class AsuswrtRouterInfo {
      ************************************/
 
     public String getProductId() {
-        return this.productId;
+        return productId;
     }
 
     public String getFirmwareVersion() {
-        return this.fwVersion + " (" + this.fwBuild + ")";
+        return fwVersion + " (" + this.fwBuild + ")";
     }
 
     public String getMAC() {
-        return this.macAddress;
+        return macAddress;
     }
 
     public AsuswrtUsage getMemUsage() {
-        if (this.usageStats.containsKey(JSON_MEMBER_MEM_USAGE)) {
+        if (usageStats.containsKey(JSON_MEMBER_MEM_USAGE)) {
             @Nullable
             AsuswrtUsage usage = this.usageStats.get(JSON_MEMBER_MEM_USAGE);
             if (usage != null) {
@@ -149,7 +149,7 @@ public class AsuswrtRouterInfo {
      */
     public AsuswrtUsage getCpuUsage(Integer coreNum) {
         String coreKey = JSON_MEMBER_CPU_USAGE + "_" + coreNum;
-        if (this.usageStats.containsKey(coreKey)) {
+        if (usageStats.containsKey(coreKey)) {
             @Nullable
             AsuswrtUsage usage = this.usageStats.get(coreKey);
             if (usage != null) {

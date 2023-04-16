@@ -34,8 +34,6 @@ public class AsuswrtErrorHandler {
 
     /**
      * Constructor
-     * 
-     * @param exception Exception
      */
     public AsuswrtErrorHandler(Exception ex) {
         raiseError(ex);
@@ -94,8 +92,6 @@ public class AsuswrtErrorHandler {
 
     /**
      * Get Error Message
-     * 
-     * @return
      */
     public String getErrorMessage() {
         return this.errorMessage;
@@ -103,8 +99,6 @@ public class AsuswrtErrorHandler {
 
     /**
      * Get Error Message
-     * 
-     * @return
      */
     public String getInfoMessage() {
         return this.infoMessage;

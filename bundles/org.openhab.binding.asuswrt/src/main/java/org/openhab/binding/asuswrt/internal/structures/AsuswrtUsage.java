@@ -95,26 +95,26 @@ public class AsuswrtUsage {
      ************************************/
 
     public Integer getTotal() {
-        return this.total;
+        return total;
     }
 
     public Integer getUsed() {
-        return this.used;
+        return used;
     }
 
     public Integer getFree() {
-        return this.free;
+        return free;
     }
 
     public Integer getUsedPercent() {
-        if (this.total > 0) {
+        if (total > 0) {
             return ((this.used * 100) / this.total);
         }
         return 0;
     }
 
     public Integer getFreePercent() {
-        if (this.total > 0) {
+        if (total > 0) {
             return ((this.free * 100) / this.total);
         }
         return 0;

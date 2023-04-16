@@ -11,10 +11,10 @@
 		</supported-bridge-type-refs>
 
 		<label>Asuswrt Client</label>
-		<description>Client connected to Asuswrt-Rotuer</description>
+		<description>Client connected to Asuswrt-Router</description>
 		<channel-groups>
-			<channel-group id="networkInfo" typeId="clientNetworkGroup"></channel-group>
-			<channel-group id="traffic" typeId="trafficGroup"></channel-group>
+			<channel-group id="network-info" typeId="clientNetworkGroup"></channel-group>
+			<channel-group id="traffic" typeId="traffic-group"></channel-group>
 		</channel-groups>
 		<properties>
 			<property name="vendor">Vendor</property>
@@ -41,13 +41,13 @@
 		<label>Clients</label>
 		<description>Clients connected to router</description>
 		<channels>
-			<channel id="networkState" typeId="isOnlineType"></channel>
-			<channel id="ipAddress" typeId="ipAddressType">
+			<channel id="network-state" typeId="is-online-type"></channel>
+			<channel id="ip-address" typeId="ip-address-type">
 				<description>Client IP-Address</description>
 			</channel>
-			<channel id="ipMethod" typeId="ipProtoType"></channel>
-			<channel id="internetState" typeId="internetStateType"></channel>
-			<channel id="clientOnlineEvent" typeId="clientOnlineEventType"></channel>
+			<channel id="ip-method" typeId="ip-proto-type"></channel>
+			<channel id="internet-state" typeId="interne-state-type"></channel>
+			<channel id="client-online-event" typeId="client-online-event-type"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -54,49 +54,49 @@ public class AsuswrtBindingConstants {
     public static final String EVENT_STATE_DISCONNECTED = "disconnected";
 
     // global channels
-    public static final String CHANNELS_ALL = "anyChannel";
+    public static final String CHANNELS_ALL = "any-channel";
 
     // channel group system info
-    public static final String CHANNEL_GROUP_SYSINFO = "sysInfo";
-    public static final String CHANNEL_MEM_FREE = "memFree";
-    public static final String CHANNEL_MEM_FREE_PERCENT = "memFreePercent";
-    public static final String CHANNEL_MEM_TOTAL = "memTotal";
-    public static final String CHANNEL_MEM_USED = "memUsed";
-    public static final String CHANNEL_MEM_USED_PERCENT = "memUsedPercent";
-    public static final String CHANNEL_CPU_USED_PERCENT = "cpuUsedPercent";
+    public static final String CHANNEL_GROUP_SYSINFO = "sys-info";
+    public static final String CHANNEL_MEM_FREE = "mem-free";
+    public static final String CHANNEL_MEM_FREE_PERCENT = "mem-free-percent";
+    public static final String CHANNEL_MEM_TOTAL = "mem-total";
+    public static final String CHANNEL_MEM_USED = "mem-used";
+    public static final String CHANNEL_MEM_USED_PERCENT = "mem-used-percent";
+    public static final String CHANNEL_CPU_USED_PERCENT = "cpu-used-percent";
 
     // channel group interface information
-    public static final String CHANNEL_GROUP_NETWORK = "networkInfo";
-    public static final String CHANNEL_NETWORK_IP = "ipAddress";
-    public static final String CHANNEL_NETWORK_MAC = "macAddress";
+    public static final String CHANNEL_GROUP_NETWORK = "network-info";
+    public static final String CHANNEL_NETWORK_IP = "ip-address";
+    public static final String CHANNEL_NETWORK_MAC = "mac-address";
     public static final String CHANNEL_NETWORK_MASK = "subnet";
     public static final String CHANNEL_NETWORK_GATEWAY = "gateway";
-    public static final String CHANNEL_NETWORK_METHOD = "ipMethod";
-    public static final String CHANNEL_NETWORK_DNS = "dnsServers";
-    public static final String CHANNEL_NETWORK_STATE = "networkState";
-    public static final String CHANNEL_NETWORK_INTERNET = "internetState";
-    public static final String EVENT_CONNECTION = "connectionEvent";
+    public static final String CHANNEL_NETWORK_METHOD = "ip-method";
+    public static final String CHANNEL_NETWORK_DNS = "dns-servers";
+    public static final String CHANNEL_NETWORK_STATE = "network-state";
+    public static final String CHANNEL_NETWORK_INTERNET = "internet-state";
+    public static final String EVENT_CONNECTION = "connection-event";
 
     // channel group clientList information
-    public static final String CHANNEL_GROUP_CLIENTS = "clientList";
-    public static final String CHANNEL_CLIENTS_KNOWN = "knownClients";
-    public static final String CHANNEL_CLIENTS_ONLINE = "onlineClients";
-    public static final String CHANNEL_CLIENTS_COUNT = "onlineClientsCount";
-    public static final String CHANNEL_CLIENTS_ONLINE_MAC = "onlineMACs";
-    public static final String EVENT_CLIENT_CONNECTION = "clientOnlineEvent";
+    public static final String CHANNEL_GROUP_CLIENTS = "client-list";
+    public static final String CHANNEL_CLIENTS_KNOWN = "known-clients";
+    public static final String CHANNEL_CLIENTS_ONLINE = "online-clients";
+    public static final String CHANNEL_CLIENTS_COUNT = "online-clients-count";
+    public static final String CHANNEL_CLIENTS_ONLINE_MAC = "online-macs";
+    public static final String EVENT_CLIENT_CONNECTION = "client-online-event";
 
     // channel group client information
     public static final String CHANNEL_GROUP_CLIENT = "client";
-    public static final String CHANNEL_CLIENT_NICKNAME = "clientName";
+    public static final String CHANNEL_CLIENT_NICKNAME = "client-name";
 
     // channel group traffic
     public static final String CHANNEL_GROUP_TRAFFIC = "traffic";
-    public static final String CHANNEL_TRAFFIC_TOTAL_RX = "totalRX";
-    public static final String CHANNEL_TRAFFIC_TOTAL_TX = "totalTX";
-    public static final String CHANNEL_TRAFFIC_TODAY_RX = "todayRX";
-    public static final String CHANNEL_TRAFFIC_TODAY_TX = "todayTX";
-    public static final String CHANNEL_TRAFFIC_CURRENT_RX = "curRX";
-    public static final String CHANNEL_TRAFFIC_CURRENT_TX = "curTX";
+    public static final String CHANNEL_TRAFFIC_TOTAL_RX = "total-rx";
+    public static final String CHANNEL_TRAFFIC_TOTAL_TX = "total-tx";
+    public static final String CHANNEL_TRAFFIC_TODAY_RX = "today-rx";
+    public static final String CHANNEL_TRAFFIC_TODAY_TX = "today-tx";
+    public static final String CHANNEL_TRAFFIC_CURRENT_RX = "cur-rx";
+    public static final String CHANNEL_TRAFFIC_CURRENT_TX = "cur-tx";
 
     /**
      * PROPERTIES
@@ -104,10 +104,10 @@ public class AsuswrtBindingConstants {
 
     // interface
     public static final String PROPERTY_INTERFACE_NAME = "interfaceName";
-    public static final String NETWORK_REPRASENTATION_PROPERTY = "interfaceName";
+    public static final String NETWORK_REPRESENTATION_PROPERTY = "interfaceName";
     // client
     public static final String PROPERTY_CLIENT_NAME = "dnsName";
-    public static final String CLIENT_REPRASENTATION_PROPERTY = "macAddress";
+    public static final String CLIENT_REPRESENTATION_PROPERTY = "macAddress";
 
     /***
      * JSON REQUEST MEMBERNAMES
@@ -147,9 +147,9 @@ public class AsuswrtBindingConstants {
     public static final String JSON_MEMBER_CLIENT_IPFROM = "from";
     public static final String JSON_MEMBER_CLIENT_GROUP = "group";
     public static final String JSON_MEMBER_CLIENT_INETMODE = "internetMode";
-    public static final String JSON_MEMBER_CLIENT_INETSTATE = "internetState";
+    public static final String JSON_MEMBER_CLIENT_INETSTATE = "internet-state";
     public static final String JSON_MEMBER_CLIENT_IP = "ip";
-    public static final String JSON_MEMBER_CLIENT_IPMETHOD = "ipMethod";
+    public static final String JSON_MEMBER_CLIENT_IPMETHOD = "ip-method";
     public static final String JSON_MEMBER_CLIENT_IPGATEWAY = "isGateway";
     public static final String JSON_MEMBER_CLIENT_GN = "isGN";
     public static final String JSON_MEMBER_CLIENT_ITUNES = "isITunes";

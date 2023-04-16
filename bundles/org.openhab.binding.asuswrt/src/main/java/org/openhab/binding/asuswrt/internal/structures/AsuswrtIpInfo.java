@@ -101,38 +101,38 @@ public class AsuswrtIpInfo {
      ************************************/
 
     public AsuswrtTraffic geTraffic() {
-        return this.traffic;
+        return traffic;
     }
 
     public String getMAC() {
-        return this.hwAddress;
+        return hwAddress;
     }
 
     public String getIpAddress() {
-        return this.ipAddress;
+        return ipAddress;
     }
 
     public String getSubnet() {
-        return this.subnet;
+        return subnet;
     }
 
     public String getGateway() {
-        return this.gateway;
+        return gateway;
     }
 
     public String getIpProto() {
-        return this.ipProto;
+        return ipProto;
     }
 
     public String getDNSNServer() {
-        return this.dnsServer;
+        return dnsServer;
     }
 
     public String getName() {
-        return this.ifName;
+        return ifName;
     }
 
     public Boolean isConnected() {
-        return this.connected;
+        return connected;
     }
 }
