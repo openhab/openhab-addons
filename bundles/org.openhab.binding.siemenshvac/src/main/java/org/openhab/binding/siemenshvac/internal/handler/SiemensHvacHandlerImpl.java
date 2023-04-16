@@ -69,6 +69,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
     private final @Nullable SiemensHvacConnector hvacConnector;
     private final @Nullable SiemensHvacMetadataRegistry metaDataRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private long LastWrite = 0;
 
     public SiemensHvacHandlerImpl(Thing thing, @Nullable SiemensHvacConnector hvacConnector,
             @Nullable SiemensHvacMetadataRegistry metaDataRegistry, ChannelTypeRegistry channelTypeRegistry) {
@@ -97,7 +98,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             }
         });
 
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 10, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
@@ -217,10 +218,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
         try {
             lockObj.lock();
-            logger.debug("Start read : {}", dp);
+
+            logger.info("Start read : {}", dp);
             String request = "api/menutree/read_datapoint.json?Id=" + dp;
 
-            logger.debug("siemensHvac:ReadDp:DoRequest(): {}", request);
+            logger.info("siemensHvac:ReadDp:DoRequest(): {}", request);
 
             if (async) {
                 if (lcHvacConnector != null) {
@@ -228,6 +230,12 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
                         @Override
                         public void execute(java.net.URI uri, int status, @Nullable Object response) {
+                            // prevent async read if we just write so we have no overlaps
+                            long now = System.currentTimeMillis();
+                            if (now - LastWrite < 5000) {
+                                return;
+                            }
+
                             if (response instanceof JsonObject) {
                                 DecodeReadDp((JsonObject) response, uid, dp, type);
                             }
@@ -246,7 +254,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
         } finally {
             logger.debug("End read : {}", dp);
             lockObj.unlock();
-
         }
     }
 
@@ -258,6 +265,9 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
         try {
             lockObj.lock();
+            logger.info("Start write : {}", dp);
+            LastWrite = System.currentTimeMillis();
+
             String valUpdate = "0";
             String valUpdateEnum = "";
 
@@ -284,10 +294,10 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                     type);
 
             if (lcHvacConnector != null) {
-                logger.debug("Write request for : {} ", valUpdate);
+                logger.info("Write request for : {} ", valUpdate);
                 JsonObject response = lcHvacConnector.DoRequest(request, null);
 
-                logger.debug("Write request response : {} ", response);
+                logger.info("Write request response : {} ", response);
             }
 
         } catch (Exception e) {

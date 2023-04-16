@@ -206,7 +206,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 lockObj.lock();
                 try {
                     startedRequest++;
-                    logger.debug("StartedRequest : {}", startedRequest);
+                    logger.info("StartedRequest : {}", startedRequest - completedRequest);
 
                 } finally {
                     lockObj.unlock();
