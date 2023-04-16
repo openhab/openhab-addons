@@ -145,11 +145,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
         }
 
         if (Id == null) {
-            logger.debug("poolingCode : Id is null {} ", channel);
+            logger.debug("pollingCode : Id is null {} ", channel);
             return;
         }
         if (type == null) {
-            logger.debug("poolingCode : type is null {} ", channel);
+            logger.debug("pollingCode : type is null {} ", channel);
             return;
         }
         ReadDp(Id, uid, type, true);
@@ -235,6 +235,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                             if (now - LastWrite < 5000) {
                                 return;
                             }
+
+                            logger.info("End read : {}", dp);
 
                             if (response instanceof JsonObject) {
                                 DecodeReadDp((JsonObject) response, uid, dp, type);
