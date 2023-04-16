@@ -14,6 +14,8 @@ package org.openhab.binding.chatgpt.internal.dto;
 
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This is a dto used for parsing the JSON response from ChatGPT.
  *
@@ -50,7 +52,9 @@ public class ChatResponse {
 
     public static class Choice {
         private Message message;
-        private String finish_reason;
+
+        @SerializedName("finish_reason")
+        private String finishReason;
         private int index;
 
         public Message getMessage() {
@@ -58,7 +62,7 @@ public class ChatResponse {
         }
 
         public String getFinishReason() {
-            return finish_reason;
+            return finishReason;
         }
 
         public int getIndex() {
