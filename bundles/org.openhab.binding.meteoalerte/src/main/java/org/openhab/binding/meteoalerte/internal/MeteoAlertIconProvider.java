@@ -80,12 +80,12 @@ public class MeteoAlertIconProvider implements IconProvider {
     }
 
     private String getText(String entry, String defaultValue, @Nullable Locale locale) {
-        String label = defaultValue;
+        String text = defaultValue;
         if (locale != null) {
-            label = i18nProvider.getText(context.getBundle(), "iconset." + entry, defaultValue, locale);
-            label = label == null ? defaultValue : label;
+            text = i18nProvider.getText(context.getBundle(), "iconset." + entry, defaultValue, locale);
+            text = text == null ? defaultValue : text;
         }
-        return label;
+        return text;
     }
 
     @Override
@@ -123,9 +123,7 @@ public class MeteoAlertIconProvider implements IconProvider {
         URL iconResource = context.getBundle()
                 .getEntry("icon/%s.svg".formatted(iconName.replace(BINDING_ID + ":", "")));
         try (InputStream stream = iconResource.openStream()) {
-            if (stream != null) {
-                result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-            }
+            result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             logger.warn("Unable to load ressource '{}' : {}", iconResource.getPath(), e.getMessage());
         }
