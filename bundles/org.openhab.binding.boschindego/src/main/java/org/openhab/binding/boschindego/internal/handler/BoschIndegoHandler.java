@@ -31,6 +31,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschindego.internal.BoschIndegoTranslationProvider;
 import org.openhab.binding.boschindego.internal.DeviceStatus;
 import org.openhab.binding.boschindego.internal.IndegoDeviceController;
+import org.openhab.binding.boschindego.internal.IndegoTypeDatabase;
 import org.openhab.binding.boschindego.internal.config.BoschIndegoConfiguration;
 import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
 import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
@@ -365,6 +366,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, deviceProperties.firmwareVersion);
         }
         if (deviceProperties.bareToolNumber != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID,
+                    IndegoTypeDatabase.nameFromTypeNumber(deviceProperties.bareToolNumber));
             properties.put(PROPERTY_BARE_TOOL_NUMBER, deviceProperties.bareToolNumber);
         }
         properties.put(PROPERTY_SERVICE_COUNTER, String.valueOf(deviceProperties.serviceCounter));
