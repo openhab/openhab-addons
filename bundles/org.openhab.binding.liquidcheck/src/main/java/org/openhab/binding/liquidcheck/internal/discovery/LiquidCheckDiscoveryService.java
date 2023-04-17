@@ -57,10 +57,10 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.liquidcheck")
 public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
 
-    private static final int DISCOVER_TIMEOUT_SECONDS = 120;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 300;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
     public LiquidCheckDiscoveryService(@Reference HttpClientFactory httpClientFactory) {
@@ -91,55 +91,48 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      * @return the Runnable
      */
     protected Runnable liquidCheckDiscoveryRunnable() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    List<InetAddress> addresses = getIPv4Addresses();
-                    List<InetAddress> hosts = findActiveHosts(addresses);
-                    for (InetAddress host : hosts) {
-                        Request request = httpClient.newRequest("http://" + host.getHostAddress() + "/infos.json")
-                                .method(HttpMethod.GET).followRedirects(false);
-                        try {
-                            ContentResponse response = request.send();
-                            if (response.getStatus() == 200) {
-                                CommData json = null;
-                                try {
-                                    json = new Gson().fromJson(response.getContentAsString(), CommData.class);
-                                } catch (JsonSyntaxException e) {
-                                    logger.debug("Json Syntax Exception!");
-                                }
-                                if (null != json) {
-                                    if (InetAddress.getByName(json.payload.wifi.station.hostname).isReachable(50)) {
-                                        buildDiscoveryResult(json, true);
-                                    } else {
-                                        buildDiscoveryResult(json, false);
-                                    }
-                                } else {
-                                    logger.debug("Response Object is null!");
-                                }
+        return () -> {
+            try {
+                List<InetAddress> addresses = getIPv4Addresses();
+                List<InetAddress> hosts = findActiveHosts(addresses);
+                for (InetAddress host : hosts) {
+                    Request request = httpClient.newRequest("http://" + host.getHostAddress() + "/infos.json")
+                            .method(HttpMethod.GET).followRedirects(false);
+                    try {
+                        ContentResponse response = request.send();
+                        if (response.getStatus() == 200) {
+                            CommData json = null;
+                            try {
+                                json = new Gson().fromJson(response.getContentAsString(), CommData.class);
+                            } catch (JsonSyntaxException e) {
+                                logger.debug("Json Syntax Exception!");
                             }
-                        } catch (TimeoutException e) {
-                            logger.debug("TimeOut: {}", e.getMessage());
-                        } catch (ExecutionException e) {
-                            logger.debug("ExecutionException: {}", e.getMessage());
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+                            if (null != json) {
+                                buildDiscoveryResult(json,
+                                        InetAddress.getByName(json.payload.wifi.station.hostname).isReachable(50));
+                            } else {
+                                logger.debug("Response Object is null!");
+                            }
                         }
-
+                    } catch (TimeoutException e) {
+                        logger.debug("TimeOut: {}", e.getMessage());
+                    } catch (ExecutionException e) {
+                        logger.debug("ExecutionException: {}", e.getMessage());
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
-                } catch (IOException e) {
-                    logger.debug("Message: {}", e.getMessage());
+
                 }
+            } catch (IOException e) {
+                logger.debug("Message: {}", e.getMessage());
             }
         };
-        return runnable;
     }
 
     /**
      * This Method retrieves all IPv4 addresses of the server
      * 
-     * @return A list of all available IPv4 Adresses that are registered
+     * @return A list of all available IPv4 addresses that are registered
      * @throws SocketException
      */
     private List<InetAddress> getIPv4Addresses() throws SocketException {
@@ -172,8 +165,8 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     private List<InetAddress> findActiveHosts(List<InetAddress> addresses) throws UnknownHostException, IOException {
         List<InetAddress> hosts = new ArrayList<>();
         for (InetAddress inetAddress : addresses) {
-            String[] adressStrings = inetAddress.getHostAddress().split("[.]");
-            String subnet = adressStrings[0] + "." + adressStrings[1] + "." + adressStrings[2];
+            String[] addressStrings = inetAddress.getHostAddress().split("[.]");
+            String subnet = addressStrings[0] + "." + addressStrings[1] + "." + addressStrings[2];
             int timeout = 50;
             for (int i = 0; i < 255; i++) {
                 String host = subnet + "." + i;

@@ -30,6 +30,7 @@ import org.openhab.core.thing.Thing;
  *
  * @author Marcel Goerentz - Initial contribution
  */
+
 @NonNullByDefault
 public class CommData {
 
@@ -52,7 +53,7 @@ public class CommData {
     }
 
     public Map<String, Object> createPropertyMap(boolean isHostname) {
-        Map<String, Object> properties = new HashMap<String, Object>(createPropertyMap());
+        Map<String, Object> properties = new HashMap<>(createPropertyMap());
         if (isHostname) {
             properties.put(PROPERTY_HOSTNAME, payload.wifi.station.hostname);
         } else {

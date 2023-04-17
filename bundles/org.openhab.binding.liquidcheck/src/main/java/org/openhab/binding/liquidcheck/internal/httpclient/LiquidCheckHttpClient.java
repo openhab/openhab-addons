@@ -49,13 +49,6 @@ public class LiquidCheckHttpClient {
     public LiquidCheckHttpClient(LiquidCheckConfiguration config, HttpClient client) {
         this.config = config;
         this.client = client;
-        if (!client.isStarted()) {
-            try {
-                client.start();
-            } catch (Exception e) {
-                logger.warn("Could not start client. {}", e.getMessage());
-            }
-        }
     }
 
     /**

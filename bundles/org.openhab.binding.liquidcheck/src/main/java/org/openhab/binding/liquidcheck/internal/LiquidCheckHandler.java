@@ -75,6 +75,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
     }
 
     @Override
+    @SuppressWarnings("null")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(MEASURE_CHANNEL)) {
             if (command instanceof OnOffType) {
@@ -83,7 +84,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     if (client != null && client.isConnected()) {
                         String response = client.measureCommand();
                         CommData commandResponse = new Gson().fromJson(response, CommData.class);
-                        if (commandResponse != null) {
+                        if (commandResponse != null && !commandResponse.header.name.equals("")) {
                             if (!"success".equals(commandResponse.context.status)) {
                                 logger.warn("Starting the measurement was not successful!");
                             }
@@ -135,7 +136,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
             try {
                 String jsonString = client.pollData();
                 CommData response = new Gson().fromJson(jsonString, CommData.class);
-                if (response != null) {
+                if (response != null && !response.header.messageId.equals("")) {
                     Map<String, String> properties = response.createPropertyMap();
                     if (!oldProps.equals(properties)) {
                         oldProps = properties;
@@ -153,7 +154,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     updateState(PUMP_TOTAL_RUNTIME_CHANNEL,
                             new QuantityType<>(response.payload.system.pump.totalRuntime, Units.SECOND));
                     if (config.maxContent > 1) {
-                        double fillIndicator = (double) response.payload.measure.content / config.maxContent * 100;
+                        double fillIndicator = response.payload.measure.content / config.maxContent * 100;
                         updateState(FILL_INDICATOR_CHANNEL, new QuantityType<>(fillIndicator, Units.PERCENT));
                     }
                     if (!thing.getStatus().equals(ThingStatus.ONLINE)) {

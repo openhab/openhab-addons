@@ -39,6 +39,7 @@ public class ResponseTest {
 
     @DisplayName("Test response from polling")
     @Test
+    @SuppressWarnings("null")
     public void pollingResponseTest() {
         CommData response = new CommData();
         try {
@@ -53,7 +54,7 @@ public class ResponseTest {
         } catch (Exception e) {
             return;
         }
-        if (response != null) {
+        if (response != null && !"".equals(response.header.messageId)) {
             assertThat(response, is(notNullValue()));
             assertThat(response.header.namespace, is(equalTo("Device")));
             assertThat(response.header.name, is(equalTo("Response")));
@@ -107,7 +108,7 @@ public class ResponseTest {
         } catch (Exception e) {
             return;
         }
-        if (response != null) {
+        if (response != null && !"".equals(response.header.messageId)) {
             assertThat(response, is(notNullValue()));
             assertThat(response.header.namespace, is(equalTo("Device.Control")));
             assertThat(response.header.name, is(equalTo("StartMeasure.Response")));
