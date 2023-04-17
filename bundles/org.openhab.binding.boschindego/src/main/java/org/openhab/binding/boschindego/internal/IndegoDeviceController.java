@@ -80,7 +80,7 @@ public class IndegoDeviceController extends IndegoController {
      * @throws IndegoException if any communication or parsing error occurred
      */
     public DevicePropertiesResponse getDeviceProperties() throws IndegoAuthenticationException, IndegoException {
-        return getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/", DevicePropertiesResponse.class);
+        return super.getDeviceProperties(serialNumber);
     }
 
     /**

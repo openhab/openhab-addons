@@ -20,6 +20,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.boschindego.internal.IndegoTypeDatabase;
+import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.handler.BoschAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -71,15 +73,15 @@ public class IndegoDiscoveryService extends AbstractDiscoveryService implements 
     @Override
     public void startScan() {
         try {
-            Collection<String> serialNumbers = accountHandler.getSerialNumbers();
+            Collection<DevicePropertiesResponse> devices = accountHandler.getDevices();
 
             ThingUID bridgeUID = accountHandler.getThing().getUID();
-            for (String serialNumber : serialNumbers) {
-                ThingUID thingUID = new ThingUID(THING_TYPE_INDEGO, bridgeUID, serialNumber);
+            for (DevicePropertiesResponse device : devices) {
+                ThingUID thingUID = new ThingUID(THING_TYPE_INDEGO, bridgeUID, device.serialNumber);
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber).withBridge(bridgeUID)
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.serialNumber).withBridge(bridgeUID)
                         .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
-                        .withLabel("Indego (" + serialNumber + ")").build();
+                        .withLabel(IndegoTypeDatabase.nameFromTypeNumber(device.bareToolNumber)).build();
 
                 thingDiscovered(discoveryResult);
             }

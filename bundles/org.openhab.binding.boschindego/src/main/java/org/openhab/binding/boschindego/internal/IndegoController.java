@@ -32,6 +32,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.dto.response.ErrorResponse;
 import org.openhab.binding.boschindego.internal.dto.response.Mower;
 import org.openhab.binding.boschindego.internal.dto.serialization.InstantDeserializer;
@@ -96,6 +97,19 @@ public class IndegoController {
         Mower[] mowers = getRequest(SERIAL_NUMBER_SUBPATH, Mower[].class);
 
         return Arrays.stream(mowers).map(m -> m.serialNumber).toList();
+    }
+
+    /**
+     * Queries the serial number and device service properties from the server.
+     *
+     * @param serialNumber the serial number of the device
+     * @return the device serial number and properties
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public DevicePropertiesResponse getDeviceProperties(String serialNumber)
+            throws IndegoAuthenticationException, IndegoException {
+        return getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/", DevicePropertiesResponse.class);
     }
 
     private String getAuthorizationUrl() {
