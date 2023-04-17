@@ -49,6 +49,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  * @author Andre Fuechsel - fixed the results removal
  * @author Manuel Raffel - Added support for blinds
+ * @author Vivien Boistuaud - Added support for Air Purifiers
  */
 @NonNullByDefault
 public class TradfriDiscoveryService extends AbstractDiscoveryService
@@ -158,6 +159,8 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService
                 } else if (TYPE_SENSOR.equals(type) && data.has(SENSOR)) {
                     // Motion sensor
                     thingId = new ThingUID(THING_TYPE_MOTION_SENSOR, bridge, Integer.toString(id));
+                } else if (TYPE_AIR_PURIFIER.equals(type) && data.has(AIR_PURIFIER)) {
+                    thingId = new ThingUID(THING_TYPE_AIR_PURIFIER, bridge, Integer.toString(id));
                 }
 
                 if (thingId == null) {
