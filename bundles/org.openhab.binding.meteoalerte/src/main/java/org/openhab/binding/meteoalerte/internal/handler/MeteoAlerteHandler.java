@@ -30,6 +30,7 @@ import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
 import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -137,29 +138,29 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             updateAlert(FREEZE, fields.getGrandFroid());
             updateAlert(AVALANCHE, fields.getAvalanches());
             updateAlert(WAVE, fields.getVagueSubmersion());
-            updateState(COMMENT, new StringType(fields.getVigilanceComment()));
+            updateState(COMMENT, StringType.valueOf(fields.getVigilanceComment()));
             fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
             fields.getDatePrevue().ifPresent(date -> updateDate(END_TIME, date));
         }));
     }
 
     private void updateAlert(String channelId, AlertLevel value) {
-        String channelIcon = channelId + "-icon";
+        State state = value != AlertLevel.UNKNOWN ? new DecimalType(value.ordinal()) : UnDefType.NULL;
         if (isLinked(channelId)) {
-            updateState(channelId, ALERT_LEVELS.getOrDefault(value, UnDefType.UNDEF));
+            updateState(channelId, state);
         }
+
+        String channelIcon = channelId + "-icon";
         if (isLinked(channelIcon)) {
-            State state = ALERT_LEVELS.getOrDefault(value, UnDefType.UNDEF);
             InputStream icon = iconProvider.getIcon(channelId.replace("-", "_"), BINDING_ID, state.toString(),
                     Format.SVG);
             try {
-                if (icon == null) {
+                if (icon != null) {
+                    State result = new RawType(icon.readAllBytes(), "image/svg+xml");
+                    updateState(channelIcon, result);
+                } else {
                     throw new IOException("Null icon returned");
                 }
-                byte[] bytes = new byte[icon.available()];
-                icon.read(bytes);
-                State result = new RawType(bytes, "image/svg+xml");
-                updateState(channelIcon, result);
             } catch (IOException e) {
                 logger.warn("Error reading icon resource for channel {} and value {} : {}", channelId, value,
                         e.getMessage());

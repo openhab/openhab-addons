@@ -47,12 +47,12 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
             @Reference MeteoAlertIconProvider iconProvider) {
+        this.iconProvider = iconProvider;
         this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
                 (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
                         .parse(json.getAsJsonPrimitive().getAsString())
                         .withZoneSameInstant(timeZoneProvider.getTimeZone()))
                 .create();
-        this.iconProvider = iconProvider;
     }
 
     @Override

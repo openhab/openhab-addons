@@ -174,7 +174,7 @@
 		<item-type>Number</item-type>
 		<label>Vent</label>
 		<description>Niveau d'alerte aux évènements éoliens</description>
-		<category>oh:meteoalerte:vent</category>
+		<category>meteoalerte:vent</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -189,7 +189,7 @@
 		<item-type>Number</item-type>
 		<label>Orage</label>
 		<description>Niveau d'alerte aux évènements orageux</description>
-		<category>oh:meteoalerte:orage</category>
+		<category>meteoalerte:orage</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -204,7 +204,7 @@
 		<item-type>Number</item-type>
 		<label>Inondation</label>
 		<description>Niveau d'alerte aux inondations</description>
-		<category>oh:meteoalerte:inondation</category>
+		<category>meteoalerte:inondation</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -219,7 +219,7 @@
 		<item-type>Number</item-type>
 		<label>Neige</label>
 		<description>Niveau d'alerte aux évènements neigeux</description>
-		<category>oh:meteoalerte:neige</category>
+		<category>meteoalerte:neige</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -234,7 +234,7 @@
 		<item-type>Number</item-type>
 		<label>Canicule</label>
 		<description>Niveau d'alerte aux fortes températures</description>
-		<category>oh:meteoalerte:canicule</category>
+		<category>meteoalerte:canicule</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -249,7 +249,7 @@
 		<item-type>Number</item-type>
 		<label>Grand Froid</label>
 		<description>Niveau d'alerte aux températures négatives</description>
-		<category>oh:meteoalerte:grand_froid</category>
+		<category>meteoalerte:grand_froid</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -264,7 +264,7 @@
 		<item-type>Number</item-type>
 		<label>Avalanches</label>
 		<description>Niveau d'alerte aux avalanches</description>
-		<category>oh:meteoalerte:avalanches</category>
+		<category>meteoalerte:avalanches</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -279,7 +279,7 @@
 		<item-type>Number</item-type>
 		<label>Vague Submersion</label>
 		<description>Niveau d'alerte aux vagues submersion</description>
-		<category>oh:meteoalerte:vague_submersion</category>
+		<category>meteoalerte:vague_submersion</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -294,7 +294,7 @@
 		<item-type>Number</item-type>
 		<label>Pluie Inondation</label>
 		<description>Niveau d'alerte aux inondations causée par les précipitations</description>
-		<category>oh:meteoalerte:pluie_inondation</category>
+		<category>meteoalerte:pluie_inondation</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>

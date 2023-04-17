@@ -27,8 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.types.State;
 import org.openhab.core.ui.icon.IconProvider;
 import org.openhab.core.ui.icon.IconSet;
 import org.openhab.core.ui.icon.IconSet.Format;
@@ -56,7 +54,7 @@ public class MeteoAlertIconProvider implements IconProvider {
     public static final String UNKNOWN_COLOR = "b3b3b3";
 
     public static final Map<AlertLevel, String> ALERT_COLORS = Map.of(AlertLevel.GREEN, "00ff00", AlertLevel.YELLOW,
-            "ffff00", AlertLevel.ORANGE, "ff6600", AlertLevel.RED, "ff0000", AlertLevel.UNKNOWN, UNKNOWN_COLOR);
+            "ffff00", AlertLevel.ORANGE, "ff6600", AlertLevel.RED, "ff0000");
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
     private final BundleContext context;
@@ -92,28 +90,28 @@ public class MeteoAlertIconProvider implements IconProvider {
 
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
-        return ICONS.contains(category.replace(BINDING_ID + ":", "")) && format == Format.SVG ? 7 : null;
+        return ((ICONS.contains(category) && iconSetId.equals(BINDING_ID))
+                || (ICONS.contains(category.replace(BINDING_ID + ":", "")))) && format == Format.SVG ? 7 : null;
     }
 
     @Override
-    public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String value, Format format) {
+    public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
         String icon = getResource(category);
 
         if (icon.isEmpty()) {
             return null;
         }
 
-        if (value != null) {
+        if (state != null) {
             try {
-                State state = DecimalType.valueOf(value);
-
-                AlertLevel alertLevel = ALERT_LEVELS.entrySet().stream().filter(entry -> entry.getValue().equals(state))
-                        .findFirst().map(entry -> entry.getKey()).orElse(AlertLevel.UNKNOWN);
+                Integer ordinal = Integer.valueOf(state);
+                AlertLevel alertLevel = ordinal < AlertLevel.values().length ? AlertLevel.values()[ordinal]
+                        : AlertLevel.UNKNOWN;
 
                 icon = icon.replaceAll(UNKNOWN_COLOR, ALERT_COLORS.getOrDefault(alertLevel, UNKNOWN_COLOR));
 
             } catch (NumberFormatException e) {
-                logger.debug("{} is not a valid DecimalType", value);
+                logger.debug("{} is not a valid DecimalType", state);
             }
         }
 
@@ -124,7 +122,7 @@ public class MeteoAlertIconProvider implements IconProvider {
         String result = "";
 
         URL iconResource = context.getBundle()
-                .getEntry("icons/%s.svg".formatted(iconName.replace(BINDING_ID + ":", "")));
+                .getEntry("icon/%s.svg".formatted(iconName.replace(BINDING_ID + ":", "")));
         try (InputStream stream = iconResource.openStream()) {
             if (stream != null) {
                 result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
