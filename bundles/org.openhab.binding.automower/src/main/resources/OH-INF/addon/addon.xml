@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>Automower Binding</name>
 	<description>Binding to interact with Husquvarna Automower robots.</description>
-    <connection>cloud</connection>
+	<connection>cloud</connection>
 
 </addon:addon>

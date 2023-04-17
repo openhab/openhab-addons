@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>RegoHeatPump Binding</name>
 	<description>The Rego controller based heat pumps binding.</description>
-    <connection>local</connection>
+	<connection>local</connection>
 
 </addon:addon>
