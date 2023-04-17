@@ -217,6 +217,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 |-|-|-|
 | `activateAlarmOutput` | Switch | Toggles a cameras relay output 1. |
 | `activateAlarmOutput2` | Switch | Toggles a cameras relay output 2. |
+| `animalAlarm` | Switch | Toggles when an animal is in view. |
 | `audioAlarm` | Switch (read only) | When the camera detects noise above a threshold this switch will move to ON. |
 | `autoLED` | Switch | When ON this sets a cameras IR LED to automatically turn on or off. |
 | `carAlarm` | Switch | When a car is detected the switch will turn ON. |
@@ -225,10 +226,12 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `enableAudioAlarm` | Switch | Allows the audio alarm to be turned ON or OFF. |
 | `enableExternalAlarmInput` | Switch | Hikvision and Instar allow the Alarm input terminals to be disabled by this control. |
 | `enableFieldDetectionAlarm` | Switch | Allows the field detection alarm to be turned ON or OFF. Some cameras will call this the Intrusion Alarm. |
+| `enableFTP` | Switch | Turn the cameras internal FTP recordings ON or OFF. |
 | `enableLED` | Switch | Turn the IR LED ON or OFF. Some cameras have 3 states the LED can be in, so see the `autoLED` channel. |
 | `enableLineCrossingAlarm` | Switch | Turns the line crossing alarm for API cameras, ON and OFF. |
 | `enableMotionAlarm` | Switch | Turns the motion alarm ON and OFF for API cameras. This will not effect FFmpeg based alarms which have their own control. |
 | `enablePirAlarm` | Switch | Turn PIR sensor ON or OFF. |
+| `enableRecordings` | Switch | Turn the cameras internal recordings ON or OFF. |
 | `externalAlarmInput` | Switch (read only) | Reflects the status of the alarm input terminals on some cameras. |
 | `externalAlarmInput2`  | Switch (read only) | Reflects the status of the alarm input 2 terminals on some cameras. |
 | `externalLight` | Switch | Some cameras have a dedicated relay output for turning lights on and off with. |
