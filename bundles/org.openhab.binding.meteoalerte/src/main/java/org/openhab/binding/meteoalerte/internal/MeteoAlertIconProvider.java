@@ -51,7 +51,7 @@ public class MeteoAlertIconProvider implements IconProvider {
     private static final Set<String> ICONS = Set.of(WAVE.replace("-", "_"), AVALANCHE, HEAT, FREEZE.replace("-", "_"),
             FLOOD, SNOW, STORM, RAIN.replace("-", "_"), WIND);
 
-    public static final String UNKNOWN_COLOR = "b3b3b3";
+    public static final String UNKNOWN_COLOR = "3d3c3c";
 
     public static final Map<AlertLevel, String> ALERT_COLORS = Map.of(AlertLevel.GREEN, "00ff00", AlertLevel.YELLOW,
             "ffff00", AlertLevel.ORANGE, "ff6600", AlertLevel.RED, "ff0000");
@@ -97,7 +97,6 @@ public class MeteoAlertIconProvider implements IconProvider {
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
         String icon = getResource(category);
-
         if (icon.isEmpty()) {
             return null;
         }
@@ -107,8 +106,8 @@ public class MeteoAlertIconProvider implements IconProvider {
                 Integer ordinal = Integer.valueOf(state);
                 AlertLevel alertLevel = ordinal < AlertLevel.values().length ? AlertLevel.values()[ordinal]
                         : AlertLevel.UNKNOWN;
-
-                icon = icon.replaceAll(UNKNOWN_COLOR, ALERT_COLORS.getOrDefault(alertLevel, UNKNOWN_COLOR));
+                String alertColor = ALERT_COLORS.getOrDefault(alertLevel, UNKNOWN_COLOR);
+                icon = icon.replaceAll(UNKNOWN_COLOR, alertColor);
 
             } catch (NumberFormatException e) {
                 logger.debug("{} is not a valid DecimalType", state);
