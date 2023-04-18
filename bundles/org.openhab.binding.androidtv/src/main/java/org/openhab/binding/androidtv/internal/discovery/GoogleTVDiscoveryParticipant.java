@@ -54,9 +54,8 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         return GOOGLETV_MDNS_SERVICE_TYPE;
     }
 
-    @Nullable
     @Override
-    public DiscoveryResult createResult(@Nullable ServiceInfo service) {
+    public @Nullable DiscoveryResult createResult(@Nullable ServiceInfo service) {
         if ((service == null) || !service.hasData()) {
             return null;
         }
@@ -88,9 +87,8 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
     }
 
-    @Nullable
     @Override
-    public ThingUID getThingUID(@Nullable ServiceInfo service) {
+    public @Nullable ThingUID getThingUID(@Nullable ServiceInfo service) {
         if ((service == null) || !service.hasData()) {
             return null;
         }
