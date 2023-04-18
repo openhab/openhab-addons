@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface CaddxPanelListener {
-    public void caddxMessage(CaddxMessage message);
+    void caddxMessage(CaddxMessage message);
 }

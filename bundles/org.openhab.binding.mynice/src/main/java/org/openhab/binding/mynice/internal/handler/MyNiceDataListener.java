@@ -26,5 +26,5 @@ import org.openhab.binding.mynice.internal.xml.dto.Device;
 @NonNullByDefault
 public interface MyNiceDataListener {
 
-    public void onDataFetched(List<Device> devices);
+    void onDataFetched(List<Device> devices);
 }

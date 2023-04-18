@@ -56,7 +56,8 @@ public interface SleepIQ {
      *             if the login request fails for any reason other than bad
      *             credentials (including missing credentials)
      */
-    public @Nullable LoginInfo login() throws LoginException, UnauthorizedException;
+    @Nullable
+    LoginInfo login() throws LoginException, UnauthorizedException;
 
     /**
      * Get a list of beds connected to the account.
@@ -67,7 +68,7 @@ public interface SleepIQ {
      *             credentials (including missing credentials)
      * @throws SleepIQException
      */
-    public List<Bed> getBeds() throws LoginException, SleepIQException, BedNotFoundException;
+    List<Bed> getBeds() throws LoginException, SleepIQException, BedNotFoundException;
 
     /**
      * Get a list of sleepers registered to this account for beds or bed positions
@@ -77,7 +78,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public List<Sleeper> getSleepers() throws LoginException, SleepIQException;
+    List<Sleeper> getSleepers() throws LoginException, SleepIQException;
 
     /**
      * Get the status of all beds and all air chambers registered to this
@@ -87,7 +88,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public FamilyStatusResponse getFamilyStatus() throws LoginException, SleepIQException;
+    FamilyStatusResponse getFamilyStatus() throws LoginException, SleepIQException;
 
     /**
      * Get the Sleep Data for a sleeper registered to this account.
@@ -100,7 +101,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public SleepDataResponse getSleepData(String sleeperId, SleepDataInterval interval)
+    SleepDataResponse getSleepData(String sleeperId, SleepDataInterval interval)
             throws BedNotFoundException, LoginException, SleepIQException;
 
     /**
@@ -117,7 +118,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public PauseModeResponse getPauseMode(String bedId) throws BedNotFoundException, LoginException, SleepIQException;
+    PauseModeResponse getPauseMode(String bedId) throws BedNotFoundException, LoginException, SleepIQException;
 
     /**
      * Set the sleep number for a chamber of a bed
@@ -129,7 +130,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public void setSleepNumber(String bedId, Side side, int sleepNumber) throws LoginException, SleepIQException;
+    void setSleepNumber(String bedId, Side side, int sleepNumber) throws LoginException, SleepIQException;
 
     /**
      * Set the pause (privacy) mode for a bed
@@ -139,7 +140,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public void setPauseMode(String bedId, boolean command) throws LoginException, SleepIQException;
+    void setPauseMode(String bedId, boolean command) throws LoginException, SleepIQException;
 
     /**
      * Get the foundation features for a bed
@@ -149,7 +150,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public FoundationFeaturesResponse getFoundationFeatures(String bedId) throws LoginException, SleepIQException;
+    FoundationFeaturesResponse getFoundationFeatures(String bedId) throws LoginException, SleepIQException;
 
     /**
      * Get the foundation status for a bed
@@ -159,7 +160,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public FoundationStatusResponse getFoundationStatus(String bedId) throws LoginException, SleepIQException;
+    FoundationStatusResponse getFoundationStatus(String bedId) throws LoginException, SleepIQException;
 
     /**
      * Set a foundation preset for the side of a bed
@@ -172,7 +173,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public void setFoundationPreset(String bedId, Side side, FoundationPreset preset, FoundationActuatorSpeed speed)
+    void setFoundationPreset(String bedId, Side side, FoundationPreset preset, FoundationActuatorSpeed speed)
             throws LoginException, SleepIQException;
 
     /**
@@ -187,7 +188,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public void setFoundationPosition(String bedId, Side side, FoundationActuator actuator, int position,
+    void setFoundationPosition(String bedId, Side side, FoundationActuator actuator, int position,
             FoundationActuatorSpeed speed) throws LoginException, SleepIQException;
 
     /**
@@ -200,7 +201,7 @@ public interface SleepIQ {
      * @throws LoginException
      * @throws SleepIQException
      */
-    public void setFoundationOutlet(String bedId, FoundationOutlet outlet, FoundationOutletOperation operation)
+    void setFoundationOutlet(String bedId, FoundationOutlet outlet, FoundationOutletOperation operation)
             throws LoginException, SleepIQException;
 
     /**
@@ -211,12 +212,12 @@ public interface SleepIQ {
      * @param httpClient handle to the Jetty http client
      * @return a concrete implementation of this interface
      */
-    public static SleepIQ create(Configuration config, HttpClient httpClient) {
+    static SleepIQ create(Configuration config, HttpClient httpClient) {
         return new SleepIQImpl(config, httpClient);
     }
 
     /**
      * Close down the cloud service
      */
-    public void shutdown();
+    void shutdown();
 }
