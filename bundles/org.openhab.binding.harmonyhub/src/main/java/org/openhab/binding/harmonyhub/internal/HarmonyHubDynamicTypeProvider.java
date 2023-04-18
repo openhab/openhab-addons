@@ -39,7 +39,7 @@ public class HarmonyHubDynamicTypeProvider extends AbstractStorageBasedTypeProvi
     }
 
     public void removeChannelTypesForThing(ThingUID uid) {
-        String thingUid = uid.getAsString();
+        String thingUid = uid.getAsString() + ":";
         getChannelTypes(null).stream().map(ChannelType::getUID).filter(c -> c.getAsString().startsWith(thingUid))
                 .forEach(this::removeChannelType);
     }
