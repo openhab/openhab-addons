@@ -14,6 +14,7 @@ package org.openhab.binding.energidataservice.internal.api.serialization;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,8 +36,12 @@ public class InstantDeserializer implements JsonDeserializer<Instant> {
     public @Nullable Instant deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
         String content = element.getAsString();
-        // When writing this, the format of the provided UTC strings lacks the trailing 'Z'.
-        // In case this would be fixed in the future, gracefully support both with and without this.
-        return Instant.parse(content.endsWith("Z") ? content : content + "Z");
+        try {
+            // When writing this, the format of the provided UTC strings lacks the trailing 'Z'.
+            // In case this would be fixed in the future, gracefully support both with and without this.
+            return Instant.parse(content.endsWith("Z") ? content : content + "Z");
+        } catch (DateTimeParseException e) {
+            throw new JsonParseException("Could not parse as Instant: " + content, e);
+        }
     }
 }

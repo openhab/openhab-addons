@@ -14,6 +14,7 @@ package org.openhab.binding.energidataservice.internal.api.serialization;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,6 +35,10 @@ public class LocalDateTimeDeserializer implements JsonDeserializer<LocalDateTime
     @Override
     public @Nullable LocalDateTime deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
-        return LocalDateTime.parse(element.getAsString());
+        try {
+            return LocalDateTime.parse(element.getAsString());
+        } catch (DateTimeParseException e) {
+            throw new JsonParseException("Could not parse as LocalDateTime: " + element.getAsString(), e);
+        }
     }
 }
