@@ -42,7 +42,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.ui.icon.IconSet.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,18 +151,17 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
         String channelIcon = channelId + "-icon";
         if (isLinked(channelIcon)) {
-            InputStream icon = iconProvider.getIcon(channelId.replace("-", "_"), BINDING_ID, state.toString(),
-                    Format.SVG);
-            try {
-                if (icon != null) {
+            InputStream icon = iconProvider.getIcon(channelId, state.toString());
+            if (icon != null) {
+                try {
                     State result = new RawType(icon.readAllBytes(), "image/svg+xml");
                     updateState(channelIcon, result);
-                } else {
-                    throw new IOException("Null icon returned");
+                } catch (IOException e) {
+                    logger.warn("Error getting icon for channel {} and value {} : {}", channelId, value,
+                            e.getMessage());
                 }
-            } catch (IOException e) {
-                logger.warn("Error reading icon resource for channel {} and value {} : {}", channelId, value,
-                        e.getMessage());
+            } else {
+                logger.warn("Null icon returned for channel {} and state {}", channelIcon, state);
             }
         }
     }

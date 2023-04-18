@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,14 +46,8 @@ import org.slf4j.LoggerFactory;
 public class MeteoAlertIconProvider implements IconProvider {
     private static final String DEFAULT_LABEL = "Météo Alerte Icons";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather events provided by Météo Alerte";
-
-    private static final Set<String> ICONS = Set.of(WAVE.replace("-", "_"), AVALANCHE, HEAT, FREEZE.replace("-", "_"),
-            FLOOD, SNOW, STORM, RAIN.replace("-", "_"), WIND);
-
-    public static final String UNKNOWN_COLOR = "3d3c3c";
-
-    public static final Map<AlertLevel, String> ALERT_COLORS = Map.of(AlertLevel.GREEN, "00ff00", AlertLevel.YELLOW,
-            "ffff00", AlertLevel.ORANGE, "ff6600", AlertLevel.RED, "ff0000");
+    private static final Set<String> ICONS = Set.of(WAVE, AVALANCHE, HEAT, FREEZE, FLOOD, SNOW, STORM, RAIN, WIND,
+            "meteo_france");
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
     private final BundleContext context;
@@ -94,6 +87,10 @@ public class MeteoAlertIconProvider implements IconProvider {
                 || (ICONS.contains(category.replace(BINDING_ID + ":", "")))) && format == Format.SVG ? 7 : null;
     }
 
+    public @Nullable InputStream getIcon(String category, String state) {
+        return getIcon(category, BINDING_ID, state, Format.SVG);
+    }
+
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
         String icon = getResource(category);
@@ -106,8 +103,7 @@ public class MeteoAlertIconProvider implements IconProvider {
                 Integer ordinal = Integer.valueOf(state);
                 AlertLevel alertLevel = ordinal < AlertLevel.values().length ? AlertLevel.values()[ordinal]
                         : AlertLevel.UNKNOWN;
-                String alertColor = ALERT_COLORS.getOrDefault(alertLevel, UNKNOWN_COLOR);
-                icon = icon.replaceAll(UNKNOWN_COLOR, alertColor);
+                icon = icon.replaceAll(AlertLevel.UNKNOWN.color, alertLevel.color);
 
             } catch (NumberFormatException e) {
                 logger.debug("{} is not a valid DecimalType", state);
