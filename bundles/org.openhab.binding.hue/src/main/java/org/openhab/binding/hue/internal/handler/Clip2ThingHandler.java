@@ -136,6 +136,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean hasConnectivityIssue;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
+    private boolean updateScenesDone;
 
     private @Nullable ScheduledFuture<?> updateContributorsTask;
 
@@ -339,6 +340,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         hasConnectivityIssue = false;
         updatePropertiesDone = false;
         updateDependenciesDone = false;
+        updateScenesDone = false;
     }
 
     /**
@@ -761,7 +763,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
      *
      * @param scenes the full list of scene resources.
      */
-    public void updateScenes(List<Resource> scenes) {
+    public synchronized void updateScenes(List<Resource> scenes) {
+        if (updateScenesDone) {
+            return;
+        }
         ResourceReference thisReference = getResourceReference();
 
         temporaryAssociatedScenesList.clear();
@@ -777,6 +782,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     }).collect(Collectors.toList()));
             logger.debug("updateScenes() found {} associated scenes", temporaryAssociatedScenesList.size());
         }
+        updateScenesDone = true;
     }
 
     /**

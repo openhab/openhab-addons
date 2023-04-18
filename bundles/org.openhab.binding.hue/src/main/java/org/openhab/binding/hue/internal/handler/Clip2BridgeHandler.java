@@ -105,6 +105,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> checkConnectionTask;
     private @Nullable ServiceRegistration<?> trustManagerRegistration;
     private @Nullable Clip2ThingDiscoveryService discoveryService;
+    private @Nullable ScheduledFuture<?> scheduledUpdate;
 
     private boolean assetsLoaded;
     private int applKeyRetriesRemaining;
@@ -234,13 +235,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         if (thing.getStatus() == ThingStatus.ONLINE && (childHandler instanceof Clip2ThingHandler)) {
             logger.debug("childHandlerInitialized() {}", childThing.getUID());
-            try {
-                updateScenes();
-                updateThings();
-            } catch (ApiException | AssetNotLoadedException e) {
-                // exceptions should not occur here; but log anyway (just in case)
-                logger.warn("childHandlerInitialized() {}", e.getMessage(), e);
-            }
+            updateScenesAndThings(5000);
         }
     }
 
@@ -564,15 +559,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             logger.debug("updateOnlineState()");
             connectRetriesRemaining = RECONNECT_MAX_TRIES;
             updateStatus(ThingStatus.ONLINE);
-            try {
-                updateScenes();
-                updateThings();
-                Clip2ThingDiscoveryService discoveryService = this.discoveryService;
-                if (Objects.nonNull(discoveryService)) {
-                    discoveryService.startScan(null);
-                }
-            } catch (ApiException | AssetNotLoadedException e) {
-                // should never happen as we are already online
+            updateScenesAndThings(500);
+            Clip2ThingDiscoveryService discoveryService = this.discoveryService;
+            if (Objects.nonNull(discoveryService)) {
+                discoveryService.startScan(null);
             }
         }
     }
@@ -650,6 +640,27 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 ((Clip2ThingHandler) handler).updateScenes(scenes);
             }
         });
+    }
+
+    /**
+     * Schedule a task to update scenes and things. It prevents floods of GET calls when multiple child things are added
+     * at the same time.
+     *
+     * @param delayMilliSeconds the delay before running the task.
+     */
+    private void updateScenesAndThings(int delayMilliSeconds) {
+        ScheduledFuture<?> scheduledUpdateTask = this.scheduledUpdate;
+        if (Objects.nonNull(scheduledUpdateTask) && !scheduledUpdateTask.isDone()) {
+            return;
+        }
+        scheduledUpdateTask = scheduler.schedule(() -> {
+            try {
+                updateScenes();
+                updateThings();
+            } catch (ApiException | AssetNotLoadedException e) {
+                // should never happen as we are already online
+            }
+        }, delayMilliSeconds, TimeUnit.MILLISECONDS);
     }
 
     /**
