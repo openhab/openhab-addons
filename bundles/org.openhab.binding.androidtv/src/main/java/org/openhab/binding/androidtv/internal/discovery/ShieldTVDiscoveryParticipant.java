@@ -57,7 +57,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Nullable
     @Override
     public DiscoveryResult createResult(@Nullable ServiceInfo service) {
-        if ((service == null) || !service.hasData()) {
+        if (service == null || !service.hasData()) {
             return null;
         }
 
@@ -93,7 +93,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Nullable
     @Override
     public ThingUID getThingUID(@Nullable ServiceInfo service) {
-        if ((service == null) || !service.hasData()) {
+        if (service == null || !service.hasData()) {
             return null;
         }
 

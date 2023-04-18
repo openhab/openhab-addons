@@ -155,7 +155,7 @@ public class ShieldTVConnectionManager {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-        handler.setThingProperty("Device Name", hostName);
+        handler.setThingProperty("deviceName", hostName);
     }
 
     public String getHostName() {
@@ -168,7 +168,7 @@ public class ShieldTVConnectionManager {
 
     public void setDeviceID(String deviceId) {
         this.deviceId = deviceId;
-        handler.setThingProperty("Device ID", deviceId);
+        handler.setThingProperty("deviceID", deviceId);
     }
 
     public String getDeviceID() {
@@ -177,7 +177,7 @@ public class ShieldTVConnectionManager {
 
     public void setArch(String arch) {
         this.arch = arch;
-        handler.setThingProperty("Architectures", arch);
+        handler.setThingProperty("architectures", arch);
     }
 
     public String getArch() {

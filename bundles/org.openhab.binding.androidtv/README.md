@@ -15,9 +15,10 @@ This binding supports two thing types:
 
 Both GoogleTVs and ShieldTVs should be added automatically to the inbox through the mDNS discovery process.  
 
-In the case of the ShieldTV, OpenHAB will likely create an inbox entry for both a GoogleTV and a ShieldTV device.
+In the case of the ShieldTV, openHAB will likely create an inbox entry for both a GoogleTV and a ShieldTV device.
 Only the ShieldTV device should be configured, the GoogleTV can be ignored.
-There is no benefit to configuring two things for a ShieldTV device.  This could cause undesired effects.
+There is no benefit to configuring two things for a ShieldTV device.
+This could cause undesired effects.
 
 ## Binding Configuration
 
@@ -126,20 +127,25 @@ NOTE: Not all KEYCODES work on all devices.  Keycodes above 255 have not been te
 
 For the AndroidTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
 
-To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your AndroidTV.  A 6 digit PIN should be displayed on the screen.
+To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your AndroidTV.
 
-To complete the PIN process, send the PIN displayed to the pincode channel.  The display should return back to where it was originally.
+A 6 digit PIN should be displayed on the screen.
+
+To complete the PIN process, send the PIN displayed to the pincode channel.
+
+The display should return back to where it was originally.
 
 If you are on a ShieldTV you must run that process a second time to authenticate the GoogleTV protocol stack.
 
-This completes the PIN process.  Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
+This completes the PIN process.
+
+Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
 
 ## Full Example
 
 ```java
 Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 Thing androidtv:googletv:theater [ ipAddress="192.168.1.3" ]
-
 ```
 
 ```java

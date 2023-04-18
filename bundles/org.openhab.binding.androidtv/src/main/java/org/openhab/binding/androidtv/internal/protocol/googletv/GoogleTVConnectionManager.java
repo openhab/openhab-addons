@@ -189,7 +189,7 @@ public class GoogleTVConnectionManager {
 
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;
-        handler.setThingProperty("Manufacturer", manufacturer);
+        handler.setThingProperty("manufacturer", manufacturer);
     }
 
     public String getManufacturer() {
@@ -198,7 +198,7 @@ public class GoogleTVConnectionManager {
 
     public void setModel(String model) {
         this.model = model;
-        handler.setThingProperty("Model", model);
+        handler.setThingProperty("model", model);
     }
 
     public String getModel() {
@@ -207,7 +207,7 @@ public class GoogleTVConnectionManager {
 
     public void setAndroidVersion(String androidVersion) {
         this.androidVersion = androidVersion;
-        handler.setThingProperty("Android Version", androidVersion);
+        handler.setThingProperty("androidVersion", androidVersion);
     }
 
     public String getAndroidVersion() {
@@ -216,7 +216,7 @@ public class GoogleTVConnectionManager {
 
     public void setRemoteServer(String remoteServer) {
         this.remoteServer = remoteServer;
-        handler.setThingProperty("Remote Server", remoteServer);
+        handler.setThingProperty("remoteServer", remoteServer);
     }
 
     public String getRemoteServer() {
@@ -225,7 +225,7 @@ public class GoogleTVConnectionManager {
 
     public void setRemoteServerVersion(String remoteServerVersion) {
         this.remoteServerVersion = remoteServerVersion;
-        handler.setThingProperty("Remote Server Version", remoteServerVersion);
+        handler.setThingProperty("remoteServerVersion", remoteServerVersion);
     }
 
     public String getRemoteServerVersion() {

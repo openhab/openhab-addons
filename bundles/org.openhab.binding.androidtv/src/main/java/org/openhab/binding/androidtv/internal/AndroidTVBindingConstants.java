@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.androidtv.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -35,8 +32,7 @@ public class AndroidTVBindingConstants {
     public static final ThingTypeUID THING_TYPE_GOOGLETV = new ThingTypeUID(BINDING_ID, "googletv");
     public static final ThingTypeUID THING_TYPE_SHIELDTV = new ThingTypeUID(BINDING_ID, "shieldtv");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_GOOGLETV, THING_TYPE_SHIELDTV).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GOOGLETV, THING_TYPE_SHIELDTV);
 
     // List of all Channel ids
     public static final String CHANNEL_DEBUG = "debug";

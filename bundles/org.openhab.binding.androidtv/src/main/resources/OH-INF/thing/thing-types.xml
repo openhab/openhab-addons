@@ -25,14 +25,14 @@
 		</channels>
 
 		<properties>
-			<property name="Device Name">unknown</property>
-			<property name="Device ID">unknown</property>
-			<property name="Architectures">unknown</property>
-			<property name="Manufacturer">unknown</property>
-			<property name="Model">unknown</property>
-			<property name="Android Version">unknown</property>
-			<property name="Remote Server">unknown</property>
-			<property name="Remote Server Version">unknown</property>
+			<property name="deviceName">unknown</property>
+			<property name="deviceID">unknown</property>
+			<property name="architectures">unknown</property>
+			<property name="manufacturer">unknown</property>
+			<property name="model">unknown</property>
+			<property name="androidVersion">unknown</property>
+			<property name="remoteServer">unknown</property>
+			<property name="remoteServerVersion">unknown</property>
 		</properties>
 
 		<config-description>
@@ -89,11 +89,11 @@
 		</channels>
 
 		<properties>
-			<property name="Manufacturer">unknown</property>
-			<property name="Model">unknown</property>
-			<property name="Android Version">unknown</property>
-			<property name="Remote Server">unknown</property>
-			<property name="Remote Server Version">unknown</property>
+			<property name="manufacturer">unknown</property>
+			<property name="model">unknown</property>
+			<property name="androidVersion">unknown</property>
+			<property name="remoteServer">unknown</property>
+			<property name="remoteServerVersion">unknown</property>
 		</properties>
 
 		<config-description>
