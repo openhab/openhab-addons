@@ -22,7 +22,7 @@ public interface AvrCommand {
     /**
      * Represent a CommandType of command requests
      */
-    public interface CommandType {
+    interface CommandType {
         /**
          * Return the command of this command type.
          *
@@ -52,19 +52,19 @@ public interface AvrCommand {
      *
      * @return
      */
-    public String getCommand();
+    String getCommand();
 
     /**
      * Return the number of the zone this command will be sent to.
      *
      * @return
      */
-    public int getZone();
+    int getZone();
 
     /**
      * Return the the command type of this command.
      *
      * @return
      */
-    public CommandType getCommandType();
+    CommandType getCommandType();
 }

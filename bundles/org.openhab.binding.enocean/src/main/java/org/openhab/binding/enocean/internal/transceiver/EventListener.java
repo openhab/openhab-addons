@@ -21,5 +21,5 @@ import org.openhab.binding.enocean.internal.messages.EventMessage;
  */
 @NonNullByDefault
 public interface EventListener {
-    public void eventReceived(EventMessage event);
+    void eventReceived(EventMessage event);
 }

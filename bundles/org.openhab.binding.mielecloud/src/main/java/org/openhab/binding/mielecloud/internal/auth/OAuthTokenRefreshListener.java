@@ -26,5 +26,5 @@ public interface OAuthTokenRefreshListener {
      *
      * @param accessToken The new access token.
      */
-    public void onNewAccessToken(String accessToken);
+    void onNewAccessToken(String accessToken);
 }

@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public interface Shelly1CoapListener {
-    public void processResponse(@Nullable Response response);
+    void processResponse(@Nullable Response response);
 }
