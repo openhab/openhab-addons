@@ -313,12 +313,33 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Get the v1 legacy Hue thing (if any) which has an Id that matches the idV1 attribute of a v2 thing.
+     * Get the v1 legacy Hue bridge (if any) which has the same IP address as this.
      *
-     * @param targetIdV1 the idV1 attribute value of a v2 thing.
+     * @return Optional result containing the legacy bridge (if any found).
+     */
+    public Optional<Thing> getLegacyBridge() {
+        String ipAddress = getIpAddress();
+        return Objects.nonNull(ipAddress)
+                ? thingRegistry.getAll().stream()
+                        .filter(thing -> thing.getThingTypeUID().equals(HueBindingConstants.THING_TYPE_BRIDGE)
+                                && ipAddress.equals(thing.getConfiguration().get("ipAddress")))
+                        .findFirst()
+                : Optional.empty();
+    }
+
+    /**
+     * Get the v1 legacy Hue thing (if any) which has a Bridge having the same IP address as this, and an ID that
+     * matches the given parameter.
+     *
+     * @param targetIdV1 the idV1 attribute to match.
      * @return Optional result containing the legacy thing (if found).
      */
     public Optional<Thing> getLegacyThing(String targetIdV1) {
+        Optional<Thing> legacyBridge = getLegacyBridge();
+        if (legacyBridge.isEmpty()) {
+            return Optional.empty();
+        }
+
         String config;
         if (targetIdV1.startsWith("/lights/")) {
             config = HueBindingConstants.LIGHT_ID;
@@ -327,17 +348,17 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         } else if (targetIdV1.startsWith("/groups/")) {
             config = HueBindingConstants.GROUP_ID;
         } else {
-            config = null;
+            return Optional.empty();
         }
-        if (Objects.nonNull(config)) {
-            return thingRegistry.getAll().stream() //
-                    .filter(thing -> HueBindingConstants.V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
-                    .filter(thing -> {
-                        Object id = thing.getConfiguration().get(config);
-                        return id instanceof String && targetIdV1.endsWith("/" + (String) id);
-                    }).findFirst();
-        }
-        return Optional.empty();
+
+        ThingUID legacyBridgeUID = legacyBridge.get().getUID();
+        return thingRegistry.getAll().stream() //
+                .filter(thing -> legacyBridgeUID.equals(thing.getBridgeUID())
+                        && HueBindingConstants.V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
+                .filter(thing -> {
+                    Object id = thing.getConfiguration().get(config);
+                    return (id instanceof String) && targetIdV1.endsWith("/" + (String) id);
+                }).findFirst();
     }
 
     /**

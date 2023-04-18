@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.dto.clip2;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,45 +37,41 @@ public class Effects {
     private @Nullable String status;
     private @Nullable Integer duration;
 
-    public List<EffectType> getEffectValues() {
-        List<String> effectValues = this.effectValues;
-        if (Objects.nonNull(effectValues)) {
-            return effectValues.stream().map(EffectType::of).collect(Collectors.toList());
-        }
-        return List.of();
-    }
-
-    public List<EffectType> getStatusEffectValues() {
+    public boolean allows(EffectType effect) {
         List<String> statusValues = this.statusValues;
-        if (Objects.nonNull(statusValues)) {
-            return statusValues.stream().map(EffectType::of).collect(Collectors.toList());
-        }
-        return List.of();
-    }
-
-    public @Nullable EffectType getEffectType() {
-        return Objects.nonNull(effect) ? EffectType.of(effect) : null;
-    }
-
-    public void setEffectType(EffectType effect) {
-        effectValues = null;
-        this.effect = effect.name().toLowerCase();
-    }
-
-    public @Nullable EffectType getStatusEffectType() {
-        return Objects.nonNull(status) ? EffectType.of(status) : null;
-    }
-
-    public void setStatusEffectType(EffectType status) {
-        statusValues = null;
-        this.status = status.name().toLowerCase();
+        return Objects.nonNull(statusValues) ? statusValues.contains(effect.name().toLowerCase()) : false;
     }
 
     public @Nullable Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public EffectType getEffect() {
+        String effect = this.effect;
+        return Objects.nonNull(effect) ? EffectType.of(effect) : EffectType.NO_EFFECT;
+    }
+
+    public EffectType getStatus() {
+        return Objects.nonNull(status) ? EffectType.of(status) : EffectType.NO_EFFECT;
+    }
+
+    public List<String> getStatusValues() {
+        List<String> statusValues = this.statusValues;
+        return Objects.nonNull(statusValues) ? statusValues : List.of();
+    }
+
+    public Effects setDuration(Integer duration) {
         this.duration = duration;
+        return this;
+    }
+
+    public Effects setEffect(EffectType effectType) {
+        effect = effectType.name().toLowerCase();
+        return this;
+    }
+
+    public Effects setStatusValues(List<String> statusValues) {
+        this.statusValues = statusValues;
+        return this;
     }
 }

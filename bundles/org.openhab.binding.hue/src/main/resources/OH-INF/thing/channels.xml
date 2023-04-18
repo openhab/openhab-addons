@@ -276,4 +276,16 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
+	<channel-type id="alert2">
+		<item-type>String</item-type>
+		<label>Alert</label>
+		<description>Activate the alert for the light(s).</description>
+	</channel-type>
+
+	<channel-type id="effect2">
+		<item-type>String</item-type>
+		<label>Effect</label>
+		<description>Activate the effect for the light.</description>
+	</channel-type>
+
 </thing:thing-descriptions>

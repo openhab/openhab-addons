@@ -32,6 +32,11 @@ public class Alerts {
     private @Nullable @SerializedName("action_values") List<String> actionValues;
     private @Nullable String action;
 
+    public @Nullable ActionType getAction() {
+        String action = this.action;
+        return Objects.nonNull(action) ? ActionType.of(action) : null;
+    }
+
     public List<ActionType> getActionValues() {
         List<String> actionValues = this.actionValues;
         if (Objects.nonNull(actionValues)) {
@@ -40,13 +45,8 @@ public class Alerts {
         return List.of();
     }
 
-    public @Nullable ActionType getActionType() {
-        String action = this.action;
-        return Objects.nonNull(action) ? ActionType.of(action) : null;
-    }
-
-    public void setActionType(ActionType action) {
-        actionValues = null;
-        this.action = action.name().toLowerCase();
+    public Alerts setAction(ActionType actionType) {
+        this.action = actionType.name().toLowerCase();
+        return this;
     }
 }

@@ -30,10 +30,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
+import org.openhab.binding.hue.internal.dto.clip2.Alerts;
+import org.openhab.binding.hue.internal.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
@@ -240,6 +244,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
         String putResourceId = null;
 
         switch (channelUID.getId()) {
+            case HueBindingConstants.CHANNEL_2_ALERT:
+                putResource = new Resource(lightResourceType).setAlert(command, getCachedResource(lightResourceType));
+                scheduler.schedule(() -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 5,
+                        TimeUnit.SECONDS);
+                break;
+
+            case HueBindingConstants.CHANNEL_2_EFFECT:
+                putResource = new Resource(lightResourceType).setEffect(command, getCachedResource(lightResourceType));
+                break;
+
             case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE:
                 putResource = new Resource(lightResourceType).setColorTemperaturePercent(command,
                         getCachedResource(ResourceType.LIGHT));
@@ -250,7 +264,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case HueBindingConstants.CHANNEL_2_COLOR:
-                putResource = new Resource(lightResourceType).setColor(command, getCachedResource(ResourceType.LIGHT));
+                putResource = new Resource(lightResourceType).setColor(command, getCachedResource(lightResourceType));
                 break;
 
             case HueBindingConstants.CHANNEL_2_BRIGHTNESS:
@@ -363,6 +377,26 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Process the incoming Resource to initialize the alert channel.
+     *
+     * @param resource a Resource possibly with an Alerts element.
+     */
+    private void updateAlertChannel(Resource resource) {
+        Alerts alerts = resource.getAlerts();
+        if (Objects.nonNull(alerts)) {
+            List<StateOption> stateOptions = alerts.getActionValues().stream().map(entry -> {
+                String entryName = entry.toString();
+                return new StateOption(entryName, entryName);
+            }).collect(Collectors.toList());
+            if (!stateOptions.isEmpty()) {
+                stateDescriptionProvider.setStateOptions(
+                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_ALERT), stateOptions);
+                logger.debug("updateAlerts() found {} associated alerts", stateOptions.size());
+            }
+        }
+    }
+
+    /**
      * If this v2 thing has a matching v1 legacy thing in the system, then for each channel in the v1 thing that
      * corresponds to an equivalent channel in this v2 thing, and for all items that are linked to the v1 channel,
      * create a new channel/item link between that item and the respective v2 channel in this thing.
@@ -447,16 +481,24 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case LIGHT:
+                if (fullUpdate) {
+                    updateEffectChannel(resource);
+                }
                 updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE, resource.getColorTemperaturePercentState(),
                         fullUpdate);
                 updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMP_KELVIN, resource.getColorTemperatureKelvinState(),
                         fullUpdate);
                 updateState(HueBindingConstants.CHANNEL_2_COLOR, resource.getColorState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
                 // fall through for brightness and switch channels
 
             case GROUPED_LIGHT:
+                if (fullUpdate) {
+                    updateAlertChannel(resource);
+                }
                 updateState(HueBindingConstants.CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
                 updateState(HueBindingConstants.CHANNEL_2_SWITCH, resource.getSwitch(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
                 break;
 
             case LIGHT_LEVEL:
@@ -571,6 +613,26 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.debug("updateDependencies() {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error-assets-not-loaded");
+            }
+        }
+    }
+
+    /**
+     * Process the incoming Resource to initialize the effects channel.
+     *
+     * @param resource a Resource possibly with an Effects element.
+     */
+    public void updateEffectChannel(Resource resource) {
+        Effects effects = resource.getEffects();
+        if (Objects.nonNull(effects)) {
+            List<StateOption> stateOptions = effects.getStatusValues().stream().map(entry -> {
+                String effectTypeName = EffectType.of(entry).name();
+                return new StateOption(effectTypeName, effectTypeName);
+            }).collect(Collectors.toList());
+            if (!stateOptions.isEmpty()) {
+                stateDescriptionProvider.setStateOptions(
+                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_EFFECT), stateOptions);
+                logger.debug("updateEffects() found {} effects", stateOptions.size());
             }
         }
     }
@@ -713,9 +775,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         String sceneFriendlyName = scene.getName();
                         return new StateOption(sceneFriendlyName, sceneFriendlyName);
                     }).collect(Collectors.toList()));
+            logger.debug("updateScenes() found {} associated scenes", temporaryAssociatedScenesList.size());
         }
-
-        logger.debug("updateScenes() found {} associated scenes", temporaryAssociatedScenesList.size());
     }
 
     /**

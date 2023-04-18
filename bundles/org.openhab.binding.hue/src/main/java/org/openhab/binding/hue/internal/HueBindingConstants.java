@@ -138,10 +138,12 @@ public class HueBindingConstants {
     // channels for API v2
     public static final String CHANNEL_2_BRIGHTNESS = CHANNEL_BRIGHTNESS;
     public static final String CHANNEL_2_COLOR = CHANNEL_COLOR;
-    public static final String CHANNEL_2_SWITCH = CHANNEL_SWITCH;
-    public static final String CHANNEL_2_SCENE = CHANNEL_SCENE;
     public static final String CHANNEL_2_COLOR_TEMPERATURE = "color-temperature";
     public static final String CHANNEL_2_COLOR_TEMP_KELVIN = "color-temp-kelvin";
+    public static final String CHANNEL_2_SWITCH = CHANNEL_SWITCH;
+    public static final String CHANNEL_2_SCENE = CHANNEL_SCENE;
+    public static final String CHANNEL_2_ALERT = CHANNEL_ALERT;
+    public static final String CHANNEL_2_EFFECT = CHANNEL_EFFECT;
     public static final String CHANNEL_2_BUTTON_LAST_EVENT = "button-last-event";
     public static final String CHANNEL_2_ROTARY_STEPS = "rotary-steps";
     public static final String CHANNEL_2_MOTION = "motion";

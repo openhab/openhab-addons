@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum EffectType {
+    SPARKLE,
     FIRE,
     CANDLE,
     SUNRISE,

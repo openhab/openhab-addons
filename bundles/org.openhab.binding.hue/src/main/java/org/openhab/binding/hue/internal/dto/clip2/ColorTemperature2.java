@@ -72,12 +72,14 @@ public class ColorTemperature2 {
         return 1000000f / value;
     }
 
-    public void setKelvin(double kelvin) {
+    public ColorTemperature2 setKelvin(double kelvin) {
         setMirek(getReciprocal(kelvin));
+        return this;
     }
 
-    public void setMirek(double mirek) {
+    public ColorTemperature2 setMirek(double mirek) {
         this.mirek = Math.round(mirek);
+        return this;
     }
 
     public ColorTemperature2 setMirekSchema(@Nullable MirekSchema mirekSchema) {
@@ -90,10 +92,11 @@ public class ColorTemperature2 {
      *
      * @param mirekSchema the reference MirekSchema.
      */
-    public void setPercent(double percent, MirekSchema mirekSchema) {
+    public ColorTemperature2 setPercent(double percent, MirekSchema mirekSchema) {
         double min = mirekSchema.getMirekMinimum();
         double max = mirekSchema.getMirekMaximum();
         double offset = (max - min) * percent / 100f;
         setMirek(min + offset);
+        return this;
     }
 }

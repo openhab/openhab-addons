@@ -66,6 +66,8 @@ Device things support some of the following channels:
 | brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
 | color-temperature   | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).  |
 | color-temp-kelvin   | Number:Temperature | This channel supports adjusting the color temperature in Kelvin.                      |
+| alert               | String             | This channel allows setting an alert on a light e.g. flashing them.                   |
+| effect              | String             | This channel allows setting an effect on a light e.g. 'candle' effect.                |
 | button-last-event   | Number             | This channel shows which button was last pressed in the device.                       |
 | rotary-steps        | Number             | This channel shows the number of rotary steps of the last rotary dial movement.       |
 | motion              | Switch             | This channel shows if motion has been detected by the sensor.                         |
@@ -117,9 +119,10 @@ They support the following channels:
 | switch              | Switch             | This channel supports switching the lights on and off.                                |
 | brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
 | scene<sup>1)</sup>  | String             | Setting the string to a valid scene friendly name activates the respective scene.     |
+| alert<sup>1)</sup>  | String             | This channel allows setting an alert on the lights e.g. flashing them.                |
 
-<sup>1)</sup> The scene channel is optional.
-If the respective room or zone has no scenes associated with it, the channel will not be shown.
+<sup>1)</sup> The scene and alert channels are optional.
+If the respective room or zone has no scenes or alerts associated with it, the respective channel will not be shown.
 
 ## Console Command for finding ResourceIds
 
