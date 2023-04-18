@@ -30,5 +30,5 @@ public interface LifxResponsePacketListener {
      *
      * @param packet the received packet
      */
-    public void handleResponsePacket(Packet packet);
+    void handleResponsePacket(Packet packet);
 }

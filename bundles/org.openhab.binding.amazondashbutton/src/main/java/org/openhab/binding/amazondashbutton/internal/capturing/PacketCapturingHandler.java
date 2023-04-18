@@ -26,5 +26,5 @@ public interface PacketCapturingHandler {
      *
      * @param macAddress The mac address which sent the packet
      */
-    public void packetCaptured(MacAddress sourceMacAddress);
+    void packetCaptured(MacAddress sourceMacAddress);
 }

@@ -18,7 +18,7 @@ package org.openhab.binding.xmppclient.internal.handler;
  * @author Pavel Gololobov - Initial contribution
  */
 public interface XMPPClientMessageSubscriber {
-    public void processMessage(String from, String payload);
+    void processMessage(String from, String payload);
 
-    public String getName();
+    String getName();
 }
