@@ -145,7 +145,7 @@ public class AndroidTVHandler extends BaseThingHandler {
         GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
         String ipAddress = googletvConfig.ipAddress;
 
-        if (ipAddress == null || ipAddress.isEmpty()) {
+        if (ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "googletv address not specified");
             return;
         }
@@ -156,7 +156,7 @@ public class AndroidTVHandler extends BaseThingHandler {
             ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
             ipAddress = shieldtvConfig.ipAddress;
 
-            if (ipAddress == null || ipAddress.isEmpty()) {
+            if (ipAddress.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "shieldtv address not specified");
                 return;

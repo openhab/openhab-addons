@@ -13,7 +13,6 @@
 package org.openhab.binding.androidtv.internal.protocol.shieldtv;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ShieldTVConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ShieldTVConfiguration {
 
-    public @Nullable String ipAddress;
+    public String ipAddress = "";
     public int port = 8987;
     public int reconnect;
     public int heartbeat;

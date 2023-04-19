@@ -81,7 +81,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
             final String label = service.getName() + " (" + id + ")";
             final Map<String, Object> properties = new HashMap<>(2);
 
-            properties.put(IPADDRESS, ipAddress);
+            properties.put(PROPERTY_IP_ADDRESS, ipAddress);
 
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
         } else {

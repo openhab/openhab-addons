@@ -36,8 +36,6 @@ public class AndroidTVBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_DEBUG = "debug";
-    public static final String CHANNEL_RAW = "raw";
-    public static final String CHANNEL_RAWMSG = "rawmsg";
     public static final String CHANNEL_KEYBOARD = "keyboard";
     public static final String CHANNEL_KEYPRESS = "keypress";
     public static final String CHANNEL_KEYCODE = "keycode";
@@ -51,7 +49,7 @@ public class AndroidTVBindingConstants {
     public static final String CHANNEL_PLAYER = "player";
 
     // List of all config properties
-    public static final String IPADDRESS = "ipAddress";
+    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
     public static final String PORT = "port";
 
     // List of all static String literals

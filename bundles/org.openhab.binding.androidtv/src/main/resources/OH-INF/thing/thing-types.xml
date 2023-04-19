@@ -35,6 +35,8 @@
 			<property name="remoteServerVersion">unknown</property>
 		</properties>
 
+		<representation-property>ipAddress</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -96,6 +98,8 @@
 			<property name="remoteServerVersion">unknown</property>
 		</properties>
 
+		<representation-property>ipAddress</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -120,7 +124,7 @@
 				<description>Delay between reconnection attempts</description>
 			</parameter>
 			<parameter name="heartbeat" type="integer">
-				<label>Hearbeat Frequency</label>
+				<label>Heartbeat Frequency</label>
 				<description>Frequency of heartbeats</description>
 			</parameter>
 			<parameter name="delay" type="integer">

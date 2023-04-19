@@ -13,7 +13,6 @@
 package org.openhab.binding.androidtv.internal.protocol.googletv;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GoogleTVConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class GoogleTVConfiguration {
 
-    public @Nullable String ipAddress;
+    public String ipAddress = "";
     public int port = 6466;
     public int reconnect;
     public int heartbeat;
