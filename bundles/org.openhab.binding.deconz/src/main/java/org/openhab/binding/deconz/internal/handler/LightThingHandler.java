@@ -397,10 +397,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
             }
             case CHANNEL_POSITION -> {
                 Integer lift = newState.lift;
-                if (lift != null && lift >= PercentType.ZERO.intValue() && lift <= PercentType.HUNDRED.intValue()) {
+                if (lift != null) {
                     updateState(channelUID, new PercentType(lift));
-                } else {
-                    updatePercentTypeChannel(channelUID, newState.bri, true); // always post value
                 }
             }
             case CHANNEL_EFFECT -> updateStringChannel(channelUID, newState.effect);
