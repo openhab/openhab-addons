@@ -35,7 +35,6 @@ public class VehicleStatus {
     private @Nullable Environment environment;
     private @Nullable Ignition ignition;
     private @Nullable Kinetic kinetic;
-    @SerializedName("timed.odometer")
     private @Nullable Odometer odometer;
     private @Nullable Position lastPosition;
     private @Nullable Preconditionning preconditionning;
@@ -48,7 +47,7 @@ public class VehicleStatus {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("extension", extension).toString();
+            return new ToStringBuilder(this).append("extension", this.extension).toString();
         }
     }
 
@@ -58,15 +57,16 @@ public class VehicleStatus {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this).append("kinetic", kinetic).append("odometer", odometer).toString();
+            return new ToStringBuilder(this).append("kinetic", this.kinetic).append("odometer", this.odometer)
+                    .toString();
         }
     }
 
     public @Nullable Kinetic getKinetic() {
-        if (kinetic != null) {
-            return kinetic;
+        if (this.kinetic != null) {
+            return this.kinetic;
         } else {
-            final Embedded finalEmbedded = embedded;
+            final Embedded finalEmbedded = this.embedded;
             if (finalEmbedded != null) {
                 final Extension finalExtension = finalEmbedded.extension;
                 if (finalExtension != null) {
@@ -78,10 +78,10 @@ public class VehicleStatus {
     }
 
     public @Nullable Odometer getOdometer() {
-        if (odometer != null) {
-            return odometer;
+        if (this.odometer != null) {
+            return this.odometer;
         } else {
-            Embedded finalEmbedded = embedded;
+            Embedded finalEmbedded = this.embedded;
             if (finalEmbedded != null) {
                 final Extension finalExtension = finalEmbedded.extension;
                 if (finalExtension != null) {
@@ -93,56 +93,57 @@ public class VehicleStatus {
     }
 
     public @Nullable ZonedDateTime getUpdatedAt() {
-        return updatedAt;
+        return this.updatedAt;
     }
 
     public @Nullable Battery getBattery() {
-        return battery;
+        return this.battery;
     }
 
     public @Nullable DoorsState getDoorsState() {
-        return doorsState;
+        return this.doorsState;
     }
 
     public @Nullable List<Energy> getEnergy() {
-        return energy;
+        return this.energy;
     }
 
     public @Nullable Environment getEnvironment() {
-        return environment;
+        return this.environment;
     }
 
     public @Nullable Ignition getIgnition() {
-        return ignition;
+        return this.ignition;
     }
 
     public @Nullable Position getLastPosition() {
-        return lastPosition;
+        return this.lastPosition;
     }
 
     public @Nullable Preconditionning getPreconditionning() {
-        return preconditionning;
+        return this.preconditionning;
     }
 
     public @Nullable Privacy getPrivacy() {
-        return privacy;
+        return this.privacy;
     }
 
     public @Nullable Safety getSafety() {
-        return safety;
+        return this.safety;
     }
 
     public @Nullable Service getService() {
-        return service;
+        return this.service;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("updatedAt", updatedAt).append("_embedded", embedded)
-                .append("battery", battery).append("doorsState", doorsState).append("energy", energy)
-                .append("environment", environment).append("ignition", ignition).append("kinetic", kinetic)
-                .append("odometer", odometer).append("lastPosition", lastPosition)
-                .append("preconditionning", preconditionning).append("privacy", privacy).append("safety", safety)
-                .append("service", service).toString();
+        return new ToStringBuilder(this).append("updatedAt", this.updatedAt).append("_embedded", this.embedded)
+                .append("battery", this.battery).append("doorsState", this.doorsState).append("energy", this.energy)
+                .append("environment", this.environment).append("ignition", this.ignition)
+                .append("kinetic", this.kinetic).append("odometer", this.odometer)
+                .append("lastPosition", this.lastPosition).append("preconditionning", this.preconditionning)
+                .append("privacy", this.privacy).append("safety", this.safety).append("service", this.service)
+                .toString();
     }
 }
