@@ -2,8 +2,8 @@
 
 The Tibber Binding connects to the [Tibber API](https://developer.tibber.com), and enables users to retrieve electricity data:
 
-* Default: Frequent polls are performed to retrieve electricity price and cost/consumption information
-* Optional: For users having Tibber Pulse, a websocket connection is established to retrieve live measurements  
+- Default: Frequent polls are performed to retrieve electricity price and cost/consumption information
+- Optional: For users having Tibber Pulse, a websocket connection is established to retrieve live measurements  
 
 Refresh time (poll frequency) is set manually as part of setup, minimum 1 minute.
 
@@ -11,11 +11,11 @@ Tibber Pulse will automatically be detected by the Binding if present and associ
 
 ## Supported Things
 
-Provided one have a Tibber User Account, the Tibber API is recognized as a thing in openHAB using the Tibber Binding. 
+Provided one have a Tibber User Account, the Tibber API is recognized as a thing in openHAB using the Tibber Binding.
 
 Tibber Pulse is optional, but will enable live measurements.
 
-The channels (i.e. measurements) associated with the Binding: 
+The channels (i.e. measurements) associated with the Binding:
 
 Tibber Default:
 
@@ -57,28 +57,27 @@ Tibber Pulse (optional):
 | Min Power Production    | Min Power Production since Midnight      | True      |
 | Max Power Production    | Max Power Production since Midnight      | True      |
 
-
 ## Binding Configuration
 
 To access and initiate the Tibber Binding, a Tibber user account is required.
 
 The following input is required for initialization:
 
-* Tibber token
-* Tibber HomeId
-* Refresh Interval (min 1 minute)
+- Tibber token
+- Tibber HomeId
+- Refresh Interval (min 1 minute)
 
 Note: Tibber token is retrieved from your Tibber account:
 [Tibber Account](https://developer.tibber.com/settings/accesstoken)
 
-Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.tibber.com/explorer): 
+Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.tibber.com/explorer):
 
-* Sign in (Tibber user account) and "load" personal token.
-* Copy query from below and paste into the Tibber API Explorer, and run query. 
-* If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
-* Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
+- Sign in (Tibber user account) and "load" personal token.
+- Copy query from below and paste into the Tibber API Explorer, and run query.
+- If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
+- Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
 
-```
+```json
 {
   viewer {
     homes {
@@ -95,9 +94,9 @@ If user have multiple HomeIds / Pulse, separate Things have to be created for th
 
 ## Thing Configuration
 
-When Tibber Binding is installed, Tibber API should be auto discovered. 
+When Tibber Binding is installed, Tibber API should be auto discovered.
 
-Retrieve personal token and HomeId from description above, and initialize/start a scan with the binding. 
+Retrieve personal token and HomeId from description above, and initialize/start a scan with the binding.
 
 Tibber API will be auto discovered if provided input is correct.
 
@@ -210,13 +209,13 @@ Example of tomorrow and today prices data structure - an array of tuples:
 
 ### demo.things
 
-```
+```java
 Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx" ]
 ```
 
 ### demo.items:
 
-```
+```java
 Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
 DateTime                   TibberAPICurrentStartsAt              "Timestamp - Current Price"                 {channel="tibber:tibberapi:7cfae492:current_startsAt"}
 String                     TibberAPICurrentLevel                 "Price Level"                               {channel="tibber:tibberapi:7cfae492:current_level"}

@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_02;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_02_16 extends A5_02 {
 
     public A5_02_16(ERP1Message packet) {

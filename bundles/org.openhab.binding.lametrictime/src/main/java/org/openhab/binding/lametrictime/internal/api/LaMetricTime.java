@@ -52,7 +52,7 @@ public interface LaMetricTime {
      *
      * @return the version
      */
-    public String getVersion();
+    String getVersion();
 
     /**
      * Send a low priority message to the device.
@@ -63,7 +63,7 @@ public interface LaMetricTime {
      * @throws NotificationCreationException
      *             if there is a communication error or malformed data
      */
-    public String notifyInfo(String message) throws NotificationCreationException;
+    String notifyInfo(String message) throws NotificationCreationException;
 
     /**
      * Send a medium priority message to the device.
@@ -74,7 +74,7 @@ public interface LaMetricTime {
      * @throws NotificationCreationException
      *             if there is a communication error or malformed data
      */
-    public String notifyWarning(String message) throws NotificationCreationException;
+    String notifyWarning(String message) throws NotificationCreationException;
 
     /**
      * Send an urgent message to the device. The notification will not be
@@ -87,7 +87,7 @@ public interface LaMetricTime {
      * @throws NotificationCreationException
      *             if there is a communication error or malformed data
      */
-    public String notifyCritical(String message) throws NotificationCreationException;
+    String notifyCritical(String message) throws NotificationCreationException;
 
     /**
      * Send a notification to the device.
@@ -128,7 +128,7 @@ public interface LaMetricTime {
      * @throws NotificationCreationException
      *             if there is a communication error or malformed data
      */
-    public String notify(String message, Priority priority, Icon icon, Sound sound, int messageRepeat, int soundRepeat)
+    String notify(String message, Priority priority, Icon icon, Sound sound, int messageRepeat, int soundRepeat)
             throws NotificationCreationException;
 
     /**
@@ -137,7 +137,8 @@ public interface LaMetricTime {
      *
      * @return the clock app
      */
-    public @Nullable Application getClock();
+    @Nullable
+    Application getClock();
 
     /**
      * Get the built-in countdown timer application. This application counts
@@ -146,7 +147,8 @@ public interface LaMetricTime {
      *
      * @return the countdown app
      */
-    public @Nullable Application getCountdown();
+    @Nullable
+    Application getCountdown();
 
     /**
      * Get the built-in radio application. The radio can play streams from the
@@ -155,7 +157,8 @@ public interface LaMetricTime {
      *
      * @return the radio app
      */
-    public @Nullable Application getRadio();
+    @Nullable
+    Application getRadio();
 
     /**
      * Get the built-in stopwatch application. The stopwatch counts time
@@ -163,7 +166,8 @@ public interface LaMetricTime {
      *
      * @return the stopwatch app
      */
-    public @Nullable Application getStopwatch();
+    @Nullable
+    Application getStopwatch();
 
     /**
      * Get the built-in weather application. This application displays the
@@ -172,7 +176,8 @@ public interface LaMetricTime {
      *
      * @return the weather app
      */
-    public @Nullable Application getWeather();
+    @Nullable
+    Application getWeather();
 
     /**
      * Get any of the built-in applications.
@@ -181,7 +186,8 @@ public interface LaMetricTime {
      *            the app to retrieve
      * @return the requested app
      */
-    public @Nullable Application getApplication(CoreApplication coreApp);
+    @Nullable
+    Application getApplication(CoreApplication coreApp);
 
     /**
      * Get any application installed on the device.
@@ -192,7 +198,8 @@ public interface LaMetricTime {
      * @throws ApplicationNotFoundException
      *             if the requested app is not found on the device
      */
-    public @Nullable Application getApplication(@Nullable String name) throws ApplicationNotFoundException;
+    @Nullable
+    Application getApplication(@Nullable String name) throws ApplicationNotFoundException;
 
     /**
      * Display the given built-in application on the device.
@@ -200,7 +207,7 @@ public interface LaMetricTime {
      * @param coreApp
      *            the app to activate
      */
-    public void activateApplication(CoreApplication coreApp);
+    void activateApplication(CoreApplication coreApp);
 
     /**
      * Display the first instance (widget) of the given application on the
@@ -211,7 +218,7 @@ public interface LaMetricTime {
      * @throws ApplicationActivationException
      *             if the app fails to activate
      */
-    public void activateApplication(Application app) throws ApplicationActivationException;
+    void activateApplication(Application app) throws ApplicationActivationException;
 
     /**
      * Display the given widget on the device. A widget is simply an instance of
@@ -224,7 +231,7 @@ public interface LaMetricTime {
      * @throws ApplicationActivationException
      *             if the app fails to activate
      */
-    public void activateWidget(Widget widget) throws ApplicationActivationException;
+    void activateWidget(Widget widget) throws ApplicationActivationException;
 
     /**
      * Perform the given action on the first instance (widget) of the
@@ -234,7 +241,7 @@ public interface LaMetricTime {
      * @param coreAction
      *            the action to perform
      */
-    public void doAction(CoreAction coreAction);
+    void doAction(CoreAction coreAction);
 
     /**
      * Perform the given action on the first instance (widget) of the given
@@ -248,7 +255,7 @@ public interface LaMetricTime {
      * @throws ApplicationActionException
      *             if the action cannot be performed
      */
-    public void doAction(Application app, UpdateAction action) throws ApplicationActionException;
+    void doAction(Application app, UpdateAction action) throws ApplicationActionException;
 
     /**
      * Perform the given core action on the given widget. A widget is simply an
@@ -264,7 +271,7 @@ public interface LaMetricTime {
      * @throws ApplicationActionException
      *             if the action cannot be performed
      */
-    public void doAction(@Nullable Widget widget, CoreAction action) throws ApplicationActionException;
+    void doAction(@Nullable Widget widget, CoreAction action) throws ApplicationActionException;
 
     /**
      * Perform the given action on the given widget. A widget is simply an
@@ -280,7 +287,7 @@ public interface LaMetricTime {
      * @throws ApplicationActionException
      *             if the action cannot be performed
      */
-    public void doAction(Widget widget, UpdateAction action) throws ApplicationActionException;
+    void doAction(Widget widget, UpdateAction action) throws ApplicationActionException;
 
     /**
      * Set the display brightness. The {@link #setBrightnessMode(BrightnessMode)
@@ -293,7 +300,7 @@ public interface LaMetricTime {
      * @throws UpdateException
      *             if the update failed
      */
-    public Display setBrightness(int brightness) throws UpdateException;
+    Display setBrightness(int brightness) throws UpdateException;
 
     /**
      * Set the brightness mode on the display. {@link BrightnessMode#MANUAL}
@@ -307,7 +314,7 @@ public interface LaMetricTime {
      * @throws UpdateException
      *             if the update failed
      */
-    public Display setBrightnessMode(BrightnessMode mode) throws UpdateException;
+    Display setBrightnessMode(BrightnessMode mode) throws UpdateException;
 
     /**
      * Set the speaker volume on the device.
@@ -318,7 +325,7 @@ public interface LaMetricTime {
      * @throws UpdateException
      *             if the update failed
      */
-    public Audio setVolume(int volume) throws UpdateException;
+    Audio setVolume(int volume) throws UpdateException;
 
     /**
      * Mute the device's speakers. The current volume will be stored so that
@@ -329,7 +336,7 @@ public interface LaMetricTime {
      * @throws UpdateException
      *             if the update failed
      */
-    public Audio mute() throws UpdateException;
+    Audio mute() throws UpdateException;
 
     /**
      * Restore the volume prior to {@link #mute()}. If the volume has not been
@@ -339,7 +346,7 @@ public interface LaMetricTime {
      * @throws UpdateException
      *             if the update failed
      */
-    public Audio unmute() throws UpdateException;
+    Audio unmute() throws UpdateException;
 
     /**
      * Set the active state of the Bluetooth radio on the device.
@@ -351,7 +358,7 @@ public interface LaMetricTime {
      * @throws UpdateException
      *             if the update failed
      */
-    public Bluetooth setBluetoothActive(boolean active) throws UpdateException;
+    Bluetooth setBluetoothActive(boolean active) throws UpdateException;
 
     /**
      * Set the device name as seen via Bluetooth connectivity.
@@ -362,21 +369,21 @@ public interface LaMetricTime {
      * @throws UpdateException
      *             if the update failed
      */
-    public Bluetooth setBluetoothName(String name) throws UpdateException;
+    Bluetooth setBluetoothName(String name) throws UpdateException;
 
     /**
      * Get the local API for more advanced interactions as well device inquiry.
      *
      * @return the local API
      */
-    public LaMetricTimeLocal getLocalApi();
+    LaMetricTimeLocal getLocalApi();
 
     /**
      * Get the cloud API for interacting with LaMetric's services.
      *
      * @return the cloud API
      */
-    public LaMetricTimeCloud getCloudApi();
+    LaMetricTimeCloud getCloudApi();
 
     /**
      * Create an instance of this API. For greater control over the
@@ -388,7 +395,7 @@ public interface LaMetricTime {
      *            the configuration parameters that the new instance will use
      * @return the API instance
      */
-    public static LaMetricTime create(Configuration config) {
+    static LaMetricTime create(Configuration config) {
         return new LaMetricTimeImpl(config);
     }
 
@@ -404,7 +411,7 @@ public interface LaMetricTime {
      *            communicating with the device and cloud services
      * @return the API instance
      */
-    public static LaMetricTime create(Configuration config, ClientBuilder clientBuilder) {
+    static LaMetricTime create(Configuration config, ClientBuilder clientBuilder) {
         return new LaMetricTimeImpl(config, clientBuilder);
     }
 
@@ -419,7 +426,7 @@ public interface LaMetricTime {
      *            the cloud API configuration for the new instance
      * @return the API instance
      */
-    public static LaMetricTime create(LocalConfiguration localConfig, CloudConfiguration cloudConfig) {
+    static LaMetricTime create(LocalConfiguration localConfig, CloudConfiguration cloudConfig) {
         return new LaMetricTimeImpl(localConfig, cloudConfig);
     }
 
@@ -436,7 +443,7 @@ public interface LaMetricTime {
      *            communicating with the device and cloud services
      * @return the API instance
      */
-    public static LaMetricTime create(LocalConfiguration localConfig, CloudConfiguration cloudConfig,
+    static LaMetricTime create(LocalConfiguration localConfig, CloudConfiguration cloudConfig,
             ClientBuilder clientBuilder) {
         return new LaMetricTimeImpl(localConfig, cloudConfig, clientBuilder);
     }

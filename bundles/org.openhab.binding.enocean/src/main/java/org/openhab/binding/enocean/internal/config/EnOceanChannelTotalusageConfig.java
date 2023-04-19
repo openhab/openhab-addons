@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Dominik Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanChannelTotalusageConfig {
     public boolean validateValue = false;
 }

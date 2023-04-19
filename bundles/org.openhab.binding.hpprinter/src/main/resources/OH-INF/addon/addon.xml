@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>HP Printer Binding</name>
 	<description>Binding for HP Printers with Embedded Web Servers</description>
+	<connection>local</connection>
 
 </addon:addon>

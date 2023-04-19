@@ -31,5 +31,5 @@ public interface TransceiverStatusListener {
      * @param bridge
      * @param command the infrared command
      */
-    public void onCommandReceived(EthernetBridgeHandler bridge, IrCommand command);
+    void onCommandReceived(EthernetBridgeHandler bridge, IrCommand command);
 }

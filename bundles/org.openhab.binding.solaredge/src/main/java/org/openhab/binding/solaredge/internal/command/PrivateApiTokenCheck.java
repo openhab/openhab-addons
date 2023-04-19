@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 
@@ -29,7 +28,7 @@ import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class PrivateApiTokenCheck extends AbstractCommandCallback implements SolarEdgeCommand {
+public class PrivateApiTokenCheck extends AbstractCommand implements SolarEdgeCommand {
 
     public PrivateApiTokenCheck(SolarEdgeHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener);

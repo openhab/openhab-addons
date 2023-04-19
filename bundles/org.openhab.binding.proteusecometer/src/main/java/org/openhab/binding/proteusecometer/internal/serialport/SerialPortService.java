@@ -24,5 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface SerialPortService {
-    public InputStream getInputStream(String portId, int baudRate, int numDataBits, int numStopBits, int parity);
+    InputStream getInputStream(String portId, int baudRate, int numDataBits, int numStopBits, int parity);
 }

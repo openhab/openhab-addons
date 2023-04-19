@@ -308,10 +308,10 @@ public class ValueDecoder {
                 double x = Double.parseDouble(stringx.replace(",", "."));
                 double y = Double.parseDouble(stringy.replace(",", "."));
                 if (stringY == null) {
-                    return ColorUtil.xyToHsv(new double[] { x, y });
+                    return ColorUtil.xyToHsb(new double[] { x, y });
                 } else {
-                    double Y = Double.parseDouble(stringY.replace(",", "."));
-                    return ColorUtil.xyToHsv(new double[] { x, y, Y });
+                    double pY = Double.parseDouble(stringY.replace(",", "."));
+                    return ColorUtil.xyToHsb(new double[] { x, y, pY });
                 }
             }
         }

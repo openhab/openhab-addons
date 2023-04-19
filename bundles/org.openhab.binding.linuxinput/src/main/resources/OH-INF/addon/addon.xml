@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>LinuxInput Binding</name>
 	<description>This is the binding for LinuxInput.</description>
+	<connection>local</connection>
 
 </addon:addon>

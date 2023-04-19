@@ -130,7 +130,7 @@ public class SerialTransportAdapter implements SerialCom {
             }
         }
         // should not throw, create a dummy return value
-        byte buf[] = {};
+        byte[] buf = {};
         return new ByteArrayInputStream(buf);
     }
 

@@ -7,5 +7,5 @@
 	<name>UniFi Binding</name>
 	<description>The UniFi binding integrates the UniFi controller from Ubiquiti Networks to facilitate tracking of Wi-Fi
 		clients.</description>
-
+	<connection>local</connection>
 </addon:addon>

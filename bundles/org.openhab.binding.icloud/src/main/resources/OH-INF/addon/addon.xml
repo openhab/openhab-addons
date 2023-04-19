@@ -5,4 +5,5 @@
 	<type>binding</type>
 	<name>@text/icloud.addon.name</name>
 	<description>@text/icloud.addon.description</description>
+	<connection>cloud</connection>
 </addon:addon>

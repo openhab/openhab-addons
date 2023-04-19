@@ -7,5 +7,7 @@
 	<name>Ecowatt Binding</name>
 	<description>This binding uses the Ecowatt API to expose clear signals to adopt the right gestures and to ensure a good
 		supply of electricity for all in Frances.</description>
+	<connection>cloud</connection>
+	<countries>fr</countries>
 
 </addon:addon>
