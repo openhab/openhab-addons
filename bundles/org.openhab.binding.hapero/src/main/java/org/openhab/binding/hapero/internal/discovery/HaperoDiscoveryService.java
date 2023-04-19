@@ -99,16 +99,16 @@ public class HaperoDiscoveryService extends AbstractDiscoveryService implements 
         // Check if the device is supported
         if (deviceId.startsWith(HaperoBindingConstants.BUFFER_ID)) {
             thingUID = new ThingUID(HaperoBindingConstants.THING_TYPE_BUFFER, bridgeUID, deviceId);
-            label = HaperoBindingConstants.BUFFER_LABEL;
+            label = "@text/thing-type.Hapero.buffer.label";
         } else if (deviceId.startsWith(HaperoBindingConstants.BOILER_ID)) {
             thingUID = new ThingUID(HaperoBindingConstants.THING_TYPE_BOILER, bridgeUID, deviceId);
-            label = HaperoBindingConstants.BOILER_LABEL;
+            label = "@text/thing-type.Hapero.boiler.label";
         } else if (deviceId.startsWith(HaperoBindingConstants.HEATING_ID)) {
             thingUID = new ThingUID(HaperoBindingConstants.THING_TYPE_HEATING, bridgeUID, deviceId);
-            label = HaperoBindingConstants.HEATING_LABEL;
+            label = "@text/thing-type.Hapero.heatingCircuit.label";
         } else if (deviceId.startsWith(HaperoBindingConstants.FURNACE_ID)) {
             thingUID = new ThingUID(HaperoBindingConstants.THING_TYPE_FURNACE, bridgeUID, deviceId);
-            label = HaperoBindingConstants.FURNACE_LABEL;
+            label = "@text/thing-type.Hapero.furnace.label";
         }
 
         // If device is supported, create discovery result and inform openHAB

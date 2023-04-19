@@ -30,6 +30,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link HaperoFurnaceHandler} handles the Furnace Thing
@@ -98,216 +99,220 @@ public class HaperoFurnaceHandler extends HaperoThingHandler {
             bridgeHandler = (HaperoBridgeHandler) bridge.getHandler();
         }
 
-        if (bridgeHandler != null) {
-            switch (channelId) {
-                case HaperoBindingConstants.CHANNEL_COMBUSTIONTEMPERATURE:
-                    newDevice = bridgeHandler.getDevice("A");
+        if (bridgeHandler == null) {
+            logger.debug("Could not get bridge handler for furnace channel {}.", channelId);
+            return null;
+        }
 
-                    if (newDevice != null) {
-                        value = newDevice.getFloat(CHANNEL_COMBUSTIONTEMPERATURE_INDEX);
-                        if (value != null) {
-                            state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
-                        }
+        switch (channelId) {
+            case HaperoBindingConstants.CHANNEL_COMBUSTIONTEMPERATURE:
+                newDevice = bridgeHandler.getDevice("A");
+
+                if (newDevice != null) {
+                    value = newDevice.getFloat(CHANNEL_COMBUSTIONTEMPERATURE_INDEX);
+                    if (value != null) {
+                        state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_PELLETCHANNELTEMPERATURE:
-                    newDevice = bridgeHandler.getDevice("A");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_PELLETCHANNELTEMPERATURE:
+                newDevice = bridgeHandler.getDevice("A");
 
-                    if (newDevice != null) {
-                        value = newDevice.getFloat(CHANNEL_PELLETCHANNELTEMPERATURE_INDEX);
-                        if (value != null) {
-                            state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
-                        }
+                if (newDevice != null) {
+                    value = newDevice.getFloat(CHANNEL_PELLETCHANNELTEMPERATURE_INDEX);
+                    if (value != null) {
+                        state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_BOILERTEMPERATURE:
-                    newDevice = bridgeHandler.getDevice("A");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_BOILERTEMPERATURE:
+                newDevice = bridgeHandler.getDevice("A");
 
-                    if (newDevice != null) {
-                        value = newDevice.getFloat(CHANNEL_BOILERTEMPERATURE_INDEX);
-                        if (value != null) {
-                            value /= VALUE_SCALE_10;
-                            state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
-                        }
+                if (newDevice != null) {
+                    value = newDevice.getFloat(CHANNEL_BOILERTEMPERATURE_INDEX);
+                    if (value != null) {
+                        value /= VALUE_SCALE_10;
+                        state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_OUTSIDETEMPERATURE:
-                    newDevice = bridgeHandler.getDevice("A");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_OUTSIDETEMPERATURE:
+                newDevice = bridgeHandler.getDevice("A");
 
-                    if (newDevice != null) {
-                        value = newDevice.getFloat(CHANNEL_OUTSIDETEMPERATURE_INDEX);
-                        if (value != null) {
-                            value /= VALUE_SCALE_10;
-                            state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
-                        }
+                if (newDevice != null) {
+                    value = newDevice.getFloat(CHANNEL_OUTSIDETEMPERATURE_INDEX);
+                    if (value != null) {
+                        value /= VALUE_SCALE_10;
+                        state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
                     }
-                    break;
+                }
+                break;
 
-                case HaperoBindingConstants.CHANNEL_FURNACESTATUS:
-                    newDevice = bridgeHandler.getDevice("B");
+            case HaperoBindingConstants.CHANNEL_FURNACESTATUS:
+                newDevice = bridgeHandler.getDevice("B");
 
-                    if (newDevice != null) {
-                        stringValue = newDevice.getString(CHANNEL_FURNACESTATUS_INDEX);
-                        if (stringValue != null) {
-                            state = new StringType(stringValue);
-                        }
+                if (newDevice != null) {
+                    stringValue = newDevice.getString(CHANNEL_FURNACESTATUS_INDEX);
+                    if (stringValue != null) {
+                        state = new StringType(stringValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_BURNERSTATUS:
-                    newDevice = bridgeHandler.getDevice("B");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_BURNERSTATUS:
+                newDevice = bridgeHandler.getDevice("B");
 
-                    if (newDevice != null) {
-                        stringValue = newDevice.getString(CHANNEL_BURNERSTATUS_INDEX);
-                        if (stringValue != null) {
-                            state = new StringType(stringValue);
-                        }
+                if (newDevice != null) {
+                    stringValue = newDevice.getString(CHANNEL_BURNERSTATUS_INDEX);
+                    if (stringValue != null) {
+                        state = new StringType(stringValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_MATERIALSTATUS:
-                    newDevice = bridgeHandler.getDevice("B");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_MATERIALSTATUS:
+                newDevice = bridgeHandler.getDevice("B");
 
-                    if (newDevice != null) {
-                        stringValue = newDevice.getString(CHANNEL_MATERIALSTATUS_INDEX);
-                        if (stringValue != null) {
-                            state = new StringType(stringValue);
-                        }
+                if (newDevice != null) {
+                    stringValue = newDevice.getString(CHANNEL_MATERIALSTATUS_INDEX);
+                    if (stringValue != null) {
+                        state = new StringType(stringValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_AIRSTATUS:
-                    newDevice = bridgeHandler.getDevice("B");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_AIRSTATUS:
+                newDevice = bridgeHandler.getDevice("B");
 
-                    if (newDevice != null) {
-                        stringValue = newDevice.getString(CHANNEL_AIRSTATUS_INDEX);
-                        if (stringValue != null) {
-                            state = new StringType(stringValue);
-                        }
+                if (newDevice != null) {
+                    stringValue = newDevice.getString(CHANNEL_AIRSTATUS_INDEX);
+                    if (stringValue != null) {
+                        state = new StringType(stringValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_GRATESTATUS:
-                    newDevice = bridgeHandler.getDevice("B");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_GRATESTATUS:
+                newDevice = bridgeHandler.getDevice("B");
 
-                    if (newDevice != null) {
-                        stringValue = newDevice.getString(CHANNEL_GRATESTATUS_INDEX);
-                        if (stringValue != null) {
-                            state = new StringType(stringValue);
-                        }
+                if (newDevice != null) {
+                    stringValue = newDevice.getString(CHANNEL_GRATESTATUS_INDEX);
+                    if (stringValue != null) {
+                        state = new StringType(stringValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_ERRORSTATUS:
-                    newDevice = bridgeHandler.getDevice("B");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_ERRORSTATUS:
+                newDevice = bridgeHandler.getDevice("B");
 
-                    if (newDevice != null) {
-                        stringValue = newDevice.getString(CHANNEL_ERRORSTATUS_INDEX);
-                        if (stringValue != null) {
-                            state = new StringType(stringValue);
-                        }
+                if (newDevice != null) {
+                    stringValue = newDevice.getString(CHANNEL_ERRORSTATUS_INDEX);
+                    if (stringValue != null) {
+                        state = new StringType(stringValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_MULTIFUNCTIONMOTORMODE:
-                    newDevice = bridgeHandler.getDevice("B");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_MULTIFUNCTIONMOTORMODE:
+                newDevice = bridgeHandler.getDevice("B");
 
-                    if (newDevice != null) {
-                        stringValue = newDevice.getString(CHANNEL_MULTIFUNCTIONMOTORMODE_INDEX);
-                        if (stringValue != null) {
-                            state = new StringType(stringValue);
-                        }
+                if (newDevice != null) {
+                    stringValue = newDevice.getString(CHANNEL_MULTIFUNCTIONMOTORMODE_INDEX);
+                    if (stringValue != null) {
+                        state = new StringType(stringValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_MULTIFUNCTIONMOTORSTATUS:
-                    newDevice = bridgeHandler.getDevice("B");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_MULTIFUNCTIONMOTORSTATUS:
+                newDevice = bridgeHandler.getDevice("B");
 
-                    if (newDevice != null) {
-                        stringValue = newDevice.getString(CHANNEL_MULTIFUNCTIONMOTORSTATUS_INDEX);
-                        if (stringValue != null) {
-                            state = new StringType(stringValue);
-                        }
+                if (newDevice != null) {
+                    stringValue = newDevice.getString(CHANNEL_MULTIFUNCTIONMOTORSTATUS_INDEX);
+                    if (stringValue != null) {
+                        state = new StringType(stringValue);
                     }
-                    break;
+                }
+                break;
 
-                case HaperoBindingConstants.CHANNEL_FURNACEPOWER:
-                    newDevice = bridgeHandler.getDevice("D");
+            case HaperoBindingConstants.CHANNEL_FURNACEPOWER:
+                newDevice = bridgeHandler.getDevice("D");
 
-                    if (newDevice != null) {
-                        value = newDevice.getFloat(CHANNEL_FURNACEPOWER_INDEX);
-                        if (value != null) {
-                            value /= VALUE_SCALE_10;
-                            state = new QuantityType<Dimensionless>(value, Units.PERCENT);
-                        }
+                if (newDevice != null) {
+                    value = newDevice.getFloat(CHANNEL_FURNACEPOWER_INDEX);
+                    if (value != null) {
+                        value /= VALUE_SCALE_10;
+                        state = new QuantityType<Dimensionless>(value, Units.PERCENT);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_BOILERTEMPERATURESET:
-                    newDevice = bridgeHandler.getDevice("D");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_BOILERTEMPERATURESET:
+                newDevice = bridgeHandler.getDevice("D");
 
-                    if (newDevice != null) {
-                        value = newDevice.getFloat(CHANNEL_BOILERTEMPERATURESET_INDEX);
-                        if (value != null) {
-                            value /= VALUE_SCALE_10;
-                            state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
-                        }
+                if (newDevice != null) {
+                    value = newDevice.getFloat(CHANNEL_BOILERTEMPERATURESET_INDEX);
+                    if (value != null) {
+                        value /= VALUE_SCALE_10;
+                        state = new QuantityType<Temperature>(value, SIUnits.CELSIUS);
                     }
-                    break;
+                }
+                break;
 
-                case HaperoBindingConstants.CHANNEL_FURNACEAIRFLOW:
-                    newDevice = bridgeHandler.getDevice("E");
+            case HaperoBindingConstants.CHANNEL_FURNACEAIRFLOW:
+                newDevice = bridgeHandler.getDevice("E");
 
-                    if (newDevice != null) {
-                        intValue = newDevice.getInteger(CHANNEL_FURNACEAIRFLOW_INDEX);
-                        if (intValue != null) {
-                            state = new DecimalType(intValue);
-                        }
+                if (newDevice != null) {
+                    intValue = newDevice.getInteger(CHANNEL_FURNACEAIRFLOW_INDEX);
+                    if (intValue != null) {
+                        state = new DecimalType(intValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_FURNACEAIRFLOWSET:
-                    newDevice = bridgeHandler.getDevice("E");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_FURNACEAIRFLOWSET:
+                newDevice = bridgeHandler.getDevice("E");
 
-                    if (newDevice != null) {
-                        intValue = newDevice.getInteger(CHANNEL_FURNACEAIRFLOWSET_INDEX);
-                        if (intValue != null) {
-                            state = new DecimalType(intValue);
-                        }
+                if (newDevice != null) {
+                    intValue = newDevice.getInteger(CHANNEL_FURNACEAIRFLOWSET_INDEX);
+                    if (intValue != null) {
+                        state = new DecimalType(intValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_FURNACEAIRPOWER:
-                    newDevice = bridgeHandler.getDevice("E");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_FURNACEAIRPOWER:
+                newDevice = bridgeHandler.getDevice("E");
 
-                    if (newDevice != null) {
-                        value = newDevice.getFloat(CHANNEL_FURNACEAIRPOWER_INDEX);
-                        if (value != null) {
-                            value /= VALUE_SCALE_10;
-                            state = new QuantityType<Dimensionless>(value, Units.PERCENT);
-                        }
+                if (newDevice != null) {
+                    value = newDevice.getFloat(CHANNEL_FURNACEAIRPOWER_INDEX);
+                    if (value != null) {
+                        value /= VALUE_SCALE_10;
+                        state = new QuantityType<Dimensionless>(value, Units.PERCENT);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_FURNACEAIRDRIVE:
-                    newDevice = bridgeHandler.getDevice("E");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_FURNACEAIRDRIVE:
+                newDevice = bridgeHandler.getDevice("E");
 
-                    if (newDevice != null) {
-                        intValue = newDevice.getInteger(CHANNEL_FURNACEAIRDRIVE_INDEX);
-                        if (intValue != null) {
-                            state = new DecimalType(intValue);
-                        }
+                if (newDevice != null) {
+                    intValue = newDevice.getInteger(CHANNEL_FURNACEAIRDRIVE_INDEX);
+                    if (intValue != null) {
+                        state = new DecimalType(intValue);
                     }
-                    break;
-                case HaperoBindingConstants.CHANNEL_FURNACEAIRO2:
-                    newDevice = bridgeHandler.getDevice("E");
+                }
+                break;
+            case HaperoBindingConstants.CHANNEL_FURNACEAIRO2:
+                newDevice = bridgeHandler.getDevice("E");
 
-                    if (newDevice != null) {
-                        value = newDevice.getFloat(CHANNEL_FURNACEAIRO2_INDEX);
-                        if (value != null) {
-                            value /= VALUE_SCALE_10;
-                            state = new QuantityType<Dimensionless>(value, Units.PERCENT);
-                        }
+                if (newDevice != null) {
+                    value = newDevice.getFloat(CHANNEL_FURNACEAIRO2_INDEX);
+                    if (value != null) {
+                        value /= VALUE_SCALE_10;
+                        state = new QuantityType<Dimensionless>(value, Units.PERCENT);
                     }
-                    break;
+                }
+                break;
 
-                default:
-                    logger.warn("Unknown channel requested for furnace: {}", channelId);
-                    return null;
-            }
+            default:
+                logger.warn("Unknown channel requested for furnace: {}", channelId);
+                return null;
         }
 
         if (state == null) {
             logger.warn("Could not update furnace channel {}.", channelId);
+            state = UnDefType.NULL;
         }
 
         return state;
@@ -336,17 +341,17 @@ public class HaperoFurnaceHandler extends HaperoThingHandler {
 
                 data = device.getString(PROPERTY_DSIPLAYSERIAL_INDEX);
                 if (data != null) {
-                    properties.put("displaySerialNumber", data);
+                    properties.put(HaperoBindingConstants.PROPERTY_DISPLAY_SERIAL_NUMBER, data);
                 }
 
                 data = device.getString(PROPERTY_PROGRAMVERSION_INDEX);
                 if (data != null) {
-                    properties.put("programVersion", data);
+                    properties.put(HaperoBindingConstants.PROPERTY_PROGRAM_VERSION, data);
                 }
 
                 data = device.getString(PROPERTY_OSVERSION_INDEX);
                 if (data != null) {
-                    properties.put("osVersion", data);
+                    properties.put(HaperoBindingConstants.PROPERTY_OS_VERSION, data);
                 }
 
                 updateProperties(properties);

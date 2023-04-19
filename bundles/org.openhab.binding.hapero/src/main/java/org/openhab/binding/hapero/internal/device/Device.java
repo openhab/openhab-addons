@@ -116,7 +116,6 @@ public class Device {
         Boolean result = null;
 
         if (index >= 0 && index < dataItems.length) {
-
             try {
                 if (dataItems[index].charAt(0) == '1') {
                     result = true;
@@ -131,7 +130,6 @@ public class Device {
         } else {
             logger.warn("getBoolean: Invalid Index {}.", index);
         }
-
         return result;
     }
 }

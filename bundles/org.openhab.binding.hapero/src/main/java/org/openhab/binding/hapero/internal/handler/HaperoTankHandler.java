@@ -25,6 +25,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link HaperoTankHandler} handles the Buffer and Boiler Things
@@ -120,6 +121,7 @@ public class HaperoTankHandler extends HaperoThingHandler {
 
         if (state == null) {
             logger.warn("Could not update tank channel {}.", channelId);
+            state = UnDefType.NULL;
         }
 
         return state;

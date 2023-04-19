@@ -1,4 +1,4 @@
-# hapero Binding
+# Hapero Binding
 
 This Binding is intended for [Spanner Re²/Hapero](https://www.holz-kraft.com/) Central Heating Systems.
 It collects data from the FTP upload feature of the furnace control system (The "Upload.hld" file).
@@ -6,7 +6,8 @@ The file needs to be either on a path visible to this openHAB instance or on an 
 
 It is not possible to control the furnace through the binding as this is not supported by the control system.
 
-FTP upload is only supported for "myTouch" control panels. (Check if the FTP configuration option is present in the internet settings of the control panel).
+FTP upload is only supported for "myTouch" control panels. 
+(Check if the FTP configuration option is present in the internet settings of the control panel).
 
 ## Supported Things
 
@@ -123,11 +124,11 @@ Alternatively, you can manually configure Things:
 ```java
 Bridge Hapero:haperoBridge:home [ accessMode="file", fileStoragePath="/<mappedFTPFolder>" ]
 {
-  Thing furnace myFurnace [ deviceId="SI" ]
-  Thing buffer myBuffer [ deviceId="PU1" ]
-  Thing boiler myBoiler [ deviceId="WW1" ]
-  Thing heatingCircuit myHeatingCircuit1 [ deviceId="HK1" ]
-  Thing heatingCircuit myHeatingCircuit2 [ deviceId="HK2" ]
+    Thing furnace myFurnace [ deviceId="SI" ]
+    Thing buffer myBuffer [ deviceId="PU1" ]
+    Thing boiler myBoiler [ deviceId="WW1" ]
+    Thing heatingCircuit myHeatingCircuit1 [ deviceId="HK1" ]
+    Thing heatingCircuit myHeatingCircuit2 [ deviceId="HK2" ]
 }
 ```
 
@@ -142,5 +143,6 @@ Number:Temperature Buffer_Top_Temperature "Buffer Top [%.1f °C]" {channel="Hape
 
 ## Warning!
 
-The Upload.hld file contains the VNC Password and serial number of your heating control system. With these, anyone can log into your control system.
+The Upload.hld file contains the VNC Password and serial number of your heating control system. 
+With these, anyone can log into your control system.
 Make sure you configure your heating control system and openHAB so that this file is never visible to anyone outside your home network!

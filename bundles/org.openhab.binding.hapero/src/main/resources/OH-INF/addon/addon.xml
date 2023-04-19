@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>hapero Binding</name>
-	<description>Binding for data aquisition from hapero pellet stoves.</description>
+	<name>Hapero Binding</name>
+	<description>Binding for data aquisition from Hapero pellet stoves.</description>
 
 </addon:addon>

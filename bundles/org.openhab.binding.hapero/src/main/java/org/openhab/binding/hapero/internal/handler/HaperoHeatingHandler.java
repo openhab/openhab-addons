@@ -25,6 +25,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link HaperoHeatingHandler} handles the Heating Circuit Thing
@@ -130,6 +131,7 @@ public class HaperoHeatingHandler extends HaperoThingHandler {
 
         if (state == null) {
             logger.warn("Could not update heating channel {}.", channelId);
+            state = UnDefType.NULL;
         }
 
         return state;

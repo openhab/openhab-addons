@@ -105,13 +105,13 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             /* FTP IO Error - Set the device to offline, it will come back online with the next successful update */
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.ftp.connectionerror");
-            logger.warn("ioErrorRaised");
+            logger.debug("ioErrorRaised");
         }
 
         @Override
         public void ioErrorCeased(@Nullable IoErrorCeasedEvent event) throws InterruptedException {
             /* FTP IO Error is gone, the device will come back online with the next successful update */
-            logger.warn("ioErrorCeased");
+            logger.debug("ioErrorCeased");
         }
 
         @Override
@@ -135,7 +135,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 /* Reset the timeout monitoring */
                 startFtpTimeout();
             } else {
-                logger.warn("Event received but event data null");
+                logger.debug("Event received but event data null");
             }
         }
     }
@@ -151,7 +151,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
         WatchKey key;
         HaperoConfiguration config = getConfigAs(HaperoConfiguration.class);
 
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 if (watchService != null) {
                     /*
@@ -164,7 +164,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                     break;
                 }
             } catch (InterruptedException e) {
-                logger.warn("Exception in FileWatcherTask: {}", e.getMessage());
+                logger.debug("Exception in FileWatcherTask: {}", e.getMessage());
                 faultOccurred = true;
                 break;
             }
@@ -179,7 +179,6 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.update.timeout");
                 continue;
-
             } else {
                 /* A key was returned, check if a modify event for the Upload.hld is present */
                 for (WatchEvent<?> event : key.pollEvents()) {
@@ -198,7 +197,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
 
                 /* Either way, restart the Watcher */
                 if (!key.reset()) {
-                    logger.warn("Key reset failed");
+                    logger.debug("Key reset failed");
                     faultOccurred = true;
                     break;
                 }
@@ -211,7 +210,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 watchService.close();
             }
         } catch (IOException e) {
-            logger.warn("Exception in FileWatcherTask: {}", e.getMessage());
+            logger.debug("Exception in FileWatcherTask: {}", e.getMessage());
         }
 
         if (faultOccurred) {
@@ -234,7 +233,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             devicesToNotify.remove(childHandler);
             logger.trace("Bridge child disposed");
         } else {
-            logger.warn("childHandler not of type HaperoThingHandler");
+            logger.debug("childHandler not of type HaperoThingHandler");
         }
         super.childHandlerDisposed(childHandler, childThing);
     }
@@ -245,7 +244,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             devicesToNotify.add((HaperoThingHandler) childHandler);
             logger.trace("Bridge child created");
         } else {
-            logger.warn("childHandler not of type HaperoThingHandler");
+            logger.debug("childHandler not of type HaperoThingHandler");
         }
         super.childHandlerInitialized(childHandler, childThing);
     }
@@ -277,32 +276,22 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
         /* Check if all configuration parameters are valid */
         if (config.accessMode.contentEquals(HaperoBindingConstants.CONFIG_ACCESS_FTP)) {
             if (config.ftpServer.isBlank()) {
-                errorMsg = "@text/offline.ftpserver.missing";
                 validConfig = false;
-                logger.warn("ftpServer is invalid");
             }
 
             if (config.userName.isBlank()) {
-                errorMsg = "@text/offline.username.missing";
                 validConfig = false;
-                logger.warn("userName is invalid");
             }
 
             if (config.ftpPath.isBlank()) {
-                errorMsg = "@text/offline.ftppath.missing";
                 validConfig = false;
-                logger.warn("ftpPath is invalid");
             }
         } else if (config.accessMode.contentEquals(HaperoBindingConstants.CONFIG_ACCESS_FILESYSTEM)) {
             if (config.fileStoragePath.isBlank()) {
-                errorMsg = "@text/offline.storagepath.missing";
                 validConfig = false;
-                logger.warn("datatStoragePath is invalid");
             }
         } else {
-            errorMsg = "@text/offline.accessmode.missing";
             validConfig = false;
-            logger.warn("accessMode is invalid");
         }
 
         /*
@@ -324,7 +313,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 try {
                     watchPath = Path.of(config.fileStoragePath);
                 } catch (InvalidPathException e) {
-                    logger.warn("Exception in Init: {}", e.getMessage());
+                    logger.debug("Exception in Init: {}", e.getMessage());
                     faultOcurred = true;
                     watchPath = null;
                     errorMsg = "@text/offline.monitoring.failed";
@@ -335,12 +324,12 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                         watchService = FileSystems.getDefault().newWatchService();
                         watchPath.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
                     } catch (Exception e) {
-                        logger.warn("Exception in Init: {}", e.getMessage());
+                        logger.debug("Exception in Init: {}", e.getMessage());
                         faultOcurred = true;
                         errorMsg = "@text/offline.monitoring.failed";
                     }
                 } else {
-                    logger.warn("Failed to create watchservice");
+                    logger.debug("Failed to create watchservice");
                     faultOcurred = true;
                     errorMsg = "@text/offline.monitoring.failed";
                 }
@@ -422,7 +411,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             result = reader.readLine();
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.ftp.read.error");
-            logger.warn("Exception in updateDeviceTree: {}", e.getMessage());
+            logger.debug("Exception in updateDeviceTree: {}", e.getMessage());
             return;
         }
 
@@ -445,7 +434,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             result = Files.readString(path);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.file.read.error");
-            logger.warn("Exception in updateDeviceTree: {}", e.getMessage());
+            logger.debug("Exception in updateDeviceTree: {}", e.getMessage());
             return;
         }
 
@@ -475,7 +464,6 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             data = dataIn.substring(0, dataEnd);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.data.invalid");
-            logger.warn("Illegal input data from device, Things not updated");
             return;
         }
 
@@ -493,13 +481,11 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             /* Check if the groups actually contain data */
             if (matcher.group(1) != null || matcher.group(2) != null) {
                 if (matcher.group(1).isBlank() || matcher.group(2).isBlank()) {
-                    logger.warn("Illegal input data from device, Things not updated");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.data.invalid");
                     faultOcurred = true;
                 }
             } else {
-                logger.warn("Illegal input data from device, Things not updated");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.data.invalid");
                 faultOcurred = true;
             }
@@ -520,7 +506,6 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 } else {
                     device.setDataItems(split);
                 }
-
             }
         }
 
@@ -546,7 +531,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             try {
                 filePath = Path.of(config.fileStoragePath, HaperoBindingConstants.DATA_FILENAME);
             } catch (Exception e) {
-                logger.warn("Exception in updateThings: {}", e.getMessage());
+                logger.debug("Exception in updateThings: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.file.read.error");
                 return;
@@ -560,7 +545,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 try {
                     stream = polledDirectory.getFileStream(HaperoBindingConstants.DATA_FILENAME);
                 } catch (IOException e) {
-                    logger.warn("Exception in updateThings: {}", e.getMessage());
+                    logger.debug("Exception in updateThings: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.ftp.read.error");
                     return;
@@ -568,7 +553,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
 
                 updateDeviceList(stream);
             } else {
-                logger.warn("PolledDirectory null in updateThings");
+                logger.debug("PolledDirectory null in updateThings");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.ftpmonitoring.failed");
             }
@@ -621,7 +606,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             try {
                 watchService.close();
             } catch (IOException e) {
-                logger.warn("Exception in cancelAllJobs: {}", e.getMessage());
+                logger.debug("Exception in cancelAllJobs: {}", e.getMessage());
             }
             watchService = null;
         }

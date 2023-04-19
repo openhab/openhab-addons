@@ -27,18 +27,19 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HaperoHeatingHandler} is responsible for handling commands, which are
+ * The {@link HaperoThingHandler} is responsible for handling commands, which are
  * sent to one of the channels and update the channel data from the
  * data blocks of the input stream
  *
  * @author Daniel Walter - Initial contribution
  */
 @NonNullByDefault
-class HaperoThingHandler extends BaseThingHandler {
+abstract class HaperoThingHandler extends BaseThingHandler {
 
     /** for debug data logging */
     protected final Logger logger = LoggerFactory.getLogger(HaperoThingHandler.class);
@@ -75,7 +76,6 @@ class HaperoThingHandler extends BaseThingHandler {
         HaperoThingConfig config = getConfigAs(HaperoThingConfig.class);
 
         if (config.deviceID.isBlank()) {
-            logger.warn("deviceID is invalid");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.deviceid.invalid");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
@@ -111,7 +111,7 @@ class HaperoThingHandler extends BaseThingHandler {
      * @param channelId The channel to be updated
      * @return true if a state could be obtained, false if not
      */
-    public Boolean updateChannel(ChannelUID channelId) {
+    public boolean updateChannel(ChannelUID channelId) {
         State state = null;
         HaperoBridgeHandler bridgeHandler = null;
         Bridge bridge = getBridge();
@@ -141,7 +141,7 @@ class HaperoThingHandler extends BaseThingHandler {
             state = getStateForChannel(channel, device);
         }
 
-        if (state == null) {
+        if (state == null || state == UnDefType.NULL) {
             logger.warn("{} had invalid data", channelId);
 
             return false;
@@ -159,10 +159,10 @@ class HaperoThingHandler extends BaseThingHandler {
      *
      * @param channel The channel for which a State object shall be created
      * @param device Hold the raw input data for this Thing
-     * @return a {@link State} for the Channel data or null if the device had invalid data for this channel.
+     * @return a {@link State} for the Channel data or UnDefType.NULL if the device had invalid data for this channel.
      */
     protected @Nullable State getStateForChannel(Channel channel, Device device) {
-        return null;
+        return UnDefType.NULL;
     }
 
     /**

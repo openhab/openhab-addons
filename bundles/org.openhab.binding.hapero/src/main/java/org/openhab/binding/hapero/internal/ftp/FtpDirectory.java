@@ -26,7 +26,7 @@ import com.github.drapostolos.rdp4j.spi.FileElement;
 import com.github.drapostolos.rdp4j.spi.PolledDirectory;
 
 /**
- * {@link HaperoBridgeHandler} is a helper class for FTOP File monitoring
+ * {@link HaperoBridgeHandler} is a helper class for FTP File monitoring
  * and also implements reading the file contents from an FTP Server.
  *
  * @author Daniel Walter - Initial contribution
