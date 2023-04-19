@@ -28,5 +28,5 @@ public class RenaultConfiguration {
     public String vin = "";
     public int refreshInterval = 10;
     public int updateDelay = 30;
-    public String kamereonApiKey = "VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss";
+    public String kamereonApiKey = "YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J";
 }
