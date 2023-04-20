@@ -145,6 +145,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
      * a file on the local file system. Used if "Filesystem" is
      * selected as the access method for the Upload.hld
      */
+    @Nullable
     Runnable fileWatcherTask = () -> {
         Boolean faultOccurred = false;
         Boolean fileUpdated = false;
@@ -240,8 +241,8 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof HaperoThingHandler) {
-            devicesToNotify.add((HaperoThingHandler) childHandler);
+        if (childHandler instanceof HaperoThingHandler haperoThingHandler) {
+            devicesToNotify.add(haperoThingHandler);
             logger.trace("Bridge child created");
         } else {
             logger.debug("childHandler not of type HaperoThingHandler");
