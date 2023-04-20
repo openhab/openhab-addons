@@ -87,7 +87,7 @@
 			<property name="modelId">HP02</property>
 		</properties>
 		<representation-property>deviceID</representation-property>
-        <config-description-ref uri="thing-type:hapero:device"/>
+		<config-description-ref uri="thing-type:hapero:device"/>
 	</thing-type>
 
 	<!-- Buffer Tank Thing Type -->
@@ -107,7 +107,7 @@
 			<channel id="charging" typeId="chargingStatus"/>
 		</channels>
 		<representation-property>deviceID</representation-property>
-        <config-description-ref uri="thing-type:hapero:device"/>
+		<config-description-ref uri="thing-type:hapero:device"/>
 	</thing-type>
 
 	<!-- Boiler Tank Thing Type -->
@@ -127,7 +127,7 @@
 			<channel id="charging" typeId="chargingStatus"/>
 		</channels>
 		<representation-property>deviceID</representation-property>
-        <config-description-ref uri="thing-type:hapero:device"/>
+		<config-description-ref uri="thing-type:hapero:device"/>
 	</thing-type>
 
 	<!-- Heating Circuit Thing Type -->
@@ -148,7 +148,7 @@
 			<channel id="roomTemperatureSet" typeId="roomTemperatureSetpoint"/>
 		</channels>
 		<representation-property>deviceID</representation-property>
-        <config-description-ref uri="thing-type:hapero:device"/>
+		<config-description-ref uri="thing-type:hapero:device"/>
 	</thing-type>
 
 	<!-- Furnace Channel Group Types -->
@@ -200,10 +200,10 @@
 		<label>Combustion Chamber Temperature</label>
 		<description>Temperature in the combustion chamber</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="600" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pelletChannelTemperature" advanced="true">
@@ -211,10 +211,10 @@
 		<label>Pellet Channel Temperature</label>
 		<description>Temperature in the pellet feed channel</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="600" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="boilerTemperature">
@@ -222,10 +222,10 @@
 		<label>Furnace Boiler Temperature</label>
 		<description>Temperature in the boiler</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="100" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="boilerTemperatureSetpoint">
@@ -233,10 +233,10 @@
 		<label>Furnace Boiler Target Temperature</label>
 		<description>Target temperature of the boiler</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="100" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="outsideTemperature">
@@ -244,10 +244,10 @@
 		<label>Outside Temperature</label>
 		<description>Outside temperature</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="100" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="furnaceStatusType">
@@ -386,10 +386,10 @@
 		<item-type>Number</item-type>
 		<label>Target Air Flow</label>
 		<description>Target Air flow</description>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="furnaceAirPower" advanced="true">
@@ -415,10 +415,10 @@
 		<label>Temperature Top</label>
 		<description>Temperature on top of the storage tank</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="800" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="storageTemperatureBottom">
@@ -426,10 +426,10 @@
 		<label>Temperature Bottom</label>
 		<description>Temperature on the bottom of the storage tank</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="800" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperatureOnSetpoint">
@@ -437,10 +437,10 @@
 		<label>Request Start Temperature</label>
 		<description>Charging of the tank is requested at/below this temperature</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperatureOffSetpoint">
@@ -448,10 +448,10 @@
 		<label>Request End Temperature</label>
 		<description>Target temperature for charging of the tank</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pumpStatus" advanced="true">
@@ -473,9 +473,9 @@
 		<label>Charging Request</label>
 		<description>Charging of the tank is requested</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowTemperatureCurrent">
@@ -483,10 +483,10 @@
 		<label>Current Flow Temperature</label>
 		<description>Current flow temperature of the heating circuit</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowTemperatureSetpoint">
@@ -494,10 +494,10 @@
 		<label>Set Flow Temperature</label>
 		<description>Target flow temperature of the heating circuit</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="heatingCircuitMode">
@@ -526,10 +526,10 @@
 		<label>Current Room Temperature</label>
 		<description>Current room temperature for this heating circuit</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="roomTemperatureSetpoint">
@@ -537,10 +537,10 @@
 		<label>Set Room Temperature</label>
 		<description>Target room temperature for this heating circuit</description>
 		<category>Temperature</category>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
