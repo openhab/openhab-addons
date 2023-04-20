@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -93,7 +94,7 @@ public class IndegoController {
     public Collection<String> getSerialNumbers() throws IndegoAuthenticationException, IndegoException {
         Mower[] mowers = getRequest(SERIAL_NUMBER_SUBPATH, Mower[].class);
 
-        return Arrays.stream(mowers).map(m -> m.serialNumber).toList();
+        return Arrays.stream(mowers).map(m -> m.serialNumber).collect(Collectors.toUnmodifiableList());
     }
 
     private String getAuthorizationUrl() {
