@@ -461,15 +461,43 @@ public class Resource {
         return Objects.nonNull(relativeRotary) ? relativeRotary.getStepsState() : UnDefType.NULL;
     }
 
+    /**
+     * Check if the scene resource contains a 'status.active' element. If such an element is present, returns 'TRUE' or
+     * 'FALSE' depending on the value of that element. Or returns 'null' if there is no such element.
+     *
+     * @return 'TRUE', 'FALSE', or null.
+     */
     public @Nullable Boolean getSceneActive() {
-        JsonElement status = this.status;
-        if (Objects.nonNull(status) && status.isJsonObject()) {
-            JsonElement active = ((JsonObject) status).get("active");
-            if (Objects.nonNull(active) && active.isJsonPrimitive()) {
-                return !"inactive".equals(active.getAsString());
+        if (ResourceType.SCENE == getType()) {
+            JsonElement status = this.status;
+            if (Objects.nonNull(status) && status.isJsonObject()) {
+                JsonElement active = ((JsonObject) status).get("active");
+                if (Objects.nonNull(active) && active.isJsonPrimitive()) {
+                    return !"inactive".equals(active.getAsString());
+                }
             }
         }
         return null;
+    }
+
+    /**
+     * If the resource is a scene: if it is active, return its name, or otherwise return 'UNDEF'. Or if the resource is
+     * not a scene then return 'NULL'.
+     *
+     * @return StringType containing the scene name, 'UNDEF', or 'NULL'.
+     */
+    public State getSceneState() {
+        Boolean sceneActive = getSceneActive();
+        if (Objects.nonNull(sceneActive)) {
+            if (Boolean.TRUE.equals(sceneActive)) {
+                String name = getName();
+                if (Objects.nonNull(name)) {
+                    return new StringType(name);
+                }
+            }
+            return UnDefType.UNDEF;
+        }
+        return UnDefType.NULL;
     }
 
     public List<ResourceReference> getServiceReferences() {
