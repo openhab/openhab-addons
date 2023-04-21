@@ -162,7 +162,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public void openConnection(@Nullable String code, @Nullable String redirectUri) {
-        authenticate(code, redirectUri);
+        if (!authenticate(code, redirectUri)) {
+            return;
+        }
 
         logger.debug("Connecting to Netatmo API.");
 
@@ -170,6 +172,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         if (!configuration.webHookUrl.isBlank()) {
             SecurityApi securityApi = getRestManager(SecurityApi.class);
             if (securityApi != null) {
+                webHookServlet.ifPresent(servlet -> servlet.dispose());
                 WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
                         configuration.webHookUrl, configuration.webHookPostfix);
                 servlet.startListening();
@@ -183,11 +186,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
     }
 
-    private void authenticate(@Nullable String code, @Nullable String redirectUri) {
+    private boolean authenticate(@Nullable String code, @Nullable String redirectUri) {
         OAuthClientService oAuthClientService = this.oAuthClientService;
         if (oAuthClientService == null) {
             logger.debug("ApiBridgeHandler is not ready, OAuthClientService not initialized");
-            return;
+            return false;
         }
 
         AccessTokenResponse accessTokenResponse;
@@ -204,21 +207,23 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         } catch (OAuthException | OAuthResponseException e) {
             logger.debug("Failed to load access token: {}", e.getMessage());
             startAuthorizationFlow();
-            return;
+            return false;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             prepareReconnection(code, redirectUri);
-            return;
+            return false;
         }
 
         if (accessTokenResponse == null) {
             logger.debug("Authorization failed, restarting authorization flow");
             startAuthorizationFlow();
-            return;
+            return false;
         }
 
         connectApi.setAccessToken(accessTokenResponse.getAccessToken());
         connectApi.setScope(accessTokenResponse.getScope());
+
+        return true;
     }
 
     private void startAuthorizationFlow() {
@@ -300,7 +305,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
-            authenticate(null, null);
+            if (!authenticate(null, null)) {
+                prepareReconnection(null, null);
+                throw new NetatmoException("Not authenticated");
+            }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
 
             if (payload != null && contentType != null
