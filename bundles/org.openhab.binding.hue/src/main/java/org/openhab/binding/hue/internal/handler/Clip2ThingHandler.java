@@ -42,6 +42,8 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -246,29 +248,34 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case HueBindingConstants.CHANNEL_2_ALERT:
                 putResource = new Resource(lightResourceType).setAlert(command, getCachedResource(lightResourceType));
-                scheduler.schedule(() -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 5,
+                scheduler.schedule(() -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 10,
                         TimeUnit.SECONDS);
                 break;
 
             case HueBindingConstants.CHANNEL_2_EFFECT:
-                putResource = new Resource(lightResourceType).setEffect(command, getCachedResource(lightResourceType));
+                putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON).setEffect(command,
+                        getCachedResource(lightResourceType));
                 break;
 
             case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE:
-                putResource = new Resource(lightResourceType).setColorTemperaturePercent(command,
-                        getCachedResource(ResourceType.LIGHT));
+                putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON)
+                        .setColorTemperaturePercent(command, getCachedResource(ResourceType.LIGHT));
                 break;
 
             case HueBindingConstants.CHANNEL_2_COLOR_TEMP_KELVIN:
-                putResource = new Resource(lightResourceType).setColorTemperatureKelvin(command);
+                putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON)
+                        .setColorTemperatureKelvin(command);
                 break;
 
             case HueBindingConstants.CHANNEL_2_COLOR:
-                putResource = new Resource(lightResourceType).setColor(command, getCachedResource(lightResourceType));
+                putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON).setColor(command,
+                        getCachedResource(lightResourceType));
                 break;
 
             case HueBindingConstants.CHANNEL_2_BRIGHTNESS:
-                putResource = new Resource(lightResourceType).setBrightness(command);
+                putResource = new Resource(lightResourceType)
+                        .setSwitch(PercentType.ZERO.equals(command) ? OnOffType.OFF : OnOffType.ON)
+                        .setBrightness(command);
                 break;
 
             case HueBindingConstants.CHANNEL_2_SWITCH:
@@ -784,13 +791,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param fullUpdate if true always update the channel, otherwise only update if state is not 'UNDEF'.
      */
     private void updateState(String channelID, State state, boolean fullUpdate) {
-        logger.debug("{} -> updateState() channelID:{}, state:{}, fullUpdate:{}", resourceId, channelID, state,
-                fullUpdate);
         boolean isDefined = state != UnDefType.NULL;
         if (fullUpdate || isDefined) {
+            logger.debug("{} -> updateState() '{}' updated to '{}' (fullUpdate:{}, isDefined:{})", resourceId,
+                    channelID, state, fullUpdate, isDefined);
             updateState(channelID, state);
         }
         if (fullUpdate && isDefined) {
+            logger.debug("{} -> updateState() '{}' added to supported channels", resourceId, channelID);
             supportedChannelIds.add(channelID);
         }
     }

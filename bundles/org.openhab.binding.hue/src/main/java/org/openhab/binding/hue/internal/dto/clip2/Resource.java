@@ -155,12 +155,16 @@ public class Resource {
         if (Objects.isNull(this.color) && Objects.nonNull(other.color)) {
             this.color = other.color;
         }
-        // gamut
+        // color gamut
         ColorXy oC = other.color;
         Gamut oG = Objects.nonNull(oC) ? oC.getGamut() : null;
         if (Objects.nonNull(oG)) {
             ColorXy tC = this.color;
             this.color = (Objects.nonNull(tC) ? tC : new ColorXy()).setGamut(oG);
+        }
+        // color temperature
+        if (Objects.isNull(this.colorTemperature) && Objects.nonNull(other.colorTemperature)) {
+            this.colorTemperature = other.colorTemperature;
         }
         // mirek schema
         ColorTemperature2 oCT = other.colorTemperature;
