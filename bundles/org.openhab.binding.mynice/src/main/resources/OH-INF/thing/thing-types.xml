@@ -104,11 +104,11 @@
 		</state>
 		<command>
 			<options>
-                <option value="STOP">Stop</option>
+				<option value="STOP">Stop</option>
 				<option value="MOVE">Move</option>
 			</options>
-	   </command>
-        <autoUpdatePolicy>veto</autoUpdatePolicy>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="moving">
@@ -172,19 +172,19 @@
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	
+
 	<channel-type id="courtesy">
-        <item-type>Switch</item-type>
-        <label>Courtesy Light</label>
-        <description>Courtesy Light illuminates the area around your gates.</description>
-        <category>lightbulb</category>
-        <config-description>
-        	<parameter name="duration" type="integer" min="0" unit="s" step="1">
-        		<label>Duration</label>
-        		<description>Duration the lamp stays on</description>
-        		<default>60</default>
-        	</parameter>
-        </config-description>
+		<item-type>Switch</item-type>
+		<label>Courtesy Light</label>
+		<description>Courtesy Light illuminates the area around your gates.</description>
+		<category>lightbulb</category>
+		<config-description>
+			<parameter name="duration" type="integer" min="0" unit="s" step="1">
+				<label>Duration</label>
+				<description>Duration the lamp stays on</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 </thing:thing-descriptions>
