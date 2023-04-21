@@ -6,9 +6,13 @@
 	<channel-group-type id="charger-state">
 		<label>Charger Status</label>
 		<channels>
-			<channel id="smartCharging" typeId="type-switch">
+			<channel id="smartCharging" typeId="rwtype-switch">
 				<label>Smart Charging</label>
 				<description>Smart Charging status of the wallbox.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">.*</property>
+				</properties>
 			</channel>
 			<channel id="cableLocked" typeId="type-switch">
 				<label>Cable Locked</label>
