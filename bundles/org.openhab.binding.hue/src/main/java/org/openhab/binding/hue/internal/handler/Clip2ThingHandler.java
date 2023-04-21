@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.handler;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,11 +105,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final Map<String, Integer> controlIds = new ConcurrentHashMap<>();
 
     /**
-     * A list of channel IDs that are supported by this thing. e.g. an on/off light may support 'switch' and
+     * The set of channel IDs that are supported by this thing. e.g. an on/off light may support 'switch' and
      * 'zigbeeStatus' channels, whereas a complex light may support 'switch', 'brightness', 'color', 'color temperature'
      * and 'zigbeeStatus' channels.
      */
-    private final List<String> supportedChannelIds = new CopyOnWriteArrayList<>();
+    private final Set<String> supportedChannelIdSet = new HashSet<>();
 
     /**
      * A list of scene Resources that are supported by this thing.
@@ -161,6 +162,20 @@ public class Clip2ThingHandler extends BaseThingHandler {
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
+    /**
+     * Add a channel ID to the supportedChannelIdSet set.
+     *
+     * @param channelId the channel ID to add.
+     */
+    private void addSupportedChannel(String channelId) {
+        if (!disposing && !updateDependenciesDone) {
+            synchronized (supportedChannelIdSet) {
+                logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId, channelId);
+                supportedChannelIdSet.add(channelId);
+            }
+        }
+    }
+
     @Override
     public void dispose() {
         logger.debug("{} -> dispose()", resourceId);
@@ -173,7 +188,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         supportedScenes.clear();
         legacyLinkedChannelUIDs.clear();
         sceneCommandResourceIds.clear();
-        supportedChannelIds.clear();
+        supportedChannelIdSet.clear();
         commandResourceIds.clear();
         contributorsCache.clear();
         controlIds.clear();
@@ -441,32 +456,36 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Set the active list of channels by removing any that had initially been created by the thing XML declaration, but
-     * which in fact did not have data returned from the bridge i.e. channels which are not in the supportedChannelIds
-     * list. Also warn if there are channels in the supportedChannelIds set which are not in the thing.
+     * which in fact did not have data returned from the bridge i.e. channels which are not in the supportedChannelIdSet
+     * set. Also warn if there are channels in the supportedChannelIdSet set which are not in the thing.
      */
     private void updateChannelList() {
         if (!disposing) {
-            logger.debug("{} -> updateChannelList() supportedChannelIds.size():{}", resourceId,
-                    supportedChannelIds.size());
+            synchronized (supportedChannelIdSet) {
+                logger.debug("{} -> updateChannelList() supportedChannelIdSet.size():{}", resourceId,
+                        supportedChannelIdSet.size());
 
-            // warn about any missing channels
-            supportedChannelIds.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
-                    .forEach(channelId -> logger.warn(
-                            "{} -> updateChannelList() required channel '{}' missing => please recreate thing!",
-                            resourceId, channelId));
+                // warn about any missing channels
+                supportedChannelIdSet.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
+                        .forEach(channelId -> logger.warn(
+                                "{} -> updateChannelList() required channel '{}' missing => please recreate thing!",
+                                resourceId, channelId));
 
-            // get list of unused channels
-            List<Channel> unusedChannels = thing.getChannels().stream()
-                    .filter(channel -> !supportedChannelIds.contains(channel.getUID().getId()))
-                    .collect(Collectors.toList());
+                // get list of unused channels
+                List<Channel> unusedChannels = thing.getChannels().stream()
+                        .filter(channel -> !supportedChannelIdSet.contains(channel.getUID().getId()))
+                        .collect(Collectors.toList());
 
-            // remove any unused channels
-            if (!unusedChannels.isEmpty()) {
-                if (logger.isDebugEnabled()) {
-                    unusedChannels.stream().map(channel -> channel.getUID().getId()).forEach(channelId -> logger
-                            .debug("{} -> updateChannelList() removing unused channel '{}'", resourceId, channelId));
+                // remove any unused channels
+                if (!unusedChannels.isEmpty()) {
+                    if (logger.isDebugEnabled()) {
+                        unusedChannels.stream().map(channel -> channel.getUID().getId())
+                                .forEach(channelId -> logger.debug(
+                                        "{} -> updateChannelList() removing unused channel '{}'", resourceId,
+                                        channelId));
+                    }
+                    updateThing(editThing().withoutChannels(unusedChannels).build());
                 }
-                updateThing(editThing().withoutChannels(unusedChannels).build());
             }
         }
     }
@@ -483,7 +502,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (resource.getType()) {
             case BUTTON:
                 if (fullUpdate) {
-                    supportedChannelIds.add(HueBindingConstants.CHANNEL_2_BUTTON_LAST_EVENT);
+                    addSupportedChannel(HueBindingConstants.CHANNEL_2_BUTTON_LAST_EVENT);
                 }
                 resource.addControlIdToMap(controlIds);
                 State buttonState = resource.getButtonEventState(controlIds);
@@ -528,7 +547,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case RELATIVE_ROTARY:
                 if (fullUpdate) {
-                    supportedChannelIds.add(HueBindingConstants.CHANNEL_2_ROTARY_STEPS);
+                    addSupportedChannel(HueBindingConstants.CHANNEL_2_ROTARY_STEPS);
                 }
                 updateState(HueBindingConstants.CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 break;
@@ -574,7 +593,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/offline.api2.comm-error.zigbee-connectivity-issue");
                     // change all channel states, except the Zigbee channel itself, to undefined
-                    supportedChannelIds.stream()
+                    supportedChannelIdSet.stream()
                             .filter(channelId -> !HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS.equals(channelId))
                             .forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
@@ -769,7 +788,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     .collect(Collectors.toList()));
 
             if (!supportedScenes.isEmpty()) {
-                supportedChannelIds.add(HueBindingConstants.CHANNEL_SCENE);
+                addSupportedChannel(HueBindingConstants.CHANNEL_SCENE);
                 stateDescriptionProvider
                         .setStateOptions(new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_SCENE),
                                 supportedScenes.stream().map(scene -> scene.getName())
@@ -798,8 +817,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             updateState(channelID, state);
         }
         if (fullUpdate && isDefined) {
-            logger.debug("{} -> updateState() '{}' added to supported channels", resourceId, channelID);
-            supportedChannelIds.add(channelID);
+            addSupportedChannel(channelID);
         }
     }
 
