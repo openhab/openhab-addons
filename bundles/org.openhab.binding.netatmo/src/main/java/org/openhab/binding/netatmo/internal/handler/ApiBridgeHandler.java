@@ -21,9 +21,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -70,11 +67,16 @@ import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
 import org.openhab.binding.netatmo.internal.config.ConfigurationLevel;
+import org.openhab.binding.netatmo.internal.deserialization.AccessTokenResponseDeserializer;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
 import org.openhab.binding.netatmo.internal.servlet.GrantServlet;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
-import org.openhab.core.OpenHAB;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -89,130 +91,147 @@ import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.GsonBuilder;
+
 /**
  * {@link ApiBridgeHandler} is the handler for a Netatmo API and connects it to the framework.
  *
  * @author Gaël L'hopital - Initial contribution
- *
+ * @author Jacob Laursen - Refactored to use standard OAuth2 implementation
  */
 @NonNullByDefault
 public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final int TIMEOUT_S = 20;
-    private static final String REFRESH_TOKEN = "refreshToken";
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
-    private final AuthenticationApi connectApi = new AuthenticationApi(this, scheduler);
+    private final AuthenticationApi connectApi = new AuthenticationApi(this);
     private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private final Deque<LocalDateTime> requestsTimestamps = new ArrayDeque<>(200);
     private final BindingConfiguration bindingConf;
     private final HttpClient httpClient;
+    private final OAuthFactory oAuthFactory;
     private final NADeserializer deserializer;
     private final HttpService httpService;
     private final ChannelUID requestCountChannelUID;
-    private final Path tokenFile;
 
+    private @Nullable OAuthClientService oAuthClientService;
     private Optional<ScheduledFuture<?>> connectJob = Optional.empty();
     private Optional<WebhookServlet> webHookServlet = Optional.empty();
     private Optional<GrantServlet> grantServlet = Optional.empty();
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
-            BindingConfiguration configuration, HttpService httpService) {
+            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
         super(bridge);
         this.bindingConf = configuration;
         this.httpClient = httpClient;
         this.deserializer = deserializer;
         this.httpService = httpService;
-        this.requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
+        this.oAuthFactory = oAuthFactory;
 
-        Path homeFolder = Paths.get(OpenHAB.getUserDataFolder(), BINDING_ID);
-        if (Files.notExists(homeFolder)) {
-            try {
-                Files.createDirectory(homeFolder);
-            } catch (IOException e) {
-                logger.warn("Unable to create {} folder : {}", homeFolder.toString(), e.getMessage());
-            }
-        }
-        tokenFile = homeFolder.resolve(REFRESH_TOKEN + "_" + thing.getUID().toString().replace(":", "_"));
+        requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Netatmo API bridge handler.");
+
+        ApiHandlerConfiguration configuration = getConfiguration();
+
+        if (configuration.clientId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    ConfigurationLevel.EMPTY_CLIENT_ID.message);
+            return;
+        }
+
+        if (configuration.clientSecret.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    ConfigurationLevel.EMPTY_CLIENT_SECRET.message);
+            return;
+        }
+
+        oAuthClientService = oAuthFactory
+                .createOAuthClientService(this.getThing().getUID().getAsString(),
+                        AuthenticationApi.TOKEN_URI.toString(), AuthenticationApi.AUTH_URI.toString(),
+                        configuration.clientId, configuration.clientSecret, FeatureArea.ALL_SCOPES, false)
+                .withGsonBuilder(new GsonBuilder().registerTypeAdapter(AccessTokenResponse.class,
+                        new AccessTokenResponseDeserializer()));
+
         updateStatus(ThingStatus.UNKNOWN);
+
         scheduler.execute(() -> openConnection(null, null));
     }
 
     public void openConnection(@Nullable String code, @Nullable String redirectUri) {
+        if (!authenticate(code, redirectUri)) {
+            return;
+        }
+
+        logger.debug("Connecting to Netatmo API.");
+
         ApiHandlerConfiguration configuration = getConfiguration();
-
-        String refreshToken = readRefreshToken();
-
-        ConfigurationLevel level = configuration.check(refreshToken);
-        switch (level) {
-            case EMPTY_CLIENT_ID:
-            case EMPTY_CLIENT_SECRET:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, level.message);
-                break;
-            case REFRESH_TOKEN_NEEDED:
-                if (code == null || redirectUri == null) {
-                    GrantServlet servlet = new GrantServlet(this, httpService);
-                    servlet.startListening();
-                    grantServlet = Optional.of(servlet);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, level.message);
-                    break;
-                } // else we can proceed to get the token refresh
-            case COMPLETED:
-                try {
-                    logger.debug("Connecting to Netatmo API.");
-
-                    connectApi.authorize(configuration, refreshToken, code, redirectUri);
-
-                    if (!configuration.webHookUrl.isBlank()) {
-                        SecurityApi securityApi = getRestManager(SecurityApi.class);
-                        if (securityApi != null) {
-                            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
-                                    configuration.webHookUrl, configuration.webHookPostfix);
-                            servlet.startListening();
-                            this.webHookServlet = Optional.of(servlet);
-                        }
-                    }
-
-                    updateStatus(ThingStatus.ONLINE);
-
-                    getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler)
-                            .filter(Objects::nonNull).map(CommonInterface.class::cast)
-                            .forEach(CommonInterface::expireData);
-
-                } catch (NetatmoException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    prepareReconnection(code, redirectUri);
-                }
-                break;
-        }
-    }
-
-    private String readRefreshToken() {
-        if (Files.exists(tokenFile)) {
-            try {
-                return Files.readString(tokenFile);
-            } catch (IOException e) {
-                logger.warn("Unable to read token file {} : {}", tokenFile.toString(), e.getMessage());
+        if (!configuration.webHookUrl.isBlank()) {
+            SecurityApi securityApi = getRestManager(SecurityApi.class);
+            if (securityApi != null) {
+                webHookServlet.ifPresent(servlet -> servlet.dispose());
+                WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+                        configuration.webHookUrl, configuration.webHookPostfix);
+                servlet.startListening();
+                this.webHookServlet = Optional.of(servlet);
             }
         }
-        return "";
+
+        updateStatus(ThingStatus.ONLINE);
+
+        getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).filter(Objects::nonNull)
+                .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
     }
 
-    public void storeRefreshToken(String refreshToken) {
-        if (refreshToken.isBlank()) {
-            logger.trace("Blank refresh token received - ignored");
-        } else {
-            logger.trace("Updating refresh token in {} : {}", tokenFile.toString(), refreshToken);
-            try {
-                Files.write(tokenFile, refreshToken.getBytes());
-            } catch (IOException e) {
-                logger.warn("Error saving refresh token to {} : {}", tokenFile.toString(), e.getMessage());
-            }
+    private boolean authenticate(@Nullable String code, @Nullable String redirectUri) {
+        OAuthClientService oAuthClientService = this.oAuthClientService;
+        if (oAuthClientService == null) {
+            logger.debug("ApiBridgeHandler is not ready, OAuthClientService not initialized");
+            return false;
         }
+
+        AccessTokenResponse accessTokenResponse;
+        try {
+            if (code != null) {
+                accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
+
+                // Dispose grant servlet upon completion of authorization flow.
+                grantServlet.ifPresent(servlet -> servlet.dispose());
+                grantServlet = Optional.empty();
+            } else {
+                accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+            }
+        } catch (OAuthException | OAuthResponseException e) {
+            logger.debug("Failed to load access token: {}", e.getMessage());
+            startAuthorizationFlow();
+            return false;
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            prepareReconnection(code, redirectUri);
+            return false;
+        }
+
+        if (accessTokenResponse == null) {
+            logger.debug("Authorization failed, restarting authorization flow");
+            startAuthorizationFlow();
+            return false;
+        }
+
+        connectApi.setAccessToken(accessTokenResponse.getAccessToken());
+        connectApi.setScope(accessTokenResponse.getScope());
+
+        return true;
+    }
+
+    private void startAuthorizationFlow() {
+        GrantServlet servlet = new GrantServlet(this, httpService);
+        servlet.startListening();
+        grantServlet = Optional.of(servlet);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                ConfigurationLevel.REFRESH_TOKEN_NEEDED.message);
     }
 
     public ApiHandlerConfiguration getConfiguration() {
@@ -220,7 +239,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void prepareReconnection(@Nullable String code, @Nullable String redirectUri) {
-        connectApi.disconnect();
+        connectApi.dispose();
         freeConnectJob();
         connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri),
                 getConfiguration().reconnectInterval, TimeUnit.SECONDS));
@@ -243,7 +262,16 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         connectApi.dispose();
         freeConnectJob();
+
+        oAuthFactory.ungetOAuthService(this.getThing().getUID().getAsString());
+
         super.dispose();
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(this.getThing().getUID().getAsString());
+        super.handleRemoval();
     }
 
     @Override
@@ -277,6 +305,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
+            if (!authenticate(null, null)) {
+                prepareReconnection(null, null);
+                throw new NetatmoException("Not authenticated");
+            }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
 
             if (payload != null && contentType != null
