@@ -14,6 +14,7 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_AUX;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,8 +42,6 @@ import org.slf4j.LoggerFactory;
  * The {@link OpenWebNetAuxiliaryHandler} is responsible for sending Auxiliary (AUX) commands/messages to the bus
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
- * NOTICE: Support for handling messages from the bus regarding alarm control has to be implemented
- *
  * @author Giovanni Fabiani - Initial contribution
  *
  */
@@ -52,8 +51,20 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUX_SUPPORTED_THING_TYPES;
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetAuxiliaryHandler.class);
 
+    private static final Set<OpenWebNetAuxiliaryHandler> auxHandlers = new HashSet<>();
+    private static final String AUX_NONE = "NONE";
+
     public OpenWebNetAuxiliaryHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_AUX.equals(thing.getThingTypeUID())) {
+            auxHandlers.add(this);
+            updateState(CHANNEL_AUX, new StringType(AUX_NONE));
+        }
     }
 
     /**
@@ -127,5 +138,14 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     @Override
     protected String ownIdPrefix() {
         return Who.AUX.value().toString();
+    }
+
+    @Override
+    public void dispose() {
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_AUX.equals(thing.getThingTypeUID())) {
+            auxHandlers.remove(this);
+            logger.debug("Auxiliary.dispose() - removed auxiliary {}", this.deviceWhere);
+        }
+        super.dispose();
     }
 }
