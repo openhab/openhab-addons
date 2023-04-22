@@ -194,13 +194,16 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     private void dimLightTo(int percent, Command command) {
         logger.debug("   DIM dimLightTo({}) bri={} briBeforeOff={}", percent, brightness, brightnessBeforeOff);
         int newBrightness = percent;
-        if (newBrightness == UNKNOWN_STATE) {
-            // we do not know last brightness -> set dimmer to 100%
+        if (newBrightness == UNKNOWN_STATE) { // we do not know last brightness -> set dimmer to 100%
             newBrightness = 100;
         } else if (newBrightness <= 0) {
-            newBrightness = 0;
-            brightnessBeforeOff = brightness;
-            logger.debug("   DIM saved bri before sending bri=0 command to device");
+            if (brightness == 0) {
+                logger.debug("   DIM bri already 0: no need to save it");
+            } else {
+                brightnessBeforeOff = brightness;
+                logger.debug("   DIM saved briBeforeOff={} before sending bri=0 command to device",
+                        brightnessBeforeOff);
+            }
         } else if (newBrightness > 100) {
             newBrightness = 100;
         }
@@ -280,8 +283,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     return;
                 } else {
                     // otherwise we interpret this ON event as the requestStatus response event with
-                    // level=1
-                    // so we proceed to call updateBrightnessState()
+                    // level=1 so we proceed to call updateBrightnessState()
                     logger.debug("  $BRI 'ON' is the requestStatus response level");
                 }
             }
