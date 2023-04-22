@@ -130,10 +130,8 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                     }
                 } else if (clip2BridgeHandler != null) {
                     String applicationKey = clip2BridgeHandler.getApplicationKey();
-                    applicationKey = Objects.nonNull(applicationKey) ? applicationKey : "undefined";
 
                     String ipAddress = clip2BridgeHandler.getIpAddress();
-                    ipAddress = Objects.nonNull(ipAddress) ? ipAddress : "undefined";
 
                     switch (args[1]) {
                         case APPLICATION_KEY:

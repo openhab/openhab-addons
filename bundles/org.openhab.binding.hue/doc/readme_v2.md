@@ -59,7 +59,7 @@ The configuration of all things (as described above) is the same regardless of w
 
 Device things support some of the following channels:
 
-| Channel Type ID     | Item Type          | Description                                                                           |
+| Channel ID          | Item Type          | Description                                                                           |
 |---------------------|--------------------|---------------------------------------------------------------------------------------|
 | switch              | Switch             | This channel supports switching the device on and off.                                |
 | color               | Color              | This channel supports full color control with hue, saturation and brightness values.  |
@@ -114,7 +114,7 @@ A positive number means the dial was rotated clock-wise, whereas a negative numb
 Room and Zone things allow you to control the lights in a given zone or room.
 They support the following channels:
 
-| Channel Type ID     | Item Type          | Description                                                                           |
+| Channel ID          | Item Type          | Description                                                                           |
 |---------------------|--------------------|---------------------------------------------------------------------------------------|
 | switch              | Switch             | This channel supports switching the lights on and off.                                |
 | brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
@@ -128,20 +128,19 @@ If the respective room or zone has no scenes or alerts associated with it, the r
 
 The openHAB console has a command named `openhab:hue` that (among other things) lists the `resourceId` of all device things in the bridge.
 The console command usage is `openhab:hue <brigeUID> things`.
-An exampe of such a console command, and its respective output, is shown below..
+An exampe of such a console command, and its respective output, is shown below.
 
-```text
+```shell
 openhab> openhab:hue hue:bridge-api2:g24 things
 Bridge hue:bridge-api2:g24 "Philips Hue Bridge" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
   Thing device 11111111-2222-3333-4444-555555555555 "Standard Lamp L" [resourceId="11111111-2222-3333-4444-555555555555"] // Hue color lamp
   Thing device 11111111-2222-3333-4444-666666666666 "Kitchen Wallplate Switch" [resourceId="11111111-2222-3333-4444-666666666666"] // Hue wall switch module
-  ..
 }
 ```
 
-The `openhab:hue <brigeUID> things` command produces an output that can be used to directly create a `.things' file, as shown below..
+The `openhab:hue <brigeUID> things` command produces an output that can be used to directly create a `.things` file, as shown below.
 
-```text
+```shell
 openhab> openhab:hue hue:bridge-api2:g24 things > myThingsFile.things
 ```
 

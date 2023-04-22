@@ -555,7 +555,7 @@ public class Clip2Bridge implements Closeable {
      * @param cause the exception that caused the error.
      */
     private synchronized void fatalError(Object listener, Http2Exception cause) {
-        if (restarting || (onlineState == State.CLOSED)) {
+        if (restarting || onlineState == State.CLOSED) {
             return;
         }
         String causeId = listener.getClass().getSimpleName();

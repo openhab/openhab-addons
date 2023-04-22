@@ -13,7 +13,6 @@
 package org.openhab.binding.hue.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Configuration for the Clip2BridgeHandler.
@@ -24,8 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Clip2BridgeConfig {
     public static final String APPLICATION_KEY = "applicationKey";
 
-    public @Nullable String ipAddress;
-    public @Nullable String applicationKey;
+    public String ipAddress = "";
+    public String applicationKey = "";
     public int checkMinutes = 60;
     public boolean useSelfSignedCertificate = true;
 }

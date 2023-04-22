@@ -14,8 +14,6 @@ package org.openhab.binding.hue.internal;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -161,21 +159,20 @@ public class HueBindingConstants {
      * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we
      * should try to replicate the channel/item links from the v1 channel into the respective v2 channel.
      */
-    public static final Map<String, String> REPLICATE_CHANNEL_ID_MAP = Stream.of(new String[][] { //
-            { CHANNEL_BRIGHTNESS, CHANNEL_2_BRIGHTNESS }, //
-            { CHANNEL_COLOR, CHANNEL_2_COLOR }, //
-            { CHANNEL_SWITCH, CHANNEL_2_SWITCH }, //
-            { CHANNEL_SCENE, CHANNEL_2_SCENE }, //
-            { CHANNEL_COLORTEMPERATURE, CHANNEL_2_COLOR_TEMPERATURE }, //
-            { CHANNEL_COLORTEMPERATURE_ABS, CHANNEL_2_COLOR_TEMP_KELVIN }, //
-            { CHANNEL_DIMMER_SWITCH, CHANNEL_2_BUTTON_LAST_EVENT }, //
-            { CHANNEL_LIGHT_LEVEL, CHANNEL_2_LIGHT_LEVEL }, //
-            { CHANNEL_PRESENCE, CHANNEL_2_MOTION }, //
-            { CHANNEL_TEMPERATURE, CHANNEL_2_TEMPERATURE }, //
-            { CHANNEL_BATTERY_LEVEL, CHANNEL_2_BATTERY_LEVEL }, //
-            { CHANNEL_BATTERY_LOW, CHANNEL_2_BATTERY_LOW }, //
-            { CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED } //
-    }).collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
+    public static final Map<String, String> REPLICATE_CHANNEL_ID_MAP = Map.ofEntries(
+            Map.entry(CHANNEL_BRIGHTNESS, CHANNEL_2_BRIGHTNESS), //
+            Map.entry(CHANNEL_COLOR, CHANNEL_2_COLOR), //
+            Map.entry(CHANNEL_SWITCH, CHANNEL_2_SWITCH), //
+            Map.entry(CHANNEL_SCENE, CHANNEL_2_SCENE), //
+            Map.entry(CHANNEL_COLORTEMPERATURE, CHANNEL_2_COLOR_TEMPERATURE), //
+            Map.entry(CHANNEL_COLORTEMPERATURE_ABS, CHANNEL_2_COLOR_TEMP_KELVIN), //
+            Map.entry(CHANNEL_DIMMER_SWITCH, CHANNEL_2_BUTTON_LAST_EVENT), //
+            Map.entry(CHANNEL_LIGHT_LEVEL, CHANNEL_2_LIGHT_LEVEL), //
+            Map.entry(CHANNEL_PRESENCE, CHANNEL_2_MOTION), //
+            Map.entry(CHANNEL_TEMPERATURE, CHANNEL_2_TEMPERATURE), //
+            Map.entry(CHANNEL_BATTERY_LEVEL, CHANNEL_2_BATTERY_LEVEL), //
+            Map.entry(CHANNEL_BATTERY_LOW, CHANNEL_2_BATTERY_LOW), //
+            Map.entry(CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED));
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all_lights.label";
 }

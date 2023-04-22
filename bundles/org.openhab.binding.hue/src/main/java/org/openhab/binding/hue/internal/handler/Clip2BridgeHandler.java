@@ -278,7 +278,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      *
      * @return the application key.
      */
-    public @Nullable String getApplicationKey() {
+    public String getApplicationKey() {
         Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
         return config.applicationKey;
     }
@@ -298,11 +298,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Return the ip address for the console app.
+     * Return the IP address for the console app.
      *
-     * @return the ip address.
+     * @return the IP address.
      */
-    public @Nullable String getIpAddress() {
+    public String getIpAddress() {
         Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
         return config.ipAddress;
     }
@@ -424,7 +424,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
 
             String ipAddress = config.ipAddress;
-            if (Objects.isNull(ipAddress) || ipAddress.isEmpty()) {
+            if (ipAddress.isBlank()) {
                 logger.warn("initializeAssets() invalid ip address '{}'", config.ipAddress);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-no-ip-address");
