@@ -15,6 +15,7 @@ package org.openhab.binding.boschindego.internal.handler;
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschindego.internal.IndegoController;
 import org.openhab.binding.boschindego.internal.discovery.IndegoDiscoveryService;
+import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -119,7 +121,18 @@ public class BoschAccountHandler extends BaseBridgeHandler {
         return oAuthClientService;
     }
 
-    public Collection<String> getSerialNumbers() throws IndegoException {
-        return controller.getSerialNumbers();
+    public Collection<DevicePropertiesResponse> getDevices() throws IndegoException {
+        Collection<String> serialNumbers = controller.getSerialNumbers();
+        List<DevicePropertiesResponse> devices = new ArrayList<DevicePropertiesResponse>(serialNumbers.size());
+
+        for (String serialNumber : serialNumbers) {
+            DevicePropertiesResponse properties = controller.getDeviceProperties(serialNumber);
+            if (properties.serialNumber == null) {
+                properties.serialNumber = serialNumber;
+            }
+            devices.add(properties);
+        }
+
+        return devices;
     }
 }
