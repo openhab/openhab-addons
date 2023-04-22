@@ -71,7 +71,7 @@ meteoalert.items:
 
 ```java
 Group gMeteoAlert "Alertes Météo" <oh:meteoalerte:meteo_france> 
-String     MA_Dept78                  "Département 78 [%s]"       <oh:meteoalerte:text>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:comment"}
+String     MA_Dept78                  "Département 78 [%s]"       <text>                              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:comment"}
 Number     MA_etat_canicule           "Canicule [%s]"             <oh:meteoalerte:canicule>           (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule"}
 Number     MA_etat_grand_froid        "Grand Froid [%s]"          <oh:meteoalerte:grand-froid>        (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid"}
 Number     MA_etat_pluie_inondation   "Pluie-Inondation [%s]"     <oh:meteoalerte:pluie-inondation>   (gMeteoAlert)   {channel="meteoalerte:department:yvelines:pluie-inondation"}
@@ -90,6 +90,6 @@ Image      MA_icon_inondation         "Inondation"                <oh:meteoalert
 Image      MA_icon_orage              "Orage"                     <oh:meteoalerte:orage>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage-icon"}
 Image      MA_icon_avalanche          "Avalanche"                 <oh:meteoalerte:avalanches>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches-icon"}
     
-DateTime   MA_ObservationTS           "Timestamp [%1$tH:%1$tM]"   <time>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:observation-time"}
+DateTime   MA_ObservationTS           "Timestamp [%1$tH:%1$tM]"   <time>                              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:observation-time"}
 
 ```

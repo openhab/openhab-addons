@@ -293,7 +293,7 @@
 	<channel-type id="pluie-inondation">
 		<item-type>Number</item-type>
 		<label>Pluie Inondation</label>
-		<description>Niveau d'alerte aux inondations causée par les précipitations</description>
+		<description>Niveau d'alerte aux inondations causées par les précipitations</description>
 		<category>oh:meteoalerte:pluie-inondation</category>
 		<state readOnly="true">
 			<options>
