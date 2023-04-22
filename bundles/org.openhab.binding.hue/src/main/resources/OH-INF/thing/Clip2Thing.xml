@@ -18,6 +18,7 @@
 			<channel id="color-temperature" typeId="system.color-temperature"/>
 			<channel id="color-temp-kelvin" typeId="system.color-temperature-abs"/>
 			<channel id="switch" typeId="light-switch"/>
+			<channel id="dynamics" typeId="dynamics"/>
 			<channel id="alert" typeId="alert2"/>
 			<channel id="effect" typeId="effect2"/>
 			<channel id="button-last-event" typeId="button-last-event"/>
@@ -58,6 +59,7 @@
 			<channel id="brightness" typeId="group-brightness"/>
 			<channel id="switch" typeId="group-switch"/>
 			<channel id="scene" typeId="group-scene"/>
+			<channel id="dynamics" typeId="dynamics"/>
 			<channel id="alert" typeId="alert2"/>
 		</channels>
 
@@ -85,6 +87,7 @@
 			<channel id="brightness" typeId="group-brightness"/>
 			<channel id="switch" typeId="group-switch"/>
 			<channel id="scene" typeId="group-scene"/>
+			<channel id="dynamics" typeId="dynamics"/>
 			<channel id="alert" typeId="alert2"/>
 		</channels>
 

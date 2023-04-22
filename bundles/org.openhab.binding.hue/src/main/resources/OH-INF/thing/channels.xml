@@ -288,4 +288,12 @@
 		<description>Activate the effect for the light.</description>
 	</channel-type>
 
+	<channel-type id="dynamics">
+		<item-type>Number</item-type>
+		<label>Dynamics</label>
+		<description>The duration (mSec) of dynamic transitions between light states.</description>
+		<category>Time</category>
+		<state min="0"/>
+	</channel-type>
+
 </thing:thing-descriptions>

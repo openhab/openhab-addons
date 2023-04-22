@@ -140,6 +140,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_COLOR_TEMP_KELVIN = "color-temp-kelvin";
     public static final String CHANNEL_2_SWITCH = CHANNEL_SWITCH;
     public static final String CHANNEL_2_SCENE = CHANNEL_SCENE;
+    public static final String CHANNEL_2_DYNAMICS = "dynamics";
     public static final String CHANNEL_2_ALERT = CHANNEL_ALERT;
     public static final String CHANNEL_2_EFFECT = CHANNEL_EFFECT;
     public static final String CHANNEL_2_BUTTON_LAST_EVENT = "button-last-event";
@@ -154,6 +155,10 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_BATTERY_LOW = "battery-low";
     public static final String CHANNEL_2_ZIGBEE_STATUS = "zigbee-status";
     public static final String CHANNEL_2_LAST_UPDATED = "last-updated";
+
+    // channel IDs that (optionally) support dynamics
+    public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
+            CHANNEL_2_COLOR_TEMPERATURE, CHANNEL_2_COLOR_TEMP_KELVIN, CHANNEL_2_SCENE);
 
     /*
      * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we

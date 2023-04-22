@@ -66,6 +66,7 @@ Device things support some of the following channels:
 | brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
 | color-temperature   | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).  |
 | color-temp-kelvin   | Number:Temperature | This channel supports adjusting the color temperature in Kelvin.                      |
+| dynamics            | Number             | The duration (mSec) of dynamic transitions between light states.                      |
 | alert               | String             | This channel allows setting an alert on a light e.g. flashing them.                   |
 | effect              | String             | This channel allows setting an effect on a light e.g. 'candle' effect.                |
 | button-last-event   | Number             | This channel shows which button was last pressed in the device.                       |
@@ -119,10 +120,23 @@ They support the following channels:
 | switch              | Switch             | This channel supports switching the lights on and off.                                |
 | brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
 | scene<sup>1)</sup>  | String             | Setting the string to a valid scene friendly name activates the respective scene.     |
+| dynamics            | Number             | The duration (mSec) of dynamic transitions between light states.                      |
 | alert<sup>1)</sup>  | String             | This channel allows setting an alert on the lights e.g. flashing them.                |
 
 <sup>1)</sup> The scene and alert channels are optional.
 If the respective room or zone has no scenes or alerts associated with it, the respective channel will not be shown.
+
+### The `dynamics` Channel
+
+Some channels support dynamic transitions between light states.
+A dynamic transition is where, instead of the light state changing immediately to its new target value, it changes gradually to the new value over a period of time.
+
+If a thing supports dynamic transitions, then it will have a `dynamics` channel.
+This is a numeric channel where you can set the time delay for the transition in milli- seconds.
+When you set a value for the `dynamics` channel (e.g. 2000 milli seconds) and then quickly issue another command (e.g. brightness 100%), the second command will be executed gradually over the period of milli- seconds given by the `dynamics` channel value.
+When the `dynamics` channel value is changed, it triggers a time window of ten seconds during which the value is active.
+If the second command is sent within the active time window it will be executed gradually according to the `dynamics` channel value.
+However if the second command is sent after the active time window has expired then it will be executed immediately.
 
 ## Console Command for finding ResourceIds
 

@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.dto.clip2;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -111,6 +112,8 @@ public class Resource {
     private @Nullable @SerializedName("relative_rotary") RelativeRotary relativeRotary;
     private @Nullable List<ResourceReference> children;
     private @Nullable JsonElement status;
+    @SuppressWarnings("unused")
+    private @Nullable Dynamics dynamics;
 
     /**
      * Constructor
@@ -676,6 +679,11 @@ public class Resource {
             colorTemperature.setPercent(((PercentType) command).doubleValue(), schema);
             this.colorTemperature = colorTemperature;
         }
+        return this;
+    }
+
+    public Resource setDynamicsDuration(Duration duration) {
+        dynamics = new Dynamics().setDuration(duration);
         return this;
     }
 

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +45,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
@@ -78,6 +81,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(HueBindingConstants.THING_TYPE_DEVICE,
             HueBindingConstants.THING_TYPE_ROOM, HueBindingConstants.THING_TYPE_ZONE);
+
+    private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -133,6 +138,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private String resourceId = "?";
     private Resource thisResource;
+    private Duration dynamicsDuration = Duration.ZERO;
+    private Instant dynamicsExpireTime = Instant.MIN;
 
     private boolean disposing;
     private boolean hasConnectivityIssue;
@@ -163,7 +170,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Add a channel ID to the supportedChannelIdSet set.
+     * Add a channel ID to the supportedChannelIdSet set. If the channel supports time transitions then add the
+     * respective transition duration channel too.
      *
      * @param channelId the channel ID to add.
      */
@@ -172,6 +180,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             synchronized (supportedChannelIdSet) {
                 logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId, channelId);
                 supportedChannelIdSet.add(channelId);
+                if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
+                    supportedChannelIdSet.add(HueBindingConstants.CHANNEL_2_DYNAMICS);
+                }
             }
         }
     }
@@ -259,8 +270,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         Resource putResource = null;
         String putResourceId = null;
+        String channelId = channelUID.getId();
 
-        switch (channelUID.getId()) {
+        switch (channelId) {
             case HueBindingConstants.CHANNEL_2_ALERT:
                 putResource = new Resource(lightResourceType).setAlert(command, getCachedResource(lightResourceType));
                 scheduler.schedule(() -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 10,
@@ -318,6 +330,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 break;
 
+            case HueBindingConstants.CHANNEL_2_DYNAMICS:
+                if (command instanceof DecimalType) {
+                    Duration duration = Duration.ofMillis(((DecimalType) command).intValue());
+                    if (!duration.isZero() && !duration.isNegative()) {
+                        dynamicsDuration = duration;
+                        dynamicsExpireTime = Instant.now().plus(DYNAMICS_ACTIVE_WINDOW);
+                        logger.debug("{} -> handleCommand() dynamics setting {} valid for {}", resourceId,
+                                dynamicsDuration, DYNAMICS_ACTIVE_WINDOW);
+                        return;
+                    }
+                }
+                dynamicsExpireTime = Instant.MIN;
+                dynamicsDuration = Duration.ZERO;
+                updateState(HueBindingConstants.CHANNEL_2_DYNAMICS, DecimalType.ZERO);
+                return;
+
             default:
                 logger.warn("{} -> handleCommand() channelUID:{} not supported", resourceId, channelUID);
                 return;
@@ -338,6 +366,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         putResource.setId(putResourceId);
         logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
+
+        if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
+            if (Instant.now().isBefore(dynamicsExpireTime) && !dynamicsDuration.isZero()
+                    && !dynamicsDuration.isNegative()) {
+                putResource.setDynamicsDuration(dynamicsDuration);
+            }
+            dynamicsExpireTime = Instant.MIN;
+        }
 
         try {
             getBridgeHandler().putResource(putResource);
@@ -363,6 +399,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         updateThingFromLegacy();
         updateStatus(ThingStatus.UNKNOWN);
+
+        dynamicsDuration = Duration.ZERO;
+        dynamicsExpireTime = Instant.MIN;
 
         disposing = false;
         hasConnectivityIssue = false;
