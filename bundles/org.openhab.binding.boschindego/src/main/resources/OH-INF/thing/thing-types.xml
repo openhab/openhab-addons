@@ -34,6 +34,10 @@
 			<channel id="gardenMap" typeId="gardenMap"/>
 		</channels>
 
+		<properties>
+			<property name="vendor">Bosch</property>
+		</properties>
+
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>

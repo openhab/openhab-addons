@@ -15,6 +15,7 @@ package org.openhab.binding.boschindego.internal;
 import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
@@ -31,8 +32,10 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.dto.response.ErrorResponse;
 import org.openhab.binding.boschindego.internal.dto.response.Mower;
+import org.openhab.binding.boschindego.internal.dto.serialization.InstantDeserializer;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
@@ -48,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 /**
@@ -62,11 +66,10 @@ public class IndegoController {
 
     private static final String BASE_URL = "https://api.indego-cloud.iot.bosch-si.com/api/v1/";
     private static final String CONTENT_TYPE_HEADER = "application/json";
-
     private static final String BEARER = "Bearer ";
 
     private final Logger logger = LoggerFactory.getLogger(IndegoController.class);
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer()).create();
     private final HttpClient httpClient;
     private final OAuthClientService oAuthClientService;
     private final String userAgent;
@@ -94,6 +97,19 @@ public class IndegoController {
         Mower[] mowers = getRequest(SERIAL_NUMBER_SUBPATH, Mower[].class);
 
         return Arrays.stream(mowers).map(m -> m.serialNumber).toList();
+    }
+
+    /**
+     * Queries the serial number and device service properties from the server.
+     *
+     * @param serialNumber the serial number of the device
+     * @return the device serial number and properties
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public DevicePropertiesResponse getDeviceProperties(String serialNumber)
+            throws IndegoAuthenticationException, IndegoException {
+        return getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/", DevicePropertiesResponse.class);
     }
 
     private String getAuthorizationUrl() {
