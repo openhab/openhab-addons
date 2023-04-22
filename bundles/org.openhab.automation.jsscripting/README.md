@@ -1,6 +1,7 @@
 # JavaScript Scripting
 
 This add-on provides support for JavaScript (ECMAScript 2022+) that can be used as a scripting language within automation rules.
+It is based on [GraalJS](https://www.graalvm.org/javascript/) from the [GraalVM project](https://www.graalvm.org/).
 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
 to common openHAB functionality within rules including items, things, actions, logging and more.
@@ -11,8 +12,9 @@ to common openHAB functionality within rules including items, things, actions, l
   - [Adding Actions](#adding-actions)
   - [UI Event Object](#ui-event-object)
 - [Scripting Basics](#scripting-basics)
-  - [Require](#require)
-  - [Console](#console)
+  - [`let` and `const`](#let-and-const)
+  - [`require`](#require)
+  - [`console`](#console)
   - [Timers](#timers)
   - [Paths](#paths)
   - [Deinitialization Hook](#deinitialization-hook)
@@ -22,8 +24,9 @@ to common openHAB functionality within rules including items, things, actions, l
   - [Things](#things)
   - [Actions](#actions)
   - [Cache](#cache)
-  - [Log](#log)
   - [Time](#time)
+  - [Quantity](#quantity)
+  - [Log](#log)
   - [Utils](#utils)
 - [File Based Rules](#file-based-rules)
   - [JSRule](#jsrule)
@@ -95,6 +98,8 @@ See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of fu
 ### UI Event Object
 
 **NOTE**: Note that `event` object is different in UI based rules and file based rules! This section is only valid for UI based rules. If you use file based rules, refer to [file based rules event object documentation](#event-object).
+Note that `event` object is only available when the UI based rule was triggered by an event and is not manually run!
+Trying to access `event` on manual run does not work (and will lead to an error), use `this.event` instead (will be `undefined` in case of manual run).
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
 
@@ -130,13 +135,33 @@ console.log(event.itemState.toString() == "test") // OK
 
 The openHAB JavaScript Scripting runtime attempts to provide a familiar environment to JavaScript developers.
 
-### Require
+### `let` and `const`
+
+Due to the way how openHAB runs UI based scripts, `let`, `const` and `class` are not supported at top-level.
+Use `var` instead or wrap your script inside a self-invoking function:
+
+```javascript
+// Wrap script inside a self-invoking function:
+(function (data) {
+  const C = 'Hello world';
+  console.log(C);
+})(this.event);
+
+// Defining a class using var:
+var Tree = class {
+  constructor (height) {
+    this.height = height;
+  }
+}
+```
+
+### `require`
 
 Scripts may include standard NPM based libraries by using CommonJS `require`.
 The library search will look in the path `automation/js/node_modules` in the user configuration directory.
 See [libraries](#libraries) for more information.
 
-### Console
+### `console`
 
 The JS Scripting binding supports the standard `console` object for logging.
 Script logging is enabled by default at the `INFO` level (messages from `console.debug` and `console.trace` won't be displayed), but can be configured using the [openHAB console](https://www.openhab.org/docs/administration/console.html):
@@ -179,7 +204,7 @@ JS Scripting provides access to the global `setTimeout`, `setInterval`, `clearTi
 
 When a script is unloaded, all created timeouts and intervals are automatically cancelled.
 
-#### SetTimeout
+#### 'setTimeout'
 
 The global [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method sets a timer which executes a function once the timer expires.
 `setTimeout()` returns a `timeoutId` (a positive integer value) which identifies the timer created.
@@ -192,7 +217,7 @@ var timeoutId = setTimeout(callbackFunction, delay);
 
 The global [`clearTimeout(timeoutId)`](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout) method cancels a timeout previously established by calling `setTimeout()`.
 
-#### SetInterval
+#### `setInterval`
 
 The global [`setInterval()`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval) method repeatedly calls a function, with a fixed time delay between each call.
 `setInterval()` returns an `intervalId` (a positive integer value) which identifies the interval created.
@@ -283,8 +308,8 @@ Use the `SCRIPT` transformation with JavaScript Scripting by:
    })(input);
    ```
 
-2. Using `SCRIPT(graaljs:<scriptname>.script):%s` as the transformation profile, e.g. on an Item.
-3. Passing parameters is also possible by using a URL like syntax: `SCRIPT(graaljs:<scriptname>.script?arg=value):%s`.
+2. Using `SCRIPT(js:<scriptname>.script):%s` as the transformation profile, e.g. on an Item.
+3. Passing parameters is also possible by using a URL like syntax: `SCRIPT(js:<scriptname>.script?arg=value):%s`.
    Parameters are injected into the script and can be referenced like variables.
 
 ## Standard Library
@@ -340,9 +365,9 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .getMetadata(namespace) ⇒ `object|null`
   - .replaceMetadata(namespace, value, configuration) ⇒ `object`
   - .removeMetadata(namespace) ⇒ `object|null`
-  - .sendCommand(value): `value` can be a string or a [`time.ZonedDateTime`](#time)
-  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string or a [`time.ZonedDateTime`](#time)
-  - .postUpdate(value): `value` can be a string or a [`time.ZonedDateTime`](#time)
+  - .sendCommand(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+  - .postUpdate(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
   - .addGroups(...groupNamesOrItems)
   - .removeGroups(...groupNamesOrItems)
   - .addTags(...tagNames)
@@ -755,9 +780,9 @@ The following rules are used during the conversion:
 | `java.time.ZonedDateTime`                                                    | converted to the `time.ZonedDateTime` equivalent                                                                |                                                                                        |
 | JavaScript native `Date`                                                     | converted to the equivalent `time.ZonedDateTime` using `SYSTEM` as the timezone                                 |                                                                                        |
 | `number`, `bingint`, `java.lang.Number`, `DecimalType`                       | rounded to the nearest integer and added to `now` as milliseconds                                               | `time.toZDT(1000);`                                                                    |
-| [`Quantity`](#quantity) or `QuantityType`                                    | if the units are `Time`, that time is added to `now`                                                            | `time.toZDT(item.getItem('MyTimeItem').rawState);`, `time.toZDT(Quantity('10 min'));`  |
+| [`Quantity`](#quantity) or `QuantityType`                                    | if the unit is time-compatible, added to `now`                                                                  | `time.toZDT(item.getItem('MyTimeItem').rawState);`, `time.toZDT(Quantity('10 min'));`  |
 | `items.Item` or `org.openhab.core.types.Item`                                | if the state is supported (see the `Type` rules in this table, e.g. `DecimalType`), the state is converted      | `time.toZDT(items.getItem('MyItem'));`                                                 |
-| `String`, `java.lang.String`, `StringType`                                   | parsed based on the following rules                                                                             |                                                                                        |
+| `String`, `java.lang.String`, `StringType`                                   | parsed based on the following rules; if no timezone is specified, `SYSTEM` timezone is used                     |                                                                                        |
 | [ISO8601 Date/Time](https://en.wikipedia.org/wiki/ISO_8601) String           | parsed, depending on the provided data: if no date is passed, today's date; if no time is passed, midnight time | `time.toZDT('00:00');`, `time.toZDT('2022-12-24');`, `time.toZDT('2022-12-24T18:30');` |
 | RFC String (output from a Java `ZonedDateTime.toString()`)                   | parsed                                                                                                          | `time.toZDT('2019-10-12T07:20:50.52Z');`                                               |
 | `"kk:mm[:ss][ ]a"` (12 hour time)                                            | today's date with the time indicated, the space between the time and am/pm and seconds are optional             | `time.toZDT('1:23:45 PM');`                                                            |
@@ -1077,7 +1102,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -1154,7 +1179,7 @@ Additionally, all the above triggers have the following functions:
 ```javascript
 // Basic rule, when the BedroomLight1 is changed, run a custom function
 rules.when().item('BedroomLight1').changed().then(e => {
-    console.log("BedroomLight1 state", e.newState)
+  console.log("BedroomLight1 state", e.newState)
 }).build();
 
 // Turn on the kitchen light at SUNSET

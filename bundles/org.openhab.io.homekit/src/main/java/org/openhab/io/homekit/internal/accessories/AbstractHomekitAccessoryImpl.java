@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.characteristics.Characteristic;
+import io.github.hapjava.characteristics.CharacteristicEnum;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.base.BaseCharacteristic;
 import io.github.hapjava.services.Service;
@@ -267,29 +268,38 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 .map(homekitTaggedItem -> homekitTaggedItem.getConfiguration(key, defaultValue)).orElse(defaultValue);
     }
 
-    /**
-     * update mapping with values from item configuration.
-     * it checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
-     * replace the value.
-     *
-     * @param characteristicType characteristicType to identify item
-     * @param map mapping to update
-     * @param customEnumList list to store custom state enumeration
-     */
     @NonNullByDefault
-    public <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map,
-            @Nullable List<T> customEnumList) {
-        getCharacteristic(characteristicType).ifPresent(c -> {
-            final Map<String, Object> configuration = c.getConfiguration();
-            if (configuration != null) {
-                HomekitCharacteristicFactory.updateMapping(configuration, map, customEnumList);
-            }
-        });
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz) {
+        return createMapping(characteristicType, klazz, null, false);
     }
 
     @NonNullByDefault
-    public <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map) {
-        updateMapping(characteristicType, map, null);
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz, boolean inverted) {
+        return createMapping(characteristicType, klazz, null, inverted);
+    }
+
+    @NonNullByDefault
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList) {
+        return createMapping(characteristicType, klazz, customEnumList, false);
+    }
+
+    /**
+     * create mapping with values from item configuration
+     * 
+     * @param characteristicType to identify item; must be present
+     * @param customEnumList list to store custom state enumeration
+     * @param inverted if ON/OFF and OPEN/CLOSED should be inverted by default (inverted on the item will double-invert)
+     * @return mapping of enum values to custom string values
+     */
+    @NonNullByDefault
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList,
+            boolean inverted) {
+        HomekitTaggedItem item = getCharacteristic(characteristicType).get();
+        return HomekitCharacteristicFactory.createMapping(item, klazz, customEnumList, inverted);
     }
 
     /**

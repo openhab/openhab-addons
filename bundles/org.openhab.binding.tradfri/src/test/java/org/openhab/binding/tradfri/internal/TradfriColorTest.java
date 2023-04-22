@@ -36,7 +36,7 @@ public class TradfriColorTest {
         HSBType hsbType = color.getHSB();
         assertNotNull(hsbType);
         assertEquals(312, hsbType.getHue().intValue());
-        assertEquals(91, hsbType.getSaturation().intValue());
+        assertEquals(92, hsbType.getSaturation().intValue());
         assertEquals(100, hsbType.getBrightness().intValue());
     }
 
@@ -48,7 +48,7 @@ public class TradfriColorTest {
         assertEquals(84, (int) color.brightness);
         HSBType hsbType = color.getHSB();
         assertNotNull(hsbType);
-        assertEquals(92, hsbType.getHue().intValue());
+        assertEquals(93, hsbType.getHue().intValue());
         assertEquals(65, hsbType.getSaturation().intValue());
         assertEquals(34, hsbType.getBrightness().intValue());
     }
@@ -61,7 +61,7 @@ public class TradfriColorTest {
         assertEquals(1, (int) color.brightness);
         HSBType hsbType = color.getHSB();
         assertNotNull(hsbType);
-        assertEquals(92, hsbType.getHue().intValue());
+        assertEquals(93, hsbType.getHue().intValue());
         assertEquals(65, hsbType.getSaturation().intValue());
         assertEquals(1, hsbType.getBrightness().intValue());
     }
@@ -75,7 +75,7 @@ public class TradfriColorTest {
         HSBType hsbType = color.getHSB();
         assertNotNull(hsbType);
         assertEquals(156, hsbType.getHue().intValue());
-        assertEquals(76, hsbType.getSaturation().intValue());
+        assertEquals(77, hsbType.getSaturation().intValue());
         assertEquals(72, hsbType.getBrightness().intValue());
     }
 

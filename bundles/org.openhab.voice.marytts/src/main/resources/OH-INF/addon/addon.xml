@@ -7,5 +7,6 @@
 	<name>Mary Text-to-Speech</name>
 	<description>The Mary Text-to-Speech (TTS) service is a pure Java implementation of a TTS service, which uses the
 		MaryTTS project of DFKI.</description>
+	<connection>local</connection>
 
 </addon:addon>

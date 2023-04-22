@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Powermax Binding</name>
 	<description>The Powermax binding interfaces with Visonic PowerMax and PowerMaster alarm panel series.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -50,6 +50,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_SIGNAL = "signal";
     public static final String GROUP_BATTERY = "battery";
     public static final String GROUP_SECURITY = "security";
+    public static final String GROUP_SECURITY_EVENT = "security-event";
     public static final String GROUP_CAM_STATUS = "status";
     public static final String GROUP_CAM_LIVE = "live";
     public static final String GROUP_PRESENCE = "presence";

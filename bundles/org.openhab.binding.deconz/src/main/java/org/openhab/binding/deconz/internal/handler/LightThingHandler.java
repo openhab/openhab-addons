@@ -395,7 +395,12 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                     updateState(channelUID, new DecimalType(miredToKelvin(ct)));
                 }
             }
-            case CHANNEL_POSITION -> updatePercentTypeChannel(channelUID, newState.bri, true); // always post value
+            case CHANNEL_POSITION -> {
+                Integer lift = newState.lift;
+                if (lift != null) {
+                    updateState(channelUID, new PercentType(lift));
+                }
+            }
             case CHANNEL_EFFECT -> updateStringChannel(channelUID, newState.effect);
             case CHANNEL_EFFECT_SPEED -> updateDecimalTypeChannel(channelUID, newState.effectSpeed);
         }
@@ -446,7 +451,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 xyY[0] = xy[0];
                 xyY[1] = xy[1];
                 xyY[2] = ((double) bri) / BRIGHTNESS_MAX;
-                updateState(channelUID, ColorUtil.xyToHsv(xyY));
+                updateState(channelUID, ColorUtil.xyToHsb(xyY));
             }
         } else if (bri != null && hue != null && sat != null) {
             updateState(channelUID,

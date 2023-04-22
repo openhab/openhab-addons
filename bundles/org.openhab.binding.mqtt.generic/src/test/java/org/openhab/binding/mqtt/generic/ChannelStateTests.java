@@ -262,8 +262,8 @@ public class ChannelStateTests {
         c.processMessage("state", "12,18,231".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
         // rgb -> hsv -> rgb is quite lossy
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("13,20,229"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$d,%2$d,%1$d"), is("229,20,13"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("11,18,232"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$d,%2$d,%1$d"), is("232,18,11"));
     }
 
     @Test
@@ -311,9 +311,9 @@ public class ChannelStateTests {
 
         c.processMessage("state", "0.3,0.6,100".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.304200,0.594600,100.00"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.298700,0.601500,100.00"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$.1f,%2$.4f,%1$.4f"),
-                is("100.0,0.5946,0.3042"));
+                is("100.0,0.6015,0.2987"));
     }
 
     @Test

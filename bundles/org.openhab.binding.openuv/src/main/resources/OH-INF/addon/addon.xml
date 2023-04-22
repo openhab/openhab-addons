@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>OpenUV Binding</name>
 	<description>Global Real-Time UV Index Forecast API</description>
+	<connection>cloud</connection>
 
 </addon:addon>

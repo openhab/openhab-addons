@@ -32,7 +32,7 @@ To satisfy this requirement while keeping the device isolated, your router shoul
 
 ## Discovery
 
-Discovery is done by connecting to the Tapo-Cloud Service. 
+Discovery is done by connecting to the Tapo-Cloud Service.
 All devices stored in your cloud account will be detected even if they are not in your network.
 You need to know the IP-Adress of your device. This must be set manually in the thing configuration
 
@@ -59,38 +59,36 @@ The thing has the following configuration parameters:
 | ipAddress          | IP Address of the device.                                            |
 | pollingInterval    | Refresh interval in seconds. Optional. The default is 30 seconds     |
 
-
 ## Channels
 
 All devices support some of the following channels:
 
-| group     | channel          | type                   | description                  | things supporting this channel                                   |
-|-----------|----------------- |------------------------|------------------------------|------------------------------------------------------------------|
-| actuator  | output           | Switch                 | Power device on or off       | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
-|           | output1          | Switch                 | Power socket 1 on or off     | P300                                                             |
-|           | output2          | Switch                 | Power socket 2 on or off     | P300                                                             |
-|           | output3          | Switch                 | Power socket 3 on or off     | P300                                                             |
-|           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530, L610, L630, L900                                     |
-|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530, L610, L630, L900                                     |
-|           | color            | Color                  | Color                        | L530, L630, L900                                                 |
-| device    | wifiSignal       | Number                 | WiFi-quality-level           | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
-|           | onTime           | Number:Time            | seconds output is on         | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
-| energy    | actualPower      | Number:Power           | actual Power (Watt)          | P110, P115                                                       |
-|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)       | P110, P115                                                       |
-|           | todayRuntime     | Number:Time            | seconds output was on today  | P110, P115                                                       |
-
+| group     | channel          | type                   | description                         | things supporting this channel                                   |
+|-----------|----------------- |------------------------|-------------------------------------|------------------------------------------------------------------|
+| actuator  | output           | Switch                 | Power device on or off              | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
+|           | output1          | Switch                 | Power socket 1 on or off            | P300                                                             |
+|           | output2          | Switch                 | Power socket 2 on or off            | P300                                                             |
+|           | output3          | Switch                 | Power socket 3 on or off            | P300                                                             |
+|           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920                               |
+|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K         | L510, L530, L610, L630, L900, L920                                     |
+|           | color            | Color                  | Color                               | L530, L630, L900, L920                                                 |
+| effects   | fxName           | String                 | Active lightning effect (readonly)  | L530                                                             |
+| device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
+|           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
+| energy    | actualPower      | Number:Power           | actual Power (Watt)                 | P110, P115                                                       |
+|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)              | P110, P115                                                       |
+|           | todayRuntime     | Number:Time            | seconds output was on today         | P110, P115                                                       |
 
 ## Channel Refresh
 
 When the thing receives a `RefreshType` command the thing will send a new refreshRequest over http.
 To minimize network traffic the default refresh-rate is set to 30 seconds. This can be reduced down to 10 seconds in advanced settings of the device. If any command was sent to a channel, it will do an immediately refresh of the whole device.
 
-
 ## Full Example
 
 ### tapocontrol.things:
 
-```
+```java
 tapocontrol:bridge:myTapoBridge                 "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
 tapocontrol:P100:myTapoBridge:mySocket          "My-Socket"     (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.150", pollingInterval=30 ]
 tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", pollingInterval=30 ]
@@ -104,6 +102,6 @@ Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ 
 
 ### tapocontrol.items:
 
-```
+```java
 Switch       TAPO_SOCKET      "socket"                { channel="tapocontrol:P100:myTapoBridge:mySocket:actuator#output" }
-``` 
+```

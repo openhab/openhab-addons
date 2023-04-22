@@ -88,6 +88,8 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ceiling3:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
             case ceiling1:
+            case ceil26:
+            case ceiling11:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING1, device.getDeviceId());
             case ceiling4:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING4, device.getDeviceId());
@@ -113,6 +115,8 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ceiling:
                 return YeelightBindingConstants.THING_TYPE_CEILING;
             case ceiling1:
+            case ceil26:
+            case ceiling11:
                 return YeelightBindingConstants.THING_TYPE_CEILING1;
             case ceiling3:
                 return YeelightBindingConstants.THING_TYPE_CEILING3;

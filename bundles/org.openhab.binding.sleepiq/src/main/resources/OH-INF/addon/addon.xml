@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>SleepIQ Binding</name>
 	<description>This is the binding for the Sleep Number SleepIQ system.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
