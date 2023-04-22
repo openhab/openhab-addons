@@ -25,6 +25,7 @@ import org.openhab.binding.mynice.internal.config.CourtesyConfiguration;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
 import org.openhab.binding.mynice.internal.xml.dto.Properties.DoorStatus;
+import org.openhab.binding.mynice.internal.xml.dto.Property;
 import org.openhab.binding.mynice.internal.xml.dto.T4Command;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StopMoveType;
@@ -152,8 +153,9 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
     public void onDataFetched(List<Device> devices) {
         devices.stream().filter(d -> id.equals(d.id)).findFirst().map(device -> {
             updateStatus(ThingStatus.ONLINE);
-            if (t4Allowed.isEmpty()) {
-                int value = Integer.parseInt(device.properties.t4allowed.values, 16);
+            Property t4list = device.properties.t4allowed;
+            if (t4Allowed.isEmpty() && t4list != null) {
+                int value = Integer.parseInt(t4list.values, 16);
                 t4Allowed = T4Command.fromBitmask(value).stream().toList();
                 if (thing.getProperties().isEmpty()) {
                     updateProperties(Map.of(PROPERTY_VENDOR, device.manuf, PROPERTY_MODEL_ID, device.prod,
