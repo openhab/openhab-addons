@@ -249,7 +249,7 @@
 		<item-type>Number</item-type>
 		<label>Grand Froid</label>
 		<description>Niveau d'alerte aux températures négatives</description>
-		<category>oh:meteoalerte:grand_froid</category>
+		<category>oh:meteoalerte:grand-froid</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -279,7 +279,7 @@
 		<item-type>Number</item-type>
 		<label>Vague Submersion</label>
 		<description>Niveau d'alerte aux vagues submersion</description>
-		<category>oh:meteoalerte:vague_submersion</category>
+		<category>oh:meteoalerte:vague-submersion</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>
@@ -294,7 +294,7 @@
 		<item-type>Number</item-type>
 		<label>Pluie Inondation</label>
 		<description>Niveau d'alerte aux inondations causée par les précipitations</description>
-		<category>oh:meteoalerte:pluie_inondation</category>
+		<category>oh:meteoalerte:pluie-inondation</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Vert</option>

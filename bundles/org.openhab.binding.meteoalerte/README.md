@@ -70,25 +70,25 @@ Thing meteoalerte:department:yvelines @ "MyCity" [department="YVELINES", refresh
 meteoalert.items:
 
 ```java
-Group gMeteoAlert "Alertes Météo" <meteo_france> 
-String     MA_Dept78                  "Département 78 [%s]"       <text>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:comment"}
-Number     MA_etat_canicule           "Canicule [%s]"             <canicule>           (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule"}
-Number     MA_etat_grand_froid        "Grand Froid [%s]"          <grand-froid>        (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid"}
-Number     MA_etat_pluie_inondation   "Pluie-Inondation [%s]"     <pluie-inondation>   (gMeteoAlert)   {channel="meteoalerte:department:yvelines:pluie-inondation"}
-Number     MA_etat_neige              "Neige [%s]"                <neige>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:neige"}
-Number     MA_etat_vent               "Vent [%s]"                 <vent>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:vent"}
-Number     MA_etat_inondation         "Inondation [%s]"           <inondation>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:inondation"}
-Number     MA_etat_orage              "Orage [%s]"                <orage>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage"}
-Number     MA_etat_avalanche          "Avalanches [%s]"           <avalanches>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches"}
+Group gMeteoAlert "Alertes Météo" <oh:meteoalerte:meteo_france> 
+String     MA_Dept78                  "Département 78 [%s]"       <oh:meteoalerte:text>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:comment"}
+Number     MA_etat_canicule           "Canicule [%s]"             <oh:meteoalerte:canicule>           (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule"}
+Number     MA_etat_grand_froid        "Grand Froid [%s]"          <oh:meteoalerte:grand-froid>        (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid"}
+Number     MA_etat_pluie_inondation   "Pluie-Inondation [%s]"     <oh:meteoalerte:pluie-inondation>   (gMeteoAlert)   {channel="meteoalerte:department:yvelines:pluie-inondation"}
+Number     MA_etat_neige              "Neige [%s]"                <oh:meteoalerte:neige>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:neige"}
+Number     MA_etat_vent               "Vent [%s]"                 <oh:meteoalerte:vent>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:vent"}
+Number     MA_etat_inondation         "Inondation [%s]"           <oh:meteoalerte:inondation>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:inondation"}
+Number     MA_etat_orage              "Orage [%s]"                <oh:meteoalerte:orage>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage"}
+Number     MA_etat_avalanche          "Avalanches [%s]"           <oh:meteoalerte:avalanches>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches"}
     
-Image      MA_icon_canicule           "Canicule"                  <canicule>           (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule-icon"}
-Image      MA_icon_grand_froid        "Grand Froid"               <grand-froid>        (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid-icon"}
-Image      MA_icon_pluie_inondation   "Pluie-Inondation"          <pluie-inondation>   (gMeteoAlert)   {channel="meteoalerte:department:yvelines:pluie-inondation-icon"}
-Image      MA_icon_neige              "Neige"                     <neige>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:neige-icon"}
-Image      MA_icon_vent               "Vent"                      <vent>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:vent-icon"}
-Image      MA_icon_inondation         "Inondation"                <inondation>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:inondation-icon"}
-Image      MA_icon_orage              "Orage"                     <orage>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage-icon"}
-Image      MA_icon_avalanche          "Avalanche"                 <avalanches>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches-icon"}
+Image      MA_icon_canicule           "Canicule"                  <oh:meteoalerte:canicule>           (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule-icon"}
+Image      MA_icon_grand_froid        "Grand Froid"               <oh:meteoalerte:grand-froid>        (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid-icon"}
+Image      MA_icon_pluie_inondation   "Pluie-Inondation"          <oh:meteoalerte:pluie-inondation>   (gMeteoAlert)   {channel="meteoalerte:department:yvelines:pluie-inondation-icon"}
+Image      MA_icon_neige              "Neige"                     <oh:meteoalerte:neige>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:neige-icon"}
+Image      MA_icon_vent               "Vent"                      <oh:meteoalerte:vent>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:vent-icon"}
+Image      MA_icon_inondation         "Inondation"                <oh:meteoalerte:inondation>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:inondation-icon"}
+Image      MA_icon_orage              "Orage"                     <oh:meteoalerte:orage>              (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage-icon"}
+Image      MA_icon_avalanche          "Avalanche"                 <oh:meteoalerte:avalanches>         (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches-icon"}
     
 DateTime   MA_ObservationTS           "Timestamp [%1$tH:%1$tM]"   <time>               (gMeteoAlert)   {channel="meteoalerte:department:yvelines:observation-time"}
 

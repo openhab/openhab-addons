@@ -83,9 +83,7 @@ public class MeteoAlertIconProvider implements IconProvider {
 
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
-        // replace is a workaround pending resolution (#PR1849) in MainUI
-        return ((ICONS.contains(category) && iconSetId.equals(BINDING_ID))
-                || (ICONS.contains(category.replace(BINDING_ID + ":", "")))) && format == Format.SVG ? 7 : null;
+        return ICONS.contains(category) && iconSetId.equals(BINDING_ID) && format == Format.SVG ? 7 : null;
     }
 
     public @Nullable InputStream getIcon(String category, String state) {
@@ -117,9 +115,7 @@ public class MeteoAlertIconProvider implements IconProvider {
     private String getResource(String iconName) {
         String result = "";
 
-        // replace is a workaround pending resolution (#PR1849) in MainUI
-        URL iconResource = context.getBundle()
-                .getEntry("icon/%s.svg".formatted(iconName.replace(BINDING_ID + ":", "")));
+        URL iconResource = context.getBundle().getEntry("icon/%s.svg".formatted(iconName));
         try (InputStream stream = iconResource.openStream()) {
             result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
