@@ -47,7 +47,7 @@ public class PresenceCapability extends CameraCapability {
     @Override
     public void updateHomeStatusModule(HomeStatusModule newData) {
         super.updateHomeStatusModule(newData);
-        securityCapability.ifPresent(cap -> cap.changeSirenStatus(handler.getId(), SirenStatus.SOUND));
+        getSecurityCapability().ifPresent(cap -> cap.changeSirenStatus(handler.getId(), SirenStatus.SOUND));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class PresenceCapability extends CameraCapability {
                 return;
             }
         } else if (CHANNEL_SIREN.equals(channelName) && command instanceof OnOffType) {
-            securityCapability.ifPresent(cap -> cap.changeSirenStatus(handler.getId(),
+            getSecurityCapability().ifPresent(cap -> cap.changeSirenStatus(handler.getId(),
                     command == OnOffType.ON ? SirenStatus.SOUND : SirenStatus.NO_SOUND));
             return;
         }
