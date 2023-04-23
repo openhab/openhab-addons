@@ -74,6 +74,7 @@ public class ApiBridge {
             String response = HttpUtil.executeUrl("GET", urlStr, null, null, null, REQUEST_TIMEOUT_MS);
             logger.debug("aqiResponse = {}", response);
             AirQualityResponse result = GSON.fromJson(response, AirQualityResponse.class);
+            if (result != null) {
             String error = result.getErrorMessage();
             AirQualityData data = result.getData();
             if (error.isEmpty()) {
@@ -81,6 +82,8 @@ public class ApiBridge {
                 return data;
             }
             throw new AirQualityException("Error raised : %s", error);
+            }
+            throw new JsonSyntaxException("Error deserializing API response".formatted(response));
         } catch (IOException | JsonSyntaxException e) {
             throw new AirQualityException("Communication error", e);
         }

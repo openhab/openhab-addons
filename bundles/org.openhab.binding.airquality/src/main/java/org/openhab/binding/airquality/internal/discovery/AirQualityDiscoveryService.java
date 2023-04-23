@@ -84,7 +84,7 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService impleme
             PointType location = provider.getLocation();
             AirQualityBridgeHandler bridge = this.bridgeHandler;
             if (location == null || bridge == null) {
-                logger.info("openHab server location is not defined, will not provide any discovery results");
+                logger.info("openHAB server location is not defined, will not provide any discovery results");
                 return;
             }
             createResults(location, bridge.getThing().getUID());
