@@ -138,7 +138,7 @@
 /bundles/org.openhab.binding.homewizard/ @Daniel-42
 /bundles/org.openhab.binding.hpprinter/ @cossey
 /bundles/org.openhab.binding.http/ @openhab/add-ons-maintainers
-/bundles/org.openhab.binding.hue/ @cweitkamp
+/bundles/org.openhab.binding.hue/ @cweitkamp @andrewfg
 /bundles/org.openhab.binding.hydrawise/ @digitaldan
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.iammeter/ @lewei50

@@ -293,7 +293,7 @@
 		<label>Dynamics</label>
 		<description>The duration (mSec) of dynamic transitions between light states.</description>
 		<category>Time</category>
-		<state min="0"/>
+		<state min="0" step="100"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -170,8 +170,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Add a channel ID to the supportedChannelIdSet set. If the channel supports time transitions then add the
-     * respective transition duration channel too.
+     * Add a channel ID to the supportedChannelIdSet set. If the channel supports dynamics (timed transitions) then add
+     * the respective channel as well.
      *
      * @param channelId the channel ID to add.
      */
@@ -182,9 +182,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 supportedChannelIdSet.add(channelId);
                 if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
                     supportedChannelIdSet.add(HueBindingConstants.CHANNEL_2_DYNAMICS);
+                    clearDynamicsChannel();
                 }
             }
         }
+    }
+
+    /**
+     * Clear the dynamics channel parameters.
+     */
+    private void clearDynamicsChannel() {
+        dynamicsExpireTime = Instant.MIN;
+        dynamicsDuration = Duration.ZERO;
+        updateState(HueBindingConstants.CHANNEL_2_DYNAMICS, DecimalType.ZERO);
     }
 
     @Override
@@ -341,9 +351,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         return;
                     }
                 }
-                dynamicsExpireTime = Instant.MIN;
-                dynamicsDuration = Duration.ZERO;
-                updateState(HueBindingConstants.CHANNEL_2_DYNAMICS, DecimalType.ZERO);
+                clearDynamicsChannel();
                 return;
 
             default:
@@ -372,7 +380,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     && !dynamicsDuration.isNegative()) {
                 putResource.setDynamicsDuration(dynamicsDuration);
             }
-            dynamicsExpireTime = Instant.MIN;
+            clearDynamicsChannel();
         }
 
         try {
