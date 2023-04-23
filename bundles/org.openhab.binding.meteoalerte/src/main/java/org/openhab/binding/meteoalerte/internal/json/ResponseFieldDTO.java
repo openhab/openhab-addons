@@ -34,7 +34,7 @@ public class ResponseFieldDTO {
         @SerializedName("Jaune")
         YELLOW("ffff00"),
         @SerializedName("Orange")
-        ORANGE("ff6600"),
+        ORANGE("ef6c00"),
         @SerializedName("Rouge")
         RED("ff0000"),
         UNKNOWN("3d3c3c");
