@@ -13,6 +13,8 @@
 package org.openhab.binding.hue.internal.dto.clip2;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -54,14 +56,15 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Resource {
 
-    private static final int DELTA = 30;
+    private static final double PERCENT_DELTA = 30f;
+    private static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
 
     /**
      * Static method to get a new percent value depending on the type of command and if relevant the current value.
      *
      * @param command either a PercentType with the new value, an OnOffType to set it at 0 / 100 percent, or an
      *            IncreaseDecreaseType to increment the percentage value by a fixed amount.
-     * @param old the current percent value.
+     * @param current the current percent value.
      * @return the new PercentType value, or null if the command was not recognised.
      */
     private static State getPercentType(Command command, State current) {
@@ -71,8 +74,8 @@ public class Resource {
             return OnOffType.ON.equals(command) ? PercentType.HUNDRED : PercentType.ZERO;
         } else if (command instanceof IncreaseDecreaseType && current instanceof PercentType) {
             int sign = IncreaseDecreaseType.INCREASE.equals(command) ? 1 : -1;
-            double percent = ((PercentType) current).doubleValue() + (sign * DELTA);
-            return new PercentType(BigDecimal.valueOf(Math.min(100, Math.max(0, percent))));
+            double percent = ((PercentType) current).doubleValue() + (sign * PERCENT_DELTA);
+            return new PercentType(new BigDecimal(Math.min(100f, Math.max(0f, percent)), PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
     }
@@ -112,8 +115,7 @@ public class Resource {
     private @Nullable @SerializedName("relative_rotary") RelativeRotary relativeRotary;
     private @Nullable List<ResourceReference> children;
     private @Nullable JsonElement status;
-    @SuppressWarnings("unused")
-    private @Nullable Dynamics dynamics;
+    private @Nullable @SuppressWarnings("unused") Dynamics dynamics;
 
     /**
      * Constructor
@@ -246,7 +248,8 @@ public class Resource {
     public State getBrightnessState() {
         Dimming dimming = this.dimming;
         try {
-            return Objects.nonNull(dimming) ? new PercentType(BigDecimal.valueOf(dimming.getBrightness()))
+            return Objects.nonNull(dimming)
+                    ? new PercentType(new BigDecimal(dimming.getBrightness(), PERCENT_MATH_CONTEXT))
                     : UnDefType.NULL;
         } catch (DTOPresentButEmptyException e) {
             return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
@@ -303,7 +306,8 @@ public class Resource {
                 HSBType hsb = ColorUtil.xyToHsb(color.getXY(), gamut);
                 Dimming dimming = this.dimming;
                 double b = Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50;
-                return new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(BigDecimal.valueOf(b)));
+                return new HSBType(hsb.getHue(), hsb.getSaturation(),
+                        new PercentType(new BigDecimal(b, PERCENT_MATH_CONTEXT)));
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
             }
@@ -341,7 +345,7 @@ public class Resource {
             try {
                 Double percent = colorTemperature.getPercent();
                 if (Objects.nonNull(percent)) {
-                    return new PercentType(BigDecimal.valueOf(percent));
+                    return new PercentType(new BigDecimal(percent, PERCENT_MATH_CONTEXT));
                 }
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing

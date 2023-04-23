@@ -23,10 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("unused")
 public class Dynamics {
-    private @Nullable Long duration;
-    private @Nullable Double speed;
+    private @Nullable @SuppressWarnings("unused") Long duration;
+    private @Nullable @SuppressWarnings("unused") Double speed;
 
     public Dynamics setDuration(Duration duration) {
         this.duration = duration.toMillis();

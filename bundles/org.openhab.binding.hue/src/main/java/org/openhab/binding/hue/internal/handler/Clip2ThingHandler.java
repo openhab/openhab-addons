@@ -14,6 +14,7 @@ package org.openhab.binding.hue.internal.handler;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
+import org.openhab.binding.hue.internal.action.DynamicsActions;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
 import org.openhab.binding.hue.internal.dto.clip2.Effects;
@@ -60,6 +62,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -181,7 +184,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId, channelId);
                 supportedChannelIdSet.add(channelId);
                 if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
-                    supportedChannelIdSet.add(HueBindingConstants.CHANNEL_2_DYNAMICS);
                     clearDynamicsChannel();
                 }
             }
@@ -194,7 +196,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private void clearDynamicsChannel() {
         dynamicsExpireTime = Instant.MIN;
         dynamicsDuration = Duration.ZERO;
-        updateState(HueBindingConstants.CHANNEL_2_DYNAMICS, DecimalType.ZERO);
+        updateState(HueBindingConstants.CHANNEL_2_DYNAMICS, DecimalType.ZERO, true);
     }
 
     @Override
@@ -249,6 +251,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     public ResourceReference getResourceReference() {
         return new ResourceReference().setId(thisResource.getId()).setType(thisResource.getType());
+    }
+
+    /**
+     * Register the 'DynamicsAction' service.
+     */
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(DynamicsActions.class);
     }
 
     @Override
@@ -341,17 +351,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case HueBindingConstants.CHANNEL_2_DYNAMICS:
+                Duration clearAfter = Duration.ZERO;
                 if (command instanceof DecimalType) {
                     Duration duration = Duration.ofMillis(((DecimalType) command).intValue());
                     if (!duration.isZero() && !duration.isNegative()) {
                         dynamicsDuration = duration;
                         dynamicsExpireTime = Instant.now().plus(DYNAMICS_ACTIVE_WINDOW);
-                        logger.debug("{} -> handleCommand() dynamics setting {} valid for {}", resourceId,
-                                dynamicsDuration, DYNAMICS_ACTIVE_WINDOW);
-                        return;
+                        clearAfter = DYNAMICS_ACTIVE_WINDOW;
+                        logger.debug("{} -> handleCommand() dynamics setting {} valid for {}", resourceId, duration,
+                                clearAfter);
                     }
                 }
-                clearDynamicsChannel();
+                scheduler.schedule(() -> clearDynamicsChannel(), clearAfter.toMillis(), TimeUnit.MILLISECONDS);
                 return;
 
             default:
@@ -380,7 +391,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     && !dynamicsDuration.isNegative()) {
                 putResource.setDynamicsDuration(dynamicsDuration);
             }
-            clearDynamicsChannel();
         }
 
         try {
@@ -388,6 +398,29 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } catch (ApiException | AssetNotLoadedException e) {
             logger.warn("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Handle a 'dynamics' command for the given channel ID for the given dynamics duration.
+     *
+     * @param channelId the ID of the target channel.
+     * @param command the new target state.
+     * @param durationMsec the 'dynamics' duration in milli-seconds.
+     */
+    public void handleDynamicsCommand(String channelId, Command command, DecimalType durationMSec) {
+        if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
+            Channel dynamicsChannel = thing.getChannel(HueBindingConstants.CHANNEL_2_DYNAMICS);
+            Channel targetChannel = thing.getChannel(channelId);
+            if (Objects.nonNull(dynamicsChannel) && Objects.nonNull(targetChannel)) {
+                logger.debug("{} - handleDynamicsCommand() channelId:{}, command:{}, duration:{}", resourceId,
+                        channelId, command, durationMSec);
+                handleCommand(dynamicsChannel.getUID(), durationMSec);
+                handleCommand(targetChannel.getUID(), command);
+                return;
+            }
+        }
+        logger.warn("{} - handleDynamicsCommand() failed for channelId:{}, command:{}, duration:{}", resourceId,
+                channelId, command, durationMSec);
     }
 
     @Override

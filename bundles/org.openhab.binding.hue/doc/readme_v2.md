@@ -158,6 +158,30 @@ The `openhab:hue <brigeUID> things` command produces an output that can be used 
 openhab> openhab:hue hue:bridge-api2:g24 things > myThingsFile.things
 ```
 
+## Rule Actions
+
+This binding includes a rule action, which implements dynamic (i.e. gradual) transitions to a new scene or light(s) state.
+Each thing has a separate action instance, which can be retrieved as follows.
+
+```php
+val hueActions = getActions("hue","hue:device:g24:11111111-2222-3333-4444-555555555555")
+```
+
+Where the first parameter must always be `hue` and the second must be the full thing UID.
+Once the action instance has been retrieved, you can invoke its `dynamicCommand(String channelId, Command command, DecimalType durationMSec)` method as follows.
+
+```php
+hueActions.dynamicCommand("brightness", new PercentType(100), new DecimalType(10000))
+
+hueActions.dynamicCommand("scene", new StringType("SceneName"), new DecimalType(20000))
+```
+
+| Parameter     | Description                                                                                                                                |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| channelId     | The channel ID of the channel to send the command to (one of `brightness`, `color`, `color-temperature`, `color-temp-kelvin`, or `scene`). |
+| command       | The target command state to transition to.                                                                                                 |
+| durationMSec  | The dynamic transition duration in mSec.                                                                                                   |
+
 ## Full Example
 
 ### demo.things:
