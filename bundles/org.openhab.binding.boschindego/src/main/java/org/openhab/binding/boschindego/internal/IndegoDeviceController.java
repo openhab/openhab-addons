@@ -24,6 +24,7 @@ import org.openhab.binding.boschindego.internal.dto.PredictiveAdjustment;
 import org.openhab.binding.boschindego.internal.dto.PredictiveStatus;
 import org.openhab.binding.boschindego.internal.dto.request.SetStateRequest;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceCalendarResponse;
+import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
 import org.openhab.binding.boschindego.internal.dto.response.LocationWeatherResponse;
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
@@ -69,6 +70,17 @@ public class IndegoDeviceController extends IndegoController {
             throw new IllegalArgumentException("Serial number must be provided");
         }
         this.serialNumber = serialNumber;
+    }
+
+    /**
+     * Queries the serial number and device service properties from the server.
+     *
+     * @return the device serial number and properties
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public DevicePropertiesResponse getDeviceProperties() throws IndegoAuthenticationException, IndegoException {
+        return super.getDeviceProperties(serialNumber);
     }
 
     /**
