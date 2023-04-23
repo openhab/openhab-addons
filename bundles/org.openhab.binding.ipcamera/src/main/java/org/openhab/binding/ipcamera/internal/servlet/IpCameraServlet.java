@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.servlet.ServletOutputStream;
@@ -60,7 +59,6 @@ public abstract class IpCameraServlet extends HttpServlet {
 
     public void startListening() {
         try {
-            Hashtable<Object, Object> initParameters = new Hashtable<>();
             initParameters.put("servlet-name", "/ipcamera/" + handler.getThing().getUID().getId());
             httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, initParameters,
                     httpService.createDefaultHttpContext());
