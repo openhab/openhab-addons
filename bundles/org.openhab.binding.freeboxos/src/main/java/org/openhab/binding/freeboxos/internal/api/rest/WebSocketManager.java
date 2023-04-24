@@ -97,7 +97,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     }
 
     public void closeSession() {
-        logger.info("Awaiting closure from remote");
+        logger.debug("Awaiting closure from remote");
         Session localSession = wsSession;
         if (localSession != null) {
             localSession.close();
@@ -107,7 +107,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     @Override
     public void onWebSocketConnect(@NonNullByDefault({}) Session wsSession) {
         this.wsSession = wsSession;
-        logger.info("Websocket connection establisehd");
+        logger.debug("Websocket connection establisehd");
         try {
             wsSession.getRemote().sendString(apiHandler.serialize(REGISTRATION));
         } catch (IOException e) {
@@ -127,7 +127,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         if (result.success) {
             switch (result.action) {
                 case REGISTER:
-                    logger.info("Event registration successfull");
+                    logger.debug("Event registration successfull");
                     break;
                 case NOTIFICATION:
                     handleNotification(result);
@@ -144,7 +144,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
             switch (result.getEvent()) {
                 case VM_CHANGED:
                     VirtualMachine vm = apiHandler.deserialize(VirtualMachine.class, json.toString());
-                    logger.info("Received notification for VM {}", vm.id());
+                    logger.debug("Received notification for VM {}", vm.id());
                     VmHandler vmHandler = vms.get(vm.id());
                     if (vmHandler != null) {
                         vmHandler.updateVmChannels(vm);
@@ -153,7 +153,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                 case HOST_UNREACHABLE, HOST_REACHABLE:
                     LanHost host = apiHandler.deserialize(LanHost.class, json.toString());
                     MACAddress mac = host.getMac();
-                    logger.info("Received notification for LanHost {}", mac.toColonDelimitedString());
+                    logger.debug("Received notification for LanHost {}", mac.toColonDelimitedString());
                     HostHandler hostHandler = lanHosts.get(mac);
                     if (hostHandler != null) {
                         hostHandler.updateConnectivityChannels(host);
@@ -169,7 +169,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     @Override
     public void onWebSocketClose(int statusCode, @NonNullByDefault({}) String reason) {
-        logger.info("Socket Closed: [{}] - reason {}", statusCode, reason);
+        logger.debug("Socket Closed: [{}] - reason {}", statusCode, reason);
         this.wsSession = null;
     }
 
