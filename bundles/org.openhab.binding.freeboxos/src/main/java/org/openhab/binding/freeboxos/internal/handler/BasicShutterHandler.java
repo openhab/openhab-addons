@@ -40,7 +40,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class BasicShutterHandler extends HomeNodeHandler {
-    private final static Set<String> SHUTTER_ENDPOINTS = Set.of(SHUTTER_STOP, BASIC_SHUTTER_UP, BASIC_SHUTTER_DOWN);
+    private static final Set<String> SHUTTER_ENDPOINTS = Set.of(SHUTTER_STOP, BASIC_SHUTTER_UP, BASIC_SHUTTER_DOWN);
 
     public BasicShutterHandler(Thing thing) {
         super(thing);

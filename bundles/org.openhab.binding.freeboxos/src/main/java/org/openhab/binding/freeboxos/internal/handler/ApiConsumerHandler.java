@@ -93,7 +93,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
                 checkAirMediaCapabilities(properties);
                 updateProperties(properties);
             } catch (FreeboxException e) {
-                logger.warn("Error getting thing properties : {}", e.getMessage());
+                logger.warn("Error getting thing {} properties : {}", thing.getUID(), e.getMessage());
             }
         }
 

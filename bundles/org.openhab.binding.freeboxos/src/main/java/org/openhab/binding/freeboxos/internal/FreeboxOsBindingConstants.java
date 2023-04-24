@@ -220,19 +220,19 @@ public class FreeboxOsBindingConstants {
     public static final ThingTypeUID BRIDGE_TYPE_API = new ThingTypeUID(BINDING_ID, "api");
 
     // Thing Types ID strings
-    private static String THING_DECT = "dect";
-    private static String THING_FXS = "fxs";
-    private static String THING_REVOLUTION = "revolution";
-    private static String THING_DELTA = "delta";
-    private static String THING_WIFI_HOST = "wifihost";
-    private static String THING_ACTIVE_PLAYER = "active_player";
+    private static final String THING_DECT = "dect";
+    private static final String THING_FXS = "fxs";
+    private static final String THING_REVOLUTION = "revolution";
+    private static final String THING_DELTA = "delta";
+    private static final String THING_WIFI_HOST = "wifihost";
+    private static final String THING_ACTIVE_PLAYER = "active_player";
 
-    public static String THING_FREEPLUG = "freeplug";
-    public static String THING_VM = "vm";
-    public static String THING_CALL = "call";
-    public static String THING_HOST = "host";
-    public static String THING_PLAYER = "player";
-    public static String THING_REPEATER = "repeater";
+    public static final String THING_FREEPLUG = "freeplug";
+    public static final String THING_VM = "vm";
+    public static final String THING_CALL = "call";
+    public static final String THING_HOST = "host";
+    public static final String THING_PLAYER = "player";
+    public static final String THING_REPEATER = "repeater";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_REVOLUTION = new ThingTypeUID(BINDING_ID, THING_REVOLUTION);

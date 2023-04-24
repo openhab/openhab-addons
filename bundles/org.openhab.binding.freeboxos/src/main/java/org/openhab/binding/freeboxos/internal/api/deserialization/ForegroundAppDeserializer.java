@@ -38,14 +38,13 @@ public class ForegroundAppDeserializer implements JsonDeserializer<ForegroundApp
     public @NonNull ForegroundApp deserialize(@NonNullByDefault({}) JsonElement json,
             @NonNullByDefault({}) Type typeOfT, @NonNullByDefault({}) JsonDeserializationContext context)
             throws JsonParseException {
-
         Object obj;
 
-        String _package = json.getAsJsonObject().get("package").getAsString();
+        String thePackage = json.getAsJsonObject().get("package").getAsString();
         JsonElement jsonElement2 = json.getAsJsonObject().get("context");
         if (jsonElement2 == null) {
             obj = null;
-        } else if ("fr.freebox.tv".equals(_package)) {
+        } else if ("fr.freebox.tv".equals(thePackage)) {
             obj = context.deserialize(jsonElement2, TvContext.class);
         } else {
             obj = context.deserialize(jsonElement2, PlayerContext.class);
@@ -53,7 +52,7 @@ public class ForegroundAppDeserializer implements JsonDeserializer<ForegroundApp
 
         int packageId = json.getAsJsonObject().get("package_id").getAsInt();
         String curlUrl = json.getAsJsonObject().get("cur_url").getAsString();
-        Objects.requireNonNull(_package);
-        return new ForegroundApp(packageId, curlUrl, obj, _package);
+        Objects.requireNonNull(thePackage);
+        return new ForegroundApp(packageId, curlUrl, obj, thePackage);
     }
 }
