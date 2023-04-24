@@ -88,7 +88,9 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
 
-        if (CHANNEL_COURTESY.equals(channelId) && command instanceof OnOffType) {
+        if (command instanceof RefreshType) {
+            getBridgeHandler().ifPresent(handler -> handler.sendCommand(CommandType.INFO));
+        } else if (CHANNEL_COURTESY.equals(channelId) && command instanceof OnOffType) {
             handleT4Command(T4Command.MDEy);
         } else if (CHANNEL_STATUS.equals(channelId)) {
             gateStatus.ifPresentOrElse(status -> {
@@ -111,9 +113,6 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
             } catch (IllegalArgumentException e) {
                 logger.warn("{} is not a valid T4 command", command);
             }
-        } else if (command instanceof RefreshType) {
-            getBridgeHandler().ifPresent(handler -> handler.sendCommand(CommandType.INFO));
-            return;
         } else {
             logger.warn("Unable to handle command {} on channel {}", command, channelId);
         }
