@@ -66,7 +66,7 @@ public class HomeManager extends RestManager {
     private static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
     }
 
-    private static record EndpointValue<T> (T value) {
+    private static record EndpointValue<T>(T value) {
     }
 
     private static enum ValueType {
@@ -79,7 +79,6 @@ public class HomeManager extends RestManager {
     }
 
     public static record EndpointState(@Nullable String value, ValueType valueType, long refresh) {
-
         public boolean asBoolean() {
             String local = value;
             return local != null ? Boolean.valueOf(local) : false;
@@ -106,7 +105,6 @@ public class HomeManager extends RestManager {
     }
 
     private static record LogEntry(long timestamp, int value) {
-
     }
 
     public static record Endpoint(int id, String name, String label, EpType epType, Visibility visibility, int refresh,
