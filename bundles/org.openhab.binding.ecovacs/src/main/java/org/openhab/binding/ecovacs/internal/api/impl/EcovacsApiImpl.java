@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.ecovacs.internal.api.impl;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +29,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -64,10 +67,12 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalI
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.MD5Util;
+import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
@@ -162,12 +167,11 @@ public final class EcovacsApiImpl implements EcovacsApi {
 
     @Override
     public List<EcovacsDevice> getDevices() throws EcovacsApiException, InterruptedException {
-        List<DeviceDescription> descriptions = getSupportedDeviceList();
+        Map<String, DeviceDescription> descriptions = getSupportedDeviceDescs();
         List<IotProduct> products = null;
         List<EcovacsDevice> devices = new ArrayList<>();
         for (Device dev : getDeviceList()) {
-            Optional<DeviceDescription> descOpt = descriptions.stream()
-                    .filter(d -> dev.getDeviceClass().equals(d.deviceClass)).findFirst();
+            Optional<DeviceDescription> descOpt = Optional.ofNullable(descriptions.get(dev.getDeviceClass()));
             if (!descOpt.isPresent()) {
                 if (products == null) {
                     products = getIotProductMap();
@@ -188,29 +192,58 @@ public final class EcovacsApiImpl implements EcovacsApi {
         return devices;
     }
 
-    private List<DeviceDescription> getSupportedDeviceList() {
+    // maps device class -> device description
+    private Map<String, DeviceDescription> getSupportedDeviceDescs() {
+        Map<String, DeviceDescription> descs = new HashMap<>();
         ClassLoader cl = Objects.requireNonNull(getClass().getClassLoader());
-        InputStream is = cl.getResourceAsStream("devices/supported_device_list.json");
-        JsonReader reader = new JsonReader(new InputStreamReader(is));
+        try (Reader reader = new InputStreamReader(cl.getResourceAsStream("devices/supported_device_list.json"))) {
+            for (DeviceDescription desc : loadSupportedDeviceData(reader)) {
+                descs.put(desc.deviceClass, desc);
+            }
+            logger.trace("Loaded {} built-in device descriptions", descs.size());
+        } catch (IOException | JsonSyntaxException e) {
+            logger.warn("Failed loading built-in device descriptions", e);
+        }
+
+        Path customDescsPath = Paths.get(OpenHAB.getUserDataFolder(), "ecovacs").resolve("custom_device_descs.json");
+        if (Files.exists(customDescsPath)) {
+            try (Reader reader = Files.newBufferedReader(customDescsPath)) {
+                int builtins = descs.size();
+                for (DeviceDescription desc : loadSupportedDeviceData(reader)) {
+                    if (descs.containsKey(desc.deviceClass)) {
+                        logger.trace("Overriding built-in description for {} with custom description",
+                                desc.deviceClass);
+                    }
+                    descs.put(desc.deviceClass, desc);
+                }
+                logger.trace("Loaded {} custom device descriptions", descs.size() - builtins);
+            } catch (IOException | JsonSyntaxException e) {
+                logger.warn("Failed loading custom device descriptions from {}", customDescsPath, e);
+            }
+        }
+
+        descs.entrySet().forEach(descEntry -> {
+            DeviceDescription desc = descEntry.getValue();
+            if (desc.deviceClassLink != null) {
+                Optional<DeviceDescription> linkedDescOpt = Optional.ofNullable(descs.get(desc.deviceClassLink));
+                if (!linkedDescOpt.isPresent()) {
+                    logger.warn("Device description {} links unknown description {}", desc.deviceClass,
+                            desc.deviceClassLink);
+                }
+                desc = desc.resolveLinkWith(linkedDescOpt.get());
+                descEntry.setValue(desc);
+            }
+            desc.addImplicitCapabilities();
+        });
+
+        return descs;
+    }
+
+    private List<DeviceDescription> loadSupportedDeviceData(Reader input) throws IOException {
+        JsonReader reader = new JsonReader(input);
         Type type = new TypeToken<List<DeviceDescription>>() {
         }.getType();
-        List<DeviceDescription> descs = gson.fromJson(reader, type);
-        return descs.stream().map(desc -> {
-            final DeviceDescription result;
-            if (desc.deviceClassLink != null) {
-                Optional<DeviceDescription> linkedDescOpt = descs.stream()
-                        .filter(d -> d.deviceClass.equals(desc.deviceClassLink)).findFirst();
-                if (!linkedDescOpt.isPresent()) {
-                    throw new IllegalStateException(
-                            "Desc " + desc.deviceClass + " links unknown desc " + desc.deviceClassLink);
-                }
-                result = desc.resolveLinkWith(linkedDescOpt.get());
-            } else {
-                result = desc;
-            }
-            result.addImplicitCapabilities();
-            return result;
-        }).collect(Collectors.toList());
+        return gson.fromJson(reader, type);
     }
 
     private List<Device> getDeviceList() throws EcovacsApiException, InterruptedException {
