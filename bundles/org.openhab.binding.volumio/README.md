@@ -56,12 +56,12 @@ The devices support the following channels:
 | volume         | Dimmer | RW         | Set or get the master volume.                                                                                        |
 | player         | Player | RW         | The State channel contains state of the Volumio Player.                                                              |
 | albumArt       | Image  | R          | Cover Art for the currently played track.                                                                            |
-| trackType      | String | R          | Tracktype of the currently played track.                                                                             |
-| playRadioStream| String | RW         | Play the given radio stream.                                                                                         |
-| playPlaylist   | String | RW         | Playback a playlist identifed by its name.                                                                           |
-| clearQueue     | Switch | RW         | Clear the current queue.                                                                                             | 
-| playURI        | Switch | RW         | Play the stream at given uri.                                                                                        |
-| playFile       | Switch | RW         | Play a file, located on your Volumio device at the given absolute path, e.g."mnt/INTERNAL/song.mp3"                  |
+| track-type      | String | R          | Tracktype of the currently played track.                                                                             |
+| play-radio-stream| String | RW         | Play the given radio stream.                                                                                         |
+| play-playlist   | String | RW         | Playback a playlist identifed by its name.                                                                           |
+| clear-queue     | Switch | RW         | Clear the current queue.                                                                                             | 
+| play-uri        | Switch | RW         | Play the stream at given uri.                                                                                        |
+| play-file       | Switch | RW         | Play a file, located on your Volumio device at the given absolute path, e.g."mnt/INTERNAL/song.mp3"                  |
 | random         | Switch | RW         | Activate random mode.                                                                                                |
 | repeat         | Switch | RW         | Activate repeat mode.                                                                                                |
 | systemCommand  | Switch | RW         | Sends a system command to Volumio. This allows to shutdown/reboot Volumio. Use "Shutdown"/"Reboot" as String command.|
@@ -84,7 +84,7 @@ String	Volumio_CurrentArtist	    "Current Artist [%s]"	                    {chan
 String	Volumio_CurrentAlbum	    "Current Album [%s]"	                    {channel="volumio:player:VolumioLivingRoom:album"}
 Dimmer	Volumio_CurrentVolume	    "Current Volume [%.1f %%]"  <soundvolume>	{channel="volumio:player:VolumioLivingRoom:volume"}
 Player	Volumio	                    "Current Status [%s]"	   <volumiologo>    {channel="volumio:player:VolumioLivingRoom:player"}
-String	Volumio_CurrentTrackType	"Current Track Type [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:trackType"}
+String	Volumio_CurrentTrackType	"Current Track Type [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:track-type"}
 ```
 
 demo.sitemap:

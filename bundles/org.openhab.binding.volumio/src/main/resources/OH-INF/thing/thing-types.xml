@@ -14,8 +14,8 @@
 			<channel id="album" typeId="album"/>
 			<channel id="volume" typeId="volume"/>
 			<channel id="player" typeId="player"/>
-			<channel id="trackType" typeId="trackType"/>
-			<channel id="playRadioStream" typeId="playRadioStream"/>
+			<channel id="track-type" typeId="track-type"/>
+			<channel id="play-radio-stream" typeId="play-radio-stream"/>
 			<channel id="playPlaylist" typeId="playPlaylist"/>
 			<channel id="clearQueue" typeId="clearQueue"/>
 			<channel id="playURI" typeId="playURI"/>
@@ -122,14 +122,14 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="trackType" advanced="true">
+	<channel-type id="track-type" advanced="true">
 		<item-type>String</item-type>
-		<label>trackType</label>
+		<label>track-type</label>
 		<description>Tracktype of the currently played track</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="playRadioStream" advanced="true">
+	<channel-type id="play-radio-stream" advanced="true">
 		<item-type>String</item-type>
 		<label>Play radio stream</label>
 		<description>Play the given radio stream</description>

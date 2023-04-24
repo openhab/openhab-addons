@@ -38,7 +38,7 @@ public class VolumioBindingConstants {
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_PLAYER = "player";
     public static final String CHANNEL_COVER_ART = "albumArt";
-    public static final String CHANNEL_TRACK_TYPE = "trackType";
+    public static final String CHANNEL_TRACK_TYPE = "track-type";
     public static final String CHANNEL_PLAY_RADIO_STREAM = "playRadioStream";
     public static final String CHANNEL_PLAY_PLAYLIST = "playPlaylist";
     public static final String CHANNEL_CLEAR_QUEUE = "clearQueue";
