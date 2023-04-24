@@ -140,13 +140,14 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Protocols Starting");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.protocols-starting");
 
         GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
         String ipAddress = googletvConfig.ipAddress;
 
         if (ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "googletv address not specified");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.googletv-address-not-specified");
             return;
         }
 
@@ -158,7 +159,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
             if (ipAddress.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "shieldtv address not specified");
+                        "@text/offline.shieldtv-address-not-specified");
                 return;
             }
 
