@@ -40,7 +40,6 @@
 		<description>Operating Mode</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">Off</option>
 				<option value="1">Timed Percent</option>
 				<option value="2">ORP Autosense</option>
 			</options>
