@@ -16,14 +16,22 @@ import static org.openhab.binding.somneo.internal.SomneoBindingConstants.*;
 
 import java.io.EOFException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.somneo.internal.model.AlarmSchedulesData;
+import org.openhab.binding.somneo.internal.model.AlarmSettingsData;
+import org.openhab.binding.somneo.internal.model.AlarmStateData;
 import org.openhab.binding.somneo.internal.model.AudioData;
 import org.openhab.binding.somneo.internal.model.DeviceData;
 import org.openhab.binding.somneo.internal.model.FirmwareData;
@@ -35,6 +43,7 @@ import org.openhab.binding.somneo.internal.model.SensorData;
 import org.openhab.binding.somneo.internal.model.SunsetData;
 import org.openhab.binding.somneo.internal.model.TimerData;
 import org.openhab.binding.somneo.internal.model.WifiData;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
@@ -52,6 +61,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +79,8 @@ public class SomneoHandler extends BaseThingHandler {
     private final HttpClientProvider httpClientProvider;
 
     private final SomneoPresetStateDescriptionProvider provider;
+
+    private final Pattern alarmPattern;
 
     /**
      * Job to poll data from the device.
@@ -97,6 +109,7 @@ public class SomneoHandler extends BaseThingHandler {
         super(thing);
         this.httpClientProvider = httpClientProvider;
         this.provider = provider;
+        this.alarmPattern = Objects.requireNonNull(Pattern.compile(CHANNEL_ALARM_PREFIX_REGEX));
     }
 
     @Override
@@ -286,6 +299,84 @@ public class SomneoHandler extends BaseThingHandler {
                         connector.setSunsetVolume(Integer.parseInt(command.toFullString()));
                     }
                     break;
+                case CHANNEL_ALARM_SNOOZE:
+                    if (command instanceof QuantityType) {
+                        @SuppressWarnings("unchecked")
+                        final QuantityType<Time> minutes = (QuantityType<Time>) command;
+                        connector.setAlarmSnooze(minutes.intValue());
+                    }
+                    break;
+                case CHANNEL_ALARM_CONFIGURED:
+                    if (alarmPosition > 2) {
+                        if (command instanceof OnOffType) {
+                            connector.toggleAlarmConfiguration(alarmPosition, (OnOffType) command);
+
+                            if (OnOffType.ON.equals(command)) {
+                                updateAlarmExtended(alarmPosition);
+                            } else {
+                                resetAlarm(alarmPosition);
+                            }
+                        }
+                    } else {
+                        logger.info("Alarm 1 and 2 can not be unset");
+                    }
+                    break;
+                case CHANNEL_ALARM_SWITCH:
+                    if (command instanceof OnOffType) {
+                        connector.toggleAlarm(alarmPosition, (OnOffType) command);
+                        updateAlarmExtended(alarmPosition);
+                    }
+                    break;
+                case CHANNEL_ALARM_TIME:
+                    if (command instanceof DateTimeType) {
+                        connector.setAlarmTime(alarmPosition, (DateTimeType) command);
+                    }
+                    break;
+                case CHANNEL_ALARM_REPEATE_DAY:
+                    if (command instanceof DecimalType) {
+                        connector.setAlarmRepeatDay(alarmPosition, (DecimalType) command);
+                    }
+                    break;
+                case CHANNEL_ALARM_POWER_WAKE:
+                    if (command instanceof OnOffType) {
+                        connector.toggleAlarmPowerWake(alarmPosition, (OnOffType) command);
+                        if (OnOffType.OFF.equals(command)) {
+                            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, alarmPosition),
+                                    QuantityType.valueOf(0, Units.MINUTE));
+                        }
+                    }
+                    break;
+                case CHANNEL_ALARM_POWER_WAKE_DELAY:
+                    if (command instanceof QuantityType) {
+                        connector.setAlarmPowerWakeDelay(alarmPosition, (QuantityType<Time>) command);
+                        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, alarmPosition), OnOffType.ON);
+                    }
+                    break;
+                case CHANNEL_ALARM_SUNRISE_DURATION:
+                    if (command instanceof QuantityType) {
+                        connector.setAlarmSunriseDuration(alarmPosition, (QuantityType<Time>) command);
+                    }
+                    break;
+                case CHANNEL_ALARM_SUNRISE_BRIGHTNESS:
+                    if (command instanceof PercentType) {
+                        connector.setAlarmSunriseBrightness(alarmPosition, (PercentType) command);
+                    }
+                    break;
+                case CHANNEL_ALARM_SUNRISE_SCHEMA:
+                    if (command instanceof DecimalType) {
+                        connector.setAlarmSunriseSchema(alarmPosition, (DecimalType) command);
+                    }
+                    break;
+                case CHANNEL_ALARM_SOUND:
+                    if (command instanceof StringType) {
+                        connector.setAlarmSound(alarmPosition, (StringType) command);
+                    }
+                    break;
+                case CHANNEL_ALARM_VOLUME:
+                    if (command instanceof PercentType) {
+                        connector.setAlarmVolume(alarmPosition, (PercentType) command);
+                    }
+                    break;
                 default:
                     logger.warn("Received unknown channel {}", channelId);
                     break;
@@ -449,6 +540,8 @@ public class SomneoHandler extends BaseThingHandler {
 
             updateFrequency();
 
+            updateAlarm();
+
             updateRemainingTimer();
 
             updateStatus(ThingStatus.ONLINE);
@@ -540,5 +633,118 @@ public class SomneoHandler extends BaseThingHandler {
         if (remainingTimeRelax <= 0 && remainingTimeSunset <= 0) {
             stopRemainingTimer();
         }
+    }
+
+    private void updateAlarm() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+
+        final State snooze = connector.fetchSnoozeDuration();
+        updateState(CHANNEL_ALARM_SNOOZE, snooze);
+
+        final AlarmStateData alarmState = connector.fetchAlarmStateData();
+        final AlarmSchedulesData alarmSchedulesData = connector.fetchAlarmScheduleData();
+
+        for (int i = 1; i <= alarmState.getAlarmCount(); i++) {
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_CONFIGURED, i), alarmState.getConfiguredState(i));
+
+            if (OnOffType.ON.equals(alarmState.getConfiguredState(i))) {
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SWITCH, i), alarmState.getEnabledState(i));
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, i),
+                        alarmSchedulesData.getAlarmTimeState(i));
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEATE_DAY, i),
+                        alarmSchedulesData.getRepeatDayState(i));
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, i), alarmState.getPowerWakeState(i));
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, i),
+                        alarmState.getPowerWakeDelayState(i, alarmSchedulesData.getAlarmTime(i)));
+            } else {
+                resetAlarm(i);
+            }
+        }
+    }
+
+    private void pollAlarmExtended() {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+
+        try {
+            final AlarmStateData alarmState = connector.fetchAlarmStateData();
+
+            for (int i = 1; i <= alarmState.getAlarmCount(); i++) {
+                if (OnOffType.ON.equals(alarmState.getConfiguredState(i))) {
+                    updateAlarmExtended(i);
+                } else {
+                    resetAlarm(i);
+                }
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Polling extended alarm data interrupted");
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException | ExecutionException e) {
+            if (e.getCause() instanceof EOFException) {
+                // Occurs on parallel mobile app access
+                logger.debug("EOF: {}", e.getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+    }
+
+    private void updateAlarmExtended(int position) throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+
+        final AlarmSettingsData alarmSettings = connector.fetchAlarmSettingsData(position);
+
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_CONFIGURED, position),
+                alarmSettings.getConfiguredState());
+
+        if (OnOffType.ON.equals(alarmSettings.getConfiguredState())) {
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SWITCH, position), alarmSettings.getEnabledState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, position),
+                    alarmSettings.getPowerWakeState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, position),
+                    alarmSettings.getPowerWakeDelayState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, position), alarmSettings.getAlarmTimeState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEATE_DAY, position),
+                    alarmSettings.getRepeatDayState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_DURATION, position),
+                    alarmSettings.getSunriseDurationInMin());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_BRIGHTNESS, position),
+                    alarmSettings.getSunriseBrightness());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_SCHEMA, position),
+                    alarmSettings.getSunriseSchema());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SOUND, position), alarmSettings.getSound());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_VOLUME, position), alarmSettings.getSoundVolume());
+        } else {
+            resetAlarm(position);
+        }
+    }
+
+    private void resetAlarm(int position) throws TimeoutException, InterruptedException, ExecutionException {
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SWITCH, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEATE_DAY, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_DURATION, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_BRIGHTNESS, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_SCHEMA, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SOUND, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_VOLUME, position), UnDefType.UNDEF);
+    }
+
+    private String formatAlarmChannelIdByIndex(String channelId, int index) {
+        final String channelIdFormated = String.format(channelId, index);
+        if (channelIdFormated == null) {
+            return "";
+        }
+        return channelIdFormated;
     }
 }
