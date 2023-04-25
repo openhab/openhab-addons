@@ -319,7 +319,11 @@ public class SomneoHttpConnector {
     public AlarmSettingsData fetchAlarmSettingsData(final int position)
             throws TimeoutException, InterruptedException, ExecutionException {
         final String responseBody = executeUrl("PUT", ALARM_SETTINGS_ENDPOINT, "{\"prfnr\":" + (position) + "}");
-        return (AlarmSettingsData) gson.fromJson(responseBody, AlarmSettingsData.class);
+        AlarmSettingsData data = (AlarmSettingsData) gson.fromJson(responseBody, AlarmSettingsData.class);
+        if (data == null) {
+            return new AlarmSettingsData();
+        }
+        return data;
     }
 
     public State fetchSnoozeDuration() throws TimeoutException, InterruptedException, ExecutionException {
