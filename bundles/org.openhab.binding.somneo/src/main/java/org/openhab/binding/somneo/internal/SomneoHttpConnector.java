@@ -458,9 +458,8 @@ public class SomneoHttpConnector {
 
     private <T> T executeUrl(String httpMethod, String endpoint, Class<T> classOfT)
             throws TimeoutException, InterruptedException, ExecutionException {
-        final String responseBody = executeUrl("GET", endpoint, (String) null);
-        final T data = gson.fromJson(responseBody, classOfT);
-        return data;
+        final String responseBody = executeUrl(httpMethod, endpoint, (String) null);
+        return gson.fromJson(responseBody, classOfT);
     }
 
     private void executeUrl(String httpMethod, String endpoint, Object data)
