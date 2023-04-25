@@ -448,9 +448,9 @@
 		</tags>
 		<state>
 			<options>
-				<option value="5">5 Minutes</option>
-				<option value="10">10 Minutes</option>
-				<option value="15">15 Minutes</option>
+				<option value="5 min">5 Minutes</option>
+				<option value="10 min">10 Minutes</option>
+				<option value="15 min">15 Minutes</option>
 			</options>
 		</state>
 	</channel-type>
@@ -524,13 +524,13 @@
 		</tags>
 		<state>
 			<options>
-				<option value="5">5 Minutes</option>
-				<option value="10">10 Minutes</option>
-				<option value="15">15 Minutes</option>
-				<option value="20">20 Minutes</option>
-				<option value="30">30 Minutes</option>
-				<option value="45">45 Minutes</option>
-				<option value="60">60 Minutes</option>
+				<option value="5 min">5 Minutes</option>
+				<option value="10 min">10 Minutes</option>
+				<option value="15 min">15 Minutes</option>
+				<option value="20 min">20 Minutes</option>
+				<option value="30 min">30 Minutes</option>
+				<option value="45 min">45 Minutes</option>
+				<option value="60 min">60 Minutes</option>
 			</options>
 		</state>
 	</channel-type>

@@ -255,8 +255,9 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_RELAX_DURATION:
-                    if (command instanceof DecimalType) {
-                        connector.setRelaxDuration(Integer.parseInt(command.toFullString()));
+                    if (command instanceof QuantityType) {
+                        final QuantityType<Time> minutes = (QuantityType<Time>) command;
+                        connector.setRelaxDuration(minutes.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_GUIDANCE_TYPE:
@@ -301,8 +302,9 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_SUNSET_DURATION:
-                    if (command instanceof DecimalType) {
-                        connector.setSunsetDuration(Integer.parseInt(command.toFullString()));
+                    if (command instanceof QuantityType) {
+                        final QuantityType<Time> minutes = (QuantityType<Time>) command;
+                        connector.setSunsetDuration(minutes.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_LIGHT_INTENSITY:
