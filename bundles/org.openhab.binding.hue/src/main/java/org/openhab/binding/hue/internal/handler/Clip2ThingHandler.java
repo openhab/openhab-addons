@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,6 +42,7 @@ import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
@@ -120,9 +121,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final Set<String> supportedChannelIdSet = new HashSet<>();
 
     /**
-     * A list of scene Resources that are supported by this thing.
+     * A map of scene IDs and respective Resources for the scenes that are associated with this thing. It is a map
+     * between the resource ID (string) and a Resource object containing the scene's last known state.
      */
-    private final List<Resource> supportedScenes = new CopyOnWriteArrayList<>();
+    private final Map<String, Resource> sceneContributorsCache = new ConcurrentHashMap<>();
 
     /**
      * A map of scene names versus Resource IDs for the scenes that are associated with this thing.
@@ -208,8 +210,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             task.cancel(true);
         }
         updateContributorsTask = null;
-        supportedScenes.clear();
         legacyLinkedChannelUIDs.clear();
+        sceneContributorsCache.clear();
         sceneCommandResourceIds.clear();
         supportedChannelIdSet.clear();
         commandResourceIds.clear();
@@ -345,7 +347,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof StringType) {
                     putResourceId = sceneCommandResourceIds.get(((StringType) command).toString());
                     if (Objects.nonNull(putResourceId)) {
-                        putResource = new Resource(ResourceType.SCENE).setRecall();
+                        putResource = new Resource(ResourceType.SCENE).setRecallAction(RecallAction.ACTIVE);
                     }
                 }
                 break;
@@ -383,15 +385,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
 
-        putResource.setId(putResourceId);
-        logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
-
         if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
             if (Instant.now().isBefore(dynamicsExpireTime) && !dynamicsDuration.isZero()
                     && !dynamicsDuration.isNegative()) {
-                putResource.setDynamicsDuration(dynamicsDuration);
+                if (ResourceType.SCENE == putResource.getType()) {
+                    putResource.setRecallDuration(dynamicsDuration);
+                } else {
+                    putResource.setDynamicsDuration(dynamicsDuration);
+                }
             }
         }
+
+        putResource.setId(putResourceId);
+        logger.debug("{} -> handleCommand() put resource {}", resourceId, putResource);
 
         try {
             getBridgeHandler().putResource(putResource);
@@ -464,7 +470,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     thisResource = resource;
                     if (!updatePropertiesDone) {
                         updateProperties(resource);
-                        resourceConsumed = true;
+                        resourceConsumed = updatePropertiesDone;
                     }
                 }
                 if (!updateDependenciesDone) {
@@ -473,12 +479,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             }
             String cacheId = resource.getId();
-            Resource cacheResource = contributorsCache.get(cacheId);
-            if (Objects.nonNull(cacheResource)) {
-                resourceConsumed = true;
-                resource.copyMissingFieldsFrom(cacheResource);
-                updateChannels(resource);
-                contributorsCache.put(cacheId, resource);
+            Resource cacheResource;
+            if (ResourceType.SCENE == resource.getType()) {
+                cacheResource = sceneContributorsCache.get(cacheId);
+                if (Objects.nonNull(cacheResource)) {
+                    resource.copyMissingFieldsFrom(cacheResource);
+                    resourceConsumed = updateChannels(resource);
+                    sceneContributorsCache.put(cacheId, resource);
+                }
+            } else {
+                cacheResource = contributorsCache.get(cacheId);
+                if (Objects.nonNull(cacheResource)) {
+                    resource.copyMissingFieldsFrom(cacheResource);
+                    resourceConsumed = updateChannels(resource);
+                    contributorsCache.put(cacheId, resource);
+                }
             }
             if (resourceConsumed) {
                 logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
@@ -498,7 +513,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     .map(actionId -> new StateOption(actionId, actionId)).collect(Collectors.toList());
             if (!stateOptions.isEmpty()) {
                 stateDescriptionProvider.setStateOptions(
-                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_ALERT), stateOptions);
+                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_2_ALERT), stateOptions);
                 logger.debug("{} -> updateAlerts() found {} associated alerts", resourceId, stateOptions.size());
             }
         }
@@ -643,7 +658,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case SCENE:
-                updateState(HueBindingConstants.CHANNEL_SCENE, resource.getSceneState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_SCENE, resource.getSceneState(), fullUpdate);
                 break;
 
             default:
@@ -743,7 +758,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     .collect(Collectors.toList());
             if (!stateOptions.isEmpty()) {
                 stateDescriptionProvider.setStateOptions(
-                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_EFFECT), stateOptions);
+                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_2_EFFECT), stateOptions);
                 logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
             }
         }
@@ -758,28 +773,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (!updateScenesDone) {
                 logger.warn("{} -> updateLookups() scene list not initialized", resourceId);
             }
-            contributorsCache.clear();
-            commandResourceIds.clear();
-            sceneCommandResourceIds.clear();
-
             // get supported services
             List<ResourceReference> services = thisResource.getServiceReferences();
 
             // add supported services to contributorsCache
+            contributorsCache.clear();
             contributorsCache.putAll(services.stream()
                     .collect(Collectors.toMap(ResourceReference::getId, r -> new Resource(r.getType()))));
 
-            // add associated scenes to contributorsCache
-            contributorsCache
-                    .putAll(supportedScenes.stream().collect(Collectors.toMap(Resource::getId, Function.identity())));
-
             // add supported services to commandResourceIds
+            commandResourceIds.clear();
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
-
-            // add associated scenes to sceneCommandResourceIds
-            sceneCommandResourceIds
-                    .putAll(supportedScenes.stream().collect(Collectors.toMap(Resource::getName, Resource::getId)));
         }
     }
 
@@ -854,27 +859,35 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Process the incoming list of scene resources to find those scenes which are associated with this thing. And if
-     * there are any, include a scene channel in the supported channel list, populate its respective state options list,
-     * and store the scenes in our temporary associated scenes list.
+     * there are any, include a scene channel in the supported channel list, and populate its respective state options
+     * list.
      *
-     * @param scenes the full list of scene resources.
+     * @param allScenes the full list of scene resources.
      */
-    public synchronized void updateScenes(List<Resource> scenes) {
+    public synchronized void updateScenes(List<Resource> allScenes) {
         if (!disposing && !updateScenesDone) {
             ResourceReference thisReference = getResourceReference();
+            List<Resource> scenes = allScenes.stream().filter(s -> thisReference.equals(s.getGroup()))
+                    .collect(Collectors.toList());
 
-            supportedScenes.clear();
-            supportedScenes.addAll(scenes.stream().filter(scene -> thisReference.equals(scene.getGroup()))
-                    .collect(Collectors.toList()));
+            sceneContributorsCache.clear();
+            sceneCommandResourceIds.clear();
 
-            if (!supportedScenes.isEmpty()) {
-                addSupportedChannel(HueBindingConstants.CHANNEL_SCENE);
+            if (!scenes.isEmpty()) {
+                sceneContributorsCache.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getId(), s -> s)));
+                sceneCommandResourceIds
+                        .putAll(scenes.stream().collect(Collectors.toMap(s -> s.getName(), s -> s.getId())));
+
+                Optional<Resource> active = scenes.stream().filter(s -> s.getSceneActive()).findAny();
+                State state = active.isPresent() ? new StringType(active.get().getName()) : UnDefType.UNDEF;
+                updateState(HueBindingConstants.CHANNEL_2_SCENE, state, true);
+
+                List<StateOption> options = scenes.stream().map(s -> s.getName()).map(n -> new StateOption(n, n))
+                        .collect(Collectors.toList());
                 stateDescriptionProvider
-                        .setStateOptions(new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_SCENE),
-                                supportedScenes.stream().map(scene -> scene.getName())
-                                        .map(sceneId -> new StateOption(sceneId, sceneId))
-                                        .collect(Collectors.toList()));
-                logger.debug("{} -> updateScenes() found {} associated scenes", resourceId, supportedScenes.size());
+                        .setStateOptions(new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_2_SCENE), options);
+
+                logger.debug("{} -> updateScenes() found {} associated scenes", resourceId, scenes.size());
             }
             updateScenesDone = true;
         }

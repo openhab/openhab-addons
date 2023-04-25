@@ -23,7 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public enum RecallAction {
     ACTIVE,
-    DYNAMIC_PALETTE;
+    DYNAMIC_PALETTE,
+    STATIC;
 
     public static RecallAction of(@Nullable String value) {
         if (value != null) {

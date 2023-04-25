@@ -716,17 +716,23 @@ public class Resource {
         return this;
     }
 
-    public void setMirekSchema(@Nullable MirekSchema schema) {
+    public Resource setMirekSchema(@Nullable MirekSchema schema) {
         ColorTemperature2 colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
             colorTemperature.setMirekSchema(schema);
         }
+        return this;
     }
 
-    public Resource setRecall() {
-        Recall recall = new Recall();
-        recall.setAction(RecallAction.ACTIVE);
-        this.recall = recall;
+    public Resource setRecallAction(RecallAction recallAction) {
+        Recall recall = this.recall;
+        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        return this;
+    }
+
+    public Resource setRecallDuration(Duration recallDuration) {
+        Recall recall = this.recall;
+        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
         return this;
     }
 

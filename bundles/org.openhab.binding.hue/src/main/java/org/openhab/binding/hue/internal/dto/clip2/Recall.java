@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
+import java.time.Duration;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 
 /**
@@ -22,13 +25,17 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
  */
 @NonNullByDefault
 public class Recall {
-    private @NonNullByDefault({}) String action;
+    private @Nullable @SuppressWarnings("unused") String action;
+    private @Nullable @SuppressWarnings("unused") String status;
+    private @Nullable @SuppressWarnings("unused") Long duration;
 
-    public RecallAction getAction() {
-        return RecallAction.of(action);
+    public Recall setAction(RecallAction action) {
+        this.action = action.name().toLowerCase();
+        return this;
     }
 
-    public void setAction(RecallAction action) {
-        this.action = action.name().toLowerCase();
+    public Recall setDuration(Duration duration) {
+        this.duration = duration.toMillis();
+        return this;
     }
 }
