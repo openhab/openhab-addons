@@ -537,6 +537,8 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                 return;
             }
             this.connection = connection;
+            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Waiting for 'milight/status: connected' MQTT message to be recieved. Check hub has 'MQTT Client Status Topic' configured.");
             connection.subscribe(fullStatesTopic, this);
             connection.subscribe(STATUS_TOPIC, this);
         }
