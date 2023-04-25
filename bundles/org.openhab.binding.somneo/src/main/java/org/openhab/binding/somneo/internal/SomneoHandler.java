@@ -86,6 +86,7 @@ public class SomneoHandler extends BaseThingHandler {
      * Job to poll data from the device.
      */
     private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJobExtended;
 
     /**
      * Job to count down the remaining program time.
@@ -117,17 +118,48 @@ public class SomneoHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
 
-        if (command instanceof RefreshType) {
-            this.poll();
-            return;
-        }
-
-        final SomneoHttpConnector connector = this.connector;
-        if (connector == null) {
-            return;
-        }
-
         try {
+            final SomneoHttpConnector connector = this.connector;
+            if (connector == null) {
+                return;
+            }
+
+            final Matcher matcher = alarmPattern.matcher(channelId);
+            int alarmPosition = 0;
+            if (matcher.matches()) {
+                // Replace alarm channel index with string format placeholder to match
+                // constants.
+                alarmPosition = Integer.parseInt(matcher.group(1));
+                channelId = channelId.replace(alarmPosition + "#", "%d#");
+            }
+
+            if (command instanceof RefreshType) {
+                if (channelId.equals(CHANNEL_ALARM_SNOOZE)) {
+                    final State snooze = connector.fetchSnoozeDuration();
+                    updateState(CHANNEL_ALARM_SNOOZE, snooze);
+                } else if (channelId.startsWith("alarm")) {
+                    updateAlarmExtended(alarmPosition);
+                } else if (channelId.startsWith("sensor")) {
+                    updateSensors();
+                } else if (channelId.startsWith("light")) {
+                    updateLights();
+                } else if (channelId.equals(CHANNEL_RELAX_REMAINING_TIME)
+                        || channelId.equals(CHANNEL_SUNSET_REMAINING_TIME)) {
+                    updateRemainingTimer();
+                } else if (channelId.equals(CHANNEL_AUDIO_FREQUENCY)) {
+                    updateFrequency();
+                } else if (channelId.startsWith("audio")) {
+                    updateLights();
+                } else if (channelId.startsWith("sunset")) {
+                    updateSunset();
+                } else if (channelId.startsWith("relax")) {
+                    updateRelax();
+                } else {
+                    this.poll();
+                }
+                return;
+            }
+
             switch (channelId) {
                 case CHANNEL_AUDIO_AUX:
                     if (command instanceof OnOffType) {
@@ -482,19 +514,30 @@ public class SomneoHandler extends BaseThingHandler {
             return;
         }
 
-        int refreshInterval = getConfigAs(SomneoConfiguration.class).refreshInterval;
-        logger.debug("Start polling job at interval {}s", refreshInterval);
+        final SomneoConfiguration config = getConfigAs(SomneoConfiguration.class);
+        int refreshInterval = config.refreshInterval;
+        logger.debug("Start default polling job at interval {}s", refreshInterval);
         this.pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
+
+        refreshInterval = config.refreshIntervalAlarmExtended;
+        logger.debug("Start extended alarm polling job at interval {}s", refreshInterval);
+        this.pollingJobExtended = scheduler.scheduleWithFixedDelay(this::pollAlarmExtended, 0, refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     private void stopPolling() {
         final ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            return;
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            pollingJob.cancel(true);
+            this.pollingJob = null;
         }
 
-        pollingJob.cancel(true);
-        this.pollingJob = null;
+        final ScheduledFuture<?> pollingJobExtended = this.pollingJobExtended;
+        if (pollingJobExtended != null && !pollingJobExtended.isCancelled()) {
+            pollingJobExtended.cancel(true);
+            this.pollingJobExtended = null;
+        }
+
         logger.debug("HTTP polling stopped.");
     }
 
@@ -505,38 +548,15 @@ public class SomneoHandler extends BaseThingHandler {
         }
 
         try {
-            final SensorData sensorData = connector.fetchSensorData();
-            updateState(CHANNEL_SENSOR_HUMIDITY, sensorData.getCurrentHumidity());
-            updateState(CHANNEL_SENSOR_ILLUMINANCE, sensorData.getCurrentIlluminance());
-            updateState(CHANNEL_SENSOR_NOISE, sensorData.getCurrentNoise());
-            updateState(CHANNEL_SENSOR_TEMPERATURE, sensorData.getCurrentTemperature());
+            updateSensors();
 
-            final LightData lightData = connector.fetchLightData();
-            updateState(CHANNEL_LIGHT_MAIN, lightData.getMainLightState());
-            updateState(CHANNEL_LIGHT_NIGHT, lightData.getNightLightState());
-            lastLightBrightness = lightData.getMainLightLevel();
+            updateLights();
 
-            final SunsetData sunsetData = connector.fetchSunsetData();
-            updateState(CHANNEL_SUNSET_SWITCH, sunsetData.getSwitchState());
-            updateState(CHANNEL_SUNSET_LIGHT_INTENSITY, sunsetData.getLightIntensity());
-            updateState(CHANNEL_SUNSET_DURATION, sunsetData.getDurationInMin());
-            updateState(CHANNEL_SUNSET_COLOR_SCHEMA, sunsetData.getColorSchema());
-            updateState(CHANNEL_SUNSET_AMBIENT_NOISE, sunsetData.getAmbientNoise());
-            updateState(CHANNEL_SUNSET_VOLUME, sunsetData.getSoundVolume());
+            updateSunset();
 
-            final RelaxData relaxData = connector.fetchRelaxData();
-            updateState(CHANNEL_RELAX_SWITCH, relaxData.getSwitchState());
-            updateState(CHANNEL_RELAX_BREATHING_RATE, relaxData.getBreathingRate());
-            updateState(CHANNEL_RELAX_DURATION, relaxData.getDurationInMin());
-            updateState(CHANNEL_RELAX_GUIDANCE_TYPE, relaxData.getGuidanceType());
-            updateState(CHANNEL_RELAX_LIGHT_INTENSITY, relaxData.getLightIntensity());
-            updateState(CHANNEL_RELAX_VOLUME, relaxData.getSoundVolume());
+            updateRelax();
 
-            final AudioData audioData = connector.fetchAudioData();
-            updateState(CHANNEL_AUDIO_RADIO, audioData.getRadioState());
-            updateState(CHANNEL_AUDIO_AUX, audioData.getAuxState());
-            updateState(CHANNEL_AUDIO_VOLUME, audioData.getVolumeState());
-            updateState(CHANNEL_AUDIO_PRESET, audioData.getPresetState());
+            updateAudio();
 
             updateFrequency();
 
@@ -556,6 +576,70 @@ public class SomneoHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
+    }
+
+    private void updateAudio() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+        final AudioData audioData = connector.fetchAudioData();
+        updateState(CHANNEL_AUDIO_RADIO, audioData.getRadioState());
+        updateState(CHANNEL_AUDIO_AUX, audioData.getAuxState());
+        updateState(CHANNEL_AUDIO_VOLUME, audioData.getVolumeState());
+        updateState(CHANNEL_AUDIO_PRESET, audioData.getPresetState());
+    }
+
+    private void updateRelax() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+        final RelaxData relaxData = connector.fetchRelaxData();
+        updateState(CHANNEL_RELAX_SWITCH, relaxData.getSwitchState());
+        updateState(CHANNEL_RELAX_BREATHING_RATE, relaxData.getBreathingRate());
+        updateState(CHANNEL_RELAX_DURATION, relaxData.getDurationInMin());
+        updateState(CHANNEL_RELAX_GUIDANCE_TYPE, relaxData.getGuidanceType());
+        updateState(CHANNEL_RELAX_LIGHT_INTENSITY, relaxData.getLightIntensity());
+        updateState(CHANNEL_RELAX_VOLUME, relaxData.getSoundVolume());
+    }
+
+    private void updateSunset() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+        final SunsetData sunsetData = connector.fetchSunsetData();
+        updateState(CHANNEL_SUNSET_SWITCH, sunsetData.getSwitchState());
+        updateState(CHANNEL_SUNSET_LIGHT_INTENSITY, sunsetData.getLightIntensity());
+        updateState(CHANNEL_SUNSET_DURATION, sunsetData.getDurationInMin());
+        updateState(CHANNEL_SUNSET_COLOR_SCHEMA, sunsetData.getColorSchema());
+        updateState(CHANNEL_SUNSET_AMBIENT_NOISE, sunsetData.getAmbientNoise());
+        updateState(CHANNEL_SUNSET_VOLUME, sunsetData.getSoundVolume());
+    }
+
+    private void updateLights() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+        final LightData lightData = connector.fetchLightData();
+        updateState(CHANNEL_LIGHT_MAIN, lightData.getMainLightState());
+        updateState(CHANNEL_LIGHT_NIGHT, lightData.getNightLightState());
+        lastLightBrightness = lightData.getMainLightLevel();
+    }
+
+    private void updateSensors() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+
+        final SensorData sensorData = connector.fetchSensorData();
+        updateState(CHANNEL_SENSOR_HUMIDITY, sensorData.getCurrentHumidity());
+        updateState(CHANNEL_SENSOR_ILLUMINANCE, sensorData.getCurrentIlluminance());
+        updateState(CHANNEL_SENSOR_NOISE, sensorData.getCurrentNoise());
+        updateState(CHANNEL_SENSOR_TEMPERATURE, sensorData.getCurrentTemperature());
     }
 
     private void updateFrequency() throws TimeoutException, InterruptedException, ExecutionException {

@@ -51,6 +51,12 @@
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="refreshIntervalAlarmExtended" type="integer" unit="s" min="1">
+				<label>Refresh Interval for extended alarm clock settings</label>
+				<description>Interval the device is polled in sec. This polling triggers a sync icon on the device.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="ignoreSSLErrors" type="boolean">
 				<label>Ignore SSL Errors</label>
 				<description>If set to true ignores invalid SSL certificate errors. This is potentially dangerous.</description>
