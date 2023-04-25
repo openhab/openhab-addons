@@ -487,7 +487,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Milight Hub is not connected to your MQTT broker.");
+                        "Waiting for 'milight/status: connected' MQTT message to be sent from your ESP Milight hub.");
             }
         } else {
             try {
@@ -537,7 +537,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                 return;
             }
             this.connection = connection;
-            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
                     "Waiting for 'milight/status: connected' MQTT message to be recieved. Check hub has 'MQTT Client Status Topic' configured.");
             connection.subscribe(fullStatesTopic, this);
             connection.subscribe(STATUS_TOPIC, this);
