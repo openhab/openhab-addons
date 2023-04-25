@@ -75,7 +75,7 @@ public class ValueDecoder {
             .compile("(?:(?<r>[\\d,.]+)|-)\\s(?:(?<g>[\\d,.]+)|-)\\s(?:(?<b>[\\d,.]+)|-)\\s(?:(?<w>[\\d,.]+)|-)\\s%");
     // xyY: "(0,123 0,123) 56 %", value range 0-1 for xy (comma as decimal point), 0-100 for Y, invalid values omitted
     private static final Pattern XYY_PATTERN = Pattern
-            .compile("(?:\\((?<x>\\d+(?:,\\d+)?) (?<y>\\d+(?:,\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:,\\d+)?)\\s%)?");
+            .compile("(?:\\((?<x>\\d+(?:[,.]\\d+)?) (?<y>\\d+(?:[,.]\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:[,.]\\d+)?)\\s%)?");
 
     /**
      * convert the raw value received to the corresponding openHAB value
@@ -311,7 +311,7 @@ public class ValueDecoder {
                     return ColorUtil.xyToHsb(new double[] { x, y });
                 } else {
                     double pY = Double.parseDouble(stringY.replace(",", "."));
-                    return ColorUtil.xyToHsb(new double[] { x, y, pY });
+                    return ColorUtil.xyToHsb(new double[] { x, y, pY / 100.0 });
                 }
             }
         }
