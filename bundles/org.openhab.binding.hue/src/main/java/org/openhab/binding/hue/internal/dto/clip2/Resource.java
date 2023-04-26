@@ -102,7 +102,7 @@ public class Resource {
     private @Nullable ColorXy color;
     private @Nullable Alerts alert;
     private @Nullable Effects effects;
-    private @Nullable @SerializedName("timed_effects") Effects timedEffects;
+    private @Nullable @SerializedName("timed_effects") TimedEffects timedEffects;
     private @Nullable ResourceReference group;
     private @Nullable List<ActionEntry> actions;
     private @Nullable Recall recall;

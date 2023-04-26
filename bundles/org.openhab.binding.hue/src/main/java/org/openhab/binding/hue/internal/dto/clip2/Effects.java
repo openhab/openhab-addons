@@ -22,7 +22,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * DTO for 'effect' of a light.
+ * DTO for 'effects' of a light.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -35,15 +35,10 @@ public class Effects {
     private @Nullable String effect;
     private @Nullable @SerializedName("status_values") List<String> statusValues;
     private @Nullable String status;
-    private @Nullable Integer duration;
 
     public boolean allows(EffectType effect) {
         List<String> statusValues = this.statusValues;
         return Objects.nonNull(statusValues) ? statusValues.contains(effect.name().toLowerCase()) : false;
-    }
-
-    public @Nullable Integer getDuration() {
-        return duration;
     }
 
     public EffectType getEffect() {
@@ -58,11 +53,6 @@ public class Effects {
     public List<String> getStatusValues() {
         List<String> statusValues = this.statusValues;
         return Objects.nonNull(statusValues) ? statusValues : List.of();
-    }
-
-    public Effects setDuration(Integer duration) {
-        this.duration = duration;
-        return this;
     }
 
     public Effects setEffect(EffectType effectType) {

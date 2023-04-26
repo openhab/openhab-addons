@@ -10,35 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hue.internal.dto.clip2.enums;
+package org.openhab.binding.hue.internal.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum for 'effect' types.
+ * DTO for 'timed_effects' of a light.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum EffectType {
-    // for Effects class only
-    SPARKLE,
-    FIRE,
-    CANDLE,
-    // for TimedEffects class only
-    SUNRISE,
-    // for either class
-    NO_EFFECT;
+public class TimedEffects extends Effects {
+    private @Nullable Integer duration;
 
-    public static EffectType of(@Nullable String value) {
-        if (value != null) {
-            try {
-                return valueOf(value.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // fall through
-            }
-        }
-        return NO_EFFECT;
+    public @Nullable Integer getDuration() {
+        return duration;
+    }
+
+    public TimedEffects setDuration(Integer duration) {
+        this.duration = duration;
+        return this;
     }
 }
