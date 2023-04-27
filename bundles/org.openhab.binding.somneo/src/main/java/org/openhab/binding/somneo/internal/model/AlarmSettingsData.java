@@ -39,8 +39,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class AlarmSettingsData {
 
-    private static final Integer POWER_WAKE_ENABLED = 255;
-    private static final Integer POWER_WAKE_DISABLED = 0;
+    private static final int POWER_WAKE_ENABLED = 255;
+    private static final int POWER_WAKE_DISABLED = 0;
 
     @SerializedName("prfnr")
     private @Nullable Integer position;

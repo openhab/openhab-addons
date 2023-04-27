@@ -32,7 +32,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class AlarmStateData {
 
-    private static final Integer POWER_WAKE_ENABLED = 255;
+    private static final int POWER_WAKE_ENABLED = 255;
 
     @SerializedName("prfen")
     private List<Boolean> enabled;
