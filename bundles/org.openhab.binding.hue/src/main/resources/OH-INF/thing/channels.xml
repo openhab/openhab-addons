@@ -197,14 +197,10 @@
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="light-level">
+	<channel-type id="light-level-2">
 		<item-type>Number:Illuminance</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 

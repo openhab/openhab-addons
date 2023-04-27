@@ -15,6 +15,7 @@ package org.openhab.binding.hue.internal.handler;
 import static org.openhab.binding.hue.internal.HueBindingConstants.THING_TYPE_BRIDGE_API2;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference BRIDGE_HOME = new ResourceReference().setType(ResourceType.BRIDGE_HOME);
     private static final ResourceReference SCENE = new ResourceReference().setType(ResourceType.SCENE);
 
-    private static final Set<ResourceReference> POLL_RESOURCE_SET = Set.of(DEVICE, ROOM, ZONE, BRIDGE_HOME, SCENE);
+    /**
+     * List of resource references that need to be mass down loaded.
+     * NOTE: the SCENE resources must be mass down loaded first!
+     */
+    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = Arrays.asList(SCENE, DEVICE, ROOM,
+            ZONE, BRIDGE_HOME);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -498,10 +504,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Inform all child thing handlers about the contents of the given list of resources.
+     * Inform all child thing handlers about the contents of the given mass download list of resources.
      *
-     * @param resourceType the type of the resources in the list.
-     * @param resources the given list of resources.
+     * @param resourceType the type of the resources in the mass download list.
+     * @param resources the given mass download list of resources.
      */
     private void onResources(ResourceType resourceType, List<Resource> resources) {
         getThing().getThings().forEach(thing -> {
@@ -702,13 +708,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Get the data for all things in the bridge, and inform all child thing handlers.
+     * Execute the mass download of all relevant resource types, and inform all child thing handlers.
      */
     private void updateThingsNow() {
         logger.debug("updateThings()");
         try {
             Clip2Bridge bridge = getClip2Bridge();
-            for (ResourceReference reference : POLL_RESOURCE_SET) {
+            for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES) {
                 onResources(reference.getType(), bridge.getResources(reference).getResources());
             }
         } catch (ApiException | AssetNotLoadedException e) {
