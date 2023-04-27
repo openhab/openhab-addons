@@ -24,8 +24,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.measure.quantity.Time;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -162,7 +160,7 @@ public class SomneoHandler extends BaseThingHandler {
 
             switch (channelId) {
                 case CHANNEL_AUDIO_AUX:
-                    if (command instanceof OnOffType) {
+                    if (command instanceof OnOffType onOff) {
                         boolean isOn = OnOffType.ON.equals(command);
                         connector.switchAux(isOn);
 
@@ -186,7 +184,7 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_AUDIO_RADIO:
-                    if (command instanceof PlayPauseType) {
+                    if (command instanceof PlayPauseType playPause) {
                         boolean isPlaying = PlayPauseType.PLAY.equals(command);
                         connector.switchRadio(isPlaying);
 
@@ -206,8 +204,8 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_AUDIO_VOLUME:
-                    if (command instanceof PercentType) {
-                        connector.setAudioVolume(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setAudioVolume(percent.intValue());
                     }
                     break;
                 case CHANNEL_LIGHT_MAIN:
@@ -222,8 +220,8 @@ public class SomneoHandler extends BaseThingHandler {
                             updateState(CHANNEL_SUNSET_SWITCH, OnOffType.OFF);
                         }
                     }
-                    if (command instanceof PercentType) {
-                        int level = Integer.parseInt(command.toFullString());
+                    if (command instanceof PercentType percent) {
+                        int level = percent.intValue();
 
                         if (level > 0) {
                             connector.setMainLightDimmer(level);
@@ -250,24 +248,23 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_RELAX_BREATHING_RATE:
-                    if (command instanceof DecimalType) {
-                        connector.setRelaxBreathingRate(Integer.parseInt(command.toFullString()));
+                    if (command instanceof DecimalType decimal) {
+                        connector.setRelaxBreathingRate(decimal.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_DURATION:
-                    if (command instanceof QuantityType) {
-                        final QuantityType<Time> minutes = (QuantityType<Time>) command;
-                        connector.setRelaxDuration(minutes.intValue());
+                    if (command instanceof QuantityType quantity) {
+                        connector.setRelaxDuration(quantity.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_GUIDANCE_TYPE:
-                    if (command instanceof DecimalType) {
-                        connector.setRelaxGuidanceType(Integer.parseInt(command.toFullString()));
+                    if (command instanceof DecimalType decimal) {
+                        connector.setRelaxGuidanceType(decimal.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_LIGHT_INTENSITY:
-                    if (command instanceof PercentType) {
-                        connector.setRelaxLightIntensity(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setRelaxLightIntensity(percent.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_SWITCH:
@@ -287,8 +284,8 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_RELAX_VOLUME:
-                    if (command instanceof PercentType) {
-                        connector.setRelaxVolume(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setRelaxVolume(percent.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_AMBIENT_NOISE:
@@ -297,19 +294,18 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_SUNSET_COLOR_SCHEMA:
-                    if (command instanceof DecimalType) {
-                        connector.setSunsetColorSchema(Integer.parseInt(command.toFullString()));
+                    if (command instanceof DecimalType decimal) {
+                        connector.setSunsetColorSchema(decimal.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_DURATION:
-                    if (command instanceof QuantityType) {
-                        final QuantityType<Time> minutes = (QuantityType<Time>) command;
-                        connector.setSunsetDuration(minutes.intValue());
+                    if (command instanceof QuantityType quantity) {
+                        connector.setSunsetDuration(quantity.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_LIGHT_INTENSITY:
-                    if (command instanceof PercentType) {
-                        connector.setSunsetLightIntensity(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setSunsetLightIntensity(percent.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_SWITCH:
@@ -329,21 +325,19 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_SUNSET_VOLUME:
-                    if (command instanceof PercentType) {
-                        connector.setSunsetVolume(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setSunsetVolume(percent.intValue());
                     }
                     break;
                 case CHANNEL_ALARM_SNOOZE:
-                    if (command instanceof QuantityType) {
-                        @SuppressWarnings("unchecked")
-                        final QuantityType<Time> minutes = (QuantityType<Time>) command;
-                        connector.setAlarmSnooze(minutes.intValue());
+                    if (command instanceof QuantityType quantity) {
+                        connector.setAlarmSnooze(quantity.intValue());
                     }
                     break;
                 case CHANNEL_ALARM_CONFIGURED:
                     if (alarmPosition > 2) {
-                        if (command instanceof OnOffType) {
-                            connector.toggleAlarmConfiguration(alarmPosition, (OnOffType) command);
+                        if (command instanceof OnOffType onOff) {
+                            connector.toggleAlarmConfiguration(alarmPosition, onOff);
 
                             if (OnOffType.ON.equals(command)) {
                                 updateAlarmExtended(alarmPosition);
@@ -356,24 +350,24 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_ALARM_SWITCH:
-                    if (command instanceof OnOffType) {
-                        connector.toggleAlarm(alarmPosition, (OnOffType) command);
+                    if (command instanceof OnOffType onOff) {
+                        connector.toggleAlarm(alarmPosition, onOff);
                         updateAlarmExtended(alarmPosition);
                     }
                     break;
                 case CHANNEL_ALARM_TIME:
-                    if (command instanceof DateTimeType) {
-                        connector.setAlarmTime(alarmPosition, (DateTimeType) command);
+                    if (command instanceof DateTimeType decimal) {
+                        connector.setAlarmTime(alarmPosition, decimal);
                     }
                     break;
                 case CHANNEL_ALARM_REPEATE_DAY:
-                    if (command instanceof DecimalType) {
-                        connector.setAlarmRepeatDay(alarmPosition, (DecimalType) command);
+                    if (command instanceof DecimalType decimal) {
+                        connector.setAlarmRepeatDay(alarmPosition, decimal);
                     }
                     break;
                 case CHANNEL_ALARM_POWER_WAKE:
-                    if (command instanceof OnOffType) {
-                        connector.toggleAlarmPowerWake(alarmPosition, (OnOffType) command);
+                    if (command instanceof OnOffType onOff) {
+                        connector.toggleAlarmPowerWake(alarmPosition, onOff);
                         if (OnOffType.OFF.equals(command)) {
                             updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, alarmPosition),
                                     QuantityType.valueOf(0, Units.MINUTE));
@@ -381,24 +375,24 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_ALARM_POWER_WAKE_DELAY:
-                    if (command instanceof QuantityType) {
-                        connector.setAlarmPowerWakeDelay(alarmPosition, (QuantityType<Time>) command);
+                    if (command instanceof QuantityType quantity) {
+                        connector.setAlarmPowerWakeDelay(alarmPosition, quantity);
                         updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, alarmPosition), OnOffType.ON);
                     }
                     break;
                 case CHANNEL_ALARM_SUNRISE_DURATION:
-                    if (command instanceof QuantityType) {
-                        connector.setAlarmSunriseDuration(alarmPosition, (QuantityType<Time>) command);
+                    if (command instanceof QuantityType quantity) {
+                        connector.setAlarmSunriseDuration(alarmPosition, quantity);
                     }
                     break;
                 case CHANNEL_ALARM_SUNRISE_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        connector.setAlarmSunriseBrightness(alarmPosition, (PercentType) command);
+                    if (command instanceof PercentType percent) {
+                        connector.setAlarmSunriseBrightness(alarmPosition, percent);
                     }
                     break;
                 case CHANNEL_ALARM_SUNRISE_SCHEMA:
-                    if (command instanceof DecimalType) {
-                        connector.setAlarmSunriseSchema(alarmPosition, (DecimalType) command);
+                    if (command instanceof DecimalType decimal) {
+                        connector.setAlarmSunriseSchema(alarmPosition, decimal);
                     }
                     break;
                 case CHANNEL_ALARM_SOUND:
@@ -407,8 +401,8 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_ALARM_VOLUME:
-                    if (command instanceof PercentType) {
-                        connector.setAlarmVolume(alarmPosition, (PercentType) command);
+                    if (command instanceof PercentType percent) {
+                        connector.setAlarmVolume(alarmPosition, percent);
                     }
                     break;
                 default:
