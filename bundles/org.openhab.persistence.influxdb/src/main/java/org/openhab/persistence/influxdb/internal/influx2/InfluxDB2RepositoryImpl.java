@@ -15,6 +15,7 @@ package org.openhab.persistence.influxdb.internal.influx2;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.Ready;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.exceptions.InfluxException;
 import com.influxdb.query.FluxTable;
 
 /**
@@ -120,13 +122,25 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public void write(InfluxPoint point) throws UnexpectedConditionException {
+    public boolean write(List<InfluxPoint> influxPoints) {
         final WriteApi currentWriteAPI = writeAPI;
-        if (currentWriteAPI != null) {
-            currentWriteAPI.writePoint(convertPointToClientFormat(point));
-        } else {
-            logger.warn("Write point {} ignored due to writeAPI isn't present", point);
+        if (currentWriteAPI == null) {
+            return false;
         }
+        List<Point> clientPoints = new ArrayList<>();
+        for (InfluxPoint influxPoint : influxPoints) {
+            try {
+                clientPoints.add(convertPointToClientFormat(influxPoint));
+            } catch (UnexpectedConditionException e) {
+                logger.warn("Could not convert {}, discarding this datapoint", influxPoint);
+            }
+        }
+        try {
+            currentWriteAPI.writePoints(clientPoints);
+        } catch (InfluxException e) {
+            return false;
+        }
+        return true;
     }
 
     private Point convertPointToClientFormat(InfluxPoint point) throws UnexpectedConditionException {

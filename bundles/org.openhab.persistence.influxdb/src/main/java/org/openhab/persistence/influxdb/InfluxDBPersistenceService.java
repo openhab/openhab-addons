@@ -14,14 +14,20 @@ package org.openhab.persistence.influxdb;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
@@ -41,7 +47,6 @@ import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
 import org.openhab.persistence.influxdb.internal.ItemToStorePointCreator;
-import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1RepositoryImpl;
 import org.openhab.persistence.influxdb.internal.influx2.InfluxDB2RepositoryImpl;
 import org.osgi.framework.Constants;
@@ -90,7 +95,11 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     private final InfluxDBConfiguration configuration;
     private final ItemToStorePointCreator itemToStorePointCreator;
     private final InfluxDBRepository influxDBRepository;
-    private boolean tryReconnection;
+    private boolean serviceActivated;
+
+    // storage
+    private final ScheduledFuture<?> storeJob;
+    private final BlockingQueue<InfluxPoint> pointsQueue = new LinkedBlockingQueue<>();
 
     @Activate
     public InfluxDBPersistenceService(final @Reference ItemRegistry itemRegistry,
@@ -102,7 +111,9 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             this.influxDBRepository = createInfluxDBRepository();
             this.influxDBRepository.connect();
             this.itemToStorePointCreator = new ItemToStorePointCreator(configuration, influxDBMetadataService);
-            tryReconnection = true;
+            this.storeJob = ThreadPoolManager.getScheduledPool("org.openhab.influxdb")
+                    .scheduleWithFixedDelay(this::doStore, 1, 1, TimeUnit.SECONDS);
+            serviceActivated = true;
         } else {
             throw new IllegalArgumentException("Configuration invalid.");
         }
@@ -124,7 +135,15 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
      */
     @Deactivate
     public void deactivate() {
-        tryReconnection = false;
+        serviceActivated = false;
+
+        storeJob.cancel(false);
+        doStore(); // ensure we at least tried to store the data;
+
+        if (!pointsQueue.isEmpty()) {
+            logger.warn("InfluxDB failed to finally store {} points.", pointsQueue.size());
+        }
+
         influxDBRepository.disconnect();
         logger.info("InfluxDB persistence service stopped.");
     }
@@ -157,20 +176,15 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        if (checkConnection()) {
-            InfluxPoint point = itemToStorePointCreator.convert(item, alias);
-            if (point != null) {
-                try {
-                    influxDBRepository.write(point);
-                    logger.trace("Stored item {} in InfluxDB point {}", item, point);
-                } catch (UnexpectedConditionException e) {
-                    logger.warn("Failed to store item {} in InfluxDB point {}", point, item);
-                }
+        InfluxPoint point = itemToStorePointCreator.convert(item, alias);
+        if (point != null) {
+            if (pointsQueue.offer(point)) {
+                logger.trace("Queued {} for item {}", point, item);
             } else {
-                logger.trace("Ignoring item {}, conversion to an InfluxDB point failed.", item);
+                logger.warn("Failed to queue {} for item {}", point, item);
             }
         } else {
-            logger.debug("store ignored, InfluxDB is not connected");
+            logger.trace("Ignoring item {}, conversion to an InfluxDB point failed.", item);
         }
     }
 
@@ -211,10 +225,23 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     private boolean checkConnection() {
         if (influxDBRepository.isConnected()) {
             return true;
-        } else if (tryReconnection) {
+        } else if (serviceActivated) {
             logger.debug("Connection lost, trying re-connection");
             return influxDBRepository.connect();
         }
         return false;
+    }
+
+    private void doStore() {
+        if (!pointsQueue.isEmpty() && checkConnection()) {
+            List<InfluxPoint> points = new ArrayList<>();
+            pointsQueue.drainTo(points);
+            if (!influxDBRepository.write(points)) {
+                logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
+                pointsQueue.addAll(points);
+            } else {
+                logger.trace("Wrote {} elements to database", points.size());
+            }
+        }
     }
 }

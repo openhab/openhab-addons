@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
+import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
@@ -113,14 +114,22 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public void write(InfluxPoint point) throws UnexpectedConditionException {
+    public boolean write(List<InfluxPoint> influxPoints) {
         final InfluxDB currentClient = this.client;
-        if (currentClient != null) {
-            Point clientPoint = convertPointToClientFormat(point);
-            currentClient.write(configuration.getDatabaseName(), configuration.getRetentionPolicy(), clientPoint);
-        } else {
-            logger.warn("Write point {} ignored due to client isn't connected", point);
+        if (currentClient == null) {
+            return false;
         }
+        BatchPoints.Builder builder = BatchPoints.database(configuration.getDatabaseName())
+                .retentionPolicy(configuration.getRetentionPolicy());
+        for (InfluxPoint influxPoint : influxPoints) {
+            try {
+                builder.point(convertPointToClientFormat(influxPoint));
+            } catch (UnexpectedConditionException e) {
+                logger.warn("Could not convert {}, discarding this datapoint", influxPoint);
+            }
+        }
+        currentClient.write(builder.build());
+        return true;
     }
 
     private Point convertPointToClientFormat(InfluxPoint point) throws UnexpectedConditionException {

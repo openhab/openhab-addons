@@ -70,10 +70,10 @@ public interface InfluxDBRepository {
     /**
      * Write point to database
      *
-     * @param influxPoint Point to write
-     * @throws UnexpectedConditionException when an error occurs
+     * @param influxPoints {@link List<InfluxPoint>} to write
+     * @returns
      */
-    void write(InfluxPoint influxPoint) throws UnexpectedConditionException;
+    boolean write(List<InfluxPoint> influxPoints);
 
     /**
      * create a query creator on this repository
