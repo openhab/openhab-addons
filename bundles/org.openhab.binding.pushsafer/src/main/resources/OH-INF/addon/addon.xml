@@ -8,5 +8,6 @@
 	<description>With Pushsafer you can send &amp; receive push notifications in real time, easily and securely on your
 		iPhone, iPad, Android, Windows mobile or Windows desktop device as well as on your browser (Chrome, Firefox, Opera
 		&amp; Yandex)!</description>
+	<connection>cloud</connection>
 
 </addon:addon>
