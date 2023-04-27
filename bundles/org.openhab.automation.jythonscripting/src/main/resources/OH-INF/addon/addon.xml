@@ -4,7 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>automation</type>
-	<name>PID Controller</name>
-	<description>A PID controller for triggering rules.</description>
+	<name>Jython Scripting</name>
+	<description>This adds a Jython script engine.</description>
+	<connection>none</connection>
 
 </addon:addon>
