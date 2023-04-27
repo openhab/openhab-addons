@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
+import java.time.Duration;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -22,14 +25,15 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class TimedEffects extends Effects {
-    private @Nullable Integer duration;
+    private @Nullable Long duration;
 
-    public @Nullable Integer getDuration() {
-        return duration;
+    public @Nullable Duration getDuration() {
+        Long duration = this.duration;
+        return Objects.nonNull(duration) ? Duration.ofMillis(duration) : Duration.ZERO;
     }
 
-    public TimedEffects setDuration(Integer duration) {
-        this.duration = duration;
+    public TimedEffects setDuration(Duration duration) {
+        this.duration = duration.toMillis();
         return this;
     }
 }

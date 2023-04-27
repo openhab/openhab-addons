@@ -13,8 +13,9 @@
 package org.openhab.binding.hue.internal.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -38,8 +39,19 @@ public class LightLevel {
         return lightLevelValid;
     }
 
+    /**
+     * Raw sensor light level is '10000 * log10(lux) + 1' so apply the inverse formula to convert to Lux.
+     *
+     * @return a QuantityType with light level in Lux, or UNDEF.
+     */
     public State getLightLevelState() {
-        return lightLevelValid ? new DecimalType(lightLevel) : UnDefType.UNDEF;
+        if (lightLevelValid) {
+            double rawLightLevel = lightLevel;
+            if (rawLightLevel > 1f) {
+                return new QuantityType<>(Math.pow(10f, (rawLightLevel - 1f) / 10000f), Units.LUX);
+            }
+        }
+        return UnDefType.UNDEF;
     }
 
     public State isLightLevelValidState() {

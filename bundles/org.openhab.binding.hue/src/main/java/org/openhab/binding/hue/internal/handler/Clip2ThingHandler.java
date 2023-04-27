@@ -48,10 +48,12 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -198,7 +200,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private void clearDynamicsChannel() {
         dynamicsExpireTime = Instant.MIN;
         dynamicsDuration = Duration.ZERO;
-        updateState(HueBindingConstants.CHANNEL_2_DYNAMICS, DecimalType.ZERO, true);
+        updateState(HueBindingConstants.CHANNEL_2_DYNAMICS, new QuantityType<>(0, MetricPrefix.MILLI(Units.SECOND)),
+                true);
     }
 
     @Override
@@ -252,7 +255,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @return a ResourceReference instance.
      */
     public ResourceReference getResourceReference() {
-        return new ResourceReference().setId(thisResource.getId()).setType(thisResource.getType());
+        return new ResourceReference().setId(resourceId).setType(thisResource.getType());
     }
 
     /**
@@ -354,9 +357,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case HueBindingConstants.CHANNEL_2_DYNAMICS:
                 Duration clearAfter = Duration.ZERO;
-                if (command instanceof DecimalType) {
-                    Duration duration = Duration.ofMillis(((DecimalType) command).intValue());
-                    if (!duration.isZero() && !duration.isNegative()) {
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> durationMSec = ((QuantityType<?>) command).toUnit(MetricPrefix.MILLI(Units.SECOND));
+                    if (Objects.nonNull(durationMSec) && durationMSec.longValue() > 0) {
+                        Duration duration = Duration.ofMillis(durationMSec.longValue());
                         dynamicsDuration = duration;
                         dynamicsExpireTime = Instant.now().plus(DYNAMICS_ACTIVE_WINDOW);
                         clearAfter = DYNAMICS_ACTIVE_WINDOW;
@@ -411,22 +415,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
      *
      * @param channelId the ID of the target channel.
      * @param command the new target state.
-     * @param durationMsec the 'dynamics' duration in milli-seconds.
+     * @param duration the transition duration.
      */
-    public void handleDynamicsCommand(String channelId, Command command, DecimalType durationMSec) {
+    public synchronized void handleDynamicsCommand(String channelId, Command command, QuantityType<?> duration) {
         if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
             Channel dynamicsChannel = thing.getChannel(HueBindingConstants.CHANNEL_2_DYNAMICS);
             Channel targetChannel = thing.getChannel(channelId);
             if (Objects.nonNull(dynamicsChannel) && Objects.nonNull(targetChannel)) {
                 logger.debug("{} - handleDynamicsCommand() channelId:{}, command:{}, duration:{}", resourceId,
-                        channelId, command, durationMSec);
-                handleCommand(dynamicsChannel.getUID(), durationMSec);
+                        channelId, command, duration);
+                handleCommand(dynamicsChannel.getUID(), duration);
                 handleCommand(targetChannel.getUID(), command);
                 return;
             }
         }
         logger.warn("{} - handleDynamicsCommand() failed for channelId:{}, command:{}, duration:{}", resourceId,
-                channelId, command, durationMSec);
+                channelId, command, duration);
     }
 
     @Override
@@ -465,7 +469,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     public void onResource(Resource resource) {
         if (!disposing) {
             boolean resourceConsumed = false;
-            if (thisResource.getId().equals(resource.getId())) {
+            if (resourceId.equals(resource.getId())) {
                 if (resource.hasFullState()) {
                     thisResource = resource;
                     if (!updatePropertiesDone) {
@@ -498,6 +502,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (resourceConsumed) {
                 logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
             }
+        }
+    }
+
+    /**
+     * Update the thing internal state depending on a full list of resources sent from the bridge. If the resourceType
+     * is SCENE then call updateScenes() otherwise, if the resource refers to this thing, consume it.
+     *
+     * @param resourceType the type of the resources in the list.
+     * @param allResources the full list of resources of the given type.
+     */
+    public void onResources(ResourceType resourceType, List<Resource> allResources) {
+        if (resourceType == ResourceType.SCENE) {
+            updateScenes(allResources);
+        } else {
+            allResources.stream().filter(r -> resourceId.equals(r.getId())).findAny().ifPresent(r -> onResource(r));
         }
     }
 
@@ -800,7 +819,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Map<String, String> properties = new HashMap<>(thing.getProperties());
 
             // resource data
-            properties.put(HueBindingConstants.PROPERTY_RESOURCE_ID, thisResource.getId());
+            properties.put(HueBindingConstants.PROPERTY_RESOURCE_ID, resourceId);
             properties.put(HueBindingConstants.PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
             properties.put(HueBindingConstants.PROPERTY_RESOURCE_NAME, thisResource.getName());
 

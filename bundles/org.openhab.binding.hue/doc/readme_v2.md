@@ -59,28 +59,28 @@ The configuration of all things (as described above) is the same regardless of w
 
 Device things support some of the following channels:
 
-| Channel ID          | Item Type          | Description                                                                           |
-|---------------------|--------------------|---------------------------------------------------------------------------------------|
-| switch              | Switch             | This channel supports switching the device on and off.                                |
-| color               | Color              | This channel supports full color control with hue, saturation and brightness values.  |
-| brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
-| color-temperature   | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).  |
-| color-temp-kelvin   | Number:Temperature | This channel supports adjusting the color temperature in Kelvin.                      |
-| dynamics            | Number             | The duration (mSec) of dynamic transitions between light states.                      |
-| alert               | String             | This channel allows setting an alert on a light e.g. flashing them.                   |
-| effect              | String             | This channel allows setting an effect on a light e.g. 'candle' effect.                |
-| button-last-event   | Number             | This channel shows which button was last pressed in the device.                       |
-| rotary-steps        | Number             | This channel shows the number of rotary steps of the last rotary dial movement.       |
-| motion              | Switch             | This channel shows if motion has been detected by the sensor.                         |
-| motion-enabled      | Switch             | This channel supports enabling / disabling the motion sensor.                         |
-| light-level         | Number             | This channel shows the current light level measured by the sensor.                    |
-| light-level-enabled | Switch             | This channel supports enabling / disabling the light level sensor.                    |
-| temperature         | Number:Temperature | This channel shows the current temperature measured by the sensor.                    |
-| temperature-enabled | Switch             | This channel supports enabling / disabling the temperature sensor.                    |
-| battery-level       | Number             | This channel shows the battery level.                                                 |
-| battery-low         | Switch             | This channel indicates whether the battery is low or not.                             |
-| zigbee-status       | String             | This channel provides information about the status of the Zigbee connection.          |
-| last-updated        | DateTime           | This channel the date and time when the thing state was last updated.                 |
+| Channel ID          | Item Type          | Description                                                              |
+|---------------------|--------------------|--------------------------------------------------------------------------|
+| switch              | Switch             | Supports switching the device on and off.                                |
+| color               | Color              | Supports full color control with hue, saturation and brightness values.  |
+| brightness          | Dimmer             | Supports adjusting the brightness value.                                 |
+| color-temperature   | Dimmer             | Supports adjusting the color temperature from cold (0%) to warm (100%).  |
+| color-temp-kelvin   | Number:Temperature | Supports adjusting the color temperature in Kelvin.                      |
+| dynamics            | Number:Time        | Sets the duration of dynamic transitions between light states.           |
+| alert               | String             | Allows setting an alert on a light e.g. flashing them.                   |
+| effect              | String             | Allows setting an effect on a light e.g. 'candle' effect.                |
+| button-last-event   | Number             | Shows which button was last pressed in the device.                       |
+| rotary-steps        | Number             | Shows the number of rotary steps of the last rotary dial movement.       |
+| motion              | Switch             | Shows if motion has been detected by the sensor.                         |
+| motion-enabled      | Switch             | Supports enabling / disabling the motion sensor.                         |
+| light-level         | Number:Illuminance | Shows the current light level measured by the sensor.                    |
+| light-level-enabled | Switch             | Supports enabling / disabling the light level sensor.                    |
+| temperature         | Number:Temperature | Shows the current temperature measured by the sensor.                    |
+| temperature-enabled | Switch             | Supports enabling / disabling the temperature sensor.                    |
+| battery-level       | Number             | Shows the battery level.                                                 |
+| battery-low         | Switch             | Indicates whether the battery is low or not.                             |
+| zigbee-status       | String             | Provides information about the status of the Zigbee connection.          |
+| last-updated        | DateTime           | The date and time when the thing state was last updated.                 |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
@@ -115,13 +115,13 @@ A positive number means the dial was rotated clock-wise, whereas a negative numb
 Room and Zone things allow you to control the lights in a given zone or room.
 They support the following channels:
 
-| Channel ID          | Item Type          | Description                                                                           |
-|---------------------|--------------------|---------------------------------------------------------------------------------------|
-| switch              | Switch             | This channel supports switching the lights on and off.                                |
-| brightness          | Dimmer             | This channel supports adjusting the brightness value.                                 |
-| scene<sup>1)</sup>  | String             | Setting the string to a valid scene friendly name activates the respective scene.     |
-| dynamics            | Number             | The duration (mSec) of dynamic transitions between light states.                      |
-| alert<sup>1)</sup>  | String             | This channel allows setting an alert on the lights e.g. flashing them.                |
+| Channel ID          | Item Type          | Description                                                                       |
+|---------------------|--------------------|-----------------------------------------------------------------------------------|
+| switch              | Switch             | Supports switching the lights on and off.                                         |
+| brightness          | Dimmer             | Supports adjusting the brightness value.                                          |
+| scene<sup>1)</sup>  | String             | Setting the string to a valid scene friendly name activates the respective scene. |
+| dynamics            | Number:Time        | The duration of dynamic transitions between light or scene states.                |
+| alert<sup>1)</sup>  | String             | This channel allows setting an alert on the lights e.g. flashing them.            |
 
 <sup>1)</sup> The scene and alert channels are optional.
 If the respective room or zone has no scenes or alerts associated with it, the respective channel will not be shown.

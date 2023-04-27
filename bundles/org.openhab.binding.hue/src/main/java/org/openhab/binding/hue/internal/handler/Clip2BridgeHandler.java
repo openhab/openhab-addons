@@ -91,7 +91,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference BRIDGE_HOME = new ResourceReference().setType(ResourceType.BRIDGE_HOME);
     private static final ResourceReference SCENE = new ResourceReference().setType(ResourceType.SCENE);
 
-    private static final Set<ResourceReference> POLL_RESOURCE_SET = Set.of(DEVICE, ROOM, ZONE, BRIDGE_HOME);
+    private static final Set<ResourceReference> POLL_RESOURCE_SET = Set.of(DEVICE, ROOM, ZONE, BRIDGE_HOME, SCENE);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -105,7 +105,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> checkConnectionTask;
     private @Nullable ServiceRegistration<?> trustManagerRegistration;
     private @Nullable Clip2ThingDiscoveryService discoveryService;
-    private @Nullable ScheduledFuture<?> scheduledUpdate;
+    private @Nullable ScheduledFuture<?> scheduledUpdateTask;
 
     private boolean assetsLoaded;
     private int applKeyRetriesRemaining;
@@ -235,7 +235,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         if (thing.getStatus() == ThingStatus.ONLINE && (childHandler instanceof Clip2ThingHandler)) {
             logger.debug("childHandlerInitialized() {}", childThing.getUID());
-            updateScenesAndThings(5000);
+            updateThingsScheduled(5000);
         }
     }
 
@@ -498,6 +498,21 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Inform all child thing handlers about the contents of the given list of resources.
+     *
+     * @param resourceType the type of the resources in the list.
+     * @param resources the given list of resources.
+     */
+    private void onResources(ResourceType resourceType, List<Resource> resources) {
+        getThing().getThings().forEach(thing -> {
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof Clip2ThingHandler) {
+                ((Clip2ThingHandler) handler).onResources(resourceType, resources);
+            }
+        });
+    }
+
+    /**
      * Called when an SSE event message comes in with a valid list of resources.
      *
      * @param resources a list of incoming resource objects.
@@ -559,7 +574,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             logger.debug("updateOnlineState()");
             connectRetriesRemaining = RECONNECT_MAX_TRIES;
             updateStatus(ThingStatus.ONLINE);
-            updateScenesAndThings(500);
+            updateThingsScheduled(500);
             Clip2ThingDiscoveryService discoveryService = this.discoveryService;
             if (Objects.nonNull(discoveryService)) {
                 discoveryService.startScan(null);
@@ -626,44 +641,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Get the full list of scene resources from the bridge, and notify all child things.
-     *
-     * @throws ApiException if a communication error occurred.
-     * @throws AssetNotLoadedException if one of the assets is not loaded.
-     */
-    private void updateScenes() throws ApiException, AssetNotLoadedException {
-        logger.debug("updateScenes()");
-        List<Resource> scenes = getClip2Bridge().getResources(SCENE).getResources();
-        getThing().getThings().forEach(thing -> {
-            ThingHandler handler = thing.getHandler();
-            if (handler instanceof Clip2ThingHandler) {
-                ((Clip2ThingHandler) handler).updateScenes(scenes);
-            }
-        });
-    }
-
-    /**
-     * Schedule a task to update scenes and things. It prevents floods of GET calls when multiple child things are added
-     * at the same time.
-     *
-     * @param delayMilliSeconds the delay before running the task.
-     */
-    private void updateScenesAndThings(int delayMilliSeconds) {
-        ScheduledFuture<?> scheduledUpdateTask = this.scheduledUpdate;
-        if (Objects.nonNull(scheduledUpdateTask) && !scheduledUpdateTask.isDone()) {
-            return;
-        }
-        scheduledUpdateTask = scheduler.schedule(() -> {
-            try {
-                updateScenes();
-                updateThings();
-            } catch (ApiException | AssetNotLoadedException e) {
-                // should never happen as we are already online
-            }
-        }, delayMilliSeconds, TimeUnit.MILLISECONDS);
-    }
-
-    /**
      * Update the thing's own state. Called sporadically in case any SSE events may have been lost.
      */
     private void updateSelf() {
@@ -726,15 +703,29 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Get the data for all things in the bridge, and inform all child thing handlers.
-     *
-     * @throws ApiException if a communication error occurred.
-     * @throws AssetNotLoadedException if one of the assets is not loaded.
      */
-    private void updateThings() throws ApiException, AssetNotLoadedException {
+    private void updateThingsNow() {
         logger.debug("updateThings()");
-        Clip2Bridge bridge = getClip2Bridge();
-        for (ResourceReference reference : POLL_RESOURCE_SET) {
-            bridge.getResources(reference).getResources().forEach(resource -> onResource(resource));
+        try {
+            Clip2Bridge bridge = getClip2Bridge();
+            for (ResourceReference reference : POLL_RESOURCE_SET) {
+                onResources(reference.getType(), bridge.getResources(reference).getResources());
+            }
+        } catch (ApiException | AssetNotLoadedException e) {
+            // should never happen as we are already online
+        }
+    }
+
+    /**
+     * Schedule a task to call updateThings(). It prevents floods of GET calls when multiple child things are added at
+     * the same time.
+     *
+     * @param delayMilliSeconds the delay before running the next task.
+     */
+    private void updateThingsScheduled(int delayMilliSeconds) {
+        ScheduledFuture<?> task = this.scheduledUpdateTask;
+        if (Objects.isNull(task) || task.getDelay(TimeUnit.MILLISECONDS) < 100) {
+            scheduledUpdateTask = scheduler.schedule(() -> updateThingsNow(), delayMilliSeconds, TimeUnit.MILLISECONDS);
         }
     }
 }

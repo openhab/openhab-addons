@@ -25,7 +25,7 @@
 			<channel id="rotary-steps" typeId="rotary-steps"/>
 			<channel id="motion" typeId="system.motion"/>
 			<channel id="motion-enabled" typeId="motion-enabled"/>
-			<channel id="light-level" typeId="light_level"/>
+			<channel id="light-level" typeId="light-level"/>
 			<channel id="light-level-enabled" typeId="light-level-enabled"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="temperature-enabled" typeId="temperature-enabled"/>
