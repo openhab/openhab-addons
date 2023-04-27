@@ -89,7 +89,7 @@ public class ApiController {
     public ApiController(HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClient;
         this.timeZoneProvider = timeZoneProvider;
-        userAgent = "openHAB " + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
     }
 
     /**
