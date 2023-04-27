@@ -176,6 +176,9 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(Item item, @Nullable String alias) {
+        if (!serviceActivated) {
+            logger.warn("InfluxDB service not ready. Storing {} rejected.", item);
+        }
         InfluxPoint point = itemToStorePointCreator.convert(item, alias);
         if (point != null) {
             if (pointsQueue.offer(point)) {

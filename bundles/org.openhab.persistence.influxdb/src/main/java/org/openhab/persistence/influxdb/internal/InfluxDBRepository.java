@@ -68,10 +68,10 @@ public interface InfluxDBRepository {
     List<InfluxRow> query(String query);
 
     /**
-     * Write point to database
+     * Write points to database
      *
      * @param influxPoints {@link List<InfluxPoint>} to write
-     * @returns
+     * @returns <code>true</code> if w successfil, <code>false</code> otherwise
      */
     boolean write(List<InfluxPoint> influxPoints);
 
