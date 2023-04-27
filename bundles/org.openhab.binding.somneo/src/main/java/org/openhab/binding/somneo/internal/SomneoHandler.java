@@ -511,14 +511,14 @@ public class SomneoHandler extends BaseThingHandler {
         }
 
         final SomneoConfiguration config = getConfigAs(SomneoConfiguration.class);
-        int refreshInterval = config.refreshInterval;
+        final int refreshInterval = config.refreshInterval;
         logger.debug("Start default polling job at interval {}s", refreshInterval);
         this.pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
 
-        refreshInterval = config.refreshIntervalAlarmExtended;
-        logger.debug("Start extended alarm polling job at interval {}s", refreshInterval);
-        this.pollingJobExtended = scheduler.scheduleWithFixedDelay(this::pollAlarmExtended, 0, refreshInterval,
-                TimeUnit.SECONDS);
+        final int refreshIntervalAlarmExtended = config.refreshIntervalAlarmExtended;
+        logger.debug("Start extended alarm polling job at interval {}s", refreshIntervalAlarmExtended);
+        this.pollingJobExtended = scheduler.scheduleWithFixedDelay(this::pollAlarmExtended, 0,
+                refreshIntervalAlarmExtended, TimeUnit.SECONDS);
     }
 
     private void stopPolling() {
