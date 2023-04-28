@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SleepDataSession {
 
-    @SerializedName("avgSleepIQ")
+    @SerializedName("sleepQuotient")
     private Integer sessionAverageSleepIQ;
 
     @SerializedName("avgHeartRate")
