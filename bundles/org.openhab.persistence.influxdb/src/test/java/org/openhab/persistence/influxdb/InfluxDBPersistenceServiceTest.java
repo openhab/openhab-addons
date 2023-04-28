@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.influxdb.internal;
+package org.openhab.persistence.influxdb;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +35,11 @@ import org.mockito.quality.Strictness;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
+import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
+import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
+import org.openhab.persistence.influxdb.internal.ItemTestHelper;
+import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution

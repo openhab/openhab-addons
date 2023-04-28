@@ -12,14 +12,21 @@
  */
 package org.openhab.persistence.influxdb;
 
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
+
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +37,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemFactory;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.ItemUtil;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
@@ -38,6 +47,7 @@ import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBHistoricItem;
@@ -46,7 +56,6 @@ import org.openhab.persistence.influxdb.internal.InfluxDBPersistentItemInfo;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.ItemToStorePointCreator;
 import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1RepositoryImpl;
 import org.openhab.persistence.influxdb.internal.influx2.InfluxDB2RepositoryImpl;
 import org.osgi.framework.Constants;
@@ -54,6 +63,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,13 +104,16 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     private final InfluxDBMetadataService influxDBMetadataService;
 
     private final InfluxDBConfiguration configuration;
-    private final ItemToStorePointCreator itemToStorePointCreator;
     private final InfluxDBRepository influxDBRepository;
     private boolean serviceActivated;
 
     // storage
     private final ScheduledFuture<?> storeJob;
     private final BlockingQueue<InfluxPoint> pointsQueue = new LinkedBlockingQueue<>();
+
+    // conversion
+    private final Set<ItemFactory> itemFactories = new HashSet<>();
+    private Map<String, Class<? extends State>> desiredClasses = new HashMap<>();
 
     @Activate
     public InfluxDBPersistenceService(final @Reference ItemRegistry itemRegistry,
@@ -110,7 +124,6 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         if (configuration.isValid()) {
             this.influxDBRepository = createInfluxDBRepository();
             this.influxDBRepository.connect();
-            this.itemToStorePointCreator = new ItemToStorePointCreator(configuration, influxDBMetadataService);
             this.storeJob = ThreadPoolManager.getScheduledPool("org.openhab.influxdb")
                     .scheduleWithFixedDelay(this::doStore, 1, 1, TimeUnit.SECONDS);
             serviceActivated = true;
@@ -178,22 +191,24 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     public void store(Item item, @Nullable String alias) {
         if (!serviceActivated) {
             logger.warn("InfluxDB service not ready. Storing {} rejected.", item);
+            return;
         }
-        InfluxPoint point = itemToStorePointCreator.convert(item, alias);
-        if (point != null) {
+        convert(item, alias).thenAccept(point -> {
+            if (point == null) {
+                logger.trace("Ignoring item {}, conversion to an InfluxDB point failed.", item.getName());
+                return;
+            }
             if (pointsQueue.offer(point)) {
                 logger.trace("Queued {} for item {}", point, item);
             } else {
                 logger.warn("Failed to queue {} for item {}", point, item);
             }
-        } else {
-            logger.trace("Ignoring item {}, conversion to an InfluxDB point failed.", item);
-        }
+        });
     }
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
-        if (checkConnection()) {
+        if (serviceActivated && checkConnection()) {
             logger.trace(
                     "Query-Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
@@ -246,5 +261,89 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                 logger.trace("Wrote {} elements to database", points.size());
             }
         }
+    }
+
+    /**
+     * Convert incoming data to an {@link InfluxPoint} for further processing. This is needed because storage is asynchronous and the item data may have changed.
+     * <p />
+     * The method is package-private for testing.
+     *
+     * @param item the {@link Item} tghat needs conversion
+     * @param storeAlias an (optional) alias for the item
+     * @return a {@link CompletableFuture} that contains either <code>null</code> for item states that cannot be converted or the corresponding {@link InfluxPoint}
+     */
+    CompletableFuture<@Nullable InfluxPoint> convert(Item item, @Nullable String storeAlias) {
+        String itemName = item.getName();
+        String itemLabel = item.getLabel();
+        String category = item.getCategory();
+        State state = item.getState();
+        String itemType = item.getType();
+        Instant timeStamp = Instant.now();
+
+        if (state instanceof UnDefType) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        return CompletableFuture.supplyAsync(() -> {
+            String measurementName = storeAlias != null && !storeAlias.isBlank() ? storeAlias : itemName;
+            measurementName = influxDBMetadataService.getMeasurementNameOrDefault(itemName, measurementName);
+
+            if (configuration.isReplaceUnderscore()) {
+                measurementName = measurementName.replace('_', '.');
+            }
+
+            State storeState = Objects
+                    .requireNonNullElse(state.as(desiredClasses.get(ItemUtil.getMainItemType(itemType))), state);
+            Object value = InfluxDBStateConvertUtils.stateToObject(storeState);
+
+            InfluxPoint.Builder pointBuilder = InfluxPoint.newBuilder(measurementName).withTime(timeStamp)
+                    .withValue(value).withTag(TAG_ITEM_NAME, itemName);
+
+            if (configuration.isAddCategoryTag()) {
+                String categoryName = Objects.requireNonNullElse(category, "n/a");
+                pointBuilder.withTag(TAG_CATEGORY_NAME, categoryName);
+            }
+
+            if (configuration.isAddTypeTag()) {
+                pointBuilder.withTag(TAG_TYPE_NAME, itemType);
+            }
+
+            if (configuration.isAddLabelTag()) {
+                String labelName = Objects.requireNonNullElse(itemLabel, "n/a");
+                pointBuilder.withTag(TAG_LABEL_NAME, labelName);
+            }
+
+            influxDBMetadataService.getMetaData(itemName)
+                    .ifPresent(metadata -> metadata.getConfiguration().forEach(pointBuilder::withTag));
+
+            return pointBuilder.build();
+        });
+    }
+
+    @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
+    public void setItemFactory(ItemFactory itemFactory) {
+        itemFactories.add(itemFactory);
+        calculateItemTypeClasses();
+    }
+
+    public void unsetItemFactory(ItemFactory itemFactory) {
+        itemFactories.remove(itemFactory);
+        calculateItemTypeClasses();
+    }
+
+    private synchronized void calculateItemTypeClasses() {
+        Map<String, Class<? extends State>> desiredClasses = new HashMap<>();
+        itemFactories.forEach(factory -> {
+            for (String itemType : factory.getSupportedItemTypes()) {
+                Item item = factory.createItem(itemType, "influxItem");
+                if (item != null) {
+                    item.getAcceptedCommandTypes().stream()
+                            .filter(commandType -> commandType.isAssignableFrom(State.class)).findFirst()
+                            .map(commandType -> (Class<? extends State>) commandType.asSubclass(State.class))
+                            .ifPresent(desiredClass -> desiredClasses.put(itemType, desiredClass));
+                }
+            }
+        });
+        this.desiredClasses = desiredClasses;
     }
 }
