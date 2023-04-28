@@ -96,7 +96,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimenionsless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current Humidity</description>
 		<category>Humidity</category>
