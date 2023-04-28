@@ -90,7 +90,9 @@ public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, Repe
     public synchronized List<LanHost> getHosts() throws FreeboxException {
         List<LanHost> hosts = new ArrayList<>();
         for (Repeater rep : getDevices()) {
-            hosts.addAll(getRepeaterHosts(rep.id));
+            if (Connection.CONNECTED.equals(rep.connection)) {
+                hosts.addAll(getRepeaterHosts(rep.id));
+            }
         }
         return hosts;
     }
