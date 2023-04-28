@@ -264,13 +264,15 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     }
 
     /**
-     * Convert incoming data to an {@link InfluxPoint} for further processing. This is needed because storage is asynchronous and the item data may have changed.
+     * Convert incoming data to an {@link InfluxPoint} for further processing. This is needed because storage is
+     * asynchronous and the item data may have changed.
      * <p />
      * The method is package-private for testing.
      *
      * @param item the {@link Item} tghat needs conversion
      * @param storeAlias an (optional) alias for the item
-     * @return a {@link CompletableFuture} that contains either <code>null</code> for item states that cannot be converted or the corresponding {@link InfluxPoint}
+     * @return a {@link CompletableFuture} that contains either <code>null</code> for item states that cannot be
+     *         converted or the corresponding {@link InfluxPoint}
      */
     CompletableFuture<@Nullable InfluxPoint> convert(Item item, @Nullable String storeAlias) {
         String itemName = item.getName();
