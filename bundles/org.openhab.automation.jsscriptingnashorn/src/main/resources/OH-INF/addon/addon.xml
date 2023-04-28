@@ -6,5 +6,6 @@
 	<type>automation</type>
 	<name>JavaScript Scripting (Nashorn)</name>
 	<description>This adds a JS (Nashorn) script engine.</description>
+	<connection>none</connection>
 
 </addon:addon>
