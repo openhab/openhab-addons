@@ -210,11 +210,11 @@ public final class EcovacsApiImpl implements EcovacsApi {
             try (Reader reader = Files.newBufferedReader(customDescsPath)) {
                 int builtins = descs.size();
                 for (DeviceDescription desc : loadSupportedDeviceData(reader)) {
-                    if (descs.containsKey(desc.deviceClass)) {
+                    DeviceDescription builtinDesc = descs.put(desc.deviceClass, desc);
+                    if (builtinDesc != null) {
                         logger.trace("Overriding built-in description for {} with custom description",
                                 desc.deviceClass);
                     }
-                    descs.put(desc.deviceClass, desc);
                 }
                 logger.trace("Loaded {} custom device descriptions", descs.size() - builtins);
             } catch (IOException | JsonSyntaxException e) {
