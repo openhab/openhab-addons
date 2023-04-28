@@ -64,7 +64,7 @@ public class ICloudDeviceDiscovery extends AbstractDiscoveryService implements I
 
             String thingLabel = deviceOwnerName + " (" + deviceTypeName + ")";
             String deviceDiscoveryId = deviceInformationRecord.getDeviceDiscoveryId();
-            if (deviceDiscoveryId == null || "".equals(deviceDiscoveryId)) {
+            if (deviceDiscoveryId == null || deviceDiscoveryId.isBlank()) {
                 logger.debug("deviceDiscoveryId is empty, using device name for identification.");
                 deviceDiscoveryId = deviceOwnerName;
             }
