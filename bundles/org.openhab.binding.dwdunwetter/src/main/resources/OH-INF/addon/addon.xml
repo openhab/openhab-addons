@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>DWD Unwetter Binding</name>
 	<description>This is the binding for DWD Unwetter.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
