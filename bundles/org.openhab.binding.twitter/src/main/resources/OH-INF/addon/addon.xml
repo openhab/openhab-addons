@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Twitter Binding</name>
 	<description>Supports adding Thing for getting the Last Tweet. Send Tweets and Pictures with Actions.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
