@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
-import static org.openhab.binding.hue.internal.HueBindingConstants.HOST;
-
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Objects;
@@ -26,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
-import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -103,7 +100,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return HueBridgeHandler.SUPPORTED_THING_TYPES;
+        return Set.of(HueBindingConstants.THING_TYPE_BRIDGE, HueBindingConstants.THING_TYPE_BRIDGE_API2);
     }
 
     @Override
@@ -133,7 +130,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
                         .withLabel(label) //
-                        .withProperty(HOST, host) //
+                        .withProperty(HueBindingConstants.HOST, host) //
                         .withProperty(Thing.PROPERTY_MODEL_ID, service.getPropertyString(MDNS_PROPERTY_MODEL_ID)) //
                         .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial.toLowerCase()) //
                         .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
@@ -157,7 +154,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
     private Optional<Thing> getLegacyBridge(String ipAddress) {
         return thingRegistry.getAll().stream()
                 .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
-                        && ipAddress.equals(thing.getConfiguration().get(HOST)))
+                        && ipAddress.equals(thing.getConfiguration().get(HueBindingConstants.HOST)))
                 .findFirst();
     }
 

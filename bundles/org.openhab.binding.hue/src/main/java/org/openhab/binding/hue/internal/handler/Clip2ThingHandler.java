@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -93,17 +92,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
     /**
-     * A map of Resources whose state contributes to the overall state of this thing. It is a map between the resource
-     * ID (string) and a Resource object containing the last known state. e.g. the state of a LIGHT Resource contributes
-     * to the overall state of a DEVICE thing, or the state of a GROUPED_LIGHT Resource contributes to the overall state
-     * of a ROOM or ZONE thing.
+     * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
+     * resource ID (string) and a Resource object containing the last known state. e.g. a DEVICE thing may support a
+     * LIGHT service whose Resource contributes to its overall state, or a ROOM or ZONE thing may support a
+     * GROUPED_LIGHT service whose Resource contributes to the its overall state.
      */
-    private final Map<String, Resource> contributorsCache = new ConcurrentHashMap<>();
+    private final Map<String, Resource> serviceContributorsCache = new ConcurrentHashMap<>();
 
     /**
      * A map of Resource IDs which are targets for commands to be sent. It is a map between the type of command
-     * (ResourcesType) and the resource ID to which the command shall be sent. e.g. a LIGHT on command shall be sent to
-     * the respective LIGHT resource ID.
+     * (ResourcesType) and the resource ID to which the command shall be sent. e.g. a LIGHT 'on' command shall be sent
+     * to the respective LIGHT resource ID.
      */
     private final Map<ResourceType, String> commandResourceIds = new ConcurrentHashMap<>();
 
@@ -123,15 +122,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final Set<String> supportedChannelIdSet = new HashSet<>();
 
     /**
-     * A map of scene IDs and respective Resources for the scenes that are associated with this thing. It is a map
-     * between the resource ID (string) and a Resource object containing the scene's last known state.
+     * A map of scene IDs and respective scene Resources for the scenes that contribute to and command this thing. It is
+     * a map between the resource ID (string) and a Resource object containing the scene's last known state.
      */
     private final Map<String, Resource> sceneContributorsCache = new ConcurrentHashMap<>();
 
     /**
-     * A map of scene names versus Resource IDs for the scenes that are associated with this thing.
+     * A map of scene names versus Resource IDs for the scenes that contribute to and command this thing. e.g. a command
+     * for a scene named 'Energize' shall be sent to the respective SCENE resource ID.
      */
-    private final Map<String, String> sceneCommandResourceIds = new ConcurrentHashMap<>();
+    private final Map<String, String> sceneResourceIds = new ConcurrentHashMap<>();
 
     /**
      * A list of API v1 thing channel UIDs that are linked to items. It is used in the process of replicating the
@@ -150,7 +150,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private boolean disposing;
     private boolean hasConnectivityIssue;
-    private boolean updateScenesDone;
+    private boolean updateSceneContributorsDone;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
 
@@ -215,10 +215,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateContributorsTask = null;
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
-        sceneCommandResourceIds.clear();
+        sceneResourceIds.clear();
         supportedChannelIdSet.clear();
         commandResourceIds.clear();
-        contributorsCache.clear();
+        serviceContributorsCache.clear();
         controlIds.clear();
     }
 
@@ -246,7 +246,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private @Nullable Resource getCachedResource(ResourceType resourceType) {
         String commandResourceId = commandResourceIds.get(resourceType);
-        return Objects.nonNull(commandResourceId) ? contributorsCache.get(commandResourceId) : null;
+        return Objects.nonNull(commandResourceId) ? serviceContributorsCache.get(commandResourceId) : null;
     }
 
     /**
@@ -274,7 +274,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (Objects.isNull(task) || !task.isDone()) {
                     updateContributorsTask = scheduler.schedule(() -> {
                         try {
-                            updateContributors();
+                            updateServiceContributors();
                         } catch (ApiException | AssetNotLoadedException e) {
                             // exceptions will not occur here since thing is already online
                         }
@@ -348,7 +348,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case HueBindingConstants.CHANNEL_2_SCENE:
                 if (command instanceof StringType) {
-                    putResourceId = sceneCommandResourceIds.get(((StringType) command).toString());
+                    putResourceId = sceneResourceIds.get(((StringType) command).toString());
                     if (Objects.nonNull(putResourceId)) {
                         putResource = new Resource(ResourceType.SCENE).setRecallAction(RecallAction.ACTIVE);
                     }
@@ -456,7 +456,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         disposing = false;
         hasConnectivityIssue = false;
-        updateScenesDone = false;
+        updateSceneContributorsDone = false;
         updatePropertiesDone = false;
         updateDependenciesDone = false;
     }
@@ -469,7 +469,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     public void onResource(Resource resource) {
         if (!disposing) {
             boolean resourceConsumed = false;
-            if (resourceId.equals(resource.getId())) {
+            String incomingResourceId = resource.getId();
+            if (resourceId.equals(incomingResourceId)) {
                 if (resource.hasFullState()) {
                     thisResource = resource;
                     if (!updatePropertiesDone) {
@@ -481,22 +482,19 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     resourceConsumed = true;
                     scheduler.submit(() -> updateDependencies());
                 }
-            }
-            String cacheId = resource.getId();
-            Resource cacheResource;
-            if (ResourceType.SCENE == resource.getType()) {
-                cacheResource = sceneContributorsCache.get(cacheId);
-                if (Objects.nonNull(cacheResource)) {
-                    resource.copyMissingFieldsFrom(cacheResource);
+            } else if (ResourceType.SCENE == resource.getType()) {
+                Resource cachedScene = sceneContributorsCache.get(incomingResourceId);
+                if (Objects.nonNull(cachedScene)) {
+                    resource.copyMissingFieldsFrom(cachedScene);
                     resourceConsumed = updateChannels(resource);
-                    sceneContributorsCache.put(cacheId, resource);
+                    sceneContributorsCache.put(incomingResourceId, resource);
                 }
             } else {
-                cacheResource = contributorsCache.get(cacheId);
-                if (Objects.nonNull(cacheResource)) {
-                    resource.copyMissingFieldsFrom(cacheResource);
+                Resource cachedService = serviceContributorsCache.get(incomingResourceId);
+                if (Objects.nonNull(cachedService)) {
+                    resource.copyMissingFieldsFrom(cachedService);
                     resourceConsumed = updateChannels(resource);
-                    contributorsCache.put(cacheId, resource);
+                    serviceContributorsCache.put(incomingResourceId, resource);
                 }
             }
             if (resourceConsumed) {
@@ -507,16 +505,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Update the thing internal state depending on a full list of resources sent from the bridge. If the resourceType
-     * is SCENE then call updateScenes() otherwise, if the resource refers to this thing, consume it.
+     * is SCENE then call updateScenes(), otherwise if the resource refers to this thing, consume it via onResource() as
+     * any other resource.
      *
      * @param resourceType the type of the resources in the list.
-     * @param allResources the full list of resources of the given type.
+     * @param fullResources the full list of resources of the given type.
      */
-    public void onResources(ResourceType resourceType, List<Resource> allResources) {
+    public void onResourcesList(ResourceType resourceType, List<Resource> fullResources) {
         if (resourceType == ResourceType.SCENE) {
-            updateScenes(allResources);
+            updateSceneContributors(fullResources);
         } else {
-            allResources.stream().filter(r -> resourceId.equals(r.getId())).findAny().ifPresent(r -> onResource(r));
+            fullResources.stream().filter(r -> resourceId.equals(r.getId())).findAny().ifPresent(r -> onResource(r));
         }
     }
 
@@ -723,21 +722,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Execute a series of HTTP GET commands to fetch the resource data for all resources that contribute to the thing
-     * state.
-     *
-     * @throws ApiException if a communication error occurred.
-     * @throws AssetNotLoadedException if one of the assets is not loaded.
-     */
-    private void updateContributors() throws ApiException, AssetNotLoadedException {
-        logger.debug("{} -> updateContributors() called for {} contributors", resourceId, contributorsCache.size());
-        ResourceReference reference = new ResourceReference();
-        for (Entry<String, Resource> entry : contributorsCache.entrySet()) {
-            updateResource(reference.setId(entry.getKey()).setType(entry.getValue().getType()));
-        }
-    }
-
-    /**
      * Get all resources needed for building the thing state. Build the forward / reverse contributor lookup maps. Set
      * up the final list of channels in the thing.
      */
@@ -745,8 +729,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (!disposing && !updateDependenciesDone) {
             logger.debug("{} -> updateDependencies()", resourceId);
             try {
+                if (!updatePropertiesDone) {
+                    logger.warn("{} -> updateDependencies() properties not initialized", resourceId);
+                    return;
+                }
+                if (!updateSceneContributorsDone && !updateSceneContributors()) {
+                    logger.warn("{} -> updateDependencies() scenes not initialized", resourceId);
+                    return;
+                }
                 updateLookups();
-                updateContributors();
+                updateServiceContributors();
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
                 if (!hasConnectivityIssue) {
@@ -789,15 +781,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private void updateLookups() {
         if (!disposing) {
             logger.debug("{} -> updateLookups()", resourceId);
-            if (!updateScenesDone) {
-                logger.warn("{} -> updateLookups() scene list not initialized", resourceId);
-            }
             // get supported services
             List<ResourceReference> services = thisResource.getServiceReferences();
 
             // add supported services to contributorsCache
-            contributorsCache.clear();
-            contributorsCache.putAll(services.stream()
+            serviceContributorsCache.clear();
+            serviceContributorsCache.putAll(services.stream()
                     .collect(Collectors.toMap(ResourceReference::getId, r -> new Resource(r.getType()))));
 
             // add supported services to commandResourceIds
@@ -872,48 +861,81 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @throws AssetNotLoadedException if one of the assets is not loaded.
      */
     private void updateResource(ResourceReference reference) throws ApiException, AssetNotLoadedException {
-        logger.debug("{} -> updateResource() from resource {}", resourceId, reference);
-        getBridgeHandler().getResources(reference).getResources().stream().forEach(resource -> onResource(resource));
-    }
-
-    /**
-     * Process the incoming list of scene resources to find those scenes which are associated with this thing. And if
-     * there are any, include a scene channel in the supported channel list, and populate its respective state options
-     * list.
-     *
-     * @param allScenes the full list of scene resources.
-     */
-    public synchronized void updateScenes(List<Resource> allScenes) {
-        if (!disposing && !updateScenesDone) {
-            ResourceReference thisReference = getResourceReference();
-            List<Resource> scenes = allScenes.stream().filter(s -> thisReference.equals(s.getGroup()))
-                    .collect(Collectors.toList());
-
-            sceneContributorsCache.clear();
-            sceneCommandResourceIds.clear();
-
-            if (!scenes.isEmpty()) {
-                sceneContributorsCache.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getId(), s -> s)));
-                sceneCommandResourceIds
-                        .putAll(scenes.stream().collect(Collectors.toMap(s -> s.getName(), s -> s.getId())));
-
-                Optional<Resource> active = scenes.stream().filter(s -> s.getSceneActive()).findAny();
-                State state = active.isPresent() ? new StringType(active.get().getName()) : UnDefType.UNDEF;
-                updateState(HueBindingConstants.CHANNEL_2_SCENE, state, true);
-
-                List<StateOption> options = scenes.stream().map(s -> s.getName()).map(n -> new StateOption(n, n))
-                        .collect(Collectors.toList());
-                stateDescriptionProvider
-                        .setStateOptions(new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_2_SCENE), options);
-
-                logger.debug("{} -> updateScenes() found {} associated scenes", resourceId, scenes.size());
-            }
-            updateScenesDone = true;
+        if (!disposing) {
+            logger.debug("{} -> updateResource() from resource {}", resourceId, reference);
+            getBridgeHandler().getResources(reference).getResources().stream()
+                    .forEach(resource -> onResource(resource));
         }
     }
 
     /**
-     * Update the channel state, and if appropriate add the channel id to the set of supportedChannelIds. Note: the
+     * Fetch the full list of scenes from the bridge, and call updateSceneContributors(List<Resource> allScenes)
+     *
+     * @throws ApiException if a communication error occurred.
+     * @throws AssetNotLoadedException if one of the assets is not loaded.
+     */
+    public boolean updateSceneContributors() throws ApiException, AssetNotLoadedException {
+        if (!disposing && !updateSceneContributorsDone) {
+            ResourceReference scenesReference = new ResourceReference().setType(ResourceType.SCENE);
+            updateSceneContributors(getBridgeHandler().getResources(scenesReference).getResources());
+        }
+        return updateSceneContributorsDone;
+    }
+
+    /**
+     * Process the incoming list of scene resources to find those scenes which contribute to this thing. And if there
+     * are any, include a scene channel in the supported channel list, and populate its respective state options.
+     *
+     * @param allScenes the full list of scene resources.
+     */
+    public synchronized boolean updateSceneContributors(List<Resource> allScenes) {
+        if (!disposing && !updateSceneContributorsDone) {
+            sceneContributorsCache.clear();
+            sceneResourceIds.clear();
+
+            ResourceReference thisReference = getResourceReference();
+            List<Resource> scenes = allScenes.stream().filter(s -> thisReference.equals(s.getGroup()))
+                    .collect(Collectors.toList());
+
+            if (!scenes.isEmpty()) {
+                sceneContributorsCache.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getId(), s -> s)));
+                sceneResourceIds.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getName(), s -> s.getId())));
+
+                State state = scenes.stream().filter(s -> s.getSceneActive().orElse(false)).map(s -> s.getSceneState())
+                        .findAny().orElse(UnDefType.UNDEF);
+                updateState(HueBindingConstants.CHANNEL_2_SCENE, state, true);
+
+                stateDescriptionProvider.setStateOptions(
+                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_2_SCENE), scenes.stream()
+                                .map(s -> s.getName()).map(n -> new StateOption(n, n)).collect(Collectors.toList()));
+
+                logger.debug("{} -> updateSceneContributors() found {} scenes", resourceId, scenes.size());
+            }
+            updateSceneContributorsDone = true;
+        }
+        return updateSceneContributorsDone;
+    }
+
+    /**
+     * Execute a series of HTTP GET commands to fetch the resource data for all service resources that contribute to the
+     * thing state.
+     *
+     * @throws ApiException if a communication error occurred.
+     * @throws AssetNotLoadedException if one of the assets is not loaded.
+     */
+    private void updateServiceContributors() throws ApiException, AssetNotLoadedException {
+        if (!disposing) {
+            logger.debug("{} -> updateServiceContributors() called for {} contributors", resourceId,
+                    serviceContributorsCache.size());
+            ResourceReference reference = new ResourceReference();
+            for (Entry<String, Resource> entry : serviceContributorsCache.entrySet()) {
+                updateResource(reference.setId(entry.getKey()).setType(entry.getValue().getType()));
+            }
+        }
+    }
+
+    /**
+     * Update the channel state, and if appropriate add the channel ID to the set of supportedChannelIds. Note: the
      * particular 'UnDefType.UNDEF' value of the state argument is used to specially indicate the undefined state, but
      * yet that its channel shall nevertheless continue to be present in the thing.
      *

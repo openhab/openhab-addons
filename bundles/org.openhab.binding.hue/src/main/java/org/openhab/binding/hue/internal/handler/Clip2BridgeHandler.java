@@ -490,36 +490,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Inform all child thing handlers about the contents of the given resource.
-     *
-     * @param resource the given resource.
-     */
-    private void onResource(Resource resource) {
-        getThing().getThings().forEach(thing -> {
-            ThingHandler handler = thing.getHandler();
-            if (handler instanceof Clip2ThingHandler) {
-                ((Clip2ThingHandler) handler).onResource(resource);
-            }
-        });
-    }
-
-    /**
-     * Inform all child thing handlers about the contents of the given mass download list of resources.
-     *
-     * @param resourceType the type of the resources in the mass download list.
-     * @param resources the given mass download list of resources.
-     */
-    private void onResources(ResourceType resourceType, List<Resource> resources) {
-        getThing().getThings().forEach(thing -> {
-            ThingHandler handler = thing.getHandler();
-            if (handler instanceof Clip2ThingHandler) {
-                ((Clip2ThingHandler) handler).onResources(resourceType, resources);
-            }
-        });
-    }
-
-    /**
-     * Called when an SSE event message comes in with a valid list of resources.
+     * Called when an SSE event message comes in with a valid list of resources. For each resource received, inform all
+     * child thing handlers with the respective resource.
      *
      * @param resources a list of incoming resource objects.
      */
@@ -527,7 +499,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (assetsLoaded) {
             scheduler.submit(() -> {
                 logger.debug("onResourcesEvent() resource count {}", resources.size());
-                resources.forEach(resource -> onResource(resource));
+                getThing().getThings().forEach(thing -> {
+                    ThingHandler handler = thing.getHandler();
+                    if (handler instanceof Clip2ThingHandler) {
+                        resources.forEach(resource -> {
+                            ((Clip2ThingHandler) handler).onResource(resource);
+                        });
+                    }
+                });
             });
         }
     }
@@ -715,7 +694,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         try {
             Clip2Bridge bridge = getClip2Bridge();
             for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES) {
-                onResources(reference.getType(), bridge.getResources(reference).getResources());
+                ResourceType resourceType = reference.getType();
+                List<Resource> resourceList = bridge.getResources(reference).getResources();
+                getThing().getThings().forEach(thing -> {
+                    ThingHandler handler = thing.getHandler();
+                    if (handler instanceof Clip2ThingHandler) {
+                        ((Clip2ThingHandler) handler).onResourcesList(resourceType, resourceList);
+                    }
+                });
             }
         } catch (ApiException | AssetNotLoadedException e) {
             // should never happen as we are already online

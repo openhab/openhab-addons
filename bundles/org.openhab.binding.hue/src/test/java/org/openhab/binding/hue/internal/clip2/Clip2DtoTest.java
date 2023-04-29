@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -488,8 +489,9 @@ class Clip2DtoTest {
         assertNotNull(active);
         assertTrue(active.isJsonPrimitive());
         assertEquals("inactive", active.getAsString());
-        Boolean isActive = resource.getSceneActive();
-        assertEquals(Boolean.FALSE, isActive);
+        Optional<Boolean> isActive = resource.getSceneActive();
+        assertTrue(isActive.isPresent());
+        assertEquals(Boolean.FALSE, isActive.get());
     }
 
     @Test
