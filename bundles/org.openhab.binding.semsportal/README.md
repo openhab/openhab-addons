@@ -79,6 +79,43 @@ The Bridge has the following configuration parameters:
 | password  |     X     | Password of the SEMS portal                                                                           |
 | interval  |           | Number of minutes between two updates. Between 1 and 60 minutes, defaults to 5 minutes                |
 
+## Full example
+
+semsportal.things:
+
+```java
+Bridge semsportal:portal:myPortal [ username="my@username.com", password="MyPassword", interval=5 ] {
+    station solarPanels "Solar Panels" [ stationUUID="xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" ]
+}
+```
+
+semsportal.items:
+
+```java
+Number:Energy   Solar_genaration_today  "Todays generation [%.0f kWh]"          {channel="semsportal:station:myPortal:solarPanels:todayTotal" }
+Number:Energy   Solar_genaration_month  "This month's generation [%.0f kWh]"    {channel="semsportal:station:myPortal:solarPanels:monthTotal" }
+Number:Energy   Solar_genaration_total  "Total generation [%.0f kWh]"           {channel="semsportal:station:myPortal:solarPanels:overallTotal" }
+Number:Power    Solar_current_output    "Current output [%.1f W]"               {channel="semsportal:station:myPortal:solarPanels:currentOutput" }
+Number          Solar_income_today      "Income today [€%.1f]"                  {channel="semsportal:station:myPortal:solarPanels:currentOutput" }
+Number          Solar_income_total      "Income total [€%.1f]"                  {channel="semsportal:station:myPortal:solarPanels:currentOutput" }
+DateTime        Solar_last_update       "Last update time [%1$tH:%1$tM]"        {channel="semsportal:station:myPortal:solarPanels:lastUpdate" }
+```
+semsportal.sitemap:
+
+```perl
+sitemap semsportal label="Sems Portal"{
+    Frame label="Solar panels" {
+        Text    item=Solar_current_output   icon="solarplant"
+        Text    item=Solar_genaration_today icon="solarplant"
+        Text    item=Solar_genaration_month icon="solarplant"
+        Text    item=Solar_genaration_total icon="solarplant"
+        Text    item=Solar_income_today     icon="price"
+        Text    item=Solar_income_total     icon="price"
+        Text    item=Solar_last_update      icon="time"
+    }
+}
+```
+
 ## Credits
 
 This binding has been created using the information provided by RogerG007 in this forum topic: <https://community.openhab.org/t/connecting-goodwe-solar-panel-inverter-to-openhab/85480>
