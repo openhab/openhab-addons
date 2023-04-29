@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Milight Binding</name>
 	<description>A binding for Milight/Easybulb/compatible white, color and color+white bulbs.</description>
+	<connection>local</connection>
 
 </addon:addon>

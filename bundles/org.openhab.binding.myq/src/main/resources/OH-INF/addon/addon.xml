@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>MyQ Binding</name>
 	<description>The MyQ binding allows monitoring and control of garage doors that are MyQ enabled.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
