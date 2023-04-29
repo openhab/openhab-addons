@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>LuftdatenInfo Binding</name>
 	<description>Binding to integrate DIY Sensors from luftdaten.info Sensor Community</description>
+	<connection>hybrid</connection>
 
 </addon:addon>

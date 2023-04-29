@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>KVV Binding</name>
 	<description>This is the binding for KVV.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

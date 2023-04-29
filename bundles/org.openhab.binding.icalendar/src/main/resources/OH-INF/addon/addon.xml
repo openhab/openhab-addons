@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>iCalendar Binding</name>
 	<description>Binding for using iCal calendars</description>
+	<connection>cloud</connection>
 
 </addon:addon>

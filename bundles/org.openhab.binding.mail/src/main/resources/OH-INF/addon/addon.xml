@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Mail Binding</name>
 	<description>This binding is used to access POP3, IMAP and SMTP servers.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
