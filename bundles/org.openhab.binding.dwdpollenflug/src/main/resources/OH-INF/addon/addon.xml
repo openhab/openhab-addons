@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>DWD Pollenflug Binding</name>
 	<description>This is the binding for DWD Pollenflug.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
