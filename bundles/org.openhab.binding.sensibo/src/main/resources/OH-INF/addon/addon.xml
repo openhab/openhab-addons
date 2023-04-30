@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Sensibo Binding</name>
 	<description>This is the binding for Sensibo products</description>
+	<connection>cloud</connection>
 
 </addon:addon>
