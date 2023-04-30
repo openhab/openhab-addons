@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>TR-064 Binding</name>
 	<description>This is the binding for TR-064 device support.</description>
+	<connection>local</connection>
 
 </addon:addon>
