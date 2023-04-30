@@ -86,17 +86,9 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
                 ThingUID legacyUID = null;
                 String label = String.format(LABEL_PATTERN, host);
 
-                try {
-                    if (Clip2Bridge.isClip2Supported(host)) {
-                        legacyUID = uid;
-                        uid = new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, serialNumber);
-                    }
-                } catch (IOException e) {
-                    // the isReachableAndValidHueBridge() check should prevent an exception
-                    logger.debug("discoverHueBridges() unexpected exception", e);
-                }
-
-                if (Objects.nonNull(legacyUID)) {
+                if (isClip2Supported(host)) {
+                    legacyUID = uid;
+                    uid = new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, serialNumber);
                     Optional<Thing> legacyThingOptional = getLegacyBridge(host);
                     if (legacyThingOptional.isPresent()) {
                         Thing legacyThing = legacyThingOptional.get();
@@ -205,5 +197,17 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
                 .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
                         && ipAddress.equals(thing.getConfiguration().get(HueBindingConstants.HOST)))
                 .findFirst();
+    }
+
+    /**
+     * Wrap Clip2Bridge.isClip2Supported() inside this method so that integration tests can can override the method, to
+     * avoid making live network calls.
+     */
+    protected boolean isClip2Supported(String ipAddress) {
+        try {
+            return Clip2Bridge.isClip2Supported(ipAddress);
+        } catch (IOException e) {
+        }
+        return false;
     }
 }
