@@ -7,6 +7,6 @@
 	<name>SMHI Binding</name>
 	<description>Binding for getting weather forecasts from the Swedish Meteorological and Hydrological Institute (SMHI)</description>
 	<connection>cloud</connection>
-	<countries>se, no, dk, fi</countries>
+	<countries>se,no,dk,fi</countries>
 
 </addon:addon>
