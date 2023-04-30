@@ -212,6 +212,9 @@ public class CameraServlet extends IpCameraServlet {
                                 Ffmpeg localMjpeg = handler.ffmpegMjpeg;
                                 if (localMjpeg != null) {
                                     localMjpeg.stopConverting();
+                                    // Set reference to ffmpegMjpeg to null to prevent automatic reconnection in handler's
+                                    // pollCameraRunnable() check for frozen camera
+                                    handler.ffmpegMjpeg = null;
                                 }
                             } else {
                                 handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));
