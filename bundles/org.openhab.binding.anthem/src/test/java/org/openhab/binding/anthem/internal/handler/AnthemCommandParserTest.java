@@ -127,7 +127,7 @@ public class AnthemCommandParserTest {
     }
 
     @Test
-    public void testNumInoutsCommand() {
+    public void testNumInputsCommand() {
         @Nullable
         AnthemUpdate update;
 
