@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -460,9 +459,7 @@ class DPTTest {
         double dy = (((value[2] & 0xff) << 8) | (value[3] & 0xff)) / 65535.0;
         double dY = ((double) (value[4] & 0xff)) * 100.0 / 255.0;
 
-        final Pattern XYY_PATTERN = Pattern.compile(
-                "(?:\\((?<x>\\d+(?:[,.]\\d+)?) (?<y>\\d+(?:[,.]\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:[,.]\\d+)?)\\s%)?");
-        Matcher matcher = XYY_PATTERN.matcher(result);
+        Matcher matcher = ValueDecoder.XYY_PATTERN.matcher(result);
         Assertions.assertTrue(matcher.matches());
         String stringx = matcher.group("x");
         String stringy = matcher.group("y");
