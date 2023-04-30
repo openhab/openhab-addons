@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Vektiva Binding</name>
 	<description>This is the binding for Vektiva products controlled by local API.</description>
+	<connection>local</connection>
 
 </addon:addon>
