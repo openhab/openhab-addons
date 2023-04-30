@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.tapocontrol.internal.helpers;
 
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
-
-import java.lang.reflect.Field;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants;
+import org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -30,9 +28,8 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class TapoErrorHandler extends Exception {
+    private TapoErrorCode errorCode = TapoErrorCode.NO_ERROR;
     private static final long serialVersionUID = 0L;
-    private Integer errorCode = 0;
-    private String errorMessage = "";
     private String infoMessage = "";
     private Gson gson = new Gson();
 
@@ -81,6 +78,25 @@ public class TapoErrorHandler extends Exception {
         raiseError(ex, infoMessage);
     }
 
+    /**
+     * Constructor TapoErrorCodeEnum
+     * 
+     * @param errorCode error code (TapoErrorCodeEnum)
+     */
+    public TapoErrorHandler(TapoErrorCode errorCode) {
+        raiseError(errorCode);
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param errorCode error code (TapoErrorCodeEnum)
+     * @param infoMessage optional info-message
+     */
+    public TapoErrorHandler(TapoErrorCode errorCode, String infoMessage) {
+        raiseError(errorCode, infoMessage);
+    }
+
     /***********************************
      *
      * Private Functions
@@ -91,27 +107,11 @@ public class TapoErrorHandler extends Exception {
      * GET ERROR-MESSAGE
      * 
      * @param errCode error Number (or constant ERR_API_CODE )
-     * @return error-message if set constant ERR_API_CODE_MSG. if not name of ERR_API_CODE is returned
+     * @return error-message if code found in i18n, else return code
      */
     private String getErrorMessage(Integer errCode) {
-        String i18nKey = "";
-        Field[] fields = TapoErrorConstants.class.getDeclaredFields();
-        /* loop ErrorConstants and search for integer-code in value */
-        for (Field f : fields) {
-            String constName = f.getName();
-            try {
-                Integer val = (Integer) f.get(this);
-                if (val != null && val.equals(errCode)) {
-                    /* convert constatn name to i18n key */
-                    i18nKey = i18nKey.replaceFirst("ERR_", "error-");
-                    i18nKey = constName.replace("_", "-").toLowerCase();
-                    return "@text/" + i18nKey;
-                }
-            } catch (Exception e) {
-                // next loop (not a good idea to raise error in error-handling)
-            }
-        }
-        return infoMessage + " (" + errCode.toString() + ")";
+        String key = TapoErrorCode.fromCode(errCode).name().replace("ERR_", "error-").replace("_", "-").toLowerCase();
+        return String.format("@text/%s [ \"%s\" ]", key, errCode.toString());
     }
 
     /***********************************
@@ -136,9 +136,7 @@ public class TapoErrorHandler extends Exception {
      * @param infoMessage optional info-message
      */
     public void raiseError(Integer errorCode, String infoMessage) {
-        this.errorCode = errorCode;
-        this.infoMessage = infoMessage;
-        this.errorMessage = getErrorMessage(errorCode);
+        raiseError(TapoErrorCode.fromCode(errorCode), infoMessage);
     }
 
     /**
@@ -157,9 +155,27 @@ public class TapoErrorHandler extends Exception {
      * @param infoMessage optional info-message
      */
     public void raiseError(Exception ex, String infoMessage) {
-        this.errorCode = ex.hashCode();
+        raiseError(TapoErrorCode.fromCode(ex.hashCode()), infoMessage);
+    }
+
+    /**
+     * Raises new error
+     * 
+     * @param errorCode error code (TapoErrorCodeEnum)
+     */
+    public void raiseError(TapoErrorCode errorCode) {
+        raiseError(errorCode, "");
+    }
+
+    /**
+     * Raises new error
+     * 
+     * @param errorCode error code (TapoErrorCodeEnum)
+     * @param infoMessage optional info-message
+     */
+    public void raiseError(TapoErrorCode errorCode, String infoMessage) {
+        this.errorCode = errorCode;
         this.infoMessage = infoMessage;
-        this.errorMessage = getValueOrDefault(ex.getMessage(), ex.toString());
     }
 
     /**
@@ -168,17 +184,15 @@ public class TapoErrorHandler extends Exception {
      * @param tapoError
      */
     public void set(TapoErrorHandler tapoError) {
-        this.errorCode = tapoError.getNumber();
+        this.errorCode = TapoErrorCode.fromCode(tapoError.getCode());
         this.infoMessage = tapoError.getExtendedInfo();
-        this.errorMessage = getErrorMessage(this.errorCode);
     }
 
     /**
      * Reset Error
      */
     public void reset() {
-        this.errorCode = 0;
-        this.errorMessage = "";
+        this.errorCode = NO_ERROR;
         this.infoMessage = "";
     }
 
@@ -196,7 +210,7 @@ public class TapoErrorHandler extends Exception {
     @Override
     @Nullable
     public String getMessage() {
-        return this.errorMessage;
+        return getErrorMessage(errorCode.getCode());
     }
 
     /**
@@ -215,7 +229,7 @@ public class TapoErrorHandler extends Exception {
      * @return error code (integer)
      */
     public Integer getCode() {
-        return this.errorCode;
+        return this.errorCode.getCode();
     }
 
     /**
@@ -228,11 +242,11 @@ public class TapoErrorHandler extends Exception {
     }
 
     /**
-     * Get Error Number
+     * Get Error Code
      * 
-     * @return error number
+     * @return error code
      */
-    public Integer getNumber() {
+    public TapoErrorCode getError() {
         return this.errorCode;
     }
 
@@ -242,7 +256,7 @@ public class TapoErrorHandler extends Exception {
      * @return true if has error
      */
     public Boolean hasError() {
-        return this.errorCode != 0;
+        return this.errorCode != NO_ERROR;
     }
 
     /**
@@ -252,7 +266,8 @@ public class TapoErrorHandler extends Exception {
      */
     public JsonObject getJson() {
         JsonObject json;
-        json = gson.fromJson("{'error_code': '" + errorCode + "', 'error_message':'" + errorMessage + "'}",
+        json = gson.fromJson(
+                "{'error_code': '" + errorCode + "', 'error_message':'" + getErrorMessage(getCode()) + "'}",
                 JsonObject.class);
         if (json == null) {
             json = new JsonObject();

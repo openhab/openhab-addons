@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.util.concurrent.TimeUnit;
@@ -258,7 +258,7 @@ public class TapoDeviceHttpApi {
             /* get errocode (0=success) */
             JsonObject jsonObject = GSON.fromJson(decryptedResponse, JsonObject.class);
             if (jsonObject != null) {
-                Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL);
+                Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL.getCode());
                 if (errorCode == 0) {
                     /* return result if set / else request was successful */
                     result = jsonObjectToString(jsonObject.getAsJsonObject("result"), "token");
@@ -411,10 +411,10 @@ public class TapoDeviceHttpApi {
                 String responseBody = response.getContentAsString();
                 return getErrorCode(responseBody);
             } else {
-                return ERR_BINDING_HTTP_RESPONSE;
+                return ERR_BINDING_HTTP_RESPONSE.getCode();
             }
         } catch (Exception e) {
-            return ERR_BINDING_HTTP_RESPONSE;
+            return ERR_BINDING_HTTP_RESPONSE.getCode();
         }
     }
 
@@ -428,7 +428,7 @@ public class TapoDeviceHttpApi {
         try {
             JsonObject jsonObject = GSON.fromJson(responseBody, JsonObject.class);
             /* get errocode (0=success) */
-            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL);
+            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL.getCode());
             if (errorCode == 0) {
                 return 0;
             } else {
@@ -437,7 +437,7 @@ public class TapoDeviceHttpApi {
                 return errorCode;
             }
         } catch (Exception e) {
-            return ERR_BINDING_HTTP_RESPONSE;
+            return ERR_BINDING_HTTP_RESPONSE.getCode();
         }
     }
 
@@ -451,7 +451,7 @@ public class TapoDeviceHttpApi {
         if (isValidJson(responseBody)) {
             JsonObject jsonObject = GSON.fromJson(responseBody, JsonObject.class);
             /* get errocode (0=success) */
-            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL);
+            Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_API_JSON_DECODE_FAIL.getCode());
             if (errorCode > 0) {
                 return true;
             }

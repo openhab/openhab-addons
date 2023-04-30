@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.device;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
+import org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.openhab.binding.tapocontrol.internal.structures.TapoChildData;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceConfiguration;
@@ -232,8 +233,12 @@ public abstract class TapoDevice extends BaseThingHandler {
      *
      * @return
      */
-    public TapoErrorHandler getError() {
+    public TapoErrorHandler getErrorHandler() {
         return this.deviceError;
+    }
+
+    public TapoErrorCode getError() {
+        return this.deviceError.getError();
     }
 
     /**
@@ -456,21 +461,27 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     public void handleConnectionState() {
         ThingStatus deviceState = getThing().getStatus();
-        Integer errorCode = deviceError.getCode();
+        TapoErrorCode errorCode = deviceError.getError();
 
-        if (errorCode == 0) {
+        if (errorCode == TapoErrorCode.NO_ERROR) {
             if (deviceState != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
-        } else if (LIST_REAUTH_ERRORS.contains(errorCode)) {
-            connect();
-        } else if (LIST_COMMUNICATION_ERRORS.contains(errorCode)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
-            disconnect();
-        } else if (LIST_CONFIGURATION_ERRORS.contains(errorCode)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, deviceError.getMessage());
+            switch (errorCode.getType()) {
+                case COMMUNICATION_RETRY:
+                    connect();
+                    break;
+                case COMMUNICATION_ERROR:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
+                    disconnect();
+                    break;
+                case CONFIGURATION_ERROR:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
+                    break;
+                default:
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, deviceError.getMessage());
+            }
         }
     }
 
