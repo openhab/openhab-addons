@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqtt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ruuvitag_beacon">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="broker"/>
+		</supported-bridge-type-refs>
+
+		<label>RuuviTag SmartBeacon</label>
+		<description>A RuuviTag SmartBeacon</description>
+
+		<channels>
+			<channel id="rssi" typeId="ruuvitag_rssi"/>
+			<channel id="ts" typeId="ruuvitag_ts"/>
+			<channel id="gwts" typeId="ruuvitag_gwts"/>
+			<channel id="gwmac" typeId="ruuvitag_gwmac"/>
+			<channel id="accelerationx" typeId="ruuvitag_accelerationx"/>
+			<channel id="accelerationy" typeId="ruuvitag_accelerationy"/>
+			<channel id="accelerationz" typeId="ruuvitag_accelerationz"/>
+			<channel id="batteryVoltage" typeId="ruuvitag_batteryVoltage"/>
+			<channel id="dataFormat" typeId="ruuvitag_dataFormat"/>
+			<channel id="humidity" typeId="ruuvitag_humidity"/>
+			<channel id="measurementSequenceNumber" typeId="ruuvitag_measurementSequenceNumber"/>
+			<channel id="movementCounter" typeId="ruuvitag_movementCounter"/>
+			<channel id="pressure" typeId="ruuvitag_pressure"/>
+			<channel id="temperature" typeId="ruuvitag_temperature"/>
+			<channel id="txPower" typeId="ruuvitag_txPower"/>
+		</channels>
+
+		<config-description>
+			<parameter name="topic" type="text">
+				<label>MQTT Topic</label>
+				<description>MQTT topic containing the payload</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="ruuvitag_rssi">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Received signal strength indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+	<channel-type id="ruuvitag_ts">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp when the message from Bluetooth sensor was received by Gateway (ts)</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="ruuvitag_gwts" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Relay Timestamp</label>
+		<description>Timestamp when the message from Bluetooth sensor was relayed by Gateway (gwts)</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="ruuvitag_gwmac" advanced="true">
+		<item-type>String</item-type>
+		<label>Gateway MAC Address</label>
+		<description>MAC-address of Ruuvi Gateway</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ruuvitag_accelerationx">
+		<item-type>Number:Acceleration</item-type>
+		<label>Acceleration X</label>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_accelerationy">
+		<item-type>Number:Acceleration</item-type>
+		<label>Acceleration Y</label>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_accelerationz">
+		<item-type>Number:Acceleration</item-type>
+		<label>Acceleration Z</label>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_batteryVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_dataFormat" advanced="true">
+		<item-type>Number</item-type>
+		<label>Data Format Version</label>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+	<channel-type id="ruuvitag_humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_measurementSequenceNumber" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Measurement Sequence Number</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_movementCounter" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Movement Counter</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_txPower">
+		<item-type>Number:Power</item-type>
+		<label>TX Power</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

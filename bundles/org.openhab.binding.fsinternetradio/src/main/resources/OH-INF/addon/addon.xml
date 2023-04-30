@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>FSInternetRadio Binding</name>
 	<description>This is the binding for internet radios based on the Frontier Silicon chipset.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -32,5 +32,5 @@ public interface DeviceUpdateListener {
      * @param instanceId The instance id of the device
      * @param data the json data describing the device
      */
-    public void onUpdate(String instanceId, JsonObject data);
+    void onUpdate(String instanceId, JsonObject data);
 }

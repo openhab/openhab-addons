@@ -6,4 +6,5 @@
 	<type>binding</type>
 	<name>Caddx Security Binding</name>
 	<description>Binding for Caddx security system with RS232 serial interface.</description>
+	<connection>local</connection>
 </addon:addon>

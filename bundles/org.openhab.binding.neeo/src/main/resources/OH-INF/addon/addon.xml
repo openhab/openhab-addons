@@ -8,4 +8,6 @@
 	<description>This binding allows you to discover NEEO Brain(s), discover the Rooms within and the Devices within those
 		Rooms. The binding then will expose that information to openHAB and allow you to execute Recipes/Scenarios and Macros
 		on the Devices</description>
+	<connection>local</connection>
+
 </addon:addon>

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Adorne Binding</name>
 	<description>The Adorne Binding controls Legrand's Adorne Wi-Fi ready switches and outlets.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -7,5 +7,6 @@
 	<name>Alarm Decoder Binding</name>
 	<description>This binding is for the Nu Tech Alarm Decoder, used for interfacing with Ademco/Honeywell and DSC alarm
 		systems.</description>
+	<connection>local</connection>
 
 </addon:addon>

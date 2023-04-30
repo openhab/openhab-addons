@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_12;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -22,6 +23,7 @@ import org.openhab.core.types.State;
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public class A5_12_02 extends A5_12 {
 
     public A5_12_02(ERP1Message packet) {

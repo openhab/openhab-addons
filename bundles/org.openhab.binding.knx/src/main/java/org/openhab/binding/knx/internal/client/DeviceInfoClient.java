@@ -36,5 +36,5 @@ public interface DeviceInfoClient {
             final int propertyId, final int start, final int elements, boolean authenticate, long timeout)
             throws InterruptedException;
 
-    public boolean isConnected();
+    boolean isConnected();
 }

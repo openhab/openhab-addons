@@ -36,11 +36,17 @@ import org.openhab.binding.sleepiq.internal.api.Configuration;
 import org.openhab.binding.sleepiq.internal.api.LoginException;
 import org.openhab.binding.sleepiq.internal.api.ResponseFormatException;
 import org.openhab.binding.sleepiq.internal.api.SleepIQ;
+import org.openhab.binding.sleepiq.internal.api.SleepIQException;
 import org.openhab.binding.sleepiq.internal.api.UnauthorizedException;
 import org.openhab.binding.sleepiq.internal.api.dto.Bed;
 import org.openhab.binding.sleepiq.internal.api.dto.BedsResponse;
 import org.openhab.binding.sleepiq.internal.api.dto.Failure;
 import org.openhab.binding.sleepiq.internal.api.dto.FamilyStatusResponse;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationFeaturesResponse;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationOutletRequest;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationPositionRequest;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationPresetRequest;
+import org.openhab.binding.sleepiq.internal.api.dto.FoundationStatusResponse;
 import org.openhab.binding.sleepiq.internal.api.dto.LoginInfo;
 import org.openhab.binding.sleepiq.internal.api.dto.LoginRequest;
 import org.openhab.binding.sleepiq.internal.api.dto.PauseModeResponse;
@@ -48,6 +54,11 @@ import org.openhab.binding.sleepiq.internal.api.dto.SleepDataResponse;
 import org.openhab.binding.sleepiq.internal.api.dto.SleepNumberRequest;
 import org.openhab.binding.sleepiq.internal.api.dto.Sleeper;
 import org.openhab.binding.sleepiq.internal.api.dto.SleepersResponse;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationActuator;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationActuatorSpeed;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationOutlet;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationOutletOperation;
+import org.openhab.binding.sleepiq.internal.api.enums.FoundationPreset;
 import org.openhab.binding.sleepiq.internal.api.enums.Side;
 import org.openhab.binding.sleepiq.internal.api.enums.SleepDataInterval;
 import org.slf4j.Logger;
@@ -60,6 +71,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link SleepIQImpl} class handles all interactions with the sleepiq service.
  *
  * @author Gregory Moyer - Initial contribution
+ * @author Mark Hilbush - Added foundation functionality
  */
 @NonNullByDefault
 public class SleepIQImpl implements SleepIQ {
@@ -225,7 +237,7 @@ public class SleepIQImpl implements SleepIQ {
         String body = GSON.toJson(new SleepNumberRequest().withBedId(bedId).withSleepNumber(sleepNumber).withSide(side),
                 SleepNumberRequest.class);
         logger.debug("SleepIQ: setSleepNumber: Request body={}", body);
-        cloudRequest(Endpoints.setSleepNumber(bedId), null, body);
+        cloudRequest(Endpoints.sleepNumber(bedId), null, body);
     }
 
     @Override
@@ -234,7 +246,68 @@ public class SleepIQImpl implements SleepIQ {
         logger.debug("SleepIQ: setPauseMode: command={}", pauseMode);
         Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put("mode", pauseMode ? "on" : "off");
-        cloudRequest(Endpoints.setPauseMode(bedId), requestParameters, "");
+        cloudRequest(Endpoints.pauseMode(bedId), requestParameters, "");
+    }
+
+    @Override
+    public FoundationFeaturesResponse getFoundationFeatures(String bedId)
+            throws LoginException, ResponseFormatException, CommunicationException {
+        try {
+            String contentResponse = cloudRequest(Endpoints.foundationFeatures(bedId));
+            FoundationFeaturesResponse response = GSON.fromJson(contentResponse, FoundationFeaturesResponse.class);
+            if (response != null) {
+                logger.debug("SleepIQ: {}", response);
+                return response;
+            } else {
+                throw new ResponseFormatException("Failed to get a valid 'foundationFeatures' response from cloud");
+            }
+        } catch (JsonSyntaxException e) {
+            throw new ResponseFormatException("Failed to parse 'foundationFeatures' response");
+        }
+    }
+
+    @Override
+    public FoundationStatusResponse getFoundationStatus(String bedId) throws LoginException, SleepIQException {
+        try {
+            String contentResponse = cloudRequest(Endpoints.foundationStatus(bedId));
+            FoundationStatusResponse response = GSON.fromJson(contentResponse, FoundationStatusResponse.class);
+            if (response != null) {
+                logger.debug("SleepIQ: {}", response);
+                return response;
+            } else {
+                throw new ResponseFormatException("Failed to get a valid 'foundationStatus' response from cloud");
+            }
+        } catch (JsonSyntaxException e) {
+            throw new ResponseFormatException("Failed to parse 'foundationStatus' response");
+        }
+    }
+
+    @Override
+    public void setFoundationPreset(String bedId, Side side, FoundationPreset preset, FoundationActuatorSpeed speed)
+            throws LoginException, SleepIQException {
+        String body = GSON.toJson(new FoundationPresetRequest().withSide(side).withFoundationPreset(preset)
+                .withFoundationActuatorSpeed(speed), FoundationPresetRequest.class);
+        logger.debug("SleepIQ: setFoundationPreset: Request body={}", body);
+        cloudRequest(Endpoints.foundationPreset(bedId), null, body);
+    }
+
+    @Override
+    public void setFoundationPosition(String bedId, Side side, FoundationActuator actuator, int position,
+            FoundationActuatorSpeed speed) throws LoginException, SleepIQException {
+        String body = GSON.toJson(new FoundationPositionRequest().withSide(side).withPosition(position)
+                .withFoundationActuator(actuator).withFoundationActuatorSpeed(speed), FoundationPositionRequest.class);
+        logger.debug("SleepIQ: setFoundationPosition: Request body={}", body);
+        cloudRequest(Endpoints.foundationPosition(bedId), null, body);
+    }
+
+    @Override
+    public void setFoundationOutlet(String bedId, FoundationOutlet outlet, FoundationOutletOperation operation)
+            throws LoginException, SleepIQException {
+        String body = GSON.toJson(
+                new FoundationOutletRequest().withFoundationOutlet(outlet).withFoundationOutletOperation(operation),
+                FoundationOutletRequest.class);
+        logger.debug("SleepIQ: setFoundationOutlet: Request body={}", body);
+        cloudRequest(Endpoints.foundationOutlet(bedId), null, body);
     }
 
     private String cloudRequest(String endpoint)
@@ -249,7 +322,7 @@ public class SleepIQImpl implements SleepIQ {
 
     private String cloudRequest(String endpoint, @Nullable Map<String, String> parameters, @Nullable String body)
             throws LoginException, ResponseFormatException, CommunicationException {
-        logger.debug("SleepIQ: cloudGetRequest: Invoke endpoint={}", endpoint);
+        logger.debug("SleepIQ: cloudRequest: Invoke endpoint={}", endpoint);
         ContentResponse response = (body == null ? doGet(endpoint, parameters) : doPut(endpoint, parameters, body));
         if (isUnauthorized(response)) {
             logger.debug("SleepIQ: cloudGetRequest: UNAUTHORIZED, reset login");
@@ -258,6 +331,7 @@ public class SleepIQImpl implements SleepIQ {
             response = (body == null ? doGet(endpoint, parameters) : doPut(endpoint, parameters, body));
         }
         if (isNotOk(response)) {
+            logger.debug("SleepIQ.cloudRequest: ResponseFormatException on call to endpoint {}", endpoint);
             throw new ResponseFormatException(String.format("Cloud API returned error: status=%d, message=%s",
                     response.getStatus(), HttpStatus.getCode(response.getStatus()).getMessage()));
         }
@@ -282,7 +356,7 @@ public class SleepIQImpl implements SleepIQ {
         return doRequest(request, parameters);
     }
 
-    private ContentResponse doRequest(Request request, @Nullable Map<String, String> parameters)
+    private synchronized ContentResponse doRequest(Request request, @Nullable Map<String, String> parameters)
             throws CommunicationException {
         try {
             if (parameters != null) {
@@ -291,12 +365,13 @@ public class SleepIQImpl implements SleepIQ {
                 }
             }
             addCookiesToRequest(request);
-            logger.debug("SleepIQ: doPut: request url={}", request.getURI());
+            logger.debug("SleepIQ: doRequest: request url={}", request.getURI());
             ContentResponse response = request.send();
-            logger.trace("SleepIQ: doPut: status={} response={}", response.getStatus(), response.getContentAsString());
+            logger.trace("SleepIQ: doRequest: status={} response={}", response.getStatus(),
+                    response.getContentAsString());
             return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("SleepIQ: doPut: Exception message={}", e.getMessage(), e);
+            logger.debug("SleepIQ: doRequest: Exception message={}", e.getMessage(), e);
             throw new CommunicationException("Communication error while accessing API: " + e.getMessage());
         }
     }

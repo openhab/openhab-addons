@@ -28,29 +28,29 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public interface ShellyManagerInterface {
 
-    public Thing getThing();
+    Thing getThing();
 
-    public String getThingName();
+    String getThingName();
 
-    public ShellyDeviceProfile getProfile();
+    ShellyDeviceProfile getProfile();
 
-    public ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException;
+    ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException;
 
-    public ShellyApiInterface getApi();
+    ShellyApiInterface getApi();
 
-    public ShellyDeviceStats getStats();
+    ShellyDeviceStats getStats();
 
-    public void resetStats();
+    void resetStats();
 
-    public State getChannelValue(String group, String channel);
+    State getChannelValue(String group, String channel);
 
-    public void setThingOnline();
+    void setThingOnline();
 
-    public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
+    void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
 
-    public boolean requestUpdates(int requestCount, boolean refreshSettings);
+    boolean requestUpdates(int requestCount, boolean refreshSettings);
 
-    public void incProtMessages();
+    void incProtMessages();
 
-    public void incProtErrors();
+    void incProtErrors();
 }

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>TpLinkRouter Binding</name>
 	<description>This is the binding for controlling a TP-Link router with telnet.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -8,5 +8,6 @@
 	<description>The pilight binding allows openHAB to communicate with a pilight instance. Pilight is a service used to
 		control 'Click On Click Off' devices like 433 MHz remote controlled sockets a cheap way, e.g. by using a Raspberry Pi
 		with corresponding 433 MHz sender.</description>
+	<connection>local</connection>
 
 </addon:addon>

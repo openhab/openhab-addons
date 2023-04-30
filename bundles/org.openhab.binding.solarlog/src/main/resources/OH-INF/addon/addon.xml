@@ -10,5 +10,6 @@
 		includes information about current energy production and use, and other vital parameters of a PV installation. This
 		binding makes this data accessible to openHAB from where it can be persistently stored, used to trigger actions or be
 		displayed for information.</description>
+	<connection>local</connection>
 
 </addon:addon>

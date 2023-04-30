@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>openHAB Oceanic Binding</name>
 	<description>This is the binding for Oceanic Water Softener.</description>
+	<connection>local</connection>
 
 </addon:addon>

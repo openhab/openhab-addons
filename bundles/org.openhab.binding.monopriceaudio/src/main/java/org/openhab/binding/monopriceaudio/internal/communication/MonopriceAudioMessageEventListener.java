@@ -29,5 +29,5 @@ public interface MonopriceAudioMessageEventListener extends EventListener {
      *
      * @param event the MonopriceAudioMessageEvent
      */
-    public void onNewMessageEvent(MonopriceAudioMessageEvent event);
+    void onNewMessageEvent(MonopriceAudioMessageEvent event);
 }

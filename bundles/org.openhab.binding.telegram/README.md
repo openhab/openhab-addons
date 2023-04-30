@@ -1,37 +1,37 @@
 # Telegram Binding
 
-The Telegram binding allows sending and receiving messages to and from Telegram clients (https://telegram.org), by using the Telegram Bot API.
+The Telegram binding allows sending and receiving messages to and from Telegram clients (<https://telegram.org>), by using the Telegram Bot API.
 
 # Prerequisites
 
-As described in the Telegram Bot API (https://core.telegram.org/bots#6-botfather), this is the manual procedure needed in order to get the necessary information.
+As described in the Telegram Bot API (<https://core.telegram.org/bots#6-botfather>), this is the manual procedure needed in order to get the necessary information.
 
 1. Create a new Bot and get the Token
 
-- On a Telegram client open a chat with BotFather.
-- Send `/newbot` to BotFather and fill in all the needed information. The authentication token that is given will be needed in the next steps.
-- The token is a combination with double point separated parts of numbers and letters e.g.: 158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps
+    - On a Telegram client open a chat with BotFather.
+    - Send `/newbot` to BotFather and fill in all the needed information. The authentication token that is given will be needed in the next steps.
+    - The token is a combination with double point separated parts of numbers and letters e.g.: 158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps
 
-2. Create the destination chat
+1. Create the destination chat
 
-- Open a chat with your new Bot and send any message to it. The next step will not work unless you send a message to your bot first.
+    - Open a chat with your new Bot and send any message to it. The next step will not work unless you send a message to your bot first.
 
-3. Get the chatID
+1. Get the chatID
 
-- Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained e.g.:  `https://api.telegram.org/bot158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps/getUpdates`)
-- Look at the JSON result to find the value of `id`: that's the chatID.
+    - Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained e.g.:  `https://api.telegram.org/bot158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps/getUpdates`)
+    - Look at the JSON result to find the value of `id`: that's the chatID.
 
 Note that if using a Telegram group chat, the group chatIDs are prefixed with a dash that must be included in the config (e.g. `-22334455`).
-If this does not work for you (the JSON response may be empty), or you want to send to *more* than one recipient (= another chatID), the alternative is to contact (= open a chat with) a Telegram bot to respond with the chatID.
+If this does not work for you (the JSON response may be empty), or you want to send to _more_ than one recipient (= another chatID), the alternative is to contact (= open a chat with) a Telegram bot to respond with the chatID.
 There's a number of them such as `@myidbot` or `@chatid_echo_bot` - open a chat, eventually tap `/start` and it will return the chatID you're looking for.
 Another option is `@getidsbot` which gives you much more information.
 Note bots may work or not at any time so eventually you need to try another one.
 
-4. Test the bot
+1. Test the bot
 
-- Open this URL in your web browser, replacing <token> with the authentication token and <chatId> with the chatId:
-- `https://api.telegram.org/bot<token>/sendMessage?chat_id=<chatId>&text=testing`
-- Your Telegram-bot should send you a message with the text: `testing`
+    - Open this URL in your web browser, replacing <token> with the authentication token and <chatId> with the chatId:
+    - `https://api.telegram.org/bot<token>/sendMessage?chat_id=<chatId>&text=testing`
+    - Your Telegram-bot should send you a message with the text: `testing`
 
 **Notice:** By default your bot will only receive messages that either start with the '/' symbol or mention the bot by username (or if you talk to it directly).
 However, if you add your bot to a group you must either talk to BotFather and send the command "/setprivacy" and then disable it or you give admin rights to your bot in that group.
@@ -43,12 +43,12 @@ Otherwise you will not be able to receive those messages.
 
 The Telegram binding supports the following state channels which originate from the last message sent to the Telegram bot:
 
-* message text or URL
-* message date
-* full name of sender (first name + last name)
-* username of sender
-* chat id (used to identify the chat of the last message)
-* reply id (used to identify an answer from a user of a previously sent message by the binding)
+- message text or URL
+- message date
+- full name of sender (first name + last name)
+- username of sender
+- chat id (used to identify the chat of the last message)
+- reply id (used to identify an answer from a user of a previously sent message by the binding)
 
 There are also event channels that provide received messages or query callback responses as JSON payloads for easier handling in rules.
 
@@ -79,31 +79,31 @@ To use the reply function, chat ids need to be bi-directional.
 
 telegram.thing (no proxy):
 
-```
+```java
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN" ]
 ```
 
 telegram.thing (multiple chat ids, one bi-directional chat (ID1), one outbound-only (ID2)):
 
-```
+```java
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID1",">ID2", botToken="TOKEN" ]
 ```
 
 telegram.thing (markdown format):
 
-```
+```java
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", parseMode ="Markdown" ]
 ```
 
 telegram.thing (SOCKS5 proxy server is used):
 
-```
+```java
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="HOST", proxyPort="PORT", proxyType="TYPE" ]
 ```
 
 or HTTP proxy server
 
-```
+```java
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
 ```
 
@@ -174,7 +174,7 @@ See the [`CallbackQuery` class for details](https://github.com/pengrad/java-tele
 
 This binding includes a number of rule actions, which allow the sending of Telegram messages from within rules.
 
-```
+```java
 val telegramAction = getActions("telegram","telegram:telegramBot:<uid>")
 ```
 
@@ -182,7 +182,7 @@ where uid is the Thing UID of the Telegram thing (not the chat id!).
 
 Once this action instance is retrieved, you can invoke the `sendTelegram' method on it:
 
-```
+```java
 telegramAction.sendTelegram("Hello world!")
 ```
 
@@ -196,9 +196,9 @@ These actions will send a message to all chat ids configured for this bot.
 | Action                     | Description  |
 |----------------------------|--------------|
 | sendTelegram(String message) | Sends a message. |
-| sendTelegram(String format, Object... args)          | Sends a formatted message (See https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html for more information).
+| sendTelegram(String format, Object... args)          | Sends a formatted message (See <https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html> for more information).
 | sendTelegramQuery(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png). |
-| sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should *always* call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
+| sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should _always_ call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
 | sendTelegramPhoto(String photoURL, String caption) | Sends a picture. Can be one of the URL formats, see the Note below, or a base64 encoded image (simple base64 data or data URI scheme). |
 | sendTelegramPhoto(String photoURL, String caption, String username, String password) | Sends a picture which is downloaded from a username/password protected http/https address. |
 | sendTelegramAnimation(String animationURL, String caption) | Send animation files either GIF or H.264/MPEG-4 AVC video without sound. |
@@ -206,17 +206,17 @@ These actions will send a message to all chat ids configured for this bot.
 
 **Note:** In actions that require a file URL, the following formats are acceptable:
 
-+ http://foo.com/bar.jpg
-+ https://foo.com/bar.jpg
-+ file://c:\\foo\\bar.jpg
-+ c:\\foo\\bar.jpg
-+ /etc/openhab/html/bar.jpg
+- `http://foo.com/bar.jpg`
+- `https://foo.com/bar.jpg`
+- `file://c:\\foo\\bar.jpg`
+- `c:\\foo\\bar.jpg`
+- `/etc/openhab/html/bar.jpg`
 
 ### Actions to send messages to a particular chat
 
 Just put the chat id (must be a long value!) followed by an "L" as the first argument to one of the above mentioned APIs:
 
-```
+```java
 telegramAction.sendTelegram(1234567L, "Hello world!")
 ```
 
@@ -225,7 +225,7 @@ telegramAction.sendTelegram(1234567L, "Hello world!")
 This binding stores the `callbackId` and recalls it using the `replyId`, but this information is lost if openHAB restarts.
 If you store the `callbackId`, `chatId`, and optionally `messageId` somewhere that will be persisted when openHAB shuts down, you can use the following overload of `sendTelegramAnswer` to respond to any Callback Query.
 
-```
+```java
 telegramAction.sendTelegramAnswer(chatId, callbackId, messageId, message)
 ```
 
