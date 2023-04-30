@@ -418,7 +418,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                 List<StateOption> options = new ArrayList<>();
                 for (RunStateDTO runState : runStates.runStatesList) {
                     RunState state = runState.runState;
-                    logger.info("Found runstate: id={}, name={}, desc={}, isActive={}", state.id, state.name,
+                    logger.debug("Found runstate: id={}, name={}, desc={}, isActive={}", state.id, state.name,
                             state.definition, state.isActive);
                     options.add(new StateOption(state.name, state.name));
                     if ("1".equals(state.isActive)) {
