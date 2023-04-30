@@ -237,7 +237,7 @@ Example for users who still prefer configuration files.
 
 demo.things:
 
-```
+```java
 Thing gpio:pigpio-remote:mypi "MyPi GPIO" [ host="192.168.1.5", port=8888,
                                                 heartBeatInterval=10000,
                                                 inputConnectAction="REFRESH",      # REFRESH,NOTHING
@@ -267,11 +267,11 @@ Thing gpio:pigpio-remote:mypi "MyPi GPIO" [ host="192.168.1.5", port=8888,
                 Type pigpio-digital-input  : GPI13 [ gpioId=13,debouncingTime=50,pullupdown="DOWN",invert=false ]
                 Type pigpio-digital-input  : GPI26 [ gpioId=26,debouncingTime=50,pullupdown="OFF",invert=false ]
     } 
-```java
+```
 
 demo.items:
 
-```
+```java
 Switch SampleInput1 {channel="gpio:pigpio-remote:mypi:GPI23"}
 Switch SampleOutput1 {channel="gpio:pigpio-remote:mypi:GPO4"}
-```java
+```
