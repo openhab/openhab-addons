@@ -6,7 +6,7 @@
 	<thing-type uid="zoneminder:server">
 
 		<instruction-set targetVersion="1">
-			<add-channel id="runState"">
+			<add-channel id="runState">
 				<type>zoneminder:runState</type>
 			</add-channel>
 		</instruction-set>

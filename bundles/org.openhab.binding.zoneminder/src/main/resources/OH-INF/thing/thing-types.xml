@@ -23,9 +23,7 @@
 			<channel id="videoUrl" typeId="url">
 				<label>Video URL</label>
 			</channel>
-			<channel id="runState" typeId="runState">
-				<label>Run State</label>
-			</channel>
+			<channel id="runState" typeId="runState"/>
 		</channels>
 
 		<properties>
