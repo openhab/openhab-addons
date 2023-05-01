@@ -58,7 +58,7 @@ public class HueBridgeUPNPDiscoveryParticipant implements UpnpDiscoveryParticipa
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeUPNPDiscoveryParticipant.class);
 
-    private long removalGracePeriod = 0L;
+    private long removalGracePeriod = 50L;
 
     private boolean isAutoDiscoveryEnabled = true;
 
