@@ -97,63 +97,64 @@ public class HueBridgeUPNPDiscoveryParticipant implements UpnpDiscoveryParticipa
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        if (isAutoDiscoveryEnabled) {
-            DeviceDetails details = device.getDetails();
-            ThingUID uid = getThingUID(device);
-            if (details != null && uid != null) {
-                URL baseUrl = details.getBaseURL();
-                String serialNumber = details.getSerialNumber();
-                String label = details.getFriendlyName();
-                String modelName = EXPECTED_MODEL_NAME_PREFIX;
-                ModelDetails modelDetails = details.getModelDetails();
-                if (modelDetails != null && modelDetails.getModelName() != null
-                        && modelDetails.getModelNumber() != null) {
-                    modelName = String.format("%s (%s)", modelDetails.getModelName(), modelDetails.getModelNumber());
-                }
-                if (baseUrl != null && serialNumber != null && !serialNumber.isBlank() && label != null) {
-                    return DiscoveryResultBuilder.create(uid) //
-                            .withProperties(Map.of( //
-                                    HOST, baseUrl.getHost(), //
-                                    PORT, baseUrl.getPort(), //
-                                    PROTOCOL, baseUrl.getProtocol(), //
-                                    Thing.PROPERTY_MODEL_ID, modelName, //
-                                    Thing.PROPERTY_SERIAL_NUMBER, serialNumber.toLowerCase())) //
-                            .withLabel(label) //
-                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
-                            .build();
-                }
-            }
+        if (!isAutoDiscoveryEnabled) {
+            return null;
         }
-        return null;
+        DeviceDetails details = device.getDetails();
+        ThingUID uid = getThingUID(device);
+        if (details == null || uid == null) {
+            return null;
+        }
+        URL baseUrl = details.getBaseURL();
+        String serialNumber = details.getSerialNumber();
+        String label = details.getFriendlyName();
+        String modelName = EXPECTED_MODEL_NAME_PREFIX;
+        ModelDetails modelDetails = details.getModelDetails();
+        if (modelDetails != null && modelDetails.getModelName() != null && modelDetails.getModelNumber() != null) {
+            modelName = String.format("%s (%s)", modelDetails.getModelName(), modelDetails.getModelNumber());
+        }
+        if (baseUrl == null || serialNumber == null || serialNumber.isBlank() || label == null) {
+            return null;
+        }
+        return DiscoveryResultBuilder.create(uid) //
+                .withProperties(Map.of( //
+                        HOST, baseUrl.getHost(), //
+                        PORT, baseUrl.getPort(), //
+                        PROTOCOL, baseUrl.getProtocol(), //
+                        Thing.PROPERTY_MODEL_ID, modelName, //
+                        Thing.PROPERTY_SERIAL_NUMBER, serialNumber.toLowerCase())) //
+                .withLabel(label) //
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
+                .build();
     }
 
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         DeviceDetails details = device.getDetails();
-        if (details != null) {
-            String serialNumber = details.getSerialNumber();
-            ModelDetails modelDetails = details.getModelDetails();
-            if (serialNumber != null && !serialNumber.isBlank() && modelDetails != null) {
-                String modelName = modelDetails.getModelName();
-                // Model name has the format "Philips hue bridge <year>" with <year> being 2012
-                // for a hue bridge V1 or 2015 for a hue bridge V2.
-                if (modelName != null && modelName.startsWith(EXPECTED_MODEL_NAME_PREFIX)) {
-                    boolean ignored = false;
-                    try {
-                        int year = Integer.parseInt(modelName.substring(EXPECTED_MODEL_NAME_PREFIX.length()).trim());
-                        // The bridge is ignored if year is greater or equal to 2015
-                        ignored = year >= 2015;
-                    } catch (NumberFormatException e) {
-                        // No int value found, this bridge is ignored
-                        ignored = true;
-                    }
-                    if (!ignored) {
-                        return new ThingUID(THING_TYPE_BRIDGE, serialNumber.toLowerCase());
-                    }
-                }
-            }
+        if (details == null) {
+            return null;
         }
-        return null;
+        String serialNumber = details.getSerialNumber();
+        ModelDetails modelDetails = details.getModelDetails();
+        if (serialNumber == null || serialNumber.isBlank() || modelDetails == null) {
+            return null;
+        }
+        String modelName = modelDetails.getModelName();
+        // Model name has the format "Philips hue bridge <year>" with <year> being 2012
+        // for a hue bridge V1 or 2015 for a hue bridge V2.
+        if (modelName == null || !modelName.startsWith(EXPECTED_MODEL_NAME_PREFIX)) {
+            return null;
+        }
+        boolean ignored = false;
+        try {
+            int year = Integer.parseInt(modelName.substring(EXPECTED_MODEL_NAME_PREFIX.length()).trim());
+            // The bridge is ignored if year is greater or equal to 2015
+            ignored = year >= 2015;
+        } catch (NumberFormatException e) {
+            // No int value found, this bridge is ignored
+            ignored = true;
+        }
+        return ignored ? null : new ThingUID(THING_TYPE_BRIDGE, serialNumber.toLowerCase());
     }
 
     @Override
