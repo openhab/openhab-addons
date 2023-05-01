@@ -141,7 +141,7 @@ public class HueBridgeUPNPDiscoveryParticipant implements UpnpDiscoveryParticipa
                     boolean ignored = false;
                     try {
                         int year = Integer.parseInt(modelName.substring(EXPECTED_MODEL_NAME_PREFIX.length()).trim());
-                        // The bridge is ignored if year is lower than 2015
+                        // The bridge is ignored if year is greater or equal to 2015
                         ignored = year >= 2015;
                     } catch (NumberFormatException e) {
                         // No int value found, we consider the bridge
