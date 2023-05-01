@@ -8,6 +8,10 @@ The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ([AVM Hom
 
 ### FRITZ!Box
 
+Attention: If you changed the Fritz!Box Name to any value that is NOT "fritz.box", the configurion in the openhab UI is not working correctly. 
+Values from the chanels will shown as unknown, although the values will be updated (seen at logging interface) 
+You can solve the problem by typing "fritz.box" as the Fritz!Box name. 
+
 FRITZ!Boxes (thing type `fritzbox`) are supported as bridges and they offer channels for call monitoring.
 To activate the call monitor interface on a FRITZ!Box, you need to dial once `#96*5*` on a connected telephone.
 You should hear a short audio signal as confirmation.
