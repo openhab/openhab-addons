@@ -13,12 +13,15 @@
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -26,6 +29,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HaywardChlorinatorHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardChlorinatorHandler.class);
-    public String chlorTimedPercent = "";
-    public String chlorState = "";
+    private Map<String, State> channelStates = new HashMap<>();
 
     public HaywardChlorinatorHandler(Thing thing) {
         super(thing);
@@ -63,8 +66,8 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
 
                         // Timed Percent
                         data = bridgehandler.evaluateXPath("//Chlorinator/@Timed-Percent", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT, data.get(i));
-                        this.chlorTimedPercent = data.get(0);
+                        channelStates.putAll(
+                                updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT, data.get(i)));
 
                         // scMode
                         data = bridgehandler.evaluateXPath("//Chlorinator/@scMode", xmlResponse);
@@ -91,15 +94,9 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(i));
 
                         if ((Integer.parseInt(data.get(i)) & 128) > 0) {
-                            updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1");
-                            // chlorState is used to set the chlorinator cfgState in the timedPercent command
-                            // which is another way to enable/disable the chlorinator
-                            this.chlorState = "3";
+                            channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1"));
                         } else {
-                            updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0");
-                            // chlorState is used to set the chlorinator cfgState in the timedPercent command
-                            // which is another way to enable/disable the chlorinator
-                            this.chlorState = "2";
+                            channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0"));
                         }
                     }
                 }
@@ -130,16 +127,20 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                 try {
                     switch (channelUID.getId()) {
                         case HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE:
+                            chlorTimedPercent = channelStates
+                                    .get(HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT).format("%d");
                             if ("1".equals(cmdString)) {
                                 chlorCfgState = "3";
-                                chlorTimedPercent = this.chlorTimedPercent;
                             } else {
                                 chlorCfgState = "2";
-                                chlorTimedPercent = this.chlorTimedPercent;
                             }
                             break;
                         case HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT:
-                            chlorCfgState = this.chlorState;
+                            if (channelStates.get(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE) == OnOffType.ON) {
+                                chlorCfgState = "3";
+                            } else {
+                                chlorCfgState = "2";
+                            }
                             chlorTimedPercent = cmdString;
                             break;
                         default:
