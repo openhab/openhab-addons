@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,7 +31,6 @@ import org.openhab.persistence.influxdb.internal.InfluxDBConstants;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +42,7 @@ import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.Ready;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.exceptions.InfluxException;
 import com.influxdb.query.FluxTable;
 
 /**
@@ -120,34 +121,40 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public void write(InfluxPoint point) throws UnexpectedConditionException {
+    public boolean write(List<InfluxPoint> influxPoints) {
         final WriteApi currentWriteAPI = writeAPI;
-        if (currentWriteAPI != null) {
-            currentWriteAPI.writePoint(convertPointToClientFormat(point));
-        } else {
-            logger.warn("Write point {} ignored due to writeAPI isn't present", point);
+        if (currentWriteAPI == null) {
+            return false;
         }
+        try {
+            List<Point> clientPoints = influxPoints.stream().map(this::convertPointToClientFormat)
+                    .filter(Optional::isPresent).map(Optional::get).toList();
+            currentWriteAPI.writePoints(clientPoints);
+        } catch (InfluxException e) {
+            logger.debug("Writing to database failed", e);
+            return false;
+        }
+        return true;
     }
 
-    private Point convertPointToClientFormat(InfluxPoint point) throws UnexpectedConditionException {
+    private Optional<Point> convertPointToClientFormat(InfluxPoint point) {
         Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
-        setPointValue(point.getValue(), clientPoint);
-        point.getTags().forEach(clientPoint::addTag);
-        return clientPoint;
-    }
-
-    private void setPointValue(@Nullable Object value, Point point) throws UnexpectedConditionException {
+        @Nullable
+        Object value = point.getValue();
         if (value instanceof String) {
-            point.addField(FIELD_VALUE_NAME, (String) value);
+            clientPoint.addField(FIELD_VALUE_NAME, (String) value);
         } else if (value instanceof Number) {
-            point.addField(FIELD_VALUE_NAME, (Number) value);
+            clientPoint.addField(FIELD_VALUE_NAME, (Number) value);
         } else if (value instanceof Boolean) {
-            point.addField(FIELD_VALUE_NAME, (Boolean) value);
+            clientPoint.addField(FIELD_VALUE_NAME, (Boolean) value);
         } else if (value == null) {
-            point.addField(FIELD_VALUE_NAME, (String) null);
+            clientPoint.addField(FIELD_VALUE_NAME, (String) null);
         } else {
-            throw new UnexpectedConditionException("Not expected value type");
+            logger.warn("Could not convert {}, discarding this datapoint)", clientPoint);
+            return Optional.empty();
         }
+        point.getTags().forEach(clientPoint::addTag);
+        return Optional.of(clientPoint);
     }
 
     @Override
