@@ -223,7 +223,7 @@
 /bundles/org.openhab.binding.mynice/ @clinique
 /bundles/org.openhab.binding.myq/ @digitaldan
 /bundles/org.openhab.binding.mystrom/ @pail23
-/bundles/org.openhab.binding.nanoleaf/ @raepple @stefan-hoehn
+/bundles/org.openhab.binding.nanoleaf/ @stefan-hoehn
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @tmrobert8
 /bundles/org.openhab.binding.neohub/ @andrewfg
