@@ -18,9 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rainsoft.handler.AccountHandler;
-import org.openhab.binding.rainsoft.handler.ChimeHandler;
-import org.openhab.binding.rainsoft.handler.DoorbellHandler;
-import org.openhab.binding.rainsoft.handler.StickupcamHandler;
+import org.openhab.binding.rainsoft.handler.WCSHandler;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
@@ -69,8 +67,7 @@ public class RainSoftHandlerFactory extends BaseThingHandlerFactory {
 
         logger.debug("Using OH HTTP port {}", httpPort);
 
-        SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME,
-                THING_TYPE_STICKUPCAM);
+        SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_WCS);
     }
 
     @Override

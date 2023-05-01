@@ -27,6 +27,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.binding.rainsoft.internal.RestClient;
 
 /**
  * The handler for a Water Conditioning System.
@@ -46,13 +47,11 @@ public class WCSHandler extends RainSoftDeviceHandler {
         logger.debug("Initializing WCS handler");
         super.initialize();
 
-        // Configuration config = getThing().getConfiguration();
-
         RainSoftDeviceRegistry registry = RainSoftDeviceRegistry.getInstance();
         String id = getThing().getUID().getId();
         if (registry.isInitialized()) {
             try {
-                linkDevice(id, Doorbell.class);
+                linkDevice(id, WCS.class);
                 updateStatus(ThingStatus.ONLINE);
             } catch (DeviceNotFoundException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

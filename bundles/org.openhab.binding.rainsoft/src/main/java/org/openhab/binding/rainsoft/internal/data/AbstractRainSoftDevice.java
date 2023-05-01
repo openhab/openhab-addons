@@ -66,8 +66,8 @@ public abstract class AbstractRainSoftDevice implements RainSoftDevice {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public String getDeviceId() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_DEVICE_ID, "?").toString();
+    public String getModel() {
+        return jsonObject.getOrDefault(ApiConstants.DEVICE_MODEL, "?").toString();
     }
 
     /**
@@ -77,56 +77,8 @@ public abstract class AbstractRainSoftDevice implements RainSoftDevice {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public String getDescription() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_DESCRIPTION, "?").toString();
-    }
-
-    /**
-     * Get the device firmware version.
-     *
-     * @return the device firmware version.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getFirmwareVersion() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_FIRMWARE_VERSION, "?").toString();
-    }
-
-    /**
-     * Get the device time zone.
-     *
-     * @return the device time zone.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getTimeZone() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_TIME_ZONE, "?").toString();
-    }
-
-    /**
-     * Get the device kind.
-     *
-     * @return the device kind.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getKind() {
-        return jsonObject.getOrDefault(ApiConstants.DEVICE_KIND, "?").toString();
-    }
-
-    /**
-     * Get battery level
-     *
-     * @return battery level (%)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public Integer getBattery() {
-        if (jsonObject.getOrDefault(ApiConstants.DEVICE_BATTERY, "-1") != null) {
-            return Integer.parseInt(jsonObject.getOrDefault(ApiConstants.DEVICE_BATTERY, "-1").toString());
-        } else {
-            return 0;
-        }
+    public String getName() {
+        return jsonObject.getOrDefault(ApiConstants.DEVICE_NAME, "?").toString();
     }
 
     /**

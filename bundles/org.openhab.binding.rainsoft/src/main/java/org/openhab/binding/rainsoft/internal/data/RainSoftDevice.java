@@ -36,42 +36,14 @@ public interface RainSoftDevice {
      *
      * @return the device device_id.
      */
-    public String getDeviceId();
+    public String getModel();
 
     /**
      * Get the device description.
      *
      * @return the device description.
      */
-    public String getDescription();
-
-    /**
-     * Get the device firmware version.
-     *
-     * @return the device firmware version.
-     */
-    public String getFirmwareVersion();
-
-    /**
-     * Get the device time zone.
-     *
-     * @return the device time zone.
-     */
-    public String getTimeZone();
-
-    /**
-     * Get the device kind.
-     *
-     * @return the device kind.
-     */
-    public String getKind();
-
-    /**
-     * Get battery level
-     *
-     * @return battery level (%)
-     */
-    public Integer getBattery();
+    public String getName();
 
     /**
      * Get the DiscoveryResult object to identify the device as

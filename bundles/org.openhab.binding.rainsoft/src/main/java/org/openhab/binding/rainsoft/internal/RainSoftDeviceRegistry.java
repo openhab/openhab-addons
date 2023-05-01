@@ -62,7 +62,7 @@ public class RainSoftDeviceRegistry {
      */
     public static RainSoftDeviceRegistry getInstance() {
         if (instance == null) {
-            synchronized (RainsoftDeviceRegistry.class) {
+            synchronized (RainSoftDeviceRegistry.class) {
                 if (instance == null) {
                     instance = new RainSoftDeviceRegistry();
                 }
@@ -79,9 +79,10 @@ public class RainSoftDeviceRegistry {
             logger.debug("Ignoring null rainSoftDevice");
         } else {
             if (devices.containsKey(rainSoftDevice.getId())) {
-                // logger.trace("RainSoft device with duplicate id " + rainSoftDevice.getId() + " ignored");
+                logger.trace("RainSoft device with duplicate id {} ignored",rainSoftDevice.getId());
                 throw new DuplicateIdException("RainSoft device with duplicate id " + rainSoftDevice.getId() + " ignored");
             } else {
+                logger.debug("New RainSoft device with id {} added",rainSoftDevice.getId());
                 rainSoftDevice.setRegistrationStatus(Status.ADDED);
                 devices.put(rainSoftDevice.getId(), rainSoftDevice);
             }
@@ -110,6 +111,10 @@ public class RainSoftDeviceRegistry {
      */
     public boolean isInitialized() {
         return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 
     /**

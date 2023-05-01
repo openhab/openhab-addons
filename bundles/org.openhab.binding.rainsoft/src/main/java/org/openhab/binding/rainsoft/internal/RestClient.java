@@ -47,11 +47,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.openhab.binding.rainsoft.internal.data.DataFactory;
 import org.openhab.binding.rainsoft.internal.data.ParamBuilder;
-import org.openhab.binding.rainsoft.internal.data.Profile;
 import org.openhab.binding.rainsoft.internal.data.RainSoftDevices;
-import org.openhab.binding.rainsoft.internal.data.RainSoftEvent;
 import org.openhab.binding.rainsoft.internal.errors.AuthenticationException;
 import org.openhab.binding.rainsoft.internal.utils.RainSoftUtils;
 import org.slf4j.Logger;
@@ -79,93 +76,8 @@ public class RestClient {
      * @param endPoint
      */
     public RestClient() {
-        logger.info("Creating RainSoft client for API version {} on endPoint {}", ApiConstants.API_VERSION,
+        logger.info("Creating RainSoft client for API on endPoint {}",
                 ApiConstants.API_BASE);
-    }
-
-    /**
-     * Post data to given url
-     *
-     * @param url
-     * @param data
-     * @param unamePassword username:password if applicable, otherwise null
-     * @return the servers response
-     * @throws AuthenticationException
-     *
-     */
-
-    private String postRequest(String resourceUrl, String data, String oauth_token) throws AuthenticationException {
-        String result = null;
-        logger.trace("RestClient - postRequest: {} - {} - {}", resourceUrl, data, oauth_token);
-        try {
-            byte[] postData = data.getBytes(StandardCharsets.UTF_8);
-            StringBuilder output = new StringBuilder();
-            URL url = new URL(resourceUrl);
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.setDoInput(true);
-            conn.setUseCaches(false);
-            conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setRequestProperty("Authorization", "Bearer " + oauth_token);
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-            // SSL setting
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-            } }, null);
-            conn.setSSLSocketFactory(context.getSocketFactory());
-            conn.setRequestMethod(METHOD_POST);
-
-            // conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset: UTF-8");
-            conn.setRequestProperty("X-API-LANG", "en");
-            conn.setRequestProperty("Content-length", "gzip, deflate");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-
-            OutputStream out = conn.getOutputStream();
-            out.write(postData);
-            logger.debug("RestApi postRequest: {}, response code: {}, message {}.", resourceUrl, conn.getResponseCode(),
-                    conn.getResponseMessage());
-            switch (conn.getResponseCode()) {
-                case 200:
-                case 201:
-                    break;
-                case 400:
-                case 401:
-                    throw new AuthenticationException("Invalid username or password");
-                default:
-                    logger.error("Unhandled http response code: {}", conn.getResponseCode());
-                    throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-            String line;
-            while ((line = br.readLine()) != null) {
-                output.append(line);
-            }
-            conn.disconnect();
-            result = output.toString();
-            logger.trace("RestApi postRequest response: {}.", result);
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
-            logger.error("RestApi error in postRequest!", ex);
-            // ex.printStackTrace();
-        }
-        return result;
     }
 
     /**
@@ -176,7 +88,7 @@ public class RestClient {
      * @return the servers response
      * @throws AuthenticationException
      */
-    private String getRequest(String resourceUrl, Profile profile) throws AuthenticationException {
+    private String getRequest(String resourceUrl, String authToken) throws AuthenticationException {
         String result = null;
         logger.trace("RestClient - getRequest: {}", resourceUrl);
         try {
@@ -185,7 +97,8 @@ public class RestClient {
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
-            conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
+            conn.setRequestProperty("Accept", ApiConstants.API_ACCEPT_JSON);
+            conn.setRequestProperty("Content-Type", ApiConstants.API_CONTENT_TYPE);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
@@ -211,9 +124,7 @@ public class RestClient {
             conn.setSSLSocketFactory(context.getSocketFactory());
             conn.setRequestMethod(METHOD_GET);
 
-            conn.setRequestProperty("cache-control", "no-cache");
-            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("authorization", "Bearer " + profile.getAccessToken());
+            conn.setRequestProperty("X-Remind-Auth-Token", authToken);
 
             conn.setDoOutput(true);
             conn.setConnectTimeout(12000);
@@ -242,9 +153,6 @@ public class RestClient {
             }
             conn.disconnect();
             result = output.toString();
-            if (!result.startsWith("[{\"id\"")) { // Ignore ding results
-                logger.trace("RestApi getRequest response: {}.", result);
-            }
         } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
             logger.debug("RestApi error in getRequest!", ex);
             // ex.printStackTrace();
@@ -262,31 +170,19 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws ParseException
      */
-    public Profile getAuthenticatedProfile(String username, String password, String refreshToken, String twofactorCode,
-            String hardwareId) throws AuthenticationException, ParseException {
+    public String getAuthenticatedProfile(String username, String password) throws AuthenticationException, ParseException {
 
-        String refToken = refreshToken;
+        logger.debug("RestClient - getAuthenticatedProfile U:{} - P:{}",
+                RainSoftUtils.sanitizeData(username), RainSoftUtils.sanitizeData(password));
 
-        logger.debug("RestClient - getAuthenticatedProfile U:{} - P:{} - R:{} - 2:{} - H:{}",
-                RainSoftUtils.sanitizeData(username), RainSoftUtils.sanitizeData(password),
-                RainSoftUtils.sanitizeData(refreshToken), RainSoftUtils.sanitizeData(twofactorCode),
-                RainSoftUtils.sanitizeData(hardwareId));
-
-        if ((twofactorCode != null) && (!twofactorCode.equals(""))) {
-            logger.debug("RestClient - getAuthenticatedProfile - valid 2fa - run getAuthCode");
-            refToken = getAuthCode(twofactorCode, username, password, hardwareId);
-        }
-
-        JSONObject oauthToken = get_oauth_token(username, password, refToken);
-        String jsonResult = postRequest(ApiConstants.URL_SESSION, DataFactory.getSessionParams(hardwareId),
-                oauthToken.get("access_token").toString());
-        JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
-        return new Profile((JSONObject) obj.get("profile"), oauthToken.get("refresh_token").toString(),
-                oauthToken.get("access_token").toString());
+        JSONObject authToken = get_auth_token(username, password);
+        String token = authToken.get("authentication_token").toString();
+        logger.debug("RestClient - getAuthenticatedProfile T:{}",RainSoftUtils.sanitizeData(token));
+        return token;
     }
 
     /**
-     * Get a (new) oAuth token.
+     * Get a (new) auth token.
      *
      * @param username the username of the RainSoft account.
      * @param password the password for the RainSoft account.
@@ -294,37 +190,26 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws ParseException
      */
-    private JSONObject get_oauth_token(String username, String password, String refreshToken)
+    private JSONObject get_auth_token(String username, String password)
             throws AuthenticationException, ParseException {
 
-        logger.debug("RestClient - get_oauth_token {} - {} - {}", RainSoftUtils.sanitizeData(username),
-                RainSoftUtils.sanitizeData(password), RainSoftUtils.sanitizeData(refreshToken));
+        logger.debug("RestClient - get_auth_token {} - {}", RainSoftUtils.sanitizeData(username),
+                RainSoftUtils.sanitizeData(password));
 
         String result = null;
         JSONObject oauth_token = null;
-        String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
+        String resourceUrl = ApiConstants.URL_LOGIN;
         try {
             Map<String, String> map = new HashMap<String, String>();
 
-            map.put("client_id", "ring_official_android");
-            map.put("scope", "client");
-            if (refreshToken == null || refreshToken.equals("")) {
-                logger.debug("RestClient - get_oauth_token - refreshToken null or empty {}",
-                        RainSoftUtils.sanitizeData(refreshToken));
-                map.put("grant_type", "password");
-                map.put("username", username);
+                map.put("email", username);
                 map.put("password", password);
-            } else {
-                logger.debug("RestClient - get_oauth_token - refreshToken NOT null or empty {}",
-                        RainSoftUtils.sanitizeData(refreshToken));
-                map.put("grant_type", "refresh_token");
-                map.put("refresh_token", refreshToken);
-            }
             URL url = new URL(resourceUrl);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setUseCaches(false);
-            conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
+            conn.setRequestProperty("Accept", ApiConstants.API_ACCEPT_JSON);
+            conn.setRequestProperty("Content-Type", ApiConstants.API_CONTENT_TYPE);
             conn.setHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
@@ -350,7 +235,6 @@ public class RestClient {
             conn.setSSLSocketFactory(context.getSocketFactory());
             conn.setRequestMethod(METHOD_POST);
 
-            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset: UTF-8");
             conn.setDoOutput(true);
             conn.setConnectTimeout(CONNECTION_TIMEOUT);
 
@@ -366,19 +250,13 @@ public class RestClient {
             OutputStream os = conn.getOutputStream();
             os.write(out);
 
-            logger.debug("RestClient get_oauth_token: {}, response code: {}, message {}.", resourceUrl,
+            logger.debug("RestClient get_auth_token: {}, response code: {}, message {}.", resourceUrl,
                     conn.getResponseCode(), conn.getResponseMessage());
 
             switch (conn.getResponseCode()) {
                 case 200:
                 case 201:
                     break;
-                case 400:
-                    throw new AuthenticationException("Two factor authentication enabled, enter code");
-                case 412:
-                    if (conn.getResponseMessage().startsWith("Precondition")) {
-                        throw new AuthenticationException("Two factor authentication enabled, enter code");
-                    }
                 case 401:
                     throw new AuthenticationException("Invalid username or password.");
                 default:
@@ -412,193 +290,36 @@ public class RestClient {
         return baos;
     }
 
-    public Boolean refresh_session(String refreshToken) {
-        logger.debug("RestClient - refresh_session {}", RainSoftUtils.sanitizeData(refreshToken));
-        String result = null;
-        String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
-        try {
-            Map<String, String> map = new HashMap<String, String>();
-
-            map.put("grant_type", "refresh_token");
-            map.put("refresh_token", refreshToken);
-
-            URL url = new URL(resourceUrl);
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.setDoInput(true);
-            conn.setUseCaches(false);
-            conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-            // SSL setting
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-            } }, null);
-            conn.setSSLSocketFactory(context.getSocketFactory());
-            conn.setRequestMethod(METHOD_POST);
-
-            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset: UTF-8");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-
-            StringJoiner sj = new StringJoiner("&");
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8"));
-            }
-            byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
-            int length = out.length;
-
-            conn.setFixedLengthStreamingMode(length);
-            conn.connect();
-            OutputStream os = conn.getOutputStream();
-            os.write(out);
-
-            switch (conn.getResponseCode()) {
-                case 200:
-                case 201:
-                    break;
-                case 400:
-                case 401:
-                    return false;
-                default:
-                    logger.error("Unhandled http response code: {}", conn.getResponseCode());
-                    return false;
-            }
-            logger.debug("RestApi resource: {}, response code: {}.", resourceUrl, conn.getResponseCode());
-
-            result = readFullyAsString(conn.getInputStream(), "UTF-8");
-            conn.disconnect();
-
-            logger.debug("RestApi response: {}.", result);
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
-            logger.error("ERROR!", ex);
-            // ex.printStackTrace();
-        }
-        return true;
+    public String getCustomerId(String authToken) throws AuthenticationException, ParseException {
+        String jsonResult = getRequest(ApiConstants.URL_CUSTOMER, authToken);
+        JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
+        String customerId = obj.get("id").toString();
+        logger.debug("RestClient - getCustomerId ID:{}",customerId);
+        return customerId;
     }
 
-    /**
-     * Post data to given url
-     *
-     * @param url
-     * @param data
-     * @param unamePassword username:password if applicable, otherwise null
-     * @return the servers response
-     * @throws AuthenticationException
-     *
-     */
+    public String getLocations(String customerId, String authToken) throws AuthenticationException, ParseException {
+        String jsonResult = getRequest(ApiConstants.URL_LOCATIONS + "/" + customerId, authToken);
+        logger.debug("RestClient - getLocations ID:{}", jsonResult);
+        return jsonResult;
+    }
 
-    private String getAuthCode(String authCode, String username, String password, String hardwareId)
-            throws AuthenticationException {
-        logger.debug("RestClient - getAuthCode A:{} - U:{} - P:{} - H:{}", RainSoftUtils.sanitizeData(authCode),
-                RainSoftUtils.sanitizeData(username), RainSoftUtils.sanitizeData(password), RainSoftUtils.sanitizeData(hardwareId));
+    public String getDevice(String deviceId, String authToken) throws AuthenticationException, ParseException {
+        String jsonResult = getRequest(ApiConstants.URL_DEVICE + "/" + deviceId, authToken);
+        logger.debug("RestClient - getDevice ID:{}", jsonResult);
+        return jsonResult;
+    }
 
-        String result = "";
+    public String getWaterUsage(String deviceId, String authToken) throws AuthenticationException, ParseException {
+        String jsonResult = getRequest(ApiConstants.URL_DEVICE + "/" + deviceId + "/water_usage", authToken);
+        logger.debug("RestClient - getWaterUsage ID:{}", jsonResult);
+        return jsonResult;
+    }
 
-        String resourceUrl = ApiConstants.API_OAUTH_ENDPOINT;
-        try {
-            ParamBuilder pb = new ParamBuilder(false);
-            pb.add("client_id", "ring_official_android");
-            pb.add("scope", "client");
-            pb.add("grant_type", "password");
-            pb.add("password", password);
-            pb.add("username", username);
-
-            URL url = new URL(resourceUrl);
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.setDoInput(true);
-            conn.setUseCaches(false);
-            conn.setRequestProperty("X-API-LANG", "en");
-            conn.setRequestProperty("Content-length", "gzip, deflate");
-            conn.setRequestProperty("2fa-support", "true");
-            conn.setRequestProperty("2fa-code", authCode);
-            conn.setRequestProperty("hardware_id", hardwareId);
-            conn.setRequestProperty("User-Agent", ApiConstants.API_USER_AGENT);
-            conn.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-            // SSL setting
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new TrustManager[] { new javax.net.ssl.X509TrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-            } }, null);
-
-            conn.setSSLSocketFactory(context.getSocketFactory());
-            conn.setRequestMethod(METHOD_POST);
-
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-
-            byte[] out = pb.toString().getBytes(StandardCharsets.UTF_8);
-            int length = out.length;
-
-            conn.connect();
-            OutputStream os = conn.getOutputStream();
-            os.write(out);
-
-            logger.info("RestApi getAuthCode: {}, response code: {}, message {}.", resourceUrl, conn.getResponseCode(),
-                    conn.getResponseMessage());
-            String tmp = conn.getResponseMessage();
-
-            switch (conn.getResponseCode()) {
-                case 200:
-                case 201:
-                    break;
-                case 400:
-                    throw new AuthenticationException("2 factor enabled, enter code");
-                case 412:
-                    if (conn.getResponseMessage().startsWith("Verification Code")) {
-                        throw new AuthenticationException("2 factor enabled, enter code");
-                    }
-                case 401:
-                    throw new AuthenticationException("Invalid username or password.");
-                default:
-                    logger.error("Unhandled http response code: {}", conn.getResponseCode());
-                    throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-            }
-
-            result = readFullyAsString(conn.getInputStream(), "UTF-8");
-            conn.disconnect();
-
-            JSONObject refToken = (JSONObject) new JSONParser().parse(result);
-            result = refToken.get("refresh_token").toString();
-            logger.debug("RestClient - getAuthCode response: {}.", RainSoftUtils.sanitizeData(result));
-        } catch (IOException | KeyManagementException | NoSuchAlgorithmException ex) {
-            logger.error("Error getting auth code!", ex);
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            logger.error("Error parsing refToken", e);
-        }
-        return result;
+    public String getSaltUsage(String deviceId, String authToken) throws AuthenticationException, ParseException {
+        String jsonResult = getRequest(ApiConstants.URL_DEVICE + "/" + deviceId + "/salt_usage", authToken);
+        logger.debug("RestClient - getSaltUsage ID:{}", jsonResult);
+        return jsonResult;
     }
 
     /**
@@ -609,36 +330,11 @@ public class RestClient {
      * @throws AuthenticationException when request is invalid.
      * @throws ParseException when response is invalid JSON.
      */
-    public RainSoftDevices getRainSoftDevices(Profile profile, RainSoftAccount rainSoftAccount)
+    public RainSoftDevices getRainSoftDevices(String authToken, RainSoftAccount rainSoftAccount)
             throws ParseException, AuthenticationException {
-        String jsonResult = getRequest(ApiConstants.URL_DEVICES, profile);// DataFactory.getDevicesParams(profile));
+        String jsonResult = getRequest(ApiConstants.URL_DEVICE, authToken);
         JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
         return new RainSoftDevices(obj, rainSoftAccount);
-    }
-
-    /**
-     * Get a List with the last recorded events, newest on top.
-     *
-     * @param profile the Profile previously retrieved when authenticating.
-     * @param limit the maximum number of events.
-     * @return
-     * @throws AuthenticationException
-     * @throws ParseException
-     */
-    public synchronized List<RainSoftEvent> getHistory(Profile profile, int limit)
-            throws AuthenticationException, ParseException {
-
-        String jsonResult = getRequest(ApiConstants.URL_HISTORY + "?limit=" + limit, profile);
-        if (jsonResult != null) {
-            JSONArray obj = (JSONArray) new JSONParser().parse(jsonResult);
-            List<RainSoftEvent> result = new ArrayList<>(limit);
-            for (Object jsonEvent : obj.toArray()) {
-                result.add(new RainSoftEvent((JSONObject) jsonEvent));
-            }
-            return result;
-        } else {
-            return new ArrayList<>(0);
-        }
     }
 
 }

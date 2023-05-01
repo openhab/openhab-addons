@@ -18,7 +18,8 @@ package org.openhab.binding.rainsoft.internal;
 
 public class ApiConstants {
     // API resources
-    public static final String API_USER_AGENT = "OpenHAB RainSoft Binding";
+    public static final String API_ACCEPT_JSON = "application/json";
+    public static final String API_CONTENT_TYPE = "application/x-www-form-urlencoded";
     public static final String API_BASE = "https://remind.rainsoft.com/api/remindapp/v2";
     public static final String URL_LOGIN = API_BASE + "/login";
     public static final String URL_CUSTOMER = API_BASE + "/customer";
@@ -60,10 +61,6 @@ public class ApiConstants {
 
     // JSON data names for generic devices
     public static final String DEVICE_ID = "id";
-    public static final String DEVICE_DESCRIPTION = "description";
-    public static final String DEVICE_DEVICE_ID = "device_id";
-    public static final String DEVICE_FIRMWARE_VERSION = "firmware_version";
-    public static final String DEVICE_TIME_ZONE = "time_zone";
-    public static final String DEVICE_KIND = "kind";
-    public static final String DEVICE_BATTERY = "battery_life";
+    public static final String DEVICE_MODEL = "model";
+    public static final String DEVICE_NAME = "name";
 }

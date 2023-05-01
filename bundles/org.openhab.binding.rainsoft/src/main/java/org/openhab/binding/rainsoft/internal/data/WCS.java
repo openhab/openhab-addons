@@ -41,7 +41,7 @@ public class WCS extends AbstractRainSoftDevice {
     @Override
     public DiscoveryResult getDiscoveryResult() {
         DiscoveryResult result = DiscoveryResultBuilder.create(new ThingUID("rainsoft:wcs:" + getId()))
-                .withLabel("RainSoft Video WCS - " + getDescription()).build();
+                .withLabel("RainSoft WCS - " + getName()).build();
         return result;
     }
 }

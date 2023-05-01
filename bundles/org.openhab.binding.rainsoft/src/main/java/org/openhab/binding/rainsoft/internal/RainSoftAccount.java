@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.rainsoft.internal;
 
-import org.openhab.binding.rainsoft.internal.data.Profile;
-
 /**
  * The AccountHandler implements this interface to facilitate the
  * use of the common services.
@@ -29,10 +27,4 @@ public interface RainSoftAccount {
      */
     public RestClient getRestClient();
 
-    /**
-     * Get the linked user profile.
-     *
-     * @return the user profile.
-     */
-    public Profile getProfile();
 }

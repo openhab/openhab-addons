@@ -62,9 +62,9 @@ public abstract class RainSoftDeviceHandler extends AbstractRainSoftHandler {
         if (device.getClass().equals(deviceClass)) {
             device.setRegistrationStatus(RainSoftDeviceRegistry.Status.CONFIGURED);
             device.setRainSoftDeviceHandler(this);
-            thing.setProperty("Description", device.getDescription());
-            thing.setProperty("Kind", device.getKind());
-            thing.setProperty("Device ID", device.getDeviceId());
+            //thing.setProperty("Description", device.getDescription());
+            //thing.setProperty("Kind", device.getKind());
+            //thing.setProperty("Device ID", device.getDeviceId());
         } else {
             throw new IllegalDeviceClassException(
                     "Class '" + deviceClass.getName() + "' expected but '" + device.getClass().getName() + "' found.");
@@ -76,42 +76,5 @@ public abstract class RainSoftDeviceHandler extends AbstractRainSoftHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof Number || command instanceof RefreshType || command instanceof IncreaseDecreaseType
-                || command instanceof UpDownType) {
-            switch (channelUID.getId()) {
-                case CHANNEL_CONTROL_ENABLED:
-                    updateState(channelUID, enabled);
-                    break;
-                case CHANNEL_STATUS_BATTERY:
-                    updateState(channelUID, new DecimalType(device.getBattery().toString()));
-                    break;
-                default:
-                    logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-                    break;
-            }
-            refreshState();
-        } else if (command instanceof OnOffType) {
-            OnOffType xcommand = (OnOffType) command;
-            switch (channelUID.getId()) {
-                case CHANNEL_CONTROL_ENABLED:
-                    if (!enabled.equals(xcommand)) {
-                        enabled = xcommand;
-                        updateState(channelUID, enabled);
-                        if (enabled.equals(OnOffType.ON)) {
-                            Configuration config = getThing().getConfiguration();
-                            Integer refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
-                            startAutomaticRefresh(refreshInterval);
-                        } else {
-                            stopAutomaticRefresh();
-                        }
-                    }
-                    break;
-                default:
-                    logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-                    break;
-            }
-        } else {
-            logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
-        }
     }
 }
