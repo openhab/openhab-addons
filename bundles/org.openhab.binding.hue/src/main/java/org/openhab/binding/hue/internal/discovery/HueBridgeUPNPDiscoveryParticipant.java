@@ -144,7 +144,8 @@ public class HueBridgeUPNPDiscoveryParticipant implements UpnpDiscoveryParticipa
                         // The bridge is ignored if year is greater or equal to 2015
                         ignored = year >= 2015;
                     } catch (NumberFormatException e) {
-                        // No int value found, we consider the bridge
+                        // No int value found, this bridge is ignored
+                        ignored = true;
                     }
                     if (!ignored) {
                         return new ThingUID(THING_TYPE_BRIDGE, serialNumber.toLowerCase());
