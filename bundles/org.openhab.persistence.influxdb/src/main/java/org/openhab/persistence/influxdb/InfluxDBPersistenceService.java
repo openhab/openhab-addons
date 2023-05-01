@@ -270,7 +270,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
      * <p />
      * The method is package-private for testing.
      *
-     * @param item the {@link Item} tghat needs conversion
+     * @param item the {@link Item} that needs conversion
      * @param storeAlias an (optional) alias for the item
      * @return a {@link CompletableFuture} that contains either <code>null</code> for item states that cannot be
      *         converted or the corresponding {@link InfluxPoint}
