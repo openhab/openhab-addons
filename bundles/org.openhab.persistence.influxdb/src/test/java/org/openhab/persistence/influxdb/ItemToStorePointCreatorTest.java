@@ -10,19 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.influxdb.internal;
+package org.openhab.persistence.influxdb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,11 +33,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.items.NumberItem;
-import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
+import org.openhab.persistence.influxdb.internal.InfluxDBConstants;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
+import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
+import org.openhab.persistence.influxdb.internal.InfluxPoint;
+import org.openhab.persistence.influxdb.internal.ItemTestHelper;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
@@ -44,33 +52,27 @@ import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 @NonNullByDefault(value = { DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE })
 public class ItemToStorePointCreatorTest {
 
-    private @Mock InfluxDBConfiguration influxDBConfiguration;
+    private static final Map<String, Object> BASE_CONFIGURATION = Map.of( //
+            URL_PARAM, "http://localhost:8086", //
+            VERSION_PARAM, InfluxDBVersion.V1.name(), //
+            USER_PARAM, "user", PASSWORD_PARAM, "password", //
+            DATABASE_PARAM, "openhab", //
+            RETENTION_POLICY_PARAM, "default");
+
+    private @Mock ItemRegistry itemRegistryMock;
     private @Mock MetadataRegistry metadataRegistry;
-    private ItemToStorePointCreator instance;
+    private InfluxDBPersistenceService instance;
 
     @BeforeEach
-    public void before() {
-        InfluxDBMetadataService influxDBMetadataService = new InfluxDBMetadataService(metadataRegistry);
-        when(influxDBConfiguration.isAddCategoryTag()).thenReturn(false);
-        when(influxDBConfiguration.isAddLabelTag()).thenReturn(false);
-        when(influxDBConfiguration.isAddTypeTag()).thenReturn(false);
-        when(influxDBConfiguration.isReplaceUnderscore()).thenReturn(false);
-
-        instance = new ItemToStorePointCreator(influxDBConfiguration, influxDBMetadataService);
-    }
-
-    @AfterEach
-    public void after() {
-        instance = null;
-        influxDBConfiguration = null;
-        metadataRegistry = null;
+    public void setup() {
+        instance = getService(false, false, false, false);
     }
 
     @ParameterizedTest
     @MethodSource
-    public void convertBasicItem(Number number) {
+    public void convertBasicItem(Number number) throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", number);
-        InfluxPoint point = instance.convert(item, null);
+        InfluxPoint point = instance.convert(item, null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -88,9 +90,9 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
-    public void shouldUseAliasAsMeasurementNameIfProvided() {
+    public void shouldUseAliasAsMeasurementNameIfProvided() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
-        InfluxPoint point = instance.convert(item, "aliasName");
+        InfluxPoint point = instance.convert(item, "aliasName").get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -101,12 +103,12 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
-    public void shouldStoreCategoryTagIfProvidedAndConfigured() {
+    public void shouldStoreCategoryTagIfProvidedAndConfigured() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         item.setCategory("categoryValue");
 
-        when(influxDBConfiguration.isAddCategoryTag()).thenReturn(true);
-        InfluxPoint point = instance.convert(item, null);
+        instance = getService(false, true, false, false);
+        InfluxPoint point = instance.convert(item, null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -115,8 +117,8 @@ public class ItemToStorePointCreatorTest {
 
         assertThat(point.getTags(), hasEntry(InfluxDBConstants.TAG_CATEGORY_NAME, "categoryValue"));
 
-        when(influxDBConfiguration.isAddCategoryTag()).thenReturn(false);
-        point = instance.convert(item, null);
+        instance = getService(false, false, false, false);
+        point = instance.convert(item, null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -127,11 +129,11 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
-    public void shouldStoreTypeTagIfProvidedAndConfigured() {
+    public void shouldStoreTypeTagIfProvidedAndConfigured() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
 
-        when(influxDBConfiguration.isAddTypeTag()).thenReturn(true);
-        InfluxPoint point = instance.convert(item, null);
+        instance = getService(false, false, false, true);
+        InfluxPoint point = instance.convert(item, null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -140,8 +142,8 @@ public class ItemToStorePointCreatorTest {
 
         assertThat(point.getTags(), hasEntry(InfluxDBConstants.TAG_TYPE_NAME, "Number"));
 
-        when(influxDBConfiguration.isAddTypeTag()).thenReturn(false);
-        point = instance.convert(item, null);
+        instance = getService(false, false, false, false);
+        point = instance.convert(item, null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -152,12 +154,12 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
-    public void shouldStoreTypeLabelIfProvidedAndConfigured() {
+    public void shouldStoreTypeLabelIfProvidedAndConfigured() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         item.setLabel("ItemLabel");
 
-        when(influxDBConfiguration.isAddLabelTag()).thenReturn(true);
-        InfluxPoint point = instance.convert(item, null);
+        instance = getService(false, false, true, false);
+        InfluxPoint point = instance.convert(item, null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -166,8 +168,8 @@ public class ItemToStorePointCreatorTest {
 
         assertThat(point.getTags(), hasEntry(InfluxDBConstants.TAG_LABEL_NAME, "ItemLabel"));
 
-        when(influxDBConfiguration.isAddLabelTag()).thenReturn(false);
-        point = instance.convert(item, null);
+        instance = getService(false, false, false, false);
+        point = instance.convert(item, null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -178,14 +180,14 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
-    public void shouldStoreMetadataAsTagsIfProvided() {
+    public void shouldStoreMetadataAsTagsIfProvided() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, item.getName());
 
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
-        InfluxPoint point = instance.convert(item, null);
+        InfluxPoint point = instance.convert(item, null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -197,18 +199,18 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
-    public void shouldUseMeasurementNameFromMetadataIfProvided() {
+    public void shouldUseMeasurementNameFromMetadataIfProvided() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, item.getName());
 
-        InfluxPoint point = instance.convert(item, null);
+        InfluxPoint point = instance.convert(item, null).get();
         if (point == null) {
             Assertions.fail();
             return;
         }
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
 
-        point = instance.convert(item, null);
+        point = instance.convert(item, null).get();
         if (point == null) {
             Assertions.fail();
             return;
@@ -219,7 +221,7 @@ public class ItemToStorePointCreatorTest {
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "measurementName", Map.of("key1", "val1", "key2", "val2")));
 
-        point = instance.convert(item, null);
+        point = instance.convert(item, null).get();
         if (point == null) {
             Assertions.fail();
             return;
@@ -230,12 +232,30 @@ public class ItemToStorePointCreatorTest {
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
-        point = instance.convert(item, null);
+        point = instance.convert(item, null).get();
         if (point == null) {
             Assertions.fail();
             return;
         }
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
         assertThat(point.getTags(), hasEntry("item", item.getName()));
+    }
+
+    private InfluxDBPersistenceService getService(boolean replaceUnderscore, boolean category, boolean label,
+            boolean typeTag) {
+        InfluxDBMetadataService influxDBMetadataService = new InfluxDBMetadataService(metadataRegistry);
+
+        Map<String, Object> configuration = new HashMap<>();
+        configuration.putAll(BASE_CONFIGURATION);
+        configuration.put(REPLACE_UNDERSCORE_PARAM, replaceUnderscore);
+        configuration.put(ADD_CATEGORY_TAG_PARAM, category);
+        configuration.put(ADD_LABEL_TAG_PARAM, label);
+        configuration.put(ADD_TYPE_TAG_PARAM, typeTag);
+
+        InfluxDBPersistenceService instance = new InfluxDBPersistenceService(itemRegistryMock, influxDBMetadataService,
+                configuration);
+        instance.setItemFactory(new CoreItemFactory());
+
+        return instance;
     }
 }

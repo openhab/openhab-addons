@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.persistence.influxdb.internal;
+package org.openhab.persistence.influxdb;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,14 +30,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
+import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
+import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
+import org.openhab.persistence.influxdb.internal.ItemTestHelper;
+import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class InfluxDBPersistenceServiceTest {
     private static final Map<String, Object> VALID_V1_CONFIGURATION = Map.of( //
@@ -106,7 +113,7 @@ public class InfluxDBPersistenceServiceTest {
         InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
         when(influxDBRepositoryMock.isConnected()).thenReturn(true);
         instance.store(ItemTestHelper.createNumberItem("number", 5));
-        verify(influxDBRepositoryMock).write(any());
+        verify(influxDBRepositoryMock, timeout(5000)).write(any());
     }
 
     @Test
