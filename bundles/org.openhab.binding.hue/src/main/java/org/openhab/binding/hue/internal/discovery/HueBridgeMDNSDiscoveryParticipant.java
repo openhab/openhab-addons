@@ -54,8 +54,6 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
     private static final String MDNS_PROPERTY_BRIDGE_ID = "bridgeid";
     private static final String MDNS_PROPERTY_MODEL_ID = "modelid";
 
-    private static final String CONFIG_PROPERTY_REMOVAL_GRACE_PERIOD = "removalGracePeriod";
-
     private final Logger logger = LoggerFactory.getLogger(HueBridgeMDNSDiscoveryParticipant.class);
 
     private long removalGracePeriod = 0L;
@@ -79,12 +77,12 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
         if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
             isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
         }
-        String removalGracePeriodPropertyValue = (String) properties.get(CONFIG_PROPERTY_REMOVAL_GRACE_PERIOD);
+        String removalGracePeriodPropertyValue = (String) properties.get(REMOVAL_GRACE_PERIOD);
         if (removalGracePeriodPropertyValue != null && !removalGracePeriodPropertyValue.isBlank()) {
             try {
                 removalGracePeriod = Long.parseLong(removalGracePeriodPropertyValue);
             } catch (NumberFormatException e) {
-                logger.warn("Configuration property '{}' has invalid value: {}", CONFIG_PROPERTY_REMOVAL_GRACE_PERIOD,
+                logger.warn("Configuration property '{}' has invalid value: {}", REMOVAL_GRACE_PERIOD,
                         removalGracePeriodPropertyValue);
             }
         }
