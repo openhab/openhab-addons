@@ -81,7 +81,7 @@ public class IndegoController {
     public IndegoController(HttpClient httpClient, OAuthClientService oAuthClientService) {
         this.httpClient = httpClient;
         this.oAuthClientService = oAuthClientService;
-        userAgent = "openHAB " + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
     }
 
     /**
