@@ -97,6 +97,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(InfluxDBPersistenceService.class);
 
+    private static final int COMMIT_INTERVAL = 3; // in s
     protected static final String CONFIG_URI = "persistence:influxdb";
 
     // External dependencies
@@ -125,7 +126,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             this.influxDBRepository = createInfluxDBRepository();
             this.influxDBRepository.connect();
             this.storeJob = ThreadPoolManager.getScheduledPool("org.openhab.influxdb")
-                    .scheduleWithFixedDelay(this::doStore, 1, 1, TimeUnit.SECONDS);
+                    .scheduleWithFixedDelay(this::commit, COMMIT_INTERVAL, COMMIT_INTERVAL, TimeUnit.SECONDS);
             serviceActivated = true;
         } else {
             throw new IllegalArgumentException("Configuration invalid.");
@@ -151,7 +152,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         serviceActivated = false;
 
         storeJob.cancel(false);
-        doStore(); // ensure we at least tried to store the data;
+        commit(); // ensure we at least tried to store the data;
 
         if (!pointsQueue.isEmpty()) {
             logger.warn("InfluxDB failed to finally store {} points.", pointsQueue.size());
@@ -250,7 +251,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         return false;
     }
 
-    private void doStore() {
+    private void commit() {
         if (!pointsQueue.isEmpty() && checkConnection()) {
             List<InfluxPoint> points = new ArrayList<>();
             pointsQueue.drainTo(points);
