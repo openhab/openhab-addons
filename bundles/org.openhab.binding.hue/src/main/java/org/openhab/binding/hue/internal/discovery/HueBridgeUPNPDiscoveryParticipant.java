@@ -18,6 +18,9 @@ import java.net.URL;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -145,16 +148,19 @@ public class HueBridgeUPNPDiscoveryParticipant implements UpnpDiscoveryParticipa
         if (modelName == null || !modelName.startsWith(EXPECTED_MODEL_NAME_PREFIX)) {
             return null;
         }
-        boolean ignored = false;
         try {
-            int year = Integer.parseInt(modelName.substring(EXPECTED_MODEL_NAME_PREFIX.length()).trim());
+            Pattern pattern = Pattern.compile("\\d{4}");
+            Matcher matcher = pattern.matcher(modelName);
+            int year = Integer.parseInt(matcher.find() ? matcher.group() : "9999");
             // The bridge is ignored if year is greater or equal to 2015
-            ignored = year >= 2015;
-        } catch (NumberFormatException e) {
+            if (year >= 2015) {
+                return null;
+            }
+        } catch (PatternSyntaxException | NumberFormatException e) {
             // No int value found, this bridge is ignored
-            ignored = true;
+            return null;
         }
-        return ignored ? null : new ThingUID(THING_TYPE_BRIDGE, serialNumber.toLowerCase());
+        return new ThingUID(THING_TYPE_BRIDGE, serialNumber.toLowerCase());
     }
 
     @Override
