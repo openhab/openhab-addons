@@ -107,7 +107,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             if (uid != null) {
                 String host = service.getHostAddresses()[0];
                 String id = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
-                String friendlyName = String.format("%s (%s)", service.getName(), host);
+                String friendlyName = String.format(DISCOVERY_LABEL_PATTERN, host);
                 return DiscoveryResultBuilder.create(uid) //
                         .withProperties(Map.of( //
                                 HOST, host, //
