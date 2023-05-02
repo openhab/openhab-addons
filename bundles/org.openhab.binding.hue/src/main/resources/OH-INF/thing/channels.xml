@@ -26,7 +26,6 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
-		<category>Light</category>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -187,7 +186,7 @@
 		<item-type>Number</item-type>
 		<label>Button Last Event</label>
 		<description>Numeric code (e.g. 1003) representing the last push button event.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="motion-enabled">
@@ -197,7 +196,7 @@
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="light-level-2">
+	<channel-type id="light-level2">
 		<item-type>Number:Illuminance</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
@@ -223,7 +222,7 @@
 		<label>Zigbee Status</label>
 		<description>Zigbee connection status.</description>
 		<category>QualityOfService</category>
-		<state readOnly="true">
+		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="CONNECTED">Connected</option>
 				<option value="DISCONNECTED">Disconnected</option>
@@ -237,7 +236,7 @@
 		<item-type>Number</item-type>
 		<label>Rotary Steps</label>
 		<description>The last 'steps' value (e.g. +/-30) of a rotary dial.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="light-switch">
@@ -273,9 +272,10 @@
 		<label>Scene</label>
 		<description>Activate the scene for the lights in the zone or room.</description>
 		<category>MediaControl</category>
+		<state pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="thing-last-updated">
+	<channel-type id="last-updated2">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
 		<description>The date and time when the thing was last updated.</description>
@@ -287,12 +287,14 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<description>Activate the alert for the light(s).</description>
+		<state pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="effect2">
 		<item-type>String</item-type>
 		<label>Effect</label>
 		<description>Activate the effect for the light.</description>
+		<state pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="dynamics">

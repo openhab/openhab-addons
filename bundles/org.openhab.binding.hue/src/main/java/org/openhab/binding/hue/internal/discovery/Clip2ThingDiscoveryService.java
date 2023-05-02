@@ -49,13 +49,13 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 @NonNullByDefault
 public class Clip2ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
-    public static final int DISCOVERY_TIMEOUT_SECONDS = 20;
-    public static final int DISCOVERY_INTERVAL_SECONDS = 600;
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
+    private static final int DISCOVERY_INTERVAL_SECONDS = 600;
 
     /**
      * Map of resource types and respective thing types that shall be discovered.
      */
-    public static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES = Map.of( //
+    private static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES = Map.of( //
             ResourceType.DEVICE, HueBindingConstants.THING_TYPE_DEVICE, //
             ResourceType.ROOM, HueBindingConstants.THING_TYPE_ROOM, //
             ResourceType.ZONE, HueBindingConstants.THING_TYPE_ZONE, //
@@ -83,8 +83,9 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
         super.deactivate();
         Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
         if (Objects.nonNull(bridgeHandler)) {
-            bridgeHandler.registerDiscoveryService(null);
+            bridgeHandler.unregisterDiscoveryService();
             removeOlderResults(new Date().getTime(), bridgeHandler.getThing().getBridgeUID());
+            this.bridgeHandler = null;
         }
     }
 

@@ -25,14 +25,14 @@
 			<channel id="rotary-steps" typeId="rotary-steps"/>
 			<channel id="motion" typeId="system.motion"/>
 			<channel id="motion-enabled" typeId="motion-enabled"/>
-			<channel id="light-level" typeId="light-level-2"/>
+			<channel id="light-level" typeId="light-level2"/>
 			<channel id="light-level-enabled" typeId="light-level-enabled"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="temperature-enabled" typeId="temperature-enabled"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="battery-low" typeId="system.low-battery"/>
 			<channel id="zigbee-status" typeId="zigbee-status"/>
-			<channel id="last-updated" typeId="thing-last-updated"/>
+			<channel id="last-updated" typeId="last-updated2"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>

@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.handler.Clip2ThingHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
@@ -38,20 +37,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DynamicsActions implements ThingActions {
 
-    public static void dynamicCommand(ThingActions actions, @Nullable String channelId, @Nullable Command command,
-            @Nullable DecimalType durationMSec) {
-        ((DynamicsActions) actions).dynamicCommand(channelId, command, durationMSec);
-    }
-
     private final Logger logger = LoggerFactory.getLogger(DynamicsActions.class);
 
     private @Nullable Clip2ThingHandler handler;
 
+    public static void dynamicCommand(ThingActions actions, @Nullable String channelId, @Nullable Command command,
+            @Nullable Long durationMSec) {
+        ((DynamicsActions) actions).dynamicCommand(channelId, command, durationMSec);
+    }
+
     @RuleAction(label = "@text/dynamics.action.label", description = "@text/dynamics.action.description")
     public void dynamicCommand(
-            @ActionInput(name = "channelId", label = "@text/dynamics.channel-id.label", description = "@text/dynamics.channel-id.description") @Nullable String channelId,
+            @ActionInput(name = "channelId", label = "@text/dynamics.channel.label", description = "@text/dynamics.channel.description") @Nullable String channelId,
             @ActionInput(name = "command", label = "@text/dynamics.command.label", description = "@text/dynamics.command.description") @Nullable Command command,
-            @ActionInput(name = "durationMSec", label = "@text/dynamics.duration.label", description = "@text/dynamics.duration.description") @Nullable DecimalType durationMSec) {
+            @ActionInput(name = "durationMSec", label = "@text/dynamics.duration.label", description = "@text/dynamics.duration.description") @Nullable Long durationMSec) {
         //
         Clip2ThingHandler handler = this.handler;
         if (handler == null) {

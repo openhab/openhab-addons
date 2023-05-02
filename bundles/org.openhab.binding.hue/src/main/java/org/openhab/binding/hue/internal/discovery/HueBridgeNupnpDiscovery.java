@@ -84,7 +84,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
                 String serialNumber = bridge.getId().toLowerCase();
                 ThingUID uid = new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE, serialNumber);
                 ThingUID legacyUID = null;
-                String label = String.format(LABEL_PATTERN, host);
+                String label = String.format(HueBindingConstants.DISCOVERY_LABEL_PATTERN, host);
 
                 if (isClip2Supported(host)) {
                     legacyUID = uid;

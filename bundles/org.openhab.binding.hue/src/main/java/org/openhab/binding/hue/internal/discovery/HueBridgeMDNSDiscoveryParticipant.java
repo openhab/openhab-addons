@@ -115,7 +115,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             if (Objects.nonNull(uid)) {
                 String host = service.getHostAddresses()[0];
                 String serial = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
-                String label = String.format("%s (%s)", service.getName(), host);
+                String label = String.format(HueBindingConstants.DISCOVERY_LABEL_PATTERN, host);
                 String legacyThingUID = null;
 
                 if (new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, uid.getId()).equals(uid)) {

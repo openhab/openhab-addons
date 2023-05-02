@@ -69,8 +69,11 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
     private static final String APPLICATION_KEY = "applicationkey";
     private static final String THINGS = "things";
 
-    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(
-            List.of(USER_NAME, SCENES, APPLICATION_KEY, THINGS), false);
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(USER_NAME, SCENES), false);
+
+    private static final StringsCompleter SUBCMD_COMPLETER_2 = new StringsCompleter(
+            List.of(APPLICATION_KEY, THINGS, SCENES), false);
+
     private static final StringsCompleter SCENES_COMPLETER = new StringsCompleter(List.of(SCENES), false);
 
     private final ThingRegistry thingRegistry;
@@ -104,13 +107,10 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
             }
             if (thing == null) {
                 console.println("Bad thing id '" + args[0] + "'");
-                printUsage(console);
             } else if (thingHandler == null) {
                 console.println("No handler initialized for the thingUID '" + args[0] + "'");
-                printUsage(console);
             } else if (bridgeHandler == null && groupHandler == null && clip2BridgeHandler == null) {
                 console.println("'" + args[0] + "' is neither a Hue BridgeUID nor a Hue groupThingUID");
-                printUsage(console);
             } else {
                 if (bridgeHandler != null) {
                     switch (args[1]) {
@@ -220,8 +220,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
         return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + USER_NAME, "show the user name"),
                 buildCommandUsage("<bridgeUID> " + APPLICATION_KEY, "show the API v2 application key"),
                 buildCommandUsage("<bridgeUID> " + SCENES, "list all the scenes with their id"),
-                buildCommandUsage("<bridgeUID> " + THINGS,
-                        "list all the API v2 device, room, and zone, things with their id"),
+                buildCommandUsage("<bridgeUID> " + THINGS, "list all the API v2 device/room/zone things with their id"),
                 buildCommandUsage("<groupThingUID> " + SCENES, "list all the scenes from this group with their id") });
     }
 
@@ -241,9 +240,10 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                     .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);
-            if (thing != null && (HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
-                    || HueBindingConstants.THING_TYPE_BRIDGE_API2.equals(thing.getThingTypeUID()))) {
+            if (thing != null && (HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID()))) {
                 return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            } else if (thing != null && (HueBindingConstants.THING_TYPE_BRIDGE_API2.equals(thing.getThingTypeUID()))) {
+                return SUBCMD_COMPLETER_2.complete(args, cursorArgumentIndex, cursorPosition, candidates);
             } else if (thing != null && HueBindingConstants.THING_TYPE_GROUP.equals(thing.getThingTypeUID())) {
                 return SCENES_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
             }

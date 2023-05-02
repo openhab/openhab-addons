@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2.enums;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -22,14 +24,17 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum EffectType {
-    // for Effects class only
+    // fixed Effects
     SPARKLE,
     FIRE,
     CANDLE,
-    // for TimedEffects class only
+    // timed Effects
     SUNRISE,
-    // for either class
+    // applies to both
     NO_EFFECT;
+
+    private static final Set<EffectType> FIXED = Set.of(SPARKLE, FIRE, CANDLE);
+    private static final Set<EffectType> TIMED = Set.of(SUNRISE);
 
     public static EffectType of(@Nullable String value) {
         if (value != null) {
@@ -40,5 +45,13 @@ public enum EffectType {
             }
         }
         return NO_EFFECT;
+    }
+
+    public boolean isFixed() {
+        return FIXED.contains(this);
+    }
+
+    public boolean isTimed() {
+        return TIMED.contains(this);
     }
 }

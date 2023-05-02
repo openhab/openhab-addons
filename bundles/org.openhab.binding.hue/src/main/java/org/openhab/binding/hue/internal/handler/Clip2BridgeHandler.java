@@ -118,11 +118,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private int connectRetriesRemaining;
 
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
-            Bundle bundle, LocaleProvider localeProvider, TranslationProvider translationProvider) {
+            LocaleProvider localeProvider, TranslationProvider translationProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.thingRegistry = thingRegistry;
-        this.bundle = bundle;
+        this.bundle = FrameworkUtil.getBundle(getClass());
         this.localeProvider = localeProvider;
         this.translationProvider = translationProvider;
     }
@@ -543,12 +543,19 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Register or unregister the discovery service.
+     * Register the discovery service.
      *
-     * @param discoveryService new discoveryService, or null if un-registering.
+     * @param discoveryService new discoveryService.
      */
-    public void registerDiscoveryService(@Nullable Clip2ThingDiscoveryService discoveryService) {
+    public void registerDiscoveryService(Clip2ThingDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
+    }
+
+    /**
+     * Unregister the discovery service.
+     */
+    public void unregisterDiscoveryService() {
+        discoveryService = null;
     }
 
     /**

@@ -174,30 +174,30 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (HueBindingConstants.THING_TYPE_BRIDGE_API2.equals(thingTypeUID)) {
-            return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry,
-                    getBundleContext().getBundle(), localeProvider, i18nProvider);
+            return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry, localeProvider,
+                    i18nProvider);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new Clip2ThingHandler(thing, clip2StateDescriptionProvider, thingRegistry, itemChannelLinkRegistry);
-        } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
                     stateDescriptionProvider, i18nProvider, localeProvider);
-        } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueLightHandler(thing, stateDescriptionProvider);
-        } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new DimmerSwitchHandler(thing);
-        } else if (TapSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (TapSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new TapSwitchHandler(thing);
-        } else if (PresenceHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (PresenceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new PresenceHandler(thing);
-        } else if (GeofencePresenceHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (GeofencePresenceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new GeofencePresenceHandler(thing);
-        } else if (TemperatureHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (TemperatureHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new TemperatureHandler(thing);
-        } else if (LightLevelHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (LightLevelHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new LightLevelHandler(thing);
-        } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new ClipHandler(thing);
-        } else if (HueGroupHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (HueGroupHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueGroupHandler(thing, stateDescriptionProvider);
         } else {
             return null;

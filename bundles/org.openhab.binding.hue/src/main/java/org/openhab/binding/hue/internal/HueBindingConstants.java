@@ -181,5 +181,5 @@ public class HueBindingConstants {
             Map.entry(CHANNEL_BATTERY_LOW, CHANNEL_2_BATTERY_LOW), //
             Map.entry(CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED));
 
-    public static final String ALL_LIGHTS_KEY = "discovery.group.all_lights.label";
+    public static final String ALL_LIGHTS_KEY = "discovery.group.all-lights.label";
 }
