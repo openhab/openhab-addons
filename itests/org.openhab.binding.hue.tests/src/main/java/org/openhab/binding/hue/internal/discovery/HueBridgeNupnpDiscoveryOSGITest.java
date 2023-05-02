@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -61,7 +62,7 @@ public class HueBridgeNupnpDiscoveryOSGITest extends JavaOSGiTest {
 
     private void checkDiscoveryResult(DiscoveryResult result, String expIp, String expSn) {
         assertThat(result.getBridgeUID(), nullValue());
-        assertThat(result.getLabel(), is(String.format(HueBridgeNupnpDiscovery.LABEL_PATTERN, expIp)));
+        assertThat(result.getLabel(), is(String.format(HueBindingConstants.DISCOVERY_LABEL_PATTERN, expIp)));
         assertThat(result.getProperties().get("ipAddress"), is(expIp));
         assertThat(result.getProperties().get("serialNumber"), is(expSn));
     }
