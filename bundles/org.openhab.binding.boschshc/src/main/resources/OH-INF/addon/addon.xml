@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Bosch Smart Home Binding</name>
 	<description>This is the binding for Bosch Smart Home.</description>
+	<connection>local</connection>
 
 </addon:addon>

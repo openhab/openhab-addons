@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>VolvoOnCall Binding</name>
 	<description>This binding enables the access to VolvoOnCall services.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

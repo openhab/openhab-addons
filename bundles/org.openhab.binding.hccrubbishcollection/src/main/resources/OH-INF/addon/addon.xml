@@ -6,5 +6,7 @@
 	<type>binding</type>
 	<name>HCC Rubbish Collection Binding</name>
 	<description>Get the rubbish collection dates for Hamilton City Council (New Zealand).</description>
+	<connection>cloud</connection>
+	<countries>nz</countries>
 
 </addon:addon>

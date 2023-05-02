@@ -68,12 +68,12 @@ public interface InfluxDBRepository {
     List<InfluxRow> query(String query);
 
     /**
-     * Write point to database
+     * Write points to database
      *
-     * @param influxPoint Point to write
-     * @throws UnexpectedConditionException when an error occurs
+     * @param influxPoints {@link List<InfluxPoint>} to write
+     * @returns <code>true</code> if points have been written, <code>false</code> otherwise
      */
-    void write(InfluxPoint influxPoint) throws UnexpectedConditionException;
+    boolean write(List<InfluxPoint> influxPoints);
 
     /**
      * create a query creator on this repository

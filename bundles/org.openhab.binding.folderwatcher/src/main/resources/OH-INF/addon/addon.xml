@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>FolderWatcher Binding</name>
 	<description>This binding will monitor specified location for new files and trigger event channel with new file names.</description>
+	<connection>hybrid</connection>
 
 </addon:addon>
