@@ -13,10 +13,10 @@
 package org.openhab.binding.tesla.internal.protocol;
 
 /**
- * The {@link VehicleData} is a datastructure to capture
- * variables sent by the Tesla Vehicle
+ * The {@link VehicleData} is a data structure to capture
+ * variables sent by the Tesla API about a vehicle.
  *
- * @author Karel Goderis - Initial contribution
+ * @author Kai Kreuzer - Initial contribution
  */
 public class VehicleData {
 
