@@ -32,6 +32,9 @@
 		<label>RainSoft Water Conditioning System Thing</label>
 		<description>RainSoft Water Conditioning System</description>
 		
+		<channel-groups>
+			<channel-group id="status" typeId="statusGroup"/>
+		</channel-groups>
 		<config-description>
                         <parameter name="refreshInterval" type="integer">
                                 <label>The refresh interval</label>
@@ -40,4 +43,175 @@
                         </parameter>
                 </config-description>
 	</thing-type>
+
+	<!-- Channel Groups -->
+	<channel-group-type id="statusGroup">
+		<label>System Status</label>
+		<description>System status information</description>
+		<channels>
+			<channel id="systemstatus" typeId="systemstatus"/>
+			<channel id="statuscode" typeId="statuscode"/>
+			<channel id="statusasof" typeId="statusasof"/>
+			<channel id="regentime" typeId="regentime"/>
+			<channel id="airpurgehour" typeId="airpurgehour"/>
+			<channel id="airpurgeminute" typeId="airpurgeminute"/>
+			<channel id="lastfltregentime" typeId="lastfltregentime"/>
+			<channel id="maxsalt" typeId="maxsalt"/>
+			<channel id="saltlbs" typeId="saltlbs"/>
+			<channel id="capacityremaining" typeId="capacityremaining"/>
+			<channel id="vacationmode" typeId="vacationmode"/>
+			<channel id="hardness" typeId="hardness"/>
+			<channel id="pressure" typeId="pressure"/>
+			<channel id="ironlevel" typeId="ironlevel"/>
+			<channel id="drainflow" typeId="drainflow"/>
+			<channel id="avgmonthsalt" typeId="avgmonthsalt"/>
+			<channel id="dailywateruse" typeId="dailywateruse"/>
+			<channel id="regens28day" typeId="regens28day"/>
+			<channel id="water28day" typeId="water28day"/>
+			<channel id="endofday" typeId="endofday"/>
+			<channel id="salt28day" typeId="salt28day"/>
+			<channel id="flowsinceregen" typeId="flowsinceregen"/>
+			<channel id="lifetimeflow" typeId="lifetimeflow"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Types -->
+	<channel-type id="systemstatus">
+		<item-type>String</item-type>
+		<label>System Status</label>
+		<description>System Status Message</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="statuscode">
+		<item-type>Number</item-type>
+		<label>System Status Code</label>
+		<description>System Status Code</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="statusasof">
+		<item-type>DateTime</item-type>
+		<label>System Status Last Report</label>
+		<description>System Status Last Report</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="regentime">
+		<item-type>DateTime</item-type>
+		<label>Last Regeneration Time</label>
+		<description>Last Regeneration Time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="airpurgehour">
+		<item-type>Number</item-type>
+		<label>Air Purge Hour</label>
+		<description>Air Purge Hour</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="airpurgeminute">
+		<item-type>Number</item-type>
+		<label>Air Purge Minute</label>
+		<description>Air Purge Minute</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastfltregentime">
+		<item-type>DateTime</item-type>
+		<label>Last Flt Regeneration Time</label>
+		<description>Last Flt Regeneration Time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="maxsalt">
+		<item-type>Number</item-type>
+		<label>Maximum Salt Level</label>
+		<description>Maximum Salt Level</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="saltlbs">
+		<item-type>Number</item-type>
+		<label>Current Salt Weight</label>
+		<description>Current Salt Weight</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="capacityremaining">
+		<item-type>Number</item-type>
+		<label>Current Brine Remaining (Percentage)</label>
+		<description>Current Brine Remaining (Percentage)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="vacationmode">
+		<item-type>String</item-type>
+		<label>Vacation Mode</label>
+		<description>Vacation Mode</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="hardness">
+		<item-type>Number</item-type>
+		<label>Water Hardness</label>
+		<description>Water Hardness</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pressure">
+		<item-type>Number</item-type>
+		<label>Water Pressure</label>
+		<description>Water Pressure</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ironlevel">
+		<item-type>Number</item-type>
+		<label>Iron Level</label>
+		<description>Iron Level</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="drainflow">
+		<item-type>Number</item-type>
+		<label>Drain Flow</label>
+		<description>Drain Flow</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="avgmonthsalt">
+		<item-type>Number</item-type>
+		<label>Average Monthly Salt Usage</label>
+		<description>Average Monthly Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dailywateruse">
+		<item-type>Number</item-type>
+		<label>Daily Water Usage</label>
+		<description>Daily Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="regens28day">
+		<item-type>Number</item-type>
+		<label>Regens 28 Days</label>
+		<description>Regens 28 Days</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="water28day">
+		<item-type>Number</item-type>
+		<label>Water 28 Days</label>
+		<description>Water 28 Days</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="endofday">
+		<item-type>Number</item-type>
+		<label>End of Day</label>
+		<description>End of Day</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="salt28day">
+		<item-type>Number</item-type>
+		<label>Salt 28 Days</label>
+		<description>Salt 28 Days</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="flowsinceregen">
+		<item-type>Number</item-type>
+		<label>Flow Since Regen</label>
+		<description>Flow Since Regen</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lifetimeflow">
+		<item-type>Number</item-type>
+		<label>Lifetime Flow</label>
+		<description>Lifetime Flow</description>
+		<state readOnly="true"></state>
+	</channel-type>
 </thing:thing-descriptions>
