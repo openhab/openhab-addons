@@ -514,7 +514,7 @@ public class TeslaChannelSelectorProxy {
             }
         },
         MANAGED_CHARGING_START("managed_charging_start_time", "managedchargingstart", StringType.class, false),
-        MOBILE_ENABLED(TeslaBindingConstants.MOBILE_ENABLED_STATE, "mobileenabled", OnOffType.class, false) {
+        MOBILE_ENABLED("mobile_enabled", "mobileenabled", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 if ("true".equals(s)) {
