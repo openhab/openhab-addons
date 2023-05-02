@@ -110,14 +110,14 @@ public class HueBridgeUPNPDiscoveryParticipant implements UpnpDiscoveryParticipa
         }
         URL baseUrl = details.getBaseURL();
         String serialNumber = details.getSerialNumber();
+        if (baseUrl == null || serialNumber == null || serialNumber.isBlank()) {
+            return null;
+        }
         String label = String.format(DISCOVERY_LABEL_PATTERN, baseUrl.getHost());
         String modelName = EXPECTED_MODEL_NAME_PREFIX;
         ModelDetails modelDetails = details.getModelDetails();
         if (modelDetails != null && modelDetails.getModelName() != null && modelDetails.getModelNumber() != null) {
             modelName = String.format("%s (%s)", modelDetails.getModelName(), modelDetails.getModelNumber());
-        }
-        if (baseUrl == null || serialNumber == null || serialNumber.isBlank()) {
-            return null;
         }
         return DiscoveryResultBuilder.create(uid) //
                 .withProperties(Map.of( //
