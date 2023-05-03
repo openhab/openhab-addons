@@ -28,7 +28,7 @@ public class TeslaBindingConstants {
     public static final String API_NAME = "Tesla Client API";
     public static final String API_VERSION = "api/1/";
     public static final String PATH_COMMAND = "command/{cmd}";
-    public static final String PATH_DATA_REQUEST = "data_request/{cmd}";
+    public static final String PATH_DATA_REQUEST = "vehicle_data";
     public static final String PATH_VEHICLE_ID = "/{vid}/";
     public static final String PATH_WAKE_UP = "wake_up";
     public static final String PATH_ACCESS_TOKEN = "oauth/token";
@@ -71,19 +71,11 @@ public class TeslaBindingConstants {
     public static final String COMMAND_WAKE_UP = "wake_up";
     public static final String DATA_THROTTLE = "datathrottle";
 
-    // Tesla REST API vehicle states
-    public static final String CHARGE_STATE = "charge_state";
-    public static final String CLIMATE_STATE = "climate_state";
-    public static final String DRIVE_STATE = "drive_state";
-    public static final String GUI_STATE = "gui_settings";
-    public static final String MOBILE_ENABLED_STATE = "mobile_enabled";
-    public static final String VEHICLE_STATE = "vehicle_state";
-    public static final String VEHICLE_CONFIG = "vehicle_config";
-
     public static final String BINDING_ID = "tesla";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
     public static final ThingTypeUID THING_TYPE_MODELS = new ThingTypeUID(BINDING_ID, "models");
     public static final ThingTypeUID THING_TYPE_MODEL3 = new ThingTypeUID(BINDING_ID, "model3");
     public static final ThingTypeUID THING_TYPE_MODELX = new ThingTypeUID(BINDING_ID, "modelx");
