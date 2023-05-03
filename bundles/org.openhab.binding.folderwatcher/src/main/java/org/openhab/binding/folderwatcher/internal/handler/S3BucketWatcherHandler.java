@@ -89,7 +89,6 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
 
         if (refreshS3BucketInformation()) {
             if (config.pollIntervalS3 > 0) {
-                updateStatus(ThingStatus.ONLINE);
                 executionJob = scheduler.scheduleWithFixedDelay(this::refreshS3BucketInformation, config.pollIntervalS3,
                         config.pollIntervalS3, TimeUnit.SECONDS);
             } else {
@@ -104,6 +103,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
         List<String> currentS3Listing = new ArrayList<>();
         try {
             currentS3Listing = s3.listBucket(config.s3Path);
+            updateStatus(ThingStatus.ONLINE);
             List<String> difS3Listing = new ArrayList<>(currentS3Listing);
             difS3Listing.removeAll(previousS3Listing);
             difS3Listing.forEach(file -> triggerChannel(CHANNEL_NEWFILE, file));
