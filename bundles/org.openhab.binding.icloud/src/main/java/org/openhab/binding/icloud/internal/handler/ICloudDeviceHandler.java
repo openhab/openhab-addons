@@ -185,8 +185,11 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         this.logger.debug("Device: [{}]", this.deviceId);
 
         for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
-            String currentId = deviceInformationRecord.getId();
-
+            String currentId = deviceInformationRecord.getDeviceDiscoveryId();
+            if (currentId == null || currentId.isBlank()) {
+                logger.debug("deviceDiscoveryId is empty, using device name for identification.");
+                currentId = deviceInformationRecord.getName();
+            }
             logger.debug("Current data element: [id = {}]", currentId);
 
             if (currentId != null && currentId.equals(deviceId)) {
