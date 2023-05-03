@@ -64,24 +64,29 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String qualifiedName = service.getQualifiedName();
 
         InetAddress[] ipAddresses = service.getInet4Addresses();
-        String ipAddress = ipAddresses[0].getHostAddress();
-        String macAddress = service.getPropertyString("bt");
 
-        logger.debug("GoogleTV mDNS discovery notified of GoogleTV mDNS service: {}", nice);
-        logger.trace("GoogleTV mDNS service qualifiedName: {}", qualifiedName);
-        logger.trace("GoogleTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
-        logger.trace("GoogleTV mDNS service selected ipAddress: {}", ipAddress);
-        logger.trace("GoogleTV mDNS service property macAddress: {}", macAddress);
+        if (ipAddresses.length > 0) {
+            String ipAddress = ipAddresses[0].getHostAddress();
+            String macAddress = service.getPropertyString("bt");
 
-        final ThingUID uid = getThingUID(service);
-        if (uid != null) {
-            final String id = uid.getId();
-            final String label = service.getName() + " (" + id + ")";
-            final Map<String, Object> properties = new HashMap<>(2);
+            logger.debug("GoogleTV mDNS discovery notified of GoogleTV mDNS service: {}", nice);
+            logger.trace("GoogleTV mDNS service qualifiedName: {}", qualifiedName);
+            logger.trace("GoogleTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
+            logger.trace("GoogleTV mDNS service selected ipAddress: {}", ipAddress);
+            logger.trace("GoogleTV mDNS service property macAddress: {}", macAddress);
 
-            properties.put(PROPERTY_IP_ADDRESS, ipAddress);
+            final ThingUID uid = getThingUID(service);
+            if (uid != null) {
+                final String id = uid.getId();
+                final String label = service.getName() + " (" + id + ")";
+                final Map<String, Object> properties = new HashMap<>(2);
 
-            return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+                properties.put(PROPERTY_IP_ADDRESS, ipAddress);
+
+                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
