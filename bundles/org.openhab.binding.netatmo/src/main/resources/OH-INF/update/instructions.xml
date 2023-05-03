@@ -9,6 +9,9 @@
 			<add-channel id="siren">
 				<type>netatmo:siren-status-rw</type>
 			</add-channel>
+			<update-channel id="status" groupIds="siren">
+				<type>netatmo:siren-status</type>
+			</update-channel>
 		</instruction-set>
 
 	</thing-type>
