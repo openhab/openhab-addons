@@ -31,17 +31,17 @@
 	<thing-type id="wcs">
 		<label>RainSoft Water Conditioning System Thing</label>
 		<description>RainSoft Water Conditioning System</description>
-		
+
 		<channel-groups>
 			<channel-group id="status" typeId="statusGroup"/>
 		</channel-groups>
 		<config-description>
-                        <parameter name="refreshInterval" type="integer">
-                                <label>The refresh interval</label>
-                                <description>How often to poll the RainSoft service for updates in seconds</description>
-                                <default>600</default>
-                        </parameter>
-                </config-description>
+			<parameter name="refreshInterval" type="integer">
+				<label>The refresh interval</label>
+				<description>How often to poll the RainSoft service for updates in seconds</description>
+				<default>600</default>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<!-- Channel Groups -->

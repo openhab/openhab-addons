@@ -26,5 +26,4 @@ public interface RainSoftAccount {
      * @return the REST client.
      */
     public RestClient getRestClient();
-
 }

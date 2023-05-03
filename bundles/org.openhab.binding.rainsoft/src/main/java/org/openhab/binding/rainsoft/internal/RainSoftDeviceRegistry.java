@@ -79,10 +79,11 @@ public class RainSoftDeviceRegistry {
             logger.debug("Ignoring null rainSoftDevice");
         } else {
             if (devices.containsKey(rainSoftDevice.getId())) {
-                logger.trace("RainSoft device with duplicate id {} ignored",rainSoftDevice.getId());
-                throw new DuplicateIdException("RainSoft device with duplicate id " + rainSoftDevice.getId() + " ignored");
+                logger.trace("RainSoft device with duplicate id {} ignored", rainSoftDevice.getId());
+                throw new DuplicateIdException(
+                        "RainSoft device with duplicate id " + rainSoftDevice.getId() + " ignored");
             } else {
-                logger.debug("New RainSoft device with id {} added",rainSoftDevice.getId());
+                logger.debug("New RainSoft device with id {} added", rainSoftDevice.getId());
                 rainSoftDevice.setRegistrationStatus(Status.ADDED);
                 devices.put(rainSoftDevice.getId(), rainSoftDevice);
             }
@@ -92,7 +93,8 @@ public class RainSoftDeviceRegistry {
     /**
      * Add a new rainsoft device collection.
      */
-    public synchronized void addRainSoftDevices(Collection<RainSoftDevice> rainSoftDevices) throws DuplicateIdException {
+    public synchronized void addRainSoftDevices(Collection<RainSoftDevice> rainSoftDevices)
+            throws DuplicateIdException {
         for (RainSoftDevice device : rainSoftDevices) {
             logger.debug("RainSoftDeviceRegistry - addRainSoftDevices - Trying: {}", device.getId());
             try {

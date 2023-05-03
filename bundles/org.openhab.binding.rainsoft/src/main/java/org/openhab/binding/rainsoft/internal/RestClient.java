@@ -14,7 +14,6 @@ package org.openhab.binding.rainsoft.internal;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,18 +21,11 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -43,11 +35,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.openhab.binding.rainsoft.internal.data.ParamBuilder;
 import org.openhab.binding.rainsoft.internal.data.RainSoftDevices;
 import org.openhab.binding.rainsoft.internal.errors.AuthenticationException;
 import org.openhab.binding.rainsoft.internal.utils.RainSoftUtils;
@@ -76,8 +66,7 @@ public class RestClient {
      * @param endPoint
      */
     public RestClient() {
-        logger.info("Creating RainSoft client for API on endPoint {}",
-                ApiConstants.API_BASE);
+        logger.info("Creating RainSoft client for API on endPoint {}", ApiConstants.API_BASE);
     }
 
     /**
@@ -170,14 +159,15 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws ParseException
      */
-    public String getAuthenticatedProfile(String username, String password) throws AuthenticationException, ParseException {
+    public String getAuthenticatedProfile(String username, String password)
+            throws AuthenticationException, ParseException {
 
-        logger.debug("RestClient - getAuthenticatedProfile U:{} - P:{}",
-                RainSoftUtils.sanitizeData(username), RainSoftUtils.sanitizeData(password));
+        logger.debug("RestClient - getAuthenticatedProfile U:{} - P:{}", RainSoftUtils.sanitizeData(username),
+                RainSoftUtils.sanitizeData(password));
 
         JSONObject authToken = get_auth_token(username, password);
         String token = authToken.get("authentication_token").toString();
-        logger.debug("RestClient - getAuthenticatedProfile T:{}",RainSoftUtils.sanitizeData(token));
+        logger.debug("RestClient - getAuthenticatedProfile T:{}", RainSoftUtils.sanitizeData(token));
         return token;
     }
 
@@ -190,8 +180,7 @@ public class RestClient {
      * @throws AuthenticationException
      * @throws ParseException
      */
-    private JSONObject get_auth_token(String username, String password)
-            throws AuthenticationException, ParseException {
+    private JSONObject get_auth_token(String username, String password) throws AuthenticationException, ParseException {
 
         logger.debug("RestClient - get_auth_token {} - {}", RainSoftUtils.sanitizeData(username),
                 RainSoftUtils.sanitizeData(password));
@@ -202,8 +191,8 @@ public class RestClient {
         try {
             Map<String, String> map = new HashMap<String, String>();
 
-                map.put("email", username);
-                map.put("password", password);
+            map.put("email", username);
+            map.put("password", password);
             URL url = new URL(resourceUrl);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
@@ -294,7 +283,7 @@ public class RestClient {
         String jsonResult = getRequest(ApiConstants.URL_CUSTOMER, authToken);
         JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
         String customerId = obj.get("id").toString();
-        logger.debug("RestClient - getCustomerId ID:{}",customerId);
+        logger.debug("RestClient - getCustomerId ID:{}", customerId);
         return customerId;
     }
 
@@ -336,5 +325,4 @@ public class RestClient {
         JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
         return new RainSoftDevices(obj, rainSoftAccount);
     }
-
 }

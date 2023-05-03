@@ -14,40 +14,29 @@ package org.openhab.binding.rainsoft.handler;
 
 import static org.openhab.binding.rainsoft.RainSoftBindingConstants.*;
 
-import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.parser.ParseException;
-import org.openhab.binding.rainsoft.internal.data.WCS;
-import org.openhab.binding.rainsoft.internal.ApiConstants;
-import org.openhab.binding.rainsoft.internal.RestClient;
 import org.openhab.binding.rainsoft.internal.RainSoftAccount;
 import org.openhab.binding.rainsoft.internal.RainSoftDeviceRegistry;
+import org.openhab.binding.rainsoft.internal.RestClient;
 import org.openhab.binding.rainsoft.internal.data.RainSoftDevice;
-import org.openhab.binding.rainsoft.internal.data.RainSoftDevices;
+import org.openhab.binding.rainsoft.internal.data.WCS;
 import org.openhab.binding.rainsoft.internal.errors.AuthenticationException;
 import org.openhab.binding.rainsoft.internal.errors.DuplicateIdException;
 import org.openhab.binding.rainsoft.internal.utils.RainSoftUtils;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
 
 /**
@@ -94,7 +83,7 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-            logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
+        logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
     }
 
     /**
@@ -118,7 +107,8 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
             Configuration updatedConfiguration = getThing().getConfiguration();
 
             restClient = new RestClient();
-            logger.debug("Logging in with credentials: U:{} P:{}", RainSoftUtils.sanitizeData(username), RainSoftUtils.sanitizeData(password));
+            logger.debug("Logging in with credentials: U:{} P:{}", RainSoftUtils.sanitizeData(username),
+                    RainSoftUtils.sanitizeData(password));
             this.authToken = restClient.getAuthenticatedProfile(username, password);
             this.customerId = restClient.getCustomerId(this.authToken);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
@@ -139,7 +129,8 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
         } catch (ParseException e) {
-            logger.debug("Invalid response from rainsoft.com when initializing RainSoft Account handler{}", e.getMessage());
+            logger.debug("Invalid response from rainsoft.com when initializing RainSoft Account handler{}",
+                    e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Invalid response from rainsoft.com");
         } catch (Exception e) {
@@ -151,21 +142,21 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
 
     private void refreshRegistry() throws ParseException, AuthenticationException, DuplicateIdException {
         int count = 0;
-        String locations = restClient.getLocations(this.customerId,this.authToken);
+        String locations = restClient.getLocations(this.customerId, this.authToken);
         JSONArray array = ((JSONArray) new JSONParser().parse(locations));
         for (Object obj : array) {
-                String id = ((JSONObject) obj).get("id").toString();
-                String devices = ((JSONObject) obj).get("devices").toString();
-                JSONArray devicesArray = ((JSONArray) new JSONParser().parse(devices));
-                logger.debug("refreshRegistry - found location: {} devices: {}",id,devices);
-                registry = RainSoftDeviceRegistry.getInstance();
-                for(Object deviceObject : devicesArray) {
-                      registry.addRainSoftDevice(new WCS((JSONObject) deviceObject));
-                      count++;
-                }
+            String id = ((JSONObject) obj).get("id").toString();
+            String devices = ((JSONObject) obj).get("devices").toString();
+            JSONArray devicesArray = ((JSONArray) new JSONParser().parse(devices));
+            logger.debug("refreshRegistry - found location: {} devices: {}", id, devices);
+            registry = RainSoftDeviceRegistry.getInstance();
+            for (Object deviceObject : devicesArray) {
+                registry.addRainSoftDevice(new WCS((JSONObject) deviceObject));
+                count++;
+            }
         }
-        if ( count > 0 ) {
-                registry.setInitialized(true);
+        if (count > 0) {
+            registry.setInitialized(true);
         }
     }
 
@@ -173,10 +164,11 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
         logger.debug("AccountHandler - refreshDevices");
         for (RainSoftDevice device : registry.getRainSoftDevices(RainSoftDeviceRegistry.Status.CONFIGURED)) {
             String id = device.getId();
-            String deviceInfo = restClient.getDevice(id,this.authToken);
-            String waterUsage = restClient.getWaterUsage(id,this.authToken);
-            String saltUsage = restClient.getSaltUsage(id,this.authToken);
-            logger.trace("Account Handler - updateDevices - ID: {} Info: {} Water: {} Salt: {}",id,deviceInfo,waterUsage,saltUsage);
+            String deviceInfo = restClient.getDevice(id, this.authToken);
+            String waterUsage = restClient.getWaterUsage(id, this.authToken);
+            String saltUsage = restClient.getSaltUsage(id, this.authToken);
+            logger.trace("Account Handler - updateDevices - ID: {} Info: {} Water: {} Salt: {}", id, deviceInfo,
+                    waterUsage, saltUsage);
         }
     }
 
@@ -196,7 +188,7 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
 
             try {
                 if ((authToken == null) || (authToken.equals(""))) {
-                authToken = restClient.getAuthenticatedProfile(username, password);
+                    authToken = restClient.getAuthenticatedProfile(username, password);
                 }
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
             } catch (AuthenticationException ex) {

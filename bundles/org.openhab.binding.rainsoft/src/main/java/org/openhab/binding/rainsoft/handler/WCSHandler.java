@@ -21,13 +21,11 @@ import org.openhab.binding.rainsoft.internal.data.WCS;
 import org.openhab.binding.rainsoft.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.rainsoft.internal.errors.IllegalDeviceClassException;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.openhab.binding.rainsoft.internal.RestClient;
 
 /**
  * The handler for a Water Conditioning System.

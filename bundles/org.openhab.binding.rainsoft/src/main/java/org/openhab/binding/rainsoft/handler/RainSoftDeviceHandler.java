@@ -14,21 +14,13 @@ package org.openhab.binding.rainsoft.handler;
 
 import static org.openhab.binding.rainsoft.RainSoftBindingConstants.*;
 
-import java.math.BigDecimal;
-
 import org.openhab.binding.rainsoft.internal.RainSoftDeviceRegistry;
 import org.openhab.binding.rainsoft.internal.data.RainSoftDevice;
 import org.openhab.binding.rainsoft.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.rainsoft.internal.errors.IllegalDeviceClassException;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.IncreaseDecreaseType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link RainSoftDeviceHandler} is responsible for handling commands, which are
@@ -62,9 +54,9 @@ public abstract class RainSoftDeviceHandler extends AbstractRainSoftHandler {
         if (device.getClass().equals(deviceClass)) {
             device.setRegistrationStatus(RainSoftDeviceRegistry.Status.CONFIGURED);
             device.setRainSoftDeviceHandler(this);
-            //thing.setProperty("Description", device.getDescription());
-            //thing.setProperty("Kind", device.getKind());
-            //thing.setProperty("Device ID", device.getDeviceId());
+            // thing.setProperty("Description", device.getDescription());
+            // thing.setProperty("Kind", device.getKind());
+            // thing.setProperty("Device ID", device.getDeviceId());
         } else {
             throw new IllegalDeviceClassException(
                     "Class '" + deviceClass.getName() + "' expected but '" + device.getClass().getName() + "' found.");
