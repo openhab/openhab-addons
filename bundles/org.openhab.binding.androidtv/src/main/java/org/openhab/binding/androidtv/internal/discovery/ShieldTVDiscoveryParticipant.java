@@ -64,26 +64,31 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String qualifiedName = service.getQualifiedName();
 
         InetAddress[] ipAddresses = service.getInet4Addresses();
-        String ipAddress = ipAddresses[0].getHostAddress();
-        String serverId = service.getPropertyString("SERVER");
-        String serverCapability = service.getPropertyString("SERVER_CAPABILITY");
 
-        logger.debug("ShieldTV mDNS discovery notified of ShieldTV mDNS service: {}", nice);
-        logger.trace("ShieldTV mDNS service qualifiedName: {}", qualifiedName);
-        logger.trace("ShieldTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
-        logger.trace("ShieldTV mDNS service selected ipAddress: {}", ipAddress);
-        logger.trace("ShieldTV mDNS service property SERVER: {}", serverId);
-        logger.trace("ShieldTV mDNS service property SERVER_CAPABILITY: {}", serverCapability);
+        if (ipAddresses.length > 0) {
+            String ipAddress = ipAddresses[0].getHostAddress();
+            String serverId = service.getPropertyString("SERVER");
+            String serverCapability = service.getPropertyString("SERVER_CAPABILITY");
 
-        final ThingUID uid = getThingUID(service);
-        if (uid != null) {
-            final String id = uid.getId();
-            final String label = service.getName() + " (" + id + ")";
-            final Map<String, Object> properties = new HashMap<>(2);
+            logger.debug("ShieldTV mDNS discovery notified of ShieldTV mDNS service: {}", nice);
+            logger.trace("ShieldTV mDNS service qualifiedName: {}", qualifiedName);
+            logger.trace("ShieldTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
+            logger.trace("ShieldTV mDNS service selected ipAddress: {}", ipAddress);
+            logger.trace("ShieldTV mDNS service property SERVER: {}", serverId);
+            logger.trace("ShieldTV mDNS service property SERVER_CAPABILITY: {}", serverCapability);
 
-            properties.put(PROPERTY_IP_ADDRESS, ipAddress);
+            final ThingUID uid = getThingUID(service);
+            if (uid != null) {
+                final String id = uid.getId();
+                final String label = service.getName() + " (" + id + ")";
+                final Map<String, Object> properties = new HashMap<>(2);
 
-            return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+                properties.put(PROPERTY_IP_ADDRESS, ipAddress);
+
+                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
