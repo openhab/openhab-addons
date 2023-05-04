@@ -15,7 +15,13 @@
 
 		<channels>
 			<channel id="color" typeId="system.color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -411,7 +417,13 @@
 
 		<channels>
 			<channel id="color" typeId="system.color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>ain</representation-property>
 
