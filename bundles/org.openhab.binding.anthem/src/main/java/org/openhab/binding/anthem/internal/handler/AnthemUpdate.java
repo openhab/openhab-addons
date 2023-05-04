@@ -13,7 +13,6 @@
 package org.openhab.binding.anthem.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.State;
 
 /**
@@ -24,21 +23,14 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class AnthemUpdate {
-    private static final int TYPE_STATE_UPDATE = 1;
-    private static final int TYPE_PROPERTY_UPDATE = 2;
-
-    private int updateType;
-    private @Nullable StateUpdate stateUpdate;
-    private @Nullable PropertyUpdate propertyUpdate;
+    private Object updateObject;
 
     public AnthemUpdate(StateUpdate stateUpdate) {
-        updateType = TYPE_STATE_UPDATE;
-        this.stateUpdate = stateUpdate;
+        this.updateObject = stateUpdate;
     }
 
     public AnthemUpdate(PropertyUpdate propertyUpdate) {
-        updateType = TYPE_PROPERTY_UPDATE;
-        this.propertyUpdate = propertyUpdate;
+        this.updateObject = propertyUpdate;
     }
 
     public static AnthemUpdate createStateUpdate(String groupId, String channelId, State state) {
@@ -50,26 +42,24 @@ public class AnthemUpdate {
     }
 
     public boolean isStateUpdate() {
-        return updateType == TYPE_STATE_UPDATE;
+        return updateObject instanceof StateUpdate;
     }
 
     public boolean isPropertyUpdate() {
-        return updateType == TYPE_PROPERTY_UPDATE;
+        return updateObject instanceof PropertyUpdate;
     }
 
     public StateUpdate getStateUpdate() {
-        StateUpdate localStateUpdate = stateUpdate;
-        if (updateType == TYPE_STATE_UPDATE && localStateUpdate != null) {
-            return localStateUpdate;
+        if (updateObject instanceof StateUpdate) {
+            return (StateUpdate) updateObject;
         }
-        throw new IllegalStateException("Update type is state update but stateUpdate object is null");
+        throw new IllegalStateException("Update object is not a state update");
     }
 
     public PropertyUpdate getPropertyUpdate() {
-        PropertyUpdate localPropertyUpdate = propertyUpdate;
-        if (updateType == TYPE_PROPERTY_UPDATE && localPropertyUpdate != null) {
-            return localPropertyUpdate;
+        if (updateObject instanceof PropertyUpdate) {
+            return (PropertyUpdate) updateObject;
         }
-        throw new IllegalStateException("Update type is property update but propertyUpdate object is null");
+        throw new IllegalStateException("Update object is not a property update");
     }
 }
