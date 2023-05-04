@@ -143,6 +143,8 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_LAST_CHANGE = "last_change";
     public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
     public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_COLORTEMPERATURE = "color_temperature";
+    public static final String CHANNEL_COLORTEMPERATURE_ABS = "color_temperature_abs";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_ON_OFF = "on_off";
 
