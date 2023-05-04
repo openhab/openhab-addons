@@ -44,6 +44,9 @@ public class AnthemCommandParserTest {
         update = parser.parseCommand("UNTERMINATED_COMMAND");
         assertEquals(null, update);
 
+        update = parser.parseCommand("Z1POW0");
+        assertEquals(null, update);
+
         update = parser.parseCommand("X");
         assertEquals(null, update);
 
