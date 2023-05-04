@@ -50,15 +50,15 @@ public class AnthemUpdate {
     }
 
     public StateUpdate getStateUpdate() {
-        if (updateObject instanceof StateUpdate) {
-            return (StateUpdate) updateObject;
+        if (updateObject instanceof StateUpdate stateUpdate) {
+            return stateUpdate;
         }
         throw new IllegalStateException("Update object is not a state update");
     }
 
     public PropertyUpdate getPropertyUpdate() {
-        if (updateObject instanceof PropertyUpdate) {
-            return (PropertyUpdate) updateObject;
+        if (updateObject instanceof PropertyUpdate propertyUpdate) {
+            return propertyUpdate;
         }
         throw new IllegalStateException("Update object is not a property update");
     }
