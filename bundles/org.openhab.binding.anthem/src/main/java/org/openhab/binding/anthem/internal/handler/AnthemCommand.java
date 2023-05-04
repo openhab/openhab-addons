@@ -116,6 +116,10 @@ public class AnthemCommand {
         return new AnthemCommand("IDN?");
     }
 
+    public static AnthemCommand customCommand(String customCommand) {
+        return new AnthemCommand(customCommand);
+    }
+
     public String getCommand() {
         return command + COMMAND_TERMINATOR;
     }
