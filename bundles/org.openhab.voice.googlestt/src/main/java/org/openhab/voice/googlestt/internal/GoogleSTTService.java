@@ -48,6 +48,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -117,6 +118,14 @@ public class GoogleSTTService implements STTService {
         updateConfig();
     }
 
+    @Deactivate
+    protected void dispose() {
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(SERVICE_PID);
+            oAuthService = null;
+        }
+    }
+
     @Override
     public String getId() {
         return SERVICE_ID;
@@ -157,6 +166,7 @@ public class GoogleSTTService implements STTService {
     }
 
     private void updateConfig() {
+        dispose();
         String clientId = this.config.clientId;
         String clientSecret = this.config.clientSecret;
         if (!clientId.isBlank() && !clientSecret.isBlank()) {
