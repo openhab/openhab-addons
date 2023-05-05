@@ -212,6 +212,10 @@ class Clip2DtoTest {
                 assertEquals(OnOffType.OFF, item.getSwitch());
                 state = item.getBrightnessState();
                 assertTrue(state instanceof PercentType);
+                assertEquals(0, ((PercentType) state).doubleValue(), 0.1);
+                item.setSwitch(OnOffType.ON);
+                state = item.getBrightnessState();
+                assertTrue(state instanceof PercentType);
                 assertEquals(93.0, ((PercentType) state).doubleValue(), 0.1);
                 assertEquals(UnDefType.UNDEF, item.getColorTemperaturePercentState());
                 state = item.getColorState();
@@ -230,6 +234,10 @@ class Clip2DtoTest {
                 itemFoundCount++;
                 assertEquals(ResourceType.LIGHT, item.getType());
                 assertEquals(OnOffType.OFF, item.getSwitch());
+                state = item.getBrightnessState();
+                assertTrue(state instanceof PercentType);
+                assertEquals(0, ((PercentType) state).doubleValue(), 0.1);
+                item.setSwitch(OnOffType.ON);
                 state = item.getBrightnessState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(56.7, ((PercentType) state).doubleValue(), 0.1);
@@ -338,9 +346,21 @@ class Clip2DtoTest {
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
         one.setColor(HSBType.RED, null);
+        one.setBrightness(PercentType.HUNDRED);
         assertTrue(one.getColorState() instanceof HSBType);
         assertTrue(HSBType.RED.closeTo((HSBType) one.getColorState(), 0.01));
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
+
+        // switching off should change HSB and Brightness
+        one.setSwitch(OnOffType.OFF);
+        assertEquals(0, ((HSBType) one.getColorState()).getBrightness().doubleValue(), 0.01);
+        assertEquals(PercentType.ZERO, one.getBrightnessState());
+        one.setSwitch(OnOffType.ON);
+
+        // setting brightness to zero should change HSB
+        one.setBrightness(PercentType.ZERO);
+        assertEquals(0, ((HSBType) one.getColorState()).getBrightness().doubleValue(), 0.01);
+        one.setSwitch(OnOffType.ON);
 
         // null its Dimming field
         try {

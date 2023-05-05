@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +33,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.HueBindingConstants;
+import org.openhab.binding.hue.internal.HueBindingConstants.ChannelInfo;
 import org.openhab.binding.hue.internal.action.DynamicsActions;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
@@ -47,6 +50,8 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -65,6 +70,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -84,8 +90,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Clip2ThingHandler extends BaseThingHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(HueBindingConstants.THING_TYPE_DEVICE,
-            HueBindingConstants.THING_TYPE_ROOM, HueBindingConstants.THING_TYPE_ZONE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM,
+            THING_TYPE_ZONE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
@@ -154,18 +160,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
 
-    private @Nullable ScheduledFuture<?> updateContributorsTask;
+    private @Nullable ScheduledFuture<?> updateServiceContributorsTask;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
+        if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.DEVICE);
-        } else if (HueBindingConstants.THING_TYPE_ROOM.equals(thingTypeUID)) {
+        } else if (THING_TYPE_ROOM.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.ROOM);
-        } else if (HueBindingConstants.THING_TYPE_ZONE.equals(thingTypeUID)) {
+        } else if (THING_TYPE_ZONE.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.ZONE);
         } else {
             throw new IllegalArgumentException("Wrong thing type " + thingTypeUID.getAsString());
@@ -187,7 +193,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             synchronized (supportedChannelIdSet) {
                 logger.debug("{} -> addSupportedChannel() '{}' added to supported channel set", resourceId, channelId);
                 supportedChannelIdSet.add(channelId);
-                if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
+                if (DYNAMIC_CHANNELS.contains(channelId)) {
                     clearDynamicsChannel();
                 }
             }
@@ -200,19 +206,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private void clearDynamicsChannel() {
         dynamicsExpireTime = Instant.MIN;
         dynamicsDuration = Duration.ZERO;
-        updateState(HueBindingConstants.CHANNEL_2_DYNAMICS, new QuantityType<>(0, MetricPrefix.MILLI(Units.SECOND)),
-                true);
+        updateState(CHANNEL_2_DYNAMICS, new QuantityType<>(0, MetricPrefix.MILLI(Units.SECOND)), true);
     }
 
     @Override
     public void dispose() {
         logger.debug("{} -> dispose()", resourceId);
         disposing = true;
-        ScheduledFuture<?> task = updateContributorsTask;
+        ScheduledFuture<?> task = updateServiceContributorsTask;
         if (Objects.nonNull(task)) {
             task.cancel(true);
         }
-        updateContributorsTask = null;
+        updateServiceContributorsTask = null;
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceIds.clear();
@@ -267,12 +272,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH.equals(command)) {
+    public void handleCommand(ChannelUID channelUID, Command commandParam) {
+        if (RefreshType.REFRESH.equals(commandParam)) {
             if ((thing.getStatus() == ThingStatus.ONLINE) && updateDependenciesDone) {
-                ScheduledFuture<?> task = updateContributorsTask;
+                ScheduledFuture<?> task = updateServiceContributorsTask;
                 if (Objects.isNull(task) || !task.isDone()) {
-                    updateContributorsTask = scheduler.schedule(() -> {
+                    updateServiceContributorsTask = scheduler.schedule(() -> {
                         try {
                             updateServiceContributors();
                         } catch (ApiException | AssetNotLoadedException e) {
@@ -293,60 +298,84 @@ public class Clip2ThingHandler extends BaseThingHandler {
         ResourceType lightResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
                 : ResourceType.GROUPED_LIGHT;
 
+        Command command = commandParam;
         Resource putResource = null;
         String putResourceId = null;
         String channelId = channelUID.getId();
 
         switch (channelId) {
-            case HueBindingConstants.CHANNEL_2_ALERT:
+            case CHANNEL_2_ALERT:
                 putResource = new Resource(lightResourceType).setAlert(command, getCachedResource(lightResourceType));
                 scheduler.schedule(() -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 10,
                         TimeUnit.SECONDS);
                 break;
 
-            case HueBindingConstants.CHANNEL_2_EFFECT:
+            case CHANNEL_2_EFFECT:
                 putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON).setEffect(command,
                         getCachedResource(lightResourceType));
                 break;
 
-            case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE:
+            case CHANNEL_2_COLOR_TEMPERATURE:
                 putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON)
                         .setColorTemperaturePercent(command, getCachedResource(ResourceType.LIGHT));
                 break;
 
-            case HueBindingConstants.CHANNEL_2_COLOR_TEMP_KELVIN:
+            case CHANNEL_2_COLOR_TEMP_KELVIN:
                 putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON)
                         .setColorTemperatureKelvin(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_2_COLOR:
-                putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON).setColor(command,
-                        getCachedResource(lightResourceType));
+            case CHANNEL_2_COLOR:
+                putResource = new Resource(lightResourceType);
+                if (command instanceof HSBType) {
+                    HSBType color = ((HSBType) command);
+                    putResource.setColor(color, getCachedResource(lightResourceType));
+                    command = color.getBrightness();
+                }
+                // NB fall through !!
+
+            case CHANNEL_2_BRIGHTNESS:
+                putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
+                if (command instanceof IncreaseDecreaseType) {
+                    Resource cache = getCachedResource(lightResourceType);
+                    if (Objects.nonNull(cache)) {
+                        State current = cache.getBrightnessState();
+                        if (current instanceof PercentType) {
+                            int sign = IncreaseDecreaseType.INCREASE.equals(command) ? 1 : -1;
+                            double percent = ((PercentType) current).doubleValue() + (sign * Resource.PERCENT_DELTA);
+                            command = new PercentType(new BigDecimal(Math.min(100f, Math.max(0f, percent)),
+                                    Resource.PERCENT_MATH_CONTEXT));
+                        }
+                    }
+                }
+                // NB fall through !!
+                if (command instanceof PercentType) {
+                    PercentType brightness = (PercentType) command;
+                    putResource.setBrightness(brightness);
+                    command = OnOffType.from(brightness.intValue() > 1);
+                }
+                // NB fall through !!
+
+            case CHANNEL_2_SWITCH:
+                putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
+                if (command instanceof OnOffType) {
+                    putResource.setSwitch(command);
+                }
                 break;
 
-            case HueBindingConstants.CHANNEL_2_BRIGHTNESS:
-                putResource = new Resource(lightResourceType)
-                        .setSwitch(PercentType.ZERO.equals(command) ? OnOffType.OFF : OnOffType.ON)
-                        .setBrightness(command);
-                break;
-
-            case HueBindingConstants.CHANNEL_2_SWITCH:
-                putResource = new Resource(lightResourceType).setSwitch(command);
-                break;
-
-            case HueBindingConstants.CHANNEL_2_TEMPERATURE_ENABLED:
+            case CHANNEL_2_TEMPERATURE_ENABLED:
                 putResource = new Resource(ResourceType.TEMPERATURE).setEnabled(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_2_MOTION_ENABLED:
+            case CHANNEL_2_MOTION_ENABLED:
                 putResource = new Resource(ResourceType.MOTION).setEnabled(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_2_LIGHT_LEVEL_ENABLED:
+            case CHANNEL_2_LIGHT_LEVEL_ENABLED:
                 putResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_2_SCENE:
+            case CHANNEL_2_SCENE:
                 if (command instanceof StringType) {
                     putResourceId = sceneResourceIds.get(((StringType) command).toString());
                     if (Objects.nonNull(putResourceId)) {
@@ -355,7 +384,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 break;
 
-            case HueBindingConstants.CHANNEL_2_DYNAMICS:
+            case CHANNEL_2_DYNAMICS:
                 Duration clearAfter = Duration.ZERO;
                 if (command instanceof QuantityType<?>) {
                     QuantityType<?> durationMSec = ((QuantityType<?>) command).toUnit(MetricPrefix.MILLI(Units.SECOND));
@@ -389,7 +418,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
 
-        if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
+        if (DYNAMIC_CHANNELS.contains(channelId)) {
             if (Instant.now().isBefore(dynamicsExpireTime) && !dynamicsDuration.isZero()
                     && !dynamicsDuration.isNegative()) {
                 if (ResourceType.SCENE == putResource.getType()) {
@@ -418,8 +447,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param duration the transition duration.
      */
     public synchronized void handleDynamicsCommand(String channelId, Command command, QuantityType<?> duration) {
-        if (HueBindingConstants.DYNAMIC_CHANNELS.contains(channelId)) {
-            Channel dynamicsChannel = thing.getChannel(HueBindingConstants.CHANNEL_2_DYNAMICS);
+        if (DYNAMIC_CHANNELS.contains(channelId)) {
+            Channel dynamicsChannel = thing.getChannel(CHANNEL_2_DYNAMICS);
             Channel targetChannel = thing.getChannel(channelId);
             if (Objects.nonNull(dynamicsChannel) && Objects.nonNull(targetChannel)) {
                 logger.debug("{} - handleDynamicsCommand() channelId:{}, command:{}, duration:{}", resourceId,
@@ -530,8 +559,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             List<StateOption> stateOptions = alerts.getActionValues().stream().map(action -> action.name())
                     .map(actionId -> new StateOption(actionId, actionId)).collect(Collectors.toList());
             if (!stateOptions.isEmpty()) {
-                stateDescriptionProvider.setStateOptions(
-                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_2_ALERT), stateOptions);
+                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_ALERT), stateOptions);
                 logger.debug("{} -> updateAlerts() found {} associated alerts", resourceId, stateOptions.size());
             }
         }
@@ -545,8 +573,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private void updateChannelItemLinksFromLegacy() {
         if (!disposing) {
             legacyLinkedChannelUIDs.forEach(legacyLinkedChannelUID -> {
-                String targetChannelId = HueBindingConstants.REPLICATE_CHANNEL_ID_MAP
-                        .get(legacyLinkedChannelUID.getId());
+                String targetChannelId = REPLICATE_CHANNEL_ID_MAP.get(legacyLinkedChannelUID.getId());
                 if (Objects.nonNull(targetChannelId)) {
                     Channel targetChannel = thing.getChannel(targetChannelId);
                     if (Objects.nonNull(targetChannel)) {
@@ -600,6 +627,73 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     updateThing(editThing().withoutChannels(unusedChannels).build());
                 }
             }
+            updateChannelListAdvanced();
+        }
+    }
+
+    /**
+     * Change subsidiary channels to advanced level so normal users can't see them in the UI. If a light supports the
+     * color channel, then it's brightness and switch can be commanded via the 'B' part of the HSB value. And if it
+     * supports the brightness channel the switch can be controlled via the brightness. In those cases, the subsidiary
+     * channels are strictly speaking no longer necessary. However some users (including the initial contributor) want
+     * to have the subsidiary channels available anyway, in order to have consistent commands across all lights. So in
+     * such circumstances these channels are moved to the 'advanced' level, so normal users will not see them, but
+     * advanced users can use them nevertheless.
+     */
+    private void updateChannelListAdvanced() {
+        if (!disposing) {
+            boolean hasColor = Objects.nonNull(thing.getChannel(CHANNEL_2_COLOR));
+            boolean hasBrightness = Objects.nonNull(thing.getChannel(CHANNEL_2_BRIGHTNESS));
+
+            if (hasColor || hasBrightness) {
+                int changeCount = 0;
+                List<Channel> channels = new ArrayList<>(thing.getChannels());
+
+                for (int i = 0; i < channels.size(); i++) {
+                    ChannelInfo channelInfo;
+                    String channelId = channels.get(i).getUID().getId();
+
+                    switch (channelId) {
+                        case CHANNEL_2_SWITCH:
+                            channelInfo = thisResource.getType() == ResourceType.DEVICE ? CHANNEL_LIGHT_SWITCH_ADVANCED
+                                    : CHANNEL_GROUP_SWITCH_ADVANCED;
+                            break;
+
+                        case CHANNEL_2_BRIGHTNESS:
+                            if (hasColor) {
+                                channelInfo = CHANNEL_LIGHT_BRIGHTNESS_ADVANCED;
+                                break;
+                            }
+
+                        default:
+                            continue;
+                    }
+
+                    try {
+                        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId)) //
+                                .withAcceptedItemType(channelInfo.acceptedItemType) //
+                                .withDescription(getBridgeHandler().getLocalizedText(channelInfo.description)) //
+                                .withLabel(getBridgeHandler().getLocalizedText(channelInfo.label)) //
+                                .withType(channelInfo.typeUID) //
+                                .build();
+                        channels.set(i, channel);
+                        changeCount++;
+                    } catch (AssetNotLoadedException e) {
+                        // should never happen since already online
+                        logger.debug("{} -> updateChannelListAdvanced() unexpected exception", resourceId, e);
+                    }
+                }
+
+                if (changeCount > 0) {
+                    logger.debug("{} -> updateChannelListAdvanced() changed {} channels", resourceId, changeCount);
+                    updateThing(editThing().withChannels(channels).build());
+                    // do a REFRESH to initialise new channels' state
+                    Channel lastUpdateChannel = thing.getChannel(CHANNEL_2_LAST_UPDATED);
+                    if (Objects.nonNull(lastUpdateChannel)) {
+                        handleCommand(lastUpdateChannel.getUID(), RefreshType.REFRESH);
+                    }
+                }
+            }
         }
     }
 
@@ -615,75 +709,72 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (resource.getType()) {
             case BUTTON:
                 if (fullUpdate) {
-                    addSupportedChannel(HueBindingConstants.CHANNEL_2_BUTTON_LAST_EVENT);
+                    addSupportedChannel(CHANNEL_2_BUTTON_LAST_EVENT);
                 }
                 resource.addControlIdToMap(controlIds);
                 State buttonState = resource.getButtonEventState(controlIds);
-                updateState(HueBindingConstants.CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
+                updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 break;
 
             case DEVICE_POWER:
-                updateState(HueBindingConstants.CHANNEL_2_BATTERY_LEVEL, resource.getBatteryLevelState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_BATTERY_LOW, resource.getBatteryLowState(), fullUpdate);
+                updateState(CHANNEL_2_BATTERY_LEVEL, resource.getBatteryLevelState(), fullUpdate);
+                updateState(CHANNEL_2_BATTERY_LOW, resource.getBatteryLowState(), fullUpdate);
                 break;
 
             case LIGHT:
                 if (fullUpdate) {
                     updateEffectChannel(resource);
                 }
-                updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE, resource.getColorTemperaturePercentState(),
-                        fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMP_KELVIN, resource.getColorTemperatureKelvinState(),
-                        fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_COLOR, resource.getColorState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
+                updateState(CHANNEL_2_COLOR_TEMPERATURE, resource.getColorTemperaturePercentState(), fullUpdate);
+                updateState(CHANNEL_2_COLOR_TEMP_KELVIN, resource.getColorTemperatureKelvinState(), fullUpdate);
+                updateState(CHANNEL_2_COLOR, resource.getColorState(), fullUpdate);
+                updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
                 // fall through for brightness and switch channels
 
             case GROUPED_LIGHT:
                 if (fullUpdate) {
                     updateAlertChannel(resource);
                 }
-                updateState(HueBindingConstants.CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_SWITCH, resource.getSwitch(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
+                updateState(CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
+                updateState(CHANNEL_2_SWITCH, resource.getSwitch(), fullUpdate);
+                updateState(CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
                 break;
 
             case LIGHT_LEVEL:
-                updateState(HueBindingConstants.CHANNEL_2_LIGHT_LEVEL, resource.getLightLevelState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_LIGHT_LEVEL_ENABLED, resource.getEnabledState(), fullUpdate);
+                updateState(CHANNEL_2_LIGHT_LEVEL, resource.getLightLevelState(), fullUpdate);
+                updateState(CHANNEL_2_LIGHT_LEVEL_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case MOTION:
-                updateState(HueBindingConstants.CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
+                updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
+                updateState(CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case RELATIVE_ROTARY:
                 if (fullUpdate) {
-                    addSupportedChannel(HueBindingConstants.CHANNEL_2_ROTARY_STEPS);
+                    addSupportedChannel(CHANNEL_2_ROTARY_STEPS);
                 }
-                updateState(HueBindingConstants.CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
+                updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 break;
 
             case TEMPERATURE:
-                updateState(HueBindingConstants.CHANNEL_2_TEMPERATURE, resource.getTemperatureState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_2_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
+                updateState(CHANNEL_2_TEMPERATURE, resource.getTemperatureState(), fullUpdate);
+                updateState(CHANNEL_2_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case ZIGBEE_CONNECTIVITY:
                 updateConnectivityState(resource);
-                updateState(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS, resource.getZigbeeState(), fullUpdate);
                 break;
 
             case SCENE:
-                updateState(HueBindingConstants.CHANNEL_2_SCENE, resource.getSceneState(), fullUpdate);
+                updateState(CHANNEL_2_SCENE, resource.getSceneState(), fullUpdate);
                 break;
 
             default:
                 return false;
         }
         if (thisResource.getType() == ResourceType.DEVICE) {
-            updateState(HueBindingConstants.CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
+            updateState(CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
         }
         return true;
     }
@@ -705,17 +796,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/offline.api2.comm-error.zigbee-connectivity-issue");
-                    // change all channel states, except the Zigbee channel itself, to undefined
-                    supportedChannelIdSet.stream()
-                            .filter(channelId -> !HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS.equals(channelId))
-                            .forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
+                    supportedChannelIdSet.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
             } else if (thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                // one single refresh command will update all channels
-                Channel zigbeeChannel = thing.getChannel(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS);
-                if (Objects.nonNull(zigbeeChannel)) {
-                    handleCommand(zigbeeChannel.getUID(), RefreshType.REFRESH);
+                // issue REFRESH command to update all channels
+                Channel lastUpdateChannel = thing.getChannel(CHANNEL_2_LAST_UPDATED);
+                if (Objects.nonNull(lastUpdateChannel)) {
+                    handleCommand(lastUpdateChannel.getUID(), RefreshType.REFRESH);
                 }
             }
         }
@@ -768,8 +856,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     .map(effect -> EffectType.of(effect).name()).map(effectId -> new StateOption(effectId, effectId))
                     .collect(Collectors.toList());
             if (!stateOptions.isEmpty()) {
-                stateDescriptionProvider.setStateOptions(
-                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_2_EFFECT), stateOptions);
+                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT),
+                        stateOptions);
                 logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
             }
         }
@@ -808,25 +896,25 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Map<String, String> properties = new HashMap<>(thing.getProperties());
 
             // resource data
-            properties.put(HueBindingConstants.PROPERTY_RESOURCE_ID, resourceId);
-            properties.put(HueBindingConstants.PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
-            properties.put(HueBindingConstants.PROPERTY_RESOURCE_NAME, thisResource.getName());
+            properties.put(PROPERTY_RESOURCE_ID, resourceId);
+            properties.put(PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
+            properties.put(PROPERTY_RESOURCE_NAME, thisResource.getName());
 
             // owner information
             ResourceReference owner = thisResource.getOwner();
             if (Objects.nonNull(owner)) {
                 String ownerId = owner.getId();
                 if (Objects.nonNull(ownerId)) {
-                    properties.put(HueBindingConstants.PROPERTY_OWNER, ownerId);
+                    properties.put(PROPERTY_OWNER, ownerId);
                 }
                 ResourceType ownerType = owner.getType();
-                properties.put(HueBindingConstants.PROPERTY_OWNER_TYPE, ownerType.toString());
+                properties.put(PROPERTY_OWNER_TYPE, ownerType.toString());
             }
 
             // metadata
             MetaData metaData = thisResource.getMetaData();
             if (Objects.nonNull(metaData)) {
-                properties.put(HueBindingConstants.PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
+                properties.put(PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
             }
 
             // product data
@@ -842,10 +930,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
 
                 // hue specific properties
-                properties.put(HueBindingConstants.PROPERTY_PRODUCT_NAME, productData.getProductName());
-                properties.put(HueBindingConstants.PROPERTY_PRODUCT_ARCHETYPE,
-                        productData.getProductArchetype().toString());
-                properties.put(HueBindingConstants.PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+                properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
+                properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
+                properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
             }
 
             thing.setProperties(properties);
@@ -903,11 +990,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
                 State state = scenes.stream().filter(s -> s.getSceneActive().orElse(false)).map(s -> s.getSceneState())
                         .findAny().orElse(UnDefType.UNDEF);
-                updateState(HueBindingConstants.CHANNEL_2_SCENE, state, true);
+                updateState(CHANNEL_2_SCENE, state, true);
 
-                stateDescriptionProvider.setStateOptions(
-                        new ChannelUID(thing.getUID(), HueBindingConstants.CHANNEL_2_SCENE), scenes.stream()
-                                .map(s -> s.getName()).map(n -> new StateOption(n, n)).collect(Collectors.toList()));
+                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_SCENE), scenes
+                        .stream().map(s -> s.getName()).map(n -> new StateOption(n, n)).collect(Collectors.toList()));
 
                 logger.debug("{} -> updateSceneContributors() found {} scenes", resourceId, scenes.size());
             }
@@ -928,7 +1014,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             logger.debug("{} -> updateServiceContributors() called for {} contributors", resourceId,
                     serviceContributorsCache.size());
             ResourceReference reference = new ResourceReference();
-            for (Entry<String, Resource> entry : serviceContributorsCache.entrySet()) {
+            for (var entry : serviceContributorsCache.entrySet()) {
                 updateResource(reference.setId(entry.getKey()).setType(entry.getValue().getType()));
             }
         }
@@ -965,7 +1051,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
         Map<String, String> properties = thing.getProperties();
-        String legacyThingUID = properties.get(HueBindingConstants.PROPERTY_LEGACY_THING_UID);
+        String legacyThingUID = properties.get(PROPERTY_LEGACY_THING_UID);
         if (Objects.nonNull(legacyThingUID)) {
             Thing legacyThing = thingRegistry.get(new ThingUID(legacyThingUID));
             if (Objects.nonNull(legacyThing)) {
@@ -979,12 +1065,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 // save list of legacyLinkedChannelUIDs for use after channel list is initialised
                 legacyLinkedChannelUIDs.clear();
                 legacyLinkedChannelUIDs.addAll(legacyThing.getChannels().stream().map(Channel::getUID)
-                        .filter(uid -> HueBindingConstants.REPLICATE_CHANNEL_ID_MAP.containsKey(uid.getId())
+                        .filter(uid -> REPLICATE_CHANNEL_ID_MAP.containsKey(uid.getId())
                                 && itemChannelLinkRegistry.isLinked(uid))
                         .collect(Collectors.toList()));
 
                 Map<String, String> newProperties = new HashMap<>(properties);
-                newProperties.remove(HueBindingConstants.PROPERTY_LEGACY_THING_UID);
+                newProperties.remove(PROPERTY_LEGACY_THING_UID);
 
                 updateThing(editBuilder.withProperties(newProperties).build());
             }

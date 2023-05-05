@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link HueBindingConstants} class defines common constants, which are
@@ -157,7 +158,6 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_TEMPERATURE_ENABLED = "temperature-enabled";
     public static final String CHANNEL_2_BATTERY_LEVEL = "battery-level";
     public static final String CHANNEL_2_BATTERY_LOW = "battery-low";
-    public static final String CHANNEL_2_ZIGBEE_STATUS = "zigbee-status";
     public static final String CHANNEL_2_LAST_UPDATED = "last-updated";
 
     // channel IDs that (optionally) support dynamics
@@ -184,4 +184,33 @@ public class HueBindingConstants {
             Map.entry(CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED));
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all-lights.label";
+
+    public static class ChannelInfo {
+        public final String acceptedItemType;
+        public final String description;
+        public final String label;
+        public final ChannelTypeUID typeUID;
+
+        public ChannelInfo(String acceptedItemType, String description, String label, ChannelTypeUID typeUID) {
+            this.acceptedItemType = acceptedItemType;
+            this.description = description;
+            this.label = label;
+            this.typeUID = typeUID;
+        }
+    }
+
+    public static final ChannelInfo CHANNEL_LIGHT_BRIGHTNESS_ADVANCED = new ChannelInfo("Dimmer",
+            "channel-type.hue.light-brightness-advanced.description", //
+            "channel-type.hue.light-brightness-advanced.label", //
+            new ChannelTypeUID(BINDING_ID, "light-brightness-advanced"));
+
+    public static final ChannelInfo CHANNEL_LIGHT_SWITCH_ADVANCED = new ChannelInfo("Switch",
+            "channel-type.hue.light-switch-advanced.description", //
+            "channel-type.hue.light-switch-advanced.label", //
+            new ChannelTypeUID(BINDING_ID, "light-switch-advanced"));
+
+    public static final ChannelInfo CHANNEL_GROUP_SWITCH_ADVANCED = new ChannelInfo("Switch",
+            "channel-type.hue.group-switch-advanced.description", //
+            "channel-type.hue.group-switch-advanced.label", //
+            new ChannelTypeUID(BINDING_ID, "group-switch-advanced"));
 }

@@ -31,7 +31,6 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -57,29 +56,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Resource {
 
-    private static final double PERCENT_DELTA = 30f;
-    private static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
-
-    /**
-     * Static method to get a new percent value depending on the type of command and if relevant the current value.
-     *
-     * @param command either a PercentType with the new value, an OnOffType to set it at 0 / 100 percent, or an
-     *            IncreaseDecreaseType to increment the percentage value by a fixed amount.
-     * @param current the current percent value.
-     * @return the new PercentType value, or null if the command was not recognised.
-     */
-    private static State getPercentType(Command command, State current) {
-        if (command instanceof PercentType) {
-            return (PercentType) command;
-        } else if (command instanceof OnOffType) {
-            return OnOffType.ON.equals(command) ? PercentType.HUNDRED : PercentType.ZERO;
-        } else if (command instanceof IncreaseDecreaseType && current instanceof PercentType) {
-            int sign = IncreaseDecreaseType.INCREASE.equals(command) ? 1 : -1;
-            double percent = ((PercentType) current).doubleValue() + (sign * PERCENT_DELTA);
-            return new PercentType(new BigDecimal(Math.min(100f, Math.max(0f, percent)), PERCENT_MATH_CONTEXT));
-        }
-        return UnDefType.NULL;
-    }
+    public static final double PERCENT_DELTA = 30f;
+    public static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
 
     /**
      * The SSE event mechanism sends resources in a sparse (skeleton) format that only includes state fields whose
@@ -153,6 +131,10 @@ public class Resource {
      * @return this instance.
      */
     public Resource copyMissingFieldsFrom(Resource other) {
+        // on
+        if (Objects.isNull(this.on) && Objects.nonNull(other.on)) {
+            this.on = other.on;
+        }
         // dimming
         if (Objects.isNull(this.dimming) && Objects.nonNull(other.dimming)) {
             this.dimming = other.dimming;
@@ -246,15 +228,25 @@ public class Resource {
         return Objects.isNull(bridgeId) || bridgeId.isBlank() ? null : bridgeId;
     }
 
+    /**
+     * Get the brightness as a PercentType. If off the brightness is 0, otherwise use dimming value.
+     *
+     * @return a PercentType with the dimming state, or UNDEF, or NULL
+     */
     public State getBrightnessState() {
         Dimming dimming = this.dimming;
-        try {
-            return Objects.nonNull(dimming)
-                    ? new PercentType(new BigDecimal(dimming.getBrightness(), PERCENT_MATH_CONTEXT))
-                    : UnDefType.NULL;
-        } catch (DTOPresentButEmptyException e) {
-            return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+        if (Objects.nonNull(dimming)) {
+            try {
+                // if off the brightness is 0, otherwise it is dimming value
+                OnState on = this.on;
+                double brightness = Objects.nonNull(on) && !on.isOn() ? 0f
+                        : Math.max(0f, Math.min(100f, dimming.getBrightness()));
+                return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
+            } catch (DTOPresentButEmptyException e) {
+                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            }
         }
+        return UnDefType.NULL;
     }
 
     public @Nullable Button getButton() {
@@ -294,9 +286,10 @@ public class Resource {
 
     /**
      * Get the color as an HSBType. Take its Hue & Saturation parts from the 'ColorXy' JSON element, and take its
-     * Brightness part from the 'Dimming' JSON element.
+     * Brightness part from the 'On' resp. 'Dimming' JSON elements. If off the B part is 0, otherwise it is the dimming
+     * value.
      *
-     * @return an HSBType containing the current color and brightness level.
+     * @return an HSBType containing the current color and brightness level, or UNDEF or NULL.
      */
     public State getColorState() {
         ColorXy color = this.color;
@@ -305,10 +298,12 @@ public class Resource {
                 Gamut gamut = color.getGamut();
                 gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
                 HSBType hsb = ColorUtil.xyToHsb(color.getXY(), gamut);
+                OnState on = this.on;
                 Dimming dimming = this.dimming;
-                double b = Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50;
+                double brightness = Objects.nonNull(on) && !on.isOn() ? 0
+                        : Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50;
                 return new HSBType(hsb.getHue(), hsb.getSaturation(),
-                        new PercentType(new BigDecimal(b, PERCENT_MATH_CONTEXT)));
+                        new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT)));
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
             }
@@ -591,19 +586,15 @@ public class Resource {
     /**
      * Set the brightness percent.
      *
-     * @param command either a PercentType with the new value, an OnOffType to set it at 0 / 100 percent, or an
-     *            IncreaseDecreaseType to increment the percentage value by a fixed amount.
+     * @param command a PercentType with the new brightness.
      * @return this resource instance.
      */
     public Resource setBrightness(Command command) {
-        State state = getPercentType(command, getBrightnessState());
-        if (state instanceof PercentType) {
+        if (command instanceof PercentType) {
+            PercentType brightness = (PercentType) command;
             Dimming dimming = this.dimming;
             dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
-            dimming.setBrightness(((PercentType) state).doubleValue());
-            if (PercentType.ZERO.equals(state)) {
-                setSwitch(OnOffType.OFF);
-            }
+            dimming.setBrightness(brightness.doubleValue());
             this.dimming = dimming;
         }
         return this;
@@ -624,10 +615,8 @@ public class Resource {
             gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(other) ? other.getGamut() : null;
             gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
             HSBType hsb = (HSBType) command;
-            ColorXy col = color;
-            Dimming dim = dimming;
-            color = (Objects.nonNull(col) ? col : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut));
-            dimming = (Objects.nonNull(dim) ? dim : new Dimming()).setBrightness(hsb.getBrightness().doubleValue());
+            ColorXy color = this.color;
+            this.color = (Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut));
         }
         return this;
     }
@@ -731,9 +720,10 @@ public class Resource {
 
     public Resource setSwitch(Command command) {
         if (command instanceof OnOffType) {
+            OnOffType onOff = (OnOffType) command;
             OnState on = this.on;
             on = Objects.nonNull(on) ? on : new OnState();
-            on.setOn(OnOffType.ON.equals(command));
+            on.setOn(OnOffType.ON.equals(onOff));
             this.on = on;
         }
         return this;

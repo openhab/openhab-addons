@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import static org.openhab.binding.hue.internal.HueBindingConstants.THING_TYPE_BRIDGE_API2;
+import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.connection.HueTlsTrustManagerProvider;
@@ -322,7 +321,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         String ipAddress = getIpAddress();
         return Objects.nonNull(ipAddress)
                 ? thingRegistry.getAll().stream()
-                        .filter(thing -> thing.getThingTypeUID().equals(HueBindingConstants.THING_TYPE_BRIDGE)
+                        .filter(thing -> thing.getThingTypeUID().equals(THING_TYPE_BRIDGE)
                                 && ipAddress.equals(thing.getConfiguration().get("ipAddress")))
                         .findFirst()
                 : Optional.empty();
@@ -343,11 +342,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
         String config;
         if (targetIdV1.startsWith("/lights/")) {
-            config = HueBindingConstants.LIGHT_ID;
+            config = LIGHT_ID;
         } else if (targetIdV1.startsWith("/sensors/")) {
-            config = HueBindingConstants.SENSOR_ID;
+            config = SENSOR_ID;
         } else if (targetIdV1.startsWith("/groups/")) {
-            config = HueBindingConstants.GROUP_ID;
+            config = GROUP_ID;
         } else {
             return Optional.empty();
         }
@@ -355,7 +354,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         ThingUID legacyBridgeUID = legacyBridge.get().getUID();
         return thingRegistry.getAll().stream() //
                 .filter(thing -> legacyBridgeUID.equals(thing.getBridgeUID())
-                        && HueBindingConstants.V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
+                        && V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
                 .filter(thing -> {
                     Object id = thing.getConfiguration().get(config);
                     return (id instanceof String) && targetIdV1.endsWith("/" + (String) id);
@@ -597,15 +596,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             MetaData metaData = device.getMetaData();
             if (Objects.nonNull(metaData) && metaData.getArchetype() == Archetype.BRIDGE_V2) {
                 // set resource properties
-                properties.put(HueBindingConstants.PROPERTY_RESOURCE_ID, device.getId());
-                properties.put(HueBindingConstants.PROPERTY_RESOURCE_TYPE, device.getType().toString());
+                properties.put(PROPERTY_RESOURCE_ID, device.getId());
+                properties.put(PROPERTY_RESOURCE_TYPE, device.getType().toString());
 
                 // set metadata properties
                 String metaDataName = metaData.getName();
                 if (Objects.nonNull(metaDataName)) {
-                    properties.put(HueBindingConstants.PROPERTY_RESOURCE_NAME, metaDataName);
+                    properties.put(PROPERTY_RESOURCE_NAME, metaDataName);
                 }
-                properties.put(HueBindingConstants.PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
+                properties.put(PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
 
                 // set product data properties
                 ProductData productData = device.getProductData();
@@ -620,11 +619,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     }
 
                     // set hue specific properties
-                    properties.put(HueBindingConstants.PROPERTY_PRODUCT_NAME, productData.getProductName());
-                    properties.put(HueBindingConstants.PROPERTY_PRODUCT_ARCHETYPE,
-                            productData.getProductArchetype().toString());
-                    properties.put(HueBindingConstants.PROPERTY_PRODUCT_CERTIFIED,
-                            productData.getCertified().toString());
+                    properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
+                    properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
+                    properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
                 }
                 break; // we only needed the BRIDGE_V2 resource
             }
@@ -667,7 +664,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             return;
         }
         Map<String, String> properties = thing.getProperties();
-        String legacyThingUID = properties.get(HueBindingConstants.PROPERTY_LEGACY_THING_UID);
+        String legacyThingUID = properties.get(PROPERTY_LEGACY_THING_UID);
         if (Objects.nonNull(legacyThingUID)) {
             Thing legacyThing = thingRegistry.get(new ThingUID(legacyThingUID));
             if (Objects.nonNull(legacyThing)) {
@@ -678,7 +675,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     editBuilder = editBuilder.withLocation(location);
                 }
 
-                Object userName = legacyThing.getConfiguration().get(HueBindingConstants.USER_NAME);
+                Object userName = legacyThing.getConfiguration().get(USER_NAME);
                 if (userName instanceof String) {
                     Configuration configuration = thing.getConfiguration();
                     configuration.put(Clip2BridgeConfig.APPLICATION_KEY, userName);
@@ -686,7 +683,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 }
 
                 Map<String, String> newProperties = new HashMap<>(properties);
-                newProperties.remove(HueBindingConstants.PROPERTY_LEGACY_THING_UID);
+                newProperties.remove(PROPERTY_LEGACY_THING_UID);
 
                 updateThing(editBuilder.withProperties(newProperties).build());
             }

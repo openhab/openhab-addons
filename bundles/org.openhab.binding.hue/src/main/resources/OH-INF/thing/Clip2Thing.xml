@@ -13,26 +13,25 @@
 		<description>A Hue API v2 device with channels depending on its actual capabilities.</description>
 
 		<channels>
-			<channel id="brightness" typeId="light-brightness"/>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
 			<channel id="color-temp-kelvin" typeId="system.color-temperature-abs"/>
+			<channel id="brightness" typeId="light-brightness"/>
 			<channel id="switch" typeId="light-switch"/>
 			<channel id="dynamics" typeId="dynamics"/>
-			<channel id="alert" typeId="alert2"/>
-			<channel id="effect" typeId="effect2"/>
+			<channel id="alert" typeId="alert-v2"/>
+			<channel id="effect" typeId="effect-v2"/>
 			<channel id="button-last-event" typeId="button-last-event"/>
 			<channel id="rotary-steps" typeId="rotary-steps"/>
 			<channel id="motion" typeId="system.motion"/>
 			<channel id="motion-enabled" typeId="motion-enabled"/>
-			<channel id="light-level" typeId="light-level2"/>
+			<channel id="light-level" typeId="light-level-v2"/>
 			<channel id="light-level-enabled" typeId="light-level-enabled"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="temperature-enabled" typeId="temperature-enabled"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="battery-low" typeId="system.low-battery"/>
-			<channel id="zigbee-status" typeId="zigbee-status"/>
-			<channel id="last-updated" typeId="last-updated2"/>
+			<channel id="last-updated" typeId="last-updated-v2"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
@@ -60,7 +59,7 @@
 			<channel id="switch" typeId="group-switch"/>
 			<channel id="scene" typeId="group-scene"/>
 			<channel id="dynamics" typeId="dynamics"/>
-			<channel id="alert" typeId="alert2"/>
+			<channel id="alert" typeId="alert-v2"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
@@ -88,7 +87,7 @@
 			<channel id="switch" typeId="group-switch"/>
 			<channel id="scene" typeId="group-scene"/>
 			<channel id="dynamics" typeId="dynamics"/>
-			<channel id="alert" typeId="alert2"/>
+			<channel id="alert" typeId="alert-v2"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
