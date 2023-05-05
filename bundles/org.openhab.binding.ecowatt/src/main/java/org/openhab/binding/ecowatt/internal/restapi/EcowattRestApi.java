@@ -140,4 +140,8 @@ public class EcowattRestApi {
     public void dispose() {
         oAuthFactory.ungetOAuthService(authServiceHandle);
     }
+
+    public void deleteServiceAndAccessToken() {
+        oAuthFactory.deleteServiceAndAccessToken(authServiceHandle);
+    }
 }

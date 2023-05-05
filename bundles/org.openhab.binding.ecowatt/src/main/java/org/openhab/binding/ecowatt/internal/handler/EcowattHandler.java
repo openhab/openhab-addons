@@ -116,6 +116,15 @@ public class EcowattHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public void handleRemoval() {
+        EcowattRestApi localApi = api;
+        if (localApi != null) {
+            localApi.deleteServiceAndAccessToken();
+        }
+        super.handleRemoval();
+    }
+
     /**
      * Schedule the next update of channels.
      *
