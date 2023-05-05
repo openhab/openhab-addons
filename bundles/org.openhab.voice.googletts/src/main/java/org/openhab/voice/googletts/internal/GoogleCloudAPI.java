@@ -146,20 +146,19 @@ class GoogleCloudAPI {
         String clientId = config.clientId;
         String clientSecret = config.clientSecret;
         if (clientId != null && !clientId.isEmpty() && clientSecret != null && !clientSecret.isEmpty()) {
+            final OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(GoogleTTSService.SERVICE_PID,
+                    GCP_TOKEN_URI, GCP_AUTH_URI, clientId, clientSecret, GCP_SCOPE, false);
+            this.oAuthService = oAuthService;
             try {
-                final OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(
-                        GoogleTTSService.SERVICE_PID, GCP_TOKEN_URI, GCP_AUTH_URI, clientId, clientSecret, GCP_SCOPE,
-                        false);
-                this.oAuthService = oAuthService;
                 getAccessToken();
                 initVoices();
             } catch (AuthenticationException | CommunicationException e) {
                 logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
-                oAuthService = null;
+                oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
+                this.oAuthService = null;
                 voices.clear();
             }
         } else {
-            oAuthService = null;
             voices.clear();
         }
 
