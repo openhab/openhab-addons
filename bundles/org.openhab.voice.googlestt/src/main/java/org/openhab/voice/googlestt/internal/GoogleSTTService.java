@@ -166,7 +166,10 @@ public class GoogleSTTService implements STTService {
     }
 
     private void updateConfig() {
-        dispose();
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(SERVICE_PID);
+            oAuthService = null;
+        }
         String clientId = this.config.clientId;
         String clientSecret = this.config.clientSecret;
         if (!clientId.isBlank() && !clientSecret.isBlank()) {
