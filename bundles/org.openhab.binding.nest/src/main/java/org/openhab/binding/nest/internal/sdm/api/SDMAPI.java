@@ -106,7 +106,7 @@ public class SDMAPI {
         oAuthFactory.ungetOAuthService(oAuthServiceHandleId);
     }
 
-    public void deleteServiceAndAccessToken() {
+    public void deleteOAuthServiceAndAccessToken() {
         oAuthFactory.deleteServiceAndAccessToken(oAuthServiceHandleId);
     }
 

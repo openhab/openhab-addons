@@ -267,11 +267,11 @@ public class SDMAccountHandler extends BaseBridgeHandler {
     public void handleRemoval() {
         PubSubAPI localPubSubAPI = pubSubAPI;
         if (localPubSubAPI != null) {
-            localPubSubAPI.deleteServiceAndAccessToken();
+            localPubSubAPI.deleteOAuthServiceAndAccessToken();
         }
         SDMAPI localSDMAPI = sdmAPI;
         if (localSDMAPI != null) {
-            localSDMAPI.deleteServiceAndAccessToken();
+            localSDMAPI.deleteOAuthServiceAndAccessToken();
         }
         super.handleRemoval();
     }
