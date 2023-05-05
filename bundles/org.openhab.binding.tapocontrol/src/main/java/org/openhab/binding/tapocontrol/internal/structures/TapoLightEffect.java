@@ -118,31 +118,31 @@ public class TapoLightEffect {
      ************************************/
 
     public Boolean getEnable() {
-        return this.enable;
+        return enable;
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public Boolean getCustom() {
-        return this.custom;
+        return custom;
     }
 
     public Integer getBrightness() {
-        return this.brightness;
+        return brightness;
     }
 
     public Integer[] getColorTempRange() {
-        return this.colorTempRange;
+        return colorTempRange;
     }
 
     public Color[] getDisplayColors() {
-        return this.displayColors;
+        return displayColors;
     }
 
     @Override
