@@ -15,6 +15,8 @@ package org.openhab.binding.rainsoft.handler;
 import static org.openhab.binding.rainsoft.RainSoftBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -33,6 +35,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 
 /**
  * The handler for a Water Conditioning System.
@@ -42,6 +45,8 @@ import org.openhab.core.types.Command;
  */
 
 public class WCSHandler extends RainSoftDeviceHandler {
+
+    private final Map<String, Object> channelStateMap = new HashMap<>(2);
 
     public WCSHandler(Thing thing) {
         super(thing);
@@ -93,6 +98,21 @@ public class WCSHandler extends RainSoftDeviceHandler {
         // TODO Auto-generated method stub
     }
 
+    private void updateChannelState(String channelId, Object value) {
+        if (channelStateMap.get(channelId) != null) {
+            if (!channelStateMap.get(channelId).equals(value)) {
+                updateState(channelId, (State) value);
+                channelStateMap.put(channelId, value);
+            } else {
+                logger.trace("WCSHandler - updateChannelState - Ignoring unchanged state for {} - {}", channelId,
+                        ((State) value).toString());
+            }
+        } else {
+            updateState(channelId, (State) value);
+            channelStateMap.put(channelId, value);
+        }
+    }
+
     @Override
     protected void minuteTick() {
         logger.debug("WCS Handler - minuteTick");
@@ -106,56 +126,56 @@ public class WCSHandler extends RainSoftDeviceHandler {
                 String waterUsage = device.getWaterUsage();
                 String saltUsage = device.getSaltUsage();
 
-                updateState(CHANNEL_STATUS_SYSTEMSTATUS, new StringType(
+                updateChannelState(CHANNEL_STATUS_SYSTEMSTATUS, new StringType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("systemStatusName").toString()));
-                updateState(CHANNEL_STATUS_STATUSCODE, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_STATUSCODE, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("systemStatusCode").toString()));
-                updateState(CHANNEL_STATUS_STATUSASOF,
+                updateChannelState(CHANNEL_STATUS_STATUSASOF,
                         new DateTimeType(((JSONObject) new JSONParser().parse(deviceInfo)).get("asOf").toString()));
-                updateState(CHANNEL_STATUS_REGENTIME, new DateTimeType(
+                updateChannelState(CHANNEL_STATUS_REGENTIME, new DateTimeType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("regenTime").toString()));
-                updateState(CHANNEL_STATUS_LASTREGEN, new DateTimeType(
+                updateChannelState(CHANNEL_STATUS_LASTREGEN, new DateTimeType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("lastRegenDate").toString()));
-                updateState(CHANNEL_STATUS_AIRPURGEHOUR, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_AIRPURGEHOUR, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeHour").toString()));
-                updateState(CHANNEL_STATUS_AIRPURGEMINUTE, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_AIRPURGEMINUTE, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeMinute").toString()));
-                updateState(CHANNEL_STATUS_FLTREGENTIME, new DateTimeType(
+                updateChannelState(CHANNEL_STATUS_FLTREGENTIME, new DateTimeType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("fltRegenTime").toString()));
-                updateState(CHANNEL_STATUS_MAXSALT,
+                updateChannelState(CHANNEL_STATUS_MAXSALT,
                         new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("maxSalt").toString()));
-                updateState(CHANNEL_STATUS_SALTLBS,
+                updateChannelState(CHANNEL_STATUS_SALTLBS,
                         new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("saltLbs").toString()));
-                updateState(CHANNEL_STATUS_CAPACITYREMAINING, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_CAPACITYREMAINING, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("capacityRemaining").toString()));
                 if (((JSONObject) new JSONParser().parse(deviceInfo)).get("isVacationMode").toString().equals("true")) {
-                    updateState(CHANNEL_STATUS_VACATIONMODE, OnOffType.ON);
+                    updateChannelState(CHANNEL_STATUS_VACATIONMODE, OnOffType.ON);
                 } else {
-                    updateState(CHANNEL_STATUS_VACATIONMODE, OnOffType.OFF);
+                    updateChannelState(CHANNEL_STATUS_VACATIONMODE, OnOffType.OFF);
                 }
-                updateState(CHANNEL_STATUS_HARDNESS,
+                updateChannelState(CHANNEL_STATUS_HARDNESS,
                         new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("hardness").toString()));
-                updateState(CHANNEL_STATUS_PRESSURE,
+                updateChannelState(CHANNEL_STATUS_PRESSURE,
                         new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("pressure").toString()));
-                updateState(CHANNEL_STATUS_IRONLEVEL,
+                updateChannelState(CHANNEL_STATUS_IRONLEVEL,
                         new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("ironLevel").toString()));
-                updateState(CHANNEL_STATUS_DRAINFLOW,
+                updateChannelState(CHANNEL_STATUS_DRAINFLOW,
                         new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("drainFlow").toString()));
-                updateState(CHANNEL_STATUS_AVGMONTHSALT, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_AVGMONTHSALT, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("averageMonthlySalt").toString()));
-                updateState(CHANNEL_STATUS_DAILYWATERUSE, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_DAILYWATERUSE, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("dailyWaterUse").toString()));
-                updateState(CHANNEL_STATUS_REGENS28DAY, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_REGENS28DAY, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("regens28Day").toString()));
-                updateState(CHANNEL_STATUS_WATER28DAY, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_WATER28DAY, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("water28Day").toString()));
-                updateState(CHANNEL_STATUS_ENDOFDAY,
+                updateChannelState(CHANNEL_STATUS_ENDOFDAY,
                         new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("endOfDay").toString()));
-                updateState(CHANNEL_STATUS_SALT28DAY,
+                updateChannelState(CHANNEL_STATUS_SALT28DAY,
                         new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("salt28Day").toString()));
-                updateState(CHANNEL_STATUS_FLOWSINCEREGEN, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_FLOWSINCEREGEN, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("flowSinceLastRegen").toString()));
-                updateState(CHANNEL_STATUS_LIFETIMEFLOW, new DecimalType(
+                updateChannelState(CHANNEL_STATUS_LIFETIMEFLOW, new DecimalType(
                         ((JSONObject) new JSONParser().parse(deviceInfo)).get("lifeTimeFlow").toString()));
             } catch (ParseException e1) {
                 logger.debug("RestClient reported ParseException trying getAuthenticatedProfile: {}", e1.getMessage());
