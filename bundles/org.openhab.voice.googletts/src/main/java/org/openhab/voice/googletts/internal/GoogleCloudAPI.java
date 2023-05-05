@@ -113,11 +113,6 @@ class GoogleCloudAPI {
      */
     private @Nullable GoogleTTSConfig config;
 
-    /**
-     * Status flag
-     */
-    private boolean initialized;
-
     private final Gson gson = new GsonBuilder().create();
     private final ConfigurationAdmin configAdmin;
     private final OAuthFactory oAuthFactory;
@@ -143,6 +138,11 @@ class GoogleCloudAPI {
     void setConfig(GoogleTTSConfig config) {
         this.config = config;
 
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
+            oAuthService = null;
+        }
+
         String clientId = config.clientId;
         String clientSecret = config.clientSecret;
         if (clientId != null && !clientId.isEmpty() && clientSecret != null && !clientSecret.isEmpty()) {
@@ -152,17 +152,14 @@ class GoogleCloudAPI {
                         false);
                 this.oAuthService = oAuthService;
                 getAccessToken();
-                initialized = true;
                 initVoices();
             } catch (AuthenticationException | CommunicationException e) {
                 logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
                 oAuthService = null;
-                initialized = false;
                 voices.clear();
             }
         } else {
             oAuthService = null;
-            initialized = false;
             voices.clear();
         }
 
@@ -174,6 +171,14 @@ class GoogleCloudAPI {
             }
             logger.debug("Cache purged.");
         }
+    }
+
+    public void dispose() {
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
+            oAuthService = null;
+        }
+        voices.clear();
     }
 
     /**
@@ -367,8 +372,10 @@ class GoogleCloudAPI {
             return audio;
         } catch (AuthenticationException | CommunicationException e) {
             logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
-            oAuthService = null;
-            initialized = false;
+            if (oAuthService != null) {
+                oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
+                oAuthService = null;
+            }
             voices.clear();
         } catch (FileNotFoundException e) {
             logger.warn("Could not write file {} to cache: {}", audioFileInCache, e.getMessage());
@@ -490,6 +497,6 @@ class GoogleCloudAPI {
     }
 
     boolean isInitialized() {
-        return initialized;
+        return oAuthService != null;
     }
 }
