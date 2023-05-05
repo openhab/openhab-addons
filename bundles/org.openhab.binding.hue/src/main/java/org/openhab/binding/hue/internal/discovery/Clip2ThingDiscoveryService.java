@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
+import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
@@ -56,17 +57,16 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
      * Map of resource types and respective thing types that shall be discovered.
      */
     private static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES = Map.of( //
-            ResourceType.DEVICE, HueBindingConstants.THING_TYPE_DEVICE, //
-            ResourceType.ROOM, HueBindingConstants.THING_TYPE_ROOM, //
-            ResourceType.ZONE, HueBindingConstants.THING_TYPE_ZONE, //
-            ResourceType.BRIDGE_HOME, HueBindingConstants.THING_TYPE_ZONE);
+            ResourceType.DEVICE, THING_TYPE_DEVICE, //
+            ResourceType.ROOM, THING_TYPE_ROOM, //
+            ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.BRIDGE_HOME, THING_TYPE_ZONE);
 
     private @Nullable Clip2BridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService() {
-        super(Set.of(HueBindingConstants.THING_TYPE_DEVICE, HueBindingConstants.THING_TYPE_ROOM,
-                HueBindingConstants.THING_TYPE_ZONE), DISCOVERY_TIMEOUT_SECONDS, true);
+        super(Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE), DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
 
                         // special zone 'all lights'
                         if (resource.getType() == ResourceType.BRIDGE_HOME) {
-                            thingLabel = bridgeHandler.getLocalizedText(HueBindingConstants.ALL_LIGHTS_KEY);
+                            thingLabel = bridgeHandler.getLocalizedText(ALL_LIGHTS_KEY);
                         }
 
                         Optional<Thing> legacyThingOptional = bridgeHandler.getLegacyThing(idv1);
@@ -134,14 +134,13 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                                 .create(new ThingUID(entry.getValue(), bridgeUID, thingId)) //
                                 .withBridge(bridgeUID) //
                                 .withLabel(thingLabel) //
-                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_ID, resourceId)
-                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_TYPE, resourceType)
-                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_NAME, resourceName)
-                                .withRepresentationProperty(HueBindingConstants.PROPERTY_RESOURCE_ID);
+                                .withProperty(PROPERTY_RESOURCE_ID, resourceId)
+                                .withProperty(PROPERTY_RESOURCE_TYPE, resourceType)
+                                .withProperty(PROPERTY_RESOURCE_NAME, resourceName)
+                                .withRepresentationProperty(PROPERTY_RESOURCE_ID);
 
                         if (Objects.nonNull(legacyThingUID)) {
-                            builder = builder.withProperty(HueBindingConstants.PROPERTY_LEGACY_THING_UID,
-                                    legacyThingUID);
+                            builder = builder.withProperty(PROPERTY_LEGACY_THING_UID, legacyThingUID);
                         }
                         thingDiscovered(builder.build());
                     }

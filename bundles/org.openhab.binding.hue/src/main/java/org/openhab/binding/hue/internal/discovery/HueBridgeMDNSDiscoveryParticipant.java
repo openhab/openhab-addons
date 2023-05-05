@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
+import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Objects;
@@ -22,7 +24,6 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -98,7 +99,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(HueBindingConstants.THING_TYPE_BRIDGE, HueBindingConstants.THING_TYPE_BRIDGE_API2);
+        return Set.of(THING_TYPE_BRIDGE, THING_TYPE_BRIDGE_API2);
     }
 
     @Override
@@ -113,10 +114,10 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             if (Objects.nonNull(uid)) {
                 String host = service.getHostAddresses()[0];
                 String serial = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
-                String label = String.format(HueBindingConstants.DISCOVERY_LABEL_PATTERN, host);
+                String label = String.format(DISCOVERY_LABEL_PATTERN, host);
                 String legacyThingUID = null;
 
-                if (new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, uid.getId()).equals(uid)) {
+                if (new ThingUID(THING_TYPE_BRIDGE_API2, uid.getId()).equals(uid)) {
                     Optional<Thing> legacyThingOptional = getLegacyBridge(host);
                     if (legacyThingOptional.isPresent()) {
                         Thing legacyThing = legacyThingOptional.get();
@@ -128,14 +129,14 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
                         .withLabel(label) //
-                        .withProperty(HueBindingConstants.HOST, host) //
+                        .withProperty(HOST, host) //
                         .withProperty(Thing.PROPERTY_MODEL_ID, service.getPropertyString(MDNS_PROPERTY_MODEL_ID)) //
                         .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial.toLowerCase()) //
                         .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
                         .withTTL(120L);
 
                 if (Objects.nonNull(legacyThingUID)) {
-                    builder = builder.withProperty(HueBindingConstants.PROPERTY_LEGACY_THING_UID, legacyThingUID);
+                    builder = builder.withProperty(PROPERTY_LEGACY_THING_UID, legacyThingUID);
                 }
                 return builder.build();
             }
@@ -150,10 +151,8 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
      * @return Optional of a legacy bridge thing.
      */
     private Optional<Thing> getLegacyBridge(String ipAddress) {
-        return thingRegistry.getAll().stream()
-                .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
-                        && ipAddress.equals(thing.getConfiguration().get(HueBindingConstants.HOST)))
-                .findFirst();
+        return thingRegistry.getAll().stream().filter(thing -> THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
+                && ipAddress.equals(thing.getConfiguration().get(HOST))).findFirst();
     }
 
     @Override
@@ -163,8 +162,8 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             id = id.toLowerCase();
             try {
                 return Clip2Bridge.isClip2Supported(service.getHostAddresses()[0])
-                        ? new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, id)
-                        : new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE, id);
+                        ? new ThingUID(THING_TYPE_BRIDGE_API2, id)
+                        : new ThingUID(THING_TYPE_BRIDGE, id);
             } catch (IOException e) {
                 // fall through
             }

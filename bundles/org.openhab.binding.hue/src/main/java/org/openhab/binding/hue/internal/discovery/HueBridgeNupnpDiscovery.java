@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
+import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -64,8 +65,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
 
     @Activate
     public HueBridgeNupnpDiscovery(final @Reference ThingRegistry thingRegistry) {
-        super(Set.of(HueBindingConstants.THING_TYPE_BRIDGE, HueBindingConstants.THING_TYPE_BRIDGE_API2),
-                DISCOVERY_TIMEOUT, false);
+        super(Set.of(THING_TYPE_BRIDGE, THING_TYPE_BRIDGE_API2), DISCOVERY_TIMEOUT, false);
         this.thingRegistry = thingRegistry;
     }
 
@@ -82,13 +82,13 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
             if (isReachableAndValidHueBridge(bridge)) {
                 String host = bridge.getInternalIpAddress();
                 String serialNumber = bridge.getId().toLowerCase();
-                ThingUID uid = new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE, serialNumber);
+                ThingUID uid = new ThingUID(THING_TYPE_BRIDGE, serialNumber);
                 ThingUID legacyUID = null;
-                String label = String.format(HueBindingConstants.DISCOVERY_LABEL_PATTERN, host);
+                String label = String.format(DISCOVERY_LABEL_PATTERN, host);
 
                 if (isClip2Supported(host)) {
                     legacyUID = uid;
-                    uid = new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE_API2, serialNumber);
+                    uid = new ThingUID(THING_TYPE_BRIDGE_API2, serialNumber);
                     Optional<Thing> legacyThingOptional = getLegacyBridge(host);
                     if (legacyThingOptional.isPresent()) {
                         Thing legacyThing = legacyThingOptional.get();
@@ -99,12 +99,12 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
 
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
                         .withLabel(label) //
-                        .withProperty(HueBindingConstants.HOST, host) //
+                        .withProperty(HOST, host) //
                         .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber) //
                         .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER);
 
                 if (Objects.nonNull(legacyUID)) {
-                    builder.withProperty(HueBindingConstants.PROPERTY_LEGACY_THING_UID, legacyUID.getAsString());
+                    builder.withProperty(PROPERTY_LEGACY_THING_UID, legacyUID.getAsString());
                 }
 
                 thingDiscovered(builder.build());
@@ -193,10 +193,8 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
      * @return Optional of a legacy bridge thing.
      */
     private Optional<Thing> getLegacyBridge(String ipAddress) {
-        return thingRegistry.getAll().stream()
-                .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
-                        && ipAddress.equals(thing.getConfiguration().get(HueBindingConstants.HOST)))
-                .findFirst();
+        return thingRegistry.getAll().stream().filter(thing -> THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
+                && ipAddress.equals(thing.getConfiguration().get(HOST))).findFirst();
     }
 
     /**
