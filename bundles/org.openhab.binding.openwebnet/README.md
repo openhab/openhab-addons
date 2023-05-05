@@ -228,6 +228,7 @@ OPEN command to execute: *5*8#134##
 | `battery`                    | `bus_alarm_system`                     | String      | Alarm system battery state (`OK`, `FAULT`, `UNLOADED`)                |      R      |
 | `armed`                      | `bus_alarm_system`                     | Switch      | Alarm system is armed (`ON`) or disarmed (`OFF`)                      |      R      |
 | `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`SILENT`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |
+| `timestamp`                  | `bus_alarm_zone`                       | DateTime  | Current date and time of the zone's alarm event (YY/MM/DD hh:mm:ss)   |      R      |
 
 ### Thermo channels
 
