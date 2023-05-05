@@ -107,7 +107,8 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         if (HueBindingConstants.THING_TYPE_BRIDGE_API2.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+            ThingUID clip2ThingUID = getClip2ThingUID(thingTypeUID, thingUID, configuration, bridgeUID);
+            return super.createThing(thingTypeUID, configuration, clip2ThingUID, bridgeUID);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -133,6 +134,12 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
+    }
+
+    private ThingUID getClip2ThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration, @Nullable ThingUID bridgeUID) {
+        return thingUID != null ? thingUID
+                : getThingUID(thingTypeUID, configuration.get(PROPERTY_RESOURCE_ID).toString(), bridgeUID);
     }
 
     private ThingUID getLightUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID, Configuration configuration,
