@@ -97,6 +97,8 @@ public class HueBindingConstants {
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
+    public static final String PORT = "port";
+    public static final String PROTOCOL = "protocol";
     public static final String USER_NAME = "userName";
 
     // Thing configuration properties

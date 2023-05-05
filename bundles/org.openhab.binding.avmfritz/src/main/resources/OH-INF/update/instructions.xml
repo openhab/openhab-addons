@@ -113,4 +113,26 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="avmfritz:FRITZ_DECT_500">
+		<instruction-set targetVersion="1">
+			<add-channel id="color_temperature">
+				<type>system:color-temperature</type>
+			</add-channel>
+			<add-channel id="color_temperature_abs">
+				<type>system:color-temperature-abs</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:HAN_FUN_COLOR_BULB">
+		<instruction-set targetVersion="1">
+			<add-channel id="color_temperature">
+				<type>system:color-temperature</type>
+			</add-channel>
+			<add-channel id="color_temperature_abs">
+				<type>system:color-temperature-abs</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>
