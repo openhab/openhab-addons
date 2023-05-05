@@ -164,11 +164,9 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
         logger.debug("AccountHandler - refreshDevices");
         for (RainSoftDevice device : registry.getRainSoftDevices(RainSoftDeviceRegistry.Status.CONFIGURED)) {
             String id = device.getId();
-            String deviceInfo = restClient.getDevice(id, this.authToken);
-            String waterUsage = restClient.getWaterUsage(id, this.authToken);
-            String saltUsage = restClient.getSaltUsage(id, this.authToken);
-            logger.trace("Account Handler - updateDevices - ID: {} Info: {} Water: {} Salt: {}", id, deviceInfo,
-                    waterUsage, saltUsage);
+            device.setDeviceInfo(restClient.getDevice(id, this.authToken));
+            device.setWaterUsage(restClient.getWaterUsage(id, this.authToken));
+            device.setSaltUsage(restClient.getSaltUsage(id, this.authToken));
         }
     }
 

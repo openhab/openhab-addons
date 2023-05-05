@@ -32,6 +32,13 @@ public interface RainSoftDevice {
     public String getId();
 
     /**
+     * Get the serial number.
+     *
+     * @return the serial number.
+     */
+    public String getSerialNumber();
+
+    /**
      * Get the device device_id.
      *
      * @return the device device_id.
@@ -94,4 +101,16 @@ public interface RainSoftDevice {
      * @param rainSoftDeviceHandler the handler.
      */
     public void setRainSoftDeviceHandler(RainSoftDeviceHandler rainSoftDeviceHandler);
+
+    public void setDeviceInfo(String deviceInfo);
+
+    public void setWaterUsage(String waterUsage);
+
+    public void setSaltUsage(String saltUsage);
+
+    public String getDeviceInfo();
+
+    public String getWaterUsage();
+
+    public String getSaltUsage();
 }

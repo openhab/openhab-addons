@@ -53,6 +53,7 @@
 			<channel id="statuscode" typeId="statuscode"/>
 			<channel id="statusasof" typeId="statusasof"/>
 			<channel id="regentime" typeId="regentime"/>
+			<channel id="lastregen" typeId="lastregen"/>
 			<channel id="airpurgehour" typeId="airpurgehour"/>
 			<channel id="airpurgeminute" typeId="airpurgeminute"/>
 			<channel id="lastfltregentime" typeId="lastfltregentime"/>
@@ -95,6 +96,12 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="regentime">
+		<item-type>DateTime</item-type>
+		<label>Scheduled Regeneration Time</label>
+		<description>Scheduled Regeneration Time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastregen">
 		<item-type>DateTime</item-type>
 		<label>Last Regeneration Time</label>
 		<description>Last Regeneration Time</description>

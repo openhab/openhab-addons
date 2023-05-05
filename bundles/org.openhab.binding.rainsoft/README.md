@@ -1,86 +1,74 @@
-## Note: Development of this binding has been put on hold for the forseeable future. Pull requests are welcomed, however.
+# <bindingName> RainSoft
 
-# <bindingName> Ring
-
-This is an experimental binding to the Ring.com API. It currently supports a Ring account
-and is able to discover Ring Video Doorbells and Chimes. They need to be registered in
-the Ring account before they will be detected.
-
-It currently does *not* support live video streaming, but you can view recorded video's,
-if this service is enabled in the Ring account.
+This is an experimental binding to the RainSoft API. It currently supports a RainSoft account
+and is able to discover RainSoft Water Conditioning Systems. They need to be registered in
+the RainSoft account before they will be detected.
 
 ## Supported Things
 
-The binding currently supports Ring Video Doorbell and Chimes.
+The binding currently supports RainSoft EC5 Water Conditioning Systems.
 
 ## Discovery
 
-Auto-discovery is applicable to this binding. After (manually) adding a Ring Account thing, 
-registered doorbells and chimes will be auto discovered.
+Auto-discovery is applicable to this binding. After (manually) adding a RainSoft Account thing, 
+registered water conditioning systems will be auto discovered.
 
 ## Binding Configuration
 
-There is binding configuration necessary. The easiest way to do this is from the Paper UI. Just
-add a new thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password. 
-Optionally, you can also specify a unique hardware ID and refresh interval for how often to check ring.com for
-events. If hardware ID is not specified, the MAC address of the system running OpenHAB is used.
+This binding requires an account thing to be created prior to any device things.
+
+## Thing Configuration
+
+There are two required fields to connect to the RainSoft Account.
+
+| Name             | Type    | Description                           | Default | Required | Advanced |
+|------------------|---------|---------------------------------------|---------|----------|----------|
+| username         | text    | Account Username                      | N/A     | yes      | no       |
+| password         | text    | Account Password                      | N/A     | yes      | no       |
+| refreshInterval  | text    | Periodicity of API Calls              | N/A     | no       | no       |
+
+There are no required fields for the wcs.
 
 ## Channels
 
-### Control group (all things):
-
-| Channel Type ID | Item Type | Description                           |
-|-----------------|-----------|---------------------------------------|
-| Enabled         | Switch    | Enable polling of this device/account |
-
-### Events group (Ring Account Binding Thing only):
-
-Todo: Move these to the device thing
-
-| Channel Type ID                | Item Type | Description                                                                                  |
-|--------------------------------|-----------|----------------------------------------------------------------------------------------------|
-| URL to recorded video          | String    | The URL to a recorded video (only when subscribed on ring.com)                               |
-| When the event was created     | DateTime  | The date and time the event was created                                                      |
-| The kind of event              | String    | The kind of event, usually 'motion' or 'ding'                                                |
-| The id of the doorbot          | String    | The internal id of the doorbot that generated the currently selected event                   |
-| The description of the doorbot | String    | The description of the doorbot that generated the currently selected event (e.g. Front Door) |
-
-### Device Status (Video Doorbell Binding Thing and Stickup Cam Binding Thing only):
-
-| Channel Type ID  | Item Type | Description         |
-|------------------|-----------|---------------------|
-| Battery level    | Number    | Battery level in %  |
 
 ## Full Example
 NOTE 1: Replace <ring_device_id> with a valid ring device ID when manually configuring. The easiest way to currently get that is to define the account thing and pull the device ID from the last event channel.
 
 NOTE 2: Text configuration for the Things ONLY works if you DO NOT have 2 factor authentication enabled. If you are using 2 factor authentication, Things MUST be set up through PaperUI
 
-ring.things:
+rainsoft.things:
 
 ```java
-ring:account:ringAccount "Ring Account"     [ username="user@domain.com", password="XXXXXXX", hardwareId="AA-BB-CC-DD-EE-FF", refreshInterval=5 ]
-ring:doorbell:<ring_device_id>          "Ring Doorbell"    [ refreshInterval=5, offOffset=0 ]
-ring:chime:<ring_device_id>             "Ring Chime"       [ refreshInterval=5, offOffset=0 ]
-ring:stickup:<ring_device_id>           "Ring Stickup Camera"       [ refreshInterval=5, offOffset=0 ]
+rainsoft:account:rainsoftAccount  "RainSoft Account"   [ username="my@email.com", password="secret", refreshInterval=900 ]
+rainsoft:wcs:12345 "WCS" 
 ```
 
-ring.items:
+rainsoft.items:
 
 ```java
-Switch     RingAccountEnabled             "Ring Account Polling Enabled"    { channel="ring:account:ringAccount:control#enabled" }
-String     RingEventVideoURL              "Ring Event URL"                  { channel="ring:account:ringAccount:event#url" }
-DateTime   RingEventCreated               "Ring Event Created"              { channel="ring:account:ringAccount:event#createdAt" } 
-String     RingEventKind                  "Ring Event Kind"                 { channel="ring:account:ringAccount:event#kind" }
-String     RingEventDeviceID              "Ring Device ID"                  { channel="ring:account:ringAccount:event#doorbotId" }
-String     RingEventDeviceDescription     "Ring Device Description"         { channel="ring:account:ringAccount:event#doorbotDescription" }
-
-Switch     RingDoorbellEnabled            "Ring Doorbell Polling Enabled"   { channel="ring:doorbell:<ring_device_id>:control#enabled" }
-Number     RingDoorbellBattery            "Ring Doorbell Battery [%s]%"     { channel="ring:doorbell:<ring_device_id>:status#battery"}
-
-Switch     RingChimeEnabled               "Ring Chime Polling Enabled"      { channel="ring:chime:<ring_device_id>:control#enabled" }
-
-Switch     RingStickupEnabled            "Ring Stickup Polling Enabled"   { channel="ring:stickup:<ring_device_id>:control#enabled" }
-Number     RingStickupBattery            "Ring Stickup Battery [%s]%"     { channel="ring:stickup:<ring_device_id>:status#battery"}
-
+String RAINSOFT_SYSTEMSTATUS        "RainSoft System Status [%s]"       { channel="rainsoft:wcs:12345:status#systemstatus" }
+Number RAINSOFT_STATUSCODE          "RainSoft System Status Code"       { channel="rainsoft:wcs:12345:status#statuscode" }
+DateTime RAINSOFT_STATUSASOF        "RainSoft Last Update"              { channel="rainsoft:wcs:12345:status#statusasof" }
+DateTime RAINSOFT_REGENTIME         "RainSoft Scheduled Regen Time"     { channel="rainsoft:wcs:12345:status#regentime" }
+DateTime RAINSOFT_LASTREGEN         "RainSoft Last Regen Time"          { channel="rainsoft:wcs:12345:status#lastregen" }
+Number RAINSOFT_AIRPURGEHOUR        "RainSoft Air Purge Hour"           { channel="rainsoft:wcs:12345:status#airpurgehour" }
+Number RAINSOFT_AIRPURGEMINUTE      "RainSoft Air Purge Minute"         { channel="rainsoft:wcs:12345:status#airpurgeminute" }
+DateTime RAINSOFT_FLTREGENTIME      "RainSoft Last Flt Regen Time"      { channel="rainsoft:wcs:12345:status#fltregentime" }
+Number RAINSOFT_MAXSALT             "RainSoft Max Salt Level"           { channel="rainsoft:wcs:12345:status#maxsalt" }
+Number RAINSOFT_SALTLBS             "RainSoft Remaining Salt Level"     { channel="rainsoft:wcs:12345:status#saltlbs" }
+Number RAINSOFT_CAPACITYREMAINING   "RainSoft Brine Capacity Remaining" { channel="rainsoft:wcs:12345:status#capacityremaining" }
+Switch RAINSOFT_VACATIONMODE        "RainSoft Vacation Mode"            { channel="rainsoft:wcs:12345:status#vacationmode" }
+Number RAINSOFT_HARDNESS            "RainSoft Water Hardness"           { channel="rainsoft:wcs:12345:status#hardness" }
+Number RAINSOFT_PRESSURE            "RainSoft Water Pressure"           { channel="rainsoft:wcs:12345:status#pressure" }
+Number RAINSOFT_IRONLEVEL           "RainSoft Iron Level"               { channel="rainsoft:wcs:12345:status#ironlevel" }
+Number RAINSOFT_DRAINFLOW           "RainSoft Drain Flow"               { channel="rainsoft:wcs:12345:status#drainflow" }
+Number RAINSOFT_AVGMONTHSALT        "RainSoft Average Monthly Salt"     { channel="rainsoft:wcs:12345:status#avgmonthsalt" }
+Number RAINSOFT_DAILYWATERUSE       "RainSoft Daily Water Usage"        { channel="rainsoft:wcs:12345:status#dailywateruse" }
+Number RAINSOFT_REGENS28DAY         "RainSoft Regens Last 28 Days"      { channel="rainsoft:wcs:12345:status#regens28day" }
+Number RAINSOFT_WATER28DAY          "RainSoft Water Usage Last 28 Days" { channel="rainsoft:wcs:12345:status#water28day" }
+Number RAINSOFT_ENDOFDAY            "RainSoft End of Day"               { channel="rainsoft:wcs:12345:status#endofday" }
+Number RAINSOFT_SALT28DAY           "RainSoft Salt Usage Last 28 Days"  { channel="rainsoft:wcs:12345:status#salt28day" }
+Number RAINSOFT_FLOWSINCEREGEN      "RainSoft Water Usage Since Regen"  { channel="rainsoft:wcs:12345:status#flowsinceregen" }
+Number RAINSOFT_LIFETIMEFLOW        "RainSoft Lifetime Water Usage"     { channel="rainsoft:wcs:12345:status#lifetimeflow" }
 ```

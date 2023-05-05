@@ -26,41 +26,12 @@ public class ApiConstants {
     public static final String URL_LOCATIONS = API_BASE + "/locations";
     public static final String URL_DEVICE = API_BASE + "/device";
 
-    // JSON data names for profile
-    public static final String PROFILE_AUTHENTICATION_TOKEN = "authentication_token";
-    public static final String PROFILE_ID = "id";
-    public static final String PROFILE_EMAIL = "email";
-    public static final String PROFILE_HARDWARE_ID = "hardware_id";
-    public static final String PROFILE_FIRST_NAME = "first_name";
-    public static final String PROFILE_LAST_NAME = "last_name";
-    public static final String PROFILE_PHONE_NUMBER = "phone_number";
-    public static final String PROFILE_USER_FLOW = "user_flow";
-    public static final String PROFILE_EXPLORER_PROGRAM_TERMS = "explorer_program_terms";
-
-    // JSON names for events
-    public static final String EVENT_ID = "id";
-    public static final String EVENT_CREATED_AT = "created_at";
-    public static final String EVENT_ANSWERED = "answered";
-    public static final String EVENT_EVENTS = "events";
-    public static final String EVENT_KIND = "kind";
-    public static final String EVENT_FAVORITE = "favorite";
-    public static final String EVENT_SNAPSHOT_URL = "snapshot_url";
-    public static final String EVENT_RECORDING = "recording";
-    public static final String EVENT_DOORBOT = "doorbot";
-
-    // JSON names for doorbot
-    public static final String DOORBOT_ID = "id";
-    public static final String DOORBOT_DESCRIPTION = "description";
-
-    // JSON data names for ring devices
-    public static final String DEVICES_DOORBOTS = "doorbots";
-    public static final String DEVICES_AUTHORIZED_DOORBOTS = "authorized_doorbots";
-    public static final String DEVICES_CHIMES = "chimes";
-    public static final String DEVICES_STICKUP_CAMS = "stickup_cams";
-    public static final String DEVICES_BASE_STATIONS = "base_stations";
+    // JSON devices
+    public static final String DEVICES_WCS = "wcs";
 
     // JSON data names for generic devices
     public static final String DEVICE_ID = "id";
     public static final String DEVICE_MODEL = "model";
     public static final String DEVICE_NAME = "name";
+    public static final String DEVICE_SERIALNUMBER = "serialNumber";
 }

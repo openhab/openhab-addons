@@ -44,6 +44,10 @@ public abstract class AbstractRainSoftDevice implements RainSoftDevice {
      */
     private RainSoftDeviceHandler rainSoftDeviceHandler;
 
+    private String deviceInfo = "";
+    private String waterUsage = "";
+    private String saltUsage = "";
+
     public AbstractRainSoftDevice(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
     }
@@ -57,6 +61,17 @@ public abstract class AbstractRainSoftDevice implements RainSoftDevice {
     @Override
     public String getId() {
         return jsonObject.getOrDefault(ApiConstants.DEVICE_ID, "?").toString();
+    }
+
+    /**
+     * Get the serial number.
+     *
+     * @return the serial number.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public String getSerialNumber() {
+        return jsonObject.getOrDefault(ApiConstants.DEVICE_SERIALNUMBER, "?").toString();
     }
 
     /**
@@ -139,5 +154,35 @@ public abstract class AbstractRainSoftDevice implements RainSoftDevice {
     @Override
     public void setRainSoftAccount(RainSoftAccount rainSoftAccount) {
         this.rainSoftAccount = rainSoftAccount;
+    }
+
+    @Override
+    public void setDeviceInfo(String deviceInfo) {
+        this.deviceInfo = deviceInfo;
+    }
+
+    @Override
+    public void setWaterUsage(String waterUsage) {
+        this.waterUsage = waterUsage;
+    }
+
+    @Override
+    public void setSaltUsage(String saltUsage) {
+        this.saltUsage = saltUsage;
+    }
+
+    @Override
+    public String getDeviceInfo() {
+        return this.deviceInfo;
+    }
+
+    @Override
+    public String getWaterUsage() {
+        return this.waterUsage;
+    }
+
+    @Override
+    public String getSaltUsage() {
+        return this.saltUsage;
     }
 }

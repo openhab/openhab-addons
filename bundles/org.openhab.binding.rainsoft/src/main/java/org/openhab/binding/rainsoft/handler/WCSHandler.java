@@ -16,11 +16,18 @@ import static org.openhab.binding.rainsoft.RainSoftBindingConstants.*;
 
 import java.math.BigDecimal;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openhab.binding.rainsoft.internal.RainSoftDeviceRegistry;
 import org.openhab.binding.rainsoft.internal.data.WCS;
 import org.openhab.binding.rainsoft.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.rainsoft.internal.errors.IllegalDeviceClassException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -88,8 +95,73 @@ public class WCSHandler extends RainSoftDeviceHandler {
 
     @Override
     protected void minuteTick() {
+        logger.debug("WCS Handler - minuteTick");
         if (device == null) {
             initialize();
+        }
+
+        if (device != null) {
+            try {
+                String deviceInfo = device.getDeviceInfo();
+                String waterUsage = device.getWaterUsage();
+                String saltUsage = device.getSaltUsage();
+
+                updateState(CHANNEL_STATUS_SYSTEMSTATUS, new StringType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("systemStatusName").toString()));
+                updateState(CHANNEL_STATUS_STATUSCODE, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("systemStatusCode").toString()));
+                updateState(CHANNEL_STATUS_STATUSASOF,
+                        new DateTimeType(((JSONObject) new JSONParser().parse(deviceInfo)).get("asOf").toString()));
+                updateState(CHANNEL_STATUS_REGENTIME, new DateTimeType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("regenTime").toString()));
+                updateState(CHANNEL_STATUS_LASTREGEN, new DateTimeType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("lastRegenDate").toString()));
+                updateState(CHANNEL_STATUS_AIRPURGEHOUR, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeHour").toString()));
+                updateState(CHANNEL_STATUS_AIRPURGEMINUTE, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeMinute").toString()));
+                updateState(CHANNEL_STATUS_FLTREGENTIME, new DateTimeType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("fltRegenTime").toString()));
+                updateState(CHANNEL_STATUS_MAXSALT,
+                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("maxSalt").toString()));
+                updateState(CHANNEL_STATUS_SALTLBS,
+                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("saltLbs").toString()));
+                updateState(CHANNEL_STATUS_CAPACITYREMAINING, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("capacityRemaining").toString()));
+                if (((JSONObject) new JSONParser().parse(deviceInfo)).get("isVacationMode").toString().equals("true")) {
+                    updateState(CHANNEL_STATUS_VACATIONMODE, OnOffType.ON);
+                } else {
+                    updateState(CHANNEL_STATUS_VACATIONMODE, OnOffType.OFF);
+                }
+                updateState(CHANNEL_STATUS_HARDNESS,
+                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("hardness").toString()));
+                updateState(CHANNEL_STATUS_PRESSURE,
+                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("pressure").toString()));
+                updateState(CHANNEL_STATUS_IRONLEVEL,
+                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("ironLevel").toString()));
+                updateState(CHANNEL_STATUS_DRAINFLOW,
+                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("drainFlow").toString()));
+                updateState(CHANNEL_STATUS_AVGMONTHSALT, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("averageMonthlySalt").toString()));
+                updateState(CHANNEL_STATUS_DAILYWATERUSE, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("dailyWaterUse").toString()));
+                updateState(CHANNEL_STATUS_REGENS28DAY, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("regens28Day").toString()));
+                updateState(CHANNEL_STATUS_WATER28DAY, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("water28Day").toString()));
+                updateState(CHANNEL_STATUS_ENDOFDAY,
+                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("endOfDay").toString()));
+                updateState(CHANNEL_STATUS_SALT28DAY,
+                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("salt28Day").toString()));
+                updateState(CHANNEL_STATUS_FLOWSINCEREGEN, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("flowSinceLastRegen").toString()));
+                updateState(CHANNEL_STATUS_LIFETIMEFLOW, new DecimalType(
+                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("lifeTimeFlow").toString()));
+            } catch (ParseException e1) {
+                logger.debug("RestClient reported ParseException trying getAuthenticatedProfile: {}", e1.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Invalid response from rainsoft.com");
+            }
         }
     }
 }
