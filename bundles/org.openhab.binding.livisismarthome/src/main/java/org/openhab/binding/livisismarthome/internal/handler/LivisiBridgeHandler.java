@@ -903,7 +903,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private void requestAccessToken() throws OAuthException, IOException, OAuthResponseException {
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService == null) {
-            throw new OAuthException("oAuth service is not initialized");
+            throw new OAuthException("OAuth service is not initialized");
         }
         oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
                 bridgeConfiguration.password, null);
