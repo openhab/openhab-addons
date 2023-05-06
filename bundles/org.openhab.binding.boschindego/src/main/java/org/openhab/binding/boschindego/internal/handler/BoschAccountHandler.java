@@ -61,7 +61,7 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
         this.oAuthFactory = oAuthFactory;
 
-        oAuthClientService = oAuthFactory.createOAuthClientService(getThing().getUID().getAsString(), BSK_TOKEN_URI,
+        oAuthClientService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), BSK_TOKEN_URI,
                 BSK_AUTH_URI, BSK_CLIENT_ID, null, BSK_SCOPE, false);
         controller = new IndegoController(httpClient, oAuthClientService);
     }
@@ -72,7 +72,7 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
         scheduler.execute(() -> {
             try {
-                AccessTokenResponse accessTokenResponse = this.oAuthClientService.getAccessTokenResponse();
+                AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
                 if (accessTokenResponse == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "@text/offline.conf-error.oauth2-unauthorized");
@@ -91,11 +91,17 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        oAuthFactory.ungetOAuthService(this.getThing().getUID().getAsString());
+        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     @Override
