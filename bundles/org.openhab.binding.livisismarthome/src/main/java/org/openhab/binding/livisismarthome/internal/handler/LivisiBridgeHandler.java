@@ -367,7 +367,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public void handleRemoval() {
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
-            oAuthService.removeAccessTokenRefreshListener(this);
             oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
         }
         super.handleRemoval();
