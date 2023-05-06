@@ -49,7 +49,7 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
 
-    private static final String MODEL_NAME_PHILIPS_HUE = "\"name\":\"Philips Hue\"";
+    private static final String MODEL_NAME_PHILIPS_HUE = "\"name\":\"Philips Hue\""; //
     protected static final String BRIDGE_INDICATOR = "fffe";
     private static final String DISCOVERY_URL = "https://discovery.meethue.com/";
     protected static final String LABEL_PATTERN = "Philips Hue (%s)";
