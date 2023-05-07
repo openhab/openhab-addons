@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.boschindego.internal.AuthorizationProvider;
 import org.openhab.binding.boschindego.internal.BoschIndegoTranslationProvider;
 import org.openhab.binding.boschindego.internal.DeviceStatus;
 import org.openhab.binding.boschindego.internal.IndegoDeviceController;
@@ -41,7 +42,6 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationE
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -94,7 +94,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private Instant devicePropertiesUpdated = Instant.MIN;
 
-    private @NonNullByDefault({}) OAuthClientService oAuthClientService;
+    private @NonNullByDefault({}) AuthorizationProvider authorizationProvider;
     private @NonNullByDefault({}) IndegoDeviceController controller;
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
@@ -132,7 +132,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
         ThingHandler handler = bridge.getHandler();
         if (handler instanceof BoschAccountHandler accountHandler) {
-            this.oAuthClientService = accountHandler.getOAuthClientService();
+            this.authorizationProvider = accountHandler.getAuthorizationProvider();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.missing-bridge");
@@ -142,7 +142,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         devicePropertiesUpdated = Instant.MIN;
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, config.serialNumber);
 
-        controller = new IndegoDeviceController(httpClient, oAuthClientService, config.serialNumber);
+        controller = new IndegoDeviceController(httpClient, authorizationProvider, config.serialNumber);
 
         updateStatus(ThingStatus.UNKNOWN);
         previousStateCode = Optional.empty();

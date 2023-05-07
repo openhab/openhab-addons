@@ -21,12 +21,13 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.boschindego.internal.AuthorizationController;
+import org.openhab.binding.boschindego.internal.AuthorizationProvider;
 import org.openhab.binding.boschindego.internal.IndegoController;
 import org.openhab.binding.boschindego.internal.discovery.IndegoDiscoveryService;
 import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
-import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -54,6 +55,7 @@ public class BoschAccountHandler extends BaseBridgeHandler {
     private final OAuthFactory oAuthFactory;
 
     private OAuthClientService oAuthClientService;
+    private AuthorizationController authorizationController;
     private IndegoController controller;
 
     public BoschAccountHandler(Bridge bridge, HttpClient httpClient, OAuthFactory oAuthFactory) {
@@ -63,7 +65,8 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
         oAuthClientService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), BSK_TOKEN_URI,
                 BSK_AUTH_URI, BSK_CLIENT_ID, null, BSK_SCOPE, false);
-        controller = new IndegoController(httpClient, oAuthClientService);
+        authorizationController = new AuthorizationController(oAuthClientService);
+        controller = new IndegoController(httpClient, authorizationController);
     }
 
     @Override
@@ -72,19 +75,15 @@ public class BoschAccountHandler extends BaseBridgeHandler {
         if (oAuthClientService == null) {
             throw new IllegalStateException("OAuth handle doesn't exist");
         }
+        authorizationController.setOAuthClientService(oAuthClientService);
         this.oAuthClientService = oAuthClientService;
 
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             try {
-                AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-                if (accessTokenResponse == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                            "@text/offline.conf-error.oauth2-unauthorized");
-                } else {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+                authorizationController.getAccessToken();
+                updateStatus(ThingStatus.ONLINE);
             } catch (OAuthException | OAuthResponseException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.conf-error.oauth2-unauthorized");
@@ -110,6 +109,10 @@ public class BoschAccountHandler extends BaseBridgeHandler {
         super.handleRemoval();
     }
 
+    public AuthorizationProvider getAuthorizationProvider() {
+        return authorizationController;
+    }
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(IndegoDiscoveryService.class);
@@ -127,10 +130,6 @@ public class BoschAccountHandler extends BaseBridgeHandler {
         logger.info("Authorization completed successfully");
 
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    public OAuthClientService getOAuthClientService() {
-        return oAuthClientService;
     }
 
     public Collection<DevicePropertiesResponse> getDevices() throws IndegoException {
