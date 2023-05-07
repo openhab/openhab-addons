@@ -68,6 +68,12 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        OAuthClientService oAuthClientService = oAuthFactory.getOAuthClientService(thing.getUID().getAsString());
+        if (oAuthClientService == null) {
+            throw new IllegalStateException("OAuth handle doesn't exist");
+        }
+        this.oAuthClientService = oAuthClientService;
+
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
