@@ -18,10 +18,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.boschindego.internal.AuthorizationController;
+import org.openhab.binding.boschindego.internal.AuthorizationListener;
 import org.openhab.binding.boschindego.internal.AuthorizationProvider;
 import org.openhab.binding.boschindego.internal.IndegoController;
 import org.openhab.binding.boschindego.internal.discovery.IndegoDiscoveryService;
@@ -49,10 +52,11 @@ import org.slf4j.LoggerFactory;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class BoschAccountHandler extends BaseBridgeHandler {
+public class BoschAccountHandler extends BaseBridgeHandler implements AuthorizationListener {
 
     private final Logger logger = LoggerFactory.getLogger(BoschAccountHandler.class);
     private final OAuthFactory oAuthFactory;
+    private final Set<AuthorizationListener> authorizationListeners = ConcurrentHashMap.newKeySet();
 
     private OAuthClientService oAuthClientService;
     private AuthorizationController authorizationController;
@@ -65,7 +69,7 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
         oAuthClientService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), BSK_TOKEN_URI,
                 BSK_AUTH_URI, BSK_CLIENT_ID, null, BSK_SCOPE, false);
-        authorizationController = new AuthorizationController(oAuthClientService);
+        authorizationController = new AuthorizationController(oAuthClientService, this);
         controller = new IndegoController(httpClient, authorizationController);
     }
 
@@ -97,6 +101,7 @@ public class BoschAccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+        authorizationListeners.clear();
     }
 
     @Override
@@ -111,6 +116,36 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
     public AuthorizationProvider getAuthorizationProvider() {
         return authorizationController;
+    }
+
+    public void registerAuthorizationListener(AuthorizationListener listener) {
+        if (!authorizationListeners.add(listener)) {
+            throw new IllegalStateException("Attempt to register already registered authorization listener");
+        }
+    }
+
+    public void unregisterAuthorizationListener(AuthorizationListener listener) {
+        if (!authorizationListeners.remove(listener)) {
+            throw new IllegalStateException("Attempt to unregister authorization listener which is not registered");
+        }
+    }
+
+    public void onSuccessfulAuthorization() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    public void onFailedAuthorization(Throwable throwable) {
+        logger.debug("Authorization failure", throwable);
+        if (throwable instanceof IndegoAuthenticationException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.authentication-failure");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, throwable.getMessage());
+        }
+    }
+
+    public void onAuthorizationFlowCompleted() {
+        // Ignore
     }
 
     @Override
@@ -129,7 +164,9 @@ public class BoschAccountHandler extends BaseBridgeHandler {
 
         logger.info("Authorization completed successfully");
 
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.authorization-completed");
+
+        authorizationListeners.forEach(l -> l.onAuthorizationFlowCompleted());
     }
 
     public Collection<DevicePropertiesResponse> getDevices() throws IndegoException {

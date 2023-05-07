@@ -18,13 +18,10 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
-import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AuthorizationController} acts as a bridge between
@@ -37,40 +34,54 @@ public class AuthorizationController implements AuthorizationProvider {
 
     private static final String BEARER = "Bearer ";
 
-    private final Logger logger = LoggerFactory.getLogger(AuthorizationController.class);
+    private final AuthorizationListener listener;
 
     private OAuthClientService oAuthClientService;
 
-    public AuthorizationController(OAuthClientService oAuthClientService) {
+    public AuthorizationController(OAuthClientService oAuthClientService, AuthorizationListener listener) {
         this.oAuthClientService = oAuthClientService;
+        this.listener = listener;
     }
 
     public void setOAuthClientService(OAuthClientService oAuthClientService) {
         this.oAuthClientService = oAuthClientService;
     }
 
-    public String getAuthorizationHeader() throws IndegoException {
+    public String getAuthorizationHeader() throws IndegoAuthenticationException {
         final AccessTokenResponse accessTokenResponse;
         try {
             accessTokenResponse = getAccessToken();
         } catch (OAuthException | OAuthResponseException e) {
-            logger.debug("Error fetching access token: {}", e.getMessage(), e);
-            throw new IndegoAuthenticationException(
+            var throwable = new IndegoAuthenticationException(
                     "Error fetching access token. Invalid authcode? Please generate a new one -> "
                             + getAuthorizationUrl(),
                     e);
+            listener.onFailedAuthorization(throwable);
+            throw throwable;
         } catch (IOException e) {
-            throw new IndegoException("An unexpected IOException occurred: " + e.getMessage(), e);
-        }
-        if (accessTokenResponse.getAccessToken() == null || accessTokenResponse.getAccessToken().isEmpty()) {
-            throw new IndegoAuthenticationException(
-                    "No access token. Is this thing authorized? -> " + getAuthorizationUrl());
-        }
-        if (accessTokenResponse.getRefreshToken() == null || accessTokenResponse.getRefreshToken().isEmpty()) {
-            throw new IndegoAuthenticationException("No refresh token. Please reauthorize -> " + getAuthorizationUrl());
+            var throwable = new IndegoAuthenticationException("An unexpected IOException occurred: " + e.getMessage(),
+                    e);
+            listener.onFailedAuthorization(throwable);
+            throw throwable;
         }
 
-        return BEARER + accessTokenResponse.getAccessToken();
+        String accessToken = accessTokenResponse.getAccessToken();
+        if (accessToken == null || accessToken.isEmpty()) {
+            var throwable = new IndegoAuthenticationException(
+                    "No access token. Is this thing authorized? -> " + getAuthorizationUrl());
+            listener.onFailedAuthorization(throwable);
+            throw throwable;
+        }
+        if (accessTokenResponse.getRefreshToken() == null || accessTokenResponse.getRefreshToken().isEmpty()) {
+            var throwable = new IndegoAuthenticationException(
+                    "No refresh token. Please reauthorize -> " + getAuthorizationUrl());
+            listener.onFailedAuthorization(throwable);
+            throw throwable;
+        }
+
+        listener.onSuccessfulAuthorization();
+
+        return BEARER + accessToken;
     }
 
     public AccessTokenResponse getAccessToken() throws OAuthException, OAuthResponseException, IOException {
