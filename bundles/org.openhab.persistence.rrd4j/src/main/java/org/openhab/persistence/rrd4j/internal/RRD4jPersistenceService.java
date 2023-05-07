@@ -215,7 +215,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         sample.setTime(now - 1);
                         sample.setValue(DATASOURCE_STATE, lastValue);
                         sample.update();
-                        logger.debug("Stored '{}' as value '{}' in rrd4j database (again)", name, lastValue);
+                        logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database (again)", name,
+                                lastValue, now);
                     }
                 }
             } catch (IOException e) {
@@ -232,7 +233,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             }
             sample.setValue(DATASOURCE_STATE, storeValue);
             sample.update();
-            logger.debug("Stored '{}' as value '{}' in rrd4j database", name, storeValue);
+            logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database", name, storeValue, now);
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();
             if (message != null && message.contains("at least one second step is required") && retry) {
