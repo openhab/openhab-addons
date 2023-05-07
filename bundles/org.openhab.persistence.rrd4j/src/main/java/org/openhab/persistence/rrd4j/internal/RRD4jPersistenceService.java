@@ -145,7 +145,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
-    public synchronized void store(final Item item, @Nullable final String alias) {
+    public void store(final Item item, @Nullable final String alias) {
         if (!isSupportedItemType(item)) {
             logger.trace("Ignoring item '{}' since its type {} is not supported", item.getName(), item.getType());
             return;
@@ -190,7 +190,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         scheduler.schedule(() -> internalStore(name, value, now, true), 0, TimeUnit.SECONDS);
     }
 
-    private void internalStore(String name, double value, long now, boolean retry) {
+    private synchronized void internalStore(String name, double value, long now, boolean retry) {
         RrdDb db = null;
         try {
             db = getDB(name);
