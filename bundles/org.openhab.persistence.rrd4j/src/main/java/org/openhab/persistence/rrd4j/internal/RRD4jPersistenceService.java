@@ -216,7 +216,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         sample.setValue(DATASOURCE_STATE, lastValue);
                         sample.update();
                         logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database (again)", name,
-                                lastValue, now);
+                                lastValue, now - 1);
                     }
                 }
             } catch (IOException e) {
