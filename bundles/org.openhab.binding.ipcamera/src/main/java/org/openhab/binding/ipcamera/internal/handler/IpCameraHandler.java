@@ -1813,7 +1813,7 @@ public class IpCameraHandler extends BaseThingHandler {
         localFuture = authenticationJob;
         if (localFuture != null) {
             localFuture.cancel(true);
-            localFuture = null;
+            authenticationJob = null;
         }
         localFuture = snapshotJob;
         if (localFuture != null) {
