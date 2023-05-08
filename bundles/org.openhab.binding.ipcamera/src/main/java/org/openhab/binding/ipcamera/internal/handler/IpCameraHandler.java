@@ -78,6 +78,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -479,7 +480,8 @@ public class IpCameraHandler extends BaseThingHandler {
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, httpPostURL);
         request.headers().set("Host", cameraConfig.getIp());
         request.headers().add("Content-Type", "application/json");
-        request.headers().add("User-Agent", "openHAB/3.x");
+        request.headers().add("User-Agent",
+                "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString());
         request.headers().add("Accept", "*/*");
         ByteBuf bbuf = Unpooled.copiedBuffer(content, StandardCharsets.UTF_8);
         request.headers().set("Content-Length", bbuf.readableBytes());
