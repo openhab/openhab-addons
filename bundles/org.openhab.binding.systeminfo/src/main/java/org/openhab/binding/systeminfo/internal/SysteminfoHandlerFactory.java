@@ -23,7 +23,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -39,15 +38,8 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.systeminfo")
 public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
-    private final SysteminfoInterface systeminfo;
-    private final SysteminfoThingTypeProvider thingTypeProvider;
-
-    @Activate
-    public SysteminfoHandlerFactory(@Reference SysteminfoInterface systeminfo,
-            @Reference SysteminfoThingTypeProvider thingTypeProvider) {
-        this.systeminfo = systeminfo;
-        this.thingTypeProvider = thingTypeProvider;
-    }
+    private @NonNullByDefault({}) SysteminfoInterface systeminfo;
+    private @NonNullByDefault({}) SysteminfoThingTypeProvider thingTypeProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -69,5 +61,23 @@ public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
             return new SysteminfoHandler(thing, thingTypeProvider, systeminfo);
         }
         return null;
+    }
+
+    @Reference
+    public void bindSystemInfo(SysteminfoInterface systeminfo) {
+        this.systeminfo = systeminfo;
+    }
+
+    public void unbindSystemInfo(SysteminfoInterface systeminfo) {
+        this.systeminfo = null;
+    }
+
+    @Reference
+    public void setSysteminfoThingTypeProvider(SysteminfoThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = thingTypeProvider;
+    }
+
+    public void unsetSysteminfoThingTypeProvider(SysteminfoThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = null;
     }
 }
