@@ -214,6 +214,10 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                     "Query-Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
                     filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
+            if (filter.getItemName() == null) {
+                logger.warn("Item name is missing in filter {}", filter);
+                return List.of();
+            }
             String query = influxDBRepository.createQueryCreator().createQuery(filter,
                     configuration.getRetentionPolicy());
             logger.trace("Query {}", query);
