@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>Chromecast Binding</name>
 	<description>This is the binding for Google Chromecast devices.</description>
+	<connection>local</connection>
 
 	<config-description>
 		<parameter name="callbackUrl" type="text">

@@ -14,8 +14,9 @@ package org.openhab.binding.knx.internal.dpt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -293,7 +294,6 @@ class DPTTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT29ValueFromQuantityType() {
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 Wh"), "29.010"));
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 VAh"), "29.011"));
@@ -327,6 +327,10 @@ class DPTTest {
         assertEquals(173.6, hsbType.getHue().doubleValue(), 0.1);
         assertEquals(17.6, hsbType.getSaturation().doubleValue(), 0.1);
         assertEquals(26.3, hsbType.getBrightness().doubleValue(), 0.1);
+
+        String encoded = ValueEncoder.encode(hsbType, "232.60000");
+        assertNotNull(encoded);
+        assertEquals(encoded, "r:" + data[0] + " g:" + data[1] + " b:" + data[2]);
     }
 
     @Test
@@ -336,9 +340,9 @@ class DPTTest {
         HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
 
         assertNotNull(hsbType);
-        assertEquals(207, hsbType.getHue().doubleValue(), 0.1);
-        assertEquals(22, hsbType.getSaturation().doubleValue(), 0.1);
-        assertEquals(18, hsbType.getBrightness().doubleValue(), 0.1);
+        assertEquals(207, hsbType.getHue().doubleValue(), 0.5);
+        assertEquals(23, hsbType.getSaturation().doubleValue(), 0.5);
+        assertEquals(19, hsbType.getBrightness().doubleValue(), 0.5);
     }
 
     // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
@@ -399,13 +403,79 @@ class DPTTest {
         Assertions.assertNotNull(value);
     }
 
-    private static Stream<String> rgbValueProvider() {
-        return Stream.of("r:0 g:0 b:0", "r:255 g:255 b:255");
+    private static Stream<byte[]> rgbValueProvider() {
+        // Returning all combinations is too much. Implementation tries to catch rounding errors
+        // but is still deterministic to get reproducible test results.
+        return IntStream.range(0, 3 * 256)
+                .mapToObj(i -> new byte[] { (byte) (i & 0xff), (byte) ((i / 2) & 0xff), (byte) ((i / 3) & 0xff) });
     }
 
     @ParameterizedTest
     @MethodSource("rgbValueProvider")
-    public void rgbTest(String value) {
-        Assertions.assertNotNull(ValueDecoder.decode("232.600", value.getBytes(StandardCharsets.UTF_8), HSBType.class));
+    public void dpt232BackToBackTest(byte[] value) {
+        backToBackTest232(value, "232.600");
+        backToBackTest232(value, "232.60000");
+    }
+
+    private void backToBackTest232(byte[] value, String dpt) {
+        // decode will apply transformation from raw bytes to String internally
+        HSBType hsb = (HSBType) ValueDecoder.decode(dpt, value, HSBType.class);
+        Assertions.assertNotNull(hsb);
+
+        // encoding will return a String in notation defined by Calimero: "r:xxx g:xxx b:xxx"
+        String result = ValueEncoder.encode(hsb, dpt);
+
+        // for back to back test, compare String representation
+        Assertions.assertEquals("r:" + (value[0] & 0xff) + " g:" + (value[1] & 0xff) + " b:" + (value[2] & 0xff),
+                result);
+    }
+
+    private static Stream<byte[]> xyYValueProvider() {
+        // Returning all combinations is too much. Implementation tries to catch rounding errors
+        // but is still deterministic to get reproducible test results.
+        //
+        // Cannot run make use of full numeric range, as colors cannot be represented in CIE space and
+        // back conversion would return different results.
+        // Use x: 0.1 .. 0.3, y: 0.3 .. 0.5 to be inside the triangle which can be converted without loss
+        return IntStream.range(77, 115).mapToObj(i -> new byte[] { (byte) ((i / 2) & 0xff), (byte) ((i) & 0xff),
+                (byte) (i & 0xff), (byte) ((i / 3) & 0xff), (byte) (((i - 50) * 3) & 0xff), 3 });
+        // last byte has value 3: c+b valid
+    }
+
+    @ParameterizedTest
+    @MethodSource("xyYValueProvider")
+    public void dpt242BackToBackTest(byte[] value) {
+        final String dpt = "242.600";
+
+        // decode will apply transformation from raw bytes to String internally
+        HSBType hsb = (HSBType) ValueDecoder.decode(dpt, value, HSBType.class);
+        Assertions.assertNotNull(hsb);
+
+        // encoding will return a String in notation defined by Calimero: "(x,xxxx y,yyyy) YY,Y %"
+        String result = ValueEncoder.encode(hsb, dpt);
+
+        // for back to back test, compare numerical values to allow tolerances
+        double dx = (((value[0] & 0xff) << 8) | (value[1] & 0xff)) / 65535.0;
+        double dy = (((value[2] & 0xff) << 8) | (value[3] & 0xff)) / 65535.0;
+        double dY = ((double) (value[4] & 0xff)) * 100.0 / 255.0;
+
+        Matcher matcher = ValueDecoder.XYY_PATTERN.matcher(result);
+        Assertions.assertTrue(matcher.matches());
+        String stringx = matcher.group("x");
+        String stringy = matcher.group("y");
+        String stringY = matcher.group("Y");
+        Assertions.assertNotNull(stringx);
+        Assertions.assertNotNull(stringy);
+        Assertions.assertNotNull(stringY);
+        double rx = Double.parseDouble(stringx.replace(',', '.'));
+        double ry = Double.parseDouble(stringy.replace(',', '.'));
+        double rY = Double.parseDouble(stringY.replace(',', '.'));
+
+        final double tolerance = 0.001;
+        if ((Math.abs(dx - rx) > tolerance) || (Math.abs(dy - ry) > tolerance)
+                || (Math.abs(dY - rY) > tolerance * 100)) {
+            // print failures in a useful format
+            Assertions.assertEquals(String.format("(%.4f %.4f) %.1f %%", dx, dy, dY), result);
+        }
     }
 }

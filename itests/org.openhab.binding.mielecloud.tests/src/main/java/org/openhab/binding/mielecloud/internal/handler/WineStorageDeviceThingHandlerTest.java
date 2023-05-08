@@ -43,7 +43,7 @@ public class WineStorageDeviceThingHandlerTest extends AbstractMieleThingHandler
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_WINE_STORAGE, WINE_STORAGE_DEVICE_THING_UID,
-                WineStorageDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                WineStorageDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "0");
     }
 
     @Test

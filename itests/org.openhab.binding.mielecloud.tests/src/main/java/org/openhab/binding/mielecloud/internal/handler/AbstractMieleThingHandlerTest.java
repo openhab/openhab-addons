@@ -209,7 +209,8 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
     }
 
     protected AbstractMieleThingHandler createThingHandler(ThingTypeUID thingTypeUid, ThingUID thingUid,
-            Class<? extends AbstractMieleThingHandler> expectedHandlerClass, String deviceIdentifier) {
+            Class<? extends AbstractMieleThingHandler> expectedHandlerClass, String deviceIdentifier,
+            String thingTypeVersion) {
         ThingRegistry registry = getThingRegistry();
 
         List<Channel> channels = createChannelsForThingHandler(thingTypeUid, thingUid);
@@ -217,7 +218,8 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         Thing thing = ThingBuilder.create(thingTypeUid, thingUid)
                 .withConfiguration(new Configuration(Collections
                         .singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceIdentifier)))
-                .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996").build();
+                .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996")
+                .withProperty("thingTypeVersion", thingTypeVersion).build();
         assertNotNull(thing);
 
         registry.add(thing);

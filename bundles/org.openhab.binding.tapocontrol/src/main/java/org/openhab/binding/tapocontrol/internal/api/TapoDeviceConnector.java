@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.jsonObjectToInt;
 
@@ -97,7 +97,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
             return this.loggedIn();
         } else {
             logger.debug("({}) no ping while login '{}'", uid, this.ipAddress);
-            handleError(new TapoErrorHandler(ERR_DEVICE_OFFLINE, "no ping while login"));
+            handleError(new TapoErrorHandler(ERR_BINDING_DEVICE_OFFLINE, "no ping while login"));
             return false;
         }
     }
@@ -214,23 +214,12 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     /**
      * Query Info from Device and refresh deviceInfo
      *
+     *
      * @param ignoreGap ignore gap to last query. query anyway
      */
     public void queryInfo(boolean ignoreGap) {
-        logger.trace("({}) DeviceConnetor_queryInfo from '{}'", uid, deviceURL);
-        long now = System.currentTimeMillis();
-        if (ignoreGap || now > this.lastQuery + TAPO_SEND_MIN_GAP_MS) {
-            this.lastQuery = now;
-
-            /* create payload */
-            PayloadBuilder plBuilder = new PayloadBuilder();
-            plBuilder.method = DEVICE_CMD_GETINFO;
-            String payload = plBuilder.getPayload();
-
-            sendSecurePasstrhroug(payload, DEVICE_CMD_GETINFO);
-        } else {
-            logger.debug("({}) command not sent becauso of min_gap: {}", uid, now + " <- " + lastQuery);
-        }
+        logger.trace("({}) DeviceConnector_queryInfo from '{}'", uid, deviceURL);
+        queryCommand(DEVICE_CMD_GETINFO, ignoreGap);
     }
 
     /**
@@ -238,28 +227,38 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      */
     @Override
     public void queryChildDevices() {
-        logger.trace("({}) DeviceConnetor_queryChildDevices from '{}'", uid, deviceURL);
-
-        /* create payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = DEVICE_CMD_CHILD_DEVICE_LIST;
-        String payload = plBuilder.getPayload();
-
-        sendSecurePasstrhroug(payload, DEVICE_CMD_CHILD_DEVICE_LIST);
+        logger.trace("({}) DeviceConnector_queryChildDevices from '{}'", uid, deviceURL);
+        queryCommand(DEVICE_CMD_CHILD_DEVICE_LIST, true);
     }
 
     /**
      * Get energy usage from device
      */
     public void getEnergyUsage() {
-        logger.trace("({}) DeviceConnetor_getEnergyUsage from '{}'", uid, deviceURL);
+        queryCommand(DEVICE_CMD_GETENERGY, true);
+    }
 
-        /* create payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = DEVICE_CMD_GETENERGY;
-        String payload = plBuilder.getPayload();
+    /**
+     * Send Custom DeviceQuery
+     *
+     * @param queryCommand Command to be queried
+     * @param ignoreGap ignore gap to last query. query anyway
+     */
+    public void queryCommand(String queryCommand, boolean ignoreGap) {
+        logger.trace("({}) DeviceConnector_queryCommand '{}' from '{}'", uid, queryCommand, deviceURL);
+        long now = System.currentTimeMillis();
+        if (ignoreGap || now > this.lastQuery + TAPO_SEND_MIN_GAP_MS) {
+            this.lastQuery = now;
 
-        sendSecurePasstrhroug(payload, DEVICE_CMD_GETENERGY);
+            /* create payload */
+            PayloadBuilder plBuilder = new PayloadBuilder();
+            plBuilder.method = queryCommand;
+            String payload = plBuilder.getPayload();
+
+            sendSecurePasstrhroug(payload, queryCommand);
+        } else {
+            logger.debug("({}) command not sent because of min_gap: {}", uid, now + " <- " + lastQuery);
+        }
     }
 
     /**
@@ -297,7 +296,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleSuccessResponse(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        Integer errorCode = jsonObjectToInt(jsnResult, "error_code", ERR_JSON_DECODE_FAIL);
+        Integer errorCode = jsonObjectToInt(jsnResult, "error_code", ERR_API_JSON_DECODE_FAIL.getCode());
         if (errorCode != 0) {
             logger.debug("({}) set deviceInfo not successful: {}", uid, jsnResult);
             this.device.handleConnectionState();
@@ -314,7 +313,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleDeviceResult(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(DEVICE_PROPERTY_ID)) {
+        if (jsnResult.has(JSON_KEY_ID)) {
             this.deviceInfo = new TapoDeviceInfo(jsnResult);
             this.device.setDeviceInfo(deviceInfo);
         } else {
@@ -332,7 +331,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleEnergyResult(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(ENERGY_PROPERTY_POWER)) {
+        if (jsnResult.has(JSON_KEY_ENERGY_POWER)) {
             this.energyData = new TapoEnergyData(jsnResult);
             this.device.setEnergyData(energyData);
         } else {
@@ -349,7 +348,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleChildDevices(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(CHILD_PROPERTY_START_INDEX)) {
+        if (jsnResult.has(JSON_KEY_CHILD_START_INDEX)) {
             this.childData = Objects.requireNonNull(GSON.fromJson(jsnResult, TapoChildData.class));
             this.device.setChildData(childData);
         } else {
@@ -410,7 +409,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
             }
         }
         logger.debug("({}) sendPayload exception {}", uid, responseBody);
-        handleError(new TapoErrorHandler(ERR_HTTP_RESPONSE));
+        handleError(new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE));
         return new JsonObject();
     }
 
@@ -441,7 +440,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
         } else {
             logger.trace("({})  device is offline (no ping)", uid);
             if (raiseError) {
-                handleError(new TapoErrorHandler(ERR_DEVICE_OFFLINE));
+                handleError(new TapoErrorHandler(ERR_BINDING_DEVICE_OFFLINE));
             }
             logout();
             return false;

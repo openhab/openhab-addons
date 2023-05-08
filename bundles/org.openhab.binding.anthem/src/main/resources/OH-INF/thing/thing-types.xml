@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="anthem"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="anthem">
+		<label>Anthem</label>
+		<description>Thing for Anthem AV processor</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="1" typeId="zone">
+				<label>Main Zone</label>
+				<description>Controls zone 1 (the main zone) of the processor</description>
+			</channel-group>
+
+			<channel-group id="2" typeId="zone">
+				<label>Zone 2</label>
+				<description>Controls zone 2 of the processor</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Network Address</label>
+				<description>Host name or IP address of the Anthem AV processor</description>
+				<context>network-address</context>
+			</parameter>
+
+			<parameter name="port" type="integer">
+				<label>Network Port</label>
+				<description>Network port number of the Anthem AV processor</description>
+				<default>14999</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="reconnectIntervalMinutes" type="integer">
+				<label>Reconnect Interval</label>
+				<description>The time to wait between reconnection attempts (in minutes)</description>
+				<default>2</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="commandDelayMsec" type="integer">
+				<label>Command Delay</label>
+				<description>The delay between commands sent to the processor (in milliseconds)</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="general">
+		<label>General Control</label>
+		<description>General channels for this AVR</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone">
+		<label>Zone Control</label>
+		<description>Channels for a zone of this processor</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="volumeDB" typeId="volumeDB"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="activeInput" typeId="activeInput"/>
+			<channel id="activeInputShortName" typeId="activeInputShortName"/>
+			<channel id="activeInputLongName" typeId="activeInputLongName"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel types -->
+	<channel-type id="volumeDB" advanced="true">
+		<item-type>Number</item-type>
+		<label>Volume dB</label>
+		<description>Set the volume level dB between -90 and 0</description>
+		<category>SoundVolume</category>
+		<state min="-90" max="0" step="1" pattern="%.0f dB"/>
+	</channel-type>
+
+	<channel-type id="activeInput">
+		<item-type>Number</item-type>
+		<label>Active Input</label>
+		<description>Selects the active input source</description>
+	</channel-type>
+
+	<channel-type id="activeInputShortName">
+		<item-type>String</item-type>
+		<label>Active Input Short Name</label>
+		<description>Short friendly name of the active input source</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="activeInputLongName" advanced="true">
+		<item-type>String</item-type>
+		<label>Active Input Long Name</label>
+		<description>Long friendly name of the active input source</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a custom command to the processor</description>
+		<state readOnly="false"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

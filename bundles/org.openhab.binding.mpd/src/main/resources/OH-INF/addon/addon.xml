@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>MPD Binding</name>
 	<description>This is the binding for the Music Player Daemon.</description>
+	<connection>local</connection>
 
 </addon:addon>

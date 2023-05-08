@@ -94,7 +94,7 @@
 			<parameter name="kamereonApiKey" type="text">
 				<label>Kamereon API Key</label>
 				<description>Access code for MyRenault Services.</description>
-				<default>VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss</default>
+				<default>YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J</default>
 			</parameter>
 		</config-description>
 	</thing-type>

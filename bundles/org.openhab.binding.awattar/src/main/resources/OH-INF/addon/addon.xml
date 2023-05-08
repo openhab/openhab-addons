@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>aWATTar Binding</name>
 	<description>Hourly Electricity Prices for Germany and Austria.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

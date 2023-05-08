@@ -29,12 +29,12 @@ public interface AdorneHubChangeNotify {
      * @param onOff new on/off state
      * @param brightness new brightness
      */
-    public void stateChangeNotify(int zoneId, boolean onOff, int brightness);
+    void stateChangeNotify(int zoneId, boolean onOff, int brightness);
 
     /**
      * Notify listener about hub connection change
      *
      * @param connected new connection state
      */
-    public void connectionChangeNotify(boolean connected);
+    void connectionChangeNotify(boolean connected);
 }

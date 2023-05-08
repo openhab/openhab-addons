@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>XmlTV Binding</name>
 	<description>This is the binding for reading and parsing XmlTV files</description>
+	<connection>local</connection>
 
 </addon:addon>

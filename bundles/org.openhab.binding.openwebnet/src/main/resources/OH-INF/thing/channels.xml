@@ -454,9 +454,21 @@
 				<option value="TAMPERING">Tampering</option>
 				<option value="ANTI_PANIC">Anti Panic</option>
 				<option value="SILENT">Silent</option>
+				<option value="TECHNICAL">Technical</option>
+				<option value="TECHNICAL_RESET">Technical Reset</option>
+				<option value="NONE">None</option>
 			</options>
 		</state>
 	</channel-type>
+
+	<channel-type id="zoneAlarmTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Zone Alarm Timestamp</label>
+		<description>Current alarm's timestamp for the zone (read only).</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 
 	<channel-type id="alarmZoneState">
 		<item-type>Switch</item-type>

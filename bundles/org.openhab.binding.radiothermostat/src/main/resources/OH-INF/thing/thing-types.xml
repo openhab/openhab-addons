@@ -31,49 +31,14 @@
 			<channel id="today_cool_runtime" typeId="today_cool_runtime"/>
 			<channel id="yesterday_heat_runtime" typeId="yesterday_heat_runtime"/>
 			<channel id="yesterday_cool_runtime" typeId="yesterday_cool_runtime"/>
+			<channel id="message" typeId="message"/>
 		</channels>
 
-		<config-description>
-			<parameter name="hostName" type="text" required="true">
-				<context>network-address</context>
-				<label>Thermostat Host Name/IP Address</label>
-				<description>Host Name or IP Address of the Thermostat</description>
-			</parameter>
-			<parameter name="refresh" type="integer" min="1" required="false" unit="min">
-				<label>Refresh Interval</label>
-				<description>Specifies the Refresh Interval in Minutes</description>
-				<default>2</default>
-			</parameter>
-			<parameter name="logRefresh" type="integer" min="5" required="false" unit="min">
-				<label>Run-time Log Refresh Interval</label>
-				<description>Specifies the Run-time Log and Humidity Refresh Interval in Minutes</description>
-				<default>10</default>
-			</parameter>
-			<parameter name="isCT80" type="boolean">
-				<label>Enable CT80 Thermostat Options</label>
-				<description>Optional Flag to Enable Additional Features Only Available on the CT80 Thermostat</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="disableLogs" type="boolean">
-				<label>Disable Retrieval of Run-time Data</label>
-				<description>Optional Flag to Disable the Retrieval of Run-time Data from the Thermostat</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="setpointMode" type="text">
-				<label>Setpoint Mode</label>
-				<description>Run in absolute or temporary setpoint mode</description>
-				<default>temporary</default>
-				<options>
-					<option value="absolute">Absolute</option>
-					<option value="temporary">Temporary</option>
-				</options>
-			</parameter>
-			<parameter name="clockSync" type="boolean">
-				<label>Enable Thermostat Clock Sync</label>
-				<description>Optional Flag to snyc the thermostat's clock with the host system clock</description>
-				<default>false</default>
-			</parameter>
-		</config-description>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:radiothermostat:thermostatconfig"/>
 	</thing-type>
 
 	<channel-type id="temp-temperature">
@@ -224,6 +189,12 @@
 		<label>Yesterday's Cooling Runtime</label>
 		<description>The Number of Minutes of Cooling Run-time Yesterday</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="message" advanced="true">
+		<item-type>String</item-type>
+		<label>Message</label>
+		<description>Use this channel to display a number in the price message area</description>
 	</channel-type>
 
 </thing:thing-descriptions>

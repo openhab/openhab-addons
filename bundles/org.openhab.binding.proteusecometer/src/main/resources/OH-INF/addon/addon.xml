@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Proteus EcoMeter</name>
 	<description>Puts your EcoMeter data into openHAB</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -6,4 +6,5 @@
 	<type>binding</type>
 	<name>Samsung Smartthings Binding</name>
 	<description>This is the binding for the Samsung Smartthings hub.</description>
+	<connection>local</connection>
 </addon:addon>

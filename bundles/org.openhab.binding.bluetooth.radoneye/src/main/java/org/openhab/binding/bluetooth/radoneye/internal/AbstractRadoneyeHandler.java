@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Peter Obel - Initial contribution
  */
 @NonNullByDefault
-abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
+public abstract class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
 
     private static final int CHECK_PERIOD_SEC = 10;
 
@@ -59,13 +59,13 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
     private enum ServiceState {
         NOT_RESOLVED,
         RESOLVING,
-        RESOLVED,
+        RESOLVED
     }
 
     private enum ReadState {
         IDLE,
         READING,
-        WRITING,
+        WRITING
     }
 
     public AbstractRadoneyeHandler(Thing thing) {
@@ -327,5 +327,5 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
      *
      * @param is the content of the bluetooth characteristic
      */
-    abstract protected void updateChannels(int[] is);
+    protected abstract void updateChannels(int[] is);
 }

@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>Android Debug Bridge Binding</name>
 	<description>This is the binding for connect to Android devices using the Android Debug Bridge protocol.</description>
+	<connection>local</connection>
 
 	<config-description>
 		<parameter name="discoveryPort" type="integer" required="true">

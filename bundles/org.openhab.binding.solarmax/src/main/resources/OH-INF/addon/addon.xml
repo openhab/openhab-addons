@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>SolarMax Binding</name>
 	<description>This is the binding for SolarMax power inverters, particularly the MT Series</description>
+	<connection>local</connection>
 
 </addon:addon>

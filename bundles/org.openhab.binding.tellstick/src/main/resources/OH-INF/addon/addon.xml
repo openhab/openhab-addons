@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Tellstick Binding</name>
 	<description>This is the binding for Telldus Tellstick Basic, Duo, .Net and Z-Net Lite.</description>
+	<connection>hybrid</connection>
 
 </addon:addon>

@@ -29,5 +29,5 @@ public interface OppoMessageEventListener extends EventListener {
      *
      * @param event the OppoMessageEvent object
      */
-    public void onNewMessageEvent(OppoMessageEvent event);
+    void onNewMessageEvent(OppoMessageEvent event);
 }

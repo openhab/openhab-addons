@@ -28,6 +28,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,14 +145,12 @@ public class ColorValue extends Value {
                 return String.format(formatPattern, hsbState.getHue().intValue(), hsbState.getSaturation().intValue(),
                         hsbState.getBrightness().intValue());
             case RGB:
-                PercentType[] rgb = hsbState.toRGB();
-                return String.format(formatPattern, rgb[0].toBigDecimal().multiply(factor).intValue(),
-                        rgb[1].toBigDecimal().multiply(factor).intValue(),
-                        rgb[2].toBigDecimal().multiply(factor).intValue());
+                int[] rgb = ColorUtil.hsbToRgb(hsbState);
+                return String.format(formatPattern, rgb[0], rgb[1], rgb[2]);
             case XYY:
-                PercentType[] xyY = hsbState.toXY();
-                return String.format(Locale.ROOT, formatPattern, xyY[0].floatValue() / 100.0f,
-                        xyY[1].floatValue() / 100.0f, hsbState.getBrightness().floatValue());
+                double[] xyY = ColorUtil.hsbToXY(hsbState);
+                return String.format(Locale.ROOT, formatPattern, xyY[0], xyY[1],
+                        hsbState.getBrightness().doubleValue());
             default:
                 throw new NotSupportedException(String.format("Non supported color mode: {}", this.colorMode));
         }

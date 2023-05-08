@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>WLED Binding</name>
 	<description>This is the binding for WLED</description>
+	<connection>local</connection>
 
 </addon:addon>

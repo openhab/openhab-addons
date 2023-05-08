@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Mercedes Me Binding</name>
 	<description>The binding provides access to your Mercedes developer account and vehicles</description>
+	<connection>cloud</connection>
 
 </addon:addon>

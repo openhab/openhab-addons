@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>HarmonyHub Binding</name>
 	<description>The HarmonyHub Binding integrates Logitech Harmony hubs and remotes.</description>
+	<connection>local</connection>
 
 </addon:addon>

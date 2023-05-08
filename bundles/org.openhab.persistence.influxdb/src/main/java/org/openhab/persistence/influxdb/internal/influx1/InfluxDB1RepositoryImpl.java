@@ -23,12 +23,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
+import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
@@ -38,9 +40,10 @@ import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.influxdb.exceptions.InfluxException;
 
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 1.0
@@ -113,17 +116,25 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public void write(InfluxPoint point) throws UnexpectedConditionException {
+    public boolean write(List<InfluxPoint> influxPoints) {
         final InfluxDB currentClient = this.client;
-        if (currentClient != null) {
-            Point clientPoint = convertPointToClientFormat(point);
-            currentClient.write(configuration.getDatabaseName(), configuration.getRetentionPolicy(), clientPoint);
-        } else {
-            logger.warn("Write point {} ignored due to client isn't connected", point);
+        if (currentClient == null) {
+            return false;
         }
+        try {
+            List<Point> points = influxPoints.stream().map(this::convertPointToClientFormat).filter(Optional::isPresent)
+                    .map(Optional::get).toList();
+            BatchPoints batchPoints = BatchPoints.database(configuration.getDatabaseName())
+                    .retentionPolicy(configuration.getRetentionPolicy()).points(points).build();
+            currentClient.write(batchPoints);
+        } catch (InfluxException e) {
+            logger.debug("Writing to database failed", e);
+            return false;
+        }
+        return true;
     }
 
-    private Point convertPointToClientFormat(InfluxPoint point) throws UnexpectedConditionException {
+    private Optional<Point> convertPointToClientFormat(InfluxPoint point) {
         Point.Builder clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime().toEpochMilli(),
                 TimeUnit.MILLISECONDS);
         Object value = point.getValue();
@@ -136,10 +147,11 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
         } else if (value == null) {
             clientPoint.addField(FIELD_VALUE_NAME, "null");
         } else {
-            throw new UnexpectedConditionException("Not expected value type");
+            logger.warn("Could not convert {}, discarding this datapoint", point);
+            return Optional.empty();
         }
         point.getTags().forEach(clientPoint::tag);
-        return clientPoint.build();
+        return Optional.of(clientPoint.build());
     }
 
     @Override

@@ -18,12 +18,12 @@ package org.openhab.binding.tesla.internal.throttler;
  * @author Karel Goderis - Initial contribution
  */
 public interface TimeProvider {
-    public static final TimeProvider SYSTEM_PROVIDER = new TimeProvider() {
+    static final TimeProvider SYSTEM_PROVIDER = new TimeProvider() {
         @Override
         public long getCurrentTimeInMillis() {
             return System.currentTimeMillis();
         }
     };
 
-    public long getCurrentTimeInMillis();
+    long getCurrentTimeInMillis();
 }

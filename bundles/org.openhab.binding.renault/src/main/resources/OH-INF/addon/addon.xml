@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Renault Binding</name>
 	<description>This is the binding for Renault electric cars.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

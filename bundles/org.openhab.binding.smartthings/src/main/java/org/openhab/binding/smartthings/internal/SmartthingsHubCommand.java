@@ -36,8 +36,8 @@ public interface SmartthingsHubCommand {
      * @throws TimeoutException
      * @throws ExecutionException
      */
-    public void sendDeviceCommand(@NonNull String path, int timeout, @NonNull String data)
+    void sendDeviceCommand(@NonNull String path, int timeout, @NonNull String data)
             throws InterruptedException, TimeoutException, ExecutionException;
 
-    public ThingUID getBridgeUID();
+    ThingUID getBridgeUID();
 }

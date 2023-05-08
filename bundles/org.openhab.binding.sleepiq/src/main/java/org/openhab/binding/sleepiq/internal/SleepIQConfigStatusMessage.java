@@ -22,6 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface SleepIQConfigStatusMessage {
-    public static final String USERNAME_MISSING = "missing-username-configuration";
-    public static final String PASSWORD_MISSING = "missing-password-configuration";
+    static final String USERNAME_MISSING = "missing-username-configuration";
+    static final String PASSWORD_MISSING = "missing-password-configuration";
 }

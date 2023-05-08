@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Iammeter Binding</name>
 	<description>The Iammeter binding pull your Iammeter power meter data from LAN.</description>
+	<connection>local</connection>
 
 </addon:addon>

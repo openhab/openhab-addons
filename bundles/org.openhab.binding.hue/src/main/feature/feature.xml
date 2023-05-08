@@ -5,6 +5,7 @@
 	<feature name="openhab-binding-hue" description="Hue Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mdns</feature>
+		<feature>openhab-transport-upnp</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.hue/${project.version}</bundle>
 	</feature>
 </features>

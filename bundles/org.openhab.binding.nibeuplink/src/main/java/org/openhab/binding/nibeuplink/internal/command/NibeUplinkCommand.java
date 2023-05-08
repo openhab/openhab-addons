@@ -28,7 +28,7 @@ import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 @NonNullByDefault
 public interface NibeUplinkCommand extends SuccessListener, FailureListener, ContentListener, CompleteListener {
 
-    public static int MAX_RETRIES = 5;
+    static int MAX_RETRIES = 5;
 
     /**
      * this method is to be called by the UplinkWebinterface class

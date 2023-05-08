@@ -49,10 +49,10 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
 
-    private static final String MODEL_NAME_PHILIPS_HUE = "\"name\":\"Philips Hue\"";
     protected static final String BRIDGE_INDICATOR = "fffe";
+
+    private static final String MODEL_NAME_PHILIPS_HUE = "\"name\":\"Philips hue\"";
     private static final String DISCOVERY_URL = "https://discovery.meethue.com/";
-    protected static final String LABEL_PATTERN = "Philips Hue (%s)";
     private static final String CONFIG_URL_PATTERN = "http://%s/api/0/config";
     private static final int REQUEST_TIMEOUT = 5000;
     private static final int DISCOVERY_TIMEOUT = 10;
@@ -81,7 +81,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
                         .withProperties(Map.of( //
                                 HOST, host, //
                                 Thing.PROPERTY_SERIAL_NUMBER, serialNumber)) //
-                        .withLabel(String.format(LABEL_PATTERN, host)) //
+                        .withLabel(String.format(DISCOVERY_LABEL_PATTERN, host)) //
                         .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
                         .build();
                 thingDiscovered(result);

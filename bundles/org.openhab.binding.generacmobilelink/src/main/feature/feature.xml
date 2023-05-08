@@ -4,6 +4,7 @@
 
 	<feature name="openhab-binding-generacmobilelink" description="Generac MobileLink Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">mvn:org.jsoup/jsoup/1.15.4</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.generacmobilelink/${project.version}</bundle>
 	</feature>
 </features>

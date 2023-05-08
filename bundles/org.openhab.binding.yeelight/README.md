@@ -4,10 +4,16 @@ This binding integrates the [Yeelight Lighting Product](https://www.yeelight.com
 
 ## Supported Things
 
-- [Yeelight LED White Bulb](https://www.yeelight.com/zh_CN/product/wifi-led-w) (Thing type `dolphin`)
-- [Yeelight LED Color Bulb](https://www.yeelight.com/zh_CN/product/wifi-led-c) (Thing type `wonder`)
-- [Yeelight LED Color Stripe](https://www.yeelight.com/zh_CN/product/pitaya) (Thing type `stripe`)
-- [Yeelight LED Ceiling Light](https://www.yeelight.com/en_US/product/luna) (Thing type `ceiling`)
+| Device                                                                        | Thing type ID | Device model                      |
+|-------------------------------------------------------------------------------|---------------|-----------------------------------|
+| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/) | `ceiling`     | `ceiling`, `ceiling3`             |
+| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/) | `ceiling1`    | `ceiling1`, `ceiling11`, `ceil26` |
+| [Yeelight LED Ceiling Light](https://us.yeelight.com/category/ceiling-light/) | `ceiling4`    | `ceiling4`                        |
+| [Yeelight LED Color Bulb](https://us.yeelight.com/category/smart-bulb/)       | `wonder`      | `color`, `color4`                 |
+| [Yeelight LED White Bulb](https://us.yeelight.com/category/smart-bulb/)       | `dolphin`     | `mono`                            |
+| [Yeelight LED White Bulb v2](https://us.yeelight.com/category/smart-bulb/)    | `ct_bulb`     | `ct_bulb`                         |
+| [Yeelight LED Color Stripe](https://us.yeelight.com/category/led-strip/)      | `stripe`      | `stripe`, `strip6`                |
+| [Yeelight Mi LED Desk Lamp](https://us.yeelight.com/category/table-lighting/) | `desklamp`    | `desklamp`                        |
 
 ## Preconditions
 
@@ -42,18 +48,17 @@ All devices support some of the following channels:
 |`backgroundColor` | `Color` or `Dimmer`  | This channel supports color control for the ambient light, it is available on `ceiling4`.|
 |`nightlight` | `Switch` | This supports switching to nightlight mode, it is available on `ceiling1` or `ceiling4`.|
 
-
 ## Full Example
 
 Things:
 
-```
+```java
 Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc", duration=1000 ]
 ```
 
 Items:
 
-```
+```java
 Color YeelightLEDColor { channel="yeelight:stripe:1:color" }
 Switch YeelightLEDSwitch { channel="yeelight:stripe:1:color" }
 String YeelightLEDCommand { channel="yeelight:stripe:1:command" }
@@ -61,7 +66,7 @@ String YeelightLEDCommand { channel="yeelight:stripe:1:command" }
 
 Rules:
 
-```
+```java
 rule "Yeelight Custom Command"
 when
         Time is noon

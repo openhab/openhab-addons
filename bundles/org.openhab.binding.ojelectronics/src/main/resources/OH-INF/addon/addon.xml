@@ -5,4 +5,5 @@
 	<type>binding</type>
 	<name>OJElectronics Binding</name>
 	<description>This is the binding for OJElectronics.</description>
+	<connection>cloud</connection>
 </addon:addon>
