@@ -18,12 +18,13 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.simple.parser.ParseException;
-import org.openhab.binding.ring.internal.ApiConstants;
 import org.openhab.binding.ring.internal.RestClient;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
@@ -62,6 +63,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
     private ScheduledFuture<?> eventRefresh = null;
     private Runnable runnableToken = null;
     private Runnable runnableEvent = null;
+    private Runnable runnableVideo = null;
     private @Nullable RingVideoServlet ringVideoServlet;
     private @Nullable HttpService httpService;
     /**
@@ -85,6 +87,8 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
      */
     private int eventIndex;
 
+    private ExecutorService videoExecutorService;
+
     /*
      * The number of video files to keep when auto-downloading
      */
@@ -105,6 +109,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
         this.httpPort = httpPort;
         this.networkAddressService = networkAddressService;
         this.httpService = httpService;
+        this.videoExecutorService = Executors.newCachedThreadPool();
         eventIndex = 0;
     }
 
@@ -333,6 +338,19 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
         }
     }
 
+    protected void getVideo(RingEvent event) {
+        logger.debug("AccountHandler - getVideo - Event id: {}", event.getEventId());
+        String videoFile = restClient.downloadEventVideo(event, userProfile, videoStoragePath, videoRetentionCount);
+        String localIP = networkAddressService.getPrimaryIpv4HostAddress();
+
+        if (videoFile.endsWith(".mp4")) {
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL),
+                    new StringType("http://" + localIP + ":" + httpPort + "/ring/video/" + videoFile));
+        } else {
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), new StringType(videoFile));
+        }
+    }
+
     protected void eventTick() {
         try {
             String id = lastEvents == null || lastEvents.isEmpty() ? "?" : lastEvents.get(0).getEventId();
@@ -350,10 +368,19 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                             new StringType(lastEvents.get(0).getDoorbot().getId()));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_DOORBOT_DESCRIPTION),
                             new StringType(lastEvents.get(0).getDoorbot().getDescription()));
-                    StringBuilder vidUrl = new StringBuilder();
-                    vidUrl.append(ApiConstants.URL_RECORDING_START).append(lastEvents.get(0).getEventId())
-                            .append(ApiConstants.URL_RECORDING_END);
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_EVENT_URL), new StringType(vidUrl.toString()));
+                    runnableVideo = new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                getVideo(lastEvents.get(0));
+                            } catch (final Exception e) {
+                                logger.debug(
+                                        "AccountHandler - startSessionRefresh - Exception occurred during execution of eventTick(): {}",
+                                        e.getMessage(), e);
+                            }
+                        }
+                    };
+                    videoExecutorService.submit(runnableVideo);
                 }
             } else {
                 logger.debug("AccountHandler - eventTick - lastEvents null");
@@ -470,6 +497,10 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
     @Override
     public void dispose() {
         stopSessionRefresh();
+        if (this.videoExecutorService != null) {
+            this.videoExecutorService.shutdownNow();
+        }
+
         super.dispose();
     }
 }
