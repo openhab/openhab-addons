@@ -93,7 +93,7 @@ public class StickupcamHandler extends RingDeviceHandler {
 
     @Override
     protected void minuteTick() {
-        logger.debug("StickupcamHandler - minuteTick - device {}",getThing().getUID().getId());
+        logger.debug("StickupcamHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
             initialize();
         }
@@ -103,6 +103,10 @@ public class StickupcamHandler extends RingDeviceHandler {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
             updateState(channelUID, new DecimalType(device.getBattery().toString()));
             lastBattery = device.getBattery();
+        } else if (device != null) {
+            logger.debug("Battery Level Unchanged for {} - {}  vs {}", getThing().getUID().getId(), device.getBattery(),
+                    lastBattery);
+
         }
     }
 }
