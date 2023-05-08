@@ -93,6 +93,7 @@ public class StickupcamHandler extends RingDeviceHandler {
 
     @Override
     protected void minuteTick() {
+        logger.debug("StickupcamHandler - minuteTick - device {}",getThing().getUID().getId());
         if (device == null) {
             initialize();
         }

@@ -92,13 +92,13 @@ public class RingDeviceRegistry {
     /**
      * Add a new ring device collection.
      */
-    public synchronized void addRingDevices(Collection<RingDevice> ringDevices) throws DuplicateIdException {
+    public synchronized void addRingDevices(Collection<RingDevice> ringDevices) {
         for (RingDevice device : ringDevices) {
             logger.debug("RingDeviceRegistry - addRingDevices - Trying: {}", device.getId());
             try {
                 addRingDevice(device);
             } catch (DuplicateIdException e) {
-                throw new DuplicateIdException("Ring device with duplicate id " + device.getId() + " ignored");
+                logger.debug("Ring device with duplicate id {} ignored", device.getId());
             }
         }
         initialized = true;

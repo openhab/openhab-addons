@@ -93,6 +93,7 @@ public class DoorbellHandler extends RingDeviceHandler {
 
     @Override
     protected void minuteTick() {
+        logger.debug("DoorbellHandler - minuteTick - device {}",getThing().getUID().getId());
         if (device == null) {
             initialize();
         }
