@@ -26,124 +26,122 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VehicleStatus {
 
-    private @Nullable ZonedDateTime updatedAt;
-    @SerializedName("_embedded")
-    private @Nullable Embedded embedded;
-    private @Nullable Battery battery;
-    private @Nullable DoorsState doorsState;
-    private @Nullable List<Energy> energy = null;
-    private @Nullable Environment environment;
-    private @Nullable Ignition ignition;
-    private @Nullable Kinetic kinetic;
-    private @Nullable Odometer odometer;
-    private @Nullable Position lastPosition;
-    private @Nullable Preconditionning preconditionning;
-    private @Nullable Privacy privacy;
-    private @Nullable Safety safety;
-    private @Nullable Service service;
+	private @Nullable ZonedDateTime updatedAt;
+	@SerializedName("_embedded")
+	private @Nullable Embedded embedded;
+	private @Nullable Battery battery;
+	private @Nullable DoorsState doorsState;
+	private @Nullable List<Energy> energy = null;
+	private @Nullable Environment environment;
+	private @Nullable Ignition ignition;
+	private @Nullable Kinetic kinetic;
+	private @Nullable Odometer odometer;
+	private @Nullable Position lastPosition;
+	private @Nullable Preconditionning preconditionning;
+	private @Nullable Privacy privacy;
+	private @Nullable Safety safety;
+	private @Nullable Service service;
 
-    private static class Embedded {
-        private @Nullable Extension extension;
+	private static class Embedded {
+		private @Nullable Extension extension;
 
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("extension", this.extension).toString();
-        }
-    }
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this).append("extension", extension).toString();
+		}
+	}
 
-    private static class Extension {
-        private @Nullable Kinetic kinetic;
-        private @Nullable Odometer odometer;
+	private static class Extension {
+		private @Nullable Kinetic kinetic;
+		private @Nullable Odometer odometer;
 
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("kinetic", this.kinetic).append("odometer", this.odometer)
-                    .toString();
-        }
-    }
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this).append("kinetic", kinetic).append("odometer", odometer).toString();
+		}
+	}
 
-    public @Nullable Kinetic getKinetic() {
-        if (this.kinetic != null) {
-            return this.kinetic;
-        } else {
-            final Embedded finalEmbedded = this.embedded;
-            if (finalEmbedded != null) {
-                final Extension finalExtension = finalEmbedded.extension;
-                if (finalExtension != null) {
-                    return finalExtension.kinetic;
-                }
-            }
-            return null;
-        }
-    }
+	public @Nullable Kinetic getKinetic() {
+		if (kinetic != null) {
+			return kinetic;
+		} else {
+			final Embedded finalEmbedded = embedded;
+			if (finalEmbedded != null) {
+				final Extension finalExtension = finalEmbedded.extension;
+				if (finalExtension != null) {
+					return finalExtension.kinetic;
+				}
+			}
+			return null;
+		}
+	}
 
-    public @Nullable Odometer getOdometer() {
-        if (this.odometer != null) {
-            return this.odometer;
-        } else {
-            Embedded finalEmbedded = this.embedded;
-            if (finalEmbedded != null) {
-                final Extension finalExtension = finalEmbedded.extension;
-                if (finalExtension != null) {
-                    return finalExtension.odometer;
-                }
-            }
-            return null;
-        }
-    }
+	public @Nullable Odometer getOdometer() {
+		if (odometer != null) {
+			return odometer;
+		} else {
+			Embedded finalEmbedded = embedded;
+			if (finalEmbedded != null) {
+				final Extension finalExtension = finalEmbedded.extension;
+				if (finalExtension != null) {
+					return finalExtension.odometer;
+				}
+			}
+			return null;
+		}
+	}
 
-    public @Nullable ZonedDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
+	public @Nullable ZonedDateTime getUpdatedAt() {
+		return updatedAt;
+	}
 
-    public @Nullable Battery getBattery() {
-        return this.battery;
-    }
+	public @Nullable Battery getBattery() {
+		return battery;
+	}
 
-    public @Nullable DoorsState getDoorsState() {
-        return this.doorsState;
-    }
+	public @Nullable DoorsState getDoorsState() {
+		return doorsState;
+	}
 
-    public @Nullable List<Energy> getEnergy() {
-        return this.energy;
-    }
+	public @Nullable List<Energy> getEnergy() {
+		return energy;
+	}
 
-    public @Nullable Environment getEnvironment() {
-        return this.environment;
-    }
+	public @Nullable Environment getEnvironment() {
+		return environment;
+	}
 
-    public @Nullable Ignition getIgnition() {
-        return this.ignition;
-    }
+	public @Nullable Ignition getIgnition() {
+		return ignition;
+	}
 
-    public @Nullable Position getLastPosition() {
-        return this.lastPosition;
-    }
+	public @Nullable Position getLastPosition() {
+		return lastPosition;
+	}
 
-    public @Nullable Preconditionning getPreconditionning() {
-        return this.preconditionning;
-    }
+	public @Nullable Preconditionning getPreconditionning() {
+		return preconditionning;
+	}
 
-    public @Nullable Privacy getPrivacy() {
-        return this.privacy;
-    }
+	public @Nullable Privacy getPrivacy() {
+		return privacy;
+	}
 
-    public @Nullable Safety getSafety() {
-        return this.safety;
-    }
+	public @Nullable Safety getSafety() {
+		return safety;
+	}
 
-    public @Nullable Service getService() {
-        return this.service;
-    }
+	public @Nullable Service getService() {
+		return service;
+	}
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("updatedAt", this.updatedAt).append("_embedded", this.embedded)
-                .append("battery", this.battery).append("doorsState", this.doorsState).append("energy", this.energy)
-                .append("environment", this.environment).append("ignition", this.ignition)
-                .append("kinetic", this.kinetic).append("odometer", this.odometer)
-                .append("lastPosition", this.lastPosition).append("preconditionning", this.preconditionning)
-                .append("privacy", this.privacy).append("safety", this.safety).append("service", this.service)
-                .toString();
-    }
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("updatedAt", updatedAt).append("_embedded", embedded)
+				.append("battery", battery).append("doorsState", doorsState).append("energy", energy)
+				.append("environment", environment).append("ignition", ignition).append("kinetic", kinetic)
+				.append("odometer", odometer).append("lastPosition", lastPosition)
+				.append("preconditionning", preconditionning).append("privacy", privacy).append("safety", safety)
+				.append("service", service).toString();
+	}
 }
