@@ -193,6 +193,10 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         // Also get the Item object so we can determine the type
         Item item = null;
         String itemName = filter.getItemName();
+        if (itemName == null) {
+            logger.warn("Item name is missing in filter {}", filter);
+            return List.of();
+        }
         logger.debug("JDBC::query: item is {}", itemName);
         try {
             item = itemRegistry.getItem(itemName);

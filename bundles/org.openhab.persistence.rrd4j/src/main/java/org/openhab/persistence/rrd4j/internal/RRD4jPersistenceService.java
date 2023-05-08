@@ -259,6 +259,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         String itemName = filter.getItemName();
+        if (itemName == null) {
+            logger.warn("Item name is missing in filter {}", filter);
+            return List.of();
+        }
 
         RrdDb db = null;
         try {

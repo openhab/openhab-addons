@@ -384,6 +384,10 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             // Proceed with query
             //
             String itemName = filter.getItemName();
+            if (itemName == null) {
+                logger.warn("Item name is missing in filter {}", filter);
+                return List.of();
+            }
             Item item = getItemFromRegistry(itemName);
             if (item == null) {
                 logger.warn("Could not get item {} from registry! Returning empty query results.", itemName);
