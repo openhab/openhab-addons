@@ -421,7 +421,7 @@
 	</channel-type>
 	<channel-type id="notenoughpower" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Not Enought Power</label>
+		<label>Not Enough Power</label>
 		<description>Indicates if not enough power (ON) is available to heat the vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type>
