@@ -40,11 +40,7 @@ public class ApiResponse {
     }
 
     public Optional<Parameters> getParameters() {
-        Parameters parameters = this.parameters;
-        if (parameters != null) {
-            return Optional.of(parameters);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(parameters);
     }
 
     public Stream<Record> getRecords() {
