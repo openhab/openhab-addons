@@ -59,6 +59,23 @@ The Météo Alerte information that are retrieved is available as these channels
 | 2    | Orange | Be "very vigilant" in the concerned areas |
 | 3    | Red    | Absolute vigilance required               |
 
+## Provided icon set
+
+This binding has its own IconProvider and makes available the following list of icons
+
+| Icon Name        | Dynamic | Illustration |
+|------------------|---------|--------------|
+| vent             |   Yes   | ![](src/main/resources/icon/vent.svg) |
+| pluie-inondation |   Yes   | ![](src/main/resources/icon/pluie-inondation.svg) |
+| orage            |   Yes   | ![](src/main/resources/icon/orage.svg) |
+| inondation       |   Yes   | ![](src/main/resources/icon/inondation.svg) |
+| neige            |   Yes   | ![](src/main/resources/icon/neige.svg) |
+| canicule         |   Yes   | ![](src/main/resources/icon/canicule.svg) |
+| grand-froid      |   Yes   | ![](src/main/resources/icon/grand-froid.svg) |
+| avalanches       |   Yes   | ![](src/main/resources/icon/avalanches.svg) |
+| meteo_france     |   No    | ![](src/main/resources/icon/meteo_france.svg) |
+
+
 ## Full Example
 
 meteoalert.things:
