@@ -283,6 +283,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
     }
 
     private void refreshRegistry() throws ParseException, AuthenticationException, DuplicateIdException {
+        logger.debug("AccountHandler - refreshRegistry");
         RingDevices ringDevices = restClient.getRingDevices(userProfile, this);
         registry = RingDeviceRegistry.getInstance();
         registry.addRingDevices(ringDevices.getRingDevices());

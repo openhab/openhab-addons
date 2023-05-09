@@ -613,6 +613,7 @@ public class RestClient {
      */
     public RingDevices getRingDevices(Profile profile, RingAccount ringAccount)
             throws ParseException, AuthenticationException {
+        logger.debug("RestClient - getRingDevices");
         String jsonResult = getRequest(ApiConstants.URL_DEVICES, profile);// DataFactory.getDevicesParams(profile));
         JSONObject obj = (JSONObject) new JSONParser().parse(jsonResult);
         return new RingDevices(obj, ringAccount);

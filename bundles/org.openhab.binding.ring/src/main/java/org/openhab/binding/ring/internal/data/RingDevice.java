@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ring.internal.data;
 
+import org.json.simple.JSONObject;
 import org.openhab.binding.ring.handler.RingDeviceHandler;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
@@ -123,4 +124,8 @@ public interface RingDevice {
      * @param ringDeviceHandler the handler.
      */
     public void setRingDeviceHandler(RingDeviceHandler ringDeviceHandler);
+
+    public void setJSONObject(JSONObject jsonObject);
+
+    public JSONObject getJSONObject();
 }

@@ -17,6 +17,8 @@ import org.openhab.binding.ring.handler.RingDeviceHandler;
 import org.openhab.binding.ring.internal.ApiConstants;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Interface common to all Ring devices.
@@ -26,6 +28,8 @@ import org.openhab.binding.ring.internal.RingDeviceRegistry;
  */
 
 public abstract class AbstractRingDevice implements RingDevice {
+
+    private final Logger logger = LoggerFactory.getLogger(AbstractRingDevice.class);
 
     /**
      * The JSONObject contains the data retrieved from the Ring API,
@@ -188,5 +192,16 @@ public abstract class AbstractRingDevice implements RingDevice {
     @Override
     public void setRingAccount(RingAccount ringAccount) {
         this.ringAccount = ringAccount;
+    }
+
+    @Override
+    public void setJSONObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
+        logger.trace("AbstractRingDevice - setJSONObject - Updated JSON: {}", this.jsonObject.toString());
+    }
+
+    @Override
+    public JSONObject getJSONObject() {
+        return this.jsonObject;
     }
 }
