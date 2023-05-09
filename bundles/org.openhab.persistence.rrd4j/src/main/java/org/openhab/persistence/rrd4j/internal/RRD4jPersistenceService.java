@@ -193,7 +193,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private synchronized void internalStore(String name, double value, long now, boolean retry) {
         RrdDb db = null;
         try {
-            db = getDB(name);
+            db = getDB(name, true);
         } catch (Exception e) {
             logger.warn("Failed to open rrd4j database '{}' to store data ({})", name, e.toString());
         }
@@ -276,10 +276,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             logger.warn("Item name is missing in filter {}", filter);
             return List.of();
         }
+        logger.trace("Querying rrd4j database for item '{}'", itemName);
 
         RrdDb db = null;
         try {
-            db = getDB(itemName);
+            db = getDB(itemName, false);
         } catch (Exception e) {
             logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
             return List.of();
@@ -378,7 +379,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         return Set.of();
     }
 
-    protected synchronized @Nullable RrdDb getDB(String alias) {
+    protected synchronized @Nullable RrdDb getDB(String alias, boolean createFileIfAbsent) {
         RrdDb db = null;
         Path path = getDatabasePath(alias);
         try {
@@ -389,7 +390,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 // recreate the RrdDb instance from the file
                 builder.setPath(path.toString());
                 db = builder.build();
-            } else {
+            } else if (createFileIfAbsent) {
                 if (!Files.exists(DB_FOLDER)) {
                     Files.createDirectories(DB_FOLDER);
                 }
