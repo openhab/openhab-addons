@@ -31,7 +31,8 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EvccAPI} is responsible for API calls to evcc.
- * 
+ * API requests were written for evcc version 0.117.0
+ *
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
@@ -46,7 +47,7 @@ public class EvccAPI {
 
     /**
      * Make a HTTP request.
-     * 
+     *
      * @param url full request URL
      * @param method request method, e.g. GET, POST
      * @return the response body
@@ -93,8 +94,13 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/minsoc/" + minSoC, "POST");
     }
 
+    public String setTargetEnergy(int loadpoint, float targetEnergy) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/energy/" + targetEnergy,
+                "POST");
+    }
+
     public String setTargetSoC(int loadpoint, int targetSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetsoc/" + targetSoC, "POST");
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/soc/" + targetSoC, "POST");
     }
 
     public String setPhases(int loadpoint, int phases) throws EvccApiException {
@@ -109,13 +115,12 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
     }
 
-    public String setTargetCharge(int loadpoint, float targetSoC, ZonedDateTime targetTime) throws EvccApiException {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge/" + targetSoC + "/"
-                + targetTime.toLocalDateTime().format(formatter), "POST");
+    public String setTargetTime(int loadpoint, ZonedDateTime targetTime) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/time/"
+                + targetTime.toLocalDateTime().format(DateTimeFormatter.ISO_DATE_TIME), "POST");
     }
 
-    public String unsetTargetCharge(int loadpoint) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge", "DELETE");
+    public String removeTargetTime(int loadpoint) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/time", "DELETE");
     }
 }
