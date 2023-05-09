@@ -32,6 +32,8 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -97,6 +99,8 @@ import org.slf4j.LoggerFactory;
         QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class RRD4jPersistenceService implements QueryablePersistenceService {
 
+    public static final String SERVICE_ID = "rrd4j";
+
     private static final String DEFAULT_OTHER = "default_other";
     private static final String DEFAULT_NUMERIC = "default_numeric";
     private static final String DEFAULT_QUANTIFIABLE = "default_quantifiable";
@@ -136,7 +140,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public String getId() {
-        return "rrd4j";
+        return SERVICE_ID;
     }
 
     @Override
@@ -499,6 +503,15 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         return SUPPORTED_TYPES.contains(ItemUtil.getMainItemType(item.getType()));
+    }
+
+    public List<String> getRrdFiles() {
+        try (Stream<Path> stream = Files.list(DB_FOLDER)) {
+            return stream.filter(file -> !Files.isDirectory(file) && file.toFile().getName().endsWith(".rrd"))
+                    .map(file -> file.toFile().getName()).collect(Collectors.toList());
+        } catch (IOException e) {
+            return List.of();
+        }
     }
 
     @Activate
