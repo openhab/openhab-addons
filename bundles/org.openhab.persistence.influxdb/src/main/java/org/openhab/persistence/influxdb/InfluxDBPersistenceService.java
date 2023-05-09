@@ -42,6 +42,7 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemUtil;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
@@ -92,7 +93,7 @@ import org.slf4j.LoggerFactory;
         QueryablePersistenceService.class }, configurationPid = "org.openhab.influxdb", //
         property = Constants.SERVICE_PID + "=org.openhab.influxdb")
 @ConfigurableService(category = "persistence", label = "InfluxDB Persistence Service", description_uri = InfluxDBPersistenceService.CONFIG_URI)
-public class InfluxDBPersistenceService implements QueryablePersistenceService {
+public class InfluxDBPersistenceService implements ModifiablePersistenceService {
     public static final String SERVICE_NAME = "influxdb";
 
     private final Logger logger = LoggerFactory.getLogger(InfluxDBPersistenceService.class);
@@ -190,11 +191,20 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(Item item, @Nullable String alias) {
+        store(item, ZonedDateTime.now(), item.getState(), alias);
+    }
+
+    @Override
+    public void store(Item item, ZonedDateTime date, State state) {
+        store(item, date, state, null);
+    }
+
+    public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
         if (!serviceActivated) {
             logger.warn("InfluxDB service not ready. Storing {} rejected.", item);
             return;
         }
-        convert(item, alias).thenAccept(point -> {
+        convert(item, state, date.toInstant(), null).thenAccept(point -> {
             if (point == null) {
                 logger.trace("Ignoring item {}, conversion to an InfluxDB point failed.", item.getName());
                 return;
@@ -208,6 +218,15 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
+    public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
+        if (filter.getItemName() == null) {
+            logger.warn("Item name is missing in filter {} when trying to remove data.", filter);
+            return false;
+        }
+        return influxDBRepository.remove(filter);
+    }
+
+    @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         if (serviceActivated && checkConnection()) {
             logger.trace(
@@ -215,13 +234,12 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
                     filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
             if (filter.getItemName() == null) {
-                logger.warn("Item name is missing in filter {}", filter);
+                logger.warn("Item name is missing in filter {} when querying data.", filter);
                 return List.of();
             }
-            String query = influxDBRepository.createQueryCreator().createQuery(filter,
+
+            List<InfluxDBRepository.InfluxRow> results = influxDBRepository.query(filter,
                     configuration.getRetentionPolicy());
-            logger.trace("Query {}", query);
-            List<InfluxDBRepository.InfluxRow> results = influxDBRepository.query(query);
             return results.stream().map(this::mapRowToHistoricItem).collect(Collectors.toList());
         } else {
             logger.debug("Query for persisted data ignored, InfluxDB is not connected");
@@ -279,13 +297,12 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
      * @return a {@link CompletableFuture} that contains either <code>null</code> for item states that cannot be
      *         converted or the corresponding {@link InfluxPoint}
      */
-    CompletableFuture<@Nullable InfluxPoint> convert(Item item, @Nullable String storeAlias) {
+    CompletableFuture<@Nullable InfluxPoint> convert(Item item, State state, Instant timeStamp,
+            @Nullable String storeAlias) {
         String itemName = item.getName();
         String itemLabel = item.getLabel();
         String category = item.getCategory();
-        State state = item.getState();
         String itemType = item.getType();
-        Instant timeStamp = Instant.now();
 
         if (state instanceof UnDefType) {
             return CompletableFuture.completedFuture(null);
