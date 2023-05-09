@@ -46,7 +46,6 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_CONNECTED = "vehicleConnected";
     public static final String CHANNEL_LOADPOINT_CONNECTED_DURATION = "vehicleConnectedDuration";
     public static final String CHANNEL_LOADPOINT_ENABLED = "enabled";
-    public static final String CHANNEL_LOADPOINT_HAS_VEHICLE = "hasVehicle";
     public static final String CHANNEL_LOADPOINT_MAX_CURRENT = "maxCurrent";
     public static final String CHANNEL_LOADPOINT_MIN_CURRENT = "minCurrent";
     public static final String CHANNEL_LOADPOINT_MIN_SOC = "minSoC";
@@ -103,8 +102,6 @@ public class EvccBindingConstants {
             CHANNEL_LOADPOINT_CONNECTED_DURATION);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ENABLED = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_ENABLED);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_HAS_VEHICLE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_HAS_VEHICLE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MAX_CURRENT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_MAX_CURRENT);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT = new ChannelTypeUID(BINDING_ID,

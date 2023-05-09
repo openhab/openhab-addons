@@ -297,8 +297,6 @@ public class EvccHandler extends BaseThingHandler {
                 "Number:Time");
         createChannel(CHANNEL_LOADPOINT_ENABLED, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_ENABLED,
                 CoreItemFactory.SWITCH);
-        createChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_HAS_VEHICLE,
-                CoreItemFactory.SWITCH);
         createChannel(CHANNEL_LOADPOINT_MAX_CURRENT, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MAX_CURRENT,
                 "Number:ElectricCurrent");
         createChannel(CHANNEL_LOADPOINT_MIN_CURRENT, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT,
@@ -425,10 +423,6 @@ public class EvccHandler extends BaseThingHandler {
         boolean enabled = loadpoint.getEnabled();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_ENABLED);
         updateState(channel, OnOffType.from(enabled));
-
-        boolean hasVehicle = loadpoint.getHasVehicle();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_HAS_VEHICLE);
-        updateState(channel, OnOffType.from(hasVehicle));
 
         float maxCurrent = loadpoint.getMaxCurrent();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MAX_CURRENT);

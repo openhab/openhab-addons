@@ -170,18 +170,6 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="hasVehicle">
-		<item-type>Switch</item-type>
-		<label>Loadpoint has vehicle configuration</label>
-		<description>Whether vehicle is configured for loadpoint</description>
-		<category>Switch</category>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Configured</option>
-				<option value="OFF">Not configured</option>
-			</options>
-		</state>
-	</channel-type>
 	<channel-type id="maxCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charging max current</label>
@@ -214,7 +202,7 @@
 		<state readOnly="false">
 			<options>
 				<option value="off">Off</option>
-				<option value="now">Now</option>
+				<option value="now">Fast</option>
 				<option value="minpv">Min + PV</option>
 				<option value="pv">Only PV</option>
 			</options>

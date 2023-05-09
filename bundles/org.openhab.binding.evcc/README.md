@@ -64,7 +64,6 @@ Please note that you have to replace _N_ with your loadpoint number.
 | loadpointN#chargedEnergy            | Number:Energy          | R          | Energy charged since plugged-in                                                                     |
 | loadpointN#charging                 | Switch                 | R          | Loadpoint is currently charging                                                                     |
 | loadpointN#enabled                  | Switch                 | R          | Charging enabled (mode is not "off")                                                                |
-| loadpointN#hasVehicle               | Switch                 | R          | Whether vehicle is configured for loadpoint                                                         |
 | loadpointN#maxCurrent               | Number:ElectricCurrent | RW         | Maximum amperage per connected phase with which the car should be charged                           |
 | loadpointN#minCurrent               | Number:ElectricCurrent | RW         | Minimum amperage per connected phase with which the car should be charged                           |
 | loadpointN#minSoC                   | Number:Dimensionless   | RW         | Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off" |
