@@ -37,6 +37,7 @@ import org.openhab.binding.hue.internal.HueBindingConstants.ChannelInfo;
 import org.openhab.binding.hue.internal.action.DynamicsActions;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
+import org.openhab.binding.hue.internal.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.dto.clip2.ProductData;
@@ -300,6 +301,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         Command command = commandParam;
         Resource putResource = null;
+        Resource cache = null;
         String putResourceId = null;
         String channelId = channelUID.getId();
 
@@ -329,7 +331,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = new Resource(lightResourceType);
                 if (command instanceof HSBType) {
                     HSBType color = ((HSBType) command);
-                    putResource.setColor(color, getCachedResource(lightResourceType));
+                    cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
+                    putResource.setColor(color, cache);
                     command = color.getBrightness();
                 }
                 // NB fall through !!
@@ -337,7 +340,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType) {
-                    Resource cache = getCachedResource(lightResourceType);
+                    cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
                     if (Objects.nonNull(cache)) {
                         State current = cache.getBrightnessState();
                         if (current instanceof PercentType) {
@@ -351,8 +354,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 // NB fall through !!
                 if (command instanceof PercentType) {
                     PercentType brightness = (PercentType) command;
-                    putResource.setBrightness(brightness);
-                    command = OnOffType.from(brightness.intValue() > 1);
+                    cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
+                    putResource.setBrightness(brightness, cache);
+                    Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
+                    minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
+                    command = OnOffType.from(brightness.doubleValue() >= minDimLevel);
                 }
                 // NB fall through !!
 

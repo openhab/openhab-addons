@@ -139,6 +139,13 @@ public class Resource {
         if (Objects.isNull(this.dimming) && Objects.nonNull(other.dimming)) {
             this.dimming = other.dimming;
         }
+        // minimum dimming level
+        Dimming oD = other.dimming;
+        Double oMDL = Objects.nonNull(oD) ? oD.getMinimumDimmingLevel() : null;
+        if (Objects.nonNull(oMDL)) {
+            Dimming tD = this.dimming;
+            this.dimming = (Objects.nonNull(tD) ? tD : new Dimming()).setMinimumDimmingLevel(oMDL);
+        }
         // color
         if (Objects.isNull(this.color) && Objects.nonNull(other.color)) {
             this.color = other.color;
@@ -400,6 +407,11 @@ public class Resource {
         return metadata;
     }
 
+    public @Nullable Double getMinimumDimmingLevel() {
+        Dimming dimming = this.dimming;
+        return Objects.nonNull(dimming) ? dimming.getMinimumDimmingLevel() : null;
+    }
+
     public @Nullable MirekSchema getMirekSchema() {
         ColorTemperature2 colorTemp = this.colorTemperature;
         return Objects.nonNull(colorTemp) ? colorTemp.getMirekSchema() : null;
@@ -584,14 +596,23 @@ public class Resource {
     }
 
     /**
-     * Set the brightness percent.
+     * Set the brightness percent. If this resource has its own minimum dimming level then use that, otherwise if the
+     * 'other' parameter is not null and has a minimum dimming level, then use that, and if neither have one then use
+     * the default.
      *
      * @param command a PercentType with the new brightness.
+     * @param other the reference (light) resource to be used for the minimum dimming level.
      * @return this resource instance.
      */
-    public Resource setBrightness(Command command) {
+    public Resource setBrightness(Command command, @Nullable Resource other) {
         if (command instanceof PercentType) {
+            Double min = getMinimumDimmingLevel();
+            min = Objects.nonNull(min) ? min : Objects.nonNull(other) ? other.getMinimumDimmingLevel() : null;
+            min = Objects.nonNull(min) ? min : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
             PercentType brightness = (PercentType) command;
+            if (brightness.doubleValue() < min.doubleValue()) {
+                brightness = new PercentType(new BigDecimal(min, PERCENT_MATH_CONTEXT));
+            }
             Dimming dimming = this.dimming;
             dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
             dimming.setBrightness(brightness.doubleValue());

@@ -14,6 +14,7 @@ package org.openhab.binding.hue.internal.dto.clip2;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 
@@ -22,6 +23,7 @@ import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class OnState {
     private @Nullable Boolean on;
 

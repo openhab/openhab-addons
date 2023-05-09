@@ -28,9 +28,6 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Effects {
-    /**
-     * Following fields are @Nullable since different cases use different subsets of the fields.
-     */
     private @Nullable @SerializedName("effect_values") List<String> effectValues;
     private @Nullable String effect;
     private @Nullable @SerializedName("status_values") List<String> statusValues;

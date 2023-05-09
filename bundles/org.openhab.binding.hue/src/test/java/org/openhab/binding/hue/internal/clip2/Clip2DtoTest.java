@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.dto.clip2.ActionEntry;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
 import org.openhab.binding.hue.internal.dto.clip2.Button;
+import org.openhab.binding.hue.internal.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.dto.clip2.Event;
 import org.openhab.binding.hue.internal.dto.clip2.LightLevel;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
@@ -74,6 +75,7 @@ import com.google.gson.JsonSyntaxException;
 class Clip2DtoTest {
 
     private static final Gson GSON = new Gson();
+    private static final Double MINIMUM_DIMMING_LEVEL = Double.valueOf(12.34f);
 
     /**
      * Load the test JSON payload string from a file
@@ -345,11 +347,20 @@ class Clip2DtoTest {
         // create resource one
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
+        // preset the minimum dimming level
+        try {
+            Dimming dimming = new Dimming().setMinimumDimmingLevel(MINIMUM_DIMMING_LEVEL);
+            Field dimming2 = one.getClass().getDeclaredField("dimming");
+            dimming2.setAccessible(true);
+            dimming2.set(one, dimming);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            fail();
+        }
         one.setColor(HSBType.RED, null);
-        one.setBrightness(PercentType.HUNDRED);
+        one.setBrightness(PercentType.HUNDRED, null);
         assertTrue(one.getColorState() instanceof HSBType);
-        assertTrue(HSBType.RED.closeTo((HSBType) one.getColorState(), 0.01));
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
+        assertTrue(HSBType.RED.closeTo((HSBType) one.getColorState(), 0.01));
 
         // switching off should change HSB and Brightness
         one.setSwitch(OnOffType.OFF);
@@ -357,9 +368,10 @@ class Clip2DtoTest {
         assertEquals(PercentType.ZERO, one.getBrightnessState());
         one.setSwitch(OnOffType.ON);
 
-        // setting brightness to zero should change HSB
-        one.setBrightness(PercentType.ZERO);
-        assertEquals(0, ((HSBType) one.getColorState()).getBrightness().doubleValue(), 0.01);
+        // setting brightness to zero should change it to the minimum dimming level
+        one.setBrightness(PercentType.ZERO, null);
+        assertEquals(MINIMUM_DIMMING_LEVEL, ((HSBType) one.getColorState()).getBrightness().doubleValue(), 0.01);
+        assertEquals(MINIMUM_DIMMING_LEVEL, ((PercentType) one.getBrightnessState()).doubleValue(), 0.01);
         one.setSwitch(OnOffType.ON);
 
         // null its Dimming field
@@ -382,7 +394,7 @@ class Clip2DtoTest {
         // create resource two
         Resource two = new Resource(ResourceType.DEVICE).setId("ALLIGATOR");
         assertNotNull(two);
-        two.setBrightness(testBrightness);
+        two.setBrightness(testBrightness, null);
         assertEquals(UnDefType.NULL, two.getColorState());
         assertEquals(testBrightness, two.getBrightnessState());
 
