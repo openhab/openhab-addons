@@ -77,7 +77,7 @@ To override filters, the channel `net-tariff` has the following configuration pa
 | notes           | text    | Comma-separated list of notes                                                                                              |         | no       | yes      |
 | start           | text    | Query start date parameter expressed as either YYYY-MM-DD or dynamically as one of StartOfDay, StartOfMonth or StartOfYear |         | no       | yes      |
 
-The parameters `chargeTypeCodes` and `notes` are logically combined with "AND", so if only one parameter is needed for filter, only provide this parameter and leave the other one empty.
+The parameters `chargeTypeCodes` and `notes` are logically combined with "AND", so if only one parameter is needed for the filter, only provide this parameter and leave the other one empty.
 Using any of these parameters will override the pre-configured filter entirely.
 
 The parameter `start` can be used independently to override the query start date parameter.
@@ -165,7 +165,7 @@ The result is a `Map` with the following keys:
 
 This is a convenience method that can be used when the power consumption is not known.
 The calculation will assume linear consumption and will find the best timeslot based on that.
-The this reason the resulting `Map` will not contain the keys `LowestPrice` and `HighestPrice`.
+For this reason the resulting `Map` will not contain the keys `LowestPrice` and `HighestPrice`.
 
 Example:
 
@@ -338,15 +338,19 @@ String HourlyPrices "Hourly Prices" <price> { channel="energidataservice:service
 
 ### Thing Actions Example
 
+:::: tabs
+
+::: tab DSL
+
 ```javascript
 import java.time.Duration
 import java.util.ArrayList
 import java.util.Map
 import java.time.temporal.ChronoUnit
 
-val actions = getActions("energidataservice", "energidataservice:service:energidataservice");
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 
-var priceMap = actions.getPrices(null);
+var priceMap = actions.getPrices(null)
 var hourStart = now.toInstant().truncatedTo(ChronoUnit.HOURS)
 logInfo("Current total price excl. VAT", priceMap.get(hourStart).toString)
 
@@ -377,10 +381,10 @@ consumptionPhases.add(146.341 | W)
 consumptionPhases.add(0 | W)
 
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant, now.plusHours(24).toInstant, durationPhases, consumptionPhases)
-logInfo("Lowest price", result.get("LowestPrice"))
-logInfo("Cheapest start", result.get("CheapestStart"))
-logInfo("Highest price price", result.get("HighestPrice"))
-logInfo("Most expensive start", result.get("MostExpensiveStart"))
+logInfo("Cheapest start", (result.get("CheapestStart") as Instant).toString)
+logInfo("Lowest price", (result.get("LowestPrice") as Number).doubleValue.toString)
+logInfo("Highest price", (result.get("HighestPrice") as Number).doubleValue.toString)
+logInfo("Most expensive start", (result.get("MostExpensiveStart") as Instant).toString)
 
 // This is a simpler version taking advantage of the fact that each interval here represents 0.1 kWh of consumed energy.
 // In this example we have to provide the total duration to make sure we fit the latest end. This is because there is no
@@ -393,7 +397,76 @@ durationPhases.add(Duration.ofMinutes(2))
 durationPhases.add(Duration.ofMinutes(4))
 durationPhases.add(Duration.ofMinutes(36))
 durationPhases.add(Duration.ofMinutes(41))
-durationPhases.add(Duration.ofMinutes(104))
 
-var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(24).toInstant(), Duration.ofMinutes(236), phases, 0.1 | kWh)
+var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(24).toInstant(), Duration.ofMinutes(236), durationPhases, 0.1 | kWh)
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
+
+// Get prices and convert to JavaScript Map with Instant string representation as keys.
+var priceMap = new Map();
+utils.javaMapToJsMap(edsActions.getPrices()).forEach((value, key) => {
+    priceMap.set(key.toString(), value);
+});
+
+var hourStart = time.Instant.now().truncatedTo(time.ChronoUnit.HOURS);
+console.log("Current total price excl. VAT: " + priceMap.get(hourStart.toString()));
+
+utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,NetTariff")).forEach((value, key) => {
+    priceMap.set(key.toString(), value);
+});
+console.log("Current spot price + net tariff excl. VAT: " + priceMap.get(hourStart.toString()));
+
+var price = edsActions.calculatePrice(time.Instant.now(), time.Instant.now().plusSeconds(3600), Quantity("150 W"));
+console.log("Total price for using 150 W for the next hour: " + price.toString());
+
+var durationPhases = [];
+durationPhases.push(time.Duration.ofMinutes(37));
+durationPhases.push(time.Duration.ofMinutes(8));
+durationPhases.push(time.Duration.ofMinutes(4));
+durationPhases.push(time.Duration.ofMinutes(2));
+durationPhases.push(time.Duration.ofMinutes(4));
+durationPhases.push(time.Duration.ofMinutes(36));
+durationPhases.push(time.Duration.ofMinutes(41));
+durationPhases.push(time.Duration.ofMinutes(104));
+
+var consumptionPhases = [];
+consumptionPhases.push(Quantity("162.162 W"));
+consumptionPhases.push(Quantity("750 W"));
+consumptionPhases.push(Quantity("1500 W"));
+consumptionPhases.push(Quantity("3000 W"));
+consumptionPhases.push(Quantity("1500 W"));
+consumptionPhases.push(Quantity("166.666 W"));
+consumptionPhases.push(Quantity("146.341 W"));
+consumptionPhases.push(Quantity("0 W"));
+
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(24*60*60), durationPhases, consumptionPhases);
+
+console.log("Cheapest start: " + result.get("CheapestStart").toString());
+console.log("Lowest price: " + result.get("LowestPrice"));
+console.log("Highest price: " + result.get("HighestPrice"));
+console.log("Most expensive start: " + result.get("MostExpensiveStart").toString());
+
+// This is a simpler version taking advantage of the fact that each interval here represents 0.1 kWh of consumed energy.
+// In this example we have to provide the total duration to make sure we fit the latest end. This is because there is no
+// registered consumption in the last phase.
+var durationPhases = [];
+durationPhases.push(time.Duration.ofMinutes(37));
+durationPhases.push(time.Duration.ofMinutes(8));
+durationPhases.push(time.Duration.ofMinutes(4));
+durationPhases.push(time.Duration.ofMinutes(2));
+durationPhases.push(time.Duration.ofMinutes(4));
+durationPhases.push(time.Duration.ofMinutes(36));
+durationPhases.push(time.Duration.ofMinutes(41));
+
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(24*60*60), time.Duration.ofMinutes(236), durationPhases, Quantity("0.1 kWh"));
+```
+
+:::
+
+::::
