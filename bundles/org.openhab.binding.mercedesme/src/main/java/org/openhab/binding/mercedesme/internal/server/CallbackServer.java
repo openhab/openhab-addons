@@ -73,7 +73,7 @@ public class CallbackServer {
         SERVER_MAP.remove(Integer.valueOf(config.callbackPort));
     }
 
-    public void deleteServiceAndAccessToken() {
+    public void deleteOAuthServiceAndAccessToken() {
         oAuthFactory.deleteServiceAndAccessToken(config.clientId);
     }
 

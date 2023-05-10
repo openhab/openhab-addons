@@ -133,9 +133,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     @Override
     public void handleRemoval() {
-        if (!server.isEmpty()) {
-            server.get().deleteServiceAndAccessToken();
-        }
+        server.ifPresent(s -> s.deleteOAuthServiceAndAccessToken());
         super.handleRemoval();
     }
 
