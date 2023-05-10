@@ -33,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
@@ -59,6 +60,7 @@ public class ItemToStorePointCreatorTest {
             DATABASE_PARAM, "openhab", //
             RETENTION_POLICY_PARAM, "default");
 
+    private @Mock UnitProvider unitProviderMock;
     private @Mock ItemRegistry itemRegistryMock;
     private @Mock MetadataRegistry metadataRegistry;
     private InfluxDBPersistenceService instance;
@@ -254,7 +256,7 @@ public class ItemToStorePointCreatorTest {
 
         InfluxDBPersistenceService instance = new InfluxDBPersistenceService(itemRegistryMock, influxDBMetadataService,
                 configuration);
-        instance.setItemFactory(new CoreItemFactory());
+        instance.setItemFactory(new CoreItemFactory(unitProviderMock));
 
         return instance;
     }
