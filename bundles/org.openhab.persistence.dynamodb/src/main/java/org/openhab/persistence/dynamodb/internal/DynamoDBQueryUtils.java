@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
@@ -45,10 +46,11 @@ public class DynamoDBQueryUtils {
      * @param item item corresponding to filter
      * @param filter filter for the query
      * @return DynamoDBQueryExpression corresponding to the given FilterCriteria
+     * @param unitProvider the unit provider for number with dimension
      * @throws IllegalArgumentException when schema is not fully resolved
      */
     public static QueryEnhancedRequest createQueryExpression(Class<? extends DynamoDBItem<?>> dtoClass,
-            ExpectedTableSchema expectedTableSchema, Item item, FilterCriteria filter) {
+            ExpectedTableSchema expectedTableSchema, Item item, FilterCriteria filter, UnitProvider unitProvider) {
         if (!expectedTableSchema.isFullyResolved()) {
             throw new IllegalArgumentException("Schema not resolved");
         }
@@ -59,7 +61,7 @@ public class DynamoDBQueryUtils {
             throw new IllegalArgumentException("Item name not set");
         }
         addFilterbyItemAndTimeFilter(queryBuilder, expectedTableSchema, itemName, filter);
-        addStateFilter(queryBuilder, expectedTableSchema, item, dtoClass, filter);
+        addStateFilter(queryBuilder, expectedTableSchema, item, dtoClass, filter, unitProvider);
         addProjection(dtoClass, expectedTableSchema, queryBuilder);
         return queryBuilder.build();
     }
@@ -94,7 +96,7 @@ public class DynamoDBQueryUtils {
 
     private static void addStateFilter(QueryEnhancedRequest.Builder queryBuilder,
             ExpectedTableSchema expectedTableSchema, Item item, Class<? extends DynamoDBItem<?>> dtoClass,
-            FilterCriteria filter) {
+            FilterCriteria filter, UnitProvider unitProvider) {
         final Expression expression;
         Builder itemStateTypeExpressionBuilder = Expression.builder()
                 .expression(String.format("attribute_exists(#attr)"));
@@ -123,7 +125,7 @@ public class DynamoDBQueryUtils {
             // Following will throw IllegalArgumentException when filter state is not compatible with
             // item. This is acceptable.
             GenericItem stateToFind = DynamoDBPersistenceService.copyItem(item, item, filter.getItemName(),
-                    filter.getState());
+                    filter.getState(), unitProvider);
             acceptAsDTO(stateToFind, legacy, new DynamoDBItemVisitor<@Nullable Void>() {
                 @Override
                 public @Nullable Void visit(DynamoDBStringItem serialized) {
