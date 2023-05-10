@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
@@ -53,6 +54,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.inbox.Inbox;
 import org.openhab.core.config.discovery.inbox.InboxPredicates;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -345,9 +347,15 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     }
 
     private void intializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
+        UnitProvider unitProvider = getService(UnitProvider.class);
+        assertThat(unitProvider, is(notNullValue()));
+        if (unitProvider == null) {
+            throw new AssertionError("unitProvider is null");
+        }
+
         GenericItem item = null;
         if (acceptedItemType.startsWith("Number")) {
-            item = new NumberItem(acceptedItemType, itemName);
+            item = new NumberItem(acceptedItemType, itemName, unitProvider);
         } else if ("String".equals(acceptedItemType)) {
             item = new StringItem(itemName);
         }
