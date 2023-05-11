@@ -1808,7 +1808,7 @@ public class IpCameraHandler extends BaseThingHandler {
         Future<?> localFuture = pollCameraJob;
         if (localFuture != null) {
             localFuture.cancel(true);
-            localFuture = null;
+            pollCameraJob = null;
         }
         localFuture = authenticationJob;
         if (localFuture != null) {
@@ -1818,12 +1818,12 @@ public class IpCameraHandler extends BaseThingHandler {
         localFuture = snapshotJob;
         if (localFuture != null) {
             localFuture.cancel(true);
-            localFuture = null;
+            snapshotJob = null;
         }
         localFuture = cameraConnectionJob;
         if (localFuture != null) {
             localFuture.cancel(true);
-            localFuture = null;
+            cameraConnectionJob = null;
         }
         Ffmpeg localFfmpeg = ffmpegHLS;
         if (localFfmpeg != null) {
