@@ -170,10 +170,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
 
     @Override
     public void handleRemoval() {
-        OAuthClientService oAuthService = this.oAuthService;
-        if (oAuthService != null) {
-            oAuthFactory.deleteServiceAndAccessToken(getThing().toString());
-        }
+        oAuthFactory.deleteServiceAndAccessToken(getThing().toString());
         super.handleRemoval();
     }
 
