@@ -197,10 +197,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void handleRemoval() {
-        OAuthClientService oAuthService = this.oAuthService;
-        if (oAuthService != null) {
-            oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
-        }
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
         super.handleRemoval();
     }
 
