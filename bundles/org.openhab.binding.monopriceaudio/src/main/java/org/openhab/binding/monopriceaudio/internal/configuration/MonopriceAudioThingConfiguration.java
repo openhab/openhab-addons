@@ -35,4 +35,7 @@ public class MonopriceAudioThingConfiguration {
     public @Nullable String inputLabel4;
     public @Nullable String inputLabel5;
     public @Nullable String inputLabel6;
+    public @Nullable String inputLabel7;
+    public @Nullable String inputLabel8;
+    public boolean disableKeypadPolling = false;
 }
