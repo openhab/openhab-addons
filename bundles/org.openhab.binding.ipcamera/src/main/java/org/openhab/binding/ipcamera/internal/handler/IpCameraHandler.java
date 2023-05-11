@@ -1867,7 +1867,7 @@ public class IpCameraHandler extends BaseThingHandler {
         CameraServlet localServlet = servlet;
         if (localServlet != null) {
             localServlet.dispose();
-            localServlet = null;
+            servlet = null;
         }
         threadPool.shutdown();
         // inform all group handlers that this camera has gone offline
