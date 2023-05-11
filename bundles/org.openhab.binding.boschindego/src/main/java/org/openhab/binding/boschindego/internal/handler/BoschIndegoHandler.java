@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.boschindego.internal.AuthorizationListener;
+import org.openhab.binding.boschindego.internal.AuthorizationProvider;
 import org.openhab.binding.boschindego.internal.BoschIndegoTranslationProvider;
 import org.openhab.binding.boschindego.internal.DeviceStatus;
 import org.openhab.binding.boschindego.internal.IndegoDeviceController;
@@ -41,7 +43,6 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationE
 import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -59,7 +60,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
  * @author Jacob Laursen - Refactoring, bugfixing and removal of dependency towards abandoned library
  */
 @NonNullByDefault
-public class BoschIndegoHandler extends BaseThingHandler {
+public class BoschIndegoHandler extends BaseThingHandler implements AuthorizationListener {
 
     private static final String MAP_POSITION_STROKE_COLOR = "#8c8b6d";
     private static final String MAP_POSITION_FILL_COLOR = "#fff701";
@@ -94,7 +94,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private Instant devicePropertiesUpdated = Instant.MIN;
 
-    private @NonNullByDefault({}) OAuthClientService oAuthClientService;
+    private @NonNullByDefault({}) AuthorizationProvider authorizationProvider;
     private @NonNullByDefault({}) IndegoDeviceController controller;
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
@@ -130,9 +130,9 @@ public class BoschIndegoHandler extends BaseThingHandler {
             return;
         }
 
-        ThingHandler handler = bridge.getHandler();
-        if (handler instanceof BoschAccountHandler accountHandler) {
-            this.oAuthClientService = accountHandler.getOAuthClientService();
+        if (bridge.getHandler() instanceof BoschAccountHandler accountHandler) {
+            authorizationProvider = accountHandler.getAuthorizationProvider();
+            accountHandler.registerAuthorizationListener(this);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.missing-bridge");
@@ -142,7 +142,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         devicePropertiesUpdated = Instant.MIN;
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, config.serialNumber);
 
-        controller = new IndegoDeviceController(httpClient, oAuthClientService, config.serialNumber);
+        controller = new IndegoDeviceController(httpClient, authorizationProvider, config.serialNumber);
 
         updateStatus(ThingStatus.UNKNOWN);
         previousStateCode = Optional.empty();
@@ -155,11 +155,23 @@ public class BoschIndegoHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
                 && getThing().getStatusInfo().getStatus() == ThingStatus.OFFLINE) {
-            // Trigger immediate state refresh upon authorization success.
-            rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, true);
+            updateStatus(ThingStatus.UNKNOWN);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+    }
+
+    public void onSuccessfulAuthorization() {
+        // Ignore
+    }
+
+    public void onFailedAuthorization(Throwable throwable) {
+        // Ignore
+    }
+
+    public void onAuthorizationFlowCompleted() {
+        // Trigger immediate state refresh upon authorization success.
+        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, true);
     }
 
     private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds, boolean force) {
@@ -182,6 +194,13 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            if (bridge.getHandler() instanceof BoschAccountHandler accountHandler) {
+                accountHandler.unregisterAuthorizationListener(this);
+            }
+        }
+
         ScheduledFuture<?> pollFuture = this.statePollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(true);
@@ -211,8 +230,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 sendCommand(((DecimalType) command).intValue());
             }
         } catch (IndegoAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            // Ignore, will be handled by bridge
         } catch (IndegoTimeoutException e) {
             updateStatus(lastOperatingDataStatus = ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
@@ -297,9 +315,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         try {
             refreshState();
         } catch (IndegoAuthenticationException e) {
-            logger.warn("Failed to authenticate: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            // Ignore, will be handled by bridge
         } catch (IndegoTimeoutException e) {
             updateStatus(lastOperatingDataStatus = ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
@@ -420,8 +436,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             refreshLastCuttingTime();
             refreshNextCuttingTime();
         } catch (IndegoAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            // Ignore, will be handled by bridge
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -443,8 +458,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         try {
             refreshNextCuttingTime();
         } catch (IndegoAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            // Ignore, will be handled by bridge
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
