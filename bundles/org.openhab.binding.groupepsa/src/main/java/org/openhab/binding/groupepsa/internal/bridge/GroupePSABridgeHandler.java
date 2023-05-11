@@ -143,9 +143,7 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        if (oAuthService != null) {
-            oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
-        }
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
         super.handleRemoval();
     }
 
