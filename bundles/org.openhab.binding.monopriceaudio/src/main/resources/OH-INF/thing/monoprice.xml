@@ -100,13 +100,12 @@
 			<parameter name="host" type="text" required="false">
 				<context>network-address</context>
 				<label>Address</label>
-				<description>Host Name or IP Address of the Amplifier or Serial over IP device</description>
+				<description>Host Name or IP Address of the Monoprice Amplifier or Serial over IP device</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Communication Port for Serial over IP connection to the Amplifier (Default 8080 for amps with built-in
-					Serial over IP)</description>
-				<default>8080</default>
+				<description>Communication Port for Serial over IP connection to the Monoprice Amplifier (8080 for amps with
+					built-in Serial over IP)</description>
 			</parameter>
 			<parameter name="numZones" type="integer" min="1" max="18" required="true">
 				<label>Number of Zones</label>
@@ -116,7 +115,7 @@
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
 				<label>Polling Interval</label>
-				<description>Configures How Often to Poll the Controller to Check for Zone Updates (5-60; Default 15)</description>
+				<description>Configures How Often to Poll the Amplifier to Check for Zone Updates (5-60; Default 15)</description>
 				<default>15</default>
 			</parameter>
 			<parameter name="ignoreZones" type="text" required="false">
@@ -159,6 +158,11 @@
 				<label>Source 6 Input Label</label>
 				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
 				<default>Source 6</default>
+			</parameter>
+			<parameter name="disableKeypadPolling" type="boolean" required="false">
+				<label>Disable Keypad Polling</label>
+				<description>If physical keypads are not used, this option will disable polling the amplifier for zone updates</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</thing-type>
