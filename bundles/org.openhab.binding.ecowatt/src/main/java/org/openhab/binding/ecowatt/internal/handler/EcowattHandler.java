@@ -118,10 +118,7 @@ public class EcowattHandler extends BaseThingHandler {
 
     @Override
     public void handleRemoval() {
-        EcowattRestApi localApi = api;
-        if (localApi != null) {
-            localApi.deleteServiceAndAccessToken();
-        }
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
         super.handleRemoval();
     }
 
