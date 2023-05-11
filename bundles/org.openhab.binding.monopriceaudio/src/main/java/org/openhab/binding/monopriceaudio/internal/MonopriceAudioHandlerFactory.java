@@ -14,10 +14,7 @@ package org.openhab.binding.monopriceaudio.internal;
 
 import static org.openhab.binding.monopriceaudio.internal.MonopriceAudioBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,8 +43,8 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.monopriceaudio", service = ThingHandlerFactory.class)
 public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_MP, THING_TYPE_MP70, THING_TYPE_DAX88, THING_TYPE_XT).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MP, THING_TYPE_MP70,
+            THING_TYPE_DAX88, THING_TYPE_XT);
 
     private final SerialPortManager serialPortManager;
 
@@ -71,21 +68,21 @@ public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_MP)) {
+        if (THING_TYPE_MP.equals(thingTypeUID)) {
             return new MonopriceAudioHandler(thing, AmplifierModel.MONOPRICE, stateDescriptionProvider,
                     serialPortManager);
         }
 
-        if (thingTypeUID.equals(THING_TYPE_MP70)) {
+        if (THING_TYPE_MP70.equals(thingTypeUID)) {
             return new MonopriceAudioHandler(thing, AmplifierModel.MONOPRICE70, stateDescriptionProvider,
                     serialPortManager);
         }
 
-        if (thingTypeUID.equals(THING_TYPE_DAX88)) {
+        if (THING_TYPE_DAX88.equals(thingTypeUID)) {
             return new MonopriceAudioHandler(thing, AmplifierModel.DAX88, stateDescriptionProvider, serialPortManager);
         }
 
-        if (thingTypeUID.equals(THING_TYPE_XT)) {
+        if (THING_TYPE_XT.equals(thingTypeUID)) {
             return new MonopriceAudioHandler(thing, AmplifierModel.XANTECH, stateDescriptionProvider,
                     serialPortManager);
         }

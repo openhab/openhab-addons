@@ -554,7 +554,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             try {
                                 connector.queryZone(streamZoneId);
                             } catch (MonopriceAudioException e) {
-                                logger.debug("Polling error: {}", e.getMessage());
+                                logger.debug("Polling error for zone id {}: {}", streamZoneId, e.getMessage());
                             }
                         });
                     } else {
@@ -693,7 +693,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             State state = UnDefType.UNDEF;
             switch (channelType) {
                 case CHANNEL_TYPE_POWER:
-                    state = zoneData.isPowerOn() ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(zoneData.isPowerOn());
                     break;
                 case CHANNEL_TYPE_SOURCE:
                     state = new DecimalType(zoneData.getSource());
@@ -704,7 +704,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     state = new PercentType(BigDecimal.valueOf(volumePct));
                     break;
                 case CHANNEL_TYPE_MUTE:
-                    state = zoneData.isMuted() ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(zoneData.isMuted());
                     break;
                 case CHANNEL_TYPE_TREBLE:
                     state = new DecimalType(BigDecimal.valueOf(zoneData.getTreble() - amp.getToneOffset()));
@@ -716,7 +716,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     state = new DecimalType(BigDecimal.valueOf(zoneData.getBalance() - amp.getBalOffset()));
                     break;
                 case CHANNEL_TYPE_DND:
-                    state = zoneData.isDndOn() ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(zoneData.isDndOn());
                     break;
                 case CHANNEL_TYPE_PAGE:
                     state = zoneData.isPageActive() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
