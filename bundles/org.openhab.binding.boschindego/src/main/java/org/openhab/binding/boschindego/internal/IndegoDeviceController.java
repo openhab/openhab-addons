@@ -35,7 +35,6 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidResponseException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.library.types.RawType;
 
 /**
@@ -61,11 +60,12 @@ public class IndegoDeviceController extends IndegoController {
      * Initialize the controller instance.
      * 
      * @param httpClient the HttpClient for communicating with the service
-     * @param oAuthClientService the OAuthClientService for authorization
+     * @param authorizationProvider the AuthorizationProvider for authenticating with the service
      * @param serialNumber the serial number of the device instance
      */
-    public IndegoDeviceController(HttpClient httpClient, OAuthClientService oAuthClientService, String serialNumber) {
-        super(httpClient, oAuthClientService);
+    public IndegoDeviceController(HttpClient httpClient, AuthorizationProvider authorizationProvider,
+            String serialNumber) {
+        super(httpClient, authorizationProvider);
         if (serialNumber.isBlank()) {
             throw new IllegalArgumentException("Serial number must be provided");
         }

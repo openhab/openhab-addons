@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.boschindego.internal;
 
-import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
-
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,10 +38,6 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidResponseException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
-import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.openhab.core.auth.client.oauth2.OAuthException;
-import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.RawType;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -66,23 +59,22 @@ public class IndegoController {
 
     private static final String BASE_URL = "https://api.indego-cloud.iot.bosch-si.com/api/v1/";
     private static final String CONTENT_TYPE_HEADER = "application/json";
-    private static final String BEARER = "Bearer ";
 
     private final Logger logger = LoggerFactory.getLogger(IndegoController.class);
     private final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer()).create();
     private final HttpClient httpClient;
-    private final OAuthClientService oAuthClientService;
+    private final AuthorizationProvider authorizationProvider;
     private final String userAgent;
 
     /**
      * Initialize the controller instance.
      * 
      * @param httpClient the HttpClient for communicating with the service
-     * @param oAuthClientService the OAuthClientService for authorization
+     * @param authorizationProvider the AuthorizationProvider for authenticating with the service
      */
-    public IndegoController(HttpClient httpClient, OAuthClientService oAuthClientService) {
+    public IndegoController(HttpClient httpClient, AuthorizationProvider authorizationProvider) {
         this.httpClient = httpClient;
-        this.oAuthClientService = oAuthClientService;
+        this.authorizationProvider = authorizationProvider;
         userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
     }
 
@@ -112,39 +104,6 @@ public class IndegoController {
         return getRequest(SERIAL_NUMBER_SUBPATH + serialNumber + "/", DevicePropertiesResponse.class);
     }
 
-    private String getAuthorizationUrl() {
-        try {
-            return oAuthClientService.getAuthorizationUrl(BSK_REDIRECT_URI, BSK_SCOPE, null);
-        } catch (OAuthException e) {
-            return "";
-        }
-    }
-
-    private String getAuthorizationHeader() throws IndegoException {
-        final AccessTokenResponse accessTokenResponse;
-        try {
-            accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-        } catch (OAuthException | OAuthResponseException e) {
-            logger.debug("Error fetching access token: {}", e.getMessage(), e);
-            throw new IndegoAuthenticationException(
-                    "Error fetching access token. Invalid authcode? Please generate a new one -> "
-                            + getAuthorizationUrl(),
-                    e);
-        } catch (IOException e) {
-            throw new IndegoException("An unexpected IOException occurred: " + e.getMessage(), e);
-        }
-        if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
-                || accessTokenResponse.getAccessToken().isEmpty()) {
-            throw new IndegoAuthenticationException(
-                    "No access token. Is this thing authorized? -> " + getAuthorizationUrl());
-        }
-        if (accessTokenResponse.getRefreshToken() == null || accessTokenResponse.getRefreshToken().isEmpty()) {
-            throw new IndegoAuthenticationException("No refresh token. Please reauthorize -> " + getAuthorizationUrl());
-        }
-
-        return BEARER + accessTokenResponse.getAccessToken();
-    }
-
     /**
      * Sends a GET request to the server and returns the deserialized JSON response.
      * 
@@ -160,7 +119,7 @@ public class IndegoController {
         int status = 0;
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET)
-                    .header(HttpHeader.AUTHORIZATION, getAuthorizationHeader()).agent(userAgent);
+                    .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader()).agent(userAgent);
             if (logger.isTraceEnabled()) {
                 logger.trace("GET request for {}", BASE_URL + path);
             }
@@ -226,7 +185,7 @@ public class IndegoController {
         int status = 0;
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET)
-                    .header(HttpHeader.AUTHORIZATION, getAuthorizationHeader()).agent(userAgent);
+                    .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader()).agent(userAgent);
             if (logger.isTraceEnabled()) {
                 logger.trace("GET request for {}", BASE_URL + path);
             }
@@ -312,7 +271,7 @@ public class IndegoController {
             throws IndegoAuthenticationException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(method)
-                    .header(HttpHeader.AUTHORIZATION, getAuthorizationHeader())
+                    .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader())
                     .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER).agent(userAgent);
             if (requestDto != null) {
                 String payload = gson.toJson(requestDto);
