@@ -80,7 +80,7 @@ public interface InfluxDBRepository {
      * Execute delete query
      *
      * @param filter the query filter
-     * @return
+     * @return <code>true</code> if query executed successfully, <code>false</code> otherwise
      */
     boolean remove(FilterCriteria filter);
 

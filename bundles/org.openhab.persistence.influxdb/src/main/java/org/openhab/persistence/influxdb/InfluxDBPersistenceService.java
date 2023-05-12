@@ -219,11 +219,16 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
-        if (filter.getItemName() == null) {
-            logger.warn("Item name is missing in filter {} when trying to remove data.", filter);
+        if (serviceActivated && checkConnection()) {
+            if (filter.getItemName() == null) {
+                logger.warn("Item name is missing in filter {} when trying to remove data.", filter);
+                return false;
+            }
+            return influxDBRepository.remove(filter);
+        } else {
+            logger.debug("Remove query {} ignored, InfluxDB is not connected.", filter);
             return false;
         }
-        return influxDBRepository.remove(filter);
     }
 
     @Override
