@@ -84,101 +84,119 @@ public class EvccHandler extends BaseThingHandler {
             if (groupId == null) {
                 return;
             }
+            String channelGroup = channelUID.getGroupId();
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
-            int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
             EvccAPI evccAPI = this.evccAPI;
             if (evccAPI == null) {
                 return;
             }
             try {
-                switch (channelIdWithoutGroup) {
-                    case CHANNEL_LOADPOINT_MODE -> {
-                        if (command instanceof StringType) {
-                            evccAPI.setMode(loadpoint, command.toString());
-                        } else {
-                            logger.debug("Command has wrong type, StringType required!");
-                        }
-                    }
-                    case CHANNEL_LOADPOINT_MIN_SOC -> {
-                        if (command instanceof QuantityType<?> qt) {
-                            evccAPI.setMinSoC(loadpoint, qt.toUnit(Units.PERCENT).intValue());
-                        } else if (command instanceof DecimalType dt) {
-                            evccAPI.setMinSoC(loadpoint, dt.intValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        }
-                    }
-                    case CHANNEL_LOADPOINT_TARGET_ENERGY -> {
-                        if (command instanceof QuantityType<?> qt) {
-                            evccAPI.setTargetEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType required!");
-                        }
-                    }
-                    case CHANNEL_LOADPOINT_TARGET_SOC -> {
-                        if (command instanceof QuantityType<?> qt) {
-                            evccAPI.setTargetSoC(loadpoint, qt.toUnit(Units.PERCENT).intValue());
-                        } else if (command instanceof DecimalType dt) {
-                            evccAPI.setTargetSoC(loadpoint, dt.intValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        }
-                    }
-                    case CHANNEL_LOADPOINT_TARGET_TIME -> {
-                        if (command instanceof DateTimeType dtt) {
-                            targetTimeZDT = dtt.getZonedDateTime();
-                            ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
-                                    CHANNEL_LOADPOINT_TARGET_TIME);
-                            updateState(channel, new DateTimeType(targetTimeZDT));
-                            if (targetTimeEnabled) {
-                                try {
-                                    evccAPI.setTargetTime(loadpoint, targetTimeZDT);
-                                } catch (DateTimeParseException e) {
-                                    logger.debug("Failed to set target charge: ", e);
-                                }
+                if (channelGroup.equals("general")) {
+                    switch (channelIdWithoutGroup) {
+                        case CHANNEL_BATTERY_PRIORITY_SOC -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setBatteryPrioritySoC(qt.toUnit(Units.PERCENT).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setBatteryPrioritySoC(dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                        } else {
-                            logger.debug("Command has wrong type, DateTimeType required!");
+                        }
+                        default -> {
+                            return;
                         }
                     }
-                    case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED -> {
-                        if (command == OnOffType.ON) {
-                            evccAPI.setTargetTime(loadpoint, targetTimeZDT);
-                            targetTimeEnabled = true;
-                        } else if (command == OnOffType.OFF) {
-                            evccAPI.removeTargetTime(loadpoint);
-                            targetTimeEnabled = false;
-                        } else {
-                            logger.debug("Command has wrong type, OnOffType required!");
+                } else {
+                    int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
+                    switch (channelIdWithoutGroup) {
+                        case CHANNEL_LOADPOINT_MODE -> {
+                            if (command instanceof StringType) {
+                                evccAPI.setMode(loadpoint, command.toString());
+                            } else {
+                                logger.debug("Command has wrong type, StringType required!");
+                            }
                         }
-                    }
-                    case CHANNEL_LOADPOINT_PHASES -> {
-                        if (command instanceof DecimalType dt) {
-                            evccAPI.setPhases(loadpoint, dt.intValue());
-                        } else {
-                            logger.debug("Command has wrong type, DecimalType required!");
+                        case CHANNEL_LOADPOINT_MIN_SOC -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setMinSoC(loadpoint, qt.toUnit(Units.PERCENT).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setMinSoC(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
                         }
-                    }
-                    case CHANNEL_LOADPOINT_MIN_CURRENT -> {
-                        if (command instanceof QuantityType<?> qt) {
-                            evccAPI.setMinCurrent(loadpoint, qt.toUnit(Units.AMPERE).intValue());
-                        } else if (command instanceof DecimalType dt) {
-                            evccAPI.setMinCurrent(loadpoint, dt.intValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                        case CHANNEL_LOADPOINT_TARGET_ENERGY -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setTargetEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType required!");
+                            }
                         }
-                    }
-                    case CHANNEL_LOADPOINT_MAX_CURRENT -> {
-                        if (command instanceof QuantityType<?> qt) {
-                            evccAPI.setMaxCurrent(loadpoint, qt.toUnit(Units.AMPERE).intValue());
-                        } else if (command instanceof DecimalType dt) {
-                            evccAPI.setMaxCurrent(loadpoint, dt.intValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                        case CHANNEL_LOADPOINT_TARGET_SOC -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setTargetSoC(loadpoint, qt.toUnit(Units.PERCENT).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setTargetSoC(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
                         }
-                    }
-                    default -> {
-                        return;
+                        case CHANNEL_LOADPOINT_TARGET_TIME -> {
+                            if (command instanceof DateTimeType dtt) {
+                                targetTimeZDT = dtt.getZonedDateTime();
+                                ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
+                                        CHANNEL_LOADPOINT_TARGET_TIME);
+                                updateState(channel, new DateTimeType(targetTimeZDT));
+                                if (targetTimeEnabled) {
+                                    try {
+                                        evccAPI.setTargetTime(loadpoint, targetTimeZDT);
+                                    } catch (DateTimeParseException e) {
+                                        logger.debug("Failed to set target charge: ", e);
+                                    }
+                                }
+                            } else {
+                                logger.debug("Command has wrong type, DateTimeType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED -> {
+                            if (command == OnOffType.ON) {
+                                evccAPI.setTargetTime(loadpoint, targetTimeZDT);
+                                targetTimeEnabled = true;
+                            } else if (command == OnOffType.OFF) {
+                                evccAPI.removeTargetTime(loadpoint);
+                                targetTimeEnabled = false;
+                            } else {
+                                logger.debug("Command has wrong type, OnOffType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_PHASES -> {
+                            if (command instanceof DecimalType dt) {
+                                evccAPI.setPhases(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_MIN_CURRENT -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setMinCurrent(loadpoint, qt.toUnit(Units.AMPERE).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setMinCurrent(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_MAX_CURRENT -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setMaxCurrent(loadpoint, qt.toUnit(Units.AMPERE).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setMaxCurrent(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        default -> {
+                            return;
+                        }
                     }
                 }
             } catch (EvccApiException e) {

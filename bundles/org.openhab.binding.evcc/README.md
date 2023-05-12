@@ -43,7 +43,7 @@ Please note that some of them are only available when evcc is properly configure
 | general#batteryCapacity    | Number:Energy        | R          | Capacity of (home) battery.                                                                                  |
 | general#batteryPower       | Number:Power         | R          | Current power from battery.                                                                                  |
 | general#batterySoC         | Number:Dimensionless | R          | Current State of Charge of battery.                                                                          |
-| general#batteryPrioritySoC | Number:Dimensionless | R          | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv". |
+| general#batteryPrioritySoC | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv". |
 | general#gridPower          | Number:Power         | R          | Current power from grid (negative means feed-in)                                                             |
 | general#homePower          | Number:Power         | R          | Current power taken by home.                                                                                 |
 | general#pvPower            | Number:Power         | R          | Current power from photovoltaik.                                                                             |

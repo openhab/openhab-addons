@@ -85,6 +85,11 @@ public class EvccAPI {
         }
     }
 
+    // Site API calls.
+    public String setBatteryPrioritySoC(int prioritySoc) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "prioritysoc/" + prioritySoc, "POST");
+    }
+
     // Loadpoint specific API calls.
     public String setMode(int loadpoint, String mode) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
