@@ -79,14 +79,10 @@ Device things support some of the following channels:
 | temperature-enabled | Switch             | Supports enabling / disabling the temperature sensor.                    |
 | battery-level       | Number             | Shows the battery level.                                                 |
 | battery-low         | Switch             | Indicates whether the battery is low or not.                             |
-| zigbee-status       | String             | Provides information about the status of the Zigbee connection.          |
 | last-updated        | DateTime           | The date and time when the thing state was last updated.                 |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
-
-The `zigbee-status` indicates the connectivity state of the device.
-If the device has connectivity issues, the thing state will change to 'OFFLINE'
 
 The `button-last-event` channel value is a number that is calculated from the following formula:
 
