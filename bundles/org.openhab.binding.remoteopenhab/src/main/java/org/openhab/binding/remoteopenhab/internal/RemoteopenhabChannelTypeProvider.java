@@ -48,10 +48,9 @@ import org.slf4j.LoggerFactory;
 public class RemoteopenhabChannelTypeProvider extends AbstractStorageBasedTypeProvider {
 
     private static final String PATTERN_CHANNEL_TYPE_ID = "item%s%d";
+    private static final Pattern PATTERN_MATCHING_CHANNEL_TYPE_ID = Pattern.compile("^item([a-zA-Z]+)([0-9]+)$");
 
     private final Logger logger = LoggerFactory.getLogger(RemoteopenhabChannelTypeProvider.class);
-
-    private final Pattern channelTypeIdPattern = Pattern.compile("^item([a-zA-Z]+)([0-9]+)$");
 
     private final Map<String, List<ChannelType>> channelTypesForItemTypes = new ConcurrentHashMap<>();
 
@@ -59,7 +58,7 @@ public class RemoteopenhabChannelTypeProvider extends AbstractStorageBasedTypePr
     public RemoteopenhabChannelTypeProvider(@Reference StorageService storageService) {
         super(storageService);
         getChannelTypes(null).forEach(ct -> {
-            Matcher matcher = channelTypeIdPattern.matcher(ct.getUID().getId());
+            Matcher matcher = PATTERN_MATCHING_CHANNEL_TYPE_ID.matcher(ct.getUID().getId());
             if (matcher.find()) {
                 String itemType = matcher.group(1);
                 // Handle number with a dimension
@@ -106,7 +105,7 @@ public class RemoteopenhabChannelTypeProvider extends AbstractStorageBasedTypePr
         int max = 0;
         if (channelTypesForItemType != null) {
             for (ChannelType ct : channelTypesForItemType) {
-                Matcher matcher = channelTypeIdPattern.matcher(ct.getUID().getId());
+                Matcher matcher = PATTERN_MATCHING_CHANNEL_TYPE_ID.matcher(ct.getUID().getId());
                 if (matcher.find()) {
                     int nb = Integer.parseInt(matcher.group(2));
                     if (nb > max) {
