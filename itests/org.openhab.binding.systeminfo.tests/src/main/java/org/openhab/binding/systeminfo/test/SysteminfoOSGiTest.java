@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Locale;
 
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Temperature;
@@ -35,7 +34,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -85,10 +83,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.thing.type.ChannelKind;
-import org.openhab.core.thing.type.ChannelType;
-import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -129,6 +124,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     private @NonNullByDefault({}) SysteminfoHandlerFactory systeminfoHandlerFactory;
     private @NonNullByDefault({}) ThingRegistry thingRegistry;
     private @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private @NonNullByDefault({}) SysteminfoThingTypeProvider systemThingTypeProvider;
 
     @BeforeEach
     public void setUp() {
@@ -153,9 +149,15 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         registerService(mockedSystemInfo);
 
         waitForAssert(() -> {
+            systemThingTypeProvider = getService(ThingTypeProvider.class, SysteminfoThingTypeProvider.class);
+            assertThat(systemThingTypeProvider, is(notNullValue()));
+        });
+
+        waitForAssert(() -> {
             systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SysteminfoHandlerFactory.class);
             assertThat(systeminfoHandlerFactory, is(notNullValue()));
         });
+
         if (systeminfoHandlerFactory != null) {
             // Unbind oshiSystemInfo service and bind the mock service to make the systeminfo binding tests independent
             // of the external OSHI library
@@ -167,13 +169,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
 
         waitForAssert(() -> {
-            ThingTypeProvider thingTypeProvider = getService(ThingTypeProvider.class,
-                    SysteminfoThingTypeProvider.class);
-            assertThat(thingTypeProvider, is(notNullValue()));
-        });
-        waitForAssert(() -> {
-            SysteminfoThingTypeProvider systeminfoThingTypeProvider = getService(SysteminfoThingTypeProvider.class);
-            assertThat(systeminfoThingTypeProvider, is(notNullValue()));
+            systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SysteminfoHandlerFactory.class);
+            assertThat(systeminfoHandlerFactory, is(notNullValue()));
         });
 
         waitForAssert(() -> {
@@ -256,8 +253,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         ThingUID thingUID = new ThingUID(thingTypeUID, DEFAULT_TEST_THING_NAME);
 
         ChannelUID channelUID = new ChannelUID(thingUID, channelID);
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SysteminfoBindingConstants.BINDING_ID,
-                channelUID.getIdWithoutGroup());
+        String channelTypeId = channelUID.getIdWithoutGroup();
+        if ("load1".equals(channelTypeId) || "load5".equals(channelTypeId) || "load15".equals(channelTypeId)) {
+            channelTypeId = "loadAverage";
+        }
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SysteminfoBindingConstants.BINDING_ID, channelTypeId);
         Configuration channelConfig = new Configuration();
         channelConfig.put("priority", priority);
         channelConfig.put("pid", new BigDecimal(pid));
@@ -267,22 +267,6 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         Thing thing = ThingBuilder.create(thingTypeUID, thingUID).withConfiguration(thingConfiguration)
                 .withChannel(channel).build();
         systemInfoThing = thing;
-
-        // TODO: This is a technically not correct work-around as the thing types are currently not made available by
-        // the binding. It should be properly fixes in the binding that thing-types are added to the registry. The
-        // "correct" solution here would be to wait until the thing manager initializes the thing with a missing thing
-        // type, but that would make each test take 120+ s
-        ThingTypeProvider thingTypeProviderMock = mock(ThingTypeProvider.class);
-        when(thingTypeProviderMock.getThingType(ArgumentMatchers.any(ThingTypeUID.class), nullable(Locale.class)))
-                .thenReturn(mock(ThingType.class));
-        registerService(thingTypeProviderMock);
-
-        ChannelType channelTypeMock = mock(ChannelType.class);
-        when(channelTypeMock.getKind()).thenReturn(ChannelKind.STATE);
-        ChannelTypeProvider channelTypeProviderMock = mock(ChannelTypeProvider.class);
-        when(channelTypeProviderMock.getChannelType(ArgumentMatchers.any(ChannelTypeUID.class), nullable(Locale.class)))
-                .thenReturn(channelTypeMock);
-        registerService(channelTypeProviderMock);
 
         ManagedThingProvider managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
         assertThat(managedThingProvider, is(notNullValue()));

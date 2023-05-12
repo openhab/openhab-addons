@@ -159,6 +159,12 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public void handleRemoval() {
+        thingTypeProvider.removeThingType(thing.getThingTypeUID());
+        super.handleRemoval();
+    }
+
     private boolean instantiateSysteminfoLibrary() {
         try {
             systeminfo.initializeSysteminfo();
