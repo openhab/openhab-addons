@@ -117,7 +117,7 @@ public class EvccAPI {
 
     public String setTargetTime(int loadpoint, ZonedDateTime targetTime) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/time/"
-                + targetTime.toLocalDateTime().format(DateTimeFormatter.ISO_DATE_TIME), "POST");
+                + targetTime.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "Z", "POST");
     }
 
     public String removeTargetTime(int loadpoint) throws EvccApiException {
