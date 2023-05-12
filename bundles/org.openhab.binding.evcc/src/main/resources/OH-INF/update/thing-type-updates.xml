@@ -7,6 +7,10 @@
 		<instruction-set targetVersion="1">
 			<remove-channel id="hasVehicle">
 			</remove-channel>
+			<add-channel id="targetEnergy">
+				<type>Number:Energy</type>
+				<label>Charging target energy</label>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 

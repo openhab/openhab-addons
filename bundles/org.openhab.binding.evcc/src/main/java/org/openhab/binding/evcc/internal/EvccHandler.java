@@ -67,7 +67,6 @@ public class EvccHandler extends BaseThingHandler {
     private boolean gridConfigured = false;
     private boolean pvConfigured = false;
 
-    private float targetSoC = 100;
     private boolean targetTimeEnabled = false;
     private ZonedDateTime targetTimeZDT = ZonedDateTime.now().plusHours(12);
 
@@ -107,6 +106,13 @@ public class EvccHandler extends BaseThingHandler {
                             evccAPI.setMinSoC(loadpoint, dt.intValue());
                         } else {
                             logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                        }
+                    }
+                    case CHANNEL_LOADPOINT_TARGET_ENERGY -> {
+                        if (command instanceof QuantityType<?> qt) {
+                            evccAPI.setTargetEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
+                        } else {
+                            logger.debug("Command has wrong type, QuantityType required!");
                         }
                     }
                     case CHANNEL_LOADPOINT_TARGET_SOC -> {
@@ -304,6 +310,8 @@ public class EvccHandler extends BaseThingHandler {
         createChannel(CHANNEL_LOADPOINT_MODE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MODE, CoreItemFactory.STRING);
         createChannel(CHANNEL_LOADPOINT_PHASES, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_PHASES,
                 CoreItemFactory.NUMBER);
+        createChannel(CHANNEL_LOADPOINT_TARGET_ENERGY, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TARGET_ENERGY,
+                "Number:Energy");
         createChannel(CHANNEL_LOADPOINT_TARGET_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC,
                 "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_TARGET_TIME, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME,
@@ -442,7 +450,11 @@ public class EvccHandler extends BaseThingHandler {
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_PHASES);
         updateState(channel, new DecimalType(phases));
 
-        targetSoC = loadpoint.getTargetSoC();
+        float targetEnergy = loadpoint.getTargetEnergy();
+        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_ENERGY);
+        updateState(channel, new QuantityType<>(targetEnergy, Units.WATT_HOUR));
+
+        float targetSoC = loadpoint.getTargetSoC();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_SOC);
         updateState(channel, new QuantityType<>(targetSoC, Units.PERCENT));
 

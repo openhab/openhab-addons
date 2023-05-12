@@ -51,6 +51,7 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_MIN_SOC = "minSoC";
     public static final String CHANNEL_LOADPOINT_MODE = "mode";
     public static final String CHANNEL_LOADPOINT_PHASES = "phases";
+    public static final String CHANNEL_LOADPOINT_TARGET_ENERGY = "targetEnergy";
     public static final String CHANNEL_LOADPOINT_TARGET_SOC = "targetSoC";
     public static final String CHANNEL_LOADPOINT_TARGET_TIME = "targetTime";
     /**
@@ -112,6 +113,8 @@ public class EvccBindingConstants {
             CHANNEL_LOADPOINT_MODE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PHASES = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_PHASES);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_ENERGY = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_TARGET_ENERGY);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_TARGET_SOC);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME = new ChannelTypeUID(BINDING_ID,

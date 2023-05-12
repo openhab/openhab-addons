@@ -69,6 +69,7 @@ Please note that you have to replace _N_ with your loadpoint number.
 | loadpointN#minSoC                   | Number:Dimensionless   | RW         | Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off" |
 | loadpointN#mode                     | String                 | RW         | Charging mode: "off", "now", "minpv", "pv"                                                          |
 | loadpointN#phases                   | Number                 | RW         | The maximum number of phases which can be used                                                      |
+| loadpointN#targetEnergy             | Number:Energy          | RW         | Amount of energy to charge the vehicle with                                                         |
 | loadpointN#targetSoC                | Number:Dimensionless   | RW         | Until which state of charge (SoC) should the vehicle be charged                                     |
 | loadpointN#targetTime               | DateTime               | RW         | When the target SoC should be reached                                                               |
 | loadpointN#targetTimeEnabled        | Switch                 | RW         | Target time for charging enabled                                                                    |
@@ -112,12 +113,12 @@ Number:Power              evcc_loadpoint0_chargePower                 "Charging 
 Number:Energy             evcc_loadpoint0_chargedEnergy               "Charged energy [%.1f kWh]"                       <energy>          {channel="evcc:device:demo:loadpoint0#chargedEnergy"}
 Switch                    evcc_loadpoint0_charging                    "Currently charging [%s]"                         <battery>         {channel="evcc:device:demo:loadpoint0#charging"}
 Switch                    evcc_loadpoint0_enabled                     "Charging enabled [%s]"                           <switch>          {channel="evcc:device:demo:loadpoint0#enabled"}
-Switch                    evcc_loadpoint0_hasVehicle                  "Vehicle configured [%s]"                         <switch>          {channel="evcc:device:demo:loadpoint0#hasVehicle"}
 Number:ElectricCurrent    evcc_loadpoint0_maxCurrent                  "Maximum current [%.0f A]"                        <energy>          {channel="evcc:device:demo:loadpoint0#maxCurrent"}
 Number:ElectricCurrent    evcc_loadpoint0_minCurrent                  "Minimum current [%.0f A]"                        <energy>          {channel="evcc:device:demo:loadpoint0#minCurrent"}
 Number:Dimensionless      evcc_loadpoint0_minSoC                      "Minimum SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:loadpoint0#minSoC"}
 String                    evcc_loadpoint0_mode                        "Mode [%s]"                                                         {channel="evcc:device:demo:loadpoint0#mode"}
 Number                    evcc_loadpoint0_phases                      "Enabled phases [%d]"                                               {channel="evcc:device:demo:loadpoint0#phases"}
+Number:Energy             evcc_loadpoint0_targetEnergy                "Target energy [%.1f kWh]"                        <batterylevel>    {channel="evcc:device:demo:loadpoint0#targetEnergy"}
 Number:Dimensionless      evcc_loadpoint0_targetSoC                   "Target SoC [%d %%]"                              <batterylevel>    {channel="evcc:device:demo:loadpoint0#targetSoC"}
 DateTime                  evcc_loadpoint0_targetTime                  "Target time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"    <time>            {channel="evcc:device:demo:loadpoint0#targetTime"}
 Switch                    evcc_loadpoint0_targetTimeEnabled           "Target time enabled [%s]"                        <switch>          {channel="evcc:device:demo:loadpoint0#targetTimeEnabled"}
@@ -157,6 +158,7 @@ sitemap evcc label="evcc Demo" {
         }
         Switch item=evcc_loadpoint0_mode mappings=["off"="Stop","now"="Now","minpv"="Min + PV", "pv"="Only PV"]
         Text label="Charging settings" icon="settings" {
+            Setpoint item=evcc_loadpoint0_targetEnergy minValue=5 maxValue=100 step=5
             Setpoint item=evcc_loadpoint0_targetSoC minValue=5 maxValue=100 step=5
             Setpoint item=evcc_loadpoint0_minCurrent minValue=6 maxValue=96 step=2
             Setpoint item=evcc_loadpoint0_maxCurrent minValue=6 maxValue=96 step=2
