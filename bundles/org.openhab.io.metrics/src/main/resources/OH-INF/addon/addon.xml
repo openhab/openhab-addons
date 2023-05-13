@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.metrics</service-id>
 
-	<config-description-ref uri="io.metrics"/>
+	<config-description-ref uri="io:metrics"/>
 
 </addon:addon>

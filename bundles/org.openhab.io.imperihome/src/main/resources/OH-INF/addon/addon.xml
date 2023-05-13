@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.imperihome</service-id>
 
-	<config-description-ref uri="io.imperihome"/>
+	<config-description-ref uri="io:imperihome"/>
 
 </addon:addon>
