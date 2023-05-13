@@ -76,33 +76,33 @@ The binding provides the same feature set across all devices as good as possible
 
 ### Generation 2 Plus series
 
-| thing-type           | Model                                                    | Vendor ID     |
-| -------------------- | -------------------------------------------------------- | ------------- |
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU |
-| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU |
-| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU |
-| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU |
-| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU  |
-| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT  |
-| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK  |
-| shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US  |
-| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X    |
-| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X    |
-| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A    |
-| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z    |
+| thing-type           | Model                                                    | Vendor ID                                     |
+| -------------------- | -------------------------------------------------------- | --------------------------------------------- |
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU                                 |
+| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU                                 |
+| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU                  |
+| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU                  |
+| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                                  |
+| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                  |
+| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                  |
+| shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US                                  |
+| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                                    |
+| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                    |
+| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                                    |
+| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                    |
 
 ### Generation 2 Pro series
 
-| thing-type          | Model                                                    | Vendor ID      |
-| ------------------- | -------------------------------------------------------- | -------------- |
+| thing-type          | Model                                                    | Vendor ID                                      |
+| ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
 | shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
 | shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
 | shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
-| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU |
-| shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU |
-| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU |
+| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
+| shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
+| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
 
 ## Binding Configuration
 
@@ -380,7 +380,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | TEMP_OVER  | Above "temperature over" threshold                                                               |
 | VIBRATION  | A vibration/tamper was detected (DW2 only)                                                       |
 
-Refer to section Full Example for examples how to catch alarm triggers in openHAB rules
+Refer to section [Full Example:shelly.rules](shellyrules) for examples how to catch alarm triggers in openHAB rules
 
 ## Channels
 

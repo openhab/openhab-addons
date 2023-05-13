@@ -299,6 +299,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_WATT = 2;
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 1;
+    public static final int DIGITS_AMPERE = 3;
     public static final int DIGITS_TEMP = 1;
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;
