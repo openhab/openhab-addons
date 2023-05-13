@@ -17,10 +17,10 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -109,12 +109,12 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
             return false;
         }
         if (id.length() < 10) {
-            logger.debug("Bridge not discovered: id {} is shorter then 10.", id);
+            logger.debug("Bridge not discovered: id {} is shorter than 10.", id);
             return false;
         }
         if (!BRIDGE_INDICATOR.equals(id.substring(6, 10))) {
             logger.debug(
-                    "Bridge not discovered: id {} does not contain bridge indicator {} or its at the wrong position.",
+                    "Bridge not discovered: id {} does not contain bridge indicator {} or it's at the wrong position.",
                     id, BRIDGE_INDICATOR);
             return false;
         }
@@ -124,8 +124,8 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
             logger.debug("Bridge not discovered: Failure accessing description file for ip: {}", host);
             return false;
         }
-        if (!description.contains(MODEL_NAME_PHILIPS_HUE)) {
-            logger.debug("Bridge not discovered: Description does not containing the model name: {}", description);
+        if (description == null || !description.contains(MODEL_NAME_PHILIPS_HUE)) {
+            logger.debug("Bridge not discovered: Description does not contain the model name: {}", description);
             return false;
         }
         return true;
@@ -140,14 +140,22 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
         try {
             Gson gson = new Gson();
             String json = doGetRequest(DISCOVERY_URL);
+            if (json == null) {
+                logger.debug("Philips Hue NUPnP service call failed. Can't discover bridges");
+                return List.of();
+            }
             List<BridgeJsonParameters> bridgeParameters = gson.fromJson(json,
                     new TypeToken<List<BridgeJsonParameters>>() {
                     }.getType());
-            return Objects.requireNonNull(bridgeParameters);
+            if (bridgeParameters == null) {
+                logger.debug("Philips Hue NUPnP service returned empty JSON. Can't discover bridges");
+                return List.of();
+            }
+            return bridgeParameters;
         } catch (IOException e) {
             logger.debug("Philips Hue NUPnP service not reachable. Can't discover bridges");
         } catch (JsonParseException e) {
-            logger.debug("Invalid json respone from Hue NUPnP service. Can't discover bridges");
+            logger.debug("Invalid json response from Hue NUPnP service. Can't discover bridges");
         }
         return List.of();
     }
@@ -159,7 +167,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
      * @return the http request result as String
      * @throws IOException if request failed
      */
-    protected String doGetRequest(String url) throws IOException {
+    protected @Nullable String doGetRequest(String url) throws IOException {
         return HttpUtil.executeUrl("GET", url, REQUEST_TIMEOUT);
     }
 }
