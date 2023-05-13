@@ -18,7 +18,7 @@ to common openHAB functionality within rules including items, things, actions, l
   - [Timers](#timers)
   - [Paths](#paths)
   - [Deinitialization Hook](#deinitialization-hook)
-- [`SCRIPT` Transformation](#script-transformation)
+- [`JS` Transformation](#js-transformation)
 - [Standard Library](#standard-library)
   - [Items](#items)
   - [Things](#things)
@@ -204,7 +204,7 @@ JS Scripting provides access to the global `setTimeout`, `setInterval`, `clearTi
 
 When a script is unloaded, all created timeouts and intervals are automatically cancelled.
 
-#### 'setTimeout'
+#### `setTimeout`
 
 The global [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method sets a timer which executes a function once the timer expires.
 `setTimeout()` returns a `timeoutId` (a positive integer value) which identifies the timer created.
@@ -216,6 +216,8 @@ var timeoutId = setTimeout(callbackFunction, delay);
 `delay` is an integer value that represents the amount of milliseconds to wait before the timer expires.
 
 The global [`clearTimeout(timeoutId)`](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout) method cancels a timeout previously established by calling `setTimeout()`.
+
+If you need a more verbose way of creating timers, consider to use [`createTimer`](#createtimer) instead.
 
 #### `setInterval`
 
@@ -290,27 +292,30 @@ require('@runtime').lifecycleTracker.addDisposeHook(() => {
 });
 ```
 
-## `SCRIPT` Transformation
+## `JS` Transformation
 
-openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the `SCRIPT` transformation, that is available from the framework and needs no additional installation.
+openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the script transformations, that are available from the framework and need no additional installation.
 It allows transforming values using any of the available scripting languages, which means JavaScript Scripting is supported as well.
-See the [transformation docs](https://openhab.org/docs/configuration/transformations.html#script-transformation) for more general information on the usage of `SCRIPT` transformation.
+See the [transformation docs](https://openhab.org/docs/configuration/transformations.html#script-transformation) for more general information on the usage of script transformations.
 
-Use the `SCRIPT` transformation with JavaScript Scripting by:
+Use JavaScript Scripting as script transformation by:
 
-1. Creating a script in the `$OPENHAB_CONF/transform` folder with the `.script` extension.
+1. Creating a script in the `$OPENHAB_CONF/transform` folder with the `.js` extension.
    The script should take one argument `input` and return a value that supports `toString()` or `null`:
 
    ```javascript
    (function(data) {
-     // Do some data transformation here
-     return data;
+     // Do some data transformation here, e.g.
+     return "String has" + data.length + "characters";
    })(input);
    ```
 
-2. Using `SCRIPT(js:<scriptname>.script):%s` as the transformation profile, e.g. on an Item.
-3. Passing parameters is also possible by using a URL like syntax: `SCRIPT(js:<scriptname>.script?arg=value):%s`.
+2. Using `JS(<scriptname>.js):%s` as Item state transformation.
+3. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
+
+Simple transformations can aso be given as an inline script: `JS(|...)`, e.g. `JS(|"String has " + input.length + "characters")`.
+It should start with the `|` character, quotes within the script may need to be escaped with a backslash `\` when used with another quoted string as in text configurations.
 
 ## Standard Library
 
@@ -355,7 +360,7 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .label ⇒ `string`
   - .state ⇒ `string`
   - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
-  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible
+  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
   - .rawState ⇒ `HostState`
   - .members ⇒ `Array[Item]`
   - .descendents ⇒ `Array[Item]`
@@ -606,7 +611,7 @@ You can also create timers using the [native JS methods for timer creation](#tim
 Sometimes, using `setTimer` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
 
 Keep in mind that you should somehow manage the timers you create using `createTimer`, otherwise you could end up with unmanageable timers running until you restart openHAB.
-A possible solution is to store all timers in an array and cancel all timers in the [Deinitialization Hook](#deinitialization-hook).
+A possible solution is to store all timers in the [private cache](#cache) and let openHAB automatically cancel them when the script is unloaded and the cache is cleared.
 
 ##### `createTimer`
 
@@ -704,7 +709,7 @@ The cache namespace provides both a private and a shared cache that can be used 
 
 The private cache can only be accessed by the same script and is cleared when the script is unloaded.
 You can use it to e.g. store timers or counters between subsequent runs of that script.
-When a script is unloaded and its cache is cleared, all timers (see [ScriptExecution Actions](#scriptexecution-actions)) stored in its private cache are cancelled.
+When a script is unloaded and its cache is cleared, all timers (see [`createTimer`](#createtimer)) stored in its private cache are automatically cancelled.
 
 The shared cache is shared across all rules and scripts, it can therefore be accessed from any automation language.
 The access to every key is tracked and the key is removed when all scripts that ever accessed that key are unloaded.
@@ -940,6 +945,8 @@ qty = Quantity('1 m^2 s^2'); // / is required
 qty = Quantity('1 m2/s2'); // ^ is required
 ```
 
+Note: It is possible to create a unit-less (without unit) Quantity, however there is no advantage over using a `number` instead.
+
 #### Conversion
 
 It is possible to convert a `Quantity` to a new `Quantity` with a different unit or to get a `Quantity`'s amount as integer or float:
@@ -1102,7 +1109,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-  console.log(event);
+    console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
