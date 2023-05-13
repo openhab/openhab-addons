@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.homekit</service-id>
 
-	<config-description-ref uri="io.homekit"/>
+	<config-description-ref uri="io:homekit"/>
 
 </addon:addon>
