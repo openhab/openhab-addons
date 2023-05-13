@@ -269,7 +269,7 @@ public class ShellyComponents {
                             }
 
                             // convert Watt/Hour to kw/h
-                            double total = getDouble(emeter.total) / 1000 / 60;
+                            double total = getDouble(emeter.total) / 1000;
                             double totalReturned = getDouble(emeter.totalReturned) / 1000;
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                                     toQuantityType(getDouble(emeter.power), DIGITS_WATT, Units.WATT));
