@@ -153,6 +153,8 @@ public class OnvifDiscovery {
             return "dahua";
         } else if (response.toLowerCase().contains("dh-sd")) {
             return "dahua";
+        } else if (response.toLowerCase().contains("reolink")) {
+            return "reolink";
         }
         return "onvif";
     }

@@ -107,7 +107,6 @@ public class FoscamHandler extends ChannelDuplexHandler {
 
             if (content.contains("</CGI_Result>")) {
                 ctx.close();
-                ipCameraHandler.logger.debug("End of FOSCAM handler reached, so closing the channel to the camera now");
             }
         } finally {
             ReferenceCountUtil.release(msg);

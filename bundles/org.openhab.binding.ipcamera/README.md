@@ -35,6 +35,7 @@ Some cameras allow the key frame to be created every second or a different amoun
 
 These cameras do not have the ability to create H.264 streams and hence can not be used with HLS, however all other features should work.
 Due to many custom firmwares available, you may need to ask the firmware developer what the URLs are for snapshots and MJPEG streams if they have changed the defaults from what the Arduino IDE sample code uses.
+Another limitation is that they can only provide a single stream at a time, so you need to setup the `ffmpegInput` to use the ipcamera.mjpeg feed from the openHAB server and change `ffmpegInputOptions` to "-f mjpeg" so FFmpeg knows the input is MJPEG format and not H.264.
 
 Example:
 
@@ -46,7 +47,8 @@ Thing ipcamera:generic:Esp32Cam
     snapshotUrl="http://192.168.1.181/capture",
     mjpegUrl="http://192.168.1.181:81/stream",
     ffmpegInputOptions="-f mjpeg",
-    ffmpegOutput="/tmp/Esp32Camera/", ffmpegInput="http://192.168.1.181:81/stream"
+    ffmpegOutput="/tmp/Esp32Camera/",
+    ffmpegInput="http://192.168.1.3:8080/ipcamera/{cameraUID}/ipcamera.mjpeg"
 ]
 ```
 
@@ -123,6 +125,11 @@ Thing ipcamera:hikvision:West "West Camera"
 
 - For MJPEG to work, you need to set the first sub-stream to be MJPEG format for the default settings to work, otherwise you can override the default with mjpegUrl with a valid URL for MJPEG streams.
 - Be sure to update to the latest firmware for your camera as Instar have made a lot of improvements recently, including adding MQTT features (MQTT is not needed for this binding to work).
+
+### Reolink
+
+- NVR's made by Reolink have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF or newer firmwares may be able to do this via their app or web UI.
+- This binding will use the Reolink API for polling the alarms if the `nvrChannel` is 1 or higher and does not need ONVIF to be enabled. To use ONVIF event methods for the alarms, you can set `nvrChannel` to 0.
 
 ## Discovery
 
@@ -209,6 +216,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 |-|-|-|
 | `activateAlarmOutput` | Switch | Toggles a cameras relay output 1. |
 | `activateAlarmOutput2` | Switch | Toggles a cameras relay output 2. |
+| `animalAlarm` | Switch | Toggles when an animal is in view. |
 | `audioAlarm` | Switch (read only) | When the camera detects noise above a threshold this switch will move to ON. |
 | `autoLED` | Switch | When ON this sets a cameras IR LED to automatically turn on or off. |
 | `carAlarm` | Switch | When a car is detected the switch will turn ON. |
@@ -217,10 +225,12 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `enableAudioAlarm` | Switch | Allows the audio alarm to be turned ON or OFF. |
 | `enableExternalAlarmInput` | Switch | Hikvision and Instar allow the Alarm input terminals to be disabled by this control. |
 | `enableFieldDetectionAlarm` | Switch | Allows the field detection alarm to be turned ON or OFF. Some cameras will call this the Intrusion Alarm. |
+| `enableFTP` | Switch | Turn the cameras internal FTP recordings ON or OFF. |
 | `enableLED` | Switch | Turn the IR LED ON or OFF. Some cameras have 3 states the LED can be in, so see the `autoLED` channel. |
 | `enableLineCrossingAlarm` | Switch | Turns the line crossing alarm for API cameras, ON and OFF. |
 | `enableMotionAlarm` | Switch | Turns the motion alarm ON and OFF for API cameras. This will not effect FFmpeg based alarms which have their own control. |
 | `enablePirAlarm` | Switch | Turn PIR sensor ON or OFF. |
+| `enableRecordings` | Switch | Turn the cameras internal recordings ON or OFF. |
 | `externalAlarmInput` | Switch (read only) | Reflects the status of the alarm input terminals on some cameras. |
 | `externalAlarmInput2`  | Switch (read only) | Reflects the status of the alarm input 2 terminals on some cameras. |
 | `externalLight` | Switch | Some cameras have a dedicated relay output for turning lights on and off with. |
