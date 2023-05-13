@@ -35,6 +35,7 @@ import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
+import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
@@ -58,12 +59,14 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     private final Logger logger = LoggerFactory.getLogger(InfluxDB1RepositoryImpl.class);
     private final InfluxDBConfiguration configuration;
     private final InfluxDBMetadataService influxDBMetadataService;
+    private final FilterCriteriaQueryCreator queryCreator;
     private @Nullable InfluxDB client;
 
     public InfluxDB1RepositoryImpl(InfluxDBConfiguration configuration,
             InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
         this.influxDBMetadataService = influxDBMetadataService;
+        this.queryCreator = new InfluxDB1FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 
     @Override
@@ -134,6 +137,12 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
         return true;
     }
 
+    @Override
+    public boolean remove(FilterCriteria filter) {
+        logger.warn("Removing data is not supported in InfluxDB v1.");
+        return false;
+    }
+
     private Optional<Point> convertPointToClientFormat(InfluxPoint point) {
         Point.Builder clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime().toEpochMilli(),
                 TimeUnit.MILLISECONDS);
@@ -155,9 +164,11 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public List<InfluxRow> query(String query) {
+    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
         final InfluxDB currentClient = client;
         if (currentClient != null) {
+            String query = queryCreator.createQuery(filter, retentionPolicy);
+            logger.trace("Query {}", query);
             Query parsedQuery = new Query(query, configuration.getDatabaseName());
             List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
             return convertClientResultToRepository(results);
@@ -215,10 +226,5 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     @Override
     public Map<String, Integer> getStoredItemsCount() {
         return Collections.emptyMap();
-    }
-
-    @Override
-    public FilterCriteriaQueryCreator createQueryCreator() {
-        return new InfluxDB1FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 }
