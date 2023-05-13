@@ -175,6 +175,7 @@
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.linky/ @clinique @lolodomo
 /bundles/org.openhab.binding.linuxinput/ @t-8ch
+/bundles/org.openhab.binding.liquidcheck/ @marcelGoerentz
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.livisismarthome/ @Novanic
 /bundles/org.openhab.binding.logreader/ @paulianttila
