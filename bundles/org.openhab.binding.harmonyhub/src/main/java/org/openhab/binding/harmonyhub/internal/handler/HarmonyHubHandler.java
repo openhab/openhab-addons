@@ -28,7 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.harmonyhub.internal.HarmonyHubDynamicTypeProvider;
 import org.openhab.binding.harmonyhub.internal.config.HarmonyHubConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -85,7 +86,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     // Websocket will timeout after 60 seconds, pick a sensible max under this,
     private static final int HEARTBEAT_INTERVAL_MAX = 50;
     private Set<HubStatusListener> listeners = ConcurrentHashMap.newKeySet();
-    private final HarmonyHubHandlerFactory factory;
+    private final HarmonyHubDynamicTypeProvider typeProvider;
     private @NonNullByDefault({}) HarmonyHubConfig config;
     private final HarmonyClient client;
     private @Nullable ScheduledFuture<?> retryJob;
@@ -94,10 +95,10 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
     private int heartBeatInterval;
 
-    public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
+    public HarmonyHubHandler(Bridge bridge, HarmonyHubDynamicTypeProvider typeProvider, HttpClient httpClient) {
         super(bridge);
-        this.factory = factory;
-        client = new HarmonyClient(factory.getHttpClient());
+        this.typeProvider = typeProvider;
+        client = new HarmonyClient(httpClient);
         client.addListener(this);
     }
 
@@ -193,7 +194,12 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         listeners.clear();
         cancelRetry();
         disconnectFromHub();
-        factory.removeChannelTypesForThing(getThing().getUID());
+    }
+
+    @Override
+    public void handleRemoval() {
+        typeProvider.removeChannelTypesForThing(getThing().getUID());
+        super.handleRemoval();
     }
 
     @Override
@@ -400,7 +406,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
                         .withReadOnly(false).withOptions(states).build())
                 .build();
 
-        factory.addChannelType(channelType);
+        typeProvider.putChannelType(channelType);
 
         Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), CHANNEL_CURRENT_ACTIVITY), "String")
                 .withType(channelTypeUID).build();
