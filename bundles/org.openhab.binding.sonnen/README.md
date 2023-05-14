@@ -14,7 +14,7 @@ More infromation about the V2 API can be found `http://LOCAL-SONNENBATTERY-SYSTE
 ## Thing Configuration
 
 Only the parameter `hostIP` is required; this is the IP address of the sonnen battery in your local network.
-If you want to use the V2 API of the vendor sonnen which supports more channels you need to provide the `Authentication Token`.
+If you want to use the V2 API of the vendor sonnen which supports more channels you need to provide the `authToken`.
 
 ## Channels
 

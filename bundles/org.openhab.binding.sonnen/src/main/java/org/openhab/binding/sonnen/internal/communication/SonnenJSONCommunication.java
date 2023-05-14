@@ -76,8 +76,8 @@ public class SonnenJSONCommunication {
             }
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
-
-            if (e.getMessage() != null && e.getMessage().contains("WWW-Authenticate header")) {
+            String message = e.getMessage();
+            if (message != null && message.contains("WWW-Authenticate header")) {
                 result = "Given token: " + config.authToken + " is not valid.";
             } else {
                 result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
