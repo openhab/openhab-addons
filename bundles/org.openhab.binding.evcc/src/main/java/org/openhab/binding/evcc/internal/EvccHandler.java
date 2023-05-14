@@ -84,27 +84,23 @@ public class EvccHandler extends BaseThingHandler {
             if (groupId == null) {
                 return;
             }
-            String channelGroup = channelUID.getGroupId();
+            String channelGroupId = channelUID.getGroupId();
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
             EvccAPI evccAPI = this.evccAPI;
             if (evccAPI == null) {
                 return;
             }
             try {
-                if (channelGroup.equals("general")) {
-                    switch (channelIdWithoutGroup) {
-                        case CHANNEL_BATTERY_PRIORITY_SOC -> {
-                            if (command instanceof QuantityType<?> qt) {
-                                evccAPI.setBatteryPrioritySoC(qt.toUnit(Units.PERCENT).intValue());
-                            } else if (command instanceof DecimalType dt) {
-                                evccAPI.setBatteryPrioritySoC(dt.intValue());
-                            } else {
-                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                            }
-                        }
-                        default -> {
-                            return;
-                        }
+                if (channelGroupId.equals(CHANNEL_GROUP_ID_GENERAL)) {
+                    if (!channelIdWithoutGroup.equals(CHANNEL_BATTERY_PRIORITY_SOC)) {
+                        return;
+                    }
+                    if (command instanceof QuantityType<?> qt) {
+                        evccAPI.setBatteryPrioritySoC(qt.toUnit(Units.PERCENT).intValue());
+                    } else if (command instanceof DecimalType dt) {
+                        evccAPI.setBatteryPrioritySoC(dt.intValue());
+                    } else {
+                        logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                     }
                 } else {
                     int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
@@ -278,20 +274,22 @@ public class EvccHandler extends BaseThingHandler {
 
     // Utility functions
     private void createChannelsGeneral() {
-        final String channelGroup = "general";
         if (batteryConfigured) {
-            createChannel(CHANNEL_BATTERY_CAPACITY, channelGroup, CHANNEL_TYPE_UID_BATTERY_CAPACITY, "Number:Energy");
-            createChannel(CHANNEL_BATTERY_POWER, channelGroup, CHANNEL_TYPE_UID_BATTERY_POWER, "Number:Power");
-            createChannel(CHANNEL_BATTERY_SOC, channelGroup, CHANNEL_TYPE_UID_BATTERY_SOC, "Number:Dimensionless");
-            createChannel(CHANNEL_BATTERY_PRIORITY_SOC, channelGroup, CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC,
+            createChannel(CHANNEL_BATTERY_CAPACITY, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_CAPACITY,
+                    "Number:Energy");
+            createChannel(CHANNEL_BATTERY_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_POWER,
+                    "Number:Power");
+            createChannel(CHANNEL_BATTERY_SOC, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_SOC,
+                    "Number:Dimensionless");
+            createChannel(CHANNEL_BATTERY_PRIORITY_SOC, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC,
                     "Number:Dimensionless");
         }
         if (gridConfigured) {
-            createChannel(CHANNEL_GRID_POWER, channelGroup, CHANNEL_TYPE_UID_GRID_POWER, "Number:Power");
+            createChannel(CHANNEL_GRID_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_GRID_POWER, "Number:Power");
         }
-        createChannel(CHANNEL_HOME_POWER, channelGroup, CHANNEL_TYPE_UID_HOME_POWER, "Number:Power");
+        createChannel(CHANNEL_HOME_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_HOME_POWER, "Number:Power");
         if (pvConfigured) {
-            createChannel(CHANNEL_PV_POWER, channelGroup, CHANNEL_TYPE_UID_PV_POWER, "Number:Power");
+            createChannel(CHANNEL_PV_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_PV_POWER, "Number:Power");
         }
     }
 
@@ -362,34 +360,34 @@ public class EvccHandler extends BaseThingHandler {
         boolean batteryConfigured = this.batteryConfigured;
         if (batteryConfigured) {
             float batteryCapacity = result.getBatteryCapacity();
-            channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_CAPACITY);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_CAPACITY);
             updateState(channel, new QuantityType<>(batteryCapacity, Units.KILOWATT_HOUR));
 
             float batteryPower = result.getBatteryPower();
-            channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_POWER);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_POWER);
             updateState(channel, new QuantityType<>(batteryPower, Units.WATT));
 
             float batterySoC = result.getBatterySoC();
-            channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_SOC);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_SOC);
             updateState(channel, new QuantityType<>(batterySoC, Units.PERCENT));
 
             float batteryPrioritySoC = result.getBatteryPrioritySoC();
-            channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_PRIORITY_SOC);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_PRIORITY_SOC);
             updateState(channel, new QuantityType<>(batteryPrioritySoC, Units.PERCENT));
         }
         boolean gridConfigured = this.gridConfigured;
         if (gridConfigured) {
             float gridPower = result.getGridPower();
-            channel = new ChannelUID(uid, "general", CHANNEL_GRID_POWER);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_GRID_POWER);
             updateState(channel, new QuantityType<>(gridPower, Units.WATT));
         }
         float homePower = result.getHomePower();
-        channel = new ChannelUID(uid, "general", CHANNEL_HOME_POWER);
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_HOME_POWER);
         updateState(channel, new QuantityType<>(homePower, Units.WATT));
         boolean pvConfigured = this.pvConfigured;
         if (pvConfigured) {
             float pvPower = result.getPvPower();
-            channel = new ChannelUID(uid, "general", CHANNEL_PV_POWER);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_PV_POWER);
             updateState(channel, new QuantityType<>(pvPower, Units.WATT));
         }
     }

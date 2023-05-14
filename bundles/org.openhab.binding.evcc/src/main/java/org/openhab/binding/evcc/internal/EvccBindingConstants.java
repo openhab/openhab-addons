@@ -27,6 +27,8 @@ public class EvccBindingConstants {
 
     private static final String BINDING_ID = "evcc";
 
+    public static final String CHANNEL_GROUP_ID_GENERAL = "general";
+
     // List of all Channel ids
     public static final String CHANNEL_BATTERY_CAPACITY = "batteryCapacity";
     public static final String CHANNEL_BATTERY_POWER = "batteryPower";
