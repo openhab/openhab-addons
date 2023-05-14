@@ -84,7 +84,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     private @Nullable List<Event> eventHistory;
 
     private @NonNullByDefault({}) OAuthClientService oAuthClientService;
-    private @NonNullByDefault({}) String oAuthServiceHandleId;
+    private @Nullable String oAuthServiceHandleId;
     private @NonNullByDefault({}) HomeConnectApiClient apiClient;
     private @NonNullByDefault({}) HomeConnectEventSourceClient eventSourceClient;
 
@@ -222,6 +222,15 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public void handleRemoval() {
+        String handleId = this.oAuthServiceHandleId;
+        if (handleId != null) {
+            oAuthFactory.deleteServiceAndAccessToken(handleId);
+        }
+        super.handleRemoval();
+    }
+
+    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(HomeConnectDiscoveryService.class);
     }
@@ -285,7 +294,10 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
         eventSourceClient.getLatestEvents().clear();
         eventSourceClient.dispose(immediate);
 
-        oAuthFactory.ungetOAuthService(oAuthServiceHandleId);
+        String handleId = this.oAuthServiceHandleId;
+        if (handleId != null) {
+            oAuthFactory.ungetOAuthService(handleId);
+        }
         homeConnectServlet.removeBridgeHandler(this);
     }
 

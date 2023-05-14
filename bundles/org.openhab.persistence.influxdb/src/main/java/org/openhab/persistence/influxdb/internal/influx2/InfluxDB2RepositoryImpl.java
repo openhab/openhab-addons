@@ -15,6 +15,8 @@ package org.openhab.persistence.influxdb.internal.influx2;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBConstants;
@@ -34,6 +37,7 @@ import org.openhab.persistence.influxdb.internal.InfluxPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.influxdb.client.DeleteApi;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.InfluxDBClientOptions;
@@ -55,15 +59,18 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     private final Logger logger = LoggerFactory.getLogger(InfluxDB2RepositoryImpl.class);
     private final InfluxDBConfiguration configuration;
     private final InfluxDBMetadataService influxDBMetadataService;
+    private final FilterCriteriaQueryCreator queryCreator;
 
     private @Nullable InfluxDBClient client;
     private @Nullable QueryApi queryAPI;
     private @Nullable WriteApi writeAPI;
+    private @Nullable DeleteApi deleteAPI;
 
     public InfluxDB2RepositoryImpl(InfluxDBConfiguration configuration,
             InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
         this.influxDBMetadataService = influxDBMetadataService;
+        this.queryCreator = new InfluxDB2FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 
     @Override
@@ -88,6 +95,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
 
         queryAPI = createdClient.getQueryApi();
         writeAPI = createdClient.getWriteApi();
+        deleteAPI = createdClient.getDeleteApi();
         logger.debug("Successfully connected to InfluxDB. Instance ready={}", createdClient.ready());
 
         return checkConnectionStatus();
@@ -137,6 +145,42 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         return true;
     }
 
+    @Override
+    public boolean remove(FilterCriteria filter) {
+        final DeleteApi currentDeleteApi = deleteAPI;
+        if (currentDeleteApi == null) {
+            return false;
+        }
+
+        if (filter.getState() != null) {
+            logger.warn("Deleting by value is not supported in InfluxDB v2.");
+            return false;
+        }
+        OffsetDateTime start = Objects.requireNonNullElse(filter.getBeginDate(), ZonedDateTime.now().minusYears(100))
+                .toOffsetDateTime();
+        OffsetDateTime stop = Objects.requireNonNullElse(filter.getEndDate(), ZonedDateTime.now().plusYears(100))
+                .toOffsetDateTime();
+
+        // create predicate
+        String predicate = "";
+        String itemName = filter.getItemName();
+        if (itemName != null) {
+            String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
+            String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
+            predicate = "(_measurement=\"" + measurementName + "\")";
+        }
+
+        try {
+            deleteAPI.delete(start, stop, predicate, configuration.getRetentionPolicy(),
+                    configuration.getDatabaseName());
+        } catch (InfluxException e) {
+            logger.debug("Deleting from database failed", e);
+            return false;
+        }
+
+        return true;
+    }
+
     private Optional<Point> convertPointToClientFormat(InfluxPoint point) {
         Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
         @Nullable
@@ -158,9 +202,11 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public List<InfluxRow> query(String query) {
+    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
         final QueryApi currentQueryAPI = queryAPI;
         if (currentQueryAPI != null) {
+            String query = queryCreator.createQuery(filter, retentionPolicy);
+            logger.trace("Query {}", query);
             List<FluxTable> clientResult = currentQueryAPI.query(query);
             return clientResult.stream().flatMap(this::mapRawResultToHistoric).toList();
         } else {
@@ -203,10 +249,5 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
             logger.warn("Returning empty result  because queryAPI isn't present");
             return Collections.emptyMap();
         }
-    }
-
-    @Override
-    public FilterCriteriaQueryCreator createQueryCreator() {
-        return new InfluxDB2FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 }

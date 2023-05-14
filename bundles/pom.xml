@@ -209,6 +209,7 @@
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
     <module>org.openhab.binding.linuxinput</module>
+    <module>org.openhab.binding.liquidcheck</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.livisismarthome</module>
     <module>org.openhab.binding.logreader</module>

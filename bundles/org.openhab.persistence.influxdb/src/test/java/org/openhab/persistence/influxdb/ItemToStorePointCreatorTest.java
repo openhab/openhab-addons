@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +34,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
@@ -59,6 +61,7 @@ public class ItemToStorePointCreatorTest {
             DATABASE_PARAM, "openhab", //
             RETENTION_POLICY_PARAM, "default");
 
+    private @Mock UnitProvider unitProviderMock;
     private @Mock ItemRegistry itemRegistryMock;
     private @Mock MetadataRegistry metadataRegistry;
     private InfluxDBPersistenceService instance;
@@ -72,7 +75,7 @@ public class ItemToStorePointCreatorTest {
     @MethodSource
     public void convertBasicItem(Number number) throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", number);
-        InfluxPoint point = instance.convert(item, null).get();
+        InfluxPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -92,7 +95,7 @@ public class ItemToStorePointCreatorTest {
     @Test
     public void shouldUseAliasAsMeasurementNameIfProvided() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
-        InfluxPoint point = instance.convert(item, "aliasName").get();
+        InfluxPoint point = instance.convert(item, item.getState(), Instant.now(), "aliasName").get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -108,7 +111,7 @@ public class ItemToStorePointCreatorTest {
         item.setCategory("categoryValue");
 
         instance = getService(false, true, false, false);
-        InfluxPoint point = instance.convert(item, null).get();
+        InfluxPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -118,7 +121,7 @@ public class ItemToStorePointCreatorTest {
         assertThat(point.getTags(), hasEntry(InfluxDBConstants.TAG_CATEGORY_NAME, "categoryValue"));
 
         instance = getService(false, false, false, false);
-        point = instance.convert(item, null).get();
+        point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -133,7 +136,7 @@ public class ItemToStorePointCreatorTest {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
 
         instance = getService(false, false, false, true);
-        InfluxPoint point = instance.convert(item, null).get();
+        InfluxPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -143,7 +146,7 @@ public class ItemToStorePointCreatorTest {
         assertThat(point.getTags(), hasEntry(InfluxDBConstants.TAG_TYPE_NAME, "Number"));
 
         instance = getService(false, false, false, false);
-        point = instance.convert(item, null).get();
+        point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -159,7 +162,7 @@ public class ItemToStorePointCreatorTest {
         item.setLabel("ItemLabel");
 
         instance = getService(false, false, true, false);
-        InfluxPoint point = instance.convert(item, null).get();
+        InfluxPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -169,7 +172,7 @@ public class ItemToStorePointCreatorTest {
         assertThat(point.getTags(), hasEntry(InfluxDBConstants.TAG_LABEL_NAME, "ItemLabel"));
 
         instance = getService(false, false, false, false);
-        point = instance.convert(item, null).get();
+        point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -187,7 +190,7 @@ public class ItemToStorePointCreatorTest {
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
-        InfluxPoint point = instance.convert(item, null).get();
+        InfluxPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 
         if (point == null) {
             Assertions.fail("'point' is null");
@@ -203,14 +206,14 @@ public class ItemToStorePointCreatorTest {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, item.getName());
 
-        InfluxPoint point = instance.convert(item, null).get();
+        InfluxPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
         if (point == null) {
             Assertions.fail();
             return;
         }
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
 
-        point = instance.convert(item, null).get();
+        point = instance.convert(item, item.getState(), Instant.now(), null).get();
         if (point == null) {
             Assertions.fail();
             return;
@@ -221,7 +224,7 @@ public class ItemToStorePointCreatorTest {
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "measurementName", Map.of("key1", "val1", "key2", "val2")));
 
-        point = instance.convert(item, null).get();
+        point = instance.convert(item, item.getState(), Instant.now(), null).get();
         if (point == null) {
             Assertions.fail();
             return;
@@ -232,7 +235,7 @@ public class ItemToStorePointCreatorTest {
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
-        point = instance.convert(item, null).get();
+        point = instance.convert(item, item.getState(), Instant.now(), null).get();
         if (point == null) {
             Assertions.fail();
             return;
@@ -254,7 +257,7 @@ public class ItemToStorePointCreatorTest {
 
         InfluxDBPersistenceService instance = new InfluxDBPersistenceService(itemRegistryMock, influxDBMetadataService,
                 configuration);
-        instance.setItemFactory(new CoreItemFactory());
+        instance.setItemFactory(new CoreItemFactory(unitProviderMock));
 
         return instance;
     }

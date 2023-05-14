@@ -264,6 +264,19 @@ public class SDMAccountHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public void handleRemoval() {
+        PubSubAPI localPubSubAPI = pubSubAPI;
+        if (localPubSubAPI != null) {
+            localPubSubAPI.deleteOAuthServiceAndAccessToken();
+        }
+        SDMAPI localSDMAPI = sdmAPI;
+        if (localSDMAPI != null) {
+            localSDMAPI.deleteOAuthServiceAndAccessToken();
+        }
+        super.handleRemoval();
+    }
+
+    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(SDMDiscoveryService.class);
     }
