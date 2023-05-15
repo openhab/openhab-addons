@@ -62,6 +62,33 @@
 
 		</config-description>
 	</thing-type>
+	<!-- Other Thing Type -->
+	<thing-type id="other">
+		<label>Other Binding Thing</label>
+		<description>A Ring Other device</description>
+
+		<channel-groups>
+			<channel-group id="control" typeId="controlGroup"/>
+			<channel-group id="status" typeId="deviceStatus"/>
+		</channel-groups>
+		<properties>
+			<property name="Description">unknown</property>
+			<property name="Device ID">unknown</property>
+			<property name="Kind">unknown</property>
+		</properties>
+		<config-description>
+			<parameter name="offOffset" type="decimal">
+				<label>Offset in minutes to switch off</label>
+				<description>Offset in minutes to switch off</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>The refresh interval</label>
+				<description>How often to poll the Ring service for events in seconds</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
 	<!-- Ring Chime Thing Type -->
 	<thing-type id="chime">
 		<label>Chime Binding Thing</label>
