@@ -211,10 +211,11 @@ public class WCSHandler extends RainSoftDeviceHandler {
                         String label = dailyWaterUsageLabelsArray.get(i).toString();
                         String water = dailyWaterUsageDataArray.get(i).toString();
                         String salt = dailySaltUsageDataArray.get(i).toString();
+                        int day = i + 1;
                         logger.trace("WCSHandler - minuteTick - dailyArrays - {} {} {}", label, water, salt);
-                        String labelChannel = "usage#day" + i + "date";
-                        String waterChannel = "usage#day" + i + "water";
-                        String saltChannel = "usage#day" + i + "salt";
+                        String labelChannel = "usage#day" + day + "date";
+                        String waterChannel = "usage#day" + day + "water";
+                        String saltChannel = "usage#day" + day + "salt";
                         updateChannelState(labelChannel, new StringType(label));
                         updateChannelState(waterChannel, new DecimalType(water));
                         updateChannelState(saltChannel, new DecimalType(salt));
