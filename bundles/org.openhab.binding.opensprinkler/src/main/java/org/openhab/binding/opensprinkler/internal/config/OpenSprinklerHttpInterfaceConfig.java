@@ -43,6 +43,22 @@ public class OpenSprinklerHttpInterfaceConfig {
      * Number of seconds in between refreshes from the OpenSprinkler device.
      */
     public int refresh = 60;
+
+    /**
+     * Number of seconds for connection timeouts
+     */
+    public int timeout = 5;
+
+    /**
+     * Number of retries in case of connection timeouts
+     */
+    public int retry = 3;
+
+    /**
+     * Number of seconds delay between connection retries
+     */
+    public int retryDelay = 10;
+
     /**
      * The basic auth username to use when the OpenSprinkler device is behind a reverse proxy with basic auth enabled.
      */
