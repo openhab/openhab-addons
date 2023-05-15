@@ -1,17 +1,16 @@
-## Note: Development of this binding has been put on hold for the forseeable future. Pull requests are welcomed, however.
-
 # <bindingName> Ring
 
 This is an experimental binding to the Ring.com API. It currently supports a Ring account
-and is able to discover Ring Video Doorbells and Chimes. They need to be registered in
-the Ring account before they will be detected.
+and is able to discover Ring Video Doorbells, Stickup Cameras, Chimes, and Other devices. 
+They need to be registered in the Ring account before they will be detected.
 
 It currently does *not* support live video streaming, but you can view recorded video's,
 if this service is enabled in the Ring account.
 
 ## Supported Things
 
-The binding currently supports Ring Video Doorbell and Chimes.
+The binding currently supports Ring Video Doorbell, Sickup Cameras, Chimes, and Others.
+*Other* is identified as any of the non-traditional types such as the intercom.
 
 ## Discovery
 
@@ -45,7 +44,7 @@ Todo: Move these to the device thing
 | The id of the doorbot          | String    | The internal id of the doorbot that generated the currently selected event                   |
 | The description of the doorbot | String    | The description of the doorbot that generated the currently selected event (e.g. Front Door) |
 
-### Device Status (Video Doorbell Binding Thing and Stickup Cam Binding Thing only):
+### Device Status (Video Doorbell Binding Thing, Stickup Cam Binding Thing, Other Binding Thing only):
 
 | Channel Type ID  | Item Type | Description         |
 |------------------|-----------|---------------------|
@@ -59,10 +58,11 @@ NOTE 2: Text configuration for the Things ONLY works if you DO NOT have 2 factor
 ring.things:
 
 ```java
-ring:account:ringAccount "Ring Account"     [ username="user@domain.com", password="XXXXXXX", hardwareId="AA-BB-CC-DD-EE-FF", refreshInterval=5 ]
-ring:doorbell:<ring_device_id>          "Ring Doorbell"    [ refreshInterval=5, offOffset=0 ]
-ring:chime:<ring_device_id>             "Ring Chime"       [ refreshInterval=5, offOffset=0 ]
-ring:stickup:<ring_device_id>           "Ring Stickup Camera"       [ refreshInterval=5, offOffset=0 ]
+ring:account:ringAccount                "Ring Account"           [ username="user@domain.com", password="XXXXXXX", hardwareId="AA-BB-CC-DD-EE-FF", refreshInterval=5 ]
+ring:doorbell:<ring_device_id>          "Ring Doorbell"          [ refreshInterval=5, offOffset=0 ]
+ring:chime:<ring_device_id>             "Ring Chime"             [ refreshInterval=5, offOffset=0 ]
+ring:stickupcam:<ring_device_id>        "Ring Stickup Camera"    [ refreshInterval=5, offOffset=0 ]
+ring:other:<ring_device_id>             "Ring Other Device"      [ refreshInterval=5, offOffset=0 ]
 ```
 
 ring.items:
@@ -80,7 +80,9 @@ Number     RingDoorbellBattery            "Ring Doorbell Battery [%s]%"     { ch
 
 Switch     RingChimeEnabled               "Ring Chime Polling Enabled"      { channel="ring:chime:<ring_device_id>:control#enabled" }
 
-Switch     RingStickupEnabled            "Ring Stickup Polling Enabled"   { channel="ring:stickup:<ring_device_id>:control#enabled" }
-Number     RingStickupBattery            "Ring Stickup Battery [%s]%"     { channel="ring:stickup:<ring_device_id>:status#battery"}
+Switch     RingStickupEnabled            "Ring Stickup Polling Enabled"   { channel="ring:stickupcam:<ring_device_id>:control#enabled" }
+Number     RingStickupBattery            "Ring Stickup Battery [%s]%"     { channel="ring:stickupcam:<ring_device_id>:status#battery"}
 
+Switch     RingOtherEnabled            "Ring Other Polling Enabled"   { channel="ring:other:<ring_device_id>:control#enabled" }
+Number     RingOtherBattery            "Ring Other Battery [%s]%"     { channel="ring:other:<ring_device_id>:status#battery"}
 ```
