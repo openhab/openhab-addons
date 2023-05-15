@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ring.handler.AccountHandler;
 import org.openhab.binding.ring.handler.ChimeHandler;
 import org.openhab.binding.ring.handler.DoorbellHandler;
+import org.openhab.binding.ring.handler.OtherHandler;
 import org.openhab.binding.ring.handler.StickupcamHandler;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -72,7 +73,7 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Using OH HTTP port {}", httpPort);
 
         SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME,
-                THING_TYPE_STICKUPCAM);
+                THING_TYPE_STICKUPCAM, THING_TYPE_OTHER);
     }
 
     @Override
@@ -93,6 +94,8 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
             return new ChimeHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STICKUPCAM)) {
             return new StickupcamHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_OTHER)) {
+            return new OtherHandler(thing);
         }
         return null;
     }

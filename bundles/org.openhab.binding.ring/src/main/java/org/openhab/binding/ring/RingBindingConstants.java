@@ -30,6 +30,7 @@ public class RingBindingConstants {
     public final static ThingTypeUID THING_TYPE_DOORBELL = new ThingTypeUID(BINDING_ID, "doorbell");
     public final static ThingTypeUID THING_TYPE_CHIME = new ThingTypeUID(BINDING_ID, "chime");
     public final static ThingTypeUID THING_TYPE_STICKUPCAM = new ThingTypeUID(BINDING_ID, "stickupcam");
+    public final static ThingTypeUID THING_TYPE_OTHER = new ThingTypeUID(BINDING_ID, "other");
 
     // List of all Channel ids
     public final static String CHANNEL_CONTROL_STATUS = "control#status";
