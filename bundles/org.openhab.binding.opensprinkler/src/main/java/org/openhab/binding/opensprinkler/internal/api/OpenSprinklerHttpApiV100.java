@@ -379,22 +379,44 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             } else {
                 location = url;
             }
-            ContentResponse response;
-            try {
-                response = withGeneralProperties(httpClient.newRequest(location)).timeout(5, TimeUnit.SECONDS)
-                        .method(HttpMethod.GET).send();
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
+            ContentResponse response = null;
+            int retriesLeft = config.retry;
+            if (retriesLeft <= 0) {
+                retriesLeft = 1;
             }
-            if (response.getStatus() != HTTP_OK_CODE) {
+            boolean connectionSuccess = false;
+            while (connectionSuccess == false && retriesLeft > 0) {
+                retriesLeft--;
+                try {
+                    response = withGeneralProperties(httpClient.newRequest(location))
+                            .timeout(config.timeout, TimeUnit.SECONDS).method(HttpMethod.GET).send();
+                    connectionSuccess = true;
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    // throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
+                    logger.warn("Request to OpenSprinkler device failed (retries left: " + retriesLeft + "): "
+                            + e.getMessage());
+                    try {
+                        Thread.sleep(1000 * config.retryDelay);
+
+                    } catch (Exception sleepException) {
+                        logger.warn("Exception while sleeping: " + sleepException.getMessage());
+                    }
+                }
+            }
+            if (connectionSuccess == false) {
+                throw new CommunicationApiException("Request to OpenSprinkler device failed");
+            }
+            if (response != null && response.getStatus() != HTTP_OK_CODE) {
                 throw new CommunicationApiException(
                         "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
+            } else if (response != null) {
+                String content = response.getContentAsString();
+                if ("{\"result\":2}".equals(content)) {
+                    throw new UnauthorizedApiException("Unauthorized, check your password is correct");
+                }
+                return content;
             }
-            String content = response.getContentAsString();
-            if ("{\"result\":2}".equals(content)) {
-                throw new UnauthorizedApiException("Unauthorized, check your password is correct");
-            }
-            return content;
+            return "";
         }
 
         private Request withGeneralProperties(Request request) {
