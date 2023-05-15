@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.ring.handler;
 
+import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_BATTERY;
+
 import java.math.BigDecimal;
 
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
-import org.openhab.binding.ring.internal.data.Chime;
+import org.openhab.binding.ring.internal.data.Other;
 import org.openhab.binding.ring.internal.errors.DeviceNotFoundException;
 import org.openhab.binding.ring.internal.errors.IllegalDeviceClassException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -26,22 +29,22 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 
 /**
- * The handler for a Ring CHime.
+ * The handler for a Ring Other Device.
  *
- * @author Ben Rosenblum - Initial contribution
+ * @author Ben Rosenblum - Initial Contribution
  *
  */
 
-public class ChimeHandler extends RingDeviceHandler {
+public class OtherHandler extends RingDeviceHandler {
     private Integer lastBattery = -1;
 
-    public ChimeHandler(Thing thing) {
+    public OtherHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Chime handler");
+        logger.debug("Initializing Other handler");
         super.initialize();
 
         // Configuration config = getThing().getConfiguration();
@@ -50,7 +53,7 @@ public class ChimeHandler extends RingDeviceHandler {
         String id = getThing().getUID().getId();
         if (registry.isInitialized()) {
             try {
-                linkDevice(id, Chime.class);
+                linkDevice(id, Other.class);
                 updateStatus(ThingStatus.ONLINE);
             } catch (DeviceNotFoundException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -89,9 +92,20 @@ public class ChimeHandler extends RingDeviceHandler {
 
     @Override
     protected void minuteTick() {
-        logger.debug("ChimeHandler - minuteTick - device {}", getThing().getUID().getId());
+        logger.debug("OtherHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
             initialize();
+        }
+
+        if ((device != null) && (!device.getBattery().equals(lastBattery))) {
+            logger.debug("Battery Level: {}", device.getBattery());
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
+            updateState(channelUID, new DecimalType(device.getBattery().toString()));
+            lastBattery = device.getBattery();
+        } else if (device != null) {
+            logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(), device.getBattery(),
+                    lastBattery);
+
         }
     }
 }
