@@ -32,6 +32,21 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="retry" type="integer">
+				<label>Retry Count</label>
+				<description>Specifies the number of retries on connection timeouts.</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="retryDelay" type="integer">
+				<label>Retry Delay</label>
+				<description>Specifies delay between retries in seconds∏.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="timeout" type="integer">
+				<label>Timeout</label>
+				<description>Specifies the connection timeout in seconds.</description>
+				<default>5</default>
+			</parameter>
 			<parameter name="basicUsername" type="text">
 				<label>Basic Auth Username</label>
 				<description>Used if the OpenSprinkler device is behind a basic auth protected reverse proxy.</description>
