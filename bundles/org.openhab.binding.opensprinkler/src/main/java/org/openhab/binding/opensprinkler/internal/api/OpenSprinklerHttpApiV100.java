@@ -12,7 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
-import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.CMD_DISABLE_MANUAL_MODE;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.CMD_ENABLE_MANUAL_MODE;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.CMD_OPTIONS_INFO;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.CMD_PASSWORD;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.CMD_STATION_INFO;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.CMD_STATUS_INFO;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_STATION_COUNT;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.HTTPS_REQUEST_URL_PREFIX;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.HTTP_REQUEST_URL_PREFIX;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -393,13 +401,12 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                     connectionSuccess = true;
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     // throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
-                    logger.warn("Request to OpenSprinkler device failed (retries left: " + retriesLeft + "): "
-                            + e.getMessage());
+                    logger.warn("Request to OpenSprinkler device failed (retries left: {}): {}", retriesLeft, e.getMessage());
                     try {
                         Thread.sleep(1000 * config.retryDelay);
 
                     } catch (Exception sleepException) {
-                        logger.warn("Exception while sleeping: " + sleepException.getMessage());
+                        logger.warn("Exception while sleeping: {}",sleepException.getMessage());
                     }
                 }
             }
