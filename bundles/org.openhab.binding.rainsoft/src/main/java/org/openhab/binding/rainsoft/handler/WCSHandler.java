@@ -101,6 +101,8 @@ public class WCSHandler extends RainSoftDeviceHandler {
     private void updateChannelState(String channelId, Object value) {
         if (channelStateMap.get(channelId) != null) {
             if (!channelStateMap.get(channelId).equals(value)) {
+                logger.trace("WCSHandler - updateChannelState - Channel state updated for {} - {}", channelId,
+                        ((State) value).toString());
                 updateState(channelId, (State) value);
                 channelStateMap.put(channelId, value);
             } else {
@@ -108,6 +110,8 @@ public class WCSHandler extends RainSoftDeviceHandler {
                         ((State) value).toString());
             }
         } else {
+            logger.trace("WCSHandler - updateChannelState - Channel state created for {} - {}", channelId,
+                    ((State) value).toString());
             updateState(channelId, (State) value);
             channelStateMap.put(channelId, value);
         }
@@ -126,59 +130,67 @@ public class WCSHandler extends RainSoftDeviceHandler {
                 String waterUsage = device.getWaterUsage();
                 String saltUsage = device.getSaltUsage();
 
-                updateChannelState(CHANNEL_STATUS_SYSTEMSTATUS, new StringType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("systemStatusName").toString()));
-                updateChannelState(CHANNEL_STATUS_STATUSCODE, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("systemStatusCode").toString()));
-                updateChannelState(CHANNEL_STATUS_STATUSASOF,
-                        new DateTimeType(((JSONObject) new JSONParser().parse(deviceInfo)).get("asOf").toString()));
-                updateChannelState(CHANNEL_STATUS_REGENTIME, new DateTimeType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("regenTime").toString()));
-                updateChannelState(CHANNEL_STATUS_LASTREGEN, new DateTimeType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("lastRegenDate").toString()));
-                updateChannelState(CHANNEL_STATUS_AIRPURGEHOUR, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeHour").toString()));
-                updateChannelState(CHANNEL_STATUS_AIRPURGEMINUTE, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeMinute").toString()));
-                updateChannelState(CHANNEL_STATUS_FLTREGENTIME, new DateTimeType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("fltRegenTime").toString()));
-                updateChannelState(CHANNEL_STATUS_MAXSALT,
-                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("maxSalt").toString()));
-                updateChannelState(CHANNEL_STATUS_SALTLBS,
-                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("saltLbs").toString()));
-                updateChannelState(CHANNEL_STATUS_CAPACITYREMAINING, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("capacityRemaining").toString()));
-                if (((JSONObject) new JSONParser().parse(deviceInfo)).get("isVacationMode").toString().equals("true")) {
-                    updateChannelState(CHANNEL_STATUS_VACATIONMODE, OnOffType.ON);
-                } else {
-                    updateChannelState(CHANNEL_STATUS_VACATIONMODE, OnOffType.OFF);
+                logger.trace("WCSHandler - minuteTick - deviceInfo: {}", deviceInfo);
+                logger.trace("WCSHandler - minuteTick - waterUsage: {}", waterUsage);
+                logger.trace("WCSHandler - minuteTick - saltUsage: {}", saltUsage);
+
+                if ((deviceInfo != null) && (!deviceInfo.isEmpty())) {
+                    updateChannelState(CHANNEL_STATUS_SYSTEMSTATUS, new StringType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("systemStatusName").toString()));
+                    updateChannelState(CHANNEL_STATUS_STATUSCODE, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("systemStatusCode").toString()));
+                    updateChannelState(CHANNEL_STATUS_STATUSASOF,
+                            new DateTimeType(((JSONObject) new JSONParser().parse(deviceInfo)).get("asOf").toString()));
+                    updateChannelState(CHANNEL_STATUS_REGENTIME, new DateTimeType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("regenTime").toString()));
+                    updateChannelState(CHANNEL_STATUS_LASTREGEN, new DateTimeType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("lastRegenDate").toString()));
+                    updateChannelState(CHANNEL_STATUS_AIRPURGEHOUR, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeHour").toString()));
+                    updateChannelState(CHANNEL_STATUS_AIRPURGEMINUTE, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("airPurgeMinute").toString()));
+                    updateChannelState(CHANNEL_STATUS_FLTREGENTIME, new DateTimeType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("fltRegenTime").toString()));
+                    updateChannelState(CHANNEL_STATUS_MAXSALT, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("maxSalt").toString()));
+                    updateChannelState(CHANNEL_STATUS_SALTLBS, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("saltLbs").toString()));
+                    updateChannelState(CHANNEL_STATUS_CAPACITYREMAINING, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("capacityRemaining").toString()));
+                    if (((JSONObject) new JSONParser().parse(deviceInfo)).get("isVacationMode").toString()
+                            .equals("true")) {
+                        updateChannelState(CHANNEL_STATUS_VACATIONMODE, OnOffType.ON);
+                    } else {
+                        updateChannelState(CHANNEL_STATUS_VACATIONMODE, OnOffType.OFF);
+                    }
+                    updateChannelState(CHANNEL_STATUS_HARDNESS, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("hardness").toString()));
+                    updateChannelState(CHANNEL_STATUS_PRESSURE, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("pressure").toString()));
+                    updateChannelState(CHANNEL_STATUS_IRONLEVEL, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("ironLevel").toString()));
+                    updateChannelState(CHANNEL_STATUS_DRAINFLOW, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("drainFlow").toString()));
+                    updateChannelState(CHANNEL_STATUS_AVGMONTHSALT, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("averageMonthlySalt").toString()));
+                    updateChannelState(CHANNEL_STATUS_DAILYWATERUSE, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("dailyWaterUse").toString()));
+                    updateChannelState(CHANNEL_STATUS_REGENS28DAY, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("regens28Day").toString()));
+                    updateChannelState(CHANNEL_STATUS_WATER28DAY, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("water28Day").toString()));
+                    updateChannelState(CHANNEL_STATUS_ENDOFDAY, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("endOfDay").toString()));
+                    updateChannelState(CHANNEL_STATUS_SALT28DAY, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("salt28Day").toString()));
+                    updateChannelState(CHANNEL_STATUS_FLOWSINCEREGEN, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("flowSinceLastRegen").toString()));
+                    updateChannelState(CHANNEL_STATUS_LIFETIMEFLOW, new DecimalType(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("lifeTimeFlow").toString()));
                 }
-                updateChannelState(CHANNEL_STATUS_HARDNESS,
-                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("hardness").toString()));
-                updateChannelState(CHANNEL_STATUS_PRESSURE,
-                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("pressure").toString()));
-                updateChannelState(CHANNEL_STATUS_IRONLEVEL,
-                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("ironLevel").toString()));
-                updateChannelState(CHANNEL_STATUS_DRAINFLOW,
-                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("drainFlow").toString()));
-                updateChannelState(CHANNEL_STATUS_AVGMONTHSALT, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("averageMonthlySalt").toString()));
-                updateChannelState(CHANNEL_STATUS_DAILYWATERUSE, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("dailyWaterUse").toString()));
-                updateChannelState(CHANNEL_STATUS_REGENS28DAY, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("regens28Day").toString()));
-                updateChannelState(CHANNEL_STATUS_WATER28DAY, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("water28Day").toString()));
-                updateChannelState(CHANNEL_STATUS_ENDOFDAY,
-                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("endOfDay").toString()));
-                updateChannelState(CHANNEL_STATUS_SALT28DAY,
-                        new DecimalType(((JSONObject) new JSONParser().parse(deviceInfo)).get("salt28Day").toString()));
-                updateChannelState(CHANNEL_STATUS_FLOWSINCEREGEN, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("flowSinceLastRegen").toString()));
-                updateChannelState(CHANNEL_STATUS_LIFETIMEFLOW, new DecimalType(
-                        ((JSONObject) new JSONParser().parse(deviceInfo)).get("lifeTimeFlow").toString()));
             } catch (ParseException e1) {
-                logger.debug("RestClient reported ParseException trying getAuthenticatedProfile: {}", e1.getMessage());
+                logger.debug("WCSHandler - RestClient reported ParseException trying getAuthenticatedProfile: {}",
+                        e1.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Invalid response from rainsoft.com");
             }

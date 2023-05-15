@@ -93,14 +93,13 @@ public class RainSoftDeviceRegistry {
     /**
      * Add a new rainsoft device collection.
      */
-    public synchronized void addRainSoftDevices(Collection<RainSoftDevice> rainSoftDevices)
-            throws DuplicateIdException {
+    public synchronized void addRainSoftDevices(Collection<RainSoftDevice> rainSoftDevices) {
         for (RainSoftDevice device : rainSoftDevices) {
             logger.debug("RainSoftDeviceRegistry - addRainSoftDevices - Trying: {}", device.getId());
             try {
                 addRainSoftDevice(device);
             } catch (DuplicateIdException e) {
-                throw new DuplicateIdException("RainSoft device with duplicate id " + device.getId() + " ignored");
+                logger.debug("RainSoft device with duplicate id {} ignored", device.getId());
             }
         }
         initialized = true;

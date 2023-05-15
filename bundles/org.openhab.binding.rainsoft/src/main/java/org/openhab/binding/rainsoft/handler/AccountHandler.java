@@ -190,11 +190,13 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
                 }
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
             } catch (AuthenticationException ex) {
-                logger.debug("RestClient reported AuthenticationException trying getAuthenticatedProfile: {}",
+                logger.debug(
+                        "AccountHandler - RestClient reported AuthenticationException trying getAuthenticatedProfile: {}",
                         ex.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid credentials");
             } catch (ParseException e1) {
-                logger.debug("RestClient reported ParseException trying getAuthenticatedProfile: {}", e1.getMessage());
+                logger.debug("AccountHandler - RestClient reported ParseException trying getAuthenticatedProfile: {}",
+                        e1.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Invalid response from api.ring.com");
             } finally {
@@ -207,12 +209,14 @@ public class AccountHandler extends AbstractRainSoftHandler implements RainSoftA
                     registry = null;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "AuthenticationException response from rainsoft.com");
-                    logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
+                    logger.debug("AccountHandler - RestClient reported AuthenticationException in finally block: {}",
+                            ae.getMessage());
                 } catch (ParseException pe1) {
                     registry = null;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "ParseException response from rainsoft.com");
-                    logger.debug("RestClient reported ParseException in finally block: {}", pe1.getMessage());
+                    logger.debug("AccountHandler - RestClient reported ParseException in finally block: {}",
+                            pe1.getMessage());
                 }
             }
         } catch (DuplicateIdException ignored) {
