@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -187,6 +188,37 @@ public class WCSHandler extends RainSoftDeviceHandler {
                             ((JSONObject) new JSONParser().parse(deviceInfo)).get("flowSinceLastRegen").toString()));
                     updateChannelState(CHANNEL_STATUS_LIFETIMEFLOW, new DecimalType(
                             ((JSONObject) new JSONParser().parse(deviceInfo)).get("lifeTimeFlow").toString()));
+                }
+
+                if ((waterUsage != null) && (saltUsage != null) && (!waterUsage.isEmpty()) && (!saltUsage.isEmpty())) {
+                    String dailyWaterUsage = ((JSONObject) new JSONParser().parse(waterUsage)).get("dailyUsage")
+                            .toString();
+                    String dailySaltUsage = ((JSONObject) new JSONParser().parse(saltUsage)).get("dailyUsage")
+                            .toString();
+                    String dailyWaterUsageLabels = ((JSONObject) new JSONParser().parse(dailyWaterUsage)).get("labels")
+                            .toString();
+                    String dailyWaterUsageData = ((JSONObject) new JSONParser().parse(dailyWaterUsage)).get("data")
+                            .toString();
+                    String dailySaltUsageData = ((JSONObject) new JSONParser().parse(dailySaltUsage)).get("data")
+                            .toString();
+                    JSONArray dailyWaterUsageLabelsArray = ((JSONArray) new JSONParser().parse(dailyWaterUsageLabels));
+                    JSONArray dailyWaterUsageDataArray = ((JSONArray) new JSONParser().parse(dailyWaterUsageData));
+                    JSONArray dailySaltUsageDataArray = ((JSONArray) new JSONParser().parse(dailySaltUsageData));
+                    logger.debug("WCSHandler - minuteTick - dailyWaterUsageLabels - {}", dailyWaterUsageLabels);
+                    logger.debug("WCSHandler - minuteTick - dailyWaterUsageData - {}", dailyWaterUsageData);
+                    logger.debug("WCSHandler - minuteTick - dailySaltUsageData - {}", dailySaltUsageData);
+                    for (int i = 0; i < 28; i++) {
+                        String label = dailyWaterUsageLabelsArray.get(i).toString();
+                        String water = dailyWaterUsageDataArray.get(i).toString();
+                        String salt = dailySaltUsageDataArray.get(i).toString();
+                        logger.trace("WCSHandler - minuteTick - dailyArrays - {} {} {}", label, water, salt);
+                        String labelChannel = "usage#day" + i + "date";
+                        String waterChannel = "usage#day" + i + "water";
+                        String saltChannel = "usage#day" + i + "salt";
+                        updateChannelState(labelChannel, new StringType(label));
+                        updateChannelState(waterChannel, new DecimalType(water));
+                        updateChannelState(saltChannel, new DecimalType(salt));
+                    }
                 }
             } catch (ParseException e1) {
                 logger.debug("WCSHandler - RestClient reported ParseException trying getAuthenticatedProfile: {}",

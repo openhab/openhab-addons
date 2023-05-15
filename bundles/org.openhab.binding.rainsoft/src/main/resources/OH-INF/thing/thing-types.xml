@@ -34,6 +34,7 @@
 
 		<channel-groups>
 			<channel-group id="status" typeId="statusGroup"/>
+			<channel-group id="usage" typeId="usageGroup"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="refreshInterval" type="integer">
@@ -73,6 +74,97 @@
 			<channel id="salt28day" typeId="salt28day"/>
 			<channel id="flowsinceregen" typeId="flowsinceregen"/>
 			<channel id="lifetimeflow" typeId="lifetimeflow"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="usageGroup">
+		<label>Daily Usage Data</label>
+		<description>Daily Water and Salt Usage Data</description>
+		<channels>
+			<channel id="day1date" typeId="day1date"/>
+			<channel id="day1water" typeId="day1water"/>
+			<channel id="day1salt" typeId="day1salt"/>
+			<channel id="day2date" typeId="day2date"/>
+			<channel id="day2water" typeId="day2water"/>
+			<channel id="day2salt" typeId="day2salt"/>
+			<channel id="day3date" typeId="day3date"/>
+			<channel id="day3water" typeId="day3water"/>
+			<channel id="day3salt" typeId="day3salt"/>
+			<channel id="day4date" typeId="day4date"/>
+			<channel id="day4water" typeId="day4water"/>
+			<channel id="day4salt" typeId="day4salt"/>
+			<channel id="day5date" typeId="day5date"/>
+			<channel id="day5water" typeId="day5water"/>
+			<channel id="day5salt" typeId="day5salt"/>
+			<channel id="day6date" typeId="day6date"/>
+			<channel id="day6water" typeId="day6water"/>
+			<channel id="day6salt" typeId="day6salt"/>
+			<channel id="day7date" typeId="day7date"/>
+			<channel id="day7water" typeId="day7water"/>
+			<channel id="day7salt" typeId="day7salt"/>
+			<channel id="day8date" typeId="day8date"/>
+			<channel id="day8water" typeId="day8water"/>
+			<channel id="day8salt" typeId="day8salt"/>
+			<channel id="day9date" typeId="day9date"/>
+			<channel id="day9water" typeId="day9water"/>
+			<channel id="day9salt" typeId="day9salt"/>
+			<channel id="day10date" typeId="day10date"/>
+			<channel id="day10water" typeId="day10water"/>
+			<channel id="day10salt" typeId="day10salt"/>
+			<channel id="day11date" typeId="day11date"/>
+			<channel id="day11water" typeId="day11water"/>
+			<channel id="day11salt" typeId="day11salt"/>
+			<channel id="day12date" typeId="day12date"/>
+			<channel id="day12water" typeId="day12water"/>
+			<channel id="day12salt" typeId="day12salt"/>
+			<channel id="day13date" typeId="day13date"/>
+			<channel id="day13water" typeId="day13water"/>
+			<channel id="day13salt" typeId="day13salt"/>
+			<channel id="day14date" typeId="day14date"/>
+			<channel id="day14water" typeId="day14water"/>
+			<channel id="day14salt" typeId="day14salt"/>
+			<channel id="day15date" typeId="day15date"/>
+			<channel id="day15water" typeId="day15water"/>
+			<channel id="day15salt" typeId="day15salt"/>
+			<channel id="day16date" typeId="day16date"/>
+			<channel id="day16water" typeId="day16water"/>
+			<channel id="day16salt" typeId="day16salt"/>
+			<channel id="day17date" typeId="day17date"/>
+			<channel id="day17water" typeId="day17water"/>
+			<channel id="day17salt" typeId="day17salt"/>
+			<channel id="day18date" typeId="day18date"/>
+			<channel id="day18water" typeId="day18water"/>
+			<channel id="day18salt" typeId="day18salt"/>
+			<channel id="day19date" typeId="day19date"/>
+			<channel id="day19water" typeId="day19water"/>
+			<channel id="day19salt" typeId="day19salt"/>
+			<channel id="day20date" typeId="day20date"/>
+			<channel id="day20water" typeId="day20water"/>
+			<channel id="day20salt" typeId="day20salt"/>
+			<channel id="day21date" typeId="day21date"/>
+			<channel id="day21water" typeId="day21water"/>
+			<channel id="day21salt" typeId="day21salt"/>
+			<channel id="day22date" typeId="day22date"/>
+			<channel id="day22water" typeId="day22water"/>
+			<channel id="day22salt" typeId="day22salt"/>
+			<channel id="day23date" typeId="day23date"/>
+			<channel id="day23water" typeId="day23water"/>
+			<channel id="day23salt" typeId="day23salt"/>
+			<channel id="day24date" typeId="day24date"/>
+			<channel id="day24water" typeId="day24water"/>
+			<channel id="day24salt" typeId="day24salt"/>
+			<channel id="day25date" typeId="day25date"/>
+			<channel id="day25water" typeId="day25water"/>
+			<channel id="day25salt" typeId="day25salt"/>
+			<channel id="day26date" typeId="day26date"/>
+			<channel id="day26water" typeId="day26water"/>
+			<channel id="day26salt" typeId="day26salt"/>
+			<channel id="day27date" typeId="day27date"/>
+			<channel id="day27water" typeId="day27water"/>
+			<channel id="day27salt" typeId="day27salt"/>
+			<channel id="day28date" typeId="day28date"/>
+			<channel id="day28water" typeId="day28water"/>
+			<channel id="day28salt" typeId="day28salt"/>
 		</channels>
 	</channel-group-type>
 
@@ -219,6 +311,510 @@
 		<item-type>Number</item-type>
 		<label>Lifetime Flow</label>
 		<description>Lifetime Flow</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day1date">
+		<item-type>String</item-type>
+		<label>Day 1 Date</label>
+		<description>Day 1 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day1water">
+		<item-type>Number</item-type>
+		<label>Day 1 Water Usage</label>
+		<description>Day 1 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day1salt">
+		<item-type>Number</item-type>
+		<label>Day 1 Salt Usage</label>
+		<description>Day 1 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day2date">
+		<item-type>String</item-type>
+		<label>Day 2 Date</label>
+		<description>Day 2 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day2water">
+		<item-type>Number</item-type>
+		<label>Day 2 Water Usage</label>
+		<description>Day 2 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day2salt">
+		<item-type>Number</item-type>
+		<label>Day 2 Salt Usage</label>
+		<description>Day 2 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day3date">
+		<item-type>String</item-type>
+		<label>Day 3 Date</label>
+		<description>Day 3 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day3water">
+		<item-type>Number</item-type>
+		<label>Day 3 Water Usage</label>
+		<description>Day 3 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day3salt">
+		<item-type>Number</item-type>
+		<label>Day 3 Salt Usage</label>
+		<description>Day 3 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day4date">
+		<item-type>String</item-type>
+		<label>Day 4 Date</label>
+		<description>Day 4 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day4water">
+		<item-type>Number</item-type>
+		<label>Day 4 Water Usage</label>
+		<description>Day 4 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day4salt">
+		<item-type>Number</item-type>
+		<label>Day 4 Salt Usage</label>
+		<description>Day 4 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day5date">
+		<item-type>String</item-type>
+		<label>Day 5 Date</label>
+		<description>Day 5 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day5water">
+		<item-type>Number</item-type>
+		<label>Day 5 Water Usage</label>
+		<description>Day 5 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day5salt">
+		<item-type>Number</item-type>
+		<label>Day 5 Salt Usage</label>
+		<description>Day 5 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day6date">
+		<item-type>String</item-type>
+		<label>Day 6 Date</label>
+		<description>Day 6 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day6water">
+		<item-type>Number</item-type>
+		<label>Day 6 Water Usage</label>
+		<description>Day 6 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day6salt">
+		<item-type>Number</item-type>
+		<label>Day 6 Salt Usage</label>
+		<description>Day 6 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day7date">
+		<item-type>String</item-type>
+		<label>Day 7 Date</label>
+		<description>Day 7 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day7water">
+		<item-type>Number</item-type>
+		<label>Day 7 Water Usage</label>
+		<description>Day 7 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day7salt">
+		<item-type>Number</item-type>
+		<label>Day 7 Salt Usage</label>
+		<description>Day 7 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day8date">
+		<item-type>String</item-type>
+		<label>Day 8 Date</label>
+		<description>Day 8 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day8water">
+		<item-type>Number</item-type>
+		<label>Day 8 Water Usage</label>
+		<description>Day 8 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day8salt">
+		<item-type>Number</item-type>
+		<label>Day 8 Salt Usage</label>
+		<description>Day 8 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day9date">
+		<item-type>String</item-type>
+		<label>Day 9 Date</label>
+		<description>Day 9 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day9water">
+		<item-type>Number</item-type>
+		<label>Day 9 Water Usage</label>
+		<description>Day 9 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day9salt">
+		<item-type>Number</item-type>
+		<label>Day 9 Salt Usage</label>
+		<description>Day 9 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day10date">
+		<item-type>String</item-type>
+		<label>Day 10 Date</label>
+		<description>Day 10 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day10water">
+		<item-type>Number</item-type>
+		<label>Day 10 Water Usage</label>
+		<description>Day 10 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day10salt">
+		<item-type>Number</item-type>
+		<label>Day 10 Salt Usage</label>
+		<description>Day 10 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day11date">
+		<item-type>String</item-type>
+		<label>Day 11 Date</label>
+		<description>Day 11 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day11water">
+		<item-type>Number</item-type>
+		<label>Day 11 Water Usage</label>
+		<description>Day 11 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day11salt">
+		<item-type>Number</item-type>
+		<label>Day 11 Salt Usage</label>
+		<description>Day 11 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day12date">
+		<item-type>String</item-type>
+		<label>Day 12 Date</label>
+		<description>Day 12 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day12water">
+		<item-type>Number</item-type>
+		<label>Day 12 Water Usage</label>
+		<description>Day 12 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day12salt">
+		<item-type>Number</item-type>
+		<label>Day 12 Salt Usage</label>
+		<description>Day 12 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day13date">
+		<item-type>String</item-type>
+		<label>Day 13 Date</label>
+		<description>Day 13 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day13water">
+		<item-type>Number</item-type>
+		<label>Day 13 Water Usage</label>
+		<description>Day 13 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day13salt">
+		<item-type>Number</item-type>
+		<label>Day 13 Salt Usage</label>
+		<description>Day 13 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day14date">
+		<item-type>String</item-type>
+		<label>Day 14 Date</label>
+		<description>Day 14 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day14water">
+		<item-type>Number</item-type>
+		<label>Day 14 Water Usage</label>
+		<description>Day 14 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day14salt">
+		<item-type>Number</item-type>
+		<label>Day 14 Salt Usage</label>
+		<description>Day 14 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day15date">
+		<item-type>String</item-type>
+		<label>Day 15 Date</label>
+		<description>Day 15 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day15water">
+		<item-type>Number</item-type>
+		<label>Day 15 Water Usage</label>
+		<description>Day 15 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day15salt">
+		<item-type>Number</item-type>
+		<label>Day 15 Salt Usage</label>
+		<description>Day 15 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day16date">
+		<item-type>String</item-type>
+		<label>Day 16 Date</label>
+		<description>Day 16 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day16water">
+		<item-type>Number</item-type>
+		<label>Day 16 Water Usage</label>
+		<description>Day 16 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day16salt">
+		<item-type>Number</item-type>
+		<label>Day 16 Salt Usage</label>
+		<description>Day 16 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day17date">
+		<item-type>String</item-type>
+		<label>Day 17 Date</label>
+		<description>Day 17 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day17water">
+		<item-type>Number</item-type>
+		<label>Day 17 Water Usage</label>
+		<description>Day 17 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day17salt">
+		<item-type>Number</item-type>
+		<label>Day 17 Salt Usage</label>
+		<description>Day 17 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day18date">
+		<item-type>String</item-type>
+		<label>Day 18 Date</label>
+		<description>Day 18 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day18water">
+		<item-type>Number</item-type>
+		<label>Day 18 Water Usage</label>
+		<description>Day 18 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day18salt">
+		<item-type>Number</item-type>
+		<label>Day 18 Salt Usage</label>
+		<description>Day 18 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day19date">
+		<item-type>String</item-type>
+		<label>Day 19 Date</label>
+		<description>Day 19 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day19water">
+		<item-type>Number</item-type>
+		<label>Day 19 Water Usage</label>
+		<description>Day 19 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day19salt">
+		<item-type>Number</item-type>
+		<label>Day 19 Salt Usage</label>
+		<description>Day 19 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day20date">
+		<item-type>String</item-type>
+		<label>Day 20 Date</label>
+		<description>Day 20 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day20water">
+		<item-type>Number</item-type>
+		<label>Day 20 Water Usage</label>
+		<description>Day 20 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day20salt">
+		<item-type>Number</item-type>
+		<label>Day 20 Salt Usage</label>
+		<description>Day 20 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day21date">
+		<item-type>String</item-type>
+		<label>Day 21 Date</label>
+		<description>Day 21 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day21water">
+		<item-type>Number</item-type>
+		<label>Day 21 Water Usage</label>
+		<description>Day 21 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day21salt">
+		<item-type>Number</item-type>
+		<label>Day 21 Salt Usage</label>
+		<description>Day 21 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day22date">
+		<item-type>String</item-type>
+		<label>Day 22 Date</label>
+		<description>Day 22 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day22water">
+		<item-type>Number</item-type>
+		<label>Day 22 Water Usage</label>
+		<description>Day 22 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day22salt">
+		<item-type>Number</item-type>
+		<label>Day 22 Salt Usage</label>
+		<description>Day 22 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day23date">
+		<item-type>String</item-type>
+		<label>Day 23 Date</label>
+		<description>Day 23 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day23water">
+		<item-type>Number</item-type>
+		<label>Day 23 Water Usage</label>
+		<description>Day 23 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day23salt">
+		<item-type>Number</item-type>
+		<label>Day 23 Salt Usage</label>
+		<description>Day 23 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day24date">
+		<item-type>String</item-type>
+		<label>Day 24 Date</label>
+		<description>Day 24 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day24water">
+		<item-type>Number</item-type>
+		<label>Day 24 Water Usage</label>
+		<description>Day 24 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day24salt">
+		<item-type>Number</item-type>
+		<label>Day 24 Salt Usage</label>
+		<description>Day 24 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day25date">
+		<item-type>String</item-type>
+		<label>Day 25 Date</label>
+		<description>Day 25 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day25water">
+		<item-type>Number</item-type>
+		<label>Day 25 Water Usage</label>
+		<description>Day 25 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day25salt">
+		<item-type>Number</item-type>
+		<label>Day 25 Salt Usage</label>
+		<description>Day 25 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day26date">
+		<item-type>String</item-type>
+		<label>Day 26 Date</label>
+		<description>Day 26 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day26water">
+		<item-type>Number</item-type>
+		<label>Day 26 Water Usage</label>
+		<description>Day 26 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day26salt">
+		<item-type>Number</item-type>
+		<label>Day 26 Salt Usage</label>
+		<description>Day 26 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day27date">
+		<item-type>String</item-type>
+		<label>Day 27 Date</label>
+		<description>Day 27 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day27water">
+		<item-type>Number</item-type>
+		<label>Day 27 Water Usage</label>
+		<description>Day 27 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day27salt">
+		<item-type>Number</item-type>
+		<label>Day 27 Salt Usage</label>
+		<description>Day 27 Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day28date">
+		<item-type>String</item-type>
+		<label>Day 28 Date</label>
+		<description>Day 28 Date</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day28water">
+		<item-type>Number</item-type>
+		<label>Day 28 Water Usage</label>
+		<description>Day 28 Water Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="day28salt">
+		<item-type>Number</item-type>
+		<label>Day 28 Salt Usage</label>
+		<description>Day 28 Salt Usage</description>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>
