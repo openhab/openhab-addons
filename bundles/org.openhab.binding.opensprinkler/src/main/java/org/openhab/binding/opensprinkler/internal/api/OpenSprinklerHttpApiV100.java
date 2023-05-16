@@ -401,12 +401,13 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                     connectionSuccess = true;
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     // throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
-                    logger.warn("Request to OpenSprinkler device failed (retries left: {}): {}", retriesLeft, e.getMessage());
+                    logger.warn("Request to OpenSprinkler device failed (retries left: {}): {}", retriesLeft,
+                            e.getMessage());
                     try {
                         Thread.sleep(1000 * config.retryDelay);
 
                     } catch (Exception sleepException) {
-                        logger.warn("Exception while sleeping: {}",sleepException.getMessage());
+                        logger.warn("Exception while sleeping: {}", sleepException.getMessage());
                     }
                 }
             }
