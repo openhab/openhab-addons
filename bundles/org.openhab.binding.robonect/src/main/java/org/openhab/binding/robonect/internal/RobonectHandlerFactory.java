@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.robonect.internal;
 
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.THING_TYPE_AUTOMOWER;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.robonect.internal.handler.RobonectHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -28,7 +29,10 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link RobonectHandlerFactory} is responsible for creating things and thing
@@ -36,10 +40,13 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.robonect")
 public class RobonectHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AUTOMOWER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AUTOMOWER);
+
+    private final Logger logger = LoggerFactory.getLogger(RobonectHandlerFactory.class);
 
     private HttpClient httpClient;
     private TimeZoneProvider timeZoneProvider;
@@ -47,8 +54,24 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public RobonectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TimeZoneProvider timeZoneProvider) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID);
         this.timeZoneProvider = timeZoneProvider;
+
+        try {
+            this.httpClient.start();
+        } catch (Exception e) {
+            logger.error("Exception while trying to start HTTP client", e);
+            throw new IllegalStateException("Could not create HttpClient");
+        }
+    }
+
+    @Deactivate
+    public void deactivate() {
+        try {
+            this.httpClient.stop();
+        } catch (Exception e) {
+            logger.warn("Exception while trying to stop HTTP client", e);
+        }
     }
 
     @Override
@@ -57,7 +80,7 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_AUTOMOWER)) {

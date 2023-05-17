@@ -243,7 +243,7 @@ public class RobonectHandler extends BaseThingHandler {
             if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP,
                         new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
-                updateState(CHANNEL_HEALTH_HUM, new QuantityType(info.getHealth().getHumidity(), Units.PERCENT));
+                updateState(CHANNEL_HEALTH_HUM, new QuantityType<>(info.getHealth().getHumidity(), Units.PERCENT));
             }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
@@ -362,13 +362,7 @@ public class RobonectHandler extends BaseThingHandler {
                     timeZoneString, timeZoneProvider.getTimeZone(), e);
         }
 
-        try {
-            httpClient.start();
-            robonectClient = new RobonectClient(httpClient, endpoint);
-        } catch (Exception e) {
-            logger.error("Exception while trying to start http client", e);
-            throw new RuntimeException("Exception while trying to start http client", e);
-        }
+        robonectClient = new RobonectClient(httpClient, endpoint);
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
         int pollInterval = robonectConfig.getPollInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
@@ -376,12 +370,11 @@ public class RobonectHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
-
-        httpClient = null;
     }
 
     /**
