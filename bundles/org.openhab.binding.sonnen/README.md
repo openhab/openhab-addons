@@ -3,7 +3,7 @@
 The binding for sonnen communicates with a sonnen battery.
 More information about the sonnen battery can be found [here](https://sonnen.de/).
 The binding supports the old deprecated V1 from sonnen as well as V2 which requires an authentication token.
-More infromation about the V2 API can be found `http://LOCAL-SONNENBATTERY-SYSTEM-IP/api/doc.html`
+More information about the V2 API can be found at `http://LOCAL-SONNENBATTERY-SYSTEM-IP/api/doc.html`
 
 ## Supported Things
 
@@ -14,7 +14,7 @@ More infromation about the V2 API can be found `http://LOCAL-SONNENBATTERY-SYSTE
 ## Thing Configuration
 
 Only the parameter `hostIP` is required; this is the IP address of the sonnen battery in your local network.
-If you want to use the V2 API of the vendor sonnen which supports more channels you need to provide the `authToken`.
+If you want to use the V2 API, which supports more channels, you need to provide the `authToken`.
 
 ## Channels
 
