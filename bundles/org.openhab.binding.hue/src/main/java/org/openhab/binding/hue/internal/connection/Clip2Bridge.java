@@ -32,6 +32,7 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -401,7 +402,8 @@ public class Clip2Bridge implements Closeable {
 
     public static final int TIMEOUT_SECONDS = 10;
     private static final int CHECK_ALIVE_SECONDS = 300;
-    private static final int REQUEST_INTERVAL_MILLISECS = 100;
+    private static final int REQUEST_INTERVAL_MILLISECS = 50;
+    private static final int MAX_CONCURRENT_SESSIONS = 3;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
@@ -443,6 +445,7 @@ public class Clip2Bridge implements Closeable {
     private final String applicationKey;
     private final Clip2BridgeHandler bridgeHandler;
     private final Gson jsonParser = new Gson();
+    private final Semaphore sessionMutex = new Semaphore(MAX_CONCURRENT_SESSIONS, true);
 
     private boolean restarting = false;
     private State onlineState = State.CLOSED;
@@ -673,6 +676,8 @@ public class Clip2Bridge implements Closeable {
             throw new ApiException("Error sending request", e);
         } catch (InterruptedException | TimeoutException e) {
             throw new ApiException("Error sending request", e);
+        } finally {
+            throttleDone();
         }
     }
 
@@ -784,7 +789,6 @@ public class Clip2Bridge implements Closeable {
      * @throws HttpUnauthorizedException if the application key is not authenticated.
      */
     private void openEventStream() throws ApiException, HttpUnauthorizedException {
-        throttle();
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or in an illegal state");
@@ -943,6 +947,8 @@ public class Clip2Bridge implements Closeable {
             }
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             throw new ApiException("Error sending request", e);
+        } finally {
+            throttleDone();
         }
     }
 
@@ -1032,18 +1038,28 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Hue Bridges get confused if they receive too many HTTP requests in a short period of time (e.g. on start up), so
-     * this method throttles the requests so that the minimum interval is REQUEST_INTERVAL_MILLISECS.
+     * Hue Bridges get confused if they receive too many HTTP requests in a short period of time (e.g. on start up), or
+     * if to many HTTP sessions are opened at the same time. So this method throttles the requests to a maximum of one
+     * per REQUEST_INTERVAL_MILLISECS, and ensures that no more than MAX_CONCURRENT_SESSIONS sessions are started.
      */
     private synchronized void throttle() {
         try {
+            sessionMutex.acquire();
             long delay = Duration.between(Instant.now(), lastRequestTime).toMillis() + REQUEST_INTERVAL_MILLISECS;
             if (delay > 0) {
                 Thread.sleep(delay);
             }
-        } catch (InterruptedException | ArithmeticException e) {
-            // fall through
+        } catch (ArithmeticException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
         lastRequestTime = Instant.now();
+    }
+
+    /**
+     * Release the mutex.
+     */
+    private void throttleDone() {
+        sessionMutex.release();
     }
 }
