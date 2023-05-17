@@ -439,7 +439,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         try {
             loginSuccess = connector.login();
             if (loginSuccess) {
-                connector.queryInfo();
+                queryDeviceInfo(true);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
             }
