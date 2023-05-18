@@ -42,6 +42,10 @@
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:comfoair:serial"/>
+		
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 	</thing-type>
 
@@ -67,6 +71,11 @@
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:comfoair:serial"/>
+		
+		<properties>
+			<property name="vendor">Zehnder</property>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 	</thing-type>
 
@@ -540,19 +549,19 @@
 	</channel-type>
 
 	<channel-type id="fan_in_RPM" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Fan In (rpm)</label>
-		<description>Current absolute speed (rpm) of incoming fan</description>
+		<description>Current rotational speed of incoming fan</description>
 		<category>Number</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
 
 	<channel-type id="fan_out_RPM" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Fan Out (rpm)</label>
-		<description>Current absolute speed (rpm) of outgoing fan</description>
+		<description>Current rotational speed of outgoing fan</description>
 		<category>Number</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
 
 	<channel-type id="outdoor_temperature_in">

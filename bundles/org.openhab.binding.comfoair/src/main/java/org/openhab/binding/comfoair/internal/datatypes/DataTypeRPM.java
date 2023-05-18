@@ -15,7 +15,8 @@ package org.openhab.binding.comfoair.internal.datatypes;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -52,20 +53,22 @@ public class DataTypeRPM implements ComfoAirDataType {
                 return UnDefType.NULL;
             }
             // transferred value is (1875000 / rpm) per protocol
-            return new DecimalType((int) (1875000.0 / value));
+            return new QuantityType<>((int) (1875000.0 / value), Units.RPM);
         }
     }
 
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value instanceof UnDefType) {
+        int[] template = commandType.getChangeDataTemplate();
+        QuantityType<?> rpms = ((QuantityType<?>) value).toUnit(Units.RPM);
+
+        if (rpms != null) {
+            // transferred value is (1875000 / rpm) per protocol
+            template[commandType.getChangeDataPos()] = (int) (1875000 / rpms.doubleValue());
+            return template;
+        } else {
             logger.trace("\"DataTypeRPM\" class \"convertFromState\" undefined state");
             return null;
-        } else {
-            int[] template = commandType.getChangeDataTemplate();
-            // transferred value is (1875000 / rpm) per protocol
-            template[commandType.getChangeDataPos()] = (int) (1875000 / ((DecimalType) value).doubleValue());
-            return template;
         }
     }
 }
