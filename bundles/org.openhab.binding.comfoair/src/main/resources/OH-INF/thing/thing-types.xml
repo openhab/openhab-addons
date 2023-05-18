@@ -873,7 +873,14 @@
 		<label>Preheater Frost Safety</label>
 		<description>Frost safety setting</description>
 		<category>Number</category>
-		<state readOnly="true"/>
+		<state readOnly="false">
+			<options>
+				<option value="0">Extra-safe setting</option>
+				<option value="1">Safe setting</option>
+				<option value="2">Normal setting</option>
+				<option value="3">Economy setting</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="ghx_temperature_low" advanced="true">
