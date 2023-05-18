@@ -52,6 +52,14 @@ public class DataTypeTime implements ComfoAirDataType {
                 return UnDefType.NULL;
             }
 
+            if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_DELAYS
+                    || commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_PREHEATER) {
+                if (commandType == ComfoAirCommandType.FILTER_WEEKS) {
+                    return new QuantityType<>(value, Units.WEEK);
+                } else {
+                    return new QuantityType<>(value, Units.MINUTE);
+                }
+            }
             return new QuantityType<>(value, Units.HOUR);
         }
     }
@@ -61,10 +69,21 @@ public class DataTypeTime implements ComfoAirDataType {
         int[] template = commandType.getChangeDataTemplate();
         int[] possibleValues = commandType.getPossibleValues();
         int position = commandType.getChangeDataPos();
-        QuantityType<?> hours = ((QuantityType<?>) value).toUnit(Units.HOUR);
+        QuantityType<?> quantity = new QuantityType<>();
 
-        if (hours != null) {
-            int intValue = hours.intValue();
+        if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_DELAYS
+                || commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_PREHEATER) {
+            if (commandType == ComfoAirCommandType.FILTER_WEEKS) {
+                quantity = ((QuantityType<?>) value).toUnit(Units.WEEK);
+            } else {
+                quantity = ((QuantityType<?>) value).toUnit(Units.MINUTE);
+            }
+        } else {
+            quantity = ((QuantityType<?>) value).toUnit(Units.HOUR);
+        }
+
+        if (quantity != null) {
+            int intValue = quantity.intValue();
 
             if (possibleValues == null) {
                 template[position] = intValue;

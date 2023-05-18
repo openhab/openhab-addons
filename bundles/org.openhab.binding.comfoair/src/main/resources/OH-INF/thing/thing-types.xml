@@ -861,11 +861,11 @@
 	</channel-type>
 
 	<channel-type id="preheater_frost_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Preheater Frost Time</label>
-		<description>Frost minutes</description>
-		<category>Number</category>
-		<state readOnly="true"/>
+		<description>Frost time</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="preheater_safety" advanced="true">
@@ -1195,67 +1195,67 @@
 	</channel-type>
 
 	<channel-type id="cookerhood_delay" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Cookerhood Delay (P20)</label>
-		<description>End delay for cooker hood control (min)</description>
+		<description>End delay for cooker hood control (uses minutes internally)</description>
 		<category>Time</category>
-		<state min="0" max="180" step="1" readOnly="false"/>
+		<state min="0" max="180" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="bathroom_start_delay" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Bathroom Switch Start Delay (P21)</label>
-		<description>Start delay for bathroom switch (min)</description>
+		<description>Start delay for bathroom switch (uses minutes internally)</description>
 		<category>Time</category>
-		<state min="0" max="120" step="1" readOnly="false"/>
+		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="bathroom_end_delay" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Bathroom Switch End Delay (P22)</label>
-		<description>End delay for bathroom switch (min)</description>
+		<description>End delay for bathroom switch (uses minutes internally)</description>
 		<category>Time</category>
-		<state min="0" max="120" step="1" readOnly="false"/>
+		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="L1_end_delay" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>L1 Switch End Delay (P23)</label>
-		<description>End delay for L1 switch (min)</description>
+		<description>End delay for L1 switch (uses minutes internally)</description>
 		<category>Time</category>
-		<state min="0" max="120" step="1" readOnly="false"/>
+		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="filter_weeks" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Filter Period (P24)</label>
-		<description>Usage period until filter pollution message (weeks)</description>
+		<description>Usage period until filter pollution message (uses full weeks internally)</description>
 		<category>Time</category>
-		<state min="10" max="26" step="1" readOnly="false"/>
+		<state min="10" max="26" step="1" readOnly="false" pattern="%.0f wk"/>
 	</channel-type>
 
 	<channel-type id="RF_short_delay" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>RF Short Delay (P25)</label>
-		<description>End delay (RF short actuation) for ventilation level 3 (min)</description>
+		<description>End delay (RF short actuation) for ventilation level 3 (uses minutes internally)</description>
 		<category>Time</category>
-		<state min="1" max="20" step="1" readOnly="false"/>
+		<state min="1" max="20" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="RF_long_delay" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>RF Long Delay (P26)</label>
-		<description>End delay (RF long actuation) for ventilation level 3 (min)</description>
+		<description>End delay (RF long actuation) for ventilation level 3 (uses minutes internally)</description>
 		<category>Time</category>
-		<state min="1" max="120" step="1" readOnly="false"/>
+		<state min="1" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="pulse_ventilation" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Pulse Ventilation Period (P27)</label>
-		<description>Period for pulse ventilation (min)</description>
+		<description>Period for pulse ventilation (uses minutes internally)</description>
 		<category>Time</category>
-		<state min="0" max="120" step="1" readOnly="false"/>
+		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="is_analog" advanced="true">

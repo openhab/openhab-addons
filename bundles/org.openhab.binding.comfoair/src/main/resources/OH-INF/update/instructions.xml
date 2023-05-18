@@ -13,6 +13,42 @@
 			<update-channel id="fanOutRPM" groupIds="ventilation">
 				<type>comfoair:fan_out_RPM</type>
 			</update-channel>
+			
+			<update-channel id="bathroomStartDelay" groupIds="menuP2">
+				<type>comfoair:bathroom_start_delay</type>
+			</update-channel>
+			
+			<update-channel id="bathroomEndDelay" groupIds="menuP2">
+				<type>comfoair:bathroom_end_delay</type>
+			</update-channel>
+			
+			<update-channel id="L1EndDelay" groupIds="menuP2">
+				<type>comfoair:L1_end_delay</type>
+			</update-channel>
+			
+			<update-channel id="pulseVentilation" groupIds="menuP2">
+				<type>comfoair:pulse_ventilation</type>
+			</update-channel>
+			
+			<update-channel id="filterWeeks" groupIds="menuP2">
+				<type>comfoair:filter_weeks</type>
+			</update-channel>
+			
+			<update-channel id="RFShortDelay" groupIds="menuP2">
+				<type>comfoair:RF_short_delay</type>
+			</update-channel>
+			
+			<update-channel id="RFLongDelay" groupIds="menuP2">
+				<type>comfoair:RF_long_delay</type>
+			</update-channel>
+			
+			<update-channel id="cookerhoodDelay" groupIds="menuP2">
+				<type>comfoair:cookerhood_delay</type>
+			</update-channel>
+			
+			<update-channel id="preheaterFrostTime" groupIds="menuP2">
+				<type>comfoair:preheater_frost_time</type>
+			</update-channel>
 		</instruction-set>
 
 	</thing-type>
@@ -26,6 +62,34 @@
 			
 			<update-channel id="fanOutRPM" groupIds="ventilation">
 				<type>comfoair:fan_out_RPM</type>
+			</update-channel>
+						
+			<update-channel id="bathroomStartDelay" groupIds="menuP2">
+				<type>comfoair:bathroom_start_delay</type>
+			</update-channel>
+			
+			<update-channel id="bathroomEndDelay" groupIds="menuP2">
+				<type>comfoair:bathroom_end_delay</type>
+			</update-channel>
+			
+			<update-channel id="L1EndDelay" groupIds="menuP2">
+				<type>comfoair:L1_end_delay</type>
+			</update-channel>
+			
+			<update-channel id="filterWeeks" groupIds="menuP2">
+				<type>comfoair:filter_weeks</type>
+			</update-channel>
+			
+			<update-channel id="RFShortDelay" groupIds="menuP2">
+				<type>comfoair:RF_short_delay</type>
+			</update-channel>
+			
+			<update-channel id="RFLongDelay" groupIds="menuP2">
+				<type>comfoair:RF_long_delay</type>
+			</update-channel>
+
+			<update-channel id="preheaterFrostTime" groupIds="menuP2">
+				<type>comfoair:preheater_frost_time</type>
 			</update-channel>
 		</instruction-set>
 
