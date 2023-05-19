@@ -87,24 +87,24 @@ An air purifier supports:
 
 Refer to the matrix above.
 
-| Channel Type ID   | Item Type     | Description                                            |
-|-------------------|---------------|--------------------------------------------------------|
-| brightness        | Dimmer        | The brightness of the bulb in percent                  |
-| color_temperature | Dimmer        | color temperature from 0% = cold to 100% = warm        |
-| color             | Color         | full color                                             |
-| battery_level     | Number        | battery level (in %)                                   |
-| battery_low       | Switch        | battery low warning (<=10% = ON, >10% = OFF)           |
-| power             | Switch        | power switch                                           |
-| position          | Rollershutter | position of the blinds from 0% = open to 100% = closed |
-| fan_mode           | Number         | Fan Mode, target speed of the fan (0 = off, 1 = auto, 10..50 = Level 1 to 5)             |
-| fan_speed          | Number         | Current Fan Speed between 0 (off) and 50 (maximum speed)                                 |
-| disable_led        | Switch         | Disables the LED's on the device                                                         |
-| lock_button        | Switch         | Disables the physical button on the device (applications can still make changes)         |
-| air_quality_pm25   | Number         | Density of Particulate Matter of 2.5μm, measured in ppm                                  |
-| air_quality_rating | Number         | Gives a rating about air quality (1 = Good, 2 = OK, 3 = Bad) similar to Tradfri app      |
-| filter_check_next  | Number:Time    | Time in min before the next filter check if > 0, if < 0 you are late checking the filter |
-| filter_check_alarm | Switch         | When ON, you must perform a filter check (i.e. `filter_check_next` is < 0)               |
-| filter_uptime      | Number:Time    | Time elapsed since the last filter change, in min                                        |
+| Channel Type ID    | Item Type     | Description                                                                              |
+|--------------------|---------------|------------------------------------------------------------------------------------------|
+| brightness         | Dimmer        | The brightness of the bulb in percent                                                    |
+| color_temperature  | Dimmer        | color temperature from 0% = cold to 100% = warm                                          |
+| color              | Color         | full color                                                                               |
+| battery_level      | Number        | battery level (in %)                                                                     |
+| battery_low        | Switch        | battery low warning (<=10% = ON, >10% = OFF)                                             |
+| power              | Switch        | power switch                                                                             |
+| position           | Rollershutter | position of the blinds from 0% = open to 100% = closed                                   |
+| fan_mode           | Number        | Fan Mode, target speed of the fan (0 = off, 1 = auto, 10..50 = Level 1 to 5)             |
+| fan_speed          | Number        | Current Fan Speed between 0 (off) and 50 (maximum speed)                                 |
+| disable_led        | Switch        | Disables the LED's on the device                                                         |
+| lock_button        | Switch        | Disables the physical button on the device (applications can still make changes)         |
+| air_quality_pm25   | Number        | Density of Particulate Matter of 2.5μm, measured in ppm                                  |
+| air_quality_rating | Number        | Gives a rating about air quality (1 = Good, 2 = OK, 3 = Bad) similar to Tradfri app      |
+| filter_check_next  | Number:Time   | Time in min before the next filter check if > 0, if < 0 you are late checking the filter |
+| filter_check_alarm | Switch        | When ON, you must perform a filter check (i.e. `filter_check_next` is < 0)               |
+| filter_uptime      | Number:Time   | Time elapsed since the last filter change, in min                                        |
 
 ## Full Example
 

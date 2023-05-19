@@ -56,8 +56,7 @@ public class TradfriBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_BLINDS_TYPES_UIDS = Collections.singleton(THING_TYPE_BLINDS);
 
-    public static final Set<ThingTypeUID> SUPPORTED_AIR_PURIFIER_TYPES_UIDS = Collections
-            .singleton(THING_TYPE_AIR_PURIFIER);
+    public static final Set<ThingTypeUID> SUPPORTED_AIR_PURIFIER_TYPES_UIDS = Set.of(THING_TYPE_AIR_PURIFIER);
 
     // List of all Gateway Configuration Properties
     public static final String GATEWAY_CONFIG_HOST = "host";
@@ -240,9 +239,8 @@ public class TradfriBindingConstants {
     public static final int FAN_MODE_SPEED4 = 40;
     public static final int FAN_MODE_SPEED5 = 50;
 
-    public static final Set<Integer> AIR_PURIFIER_FANMODE = Collections
-            .unmodifiableSet(Stream.of(FAN_MODE_OFF, FAN_MODE_AUTO, FAN_MODE_SPEED1, FAN_MODE_SPEED2, FAN_MODE_SPEED3,
-                    FAN_MODE_SPEED4, FAN_MODE_SPEED5).collect(Collectors.toSet()));
+    public static final Set<Integer> AIR_PURIFIER_FANMODE = Set.of(FAN_MODE_OFF, FAN_MODE_AUTO, FAN_MODE_SPEED1,
+            FAN_MODE_SPEED2, FAN_MODE_SPEED3, FAN_MODE_SPEED4, FAN_MODE_SPEED5);
 
     public static final int AIR_PURIFIER_AIR_QUALITY_OK = 36;
     public static final int AIR_PURIFIER_AIR_QUALITY_BAD = 86;

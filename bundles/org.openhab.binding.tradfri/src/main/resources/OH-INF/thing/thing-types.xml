@@ -181,7 +181,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Air Purifier device</label>
+		<label>Air Purifier</label>
 		<description>This represents the air purifier sensors and controls.</description>
 
 		<channels>
@@ -232,6 +232,7 @@
 
 		<label>Current Fan Speed</label>
 		<description>Displays the current fan speed (0..50).</description>
+		<category>Fan</category>
 
 		<state readOnly="true"/>
 	</channel-type>
@@ -279,6 +280,7 @@
 
 		<label>Next Filter Check</label>
 		<description>The number of minutes before the next filter check (or time since check is required if below 0).</description>
+		<category>Time</category>
 
 		<state readOnly="true" pattern="%.2f d"/>
 	</channel-type>
@@ -297,6 +299,7 @@
 
 		<label>Filter Uptime</label>
 		<description>The duration for which the current filter was used.</description>
+		<category>Time</category>
 
 		<state readOnly="true" pattern="%.2f week"/>
 	</channel-type>
