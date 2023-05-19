@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Somneo Binding</name>
 	<description>This is the binding for Philips Somneo devices.</description>
+	<connection>local</connection>
 
 </addon:addon>

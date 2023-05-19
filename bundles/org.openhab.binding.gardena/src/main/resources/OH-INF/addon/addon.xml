@@ -6,4 +6,6 @@
 	<type>binding</type>
 	<name>Gardena Smart System Binding</name>
 	<description>This is the binding for Gardena smart system.</description>
+	<connection>cloud</connection>
+
 </addon:addon>

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Vizio Binding</name>
 	<description>Controls Vizio TVs w/SmartCast API (2016+ Models)</description>
+	<connection>local</connection>
 
 </addon:addon>

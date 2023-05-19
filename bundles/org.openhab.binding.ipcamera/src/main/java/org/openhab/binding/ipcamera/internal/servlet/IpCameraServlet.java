@@ -59,6 +59,7 @@ public abstract class IpCameraServlet extends HttpServlet {
 
     public void startListening() {
         try {
+            initParameters.put("servlet-name", "/ipcamera/" + handler.getThing().getUID().getId());
             httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, initParameters,
                     httpService.createDefaultHttpContext());
         } catch (Exception e) {

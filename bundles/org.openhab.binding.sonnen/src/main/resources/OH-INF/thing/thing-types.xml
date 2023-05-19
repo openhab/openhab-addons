@@ -25,13 +25,27 @@
 			<channel id="flowGridBatteryState" typeId="flowGridBatteryState"/>
 			<channel id="flowProductionBatteryState" typeId="flowProductionBatteryState"/>
 			<channel id="flowProductionGridState" typeId="flowProductionGridState"/>
+			<channel id="energyImportedStateProduction" typeId="energyImportedStateProduction"/>
+			<channel id="energyExportedStateProduction" typeId="energyExportedStateProduction"/>
+			<channel id="energyImportedStateConsumption" typeId="energyImportedStateConsumption"/>
+			<channel id="energyExportedStateConsumption" typeId="energyExportedStateConsumption"/>
 		</channels>
+		<properties>
+			<property name="vendor">sonnen</property>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="hostIP" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>Please add the IP Address of your sonnen battery.</description>
+			</parameter>
+			<parameter name="authToken" type="text">
+				<context>service</context>
+				<label>sonnen Authentication Token</label>
+				<description>Authentication Token which can be found under "Software Integration" if you connect locally to your
+					sonnen battery. If empty the old deprecated API will be used.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="0" max="1000">
 				<label>Refresh Interval</label>
@@ -127,5 +141,29 @@
 		<label>Flow Production Towards Grid State</label>
 		<description>Indicates if there is a current flow from production towards grid.</description>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyImportedStateProduction">
+		<item-type>Number:Energy</item-type>
+		<label>kWh Imported Production</label>
+		<description>Indicates the imported kWh Production.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="energyExportedStateProduction">
+		<item-type>Number:Energy</item-type>
+		<label>kWh Exported Production</label>
+		<description>Indicates the exported kWh Production.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="energyImportedStateConsumption">
+		<item-type>Number:Energy</item-type>
+		<label>kWh Imported Consumption</label>
+		<description>Indicates the imported kWh Consumption.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="energyExportedStateConsumption">
+		<item-type>Number:Energy</item-type>
+		<label>kWh Exported Consumption</label>
+		<description>Indicates the exported kWh Consumption.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

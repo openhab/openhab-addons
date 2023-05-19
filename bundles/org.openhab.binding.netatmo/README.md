@@ -65,7 +65,7 @@ The Account bridge has the following configuration elements:
 1. The bridge thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
 1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green.
-1. The bridge configuration will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required. So you can consult this token by opening the Thing page in MainUI, this is the value of the advanced parameter named “Refresh Token”.
+1. The bridge will go _ONLINE_.
 
 Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your things.
 
@@ -444,11 +444,31 @@ All these channels except setpoint and setpoint-mode are read only.
 | battery       | low-battery | Switch       | Low battery                                      |
 | battery       | status      | String       | Description of the battery status (*)            |
 
-### Welcome Home
+### Home
 
-All these channels are read only.
+A Home is the Thing holding various modules and devices. They can hold two areas of equipments : Security and Energy.
+Depending on the way it is configured the behaviour will be adapted and available channels can vary.
 
-**Supported channels for the Home thing:**
+**Home Configuration**
+
+The Home thing has the following configuration elements:
+
+| Parameter  | Type   | Required | Description                                                                         |
+| ---------- | ------ | -------- | ----------------------------------------------------------------------------------- |
+| id (1)     | String | No       | If you have a single type of equipment, this id is to be used for the home          |
+| energyId   | String | No       | Id of a home holding energy control devices                                         |
+| securityId | String | No       | Id of a home holding security monitoring devices                                    |
+
+At least one of these parameter must be filled - at most two : 
+* id or securityId
+* id or energyId
+* securityId and energyId
+
+(1) this parameter is only kept for backward compatibility.
+
+All channels are read only.
+
+**Supported channels for the Security Home thing:**
 
 | Channel Group | Channel Id             | Item Type | Description                                      |
 | ------------- | ---------------------- | --------- | ------------------------------------------------ |
@@ -456,69 +476,70 @@ All these channels are read only.
 | security      | unknown-person-count   | Number    | Total number of unknown persons that are at home |
 | security      | unknown-person-picture | Image     | Snapshot of unknown person that is at home       |
 
-All these channels are read only.
+**Supported trigger channels for the Security Home thing:**
 
-**Supported trigger channels for the Home thing:**
+**Supported trigger channels for the Security Home, Presence and Doorbell thing:**
 
-| Channel Type ID  | Options            | Description                                                                                                                                                                      |
-| ---------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| cameraEvent      |                    | A camera event is triggered with a short delay but without requiring a webhook. The information of the event can get retrieved from the other "welcomeEvent" home thing channels |
-|                  | HUMAN              | Triggered when a human (or person) was detected                                                                                                                                  |
-|                  | ANIMAL             | Triggered when an animal was detected                                                                                                                                            |
-|                  | MOVEMENT           | Triggered when an unspecified movement was detected                                                                                                                              |
-|                  | VEHICLE            | Triggered when a vehicle was detected                                                                                                                                            |
-| welcomeHomeEvent |                    | A welcome home event is triggered directly via a configured webhook                                                                                                              |
-|                  | PERSON             | Triggered when a concrete person was detected                                                                                                                                    |
-|                  | PERSON_AWAY        | Triggered when a concrete person leaves                                                                                                                                          |
-|                  | MOVEMENT           | Triggered when a movement was detected                                                                                                                                           |
-|                  | CONNECTION         | Triggered when a camera connection gets created                                                                                                                                  |
-|                  | DISCONNECTION      | Triggered when a camera connection got lost                                                                                                                                      |
-|                  | ON                 | Triggered when camera monitoring is switched on                                                                                                                                  |
-|                  | OFF                | Triggered when camera monitoring is switched off                                                                                                                                 |
-|                  | BOOT               | Triggered when a camera is booting                                                                                                                                               |
-|                  | SD                 | Triggered when a camera SD card status was changed                                                                                                                               |
-|                  | ALIM               | Triggered when a power supply status was changed                                                                                                                                 |
-|                  | NEW_MODULE         | Triggered when a new module was discovered                                                                                                                                       |
-|                  | MODULE_CONNECT     | Triggered when a module gets connected                                                                                                                                           |
-|                  | MODULE_DISCONNECT  | Triggered when a module gets disconnected                                                                                                                                        |
-|                  | MODULE_LOW_BATTERY | Triggered when the battery of a module gets low                                                                                                                                  |
-|                  | MODULE_END_UPDATE  | Triggered when a firmware update of a module is done                                                                                                                             |
-|                  | TAG_BIG_MOVE       | Triggered when a big movement of a tag was detected                                                                                                                              |
-|                  | TAG_SMALL_MOVE     | Triggered when a small movement of a tag was detected                                                                                                                            |
-|                  | TAG_UNINSTALLED    | Triggered when a tag gets uninstalled                                                                                                                                            |
-|                  | TAG_OPEN           | Triggered when an open event of a tag was detected                                                                                                                               |
+| Channel Type ID | Options            | Description                                                         |
+|-----------------|--------------------|---------------------------------------------------------------------|
+| home-event      |                    | A welcome home event is triggered directly via a configured webhook |
+|                 | PERSON             | Triggered when a concrete person was detected                       |
+|                 | PERSON_AWAY        | Triggered when a concrete person leaves                             |
+|                 | PERSON_HOME        | Triggered when a concrete person entered the home                   |
+|                 | OUTDOOR            | Triggered when a event of an outdoor camera was triggered           |
+|                 | MOVEMENT           | Triggered when a movement was detected                              |
+|                 | HUMAN              | Triggered when a human was detected                                 |
+|                 | ANIMAL             | Triggered when an animal was detected                               |
+|                 | VEHICLE            | Triggered when a vehicle was detected                               |
+|                 | NEW_MODULE         | Triggered when a new module was discovered                          |
+|                 | MODULE_CONNECT     | Triggered when a module gets connected                              |
+|                 | MODULE_DISCONNECT  | Triggered when a module gets disconnected                           |
+|                 | MODULE_LOW_BATTERY | Triggered when the battery of a module gets low                     |
+|                 | MODULE_END_UPDATE  | Triggered when a firmware update of a module is done                |
+|                 | CONNECTION         | Triggered when a camera connection gets created                     |
+|                 | DISCONNECTION      | Triggered when a camera connection got lost                         |
+|                 | ON                 | Triggered when camera monitoring is switched on                     |
+|                 | OFF                | Triggered when camera monitoring is switched off                    |
+|                 | BOOT               | Triggered when a camera is booting                                  |
+|                 | SD                 | Triggered when a camera SD card status was changed                  |
+|                 | ALIM               | Triggered when a power supply status was changed                    |
+|                 | ACCEPTED_CALL      | Triggered when a doorbell call was accepted                         |
+|                 | INCOMING_CALL      | Triggered when a doorbell call is incoming                          |
+|                 | RTC                | Triggered when the doorbell button was pressed                      |
+|                 | MISSED_CALL        | Triggered when a doorbell call was missed                           |
 
 ### Welcome, Presence and Doorbell Cameras
 
 Warnings:
 
 - The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
-- Some features like the video surveillance are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
+- Some features like the video monitoring are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
 
 **Supported channels for the Welcome Camera thing:**
 
-| Channel Group | Channel ID           | Item Type    | Read/Write | Description                                                                                                                                 |
-| ------------- | -------------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| status        | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
-| status        | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
-| status        | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
-| live          | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
-| live          | local-picture-url    | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
-| live          | vpn-picture-url      | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
-| live          | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
-| live          | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
-| signal        | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
-| signal        | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
-| last-event    | type                 | String       | Read-only  | Type of event                                                                                                                               |
-| last-event    | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
-| last-event    | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
-| last-event    | message              | String       | Read-only  | Message sent by Netatmo corresponding to given event                                                                                        |
-| last-event    | snapshot             | Image        | Read-only  | picture of the last event, if it applies                                                                                                    |
-| last-event    | snapshot-url         | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here                   |
-| last-event    | local-video-url      | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
-| last-event    | vpn-video-url        | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
-| last-event    | video-status         | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
-| last-event    | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
+| Channel Group  | Channel ID           | Item Type    | Read/Write | Description                                                                                                                                 |
+|----------------| -------------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| security-event | home-event           |              | Read-only  | Trigger channel which is triggered when the camera sent an event                                                                            |
+| status         | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
+| status         | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
+| status         | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
+| live           | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live           | local-picture-url    | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
+| live           | vpn-picture-url      | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
+| live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
+| live           | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
+| signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
+| signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
+| last-event     | type                 | String       | Read-only  | Type of event                                                                                                                               |
+| last-event     | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
+| last-event     | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
+| last-event     | message              | String       | Read-only  | Message sent by Netatmo corresponding to given event                                                                                        |
+| last-event     | snapshot             | Image        | Read-only  | picture of the last event, if it applies                                                                                                    |
+| last-event     | snapshot-url         | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here                   |
+| last-event     | local-video-url      | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
+| last-event     | vpn-video-url        | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
+| last-event     | video-status         | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
+| last-event     | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
 
 (*) This channel is configurable : low, poor, high.
 
@@ -528,54 +549,63 @@ Warnings:
 
 - The floodlight auto-mode (auto-mode) isn't updated it is changed by another application. Therefore the binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight switch off behaviour.
 
-| Channel Group | Channel ID           | Item Type    | Read/Write | Description                                                                                                                                 |
-| ------------- | -------------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| status        | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
-| status        | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
-| status        | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
-| live          | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
-| live          | picture-url          | String       | Read-only  | Url of the live snapshot for this camera                                                                                                    |
-| live          | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
-| live          | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
-| signal        | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
-| signal        | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
-| presence      | floodlight           | String       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
-| last-event    | type                 | String       | Read-only  | Type of event                                                                                                                               |
-| last-event    | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
-| last-event    | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
-| last-event    | message              | String       | Read-only  | Message sent by Netatmo corresponding to given event                                                                                        |
-| last-event    | snapshot             | Image        | Read-only  | picture of the last event, if it applies                                                                                                    |
-| last-event    | snapshot-url         | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here                   |
-| last-event    | local-video-url      | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
-| last-event    | vpn-video-url        | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
-| last-event    | video-status         | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
-| last-event    | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
+| Channel Group  | Channel ID           | Item Type    | Read/Write | Description                                                                                                                                 |
+|----------------|----------------------| ------------ | ---------- |---------------------------------------------------------------------------------------------------------------------------------------------|
+| security-event | home-event           |              | Read-only  | Trigger channel which is triggered when the camera sent an event                                                                            |
+| status         | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
+| status         | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
+| status         | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
+| live           | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live           | picture-url          | String       | Read-only  | Url of the live snapshot for this camera                                                                                                    |
+| live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
+| live           | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
+| signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
+| signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
+| presence       | floodlight           | String       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
+| last-event     | type                 | String       | Read-only  | Type of event                                                                                                                               |
+| last-event     | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
+| last-event     | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
+| last-event     | message              | String       | Read-only  | Message sent by Netatmo corresponding to given event                                                                                        |
+| last-event     | snapshot             | Image        | Read-only  | picture of the last event, if it applies                                                                                                    |
+| last-event     | snapshot-url         | String       | Read-only  | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here                   |
+| last-event     | local-video-url      | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
+| last-event     | vpn-video-url        | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
+| last-event     | video-status         | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
+| last-event     | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
+| sub-event      | type                 | String       | Read-only  | Type of sub-event                                                                                                                           |
+| sub-event      | time                 | DateTime     | Read-only  | Time of occurrence of sub-event                                                                                                             |
+| sub-event      | message              | String       | Read-only  | Message sent by Netatmo corresponding to given sub-event                                                                                    |
+| sub-event      | snapshot-url         | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
+| sub-event      | vignette-url         | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
+| sub-event      | snapshot             | Image        | Read-only  | picture of the snapshot                                                                                                                     |
+| sub-event      | vignette             | Image        | Read-only  | picture of the vignette                                                                                                                     |
 
 (*) This channel is configurable : low, poor, high.
 
 **Supported channels for the Doorbell thing:**
 
-| Channel Group | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
-| ------------- | ----------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| status        | sd-card           | String       | Read-only  | State of the SD card                                                                                                                        |
-| status        | alim              | String       | Read-only  | State of the power connector                                                                                                                |
-| live          | picture           | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
-| live          | local-picture-url | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
-| live          | vpn-picture-url   | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
-| signal        | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
-| signal        | value             | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
-| last-event    | type              | String       | Read-only  | Type of event                                                                                                                               |
-| last-event    | video-status      | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
-| last-event    | time              | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
-| last-event    | local-video-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
-| last-event    | vpn-video-url     | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
-| sub-event     | type              | String       | Read-only  | Type of sub-event                                                                                                                           |
-| sub-event     | time              | DateTime     | Read-only  | Time of occurrence of sub-event                                                                                                             |
-| sub-event     | message           | String       | Read-only  | Message sent by Netatmo corresponding to given sub-event                                                                                    |
-| sub-event     | snapshot-url      | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
-| sub-event     | vignette-url      | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
-| sub-event     | snapshot          | Image        | Read-only  | picture of the snapshot                                                                                                                     |
-| sub-event     | vignet            | Image        | Read-only  | picture of the vignette                                                                                                                     |
+| Channel Group       | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
+|---------------------| ----------------- |--------------| ---------- |---------------------------------------------------------------------------------------------------------------------------------------------|
+| security-event      | home-event        |              | Read-only  | Trigger channel which is triggered when the doorbell sent an event                                                                          |
+| status              | sd-card           | String       | Read-only  | State of the SD card                                                                                                                        |
+| status              | alim              | String       | Read-only  | State of the power connector                                                                                                                |
+| live                | picture           | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live                | local-picture-url | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
+| live                | vpn-picture-url   | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
+| signal              | strength          | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
+| signal              | value             | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
+| last-event-doorbell | type              | String       | Read-only  | Type of event                                                                                                                               |
+| last-event-doorbell | video-status      | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
+| last-event-doorbell | time              | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
+| last-event-doorbell | local-video-url   | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
+| last-event-doorbell | vpn-video-url     | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
+| sub-event-doorbell  | type              | String       | Read-only  | Type of sub-event                                                                                                                           |
+| sub-event-doorbell  | time              | DateTime     | Read-only  | Time of occurrence of sub-event                                                                                                             |
+| sub-event-doorbell  | message           | String       | Read-only  | Message sent by Netatmo corresponding to given sub-event                                                                                    |
+| sub-event-doorbell  | snapshot-url      | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
+| sub-event-doorbell  | vignette-url      | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
+| sub-event-doorbell  | snapshot          | Image        | Read-only  | picture of the snapshot                                                                                                                     |
+| sub-event-doorbell  | vignette          | Image        | Read-only  | picture of the vignette                                                                                                                     |
 
 Note: live feeds either locally or via VPN are not available in Netatmo API.
 
@@ -823,6 +853,26 @@ sitemap netatmo label="Netatmo" {
         }
     }
 }
+```
+
+## Example Rules
+
+```java
+rule "Notification on home web hook event"
+when
+Channel "netatmo:home:mybridgeid:myclientid:home-event" triggered
+then
+logInfo("camera", "Received web hook on home level")
+end
+```
+
+```java
+rule "Notification on camera web hook event"
+when
+Channel "netatmo:presence:mybridgeid:myclientid:mythingid:home-event" triggered
+then
+logInfo("camera", "Received web hook on camera level")
+end
 ```
 
 ## Rule Actions

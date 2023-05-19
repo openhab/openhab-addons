@@ -1,0 +1,369 @@
+MainType: 1
+1.000: General bool
+1.001: DPT_Switch values: 0 = off 1 = on
+1.002: DPT_Bool values: 0 = false 1 = true
+1.003: DPT_Enable values: 0 = disable 1 = enable
+1.004: DPT_Ramp values: 0 = no ramp 1 = ramp
+1.005: DPT_Alarm values: 0 = no alarm 1 = alarm
+1.006: DPT_BinaryValue values: 0 = low 1 = high
+1.007: DPT_Step values: 0 = decrease 1 = increase
+1.008: DPT_UpDown values: 0 = up 1 = down
+1.009: DPT_OpenClose values: 0 = open 1 = close
+1.010: DPT_Start values: 0 = stop 1 = start
+1.011: DPT_State values: 0 = inactive 1 = active
+1.012: DPT_Invert values: 0 = not inverted 1 = inverted
+1.013: DPT_DimSendStyle values: 0 = start/stop 1 = cyclic
+1.014: DPT_InputSource values: 0 = fixed 1 = calculated
+1.015: DPT_Reset values: 0 = no action 1 = reset
+1.016: DPT_Ack values: 0 = no action 1 = acknowledge
+1.017: DPT_Trigger values: 0 = trigger 1 = trigger
+1.018: DPT_Occupancy values: 0 = not occupied 1 = occupied
+1.019: DPT_Window_Door values: 0 = closed 1 = open
+1.021: DPT_LogicalFunction values: 0 = OR 1 = AND
+1.022: DPT_Scene_AB values: 0 = scene A 1 = scene B
+1.023: DPT_ShutterBlinds_Mode values: 0 = only move up/down 1 = move up/down + step-stop
+1.024: DPT_DayNight values: 0 = day 1 = night
+1.100: DPT_Heat/Cool values: 0 = cooling 1 = heating
+1.1200: DPT_ConsumerProducer values: 0 = consumer 1 = producer
+1.1201: DPT_EnergyDirection values: 0 = positive 1 = negative
+
+MainType: 2
+2.001: DPT_Switch_Control values: 0 = off 1 = on
+2.002: DPT_Bool_Control values: 0 = false 1 = true
+2.003: DPT_Enable_Control values: 0 = disable 1 = enable
+2.004: DPT_Ramp_Control values: 0 = no ramp 1 = ramp
+2.005: DPT_Alarm_Control values: 0 = no alarm 1 = alarm
+2.006: DPT_BinaryValue_Control values: 0 = low 1 = high
+2.007: DPT_Step_Control values: 0 = decrease 1 = increase
+2.008: DPT_Direction1_Control values: 0 = up 1 = down
+2.009: DPT_Direction2_Control values: 0 = open 1 = close
+2.010: DPT_Start_Control values: 0 = stop 1 = start
+2.011: DPT_State_Control values: 0 = inactive 1 = active
+2.012: DPT_Invert_Control values: 0 = not inverted 1 = inverted
+
+MainType: 3
+3.007: DPT_Control_Dimming values: 0 = decrease 1 = increase
+3.008: DPT_Control_Blinds values: 0 = up 1 = down
+
+MainType: 4
+4.001: DPT_Char_ASCII
+4.002: DPT_Char_8859_1
+
+MainType: 5
+5.000: General byte
+5.001: DPT_Scaling values: 0...100 %
+5.003: DPT_Angle values: 0...360 °
+5.004: DPT_Percent_U8 (8 Bit) values: 0...255 %
+5.005: DPT_DecimalFactor values: 0...255 ratio
+5.006: DPT_Tariff values: 0...254
+5.010: DPT_Value_1_Ucount Unsigned count values: 0...255 counter pulses
+
+MainType: 6
+6.001: DPT_Percent_V8 (8 Bit) values: -128...127 %
+6.010: DPT_Value_1_Count values: signed -128...127 counter pulses
+6.020: DPT_Status_Mode3 with mode values: 0/0/0/0/0 0...1/1/1/1/1 2
+
+MainType: 7
+7.000: General unsigned integer
+7.001: DPT_Value_2_Ucount values: 0...65535 pulses
+7.002: DPT_TimePeriodMsec values: 0...65535 res 1 ms
+7.003: DPT_TimePeriod10MSec values: 0...655350 res 10 ms
+7.004: DPT_TimePeriod100MSec values: 0...6553500 res 100 ms
+7.005: DPT_TimePeriodSec values: 0...65535 s
+7.006: DPT_TimePeriodMin values: 0...65535 min
+7.007: DPT_TimePeriodHrs values: 0...65535 h
+7.010: DPT_PropDataType values: 0...65535
+7.011: DPT_Length_mm values: 0...65535 mm
+7.012: DPT_UElCurrentmA values: 0...65535 mA
+7.013: DPT_Brightness values: 0...65535 lx
+7.600: DPT_Absolute_Colour_Temperature values: 0...65535 K, 2000K 3000K 5000K 8000K
+
+MainType: 8
+8.000: General integer
+8.001: DPT_Value_2_Count
+8.002: DPT_DeltaTimeMsec
+8.003: DPT_DeltaTime10MSec
+8.004: DPT_DeltaTime100MSec
+8.005: DPT_DeltaTimeSec
+8.006: DPT_DeltaTimeMin
+8.007: DPT_DeltaTimeHrs
+8.010: DPT_Percent_V16
+8.011: DPT_Rotation_Angle
+8.012: DPT_Length_m
+
+MainType: 9
+9.000: General float
+9.001: DPT_Value_Temp values: -273...+670760 °C
+9.002: DPT_Value_Tempd values: -670760...+670760 K
+9.003: DPT_Value_Tempa values: -670760...+670760 K/h
+9.004: DPT_Value_Lux values: 0...+670760 lx
+9.005: DPT_Value_Wsp values: 0...+670760 m/s
+9.006: DPT_Value_Pres values: 0...+670760 Pa
+9.007: DPT_Value_Humidity values: 0...+670760 %
+9.008: DPT_Value_AirQuality values: 0...+670760 ppm
+9.010: DPT_Value_Time1 values: -670760...+670760 s
+9.011: DPT_Value_Time2 values: -670760...+670760 ms
+9.020: DPT_Value_Volt values: -670760...+670760 mV
+9.021: DPT_Value_Curr values: -670760...+670760 mA
+9.022: DPT_PowerDensity values: -670760...+670760 W/m²
+9.023: DPT_KelvinPerPercent values: -670760...+670760 K/%
+9.024: DPT_Power values: -670760...+670760 kW
+9.025: DPT_Value_Volume_Flow values: -670760...+670760 l/h
+9.026: DPT_Rain_Amount values: -671088.64...670760.96 l/m²
+9.027: DPT_Value_Temp_F values: -459.6...670760.96 °F
+9.028: DPT_Value_Wsp_kmh values: 0...670760.96 km/h
+9.029: DPT_Value_Absolute_Humidity values: 0...670760 g/m³
+9.030: DPT_Concentration_μgm3 values: 0...670760 µg/m³
+
+MainType: 10
+10.001: DPT_TimeOfDay values: 1 = Monday...7 = Sunday, 0 = no-day, 00:00:00 Sun, 23:59:59 dow, hh:mm:ss
+
+MainType: 11
+11.001: DPT_Date values: 1990-01-01...2089-12-31, yyyy-mm-dd
+
+MainType: 12
+12.000: General unsigned long
+12.001: DPT_Value_4_Ucount values: 0...4294967295 counter pulses
+12.100: DPT_LongTimePeriod_Sec
+12.101: DPT_LongTimePeriod_Min
+12.102: DPT_LongTimePeriod_Hrs
+12.1200: DPT_VolumeLiquid_Litre
+12.1201: DPT_Volume_m3
+
+MainType: 13
+13.000: General long
+13.001: DPT_Value_4_Count values: -2147483648...2147483647 counter pulses
+13.002: DPT_FlowRate_m3h values: -2147483648...2147483647 m3/h
+13.010: DPT_ActiveEnergy values: -2147483648...2147483647 Wh
+13.011: DPT_ApparantEnergy values: -2147483648...2147483647 VAh
+13.012: DPT_ReactiveEnergy values: -2147483648...2147483647 VARh
+13.013: DPT_ActiveEnergy_kWh values: -2147483648...2147483647 kWh
+13.014: DPT_ApparantEnergy_kVAh values: -2147483648...2147483647 kVAh
+13.015: DPT_ReactiveEnergy_kVARh values: -2147483648...2147483647 kVAR
+13.016: DPT_ActiveEnergy_MWh values: -2147483648...2147483647 MWh
+13.100: DPT_LongDeltaTimeSec values: -2147483648...2147483647 s
+13.1200: DPT_DeltaVolumeLiquid_Litre values: -2147483648...2147483647 l
+13.1201: DPT_DeltaVolume_m3 values: -2147483648...2147483647 m³
+
+MainType: 14, Range: [-3.40282347e+38f...3.40282347e+38f]
+14.000: Acceleration, values: ms⁻²
+14.001: Acceleration, angular, values: rad s⁻²
+14.002: Activation energy, values: J/mol
+14.003: Activity, values: s⁻¹
+14.004: Mol, values: mol
+14.005: Amplitude, values:
+14.006: Angle, values: rad
+14.007: Angle, values: °
+14.008: Momentum, values: Js
+14.009: Angular velocity, values: rad/s
+14.010: Area, values: m²
+14.011: Capacitance, values: F
+14.012: Charge density (surface), values: C m⁻²
+14.013: Charge density (volume), values: C m⁻³
+14.014: Compressibility, values: m²/N
+14.015: Conductance, values: Ω⁻¹
+14.016: Conductivity, electrical, values: Ω⁻¹m⁻¹
+14.017: Density, values: kg m⁻³
+14.018: Electric charge, values: C
+14.019: Electric current, values: A
+14.020: Electric current density, values: A m⁻²
+14.021: Electric dipole moment, values: Cm
+14.022: Electric displacement, values: C m⁻²
+14.023: Electric field strength, values: V/m
+14.024: Electric flux, values: Vm
+14.025: Electric flux density, values: C m⁻²
+14.026: Electric polarization, values: C m⁻²
+14.027: Electric potential, values: V
+14.028: Electric potential difference, values: V
+14.029: Electromagnetic moment, values: A m²
+14.030: Electromotive force, values: V
+14.031: Energy, values: J
+14.032: Force, values: N
+14.033: Frequency, values: Hz
+14.034: Frequency, angular, values: rad/s
+14.035: Heat capacity, values: J/K
+14.036: Heat flow rate, values: W
+14.037: Heat quantity, values: J
+14.038: Impedance, values: Ω
+14.039: Length, values: m
+14.040: Quantity of Light, values: J
+14.041: Luminance, values: cd m⁻²
+14.042: Luminous flux, values: lm
+14.043: Luminous intensity, values: cd
+14.044: Magnetic field strength, values: A/m
+14.045: Magnetic flux, values: Wb
+14.046: Magnetic flux density, values: T
+14.047: Magnetic moment, values: A m²
+14.048: Magnetic polarization, values: T
+14.049: Magnetization, values: A/m
+14.050: Magneto motive force, values: A
+14.051: Mass, values: kg
+14.052: Mass flux, values: kg/s
+14.053: Momentum, values: N/s
+14.054: Phase angle, radiant, values: rad
+14.055: Phase angle, degree, values: °
+14.056: Power, values: W
+14.057: Power factor, values:
+14.058: Pressure, values: Pa
+14.059: Reactance, values: Ω
+14.060: Resistance, values: Ω
+14.061: Resistivity, values: Ωm
+14.062: Self inductance, values: H
+14.063: Solid angle, values: sr
+14.064: Sound intensity, values: W m⁻²
+14.065: Speed, values: m/s
+14.066: Stress, values: Pa
+14.067: Surface tension, values: N/m
+14.068: Temperature in Celsius Degree, values: °C
+14.069: Temperature, absolute, values: K
+14.070: Temperature difference, values: K
+14.071: Thermal capacity, values: J/K
+14.072: Thermal conductivity, values: W/m K⁻¹
+14.073: Thermoelectric power, values: V/K
+14.074: Time, values: s
+14.075: Torque, values: Nm
+14.076: Volume, values: m³
+14.077: Volume flux, values: m³/s
+14.078: Weight, values: N
+14.079: Work, values: J
+14.080: Apparent power, values: VA
+14.1200: DPT_Volume_Flux_Meter, values: m³/h
+14.1201: DPT_Volume_Flux_ls, values: l/s
+
+MainType: 16
+16.000: ASCII string
+16.001: ISO-8859-1 string (Latin 1)
+
+MainType: 17
+17.001: Scene Number, values: 0...63
+
+MainType: 18
+18.001: Scene Control, values: 0...63, 0 = activate, 1 = learn
+
+MainType: 19
+19.001: Date with time, values: 0 = 1900, 255 = 2155, 01/01 00:00:00, 12/31 24:00:00 yr/mth/day hr:min:sec
+
+MainType: 20
+20.001: System Clock Mode, enumeration [0..2]
+20.002: Building Mode, enumeration [0..2]
+20.003: Occupancy Mode, enumeration [0..2]
+20.004: Priority, enumeration [0..3]
+20.005: Light Application Mode, enumeration [0..2]
+20.006: Application Area, enumeration [0..14]
+20.007: Alarm Class Type, enumeration [0..3]
+20.008: PSU Mode, enumeration [0..2]
+20.011: Error Class System, enumeration [0..18]
+20.012: Error Class HVAC, enumeration [0..4]
+20.013: Time Delay, enumeration [0..25]
+20.014: Beaufort Wind Force Scale, enumeration [0..12]
+20.017: Sensor Select, enumeration [0..4]
+20.020: Actuator Connect Type, enumeration [1..2]
+20.021: Cloud Cover, enumeration [0..9]
+unsupported (impl after 2.5.1): 20.022: Return Mode, enumeration [0..2]
+20.100: Fuel Type, enumeration [0..3]
+20.101: Burner Type, enumeration [0..3]
+20.102: HVAC Mode, enumeration [0..4]
+20.103: DHW Mode, enumeration [0..4]
+20.104: Load Priority, enumeration [0..2]
+20.105: HVAC Control Mode, enumeration [0..20]
+20.106: HVAC Emergency Mode, enumeration [0..5]
+20.107: Changeover Mode, enumeration [0..2]
+20.108: Valve Mode, enumeration [1..5]
+20.109: Damper Mode, enumeration [1..4]
+20.110: Heater Mode, enumeration [1..3]
+20.111: Fan Mode, enumeration [0..2]
+20.112: Master/Slave Mode, enumeration [0..2]
+20.113: Status Room Setpoint, enumeration [0..2]
+20.114: Metering Device Type, enumeration [0..41/255]
+unsupported (impl after 2.5.1): 20.115: Hum Dehum Mode, enumeration [0..2]
+20.120: Air Damper Actuator Type, enumeration [1..2]
+20.121: Backup Mode, enumeration [0..1]
+20.122: Start Synchronization, enumeration [0..2]
+20.600: Behavior Lock/Unlock, enumeration [0..6]
+20.601: Behavior Bus Power Up/Down, enumeration [0..4]
+20.602: DALI Fade Time, enumeration [0..15]
+20.603: Blinking Mode, enumeration [0..2]
+20.604: Light Control Mode, enumeration [0..1]
+20.605: Switch PB Model, enumeration [1..2]
+20.606: PB Action, enumeration [0..3]
+20.607: Dimm PB Model, enumeration [1..4]
+20.608: Switch On Mode, enumeration [0..2]
+20.609: Load Type Set, enumeration [0..2]
+20.610: Load Type Detected, enumeration [0..3]
+unsupported: 20.611 Converter Test Control, enumeration [0..6]
+unsupported: 20.612 Converter Control, enumeration [0..4]
+unsupported: 20.613 Converter Data Request, enumeration [0..8]
+20.801: SAB Except Behavior, enumeration [0..4]
+20.802: SAB Behavior Lock/Unlock, enumeration [0..6]
+20.803: SSSB Mode, enumeration [1..4]
+20.804: Blinds Control Mode, enumeration [0..1]
+20.1000: Comm Mode, enumeration [0..255]
+20.1001: Additional Info Type, enumeration [0..7]
+20.1002: RF Mode Select, enumeration [0..2]
+20.1003: RF Filter Select, enumeration [0..3]
+20.1004 Medium, enumeration [0, 1, 2, 5]
+20.1005 Push Button Function, enumeration [0..55]
+20.1200: M-Bus Breaker/Valve State, enumeration [0..255]
+20.1202: Gas Measurement Condition, enumeration [0..3]
+unsupported: 20.1203 Breaker Status, enumeration [0..6]
+unsupported: 20.1204 Euridis Communication Interface Status, enumeration [0..2]
+unsupported: 20.1205 PLC Status, enumeration [0..2]
+unsupported: 20.1206 Peak Event Notice, enumeration [0..3]
+unsupported: 20.1207 Peak Event, enumeration [0..3]
+unsupported: 20.1208 TIC Type, enumeration [0..1]
+unsupported: 20.1209 Type TIC Channel, enumeration [0..4]
+
+MainType: 21
+21.001: General Status, values: 0...31
+21.002: Device Control, values: 0...7
+21.100: Forcing Signal, values: 0...255
+21.101: Forcing Signal Cool, values: 0...1
+21.102: Room Heating Controller Status, values: 0...255
+21.103: Solar Dhw Controller Status, values: 0...7
+21.104: Fuel Type Set, values: 0...7
+21.105: Room Cooling Controller Status, values: 0...1
+21.106: Ventilation Controller Status, values: 0...15
+21.601: Light Actuator Error Info, values: 0...127
+21.1000: R F Comm Mode Info, values: 0...7
+21.1001: R F Filter Modes, values: 0...7
+21.1002 Security Report, values 0..1
+21.1010: Channel Activation State, bitfield, 1 = active
+unsupported: 21.1200 Virtual Dry Contact, bitfield, 1 = contact closed
+unsupported: 21.1201 Phases Status, bitfield, 1 = phase present
+
+MainType: 22
+unsupported (impl after 2.5.1): 22.100: DHW Controller Status
+22.101: RHCC Status (enumeration)
+unsupported: 22.102: HVAC combined status
+unsupported: 22.103: RTC status
+22.1000: KNX medium (enumeration)
+unsupported (impl after 2.5.1): 22.1010: 16 channel activation, bitfield, 1 = active
+
+MainType: 24
+unsupported (binding): 24.001: VarString_8859_1
+
+MainType: 28
+28.001: UTF-8
+
+MainType: 29
+29.010: Active Energy, values: -9223372036854775808...9223372036854775807 Wh
+29.011: Apparent energy, values: -9223372036854775808...9223372036854775807 VAh
+29.012: Reactive energy, values: -9223372036854775808...9223372036854775807 VARh
+
+Maintype 225, 3 bytes
+unsupported: 225.001 DPT_Scaling_Speed 
+
+MainType: 229
+229.001: Metering Value, values: -2147483648...2147483647
+
+MainType: 232, 3 bytes
+232.600: DPT_Colour_RGB, values: (0 0 0)...(255 255 255), r g b
+232.60000: Defined in this binding only - vendor specific (MDT): 232.600 with hsb instead of rgb
+
+MainType: 242, 3 bytes
+242.600 DPT_Colour_xyY, values: xyb + valid flags xy and b
+
+MainType: 251, 3 bytes
+251.600 DPT_Colour_RGBW, values: rgwb + valid flags per channel
+
+Several other main types >200 were added. This list is incomplete.

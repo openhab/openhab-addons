@@ -4,8 +4,6 @@ This is an openHAB binding for Verisure Smart Alarms by Verisure Securitas.
 
 This binding uses a rest API used by the [Verisure My Pages webpage](https://mypages.verisure.com/login.html)
 
-
-
 ## Supported Things
 
 This binding supports the following thing types:
@@ -25,17 +23,14 @@ This binding supports the following thing types:
 - Event Log
 - Gateway
 
-
 ## Binding Configuration
 
-You will have to configure the bridge with username and password of a pre-defined user on [Verisure page](https://mypages.verisure.com) that has not activated Multi Factor Authentication (MFA/2FA). 
+You will have to configure the bridge with username and password of a pre-defined user on [Verisure page](https://mypages.verisure.com) that has not activated Multi Factor Authentication (MFA/2FA).
 
 Verisure allows you to have more than one user so the suggestion is to use a specific user for automation that has MFA/2FA deactivated.
 **NOTE:** To be able to have full control over all SmartLock/alarm functionality, the user also needs to have Administrator rights.
 
 You must also configure pin-code(s) to be able to lock/unlock the SmartLock(s) and arm/unarm the Alarm(s).
-
-
 
 ## Discovery
 
@@ -57,15 +52,15 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 #### Configuration Options
 
-*   `username` - The username used to connect to https://mypages.verisure.com
-    * The user has to have Administrator rights to have full SmartLock functionality
+- `username` - The username used to connect to <https://mypages.verisure.com>
+  - The user has to have Administrator rights to have full SmartLock functionality
 
-*   `password` - The password used to connect to https://mypages.verisure.com
+- `password` - The password used to connect to <https://mypages.verisure.com>
 
-*   `refresh` - Specifies the refresh interval in seconds
+- `refresh` - Specifies the refresh interval in seconds
 
-*   `pin` - The username's pin code to arm/disarm alarm and lock/unlock door. In the case of more than one installation and different pin-codes, use a comma separated string where pin-code matches order of installations. The installation order can be found using DEBUG log settings.
-    * Two installations where the first listed installation uses a 6 digit pin-code and second listed installation uses a 4 digit pin-code: 123456,1234
+- `pin` - The username's pin code to arm/disarm alarm and lock/unlock door. In the case of more than one installation and different pin-codes, use a comma separated string where pin-code matches order of installations. The installation order can be found using DEBUG log settings.
+  - Two installations where the first listed installation uses a 6 digit pin-code and second listed installation uses a 4 digit pin-code: 123456,1234
 
 If you define the bridge in a things-file the bridge type id is defined as `bridge`, e.g.:
 
@@ -79,13 +74,12 @@ The following channels are supported:
 |-----------------|-----------|-------------------------------------------------------------------------------------------------|
 | status          | String    | This channel can be used to trigger an instant refresh by sending a RefreshType.REFRESH command.|
 
-
 ### Verisure Alarm
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-    *   Since Alarm lacks a Verisure ID, the following naming convention is used for alarm on installation ID 123456789: 'alarm123456789'. Installation ID can be found using DEBUG log settings
+- `deviceId` - Device Id
+  - Since Alarm lacks a Verisure ID, the following naming convention is used for alarm on installation ID 123456789: 'alarm123456789'. Installation ID can be found using DEBUG log settings
 
 #### Channels
 
@@ -105,8 +99,8 @@ The following channels are supported:
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+- `deviceId` - Device Id
+  - Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
 
@@ -131,8 +125,8 @@ The following channels are supported:
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
+- `deviceId` - Device Id
+  - Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
@@ -151,8 +145,8 @@ The following channels are supported:
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or on the sensor itself)
+- `deviceId` - Device Id
+  - Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or on the sensor itself)
 
 #### Channels
 
@@ -167,24 +161,22 @@ The following channels are supported:
 | location                    | String                | This channel reports the location of the device.                            |
 | installationName            | String                | This channel reports the installation name.                                 |
 | installationId              | Number                | This channel reports the installation ID.                                   |
-| lowBattery                  | Switch                | This channel reports if the battery level is low.                           | 
+| lowBattery                  | Switch                | This channel reports if the battery level is low.                           |
 | smokeDetectorTriggerChannel | trigger               | This is a trigger channel that receives events.                             |
 
 ### Verisure Water Detector
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
+- `deviceId` - Device Id
+  - Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
 The following channels are supported:
 
-
-
-| Channel Type ID             | Item Type             | Description                                                  | 
-|-----------------------------|-----------------------|--------------------------------------------------------------|                                                                                                                                          
+| Channel Type ID             | Item Type             | Description                                                  |
+|-----------------------------|-----------------------|--------------------------------------------------------------|
 | temperature                 | Number:Temperature    | This channel reports the current temperature.                |
 | timestamp                   | DateTime              | This channel reports the last time this sensor was updated.  |
 | location                    | String                | This channel reports the location of the device.             |
@@ -192,54 +184,53 @@ The following channels are supported:
 | installationId              | Number                | This channel reports the installation ID.                    |
 | waterDetectorTriggerChannel | trigger               | This is a trigger channel that receives events.              |
 
-
 ### Verisure Siren
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
+- `deviceId` - Device Id
+  - Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
 The following channels are supported:
- 
-| Channel Type ID     | Item Type             | Description                                                | 
-|---------------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
+
+| Channel Type ID     | Item Type             | Description                                                |
+|---------------------|-----------------------|------------------------------------------------------------|
 | temperature         | Number:Temperature    | This channel reports the current temperature.              |
 | timestamp           | DateTime              | This channel reports the last time this sensor was updated.|
 | location            | String                | This channel reports the location.                         |
 | installationName    | String                | This channel reports the installation name.                |
 | installationId      | Number                | This channel reports the installation ID.                  |
-| lowBattery          | Switch                | This channel reports if the battery level is low.          | 
+| lowBattery          | Switch                | This channel reports if the battery level is low.          |
 | sirenTriggerChannel | trigger               | This is a trigger channel that receives events.            |
 
 ### Verisure Night Control
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
+- `deviceId` - Device Id
+  - Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
-The following channels are supported: 
-| Channel Type ID            | Item Type             | Description                                                | 
-|----------------------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
+The following channels are supported:
+| Channel Type ID            | Item Type             | Description                                                |
+|----------------------------|-----------------------|------------------------------------------------------------|
 | temperature                | Number:Temperature    | This channel reports the current temperature.              |
 | timestamp                  | DateTime              | This channel reports the last time this sensor was updated.|
 | location                   | String                | This channel reports the location.                         |
 | installationName           | String                | This channel reports the installation name.                |
 | installationId             | Number                | This channel reports the installation ID.                  |
-| lowBattery                 | Switch                | This channel reports if the battery level is low.          | 
+| lowBattery                 | Switch                | This channel reports if the battery level is low.          |
 | nightControlTriggerChannel | trigger               | This is a trigger channel that receives events.            |
 
 ### Verisure DoorWindow Sensor
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
+- `deviceId` - Device Id
+  - Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
@@ -252,16 +243,15 @@ The following channels are supported:
 | location                 | String    | This channel reports the location of the device.                            |
 | installationName         | String    | This channel reports the installation name.                                 |
 | installationId           | Number    | This channel reports the installation ID.                                   |
-| lowBattery               | Switch    | This channel reports if the battery level is low.                           | 
+| lowBattery               | Switch    | This channel reports if the battery level is low.                           |
 | doorWindowTriggerChannel | trigger   | This is a trigger channel that receives events.                             |
-
 
 ### Verisure User Presence
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *  Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site id. The following naming convention is used for User presence on site id 123456789 for a user with email address test@gmail.com: 'uptestgmailcom123456789'. Installation ID can be found using DEBUG log settings.
+- `deviceId` - Device Id
+  - Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site id. The following naming convention is used for User presence on site id 123456789 for a user with email address test@gmail.com: 'uptestgmailcom123456789'. Installation ID can be found using DEBUG log settings.
 
 #### Channels
 
@@ -281,8 +271,8 @@ The following channels are supported:
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *  Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on site id 123456789: 'bc123456789'. Installation ID can be found using DEBUG log settings.
+- `deviceId` - Device Id
+  - Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on site id 123456789: 'bc123456789'. Installation ID can be found using DEBUG log settings.
 
 #### Channels
 
@@ -299,16 +289,16 @@ The following channels are supported:
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *  Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
+- `deviceId` - Device Id
+  - Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the sensor itself)
 
 #### Channels
 
 The following channels are supported:
- 
-| Channel Type ID             | Item Type          | Description                                                                         | 
-|-----------------------------|--------------------|-------------------------------------------------------------------------------------|                                                                                                                                          
-| countLatestDetection        | Number             | This channel reports the number of mice counts the latest detection during last 24. | 
+
+| Channel Type ID             | Item Type          | Description                                                                         |
+|-----------------------------|--------------------|-------------------------------------------------------------------------------------|
+| countLatestDetection        | Number             | This channel reports the number of mice counts the latest detection during last 24. |
 | countLast24Hours            | Number             | This channel reports the total number of mice counts the last 24h.                  |
 | durationLatestDetection     | Number:Time        | This channel reports the detection duration in min of latest detection.             |
 | durationLast24Hours         | Number:Time        | This channel reports the total detection duration in min for the last 24 hours.     |
@@ -324,9 +314,8 @@ The following channels are supported:
 
 #### Configuration Options
 
-*   `deviceId` - Device Id
-     *  Since Event Log lacks a Verisure ID, the following naming convention is used for Event Log on site id 123456789: 'el123456789'. Installation ID can be found using DEBUG log settings.
-             
+- `deviceId` - Device Id
+  - Since Event Log lacks a Verisure ID, the following naming convention is used for Event Log on site id 123456789: 'el123456789'. Installation ID can be found using DEBUG log settings.
 
 #### Channels
 
@@ -347,8 +336,8 @@ The following channels are supported:
 
 #### Configuration Options
 
-*    `deviceId` - Device Id
-     *  Sensor Id. Example 3B4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the Gateway itself)
+- `deviceId` - Device Id
+  - Sensor Id. Example 3B4C35FT (Note: Verisure ID, found in the Verisure App or My Pages or on the Gateway itself)
 
 #### Channels
 
@@ -397,7 +386,7 @@ The following trigger events are defined per thing type:
 
 ### Things-file
 
-````
+```java
 // Bridge configuration
 Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", password="1234", refresh="600", pin="111111"] {
 
@@ -409,11 +398,11 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
      Thing eventLog      JannesEventLog      "Verisure Event Log"              [ deviceId="el123456789" ]
      Thing gateway       JannesGateway       "Verisure Gateway"                [ deviceId="3AFG5673" ]
 }
-````
+```
 
 ### Items-file
 
-````
+```java
 Group gVerisureMiceDetection
 Group gVerisureEventLog
 Group gVerisureGateway
@@ -479,11 +468,11 @@ Number MouseDetectionTemperature        "Mouse Detection Temperature [%.1f C]"  
 DateTime MouseDetectionTemperatureTime  "Mouse Detection Temperature Time [%1$tY-%1$tm-%1$td %1$tR]" (gVerisureMiceDetection) {channel="verisure:miceDetection:myverisure:2CFZH80U:temperatureTimestamp"}
 String MouseDetectionLocation           "Mouse Detection Location"      (gVerisureMiceDetection)   {channel="verisure:miceDetection:myverisure:2CFZH80U:location"}
 
-````
+```
 
 ### Sitemap
 
-````
+```perl
     Frame label="SmartLock and Alarm" {
         Text label="SmartLock and Alarm" icon="groundfloor" {
             Frame label="Yale Doorman SmartLock" {
@@ -518,22 +507,22 @@ String MouseDetectionLocation           "Mouse Detection Location"      (gVerisu
     }
 
     Frame label="User Presence" {
-		Text label="User Presence" icon="attic" {
-			Frame label="User Presence Champinjonvägen" {
-				Text item=UserName label="User Name [%s]"
-				Text item=UserLocationEmail label="User Email [%s]"
+        Text label="User Presence" icon="attic" {
+            Frame label="User Presence Champinjonvägen" {
+                Text item=UserName label="User Name [%s]"
+                Text item=UserLocationEmail label="User Email [%s]"
                      Text item=UserLocationStatus label="User Location Status [%s]"
-			}
-		}
-	}
+            }
+        }
+    }
 
      Frame label="Broadband Connection" {
-		Text label="Broadband Connection" icon="attic" {
-			Frame label="Broadband Connection Champinjonvägen" {
-				Text item=CurrentBBStatus label="Broadband Connection Status [%s]"
-			}
-		}
-	}
+        Text label="Broadband Connection" icon="attic" {
+            Frame label="Broadband Connection Champinjonvägen" {
+                Text item=CurrentBBStatus label="Broadband Connection Status [%s]"
+            }
+        }
+    }
 
     Frame label="Mice Detection" {
             Group item=gVerisureMiceDetection label="Verisure Mice Detection"
@@ -547,11 +536,11 @@ String MouseDetectionLocation           "Mouse Detection Location"      (gVerisu
             Group item=gVerisureGateway label="Verisure Gateway"
     }
 
-````
+```
 
 ### Rules
 
-````
+```java
 import org.openhab.core.types.RefreshType
 
 rule "Handle Refesh of Verisure"
@@ -584,5 +573,4 @@ then
     logInfo("RULES", "A DoorWindow trigger event was detected:" + receivedEvent.toString())
 end
 
-
-````
+```

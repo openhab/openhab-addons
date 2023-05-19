@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>NibeHeatPump Binding</name>
 	<description>This is the binding for Nibe heat pumps.</description>
+	<connection>local</connection>
 
 </addon:addon>

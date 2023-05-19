@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface UpnpPlaylistsListener {
 
-    public void playlistsListChanged();
+    void playlistsListChanged();
 }

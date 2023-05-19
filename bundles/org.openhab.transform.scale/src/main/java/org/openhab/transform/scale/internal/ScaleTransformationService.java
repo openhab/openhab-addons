@@ -149,7 +149,7 @@ public class ScaleTransformationService
             if (!cachedTransformations.containsKey(transformation.getUID())) {
                 importConfiguration(transformation);
             }
-            Map<@Nullable Range, String> data = cachedTransformations.get(function);
+            Map<@Nullable Range, String> data = cachedTransformations.get(transformation.getUID());
 
             if (data != null) {
                 String target;

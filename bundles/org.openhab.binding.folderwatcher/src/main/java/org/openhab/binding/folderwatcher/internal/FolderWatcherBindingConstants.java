@@ -26,5 +26,6 @@ public class FolderWatcherBindingConstants {
     private static final String BINDING_ID = "folderwatcher";
     public static final ThingTypeUID THING_TYPE_FTPFOLDER = new ThingTypeUID(BINDING_ID, "ftpfolder");
     public static final ThingTypeUID THING_TYPE_LOCALFOLDER = new ThingTypeUID(BINDING_ID, "localfolder");
+    public static final ThingTypeUID THING_TYPE_S3BUCKET = new ThingTypeUID(BINDING_ID, "s3bucket");
     public static final String CHANNEL_NEWFILE = "newfile";
 }

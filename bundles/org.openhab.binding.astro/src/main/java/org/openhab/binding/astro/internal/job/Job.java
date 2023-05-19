@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public interface Job extends SchedulerRunnable, Runnable {
 
     /** Logger Instance */
-    public final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Schedules the provided {@link Job} instance
@@ -50,7 +50,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param job the {@link Job} instance to schedule
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      */
-    public static void schedule(String thingUID, AstroThingHandler astroHandler, Job job, Calendar eventAt) {
+    static void schedule(String thingUID, AstroThingHandler astroHandler, Job job, Calendar eventAt) {
         try {
             Calendar today = Calendar.getInstance();
             if (isSameDay(eventAt, today) && isTimeGreaterEquals(eventAt, today)) {
@@ -70,7 +70,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param event the event ID
      * @param channelId the channel ID
      */
-    public static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt, String event,
+    static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt, String event,
             String channelId, boolean configAlreadyApplied) {
         scheduleEvent(thingUID, astroHandler, eventAt, singletonList(event), channelId, configAlreadyApplied);
     }
@@ -84,8 +84,8 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param events the event IDs to schedule
      * @param channelId the channel ID
      */
-    public static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt,
-            List<String> events, String channelId, boolean configAlreadyApplied) {
+    static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt, List<String> events,
+            String channelId, boolean configAlreadyApplied) {
         if (events.isEmpty()) {
             return;
         }
@@ -113,7 +113,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param range the {@link Range} instance
      * @param channelId the channel ID
      */
-    public static void scheduleRange(String thingUID, AstroThingHandler astroHandler, Range range, String channelId) {
+    static void scheduleRange(String thingUID, AstroThingHandler astroHandler, Range range, String channelId) {
         final Channel channel = astroHandler.getThing().getChannel(channelId);
         if (channel == null) {
             LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
@@ -134,7 +134,7 @@ public interface Job extends SchedulerRunnable, Runnable {
         scheduleEvent(thingUID, astroHandler, end, EVENT_END, channelId, true);
     }
 
-    public static Range adjustRangeToConfig(Range range, AstroChannelConfig config) {
+    static Range adjustRangeToConfig(Range range, AstroChannelConfig config) {
         Calendar start = range.getStart();
         Calendar end = range.getEnd();
 
@@ -161,7 +161,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      */
-    public static void schedulePublishPlanet(String thingUID, AstroThingHandler astroHandler, Calendar eventAt) {
+    static void schedulePublishPlanet(String thingUID, AstroThingHandler astroHandler, Calendar eventAt) {
         Job publishJob = new PublishPlanetJob(thingUID);
         schedule(thingUID, astroHandler, publishJob, eventAt);
     }
@@ -174,7 +174,7 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param sunPhaseName {@link SunPhaseName} instance
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      */
-    public static void scheduleSunPhase(String thingUID, AstroThingHandler astroHandler, SunPhaseName sunPhaseName,
+    static void scheduleSunPhase(String thingUID, AstroThingHandler astroHandler, SunPhaseName sunPhaseName,
             Calendar eventAt) {
         Job sunPhaseJob = new SunPhaseJob(thingUID, sunPhaseName);
         schedule(thingUID, astroHandler, sunPhaseJob, eventAt);
@@ -183,5 +183,5 @@ public interface Job extends SchedulerRunnable, Runnable {
     /**
      * Returns the thing UID that is associated with this {@link Job} (cannot be {@code null})
      */
-    public String getThingUID();
+    String getThingUID();
 }

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>FMI Weather Binding</name>
 	<description>This is the binding for Finnish Meteorological Institute (FMI) Weather</description>
+	<connection>cloud</connection>
 
 </addon:addon>

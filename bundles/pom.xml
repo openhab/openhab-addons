@@ -58,6 +58,7 @@
     <module>org.openhab.binding.amplipi</module>
     <module>org.openhab.binding.androiddebugbridge</module>
     <module>org.openhab.binding.anel</module>
+    <module>org.openhab.binding.anthem</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
@@ -89,6 +90,7 @@
     <module>org.openhab.binding.buienradar</module>
     <module>org.openhab.binding.caddx</module>
     <module>org.openhab.binding.cbus</module>
+    <module>org.openhab.binding.chatgpt</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.comfoair</module>
@@ -178,7 +180,6 @@
     <module>org.openhab.binding.icalendar</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.ihc</module>
-    <module>org.openhab.binding.innogysmarthome</module>
     <module>org.openhab.binding.insteon</module>
     <module>org.openhab.binding.ipcamera</module>
     <module>org.openhab.binding.ipobserver</module>
@@ -208,6 +209,7 @@
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
     <module>org.openhab.binding.linuxinput</module>
+    <module>org.openhab.binding.liquidcheck</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.livisismarthome</module>
     <module>org.openhab.binding.logreader</module>
@@ -250,6 +252,7 @@
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
+    <module>org.openhab.binding.mqtt.ruuvigateway</module>
     <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
@@ -357,6 +360,7 @@
     <module>org.openhab.binding.sonyaudio</module>
     <module>org.openhab.binding.sonyprojector</module>
     <module>org.openhab.binding.souliss</module>
+    <module>org.openhab.binding.speedtest</module>
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.surepetcare</module>

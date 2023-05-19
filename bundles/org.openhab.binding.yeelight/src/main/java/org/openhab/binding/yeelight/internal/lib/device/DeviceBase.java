@@ -299,6 +299,11 @@ public abstract class DeviceBase {
         mConnection.connect();
     }
 
+    public void disconnect() {
+        setConnectionState(ConnectState.DISCONNECTED);
+        mConnection.disconnect();
+    }
+
     public void setConnectionState(ConnectState connectState) {
         logger.debug("{}: set connection state to: {}", TAG, connectState.name());
         if (connectState == ConnectState.DISCONNECTED) {
