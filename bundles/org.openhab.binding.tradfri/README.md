@@ -46,11 +46,11 @@ The following things are also supported even thought they are not standardized i
 
 The following matrix lists the capabilities (channels) for each of the supported non-lighting device types:
 
-| Thing type  | Battery Level | Battery Low | Position | Fan Mode | Lock physical buttons | LED's on/off | Air Quality | Current Fan Speed | Filter status |
-|-------------|:-------------:|:-----------:|:--------:|:--------:|:---------------------:|:------------:|:-----------:|:-----------------:|:-------------:|
-|  0202       |       X       |      X      |     X    |          |                       |              |             |                   |               |
-|  0203       |       X       |      X      |          |          |                       |              |             |                   |               |
-|  0007       |               |             |          |    X     |          X            |      X       |      X      |         X         |       X       |
+| Thing type  | Battery Level | Battery Low | Position | Fan Mode | Lock Button | Disabled LED | Air Quality | Fan Speed | Filter Check | Filter Uptime |
+|-------------|:-------------:|:-----------:|:--------:|:--------:|:-----------:|:------------:|:-----------:|:---------:|:------------:|:-------------:|
+|  0202       |       X       |      X      |     X    |          |             |              |             |           |              |               |
+|  0203       |       X       |      X      |          |          |             |              |             |           |              |               |
+|  0007       |               |             |          |    X     |      X      |      X       |      X      |     X     |       X      |       X       |
 
 ## Thing Configuration
 
@@ -79,32 +79,32 @@ The control outlet supports the `power` channel.
 A blind or curtain supports, beside `battery_level` and `battery_low` channels,  a `positon` channel.
 
 An air purifier supports:
-* a `fan_mode` and `fan_speed`, which allows for control and reading of the speed.
-* a `disable_led` and `lock_button`, to disabled the LED's or lock the button on the physical device.
-* a `air_quality_pm25` and `air_quality_rating`, which reads the particulate matter 2.5μm and corresponding indication of air quality.
-* a `filter_check_next` and `filter_check_alarm`, which represents the remaining number of minutes until next filter check and whether it is time to do the filter check now. Filter check must be completed through the TRÅDFRI app.
+* a `fan_mode` and `fan_speed` channels, which allows for control of the fan and reading of the current speed.
+* a `disable_led` and `lock_button` channels, to respectively disable the LED's and lock the button on the physical device.
+* a `air_quality_pm25` and `air_quality_rating` channels, which reads the particulate matter 2.5μm and corresponding indication of air quality (similar to Tradfri app rating).
+* a `filter_check_next` and `filter_check_alarm` channels, which represents the remaining number of minutes until the next filter check and whether it is time to do the filter check now. Filter check must be completed through the TRÅDFRI app (or on the hardware buttons in case of replacement).
 * a `filter_uptime`, which represents the current time since last filter change.
 
-Refer to the matrix above.
+Refer to the matrixes above.
 
-| Channel Type ID    | Item Type     | Description                                                                              |
-|--------------------|---------------|------------------------------------------------------------------------------------------|
-| brightness         | Dimmer        | The brightness of the bulb in percent                                                    |
-| color_temperature  | Dimmer        | color temperature from 0% = cold to 100% = warm                                          |
-| color              | Color         | full color                                                                               |
-| battery_level      | Number        | battery level (in %)                                                                     |
-| battery_low        | Switch        | battery low warning (<=10% = ON, >10% = OFF)                                             |
-| power              | Switch        | power switch                                                                             |
-| position           | Rollershutter | position of the blinds from 0% = open to 100% = closed                                   |
-| fan_mode           | Number        | Fan Mode, target speed of the fan (0 = off, 1 = auto, 10..50 = Level 1 to 5)             |
-| fan_speed          | Number        | Current Fan Speed between 0 (off) and 50 (maximum speed)                                 |
-| disable_led        | Switch        | Disables the LED's on the device                                                         |
-| lock_button        | Switch        | Disables the physical button on the device (applications can still make changes)         |
-| air_quality_pm25   | Number        | Density of Particulate Matter of 2.5μm, measured in ppm                                  |
-| air_quality_rating | Number        | Gives a rating about air quality (1 = Good, 2 = OK, 3 = Bad) similar to Tradfri app      |
-| filter_check_next  | Number:Time   | Time in min before the next filter check if > 0, if < 0 you are late checking the filter |
-| filter_check_alarm | Switch        | When ON, you must perform a filter check (i.e. `filter_check_next` is < 0)               |
-| filter_uptime      | Number:Time   | Time elapsed since the last filter change, in min                                        |
+| Channel Type ID     | Item Type            | Description                                                                                  |
+|---------------------|----------------------|----------------------------------------------------------------------------------------------|
+| brightness          | Dimmer               | The brightness of the bulb in percent                                                        |
+| color_temperature   | Dimmer               | Color temperature from 0% = cold to 100% = warm                                              |
+| color               | Color                | Full color                                                                                   |
+| battery_level       | Number               | Battery level (in %)                                                                         |
+| battery_low         | Switch               | Battery low warning (<=10% = ON, >10% = OFF)                                                 |
+| power               | Switch               | Power switch                                                                                 |
+| position            | Rollershutter        | Position of the blinds from 0% = open to 100% = closed                                       |
+| fan_mode            | Number               | Fan mode, target speed of the fan (0 = off, 1 = auto, 10..50 = Level 1 to 5)                 |
+| fan_speed           | Number               | Current Fan Speed between 0 (off) and 50 (maximum speed)                                     |
+| disable_led         | Switch               | Disables the LED's on the device                                                             |
+| lock_button         | Switch               | Disables the physical button on the device (applications can still make changes)             |
+| air_quality_pm25    | Number:Dimensionless | Density of Particulate Matter of 2.5μm, measured in ppm                                      |
+| air_quality_rating  | Number               | Gives a rating about air quality (1 = Good, 2 = OK, 3 = Bad) similar to Tradfri app          |
+| filter_check_next   | Number:Time          | Time in minutes before the next filter check if > 0, if < 0 you are late checking the filter |
+| filter_check_alarm  | Switch               | When ON, you must perform a filter check (i.e. `filter_check_next` is < 0)                   |
+| filter_uptime       | Number:Time          | Time elapsed since the last filter change, in minutes                                        |
 
 ## Full Example
 
