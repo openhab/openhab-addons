@@ -20,28 +20,28 @@ These are the available configuration parameters:
 
 ## Channels
 
-| channel | channel group | type   | readable only (RO) or writable (RW) | description                  |
-|---|---|---|---|---|
-| current_time | main | DateTime | RO | Current time reported by the air unit.  |
-| mode | main | String | RW | Value to control the operation mode of the air unit. One of DEMAND, PROGRAM, MANUAL and OFF  |
-| manual_fan_step | main | Dimmer | RW | Value to control the fan step when in MANUAL mode (10 steps) |
-| supply_fan_speed | main | Number | RO | Current rotation of the fan supplying air to the rooms (in rpm) |
-| extract_fan_speed | main | Number | RO | Current rotation of the fan extracting air from the rooms (in rpm) |
-| supply_fan_step | main | Dimmer | RO | Current step setting of the fan supplying air to the rooms |
-| extract_fan_step | main | Dimmer | RO | Current step setting of the fan extracting air from the rooms |
-| boost | main | Switch | RW | Enables fan boost  |
-| night_cooling | main | Switch | RW | Enables night cooling  |
-| room_temp | temps | Number:Temperature | RO | Temperature of the air in the room of the Air Dial  |
-| room_temp_calculated | temps | Number:Temperature | RO | Calculated Room Temperature  |
-| outdoor_temp | temps | Number:Temperature | RO | Temperature of the air outside  |
-| humidity | humidity | Number:Dimensionless | RO | Current relative humidity measured by the air unit  |
-| bypass | recuperator | Switch | RW | Disables the heat exchange. Useful in summer when room temperature is above target and outside temperature is below target.  |
-| supply_temp | recuperator | Number | RO | Temperature of air which is passed to the rooms  |
-| extract_temp | recuperator | Number | RO | Temperature of the air as extracted from the rooms  |
-| exhaust_temp | recuperator | Number | RO | Temperature of the air when pushed outside  |
-| battery_life | service | Number | RO | Remaining Air Dial Battery Level (percentage) |
-| filter_life | service | Number | RO | Remaining life of filter until exchange is necessary (percentage) |
-| filter_period | service | Number | RW | Number of months between filter replacements (between 3 and 12). This value affects calculation of filter_life by the unit, and might get overwritten by Air Dial or Link CC Controller. |
+| channel              | channel group | type                 | readable only (RO) or writable (RW) | description                                                                                                                                                                              |
+|----------------------|---------------|----------------------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| current_time         | main          | DateTime             | RO                                  | Current time reported by the air unit.                                                                                                                                                   |
+| mode                 | main          | String               | RW                                  | Value to control the operation mode of the air unit. One of DEMAND, PROGRAM, MANUAL and OFF                                                                                              |
+| manual_fan_step      | main          | Dimmer               | RW                                  | Value to control the fan step when in MANUAL mode (10 steps)                                                                                                                             |
+| supply_fan_speed     | main          | Number:Frequency     | RO                                  | Current rotation of the fan supplying air to the rooms (in rpm)                                                                                                                          |
+| extract_fan_speed    | main          | Number:Frequency     | RO                                  | Current rotation of the fan extracting air from the rooms (in rpm)                                                                                                                       |
+| supply_fan_step      | main          | Dimmer               | RO                                  | Current step setting of the fan supplying air to the rooms                                                                                                                               |
+| extract_fan_step     | main          | Dimmer               | RO                                  | Current step setting of the fan extracting air from the rooms                                                                                                                            |
+| boost                | main          | Switch               | RW                                  | Enables fan boost                                                                                                                                                                        |
+| night_cooling        | main          | Switch               | RW                                  | Enables night cooling                                                                                                                                                                    |
+| room_temp            | temps         | Number:Temperature   | RO                                  | Temperature of the air in the room of the Air Dial                                                                                                                                       |
+| room_temp_calculated | temps         | Number:Temperature   | RO                                  | Calculated Room Temperature                                                                                                                                                              |
+| outdoor_temp         | temps         | Number:Temperature   | RO                                  | Temperature of the air outside                                                                                                                                                           |
+| humidity             | humidity      | Number:Dimensionless | RO                                  | Current relative humidity measured by the air unit                                                                                                                                       |
+| bypass               | recuperator   | Switch               | RW                                  | Disables the heat exchange. Useful in summer when room temperature is above target and outside temperature is below target.                                                              |
+| supply_temp          | recuperator   | Number               | RO                                  | Temperature of air which is passed to the rooms                                                                                                                                          |
+| extract_temp         | recuperator   | Number               | RO                                  | Temperature of the air as extracted from the rooms                                                                                                                                       |
+| exhaust_temp         | recuperator   | Number               | RO                                  | Temperature of the air when pushed outside                                                                                                                                               |
+| battery_life         | service       | Number               | RO                                  | Remaining Air Dial Battery Level (percentage)                                                                                                                                            |
+| filter_life          | service       | Number               | RO                                  | Remaining life of filter until exchange is necessary (percentage)                                                                                                                        |
+| filter_period        | service       | Number               | RW                                  | Number of months between filter replacements (between 3 and 12). This value affects calculation of filter_life by the unit, and might get overwritten by Air Dial or Link CC Controller. |
 
 ## Full Example
 
@@ -63,12 +63,12 @@ updateUnchangedValuesEveryMillis=30000]
 ### Items
 
 ```java
-Dimmer DanfossHRV_ManualFanStep "Manual Fan Step [%s]" {channel = "danfossairunit:airunit:myairunit:main#manual_fan_step"}
-Number DanfossHRV_SupplyFanSpeed "Supply Fan Speed" {channel = "danfossairunit:airunit:myairunit:main#supply_fan_speed"}
-Number DanfossHRV_ExtractFanSpeed "Extract Fan Speed" {channel = "danfossairunit:airunit:myairunit:main#extract_fan_speed"}
-String DanfossHRV_Mode "Operation Mode" {channel = "danfossairunit:airunit:myairunit:main#mode"}
-Switch DanfossHRV_Boost "Boost" {channel = "danfossairunit:airunit:myairunit:main#boost"}
-Switch DanfossHRV_Bypass "Bypass" {channel = "danfossairunit:airunit:myairunit:recuperator#bypass"}
+Dimmer DanfossHRV_ManualFanStep "Manual Fan Step [%s]" { channel = "danfossairunit:airunit:myairunit:main#manual_fan_step" }
+Number:Frequency DanfossHRV_SupplyFanSpeed "Supply Fan Speed" { channel = "danfossairunit:airunit:myairunit:main#supply_fan_speed", unit="rpm" }
+Number:Frequency DanfossHRV_ExtractFanSpeed "Extract Fan Speed" { channel = "danfossairunit:airunit:myairunit:main#extract_fan_speed", unit="rpm" }
+String DanfossHRV_Mode "Operation Mode" { channel = "danfossairunit:airunit:myairunit:main#mode" }
+Switch DanfossHRV_Boost "Boost" { channel = "danfossairunit:airunit:myairunit:main#boost" }
+Switch DanfossHRV_Bypass "Bypass" { channel = "danfossairunit:airunit:myairunit:recuperator#bypass" }
 Number:Dimensionless DanfossHRV_Humidity "Relative humidity" <humidity> { channel = "danfossairunit:airunit:myairunit:humidity#humidity" }
 Number:Temperature DanfossHRV_RoomTemperature "Room air temperatuyre" <temperature> { channel = "danfossairunit:airunit:myairunit:temps#room_temp" }
 Number:Temperature DanfossHRV_OutdoorTemperature "Outdoor air temperature" <temperature> { channel = "danfossairunit:airunit:myairunit:temps#outdoor_temp" }
