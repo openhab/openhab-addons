@@ -17,6 +17,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
@@ -116,8 +118,13 @@ public class InfluxDBStateConvertUtils {
             return new HSBType(valueStr);
         } else if (item instanceof LocationItem) {
             return new PointType(valueStr);
-        } else if (item instanceof NumberItem) {
-            return new DecimalType(valueStr);
+        } else if (item instanceof NumberItem numberItem) {
+            Unit<?> unit = numberItem.getUnit();
+            if (unit == null) {
+                return new DecimalType(valueStr);
+            } else {
+                return new QuantityType<>(new BigDecimal(valueStr), unit);
+            }
         } else if (item instanceof DimmerItem) {
             return new PercentType(valueStr);
         } else if (item instanceof SwitchItem) {
