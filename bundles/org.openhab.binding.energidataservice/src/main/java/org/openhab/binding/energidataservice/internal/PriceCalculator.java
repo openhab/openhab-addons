@@ -18,7 +18,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +68,7 @@ public class PriceCalculator {
      * @return Map containing resulting values
      */
     public Map<String, Object> calculateCheapestPeriod(Instant earliestStart, Instant latestEnd, Duration totalDuration,
-            List<Duration> durationPhases, QuantityType<Energy> energyUsedPerPhase) throws MissingPriceException {
+            Collection<Duration> durationPhases, QuantityType<Energy> energyUsedPerPhase) throws MissingPriceException {
         QuantityType<Energy> energyInWattHour = energyUsedPerPhase.toUnit(Units.WATT_HOUR);
         if (energyInWattHour == null) {
             throw new IllegalArgumentException(
@@ -119,7 +121,8 @@ public class PriceCalculator {
      * @return Map containing resulting values
      */
     public Map<String, Object> calculateCheapestPeriod(Instant earliestStart, Instant latestEnd,
-            List<Duration> durationPhases, List<QuantityType<Power>> consumptionPhases) throws MissingPriceException {
+            Collection<Duration> durationPhases, Collection<QuantityType<Power>> consumptionPhases)
+            throws MissingPriceException {
         if (durationPhases.size() != consumptionPhases.size()) {
             throw new IllegalArgumentException("Number of phases do not match");
         }
@@ -137,8 +140,12 @@ public class PriceCalculator {
             Duration minDurationUntilNextHour = Duration.ofHours(1);
             Instant atomStart = calculationStart;
 
-            int i = 0;
-            for (Duration atomDuration : durationPhases) {
+            Iterator<Duration> durationIterator = durationPhases.iterator();
+            Iterator<QuantityType<Power>> consumptionIterator = consumptionPhases.iterator();
+            while (durationIterator.hasNext()) {
+                Duration atomDuration = durationIterator.next();
+                QuantityType<Power> atomConsumption = consumptionIterator.next();
+
                 Instant atomEnd = atomStart.plus(atomDuration);
                 Instant hourStart = atomStart.truncatedTo(ChronoUnit.HOURS);
                 Instant hourEnd = hourStart.plus(1, ChronoUnit.HOURS);
@@ -149,11 +156,9 @@ public class PriceCalculator {
                     minDurationUntilNextHour = durationUntilNextHour;
                 }
 
-                BigDecimal atomPrice = calculatePrice(atomStart, atomEnd, consumptionPhases.get(i));
+                BigDecimal atomPrice = calculatePrice(atomStart, atomEnd, atomConsumption);
                 currentPrice = currentPrice.add(atomPrice);
                 atomStart = atomEnd;
-
-                i++;
             }
 
             if (currentPrice.compareTo(lowestPrice) < 0) {
