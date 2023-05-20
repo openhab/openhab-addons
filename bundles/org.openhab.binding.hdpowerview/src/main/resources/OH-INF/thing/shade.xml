@@ -9,7 +9,7 @@
 			<bridge-type-ref id="hub"/>
 		</supported-bridge-type-refs>
 		<label>PowerView Shade</label>
-		<description>Hunter Douglas (Luxaflex) PowerView Shade</description>
+		<description>Hunter Douglas (Luxaflex) PowerView Gen 1/2 Shade</description>
 
 		<channels>
 			<channel id="position" typeId="shade-position"/>
@@ -48,7 +48,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 		<label>PowerView Shade</label>
-		<description>Hunter Douglas (Luxaflex) PowerView Shade</description>
+		<description>Hunter Douglas (Luxaflex) PowerView Gen3 Shade</description>
 
 		<channels>
 			<channel id="position" typeId="shade-position"/>
@@ -70,7 +70,7 @@
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:hdpowerview:shade"/>
+		<config-description-ref uri="thing-type:hdpowerview:shade3"/>
 	</thing-type>
 
 </thing:thing-descriptions>

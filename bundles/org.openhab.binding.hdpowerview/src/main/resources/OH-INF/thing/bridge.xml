@@ -70,7 +70,7 @@
 			</parameter>
 			<parameter name="hardRefresh" type="integer" required="false">
 				<label>Hard Refresh Interval</label>
-				<description>The number of minutes between hard refreshes from the PowerView Gateway</description>
+				<description>The number of minutes between hard refreshes of the PowerView Gateway</description>
 				<default>180</default>
 			</parameter>
 		</config-description>
