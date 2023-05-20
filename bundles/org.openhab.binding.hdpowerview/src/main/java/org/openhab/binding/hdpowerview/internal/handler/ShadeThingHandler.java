@@ -18,7 +18,6 @@ import static org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -150,7 +149,9 @@ public class ShadeThingHandler extends BaseThingHandler {
                         break;
                     } else if (command instanceof UpDownType) {
                         position.setPosition(SECONDARY_POSITION,
-                                UpDownType.UP == command ? PercentType.ZERO : PercentType.HUNDRED);
+                                (UpDownType.UP == command) && !getCapabilities(thisShade).supportsSecondaryOverlapped()
+                                        ? PercentType.ZERO
+                                        : PercentType.HUNDRED);
                         webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (StopMoveType.STOP == command) {
@@ -205,8 +206,7 @@ public class ShadeThingHandler extends BaseThingHandler {
         }
         isInitialized = false;
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.schedule(() -> ((GatewayBridgeHandler) bridgeHandler).refreshShade(thisShade.getId()), 5,
-                TimeUnit.SECONDS);
+        scheduler.submit(() -> ((GatewayBridgeHandler) bridgeHandler).refreshShade(thisShade.getId()));
     }
 
     /**
@@ -279,7 +279,7 @@ public class ShadeThingHandler extends BaseThingHandler {
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_POSITION, capabilities.supportsPrimary());
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_SECONDARY_POSITION, capabilities.supportsSecondary());
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_VANE, capabilities.supportsTilt180()
-                || capabilities.supportsTiltAnywhere() | capabilities.supportsTiltOnClosed());
+                || capabilities.supportsTiltAnywhere() || capabilities.supportsTiltOnClosed());
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_BATTERY_LEVEL, !shade.isMainsPowered());
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_LOW_BATTERY, !shade.isMainsPowered());
 
