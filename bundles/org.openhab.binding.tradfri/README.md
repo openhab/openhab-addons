@@ -79,11 +79,11 @@ The control outlet supports the `power` channel.
 A blind or curtain supports, beside `battery_level` and `battery_low` channels,  a `positon` channel.
 
 An air purifier supports:
-* a `fan_mode` and `fan_speed` channels, which allows for control of the fan and reading of the current speed.
-* a `disable_led` and `lock_button` channels, to respectively disable the LED's and lock the button on the physical device.
-* a `air_quality_pm25` and `air_quality_rating` channels, which reads the particulate matter 2.5μm and corresponding indication of air quality (similar to Tradfri app rating).
-* a `filter_check_next` and `filter_check_alarm` channels, which represents the remaining number of minutes until the next filter check and whether it is time to do the filter check now. Filter check must be completed through the TRÅDFRI app (or on the hardware buttons in case of replacement).
-* a `filter_uptime`, which represents the current time since last filter change.
+* `fan_mode` and `fan_speed` channels, which allows for control of the fan and reading of the current speed.
+* `disable_led` and `lock_button` channels, to respectively disable the LED's and lock the button on the physical device.
+* `air_quality_pm25` and `air_quality_rating` channels, which reads the particulate matter 2.5μm and corresponding indication of air quality (similar to Tradfri app rating).
+* `filter_check_next` and `filter_check_alarm` channels, which represents the remaining number of minutes until the next filter check and whether it is time to do the filter check now. Filter check must be completed through the TRÅDFRI app (or on the hardware buttons in case of replacement).
+* a `filter_uptime` channel, which represents the current time since last filter change.
 
 Refer to the matrixes above.
 
