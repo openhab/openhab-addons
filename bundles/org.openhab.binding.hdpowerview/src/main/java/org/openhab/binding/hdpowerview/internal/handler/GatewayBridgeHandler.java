@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -111,12 +112,13 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
     private void doRefresh() {
         logger.debug("doRefresh()");
         try {
-            getWebTargets().gatewayRegister();
-            getWebTargets().sseOpen();
-            refreshProperties();
-            refreshShades();
-            refreshScenes();
-            updateStatus(ThingStatus.ONLINE);
+            if (getWebTargets().gatewayRegister()) {
+                updateStatus(ThingStatus.ONLINE);
+                getWebTargets().sseOpen();
+                refreshProperties();
+                refreshShades();
+                refreshScenes();
+            }
         } catch (IllegalStateException | HubProcessingException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("doRefresh() exception:{}, message:{}", e.getClass().getSimpleName(), e.getMessage(), e);
@@ -137,7 +139,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
         logger.debug("getShadeThingHandlers()");
         return getThing().getThings().stream().map(thing -> thing.getHandler())
                 .filter(handler -> (handler instanceof ShadeThingHandler)).map(handler -> (ShadeThingHandler) handler)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -204,10 +206,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
             refreshTask.cancel(false);
         }
         this.refreshTask = scheduler.scheduleWithFixedDelay(() -> doRefresh(), 0, config.hardRefresh, TimeUnit.MINUTES);
-
         updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.submit(() -> doRefresh());
     }
 
     /**

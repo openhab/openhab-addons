@@ -1,46 +1,54 @@
 [
-  {
-    "id": 789,
-    "type": 23,
-    "name": "U2hhZGUgMg==",
-    "ptName": "ABC",
-    "capabilities": 0,
-    "powerType": "wand",
-    "batteryStatus": 2,
-    "roomId": 6833,
-    "signalStrength": -55,
-    "bleName": "PIR:5933",
-    "firmware": {
-      "revision": 3,
-      "subRevision": 0,
-      "build": 309
+    {
+        "id": 2,
+        "type": 6,
+        "name": "VXBwZXIgTGVmdA==",
+        "ptName": "Upper Left",
+        "motion": null,
+        "capabilities": 0,
+        "powerType": 0,
+        "batteryStatus": 2,
+        "roomId": 1,
+        "firmware": {
+            "revision": 3,
+            "subRevision": 0,
+            "build": 359
+        },
+        "positions": {
+            "primary": 0.5,
+            "secondary": 0,
+            "tilt": 0,
+            "velocity": 0
+        },
+        "signalStrength": -50,
+        "bleName": "DUE:1444",
+        "shadeGroupIds": [
+        ]
     },
-    "positions": {
-      "primary": 0.99,
-      "secondary": 0.99,
-      "tilt": 0,
-      "velocity": 0.5
+    {
+        "id": 3,
+        "type": 23,
+        "name": "VXBwZXIgUmlnaHQ=",
+        "ptName": "Upper Right",
+        "motion": null,
+        "capabilities": 1,
+        "powerType": 1,
+        "batteryStatus": 3,
+        "roomId": 1,
+        "firmware": {
+            "revision": 3,
+            "subRevision": 0,
+            "build": 359
+        },
+        "positions": {
+            "primary": 0,
+            "secondary": 0,
+            "tilt": 0,
+            "velocity": 0
+        },
+        "signalStrength": -51,
+        "bleName": "SIL:5AA5",
+        "shadeGroupIds": [
+        ]
     }
-  },
-  {
-    "id": 123,
-    "type": 44,
-    "name": "U2hhZGUgMg==",
-    "ptName": "ABC",
-    "capabilities": 0,
-    "powerType": "hardwired",
-    "batteryStatus": 2,
-    "roomId": 6833,
-    "signalStrength": -44,
-    "bleName": "PIR:5933",
-    "firmware": {
-      "revision": 3,
-      "subRevision": 0,
-      "build": 123
-    },
-    "positions": {
-      "primary": 0.99,
-      "velocity": 0.5
-    }
-  }
 ]

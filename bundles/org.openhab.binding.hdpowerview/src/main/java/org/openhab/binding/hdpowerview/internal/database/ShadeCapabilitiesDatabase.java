@@ -129,7 +129,7 @@ public class ShadeCapabilitiesDatabase {
         protected Type() {
         }
 
-        protected Type(int type) {
+        public Type(int type) {
             intValue = type;
         }
 

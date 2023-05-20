@@ -23,9 +23,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.GatewayWebTargets;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Type;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Shade;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
@@ -60,10 +64,13 @@ public class ShadeThingHandler extends BaseThingHandler {
     private static final String INVALID_COMMAND = "invalid command";
     private static final String COMMAND_CALIBRATE = "CALIBRATE";
     private static final String COMMAND_IDENTIFY = "IDENTIFY";
-    private final Logger logger = LoggerFactory.getLogger(ShadeThingHandler.class);
+    private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
 
+    private final Logger logger = LoggerFactory.getLogger(ShadeThingHandler.class);
     private final Shade thisShade = new Shade();
+
     private boolean isInitialized;
+    private @Nullable Capabilities capabilities;
 
     public ShadeThingHandler(Thing thing) {
         super(thing);
@@ -72,6 +79,15 @@ public class ShadeThingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         // TODO Auto-generated method stub
+    }
+
+    private Capabilities getCapabilities(Shade shade) {
+        Capabilities capabilities = this.capabilities;
+        if (capabilities == null) {
+            capabilities = DB.getCapabilities(shade.getCapabilities());
+            this.capabilities = capabilities;
+        }
+        return capabilities;
     }
 
     /**
@@ -92,6 +108,11 @@ public class ShadeThingHandler extends BaseThingHandler {
         return (GatewayBridgeHandler) handler;
     }
 
+    private Type getType(Shade shade) {
+        Integer type = shade.getType();
+        return type != null ? DB.getType(type) : new ShadeCapabilitiesDatabase.Type(0);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
@@ -106,12 +127,15 @@ public class ShadeThingHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_SHADE_POSITION:
                     if (command instanceof PercentType) {
-                        position.setPosition(PRIMARY_POSITION, ((PercentType) command).intValue());
-                        webTargets.moveShade(shadeId, position);
+                        position.setPosition(PRIMARY_POSITION, ((PercentType) command));
+                        webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (command instanceof UpDownType) {
-                        position.setPosition(PRIMARY_POSITION, UpDownType.UP == command ? 0 : 100);
-                        webTargets.moveShade(shadeId, position);
+                        position.setPosition(PRIMARY_POSITION,
+                                (UpDownType.UP == command) && !getCapabilities(thisShade).isPrimaryInverted()
+                                        ? PercentType.HUNDRED
+                                        : PercentType.ZERO);
+                        webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (StopMoveType.STOP == command) {
                         webTargets.stopShade(shadeId);
@@ -121,12 +145,13 @@ public class ShadeThingHandler extends BaseThingHandler {
 
                 case CHANNEL_SHADE_SECONDARY_POSITION:
                     if (command instanceof PercentType) {
-                        position.setPosition(SECONDARY_POSITION, ((PercentType) command).intValue());
-                        webTargets.moveShade(shadeId, position);
+                        position.setPosition(SECONDARY_POSITION, ((PercentType) command));
+                        webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (command instanceof UpDownType) {
-                        position.setPosition(SECONDARY_POSITION, UpDownType.UP == command ? 0 : 100);
-                        webTargets.moveShade(shadeId, position);
+                        position.setPosition(SECONDARY_POSITION,
+                                UpDownType.UP == command ? PercentType.ZERO : PercentType.HUNDRED);
+                        webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (StopMoveType.STOP == command) {
                         webTargets.stopShade(shadeId);
@@ -136,12 +161,13 @@ public class ShadeThingHandler extends BaseThingHandler {
 
                 case CHANNEL_SHADE_VANE:
                     if (command instanceof PercentType) {
-                        position.setPosition(VANE_TILT_POSITION, ((PercentType) command).intValue());
-                        webTargets.moveShade(shadeId, position);
+                        position.setPosition(VANE_TILT_POSITION, ((PercentType) command));
+                        webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (command instanceof UpDownType) {
-                        position.setPosition(VANE_TILT_POSITION, UpDownType.UP == command ? 0 : 100);
-                        webTargets.moveShade(shadeId, position);
+                        position.setPosition(VANE_TILT_POSITION,
+                                UpDownType.UP == command ? PercentType.HUNDRED : PercentType.ZERO);
+                        webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     }
                     throw new IllegalArgumentException(INVALID_COMMAND);
@@ -249,13 +275,11 @@ public class ShadeThingHandler extends BaseThingHandler {
     private void updateDynamicChannels(Shade shade) {
         List<Channel> removeChannels = new ArrayList<>();
 
-        ShadePosition positions = shade.getShadePositions();
-        if (positions != null) {
-            updateDynamicChannel(removeChannels, CHANNEL_SHADE_POSITION, positions.supportsPrimary());
-            updateDynamicChannel(removeChannels, CHANNEL_SHADE_SECONDARY_POSITION, positions.supportsSecondary());
-            updateDynamicChannel(removeChannels, CHANNEL_SHADE_VANE, positions.supportsTilt());
-        }
-
+        Capabilities capabilities = getCapabilities(shade);
+        updateDynamicChannel(removeChannels, CHANNEL_SHADE_POSITION, capabilities.supportsPrimary());
+        updateDynamicChannel(removeChannels, CHANNEL_SHADE_SECONDARY_POSITION, capabilities.supportsSecondary());
+        updateDynamicChannel(removeChannels, CHANNEL_SHADE_VANE, capabilities.supportsTilt180()
+                || capabilities.supportsTiltAnywhere() | capabilities.supportsTiltOnClosed());
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_BATTERY_LEVEL, !shade.isMainsPowered());
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_LOW_BATTERY, !shade.isMainsPowered());
 
@@ -279,9 +303,9 @@ public class ShadeThingHandler extends BaseThingHandler {
         if (shade.hasFullState()) {
             thing.setProperties(Stream.of(new String[][] { //
                     { HDPowerViewBindingConstants.PROPERTY_NAME, shade.getName() },
-                    { HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE, shade.getTypeString() },
-                    { HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES, shade.getCapabilitieString() },
-                    { HDPowerViewBindingConstants.PROPERTY_POWER_TYPE, shade.getPowerType() },
+                    { HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE, getType(shade).toString() },
+                    { HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES, getCapabilities(shade).toString() },
+                    { HDPowerViewBindingConstants.PROPERTY_POWER_TYPE, shade.getPowerType().name().toLowerCase() },
                     { HDPowerViewBindingConstants.PROPERTY_BLE_NAME, shade.getBleName() },
                     { Thing.PROPERTY_FIRMWARE_VERSION, shade.getFirmware() } //
             }).collect(Collectors.toMap(data -> data[0], data -> data[1])));

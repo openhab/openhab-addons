@@ -25,8 +25,9 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hdpowerview.internal.GatewayWebTargets;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewJUnitTests;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Scene;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.SceneEvent;
@@ -58,6 +59,7 @@ import com.google.gson.Gson;
 public class Generation3DtoTest {
 
     private final Gson gson = new Gson();
+    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     private String loadJson(String filename) throws IOException {
         try (InputStream inputStream = HDPowerViewJUnitTests.class.getResourceAsStream(filename)) {
@@ -92,7 +94,7 @@ public class Generation3DtoTest {
     @Test
     public void testScenesParsing() throws IOException {
         String json = loadJson("gen3/scenes.json");
-        List<Scene> sceneList = gson.fromJson(json, GatewayWebTargets.LIST_SCENES);
+        List<Scene> sceneList = List.of(gson.fromJson(json, Scene[].class));
         assertNotNull(sceneList);
         assertEquals(1, sceneList.size());
         Scene scene = sceneList.get(0);
@@ -123,15 +125,15 @@ public class Generation3DtoTest {
         ShadePosition pos;
 
         pos = new ShadePosition();
-        pos.setPosition(CoordinateSystem.PRIMARY_POSITION, 11);
+        pos.setPosition(CoordinateSystem.PRIMARY_POSITION, new PercentType(11));
         assertEquals(PercentType.valueOf("11"), pos.getState(CoordinateSystem.PRIMARY_POSITION));
         assertEquals(UnDefType.UNDEF, pos.getState(CoordinateSystem.SECONDARY_POSITION));
         assertEquals(UnDefType.UNDEF, pos.getState(CoordinateSystem.VANE_TILT_POSITION));
 
         pos = new ShadePosition();
-        pos.setPosition(CoordinateSystem.PRIMARY_POSITION, 11);
-        pos.setPosition(CoordinateSystem.SECONDARY_POSITION, 22);
-        pos.setPosition(CoordinateSystem.VANE_TILT_POSITION, 33);
+        pos.setPosition(CoordinateSystem.PRIMARY_POSITION, new PercentType(11));
+        pos.setPosition(CoordinateSystem.SECONDARY_POSITION, new PercentType(22));
+        pos.setPosition(CoordinateSystem.VANE_TILT_POSITION, new PercentType(33));
         assertEquals(PercentType.valueOf("11"), pos.getState(CoordinateSystem.PRIMARY_POSITION));
         assertEquals(PercentType.valueOf("22"), pos.getState(CoordinateSystem.SECONDARY_POSITION));
         assertEquals(PercentType.valueOf("33"), pos.getState(CoordinateSystem.VANE_TILT_POSITION));
@@ -143,29 +145,39 @@ public class Generation3DtoTest {
     @Test
     public void testShadesParsing() throws IOException {
         String json = loadJson("gen3/shades.json");
-        List<Shade> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
+        List<Shade> shadeList = List.of(gson.fromJson(json, Shade[].class));
         assertNotNull(shadeList);
         assertEquals(2, shadeList.size());
         Shade shadeData = shadeList.get(0);
-        assertEquals("Shade 2 ABC", shadeData.getName());
-        assertEquals(789, shadeData.getId());
+        assertEquals("Upper Left Upper Left", shadeData.getName());
+        assertEquals(2, shadeData.getId());
         assertFalse(shadeData.isMainsPowered());
         assertEquals(new DecimalType(66), shadeData.getBatteryLevel());
         assertEquals(OnOffType.OFF, shadeData.getLowBattery());
         ShadePosition positions = shadeData.getShadePositions();
         assertNotNull(positions);
-        assertTrue(positions.supportsPrimary());
-        assertTrue(positions.supportsSecondary());
-        assertTrue(positions.supportsTilt());
+        Integer caps = shadeData.getCapabilities();
+        assertNotNull(caps);
+        Capabilities capabilities = db.getCapabilities(caps);
+        assertTrue(capabilities.supportsPrimary());
+        assertFalse(capabilities.supportsSecondary());
+        assertFalse(capabilities.supportsTilt180());
+        assertFalse(capabilities.supportsTiltAnywhere());
+        assertFalse(capabilities.supportsTiltOnClosed());
 
         shadeData = shadeList.get(1);
-        assertEquals(123, shadeData.getId());
+        assertEquals(3, shadeData.getId());
         assertTrue(shadeData.isMainsPowered());
         positions = shadeData.getShadePositions();
         assertNotNull(positions);
-        assertTrue(positions.supportsPrimary());
-        assertFalse(positions.supportsSecondary());
-        assertFalse(positions.supportsTilt());
+        caps = shadeData.getCapabilities();
+        assertNotNull(caps);
+        capabilities = db.getCapabilities(caps);
+        assertTrue(capabilities.supportsPrimary());
+        assertFalse(capabilities.supportsSecondary());
+        assertFalse(capabilities.supportsTilt180());
+        assertFalse(capabilities.supportsTiltAnywhere());
+        assertTrue(capabilities.supportsTiltOnClosed());
     }
 
     /**
@@ -184,7 +196,7 @@ public class Generation3DtoTest {
         }
 
         String json = loadJson("gen3/shades.json");
-        List<Shade> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
+        List<Shade> shadeList = List.of(gson.fromJson(json, Shade[].class));
         assertNotNull(shadeList);
         assertEquals(2, shadeList.size());
 
@@ -194,7 +206,7 @@ public class Generation3DtoTest {
 
         /*
          * Use the first JSON Shade entry.
-         * It should support the full 6 dynamic channels.
+         * It should support 4 dynamic channels.
          */
         shadeThingHandler = new ShadeThingHandler(thing);
         shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
@@ -202,26 +214,15 @@ public class Generation3DtoTest {
         assertTrue(shadeData.hasFullState());
         shadeThingHandler.notify(shadeData);
         Thing handlerThing = shadeThingHandler.getThing();
-        assertEquals("23", handlerThing.getProperties().get("type"));
-        assertEquals("wand", handlerThing.getProperties().get("powerType"));
-        assertEquals("3.0.309", handlerThing.getProperties().get("firmwareVersion"));
-        assertEquals(new DecimalType(-55), shadeData.getSignalStrength());
-        assertEquals(6, handlerThing.getChannels().size());
-
-        /*
-         * Reuse the first JSON Shade entry and delete its 3 positions.
-         * So it should now only support 3 dynamic channels.
-         */
-        shadeThingHandler = new ShadeThingHandler(thing);
-        shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
-        shadeData.setShadePosition(new ShadePosition());
-        shadeThingHandler.notify(shadeData);
-        handlerThing = shadeThingHandler.getThing();
-        assertEquals(3, handlerThing.getChannels().size());
+        assertEquals("Duette (6)", handlerThing.getProperties().get("type"));
+        assertEquals("battery", handlerThing.getProperties().get("powerType"));
+        assertEquals("3.0.359", handlerThing.getProperties().get("firmwareVersion"));
+        assertEquals(new DecimalType(-50), shadeData.getSignalStrength());
+        assertEquals(4, handlerThing.getChannels().size());
 
         /*
          * Use the second JSON Shade entry.
-         * It should support only 2 dynamic channel.
+         * It should support only 3 dynamic channels.
          */
         shadeThingHandler = new ShadeThingHandler(thing);
         shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
@@ -229,11 +230,11 @@ public class Generation3DtoTest {
         assertTrue(shadeData.hasFullState());
         shadeThingHandler.notify(shadeData);
         handlerThing = shadeThingHandler.getThing();
-        assertEquals("44", handlerThing.getProperties().get("type"));
+        assertEquals("Silhouette (23)", handlerThing.getProperties().get("type"));
         assertEquals("hardwired", handlerThing.getProperties().get("powerType"));
-        assertEquals("3.0.123", handlerThing.getProperties().get("firmwareVersion"));
-        assertEquals(new DecimalType(-44), shadeData.getSignalStrength());
-        assertEquals(2, handlerThing.getChannels().size());
+        assertEquals("3.0.359", handlerThing.getProperties().get("firmwareVersion"));
+        assertEquals(new DecimalType(-51), shadeData.getSignalStrength());
+        assertEquals(3, handlerThing.getChannels().size());
     }
 
     /**
@@ -252,7 +253,7 @@ public class Generation3DtoTest {
         }
 
         String json = loadJson("gen3/shades.json");
-        List<Shade> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
+        List<Shade> shadeList = List.of(gson.fromJson(json, Shade[].class));
         assertNotNull(shadeList);
         assertEquals(2, shadeList.size());
 

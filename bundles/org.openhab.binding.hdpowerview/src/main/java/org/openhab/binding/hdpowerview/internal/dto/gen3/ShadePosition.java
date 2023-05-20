@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.hdpowerview.internal.dto.gen3;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem;
 import org.openhab.core.library.types.PercentType;
@@ -25,6 +29,8 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class ShadePosition {
+    private static final MathContext MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
+
     private @NonNullByDefault({}) Double primary;
     private @NonNullByDefault({}) Double secondary;
     private @NonNullByDefault({}) Double tilt;
@@ -44,7 +50,7 @@ public class ShadePosition {
             default:
                 value = null;
         }
-        return value != null ? new PercentType((int) (value.doubleValue() * 100)) : UnDefType.UNDEF;
+        return value != null ? new PercentType(new BigDecimal(value * 100f, MATH_CONTEXT)) : UnDefType.UNDEF;
     }
 
     /**
@@ -54,8 +60,8 @@ public class ShadePosition {
      * @param percent the new value in percent.
      * @return this object.
      */
-    public ShadePosition setPosition(CoordinateSystem coordinates, int percent) {
-        Double value = Double.valueOf(percent) / 100.0;
+    public ShadePosition setPosition(CoordinateSystem coordinates, PercentType percent) {
+        Double value = percent.doubleValue() / 100f;
         switch (coordinates) {
             case PRIMARY_POSITION:
                 primary = value;
@@ -69,17 +75,5 @@ public class ShadePosition {
             default:
         }
         return this;
-    }
-
-    public boolean supportsPrimary() {
-        return primary != null;
-    }
-
-    public boolean supportsSecondary() {
-        return secondary != null;
-    }
-
-    public boolean supportsTilt() {
-        return tilt != null;
     }
 }
