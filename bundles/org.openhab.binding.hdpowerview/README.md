@@ -19,15 +19,16 @@ By using a scene to control multiple shades at once, the shades will all begin m
 
 ## Supported Things
 
-| Thing                    | Thing Type | Description |
-|--------------------------|------------|-------------|
-| hub<sup>[1/2]</sup>      | Bridge     | The PowerView hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
-| shade<sup>[1/2]</sup>    | Thing      | A motorized shade. |
-| repeater<sup>[1/2]</sup> | Thing      | A PowerView signal repeater. |
-| gateway<sup>[3]</sup>    | Bridge     | Powerview Generation 3 gateway that provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
-| shade3<sup>[3]</sup>     | Thing      | A Powerview Generation 3 motorized shade. |
+| Thing                    | Thing Type | Description                                                                                                                   |
+|--------------------------|------------|-------------------------------------------------------------------------------------------------------------------------------|
+| hub<sup>[1/2]</sup>      | Bridge     | The PowerView hub interfaces between the LAN and the shade's radio network. Contains channels to interact with scenes.        |
+| shade<sup>[1/2]</sup>    | Thing      | A motorized shade.                                                                                                            |
+| repeater<sup>[1/2]</sup> | Thing      | A PowerView signal repeater.                                                                                                  |
+| gateway<sup>[3]</sup>    | Bridge     | Generation 3 gateway interfaces between the LAN and the shade's Bluetooth network. Contains channels to interact with scenes. |
+| shade3<sup>[3]</sup>     | Thing      | A Powerview Generation 3 motorized shade.                                                                                     |
 
-<sup>[1/2]</sup> Generation 1/2 hubs only. <sup>[3]</sup> Generation 3 gateways only.
+<sup>[1/2]</sup> Generation 1/2 hubs only.
+<sup>[3]</sup> Generation 3 gateways only.
 
 ## Discovery
 
@@ -55,12 +56,12 @@ If in the future, you add additional shades, scenes, repeaters, scene groups or 
 
 ### Thing Configuration for PowerView Hub / Gateway (Thing type `hub`<sup>[1/2]</sup> or `gateway`<sup>[3]</sup>)
 
-| Configuration Parameter                 | Description   |
-|-----------------------------------------|---------------|
-| host                                    | The host name or IP address of the hub on your network. |
-| refresh<sup>[1/2]</sup>                 | The number of milli-seconds between fetches of the PowerView hub's shade state (default 60'000 one minute). |
-| hardRefresh                             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 180 three hours). See [Hard Refreshes](#hard-refreshes). |
-| hardRefreshBatteryLevel<sup>[1/2]</sup> | The number of hours between hard refreshes of battery levels from the PowerView Hub (or 0 to disable, defaulting to weekly). See [Hard Refreshes](#hard-refreshes). |
+| Configuration Parameter                 | Description                                                                                                                      |
+|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| host                                    | The host name or IP address of the hub on your network.                                                                          |
+| refresh<sup>[1/2]</sup>                 | The number of milli-seconds between fetches of the PowerView hub's shade state (default 60'000 one minute).                      |
+| hardRefresh                             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 180 three hours). See [Hard Refreshes](#hard-refreshes).                                                                                                                                                           |
+| hardRefreshBatteryLevel<sup>[1/2]</sup> | The number of hours between hard refreshes of battery levels from the PowerView Hub (or 0 to disable, defaulting to weekly). See [Hard Refreshes](#hard-refreshes).                                                                                                                                           |
 
 <sup>[1/2]</sup> Generation 1/2 hubs only.
 
@@ -72,14 +73,14 @@ This can be used for the `id` parameters described below.
 
 #### Thing Configuration for PowerView Shades
 
-| Configuration Parameter | Description |
-|-------------------------|-------------|
+| Configuration Parameter | Description                                                   |
+|-------------------------|---------------------------------------------------------------|
 | id                      | The ID of the PowerView shade in the app. Must be an integer. |
 
 #### Thing Configuration for PowerView Repeaters<sup>[1/2]</sup>
 
-| Configuration Parameter | Description |
-|-------------------------|-------------|
+| Configuration Parameter | Description                                                      |
+|-------------------------|------------------------------------------------------------------|
 | id                      | The ID of the PowerView repeater in the app. Must be an integer. |
 
 ## Channels
@@ -89,11 +90,11 @@ This can be used for the `id` parameters described below.
 Scene, scene group and automation channels will be added dynamically to the binding as they are discovered in the hub.
 Each will have an entry in the hub as shown below, whereby different scenes, scene groups and automations have different `id` values:
 
-| Channel Group               | Channel | Item Type | Description |
-|-----------------------------|---------|-----------|-------------|
-| scenes                      | id      | Switch    | Setting this to ON will activate the scene. Scenes are stateless in the PowerView hub; they have no on/off state. |
-| sceneGroups<sup>[1/2]</sup> | id      | Switch    | Setting this to ON will activate the scene group. Scene groups are stateless in the PowerView hub; they have no on/off state. |
-| automations<sup>[1/2]</sup> | id      | Switch    | Setting this to ON will enable the automation, while OFF will disable it. |
+| Channel Group               | Channel | Item Type | Description                                                                                                            |
+|-----------------------------|---------|-----------|------------------------------------------------------------------------------------------------------------------------|
+| scenes                      | id      | Switch    | Setting this to ON will activate the scene. Scenes are stateless in the PowerView hub; they have no on/off state.      |
+| sceneGroups<sup>[1/2]</sup> | id      | Switch    | Setting this to ON will activate the scene group. Scene groups are stateless in the PowerView hub; they have no on/off state.                                                                                                                                                                       |
+| automations<sup>[1/2]</sup> | id      | Switch    | Setting this to ON will enable the automation, while OFF will disable it.                                              |
 
 <sup>[1/2]</sup> Generation 1/2 hubs only.
 
@@ -104,36 +105,39 @@ If the shade has slats or rotatable vanes, there is also a dimmer channel `vane`
 If it is a dual action (top-down plus bottom-up) shade, there is also a roller shutter channel `secondary` which controls the vertical position of the secondary rail.
 All of these channels appear in the binding, but only those which have a physical implementation in the shade, will have any physical effect.
 
-| Channel                        | Item Type                | Description |
-|--------------------------------|--------------------------|-------------|
-| position                       | Rollershutter            | The vertical position of the shade's rail (if any). -- See [next chapter](#roller-shutter-updown-position-vs-openclose-state). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
-| secondary                      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above. -- But see [next chapter](#roller-shutter-updown-position-vs-openclose-state). |
-| vane                           | Dimmer                   | The degree of opening of the slats or vanes (if any). On some shade types, setting this to a non-zero value might first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position. See [Interdependency between Channel positions](#interdependency-between-channel-positions). |
-| command                        | String                   | Send a command to the shade. Valid values are: `CALIBRATE`, `IDENTIFY` |
-| lowBattery                     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
-| batteryLevel                   | Number                   | Battery level (10% = low, 50% = medium, 100% = high) |
-| batteryVoltage<sup>[1/2]</sup> | Number:ElectricPotential | Battery (resp. mains power supply) voltage reported by the shade. |
-| signalStrength                 | Number                   | Signal strength (0 for no or unknown signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
-| hubRssi<sup>[1/2]</sup>        | Number:Power             | Received Signal Strength Indicator for Hub |
-| repeaterRssi<sup>[1/2]</sup>        | Number:Power             | Received Signal Strength Indicator for Repeater |
+| Channel                        | Item Type                | Description                                                                                                    |
+|--------------------------------|--------------------------|----------------------------------------------------------------------------------------------------------------|
+| position                       | Rollershutter            | The vertical position of the shade's rail (if any). -- See [next chapter](#roller-shutter-updown-position-vs-openclose-state). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail.                                                                                             |
+| secondary                      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above. -- But see [next chapter](#roller-shutter-updown-position-vs-openclose-state).                                                                                                  |
+| vane                           | Dimmer                   | The degree of opening of the slats or vanes (if any). On some shade types, setting this to a non-zero value might first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position. See [Interdependency between Channel positions](#interdependency-between-channel-positions).                                                                                                                                |
+| command                        | String                   | Advanced: Send a command to the shade.                                                                         |
+| lowBattery                     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules.            |
+| batteryLevel                   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)                                                           |
+| batteryVoltage<sup>[1/2]</sup> | Number:ElectricPotential | Battery (resp. mains power supply) voltage reported by the shade.                                              |
+| signalStrength                 | Number / Number:Power    | Shade radio signal strength.                                                                                   |
+| hubRssi<sup>[1/2]</sup>        | Number:Power             | Received Signal Strength Indicator for Hub.                                                                    |
+| repeaterRssi<sup>[1/2]</sup>   | Number:Power             | Received Signal Strength Indicator for Repeater.                                                               |
 
 Notes:
 
 - The channels `position`, `secondary` and `vane` exist if the shade physically supports such channels.
 - The shade's Power Option is set via the PowerView app with possible values 'Battery Wand', 'Rechargeable Battery Wand' or 'Hardwired Power Supply'.
 The channels `lowBattery` and `batteryLevel` exist if you have _not_ selected 'Hardwired Power Supply' in the app.
+- On Generation 1/2 hubs, the valid values for the `command` channel are: `CALIBRATE`, `IDENTIFY`.
+On Generation 3 gateways, the only valid value is: `IDENTIFY`.
+- On Generation 1/2 hubs the signal strength is 0 for no or unknown signal, 1 for weak, 2 for average, 3 for good, or 4 for excellent.
+On Generation 3 gateways the signal strength is displayed in dBm (deciBel-milliWatt).
 - <sup>[1/2]</sup> The RSSI values will only be updated upon manual request by a `REFRESH` command (e.g. in a rule).
-
-<sup>[1/2]</sup> Generation 1/2 hubs only.
+- <sup>[1/2]</sup> Repeaters are supported on Generation 1/2 hubs only.
 
 ### Channels for Repeaters (Thing type `repeater`)<sup>[1/2]</sup>
 
-| Channel         | Item Type | Description                   |
-|-----------------|-----------|-------------------------------|
+| Channel         | Item Type | Description                                                                                 |
+|-----------------|-----------|---------------------------------------------------------------------------------------------|
 | color           | Color     | Controls the color of the LED ring. A switch item can be linked: ON = white, OFF = turn off |
-| brightness      | Dimmer    | Controls the brightness of the LED ring. |
-| identify        | String    | Flash repeater to identify. Valid values are: `IDENTIFY` |
-| blinkingEnabled | Switch    | Blink during commands.        |
+| brightness      | Dimmer    | Controls the brightness of the LED ring.                                                    |
+| identify        | String    | Flash repeater to identify. Valid values are: `IDENTIFY`                                    |
+| blinkingEnabled | Switch    | Blink during commands.                                                                      |
 
 ### Roller Shutter Up/Down Position vs. Open/Close State
 
@@ -143,22 +147,22 @@ And for horizontal shades, it maps the horizontal position of the "truck" to the
 
 Depending on whether the shade is a top-down, bottom-up, left-right, right-left, dual action shade, or, a shade with a secondary blackout panel, the `OPEN` and `CLOSED` position of the shades may differ from the ▲ / ▼ commands follows..
 
-| Type of Shade               | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent           | Pebble Remote Button |
-|-----------------------------|-------------------|-----------------------|------------------|----------------|-------------------|----------------------|
-| Single action<br>bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
-|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
-| Single action<br>top-down   | `position`        | ▲                     | Up               | **`CLOSED`**   | 0%                | ▲                    |
-|                             |                   | ▼                     | Down             | **`OPEN`**     | 100%              | ▼                    |
-| Single action<br>right-left | `position`        | ▲                     | _**Left**_       | `OPEN`         | 0%                | ▲                    |
-|                             |                   | ▼                     | _**Right**_      | `CLOSED`       | 100%              | ▼                    |
-| Single action<br>left-right | `position`        | ▲                     | _**Right**_      | `OPEN`         | 0%                | ▲                    |
-|                             |                   | ▼                     | _**Left**_       | `CLOSED`       | 100%              | ▼                    |
-| Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
-|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
-| Dual action<br>(upper rail) | _**`secondary`**_ | ▲                     | Up               | **`CLOSED`** | 0%<sup>1)</sup>   | ![dual_action arrow_right](doc/right.png)   |
-|                             |                   | ▼                     | Down             | **`OPEN`**   | 100%<sup>1)</sup> | ![dual_action arrow_left](doc/left.png)    |
-| Blackout panel ('DuoLite')  | _**`secondary`**_ | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
-|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
+| Type of Shade               | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent           | Pebble Remote Button                       |
+|-----------------------------|-------------------|-----------------------|------------------|----------------|-------------------|--------------------------------------------|
+| Single action<br>bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                                          |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                                          |
+| Single action<br>top-down   | `position`        | ▲                     | Up               | **`CLOSED`**   | 0%                | ▲                                          |
+|                             |                   | ▼                     | Down             | **`OPEN`**     | 100%              | ▼                                          |
+| Single action<br>right-left | `position`        | ▲                     | _**Left**_       | `OPEN`         | 0%                | ▲                                          |
+|                             |                   | ▼                     | _**Right**_      | `CLOSED`       | 100%              | ▼                                          |
+| Single action<br>left-right | `position`        | ▲                     | _**Right**_      | `OPEN`         | 0%                | ▲                                          |
+|                             |                   | ▼                     | _**Left**_       | `CLOSED`       | 100%              | ▼                                          |
+| Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                                          |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                                          |
+| Dual action<br>(upper rail) | _**`secondary`**_ | ▲                     | Up               | **`CLOSED`** | 0%<sup>1)</sup>     | ![dual_action arrow_right](doc/right.png)  |
+|                             |                   | ▼                     | Down             | **`OPEN`**   | 100%<sup>1)</sup>   | ![dual_action arrow_left](doc/left.png)    |
+| Blackout panel ('DuoLite')  | _**`secondary`**_ | ▲                     | Up               | `OPEN`         | 0%                | ▲                                          |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                                          |
 
 _**<sup>1)</sup> BUG NOTE**_: In openHAB versions v3.1.x and earlier, there was a bug in the handling of the position percent value of the `secondary` shade.
 Although the RollerShutter Up/Down commands functioned properly as described in the table above, the percent state values (e.g. displayed on a slider control), did not.

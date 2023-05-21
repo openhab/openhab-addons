@@ -38,9 +38,11 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -82,6 +84,13 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
         this.translationProvider = translationProvider;
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof ShadeThingHandler shadeHandler) {
+            refreshShade(shadeHandler.getShadeId());
+        }
     }
 
     @Override
@@ -137,9 +146,8 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      */
     private List<ShadeThingHandler> getShadeThingHandlers() throws IllegalStateException {
         logger.debug("getShadeThingHandlers()");
-        return getThing().getThings().stream().map(thing -> thing.getHandler())
-                .filter(handler -> (handler instanceof ShadeThingHandler)).map(handler -> (ShadeThingHandler) handler)
-                .collect(Collectors.toList());
+        return getThing().getThings().stream().map(Thing::getHandler).filter(ShadeThingHandler.class::isInstance)
+                .map(ShadeThingHandler.class::cast).collect(Collectors.toList());
     }
 
     /**
@@ -277,7 +285,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      *
      * @param shadeId the id of the shade to be refreshed.
      */
-    public void refreshShade(int shadeId) {
+    private void refreshShade(int shadeId) {
         try {
             Shade shade = getWebTargets().getShade(shadeId);
             for (ShadeThingHandler handler : getShadeThingHandlers()) {

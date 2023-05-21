@@ -17,6 +17,7 @@ import static org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,6 +48,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,27 +68,13 @@ public class ShadeThingHandler extends BaseThingHandler {
     private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
 
     private final Logger logger = LoggerFactory.getLogger(ShadeThingHandler.class);
-    private final Shade thisShade = new Shade();
 
+    private int shadeId;
     private boolean isInitialized;
     private @Nullable Capabilities capabilities;
 
     public ShadeThingHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void dispose() {
-        // TODO Auto-generated method stub
-    }
-
-    private Capabilities getCapabilities(Shade shade) {
-        Capabilities capabilities = this.capabilities;
-        if (capabilities == null) {
-            capabilities = DB.getCapabilities(shade.getCapabilities());
-            this.capabilities = capabilities;
-        }
-        return capabilities;
     }
 
     /**
@@ -95,7 +83,7 @@ public class ShadeThingHandler extends BaseThingHandler {
      * @return the hub handler.
      * @throws IllegalStateException if the bridge or its handler are not initialized.
      */
-    private GatewayBridgeHandler getHandler() throws IllegalStateException {
+    private GatewayBridgeHandler getBridgeHandler() throws IllegalStateException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
             throw new IllegalStateException("Bridge not initialised.");
@@ -107,6 +95,10 @@ public class ShadeThingHandler extends BaseThingHandler {
         return (GatewayBridgeHandler) handler;
     }
 
+    public int getShadeId() {
+        return shadeId;
+    }
+
     private Type getType(Shade shade) {
         Integer type = shade.getType();
         return type != null ? DB.getType(type) : new ShadeCapabilitiesDatabase.Type(0);
@@ -115,13 +107,12 @@ public class ShadeThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
-            getHandler().handleCommand(channelUID, command);
+            getBridgeHandler().handleCommand(channelUID, command);
             return;
         }
 
-        GatewayWebTargets webTargets = getHandler().getWebTargets();
+        GatewayWebTargets webTargets = getBridgeHandler().getWebTargets();
         ShadePosition position = new ShadePosition();
-        int shadeId = thisShade.getId();
         try {
             switch (channelUID.getId()) {
                 case CHANNEL_SHADE_POSITION:
@@ -131,7 +122,7 @@ public class ShadeThingHandler extends BaseThingHandler {
                         break;
                     } else if (command instanceof UpDownType) {
                         position.setPosition(PRIMARY_POSITION,
-                                (UpDownType.UP == command) && !getCapabilities(thisShade).isPrimaryInverted()
+                                (UpDownType.UP == command) && !Objects.requireNonNull(capabilities).isPrimaryInverted()
                                         ? PercentType.HUNDRED
                                         : PercentType.ZERO);
                         webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
@@ -149,9 +140,10 @@ public class ShadeThingHandler extends BaseThingHandler {
                         break;
                     } else if (command instanceof UpDownType) {
                         position.setPosition(SECONDARY_POSITION,
-                                (UpDownType.UP == command) && !getCapabilities(thisShade).supportsSecondaryOverlapped()
-                                        ? PercentType.ZERO
-                                        : PercentType.HUNDRED);
+                                (UpDownType.UP == command)
+                                        && !Objects.requireNonNull(capabilities).supportsSecondaryOverlapped()
+                                                ? PercentType.ZERO
+                                                : PercentType.HUNDRED);
                         webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (StopMoveType.STOP == command) {
@@ -194,9 +186,24 @@ public class ShadeThingHandler extends BaseThingHandler {
         }
     }
 
+    private boolean hasPrimary() {
+        return Objects.requireNonNull(capabilities).supportsPrimary();
+    }
+
+    private boolean hasSecondary() {
+        Capabilities capabilities = Objects.requireNonNull(this.capabilities);
+        return capabilities.supportsSecondary() || capabilities.supportsSecondaryOverlapped();
+    }
+
+    private boolean hasVane() {
+        Capabilities capabilities = Objects.requireNonNull(this.capabilities);
+        return capabilities.supportsTilt180() || capabilities.supportsTiltAnywhere()
+                || capabilities.supportsTiltOnClosed();
+    }
+
     @Override
     public void initialize() {
-        thisShade.setId(getConfigAs(HDPowerViewShadeConfiguration.class).id);
+        shadeId = getConfigAs(HDPowerViewShadeConfiguration.class).id;
         Bridge bridge = getBridge();
         BridgeHandler bridgeHandler = bridge != null ? bridge.getHandler() : null;
         if (!(bridgeHandler instanceof GatewayBridgeHandler)) {
@@ -206,7 +213,6 @@ public class ShadeThingHandler extends BaseThingHandler {
         }
         isInitialized = false;
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.submit(() -> ((GatewayBridgeHandler) bridgeHandler).refreshShade(thisShade.getId()));
     }
 
     /**
@@ -216,21 +222,31 @@ public class ShadeThingHandler extends BaseThingHandler {
      * @return true if we handled the call.
      */
     public boolean notify(Shade shade) {
-        if (thisShade.getId() == shade.getId()) {
+        if (shadeId == shade.getId()) {
             updateStatus(ThingStatus.ONLINE);
-            if (!isInitialized) {
-                ShadePosition position = shade.getShadePositions();
-                if (position != null) {
-                    thisShade.setShadePosition(position);
-                }
+            if (!isInitialized && shade.hasFullState()) {
+                updateCapabilities(shade);
                 updateProperties(shade);
                 updateDynamicChannels(shade);
+                isInitialized = true;
             }
-            isInitialized = true;
             updateChannels(shade);
             return true;
         }
         return false;
+    }
+
+    /**
+     * Update the capabilities object based on the data in the passed shade instance.
+     *
+     * @param shade containing the channel data.
+     */
+    private void updateCapabilities(Shade shade) {
+        Capabilities capabilities = this.capabilities;
+        if (capabilities == null) {
+            capabilities = DB.getCapabilities(shade.getCapabilities());
+            this.capabilities = capabilities;
+        }
     }
 
     /**
@@ -239,9 +255,10 @@ public class ShadeThingHandler extends BaseThingHandler {
      * @param shade containing the channel data.
      */
     private void updateChannels(Shade shade) {
-        updateState(CHANNEL_SHADE_POSITION, shade.getPosition(PRIMARY_POSITION));
-        updateState(CHANNEL_SHADE_VANE, shade.getPosition(VANE_TILT_POSITION));
-        updateState(CHANNEL_SHADE_SECONDARY_POSITION, shade.getPosition(SECONDARY_POSITION));
+        updateState(CHANNEL_SHADE_POSITION, hasPrimary() ? shade.getPosition(PRIMARY_POSITION) : UnDefType.UNDEF);
+        updateState(CHANNEL_SHADE_VANE, hasVane() ? shade.getPosition(VANE_TILT_POSITION) : UnDefType.UNDEF);
+        updateState(CHANNEL_SHADE_SECONDARY_POSITION,
+                hasSecondary() ? shade.getPosition(SECONDARY_POSITION) : UnDefType.UNDEF);
         if (shade.hasFullState()) {
             updateState(CHANNEL_SHADE_LOW_BATTERY, shade.getLowBattery());
             updateState(CHANNEL_SHADE_BATTERY_LEVEL, shade.getBatteryLevel());
@@ -262,8 +279,8 @@ public class ShadeThingHandler extends BaseThingHandler {
         if (!channelRequired && channel != null) {
             removeList.add(channel);
         } else if (channelRequired && channel == null) {
-            logger.warn("updateDynamicChannel() shadeId:{} is missing channel:{} => please recreate the thing",
-                    thisShade.getId(), channelId);
+            logger.warn("updateDynamicChannel() shadeId:{} is missing channel:{} => please recreate the thing", shadeId,
+                    channelId);
         }
     }
 
@@ -274,20 +291,16 @@ public class ShadeThingHandler extends BaseThingHandler {
      */
     private void updateDynamicChannels(Shade shade) {
         List<Channel> removeChannels = new ArrayList<>();
-
-        Capabilities capabilities = getCapabilities(shade);
-        updateDynamicChannel(removeChannels, CHANNEL_SHADE_POSITION, capabilities.supportsPrimary());
-        updateDynamicChannel(removeChannels, CHANNEL_SHADE_SECONDARY_POSITION, capabilities.supportsSecondary());
-        updateDynamicChannel(removeChannels, CHANNEL_SHADE_VANE, capabilities.supportsTilt180()
-                || capabilities.supportsTiltAnywhere() || capabilities.supportsTiltOnClosed());
+        updateDynamicChannel(removeChannels, CHANNEL_SHADE_POSITION, hasPrimary());
+        updateDynamicChannel(removeChannels, CHANNEL_SHADE_SECONDARY_POSITION, hasSecondary());
+        updateDynamicChannel(removeChannels, CHANNEL_SHADE_VANE, hasVane());
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_BATTERY_LEVEL, !shade.isMainsPowered());
         updateDynamicChannel(removeChannels, CHANNEL_SHADE_LOW_BATTERY, !shade.isMainsPowered());
-
         if (!removeChannels.isEmpty()) {
             if (logger.isDebugEnabled()) {
                 StringJoiner joiner = new StringJoiner(", ");
                 removeChannels.forEach(c -> joiner.add(c.getUID().getId()));
-                logger.debug("updateDynamicChannels() shadeId:{}, removing unsupported channels:{}", thisShade.getId(),
+                logger.debug("updateDynamicChannels() shadeId:{}, removing unsupported channels:{}", shadeId,
                         joiner.toString());
             }
             updateThing(editThing().withoutChannels(removeChannels).build());
@@ -300,16 +313,15 @@ public class ShadeThingHandler extends BaseThingHandler {
      * @param shade containing the property data.
      */
     private void updateProperties(Shade shade) {
-        if (shade.hasFullState()) {
-            thing.setProperties(Stream.of(new String[][] { //
-                    { HDPowerViewBindingConstants.PROPERTY_NAME, shade.getName() },
-                    { HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE, getType(shade).toString() },
-                    { HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES, getCapabilities(shade).toString() },
-                    { HDPowerViewBindingConstants.PROPERTY_POWER_TYPE, shade.getPowerType().name().toLowerCase() },
-                    { HDPowerViewBindingConstants.PROPERTY_BLE_NAME, shade.getBleName() },
-                    { Thing.PROPERTY_FIRMWARE_VERSION, shade.getFirmware() } //
-            }).collect(Collectors.toMap(data -> data[0], data -> data[1])));
-        }
+        thing.setProperties(Stream.of(new String[][] { //
+                { HDPowerViewBindingConstants.PROPERTY_NAME, shade.getName() },
+                { HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE, getType(shade).toString() },
+                { HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
+                        Objects.requireNonNull(capabilities).toString() },
+                { HDPowerViewBindingConstants.PROPERTY_POWER_TYPE, shade.getPowerType().name().toLowerCase() },
+                { HDPowerViewBindingConstants.PROPERTY_BLE_NAME, shade.getBleName() },
+                { Thing.PROPERTY_FIRMWARE_VERSION, shade.getFirmware() } //
+        }).collect(Collectors.toMap(data -> data[0], data -> data[1])));
     }
 
     /**

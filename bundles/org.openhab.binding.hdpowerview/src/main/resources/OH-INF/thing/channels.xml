@@ -30,6 +30,18 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
+	<channel-type id="shade3-command" advanced="true">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a command to identify the shade</description>
+		<command>
+			<options>
+				<option value="IDENTIFY">Identify</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
 	<channel-type id="scene-activate">
 		<item-type>Switch</item-type>
 		<label>Activate</label>
@@ -75,6 +87,14 @@
 		<item-type>Switch</item-type>
 		<label>Blinking Enabled</label>
 		<description>Blink during commands</description>
+	</channel-type>
+
+	<channel-type id="ble-signal-strength">
+		<item-type>Number:Power</item-type>
+		<label>Signal strength</label>
+		<description>Signal strength of Bluetooth Low Energy communication</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
 
 	<channel-group-type id="scenes">

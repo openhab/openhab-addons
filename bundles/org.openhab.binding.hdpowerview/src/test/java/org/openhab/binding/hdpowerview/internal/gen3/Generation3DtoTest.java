@@ -38,6 +38,8 @@ import org.openhab.binding.hdpowerview.internal.handler.ShadeThingHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -149,7 +151,7 @@ public class Generation3DtoTest {
         assertNotNull(shadeList);
         assertEquals(2, shadeList.size());
         Shade shadeData = shadeList.get(0);
-        assertEquals("Upper Left Upper Left", shadeData.getName());
+        assertEquals("Upper Left", shadeData.getName());
         assertEquals(2, shadeData.getId());
         assertFalse(shadeData.isMainsPowered());
         assertEquals(new DecimalType(66), shadeData.getBatteryLevel());
@@ -217,7 +219,7 @@ public class Generation3DtoTest {
         assertEquals("Duette (6)", handlerThing.getProperties().get("type"));
         assertEquals("battery", handlerThing.getProperties().get("powerType"));
         assertEquals("3.0.359", handlerThing.getProperties().get("firmwareVersion"));
-        assertEquals(new DecimalType(-50), shadeData.getSignalStrength());
+        assertEquals(new QuantityType<>(-50, Units.DECIBEL_MILLIWATTS), shadeData.getSignalStrength());
         assertEquals(4, handlerThing.getChannels().size());
 
         /*
@@ -233,7 +235,7 @@ public class Generation3DtoTest {
         assertEquals("Silhouette (23)", handlerThing.getProperties().get("type"));
         assertEquals("hardwired", handlerThing.getProperties().get("powerType"));
         assertEquals("3.0.359", handlerThing.getProperties().get("firmwareVersion"));
-        assertEquals(new DecimalType(-51), shadeData.getSignalStrength());
+        assertEquals(new QuantityType<>(-51, Units.DECIBEL_MILLIWATTS), shadeData.getSignalStrength());
         assertEquals(3, handlerThing.getChannels().size());
     }
 

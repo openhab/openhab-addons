@@ -22,6 +22,8 @@ import org.openhab.binding.hdpowerview.internal.dto.Firmware;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -82,8 +84,7 @@ public class Shade {
     }
 
     public String getName() {
-        return String.join(" ", new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8), ptName)
-                .replaceAll("\n", "").replaceAll("\r", "");
+        return new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8);
     }
 
     public State getPosition(CoordinateSystem posKindCoords) {
@@ -102,7 +103,7 @@ public class Shade {
 
     public State getSignalStrength() {
         Integer signalStrength = this.signalStrength;
-        return signalStrength == null ? UnDefType.UNDEF : new DecimalType(signalStrength);
+        return signalStrength != null ? new QuantityType<>(signalStrength, Units.DECIBEL_MILLIWATTS) : UnDefType.UNDEF;
     }
 
     public @Nullable Integer getType() {

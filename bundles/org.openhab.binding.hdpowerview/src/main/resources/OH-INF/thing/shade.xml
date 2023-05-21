@@ -57,10 +57,10 @@
 				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
 			</channel>
 			<channel id="vane" typeId="shade-vane"/>
-			<channel id="command" typeId="shade-command"/>
+			<channel id="command" typeId="shade3-command"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
-			<channel id="signalStrength" typeId="system.signal-strength"/>
+			<channel id="signalStrength" typeId="ble-signal-strength"/>
 		</channels>
 
 		<properties>
