@@ -34,7 +34,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -42,7 +41,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -67,7 +65,6 @@ public class EvccHandler extends BaseThingHandler {
     private boolean gridConfigured = false;
     private boolean pvConfigured = false;
 
-    private float targetSoC = 100;
     private boolean targetTimeEnabled = false;
     private ZonedDateTime targetTimeZDT = ZonedDateTime.now().plusHours(12);
 
@@ -85,97 +82,116 @@ public class EvccHandler extends BaseThingHandler {
             if (groupId == null) {
                 return;
             }
+            String channelGroupId = channelUID.getGroupId();
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
-            int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
             EvccAPI evccAPI = this.evccAPI;
             if (evccAPI == null) {
                 return;
             }
             try {
-                switch (channelIdWithoutGroup) {
-                    case CHANNEL_LOADPOINT_MODE:
-                        if (command instanceof StringType) {
-                            evccAPI.setMode(loadpoint, command.toString());
-                        } else {
-                            logger.debug("Command has wrong type, StringType required!");
-                        }
-                        break;
-                    case CHANNEL_LOADPOINT_MIN_SOC:
-                        if (command instanceof QuantityType) {
-                            evccAPI.setMinSoC(loadpoint, ((QuantityType<?>) command).toUnit(Units.PERCENT).intValue());
-                        } else if (command instanceof DecimalType) {
-                            evccAPI.setMinSoC(loadpoint, ((DecimalType) command).intValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        }
-                        break;
-                    case CHANNEL_LOADPOINT_TARGET_SOC:
-                        if (command instanceof QuantityType) {
-                            evccAPI.setTargetSoC(loadpoint,
-                                    ((QuantityType<?>) command).toUnit(Units.PERCENT).intValue());
-                        } else if (command instanceof DecimalType) {
-                            evccAPI.setTargetSoC(loadpoint, ((DecimalType) command).intValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        }
-                        break;
-                    case CHANNEL_LOADPOINT_TARGET_TIME:
-                        if (command instanceof DateTimeType) {
-                            targetTimeZDT = ((DateTimeType) command).getZonedDateTime();
-                            ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
-                                    CHANNEL_LOADPOINT_TARGET_TIME);
-                            updateState(channel, new DateTimeType(targetTimeZDT));
-                            if (targetTimeEnabled) {
-                                try {
-                                    evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
-                                } catch (DateTimeParseException e) {
-                                    logger.debug("Failed to set target charge: ", e);
-                                }
-                            }
-                        } else {
-                            logger.debug("Command has wrong type, DateTimeType required!");
-                        }
-                        break;
-                    case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED:
-                        if (command == OnOffType.ON) {
-                            evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
-                            targetTimeEnabled = true;
-                        } else if (command == OnOffType.OFF) {
-                            evccAPI.unsetTargetCharge(loadpoint);
-                            targetTimeEnabled = false;
-                        } else {
-                            logger.debug("Command has wrong type, OnOffType required!");
-                        }
-                        break;
-                    case CHANNEL_LOADPOINT_PHASES:
-                        if (command instanceof DecimalType) {
-                            evccAPI.setPhases(loadpoint, ((DecimalType) command).intValue());
-                        } else {
-                            logger.debug("Command has wrong type, DecimalType required!");
-                        }
-                        break;
-                    case CHANNEL_LOADPOINT_MIN_CURRENT:
-                        if (command instanceof QuantityType) {
-                            evccAPI.setMinCurrent(loadpoint,
-                                    ((QuantityType<?>) command).toUnit(Units.AMPERE).intValue());
-                        } else if (command instanceof DecimalType) {
-                            evccAPI.setMinCurrent(loadpoint, ((DecimalType) command).intValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        }
-                        break;
-                    case CHANNEL_LOADPOINT_MAX_CURRENT:
-                        if (command instanceof QuantityType) {
-                            evccAPI.setMaxCurrent(loadpoint,
-                                    ((QuantityType<?>) command).toUnit(Units.AMPERE).intValue());
-                        } else if (command instanceof DecimalType) {
-                            evccAPI.setMaxCurrent(loadpoint, ((DecimalType) command).intValue());
-                        } else {
-                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        }
-                        break;
-                    default:
+                if (channelGroupId.equals(CHANNEL_GROUP_ID_GENERAL)) {
+                    if (!channelIdWithoutGroup.equals(CHANNEL_BATTERY_PRIORITY_SOC)) {
                         return;
+                    }
+                    if (command instanceof QuantityType<?> qt) {
+                        evccAPI.setBatteryPrioritySoC(qt.toUnit(Units.PERCENT).intValue());
+                    } else if (command instanceof DecimalType dt) {
+                        evccAPI.setBatteryPrioritySoC(dt.intValue());
+                    } else {
+                        logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                    }
+                } else {
+                    int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
+                    switch (channelIdWithoutGroup) {
+                        case CHANNEL_LOADPOINT_MODE -> {
+                            if (command instanceof StringType) {
+                                evccAPI.setMode(loadpoint, command.toString());
+                            } else {
+                                logger.debug("Command has wrong type, StringType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_MIN_SOC -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setMinSoC(loadpoint, qt.toUnit(Units.PERCENT).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setMinSoC(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_TARGET_ENERGY -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setTargetEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_TARGET_SOC -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setTargetSoC(loadpoint, qt.toUnit(Units.PERCENT).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setTargetSoC(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_TARGET_TIME -> {
+                            if (command instanceof DateTimeType dtt) {
+                                targetTimeZDT = dtt.getZonedDateTime();
+                                ChannelUID channel = new ChannelUID(getThing().getUID(), "loadpoint" + loadpoint,
+                                        CHANNEL_LOADPOINT_TARGET_TIME);
+                                updateState(channel, new DateTimeType(targetTimeZDT));
+                                if (targetTimeEnabled) {
+                                    try {
+                                        evccAPI.setTargetTime(loadpoint, targetTimeZDT);
+                                    } catch (DateTimeParseException e) {
+                                        logger.debug("Failed to set target charge: ", e);
+                                    }
+                                }
+                            } else {
+                                logger.debug("Command has wrong type, DateTimeType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED -> {
+                            if (command == OnOffType.ON) {
+                                evccAPI.setTargetTime(loadpoint, targetTimeZDT);
+                                targetTimeEnabled = true;
+                            } else if (command == OnOffType.OFF) {
+                                evccAPI.removeTargetTime(loadpoint);
+                                targetTimeEnabled = false;
+                            } else {
+                                logger.debug("Command has wrong type, OnOffType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_PHASES -> {
+                            if (command instanceof DecimalType dt) {
+                                evccAPI.setPhases(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_MIN_CURRENT -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setMinCurrent(loadpoint, qt.toUnit(Units.AMPERE).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setMinCurrent(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_MAX_CURRENT -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setMaxCurrent(loadpoint, qt.toUnit(Units.AMPERE).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setMaxCurrent(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        default -> {
+                            return;
+                        }
+                    }
                 }
             } catch (EvccApiException e) {
                 Throwable cause = e.getCause();
@@ -256,20 +272,22 @@ public class EvccHandler extends BaseThingHandler {
 
     // Utility functions
     private void createChannelsGeneral() {
-        final String channelGroup = "general";
         if (batteryConfigured) {
-            createChannel(CHANNEL_BATTERY_CAPACITY, channelGroup, CHANNEL_TYPE_UID_BATTERY_CAPACITY, "Number:Energy");
-            createChannel(CHANNEL_BATTERY_POWER, channelGroup, CHANNEL_TYPE_UID_BATTERY_POWER, "Number:Power");
-            createChannel(CHANNEL_BATTERY_SOC, channelGroup, CHANNEL_TYPE_UID_BATTERY_SOC, "Number:Dimensionless");
-            createChannel(CHANNEL_BATTERY_PRIORITY_SOC, channelGroup, CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC,
+            createChannel(CHANNEL_BATTERY_CAPACITY, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_CAPACITY,
+                    "Number:Energy");
+            createChannel(CHANNEL_BATTERY_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_POWER,
+                    "Number:Power");
+            createChannel(CHANNEL_BATTERY_SOC, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_SOC,
+                    "Number:Dimensionless");
+            createChannel(CHANNEL_BATTERY_PRIORITY_SOC, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC,
                     "Number:Dimensionless");
         }
         if (gridConfigured) {
-            createChannel(CHANNEL_GRID_POWER, channelGroup, CHANNEL_TYPE_UID_GRID_POWER, "Number:Power");
+            createChannel(CHANNEL_GRID_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_GRID_POWER, "Number:Power");
         }
-        createChannel(CHANNEL_HOME_POWER, channelGroup, CHANNEL_TYPE_UID_HOME_POWER, "Number:Power");
+        createChannel(CHANNEL_HOME_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_HOME_POWER, "Number:Power");
         if (pvConfigured) {
-            createChannel(CHANNEL_PV_POWER, channelGroup, CHANNEL_TYPE_UID_PV_POWER, "Number:Power");
+            createChannel(CHANNEL_PV_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_PV_POWER, "Number:Power");
         }
     }
 
@@ -297,8 +315,6 @@ public class EvccHandler extends BaseThingHandler {
                 "Number:Time");
         createChannel(CHANNEL_LOADPOINT_ENABLED, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_ENABLED,
                 CoreItemFactory.SWITCH);
-        createChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_HAS_VEHICLE,
-                CoreItemFactory.SWITCH);
         createChannel(CHANNEL_LOADPOINT_MAX_CURRENT, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MAX_CURRENT,
                 "Number:ElectricCurrent");
         createChannel(CHANNEL_LOADPOINT_MIN_CURRENT, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT,
@@ -308,6 +324,8 @@ public class EvccHandler extends BaseThingHandler {
         createChannel(CHANNEL_LOADPOINT_MODE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_MODE, CoreItemFactory.STRING);
         createChannel(CHANNEL_LOADPOINT_PHASES, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_PHASES,
                 CoreItemFactory.NUMBER);
+        createChannel(CHANNEL_LOADPOINT_TARGET_ENERGY, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TARGET_ENERGY,
+                "Number:Energy");
         createChannel(CHANNEL_LOADPOINT_TARGET_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC,
                 "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_TARGET_TIME, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME,
@@ -327,6 +345,8 @@ public class EvccHandler extends BaseThingHandler {
                 "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_VEHICLE_TITLE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TITLE,
                 CoreItemFactory.STRING);
+
+        removeChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup);
     }
 
     // Units and description for vars: https://docs.evcc.io/docs/reference/configuration/messaging/#msg
@@ -340,34 +360,34 @@ public class EvccHandler extends BaseThingHandler {
         boolean batteryConfigured = this.batteryConfigured;
         if (batteryConfigured) {
             float batteryCapacity = result.getBatteryCapacity();
-            channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_CAPACITY);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_CAPACITY);
             updateState(channel, new QuantityType<>(batteryCapacity, Units.KILOWATT_HOUR));
 
             float batteryPower = result.getBatteryPower();
-            channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_POWER);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_POWER);
             updateState(channel, new QuantityType<>(batteryPower, Units.WATT));
 
             float batterySoC = result.getBatterySoC();
-            channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_SOC);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_SOC);
             updateState(channel, new QuantityType<>(batterySoC, Units.PERCENT));
 
             float batteryPrioritySoC = result.getBatteryPrioritySoC();
-            channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_PRIORITY_SOC);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_PRIORITY_SOC);
             updateState(channel, new QuantityType<>(batteryPrioritySoC, Units.PERCENT));
         }
         boolean gridConfigured = this.gridConfigured;
         if (gridConfigured) {
             float gridPower = result.getGridPower();
-            channel = new ChannelUID(uid, "general", CHANNEL_GRID_POWER);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_GRID_POWER);
             updateState(channel, new QuantityType<>(gridPower, Units.WATT));
         }
         float homePower = result.getHomePower();
-        channel = new ChannelUID(uid, "general", CHANNEL_HOME_POWER);
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_HOME_POWER);
         updateState(channel, new QuantityType<>(homePower, Units.WATT));
         boolean pvConfigured = this.pvConfigured;
         if (pvConfigured) {
             float pvPower = result.getPvPower();
-            channel = new ChannelUID(uid, "general", CHANNEL_PV_POWER);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_PV_POWER);
             updateState(channel, new QuantityType<>(pvPower, Units.WATT));
         }
     }
@@ -426,10 +446,6 @@ public class EvccHandler extends BaseThingHandler {
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_ENABLED);
         updateState(channel, OnOffType.from(enabled));
 
-        boolean hasVehicle = loadpoint.getHasVehicle();
-        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_HAS_VEHICLE);
-        updateState(channel, OnOffType.from(hasVehicle));
-
         float maxCurrent = loadpoint.getMaxCurrent();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MAX_CURRENT);
         updateState(channel, new QuantityType<>(maxCurrent, Units.AMPERE));
@@ -450,12 +466,16 @@ public class EvccHandler extends BaseThingHandler {
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_PHASES);
         updateState(channel, new DecimalType(phases));
 
-        targetSoC = loadpoint.getTargetSoC();
+        float targetEnergy = loadpoint.getTargetEnergy();
+        channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_ENERGY);
+        updateState(channel, new QuantityType<>(targetEnergy, Units.WATT_HOUR));
+
+        float targetSoC = loadpoint.getTargetSoC();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_SOC);
         updateState(channel, new QuantityType<>(targetSoC, Units.PERCENT));
 
         String targetTime = loadpoint.getTargetTime();
-        if (targetTime == null) {
+        if (targetTime == null || targetTime.equals("0001-01-01T00:00:00Z")) {
             channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
             updateState(channel, OnOffType.OFF);
             targetTimeEnabled = false;
@@ -498,14 +518,17 @@ public class EvccHandler extends BaseThingHandler {
     }
 
     private void createChannel(String channel, String channelGroupId, ChannelTypeUID channelTypeUID, String itemType) {
-        ChannelUID channelToCheck = new ChannelUID(thing.getUID(), channelGroupId, channel);
-        if (thing.getChannel(channelToCheck) == null) {
-            ThingBuilder thingBuilder = editThing();
-            Channel testchannel = ChannelBuilder
-                    .create(new ChannelUID(getThing().getUID(), channelGroupId, channel), itemType)
-                    .withType(channelTypeUID).build();
-            thingBuilder.withChannel(testchannel);
-            updateThing(thingBuilder.build());
+        ChannelUID channelUid = new ChannelUID(thing.getUID(), channelGroupId, channel);
+        if (thing.getChannel(channelUid) == null) {
+            updateThing(editThing()
+                    .withChannel(ChannelBuilder.create(channelUid, itemType).withType(channelTypeUID).build()).build());
+        }
+    }
+
+    private void removeChannel(String channel, String channelGroupId) {
+        ChannelUID channelUid = new ChannelUID(thing.getUID(), channelGroupId, channel);
+        if (thing.getChannel(channelUid) != null) {
+            updateThing(editThing().withoutChannel(channelUid).build());
         }
     }
 }
