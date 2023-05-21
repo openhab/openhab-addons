@@ -214,7 +214,6 @@
     <module>org.openhab.binding.livisismarthome</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
-    <module>org.openhab.binding.luftdateninfo</module>
     <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.luxom</module>
     <module>org.openhab.binding.luxtronikheatpump</module>
@@ -334,6 +333,7 @@
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.sensibo</module>
+    <module>org.openhab.binding.sensorcommunity</module>
     <module>org.openhab.binding.serial</module>
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.shelly</module>
