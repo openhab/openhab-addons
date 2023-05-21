@@ -50,6 +50,10 @@
 			<channel id="courtesy" typeId="courtesy"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>id</representation-property>
 
 		<config-description>
@@ -76,6 +80,10 @@
 			<channel id="t4command" typeId="t4command"/>
 			<channel id="courtesy" typeId="courtesy"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
