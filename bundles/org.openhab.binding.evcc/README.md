@@ -1,7 +1,7 @@
 # evcc Binding
 
 This binding integrates [evcc - electric vehicle charging control](https://evcc.io), a project that provides a control center for electric vehicle charging.
-The binding requires evcc [version 0.111.0](https://github.com/evcc-io/evcc/releases/tag/0.111.0) or newer and is tested with this version.
+The binding requires evcc [version 0.117.0](https://github.com/evcc-io/evcc/releases/tag/0.117.0) or newer and is tested with this version.
 
 You can easily install and upgrade evcc on openHABian using `sudo openhabian-config`.
 
@@ -43,7 +43,7 @@ Please note that some of them are only available when evcc is properly configure
 | general#batteryCapacity    | Number:Energy        | R          | Capacity of (home) battery.                                                                                  |
 | general#batteryPower       | Number:Power         | R          | Current power from battery.                                                                                  |
 | general#batterySoC         | Number:Dimensionless | R          | Current State of Charge of battery.                                                                          |
-| general#batteryPrioritySoC | Number:Dimensionless | R          | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv". |
+| general#batteryPrioritySoC | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv". |
 | general#gridPower          | Number:Power         | R          | Current power from grid (negative means feed-in)                                                             |
 | general#homePower          | Number:Power         | R          | Current power taken by home.                                                                                 |
 | general#pvPower            | Number:Power         | R          | Current power from photovoltaik.                                                                             |
@@ -64,12 +64,12 @@ Please note that you have to replace _N_ with your loadpoint number.
 | loadpointN#chargedEnergy            | Number:Energy          | R          | Energy charged since plugged-in                                                                     |
 | loadpointN#charging                 | Switch                 | R          | Loadpoint is currently charging                                                                     |
 | loadpointN#enabled                  | Switch                 | R          | Charging enabled (mode is not "off")                                                                |
-| loadpointN#hasVehicle               | Switch                 | R          | Whether vehicle is configured for loadpoint                                                         |
 | loadpointN#maxCurrent               | Number:ElectricCurrent | RW         | Maximum amperage per connected phase with which the car should be charged                           |
 | loadpointN#minCurrent               | Number:ElectricCurrent | RW         | Minimum amperage per connected phase with which the car should be charged                           |
 | loadpointN#minSoC                   | Number:Dimensionless   | RW         | Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off" |
 | loadpointN#mode                     | String                 | RW         | Charging mode: "off", "now", "minpv", "pv"                                                          |
 | loadpointN#phases                   | Number                 | RW         | The maximum number of phases which can be used                                                      |
+| loadpointN#targetEnergy             | Number:Energy          | RW         | Amount of energy to charge the vehicle with                                                         |
 | loadpointN#targetSoC                | Number:Dimensionless   | RW         | Until which state of charge (SoC) should the vehicle be charged                                     |
 | loadpointN#targetTime               | DateTime               | RW         | When the target SoC should be reached                                                               |
 | loadpointN#targetTimeEnabled        | Switch                 | RW         | Target time for charging enabled                                                                    |
@@ -113,12 +113,12 @@ Number:Power              evcc_loadpoint0_chargePower                 "Charging 
 Number:Energy             evcc_loadpoint0_chargedEnergy               "Charged energy [%.1f kWh]"                       <energy>          {channel="evcc:device:demo:loadpoint0#chargedEnergy"}
 Switch                    evcc_loadpoint0_charging                    "Currently charging [%s]"                         <battery>         {channel="evcc:device:demo:loadpoint0#charging"}
 Switch                    evcc_loadpoint0_enabled                     "Charging enabled [%s]"                           <switch>          {channel="evcc:device:demo:loadpoint0#enabled"}
-Switch                    evcc_loadpoint0_hasVehicle                  "Vehicle configured [%s]"                         <switch>          {channel="evcc:device:demo:loadpoint0#hasVehicle"}
 Number:ElectricCurrent    evcc_loadpoint0_maxCurrent                  "Maximum current [%.0f A]"                        <energy>          {channel="evcc:device:demo:loadpoint0#maxCurrent"}
 Number:ElectricCurrent    evcc_loadpoint0_minCurrent                  "Minimum current [%.0f A]"                        <energy>          {channel="evcc:device:demo:loadpoint0#minCurrent"}
 Number:Dimensionless      evcc_loadpoint0_minSoC                      "Minimum SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:loadpoint0#minSoC"}
 String                    evcc_loadpoint0_mode                        "Mode [%s]"                                                         {channel="evcc:device:demo:loadpoint0#mode"}
 Number                    evcc_loadpoint0_phases                      "Enabled phases [%d]"                                               {channel="evcc:device:demo:loadpoint0#phases"}
+Number:Energy             evcc_loadpoint0_targetEnergy                "Target energy [%.1f kWh]"                        <batterylevel>    {channel="evcc:device:demo:loadpoint0#targetEnergy"}
 Number:Dimensionless      evcc_loadpoint0_targetSoC                   "Target SoC [%d %%]"                              <batterylevel>    {channel="evcc:device:demo:loadpoint0#targetSoC"}
 DateTime                  evcc_loadpoint0_targetTime                  "Target time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"    <time>            {channel="evcc:device:demo:loadpoint0#targetTime"}
 Switch                    evcc_loadpoint0_targetTimeEnabled           "Target time enabled [%s]"                        <switch>          {channel="evcc:device:demo:loadpoint0#targetTimeEnabled"}
@@ -158,6 +158,7 @@ sitemap evcc label="evcc Demo" {
         }
         Switch item=evcc_loadpoint0_mode mappings=["off"="Stop","now"="Now","minpv"="Min + PV", "pv"="Only PV"]
         Text label="Charging settings" icon="settings" {
+            Setpoint item=evcc_loadpoint0_targetEnergy minValue=5 maxValue=100 step=5
             Setpoint item=evcc_loadpoint0_targetSoC minValue=5 maxValue=100 step=5
             Setpoint item=evcc_loadpoint0_minCurrent minValue=6 maxValue=96 step=2
             Setpoint item=evcc_loadpoint0_maxCurrent minValue=6 maxValue=96 step=2
