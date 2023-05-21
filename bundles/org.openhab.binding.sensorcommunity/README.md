@@ -1,6 +1,7 @@
 # SensorCommunity Binding
 
-Binding for the Sensor Community [Sensor.Community](https://sensor.community/). The community provides instructions to build sensors on your own and they can be integrated into the database.
+Binding for the [Sensor.Community](https://sensor.community/).
+The community provides instructions to build sensors on your own and they can be integrated into the database.
 With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openHAB.
 
 ## Supported Things
