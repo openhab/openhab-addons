@@ -47,6 +47,7 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_CHARGING = "charging";
     public static final String CHANNEL_LOADPOINT_CONNECTED = "vehicleConnected";
     public static final String CHANNEL_LOADPOINT_CONNECTED_DURATION = "vehicleConnectedDuration";
+    public static final String CHANNEL_LOADPOINT_HAS_VEHICLE = "hasVehicle";
     public static final String CHANNEL_LOADPOINT_ENABLED = "enabled";
     public static final String CHANNEL_LOADPOINT_MAX_CURRENT = "maxCurrent";
     public static final String CHANNEL_LOADPOINT_MIN_CURRENT = "minCurrent";

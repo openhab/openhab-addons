@@ -34,7 +34,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -42,7 +41,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -347,6 +345,8 @@ public class EvccHandler extends BaseThingHandler {
                 "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_VEHICLE_TITLE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TITLE,
                 CoreItemFactory.STRING);
+
+        removeChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup);
     }
 
     // Units and description for vars: https://docs.evcc.io/docs/reference/configuration/messaging/#msg
@@ -518,14 +518,17 @@ public class EvccHandler extends BaseThingHandler {
     }
 
     private void createChannel(String channel, String channelGroupId, ChannelTypeUID channelTypeUID, String itemType) {
-        ChannelUID channelToCheck = new ChannelUID(thing.getUID(), channelGroupId, channel);
-        if (thing.getChannel(channelToCheck) == null) {
-            ThingBuilder thingBuilder = editThing();
-            Channel testchannel = ChannelBuilder
-                    .create(new ChannelUID(getThing().getUID(), channelGroupId, channel), itemType)
-                    .withType(channelTypeUID).build();
-            thingBuilder.withChannel(testchannel);
-            updateThing(thingBuilder.build());
+        ChannelUID channelUid = new ChannelUID(thing.getUID(), channelGroupId, channel);
+        if (thing.getChannel(channelUid) == null) {
+            updateThing(editThing()
+                    .withChannel(ChannelBuilder.create(channelUid, itemType).withType(channelTypeUID).build()).build());
+        }
+    }
+
+    private void removeChannel(String channel, String channelGroupId) {
+        ChannelUID channelUid = new ChannelUID(thing.getUID(), channelGroupId, channel);
+        if (thing.getChannel(channelUid) != null) {
+            updateThing(editThing().withoutChannel(channelUid).build());
         }
     }
 }
