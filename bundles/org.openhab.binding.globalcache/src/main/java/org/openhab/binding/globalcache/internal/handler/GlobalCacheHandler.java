@@ -105,8 +105,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
         logger.debug("Initializing thing {}", thingID());
         try {
             ifAddress = InetAddress.getByName(ipv4Address);
+            NetworkInterface netIF = NetworkInterface.getByInetAddress(ifAddress);
             logger.debug("Handler using address {} on network interface {}", ifAddress.getHostAddress(),
-                    NetworkInterface.getByInetAddress(ifAddress).getName());
+                    netIF != null ? netIF.getName() : "UNKNOWN");
         } catch (SocketException e) {
             logger.error("Handler got Socket exception creating multicast socket: {}", e.getMessage());
             markThingOfflineWithError(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No suitable network interface");

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Hyperion Binding</name>
 	<description>This binding integrates openHAB with the Hyperion ambient lighting software.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>NibeUplink Binding</name>
 	<description>This is the binding for NibeUplink.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

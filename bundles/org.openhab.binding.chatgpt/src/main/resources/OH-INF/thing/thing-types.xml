@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="chatgpt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="account" extensible="chat">
+
+		<label>OpenAI Account</label>
+		<description>Account at OpenAI that is used for accessing the ChatGPT API.</description>
+
+		<channels>
+			<channel id="chat" typeId="chat"/>
+		</channels>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>API key to access the account</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="chat">
+		<item-type>String</item-type>
+		<label>Chat</label>
+		<description>A chat session</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="model" type="text">
+				<label>Model</label>
+				<description>The model to be used for the responses</description>
+				<limitToOptions>false</limitToOptions>
+				<default>gpt-3.5-turbo</default>
+			</parameter>
+			<parameter name="temperature" type="decimal" min="0" max="2">
+				<label>Temperature</label>
+				<description>Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more
+					focused and deterministic.</description>
+				<default>0.5</default>
+			</parameter>
+			<parameter name="systemMessage" type="text">
+				<label>System Message</label>
+				<description>The system message helps set the behavior of the assistant.</description>
+			</parameter>
+			<parameter name="maxTokens" type="decimal">
+				<label>Maximum Number of Tokens</label>
+				<description>The maximum number of tokens to generate in the completion.</description>
+				<default>500</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>

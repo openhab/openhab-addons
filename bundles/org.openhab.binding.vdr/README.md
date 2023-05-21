@@ -6,14 +6,13 @@ The binding is based on VDR's own SVDRP (Simple VDR Protocol) connectivity. It s
 
 ## Supported Things
 
-
 The binding provides only one thing type: `vdr`. You can create one thing for each VDR instance at your home.
 
 ## Thing Configuration
 
 To configure a VDR, hostname or IP address and the actual SVDRP port are required.
-Please note that until VDR version 1.7.15 the standard SVDRP port was 2001 and after that version it changed to 6419. 
-The VDR configuration file svdrphosts.conf needs to be configured to allow SVDRP access from host where openHAB instance is running. 
+Please note that until VDR version 1.7.15 the standard SVDRP port was 2001 and after that version it changed to 6419.
+The VDR configuration file svdrphosts.conf needs to be configured to allow SVDRP access from host where openHAB instance is running.
 Please check VDR documentation if you are unsure about this.
 
 | Configuration Parameter | Default          | Required | Description                                                  |
@@ -24,10 +23,9 @@ Please check VDR documentation if you are unsure about this.
 
 A typical thing configuration would look like this:
 
+```java
+Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"    [ host="192.168.0.51", port=6419, refresh=30 ]
 ```
-Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"	[ host="192.168.0.51", port=6419, refresh=30 ]
-```
-
 
 ## Channels
 
@@ -36,7 +34,6 @@ Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"	[ host="192.168.0.51", port=6419, 
 Also you can show information about the current channel's program on your VDR by displaying the EPG Event Channels in your favorite openHAB user interface.
 
 To turn on the device VDR is running on please use Wake-On-LAN functionality from Network Binding.
-
 
 | channel              | type        | description                             |
 |----------------------|-------------|-----------------------------------------|
@@ -59,18 +56,17 @@ To turn on the device VDR is running on please use Wake-On-LAN functionality fro
 | nextEventEnd         | DateTime    | Next EPG Event End                      |
 | nextEventDuration    | Number:Time | Next EPG Event Duration in Minutes      |
 
-
 ## Full Example
 
 ### Things
 
-```
-Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"	[ host="192.168.0.77", port=6419, refresh=30 ]
+```java
+Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"    [ host="192.168.0.77", port=6419, refresh=30 ]
 ```
 
 ### Items
 
-```
+```java
 Switch   VDR_LivingRoom_Power                "Power"                                     {channel="vdr:vdr:livingRoom:power" }
 Number   VDR_LivingRoom_Channel              "Channel Number"                            {channel="vdr:vdr:livingRoom:channel" }
 String   VDR_LivingRoom_ChannelName          "Channel Name"                              {channel="vdr:vdr:livingRoom:channelName" }
@@ -93,28 +89,28 @@ Number   VDR_LivingRoom_NextEventDuration    "Duration (next) [%d min]"         
 
 ### Sitemap
 
-```
+```perl
 Frame label="VDR" {
-	Switch item=VDR_LivingRoom_Power
-	Selection item=VDR_LivingRoom_Channel mappings=[1="DasErste HD", 2="ZDF HD"] visibility=[VDR_LivingRoom_Power==ON]
-	Text item=VDR_LivingRoom_ChannelName visibility=[VDR_LivingRoom_Power==ON]
-	Slider item=VDR_LivingRoom_Volume visibility=[VDR_LivingRoom_Power==ON]
-	Text item=VDR_LivingRoom_DiskUsage
-	Switch item=VDR_LivingRoom_Recording
-	Selection item=VDR_LivingRoom_Key visibility=[VDR_LivingRoom_Power==ON]
-	Frame label="Now" visibility=[VDR_LivingRoom_Power==ON] {
-		Text item=VDR_LivingRoom_CurrentEventTitle
-		Text item=VDR_LivingRoom_CurrentEventSubTitle
-		Text item=VDR_LivingRoom_CurrentEventBegin
-		Text item=VDR_LivingRoom_CurrentEventEnd
-		Text item=VDR_LivingRoom_CurrentEventDuration
-	}
-	Frame label="Next" visibility=[VDR_LivingRoom_Power==ON] {
-		Text item=VDR_LivingRoom_NextEventTitle
-		Text item=VDR_LivingRoom_NextEventSubTitle
-		Text item=VDR_LivingRoom_NextEventBegin
-		Text item=VDR_LivingRoom_NextEventEnd
-		Text item=VDR_LivingRoom_NextEventDuration
-	}
+    Switch item=VDR_LivingRoom_Power
+    Selection item=VDR_LivingRoom_Channel mappings=[1="DasErste HD", 2="ZDF HD"] visibility=[VDR_LivingRoom_Power==ON]
+    Text item=VDR_LivingRoom_ChannelName visibility=[VDR_LivingRoom_Power==ON]
+    Slider item=VDR_LivingRoom_Volume visibility=[VDR_LivingRoom_Power==ON]
+    Text item=VDR_LivingRoom_DiskUsage
+    Switch item=VDR_LivingRoom_Recording
+    Selection item=VDR_LivingRoom_Key visibility=[VDR_LivingRoom_Power==ON]
+    Frame label="Now" visibility=[VDR_LivingRoom_Power==ON] {
+        Text item=VDR_LivingRoom_CurrentEventTitle
+        Text item=VDR_LivingRoom_CurrentEventSubTitle
+        Text item=VDR_LivingRoom_CurrentEventBegin
+        Text item=VDR_LivingRoom_CurrentEventEnd
+        Text item=VDR_LivingRoom_CurrentEventDuration
+    }
+    Frame label="Next" visibility=[VDR_LivingRoom_Power==ON] {
+        Text item=VDR_LivingRoom_NextEventTitle
+        Text item=VDR_LivingRoom_NextEventSubTitle
+        Text item=VDR_LivingRoom_NextEventBegin
+        Text item=VDR_LivingRoom_NextEventEnd
+        Text item=VDR_LivingRoom_NextEventDuration
+    }
 }
 ```

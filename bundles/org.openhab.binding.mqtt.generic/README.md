@@ -35,7 +35,7 @@ be found on "device123/brightness". In openHAB we call that a **state topic**.
 This pattern is very common, that you have a command and a state topic. A sensor would only have a state topic,
 naturally.
 
-Because every manufacturer can device on his own on which topic his devices publish, this
+Because every manufacturer can decide on his own on which topic his devices publish, this
 binding can unfortunately not provide any auto-discovery means.
 
 If you use an open source IoT device, the chances are high,

@@ -26,10 +26,10 @@ public interface TypeConverter<T extends State> {
     /**
      * Converts an openHAB type to a Homematic value.
      */
-    public Object convertToBinding(Type type, HmDatapoint dp) throws ConverterException;
+    Object convertToBinding(Type type, HmDatapoint dp) throws ConverterException;
 
     /**
      * Converts a Homematic value to an openHAB type.
      */
-    public T convertFromBinding(HmDatapoint dp) throws ConverterException;
+    T convertFromBinding(HmDatapoint dp) throws ConverterException;
 }

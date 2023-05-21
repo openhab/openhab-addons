@@ -32,17 +32,17 @@ public interface NhcEnergyMeterEvent {
      *
      * @param power current power consumption/production in W (positive for consumption), null for an empty reading
      */
-    public void energyMeterEvent(@Nullable Integer power);
+    void energyMeterEvent(@Nullable Integer power);
 
     /**
      * Called to indicate the energyMeter has been initialized.
      *
      */
-    public void energyMeterInitialized();
+    void energyMeterInitialized();
 
     /**
      * Called to indicate the energyMeter has been removed from the Niko Home Control controller.
      *
      */
-    public void energyMeterRemoved();
+    void energyMeterRemoved();
 }

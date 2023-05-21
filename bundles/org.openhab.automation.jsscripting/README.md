@@ -1,6 +1,7 @@
 # JavaScript Scripting
 
 This add-on provides support for JavaScript (ECMAScript 2022+) that can be used as a scripting language within automation rules.
+It is based on [GraalJS](https://www.graalvm.org/javascript/) from the [GraalVM project](https://www.graalvm.org/).
 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
 to common openHAB functionality within rules including items, things, actions, logging and more.
@@ -11,19 +12,21 @@ to common openHAB functionality within rules including items, things, actions, l
   - [Adding Actions](#adding-actions)
   - [UI Event Object](#ui-event-object)
 - [Scripting Basics](#scripting-basics)
-  - [Require](#require)
-  - [Console](#console)
+  - [`let` and `const`](#let-and-const)
+  - [`require`](#require)
+  - [`console`](#console)
   - [Timers](#timers)
   - [Paths](#paths)
   - [Deinitialization Hook](#deinitialization-hook)
-- [`SCRIPT` Transformation](#script-transformation)
+- [`JS` Transformation](#js-transformation)
 - [Standard Library](#standard-library)
   - [Items](#items)
   - [Things](#things)
   - [Actions](#actions)
   - [Cache](#cache)
-  - [Log](#log)
   - [Time](#time)
+  - [Quantity](#quantity)
+  - [Log](#log)
   - [Utils](#utils)
 - [File Based Rules](#file-based-rules)
   - [JSRule](#jsrule)
@@ -95,6 +98,8 @@ See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of fu
 ### UI Event Object
 
 **NOTE**: Note that `event` object is different in UI based rules and file based rules! This section is only valid for UI based rules. If you use file based rules, refer to [file based rules event object documentation](#event-object).
+Note that `event` object is only available when the UI based rule was triggered by an event and is not manually run!
+Trying to access `event` on manual run does not work (and will lead to an error), use `this.event` instead (will be `undefined` in case of manual run).
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
 
@@ -130,13 +135,33 @@ console.log(event.itemState.toString() == "test") // OK
 
 The openHAB JavaScript Scripting runtime attempts to provide a familiar environment to JavaScript developers.
 
-### Require
+### `let` and `const`
+
+Due to the way how openHAB runs UI based scripts, `let`, `const` and `class` are not supported at top-level.
+Use `var` instead or wrap your script inside a self-invoking function:
+
+```javascript
+// Wrap script inside a self-invoking function:
+(function (data) {
+  const C = 'Hello world';
+  console.log(C);
+})(this.event);
+
+// Defining a class using var:
+var Tree = class {
+  constructor (height) {
+    this.height = height;
+  }
+}
+```
+
+### `require`
 
 Scripts may include standard NPM based libraries by using CommonJS `require`.
 The library search will look in the path `automation/js/node_modules` in the user configuration directory.
 See [libraries](#libraries) for more information.
 
-### Console
+### `console`
 
 The JS Scripting binding supports the standard `console` object for logging.
 Script logging is enabled by default at the `INFO` level (messages from `console.debug` and `console.trace` won't be displayed), but can be configured using the [openHAB console](https://www.openhab.org/docs/administration/console.html):
@@ -179,7 +204,7 @@ JS Scripting provides access to the global `setTimeout`, `setInterval`, `clearTi
 
 When a script is unloaded, all created timeouts and intervals are automatically cancelled.
 
-#### SetTimeout
+#### `setTimeout`
 
 The global [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout) method sets a timer which executes a function once the timer expires.
 `setTimeout()` returns a `timeoutId` (a positive integer value) which identifies the timer created.
@@ -192,7 +217,9 @@ var timeoutId = setTimeout(callbackFunction, delay);
 
 The global [`clearTimeout(timeoutId)`](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout) method cancels a timeout previously established by calling `setTimeout()`.
 
-#### SetInterval
+If you need a more verbose way of creating timers, consider to use [`createTimer`](#createtimer) instead.
+
+#### `setInterval`
 
 The global [`setInterval()`](https://developer.mozilla.org/en-US/docs/Web/API/setInterval) method repeatedly calls a function, with a fixed time delay between each call.
 `setInterval()` returns an `intervalId` (a positive integer value) which identifies the interval created.
@@ -265,27 +292,30 @@ require('@runtime').lifecycleTracker.addDisposeHook(() => {
 });
 ```
 
-## `SCRIPT` Transformation
+## `JS` Transformation
 
-openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the `SCRIPT` transformation, that is available from the framework and needs no additional installation.
+openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the script transformations, that are available from the framework and need no additional installation.
 It allows transforming values using any of the available scripting languages, which means JavaScript Scripting is supported as well.
-See the [transformation docs](https://openhab.org/docs/configuration/transformations.html#script-transformation) for more general information on the usage of `SCRIPT` transformation.
+See the [transformation docs](https://openhab.org/docs/configuration/transformations.html#script-transformation) for more general information on the usage of script transformations.
 
-Use the `SCRIPT` transformation with JavaScript Scripting by:
+Use JavaScript Scripting as script transformation by:
 
-1. Creating a script in the `$OPENHAB_CONF/transform` folder with the `.script` extension.
+1. Creating a script in the `$OPENHAB_CONF/transform` folder with the `.js` extension.
    The script should take one argument `input` and return a value that supports `toString()` or `null`:
 
    ```javascript
    (function(data) {
-     // Do some data transformation here
-     return data;
+     // Do some data transformation here, e.g.
+     return "String has" + data.length + "characters";
    })(input);
    ```
 
-2. Using `SCRIPT(graaljs:<scriptname>.script):%s` as the transformation profile, e.g. on an Item.
-3. Passing parameters is also possible by using a URL like syntax: `SCRIPT(graaljs:<scriptname>.script?arg=value):%s`.
+2. Using `JS(<scriptname>.js):%s` as Item state transformation.
+3. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
+
+Simple transformations can aso be given as an inline script: `JS(|...)`, e.g. `JS(|"String has " + input.length + "characters")`.
+It should start with the `|` character, quotes within the script may need to be escaped with a backslash `\` when used with another quoted string as in text configurations.
 
 ## Standard Library
 
@@ -330,7 +360,7 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .label ⇒ `string`
   - .state ⇒ `string`
   - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
-  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible
+  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
   - .rawState ⇒ `HostState`
   - .members ⇒ `Array[Item]`
   - .descendents ⇒ `Array[Item]`
@@ -340,9 +370,9 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .getMetadata(namespace) ⇒ `object|null`
   - .replaceMetadata(namespace, value, configuration) ⇒ `object`
   - .removeMetadata(namespace) ⇒ `object|null`
-  - .sendCommand(value): `value` can be a string or a [`time.ZonedDateTime`](#time)
-  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string or a [`time.ZonedDateTime`](#time)
-  - .postUpdate(value): `value` can be a string or a [`time.ZonedDateTime`](#time)
+  - .sendCommand(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+  - .postUpdate(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
   - .addGroups(...groupNamesOrItems)
   - .removeGroups(...groupNamesOrItems)
   - .addTags(...tagNames)
@@ -581,7 +611,7 @@ You can also create timers using the [native JS methods for timer creation](#tim
 Sometimes, using `setTimer` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
 
 Keep in mind that you should somehow manage the timers you create using `createTimer`, otherwise you could end up with unmanageable timers running until you restart openHAB.
-A possible solution is to store all timers in an array and cancel all timers in the [Deinitialization Hook](#deinitialization-hook).
+A possible solution is to store all timers in the [private cache](#cache) and let openHAB automatically cancel them when the script is unloaded and the cache is cleared.
 
 ##### `createTimer`
 
@@ -679,7 +709,7 @@ The cache namespace provides both a private and a shared cache that can be used 
 
 The private cache can only be accessed by the same script and is cleared when the script is unloaded.
 You can use it to e.g. store timers or counters between subsequent runs of that script.
-When a script is unloaded and its cache is cleared, all timers (see [ScriptExecution Actions](#scriptexecution-actions)) stored in its private cache are cancelled.
+When a script is unloaded and its cache is cleared, all timers (see [`createTimer`](#createtimer)) stored in its private cache are automatically cancelled.
 
 The shared cache is shared across all rules and scripts, it can therefore be accessed from any automation language.
 The access to every key is tracked and the key is removed when all scripts that ever accessed that key are unloaded.
@@ -755,9 +785,9 @@ The following rules are used during the conversion:
 | `java.time.ZonedDateTime`                                                    | converted to the `time.ZonedDateTime` equivalent                                                                |                                                                                        |
 | JavaScript native `Date`                                                     | converted to the equivalent `time.ZonedDateTime` using `SYSTEM` as the timezone                                 |                                                                                        |
 | `number`, `bingint`, `java.lang.Number`, `DecimalType`                       | rounded to the nearest integer and added to `now` as milliseconds                                               | `time.toZDT(1000);`                                                                    |
-| [`Quantity`](#quantity) or `QuantityType`                                    | if the units are `Time`, that time is added to `now`                                                            | `time.toZDT(item.getItem('MyTimeItem').rawState);`, `time.toZDT(Quantity('10 min'));`  |
+| [`Quantity`](#quantity) or `QuantityType`                                    | if the unit is time-compatible, added to `now`                                                                  | `time.toZDT(item.getItem('MyTimeItem').rawState);`, `time.toZDT(Quantity('10 min'));`  |
 | `items.Item` or `org.openhab.core.types.Item`                                | if the state is supported (see the `Type` rules in this table, e.g. `DecimalType`), the state is converted      | `time.toZDT(items.getItem('MyItem'));`                                                 |
-| `String`, `java.lang.String`, `StringType`                                   | parsed based on the following rules                                                                             |                                                                                        |
+| `String`, `java.lang.String`, `StringType`                                   | parsed based on the following rules; if no timezone is specified, `SYSTEM` timezone is used                     |                                                                                        |
 | [ISO8601 Date/Time](https://en.wikipedia.org/wiki/ISO_8601) String           | parsed, depending on the provided data: if no date is passed, today's date; if no time is passed, midnight time | `time.toZDT('00:00');`, `time.toZDT('2022-12-24');`, `time.toZDT('2022-12-24T18:30');` |
 | RFC String (output from a Java `ZonedDateTime.toString()`)                   | parsed                                                                                                          | `time.toZDT('2019-10-12T07:20:50.52Z');`                                               |
 | `"kk:mm[:ss][ ]a"` (12 hour time)                                            | today's date with the time indicated, the space between the time and am/pm and seconds are optional             | `time.toZDT('1:23:45 PM');`                                                            |
@@ -914,6 +944,8 @@ qty = Quantity('1 m^2 / s^2'); // whitespaces are not allowed
 qty = Quantity('1 m^2 s^2'); // / is required
 qty = Quantity('1 m2/s2'); // ^ is required
 ```
+
+Note: It is possible to create a unit-less (without unit) Quantity, however there is no advantage over using a `number` instead.
 
 #### Conversion
 
@@ -1154,7 +1186,7 @@ Additionally, all the above triggers have the following functions:
 ```javascript
 // Basic rule, when the BedroomLight1 is changed, run a custom function
 rules.when().item('BedroomLight1').changed().then(e => {
-    console.log("BedroomLight1 state", e.newState)
+  console.log("BedroomLight1 state", e.newState)
 }).build();
 
 // Turn on the kitchen light at SUNSET

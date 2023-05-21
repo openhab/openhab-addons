@@ -116,6 +116,12 @@ public class EcowattHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
+    }
+
     /**
      * Schedule the next update of channels.
      *

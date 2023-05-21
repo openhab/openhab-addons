@@ -9,4 +9,5 @@
 		This binding enables acting as a receiver of updates from devices that post measurements to
 		https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php.
 	</description>
+	<connection>local</connection>
 </addon:addon>

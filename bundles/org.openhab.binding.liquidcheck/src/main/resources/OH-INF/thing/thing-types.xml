@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="liquidcheck"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="liquidCheckDevice">
+		<label>Liquid Check Device</label>
+		<category>Sensor</category>
+
+		<channels>
+			<channel id="content" typeId="content-channel"/>
+			<channel id="level" typeId="level-channel"/>
+			<channel id="fill-indicator" typeId="fill-indicator-channel"/>
+			<channel id="raw-content" typeId="raw-content-channel"/>
+			<channel id="raw-level" typeId="raw-level-channel"/>
+			<channel id="pump-runs" typeId="pump-runs-channel"/>
+			<channel id="pump-runtime" typeId="pump-runtime-channel"/>
+			<channel id="measure" typeId="measure-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device.</description>
+			</parameter>
+			<parameter name="maxContent" type="integer" unit="l" min="1">
+				<label>Maximal Content</label>
+				<description>Maximal content in the container.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" max="3600">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connectionTimeout" type="integer" unit="s" min="1" max="120">
+				<label>Connection Timeout</label>
+				<description>After the given amount of seconds without a response, the connection will be seen as timed out.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="content-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Content</label>
+		<description>Content in the container</description>
+		<state readOnly="true" pattern="%d l"/>
+	</channel-type>
+	<channel-type id="raw-content-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Content Raw Data</label>
+		<description>Content in the container as measured by the device</description>
+		<state readOnly="true" pattern="%.4f l"/>
+	</channel-type>
+	<channel-type id="level-channel">
+		<item-type>Number:Length</item-type>
+		<label>Level</label>
+		<description>Level in the container</description>
+		<state readOnly="true" pattern="%.2f m"/>
+	</channel-type>
+	<channel-type id="raw-level-channel">
+		<item-type>Number:Length</item-type>
+		<label>Level Raw Data</label>
+		<description>Level in the container as measured by the device</description>
+		<state readOnly="true" pattern="%.4f m"/>
+	</channel-type>
+	<channel-type id="fill-indicator-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fill Indicator</label>
+		<description>Indicates the fill level based on max content and measured content</description>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+	<channel-type id="measure-channel">
+		<item-type>Switch</item-type>
+		<label>Measure</label>
+		<description>Triggers a measurement</description>
+	</channel-type>
+	<channel-type id="pump-runs-channel">
+		<item-type>Number</item-type>
+		<label>Pump Total Runs</label>
+		<description>Number of pump starts in total</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="pump-runtime-channel">
+		<item-type>Number:Time</item-type>
+		<label>Pump Total Runtime</label>
+		<description>Seconds the pump has run since manufacturing</description>
+		<state readOnly="true" pattern="%d s"/>
+	</channel-type>
+</thing:thing-descriptions>

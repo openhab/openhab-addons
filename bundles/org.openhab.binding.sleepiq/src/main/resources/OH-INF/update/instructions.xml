@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="sleepiq:dualBed">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="todaySleepInBedSeconds" groupIds="left,right">
+				<type>sleepiq:todaySleepInBedSecondsType</type>
+			</add-channel>
+			<add-channel id="todaySleepOutOfBedSeconds" groupIds="left,right">
+				<type>sleepiq:todaySleepOutOfBedSecondsType</type>
+			</add-channel>
+			<add-channel id="todaySleepRestfulSeconds" groupIds="left,right">
+				<type>sleepiq:todaySleepRestfulSecondsType</type>
+			</add-channel>
+			<add-channel id="todaySleepRestlessSeconds" groupIds="left,right">
+				<type>sleepiq:todaySleepRestlessSecondsType</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="foundationPreset" groupIds="left,right">
+				<type>sleepiq:foundationPresetType</type>
+			</add-channel>
+			<add-channel id="foundationPositionHead" groupIds="left,right">
+				<type>sleepiq:foundationPositionHeadType</type>
+			</add-channel>
+			<add-channel id="foundationPositionFoot" groupIds="left,right">
+				<type>sleepiq:foundationPositionFootType</type>
+			</add-channel>
+			<add-channel id="nightStandOutlet" groupIds="left,right">
+				<type>sleepiq:nightStandOutletType</type>
+			</add-channel>
+			<add-channel id="underBedLight" groupIds="left,right">
+				<type>sleepiq:underBedLightType</type>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+
+</update:update-descriptions>

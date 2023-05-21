@@ -14,10 +14,35 @@
 		<description>Tapo Smart Multicolor Light-Bulb</description>
 		<channel-groups>
 			<channel-group id="actuator" typeId="colorBulb"/>
+			<channel-group id="effects" typeId="lightEffectL530"/>
 			<channel-group id="device" typeId="deviceState"/>
 		</channel-groups>
 		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:tapo:device"/>
 	</thing-type>
+
+	<!-- Lightning Effect -->
+	<channel-group-type id="lightEffectL530">
+		<label>Lightning Effect</label>
+		<description>Tapo Lightning Effects</description>
+		<channels>
+			<channel id="fxName" typeId="l530fxList"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- effect name -->
+	<channel-type id="l530fxList">
+		<item-type>String</item-type>
+		<label>Light Effect Theme</label>
+		<description>Name of active lightning effect</description>
+		<state readOnly="false">
+			<options>
+				<option value="off">None (No FX)</option>
+				<option value="custom">Custom</option>
+				<option value="L1">Party</option>
+				<option value="L2">Relax</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

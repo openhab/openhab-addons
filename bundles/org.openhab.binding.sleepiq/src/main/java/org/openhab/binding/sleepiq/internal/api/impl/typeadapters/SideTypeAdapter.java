@@ -36,7 +36,7 @@ public class SideTypeAdapter implements JsonDeserializer<Side>, JsonSerializer<S
 
     @Override
     public JsonElement serialize(Side side, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(side.value());
+        return new JsonPrimitive(side.equals(Side.LEFT) ? "L" : "R");
     }
 
     @Override

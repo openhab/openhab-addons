@@ -18,6 +18,7 @@
 		</channel-groups>
 		<properties>
 			<property name="vendor">Danfoss</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>host</representation-property>
 		<config-description>
@@ -158,14 +159,14 @@
 		<state step="10" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="supplyFanSpeed">
-		<item-type>Number</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Supply Fan Speed</label>
 		<description>Current rotation of the fan supplying air to the rooms</description>
 		<category>Fan</category>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
 	<channel-type id="extractFanSpeed">
-		<item-type>Number</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Extract Fan Speed</label>
 		<description>Current rotation of the fan extracting air from the rooms</description>
 		<category>Fan</category>

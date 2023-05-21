@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>IHC / ELKO Binding</name>
 	<description>Binding to communicate IHC / ELKO controller</description>
+	<connection>local</connection>
 
 </addon:addon>

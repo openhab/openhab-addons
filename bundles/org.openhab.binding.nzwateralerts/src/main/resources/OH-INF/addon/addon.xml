@@ -6,5 +6,7 @@
 	<type>binding</type>
 	<name>NZ Water Alerts Binding</name>
 	<description>Water Alert Levels for New Zealand water supply.</description>
+	<connection>cloud</connection>
+	<countries>nz</countries>
 
 </addon:addon>

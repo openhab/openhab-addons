@@ -89,7 +89,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 true);
         HttpService httpService = mock(HttpService.class);
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
                 .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
@@ -138,15 +138,13 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
         WundergroundUpdateReceiverDiscoveryService discoveryService = mock(
                 WundergroundUpdateReceiverDiscoveryService.class);
-        HttpService httpService = mock(HttpService.class);
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         WundergroundUpdateReceiverHandler handler = mock(WundergroundUpdateReceiverHandler.class);
         when(handler.getStationId()).thenReturn(STATION_ID_1);
         sut.addHandler(handler);
         when(discoveryService.isBackgroundDiscoveryEnabled()).thenReturn(false);
 
         // Then
-        verify(httpService).registerServlet(eq(WundergroundUpdateReceiverServlet.SERVLET_URL), eq(sut), any(), any());
         assertThat(sut.isActive(), is(true));
 
         HttpChannel httpChannel = mock(HttpChannel.class);
@@ -182,7 +180,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 false);
         HttpService httpService = mock(HttpService.class);
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
                 .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
@@ -196,7 +194,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         sut.addHandler(handler);
 
         // When
-        sut.activate();
+        sut.enable();
 
         // Then
         assertThat(sut.isActive(), is(true));
@@ -228,7 +226,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 true);
         HttpService httpService = mock(HttpService.class);
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req1.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
                 .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
@@ -261,7 +259,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 HttpVersion.HTTP_1_1, new HttpFields());
         Request req2 = new Request(httpChannel, null);
         req2.setMetaData(request);
-        sut.activate();
+        sut.enable();
 
         // Then
         assertThat(sut.isActive(), is(true));
@@ -295,7 +293,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 true);
         HttpService httpService = mock(HttpService.class);
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req1.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
                 .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
@@ -328,7 +326,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 HttpVersion.HTTP_1_1, new HttpFields());
         Request req2 = new Request(httpChannel, null);
         req2.setMetaData(request);
-        sut.activate();
+        sut.enable();
 
         // Then
         assertThat(sut.isActive(), is(true));
@@ -359,7 +357,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 true);
         HttpService httpService = mock(HttpService.class);
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req1.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
                 .withConfiguration(new Configuration(Map.of(REPRESENTATION_PROPERTY, REQ_STATION_ID)))
@@ -403,7 +401,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 HttpVersion.HTTP_1_1, new HttpFields());
         Request req2 = new Request(httpChannel, null);
         req2.setMetaData(request);
-        sut.activate();
+        sut.enable();
 
         // Then
         assertThat(sut.isActive(), is(true));

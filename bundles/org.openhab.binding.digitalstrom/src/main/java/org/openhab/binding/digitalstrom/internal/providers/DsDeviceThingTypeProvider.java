@@ -154,7 +154,7 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
                 thingTypeBuilder.withChannelDefinitions(Arrays.asList(new ChannelDefinitionBuilder(
                         DsChannelTypeProvider.SHADE,
                         new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID, DsChannelTypeProvider.SHADE))
-                                .build()));
+                        .build()));
             }
             if (SupportedThingTypes.circuit.equals(supportedThingType)) {
                 List<ChannelDefinition> channelDefinitions = new ArrayList<>(3);
@@ -162,7 +162,8 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
                     channelDefinitions.add(new ChannelDefinitionBuilder(
                             DsChannelTypeProvider.getMeteringChannelID(meteringType, MeteringUnitsEnum.WH, false),
                             new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID, DsChannelTypeProvider
-                                    .getMeteringChannelID(meteringType, MeteringUnitsEnum.WH, false))).build());
+                                    .getMeteringChannelID(meteringType, MeteringUnitsEnum.WH, false)))
+                            .build());
                 }
                 thingTypeBuilder.withChannelDefinitions(channelDefinitions);
             }

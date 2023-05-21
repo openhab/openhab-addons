@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Fronius Binding</name>
 	<description>Binding for Fronius inverters.</description>
+	<connection>local</connection>
 
 </addon:addon>

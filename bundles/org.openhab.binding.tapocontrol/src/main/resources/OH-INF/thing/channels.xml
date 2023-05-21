@@ -102,23 +102,6 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- Lightning Effect -->
-	<channel-group-type id="lightEffect">
-		<label>Lightning Effect</label>
-		<description>Tapo Lightning Effects</description>
-		<channels>
-			<channel id="enable" typeId="effectOn"/>
-			<channel id="brightness" typeId="dimmerChannel"/>
-			<channel id="name" typeId="effectName"/>
-			<channel id="custom" typeId="customEffect"/>
-			<channel id="displayColor1" typeId="colorChannel"/>
-			<channel id="displayColor2" typeId="colorChannel"/>
-			<channel id="displayColor3" typeId="colorChannel"/>
-			<channel id="displayColor4" typeId="colorChannel"/>
-		</channels>
-	</channel-group-type>
-
-
 	<!-- ############################### CHANNELS ############################### -->
 
 	<!-- ACTOR CHANNEL TYPES -->
@@ -215,35 +198,6 @@
 		<category>Time</category>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
-
-
-	<!-- LIGHTNING EFFECT CHANNEL TYPES -->
-	<!-- effect on -->
-	<channel-type id="effectOn">
-		<item-type>Switch</item-type>
-		<label>Lightning Effect Enable</label>
-		<description>Switches the lightning effect on/off</description>
-		<category>LightBulb</category>
-		<state readOnly="false"/>
-	</channel-type>
-
-	<!-- effect name -->
-	<channel-type id="effectName">
-		<item-type>String</item-type>
-		<label>Effect Name</label>
-		<description>Name of LightningEffect</description>
-		<state readOnly="false"/>
-	</channel-type>
-
-	<!-- custom effect -->
-	<channel-type id="customEffect">
-		<item-type>Switch</item-type>
-		<label>Custom Effect</label>
-		<description>Use custom lightning effect</description>
-		<category>LightBulb</category>
-		<state readOnly="false"/>
-	</channel-type>
-
 
 	<!-- ADVANCED SETTING CHANNELS -->
 	<!-- device led -->

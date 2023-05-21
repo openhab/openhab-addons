@@ -45,7 +45,7 @@ public class EnergyApi extends RestManager {
      *             response body
      */
     public void switchSchedule(String homeId, String scheduleId) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder(SUB_PATH_SWITCH_SCHEDULE, PARAM_HOME_ID, homeId, PARAM_SCHEDULE_ID,
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_SWITCH_SCHEDULE, PARAM_HOME_ID, homeId, PARAM_SCHEDULE_ID,
                 scheduleId);
         post(uriBuilder, ApiResponse.Ok.class, null);
     }
