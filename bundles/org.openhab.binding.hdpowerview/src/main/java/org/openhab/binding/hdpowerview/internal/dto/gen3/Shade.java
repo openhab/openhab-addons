@@ -37,7 +37,7 @@ public class Shade {
     private @Nullable Integer id;
     private @Nullable Integer type;
     private @Nullable String name;
-    private @Nullable String ptName;
+    private @Nullable @SuppressWarnings("unused") String ptName;
     private @Nullable Integer capabilities;
     private @Nullable Integer powerType;
     private @Nullable Integer batteryStatus;

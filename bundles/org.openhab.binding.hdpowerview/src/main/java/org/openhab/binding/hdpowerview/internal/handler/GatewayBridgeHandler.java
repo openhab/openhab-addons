@@ -104,11 +104,15 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
 
         GatewayWebTargets webTargets = this.webTargets;
         if (webTargets != null) {
-            try {
-                webTargets.close();
-            } catch (IOException e) {
-            }
+            scheduler.submit(() -> disposeWebTargets(webTargets));
             this.webTargets = null;
+        }
+    }
+
+    private void disposeWebTargets(GatewayWebTargets webTargets) {
+        try {
+            webTargets.close();
+        } catch (IOException e) {
         }
     }
 

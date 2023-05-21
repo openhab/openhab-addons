@@ -8,13 +8,15 @@
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
 		<description>The vertical position of the shade</description>
-		<category>blinds</category>
+		<category>Blinds</category>
+		<state min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="shade-vane">
 		<item-type>Dimmer</item-type>
 		<label>Vane</label>
 		<description>The opening of the slats in the shade</description>
+		<state min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="shade-command" advanced="true">
