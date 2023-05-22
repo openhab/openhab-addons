@@ -523,13 +523,13 @@ public class SomneoHandler extends BaseThingHandler {
 
     private void stopPolling() {
         final ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
         }
 
         final ScheduledFuture<?> pollingJobExtended = this.pollingJobExtended;
-        if (pollingJobExtended != null && !pollingJobExtended.isCancelled()) {
+        if (pollingJobExtended != null) {
             pollingJobExtended.cancel(true);
             this.pollingJobExtended = null;
         }
