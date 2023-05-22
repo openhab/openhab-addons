@@ -96,7 +96,7 @@
 		<label>Signal strength</label>
 		<description>Signal strength of Bluetooth Low Energy communication</description>
 		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%d dBm"/>
+		<state readOnly="true" pattern="%.0f dBm"/>
 	</channel-type>
 
 	<channel-group-type id="scenes">
