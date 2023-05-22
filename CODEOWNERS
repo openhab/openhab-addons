@@ -180,7 +180,6 @@
 /bundles/org.openhab.binding.livisismarthome/ @Novanic
 /bundles/org.openhab.binding.logreader/ @paulianttila
 /bundles/org.openhab.binding.loxone/ @ppieczul
-/bundles/org.openhab.binding.luftdateninfo/ @weymann
 /bundles/org.openhab.binding.lutron/ @actong @bobadair
 /bundles/org.openhab.binding.luxom/ @jesperskriasoft
 /bundles/org.openhab.binding.luxtronikheatpump/ @sgiehl
@@ -300,6 +299,7 @@
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.sensibo/ @seime
+/bundles/org.openhab.binding.sensorcommunity/ @weymann
 /bundles/org.openhab.binding.serial/ @MikeJMajor
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.shelly/ @markus7017
