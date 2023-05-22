@@ -94,7 +94,7 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(@Nullable ServiceInfo service) {
-        if ((service == null) || !service.hasData()) {
+        if ((service == null) || !service.hasData() || (service.getPropertyString("bt") == null)) {
             return null;
         }
 

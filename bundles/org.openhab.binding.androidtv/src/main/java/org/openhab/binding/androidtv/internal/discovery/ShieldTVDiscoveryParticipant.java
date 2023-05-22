@@ -96,7 +96,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(@Nullable ServiceInfo service) {
-        if (service == null || !service.hasData()) {
+        if (service == null || !service.hasData() || (service.getPropertyString("SERVER") == null)) {
             return null;
         }
 
