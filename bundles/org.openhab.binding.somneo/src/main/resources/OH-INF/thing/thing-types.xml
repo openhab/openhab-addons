@@ -53,7 +53,7 @@
 			</parameter>
 			<parameter name="refreshIntervalAlarmExtended" type="integer" unit="s" min="1">
 				<label>Refresh Interval for extended alarm clock settings</label>
-				<description>Interval the device is polled in sec. This polling triggers a sync icon on the device.</description>
+				<description>Interval the device is polled in seconds. This polling triggers a sync icon on the device.</description>
 				<default>300</default>
 				<advanced>true</advanced>
 			</parameter>
