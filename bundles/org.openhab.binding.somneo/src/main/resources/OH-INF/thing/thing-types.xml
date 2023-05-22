@@ -247,7 +247,7 @@
 
 	<channel-type id="alarmSwitch">
 		<item-type>Switch</item-type>
-		<label>Alarm clock</label>
+		<label>Alarm Clock</label>
 		<description>Turn the alarm clock on or off.</description>
 		<category>Switch</category>
 		<tags>
