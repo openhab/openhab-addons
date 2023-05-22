@@ -33,6 +33,11 @@
 			<channel-group id="alarm16" typeId="alarmErasable"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+			<property name="vendor">Philips</property>
+		</properties>
+
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
@@ -136,7 +141,7 @@
 		<description>Different light channels.</description>
 		<category>Light</category>
 		<channels>
-			<channel id="main" typeId="system.brightness"/>
+			<channel id="main" typeId="brightness"/>
 			<channel id="night" typeId="light"/>
 		</channels>
 	</channel-group-type>
@@ -165,10 +170,7 @@
 			<channel id="breathingRate" typeId="breathingRate"/>
 			<channel id="duration" typeId="relaxDuration"/>
 			<channel id="guidanceType" typeId="guidanceType"/>
-			<channel id="lightIntensity" typeId="sunriseBrightness">
-				<label>Light Intensity</label>
-				<description>The channel allows to set the light intensity.</description>
-			</channel>
+			<channel id="lightIntensity" typeId="sunriseBrightness"/>
 			<channel id="volume" typeId="system.volume"/>
 		</channels>
 	</channel-group-type>
@@ -183,9 +185,9 @@
 				<description>The switch channel allows to turn the sunset program on or off.</description>
 			</channel>
 			<channel id="remainingTime" typeId="remainingTime"/>
-			<channel id="lightIntensity" typeId="system.brightness">
-				<label>Light Intensity</label>
-				<description>The channel allows to set the light intensity.</description>
+			<channel id="lightIntensity" typeId="brightness">
+				<label>Sunset Brightness</label>
+				<description>The channel allows to set the sunset light intensity.</description>
 			</channel>
 			<channel id="duration" typeId="sunsetDuration"/>
 			<channel id="colorSchema" typeId="colorSchema"/>
@@ -311,6 +313,18 @@
 				<option value="7">10 BR/min</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Light Brightness</label>
+		<description>The channel allows to set the light intensity.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%d %%" min="0" max="100" step="4"/>
 	</channel-type>
 
 	<channel-type id="colorSchema">

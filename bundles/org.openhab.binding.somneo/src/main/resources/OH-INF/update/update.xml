@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="somneo:hf367x">
+		<instruction-set targetVersion="1">
+			<update-channel id="main" groupIds="light">
+				<type>somneo:brightness</type>
+			</update-channel>
+			<update-channel id="lightIntensity" groupIds="sunset">
+				<type>somneo:brightness</type>
+			</update-channel>
+			<update-channel id="lightIntensity" groupIds="relax">
+				<type>somneo:sunriseBrightness</type>
+			</update-channel>
+
+			<add-channel id="snooze" groupIds="alarm">
+				<type>somneo:alarmSnooze</type>
+			</add-channel>
+			<add-channel id="configured"
+				groupIds="alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:alarmConfigured</type>
+			</add-channel>
+			<add-channel id="switch"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:alarmSwitch</type>
+			</add-channel>
+			<add-channel id="repeatDay"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:repeatDay</type>
+			</add-channel>
+			<add-channel id="alarmTime"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:alarmTime</type>
+			</add-channel>
+			<add-channel id="powerWake"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:powerWakeSwitch</type>
+			</add-channel>
+			<add-channel id="powerWakeDelay"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:powerWakeDelay</type>
+			</add-channel>
+			<add-channel id="sunriseDuration"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:sunriseDuration</type>
+			</add-channel>
+			<add-channel id="sunriseBrightness"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:sunriseBrightness</type>
+			</add-channel>
+			<add-channel id="sunriseSchema"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:colorSchema</type>
+			</add-channel>
+			<add-channel id="sound"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>somneo:alarmSound</type>
+			</add-channel>
+			<add-channel id="volume"
+				groupIds="alarm1,alarm2,alarm3,alarm4,alarm5,alarm6,alarm7,alarm8,alarm9,alarm10,alarm11,alarm12,alarm13,alarm14,alarm15,alarm16">
+				<type>system:volume</type>
+			</add-channel>
+
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>
