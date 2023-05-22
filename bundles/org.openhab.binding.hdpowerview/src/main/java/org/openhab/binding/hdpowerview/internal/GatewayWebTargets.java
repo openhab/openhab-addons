@@ -120,8 +120,14 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
         shadeStop = home + "shades/stop";
         shadeEvents = home + "shades/events?sse=true";
         sceneEvents = home + "scenes/events?sse=true";
-        register = home + "integration/openhab.org";
         info = base + "gateway/info";
+
+        /*
+         * Hunter Douglas keeps a statistical count of systems (e.g. openHAB, Home Assistant, Amazon etc.) that are
+         * using their Generation 3 REST API to connect to their gateways. So we are asked to register with the gateway
+         * on startup. => So do not change the 'openhab.org' tag below !!
+         */
+        register = home + "integration/openhab.org";
     }
 
     /**
