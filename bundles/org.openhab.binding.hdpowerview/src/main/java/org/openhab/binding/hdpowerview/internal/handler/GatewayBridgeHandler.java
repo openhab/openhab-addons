@@ -74,7 +74,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
 
     private boolean scenesLoaded;
     private boolean propertiesLoaded;
-    private boolean isDisposing;
+    private boolean disposing;
 
     public GatewayBridgeHandler(Bridge bridge, HttpClient httpClient,
             HDPowerViewTranslationProvider translationProvider, ClientBuilder clientBuilder,
@@ -88,14 +88,14 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof ShadeThingHandler shadeHandler) {
-            refreshShade(shadeHandler.getShadeId());
+        if (childHandler instanceof ShadeThingHandler) {
+            refreshShade(((ShadeThingHandler) childHandler).getShadeId());
         }
     }
 
     @Override
     public void dispose() {
-        isDisposing = true;
+        disposing = true;
         ScheduledFuture<?> future = this.refreshTask;
         if (future != null) {
             future.cancel(true);
@@ -205,7 +205,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
         webTargets = new GatewayWebTargets(this, httpClient, clientBuilder, eventSourceFactory, host);
         scenesLoaded = false;
         propertiesLoaded = false;
-        isDisposing = false;
+        disposing = false;
 
         /*
          * Normally the thing's position state is updated by SSE. However we must do a refresh once on start up in order
@@ -236,7 +236,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      * @param shade the one that changed.
      */
     public void onShadeEvent(Shade shade) {
-        if (isDisposing) {
+        if (disposing) {
             return;
         }
         try {
@@ -251,10 +251,10 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
     }
 
     private void refreshProperties() throws HubProcessingException, IllegalStateException {
-        logger.debug("refreshProperties()");
-        if (propertiesLoaded || isDisposing) {
+        if (propertiesLoaded || disposing) {
             return;
         }
+        logger.debug("refreshProperties()");
         thing.setProperties(getWebTargets().getInformation());
         propertiesLoaded = true;
     }
@@ -266,10 +266,10 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      * @throws IllegalStateException if this handler is in an illegal state.
      */
     private void refreshScenes() throws HubProcessingException, IllegalStateException {
-        logger.debug("refreshScenes()");
-        if (scenesLoaded || isDisposing) {
+        if (scenesLoaded || disposing) {
             return;
         }
+        logger.debug("refreshScenes()");
         ChannelTypeUID typeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID, channelTypeId);
         ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), channelGroupId);
         List<Channel> channels = new ArrayList<>();
@@ -309,10 +309,10 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
      * @throws IllegalStateException if this handler is in an illegal state.
      */
     private void refreshShades() throws HubProcessingException, IllegalStateException {
-        logger.debug("refreshShades()");
-        if (isDisposing) {
+        if (disposing) {
             return;
         }
+        logger.debug("refreshShades()");
         List<ShadeThingHandler> handlers = getShadeThingHandlers();
         for (Shade shade : getWebTargets().getShades()) {
             for (ShadeThingHandler handler : handlers) {
