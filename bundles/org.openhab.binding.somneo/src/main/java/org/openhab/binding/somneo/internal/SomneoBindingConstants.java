@@ -62,7 +62,7 @@ public class SomneoBindingConstants {
     public static final String CHANNEL_ALARM_CONFIGURED = "alarm%d#configured";
     public static final String CHANNEL_ALARM_SWITCH = "alarm%d#switch";
     public static final String CHANNEL_ALARM_TIME = "alarm%d#alarmTime";
-    public static final String CHANNEL_ALARM_REPEATE_DAY = "alarm%d#repeatDay";
+    public static final String CHANNEL_ALARM_REPEAT_DAY = "alarm%d#repeatDay";
     public static final String CHANNEL_ALARM_POWER_WAKE = "alarm%d#powerWake";
     public static final String CHANNEL_ALARM_POWER_WAKE_DELAY = "alarm%d#powerWakeDelay";
     public static final String CHANNEL_ALARM_SUNRISE_DURATION = "alarm%d#sunriseDuration";

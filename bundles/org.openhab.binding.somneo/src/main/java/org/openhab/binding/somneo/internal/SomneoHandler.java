@@ -360,7 +360,7 @@ public class SomneoHandler extends BaseThingHandler {
                         connector.setAlarmTime(alarmPosition, decimal);
                     }
                     break;
-                case CHANNEL_ALARM_REPEATE_DAY:
+                case CHANNEL_ALARM_REPEAT_DAY:
                     if (command instanceof DecimalType decimal) {
                         connector.setAlarmRepeatDay(alarmPosition, decimal);
                     }
@@ -734,7 +734,7 @@ public class SomneoHandler extends BaseThingHandler {
                 updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SWITCH, i), alarmState.getEnabledState(i));
                 updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, i),
                         alarmSchedulesData.getAlarmTimeState(i));
-                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEATE_DAY, i),
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEAT_DAY, i),
                         alarmSchedulesData.getRepeatDayState(i));
                 updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, i), alarmState.getPowerWakeState(i));
                 updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, i),
@@ -792,7 +792,7 @@ public class SomneoHandler extends BaseThingHandler {
             updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, position),
                     alarmSettings.getPowerWakeDelayState());
             updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, position), alarmSettings.getAlarmTimeState());
-            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEATE_DAY, position),
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEAT_DAY, position),
                     alarmSettings.getRepeatDayState());
             updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_DURATION, position),
                     alarmSettings.getSunriseDurationInMin());
@@ -812,7 +812,7 @@ public class SomneoHandler extends BaseThingHandler {
         updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, position), UnDefType.UNDEF);
         updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, position), UnDefType.UNDEF);
         updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, position), UnDefType.UNDEF);
-        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEATE_DAY, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEAT_DAY, position), UnDefType.UNDEF);
         updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_DURATION, position), UnDefType.UNDEF);
         updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_BRIGHTNESS, position), UnDefType.UNDEF);
         updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_SCHEMA, position), UnDefType.UNDEF);
