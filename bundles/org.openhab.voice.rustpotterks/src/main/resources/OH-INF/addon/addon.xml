@@ -7,6 +7,7 @@
 	<name>Rustpotter Keyword Spotter</name>
 	<description>This voice service allows you to use the open source library Rustpotter as your keyword spotter in
 		openHAB.</description>
+	<connection>local</connection>
 
 	<service-id>org.openhab.voice.rustpotterks</service-id>
 

@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>XSLT transformation</name>
 	<description>Transform input using the XML Stylesheet Language for Transformations (XSLT).</description>
+	<connection>none</connection>
 
 </addon:addon>
