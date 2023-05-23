@@ -61,10 +61,10 @@ import org.slf4j.LoggerFactory;
 public class ShadeThingHandler extends BaseThingHandler {
 
     private static final String INVALID_CHANNEL = "invalid channel";
-
     private static final String INVALID_COMMAND = "invalid command";
-    private static final String COMMAND_CALIBRATE = "CALIBRATE";
+
     private static final String COMMAND_IDENTIFY = "IDENTIFY";
+
     private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
 
     private final Logger logger = LoggerFactory.getLogger(ShadeThingHandler.class);
@@ -166,14 +166,9 @@ public class ShadeThingHandler extends BaseThingHandler {
                     throw new IllegalArgumentException(INVALID_COMMAND);
 
                 case CHANNEL_SHADE_COMMAND:
-                    if (command instanceof StringType) {
-                        if (COMMAND_IDENTIFY.equals(((StringType) command).toString())) {
-                            webTargets.jogShade(shadeId);
-                            break;
-                        } else if (COMMAND_CALIBRATE.equals(((StringType) command).toString())) {
-                            webTargets.calibrateShade(shadeId);
-                            break;
-                        }
+                    if ((command instanceof StringType) && COMMAND_IDENTIFY.equals(((StringType) command).toString())) {
+                        webTargets.jogShade(shadeId);
+                        break;
                     }
                     throw new IllegalArgumentException(INVALID_COMMAND);
 

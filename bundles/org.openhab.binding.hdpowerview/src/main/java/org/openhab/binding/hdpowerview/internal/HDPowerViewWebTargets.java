@@ -102,7 +102,7 @@ public class HDPowerViewWebTargets {
     private final HttpClient httpClient;
 
     /**
-     * private helper class for passing http url query parameters
+     * helper class for passing http url query parameters
      */
     public static class Query {
         private final String key;

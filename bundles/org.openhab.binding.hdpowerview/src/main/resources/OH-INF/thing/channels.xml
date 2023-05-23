@@ -93,7 +93,7 @@
 
 	<channel-type id="ble-signal-strength">
 		<item-type>Number:Power</item-type>
-		<label>Signal strength</label>
+		<label>Signal Strength</label>
 		<description>Signal strength of Bluetooth Low Energy communication</description>
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%.0f dBm"/>

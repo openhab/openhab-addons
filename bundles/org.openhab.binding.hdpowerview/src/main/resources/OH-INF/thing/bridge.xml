@@ -24,7 +24,7 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
-				<description>The Host address of the PowerView Hub</description>
+				<description>The host address of the PowerView Hub</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
@@ -65,7 +65,7 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
-				<description>The Host address of the PowerView Gateway</description>
+				<description>The host address of the PowerView Gateway</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="hardRefresh" type="integer" required="false">

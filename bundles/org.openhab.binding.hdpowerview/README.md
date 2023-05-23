@@ -6,7 +6,7 @@ In some countries the PowerView system is sold under the brand name [Luxaflex](h
 This binding supports hubs/gateways of all generations.
 Hubs of Generation 1 or 2 are handled commonly and their generation specific features are identified with the *'Generation 1/2 only'* annotation and/or via the <sup>[1/2]</sup> mark.
 Gateways of Generation 3 have generation specific features which are identified with the *'Generation 3 only'* annotation and/or via the <sup>[3]</sup> mark.
-Features that are common to all generations are not annoted or marked.
+Features that are common to all generations are not annotated or marked.
 
 
 ![PowerView](doc/hdpowerview.png)
@@ -19,26 +19,23 @@ By using a scene to control multiple shades at once, the shades will all begin m
 
 ## Supported Things
 
-| Thing                    | Thing Type | Description                                                                                                                   |
-|--------------------------|------------|-------------------------------------------------------------------------------------------------------------------------------|
-| hub<sup>[1/2]</sup>      | Bridge     | The PowerView hub interfaces between the LAN and the shade's radio network. Contains channels to interact with scenes.        |
-| shade<sup>[1/2]</sup>    | Thing      | A motorized shade.                                                                                                            |
-| repeater<sup>[1/2]</sup> | Thing      | A PowerView signal repeater.                                                                                                  |
-| gateway<sup>[3]</sup>    | Bridge     | Generation 3 gateway interfaces between the LAN and the shade's Bluetooth network. Contains channels to interact with scenes. |
-| shade3<sup>[3]</sup>     | Thing      | A Powerview Generation 3 motorized shade.                                                                                     |
-
-<sup>[1/2]</sup> Generation 1/2 hubs only.
-<sup>[3]</sup> Generation 3 gateways only.
+| Thing    | Generation | Thing Type | Description                                                                                                                   |
+|----------|------------|------------|-------------------------------------------------------------------------------------------------------------------------------|
+| hub      | 1, 2       | Bridge     | The PowerView hub interfaces between the LAN and the shade's radio network. Contains channels to interact with scenes.        |
+| shade    | 1, 2       | Thing      | A motorized shade.                                                                                                            |
+| repeater | 1, 2       | Thing      | A PowerView signal repeater.                                                                                                  |
+| gateway  | 3          | Bridge     | Generation 3 gateway interfaces between the LAN and the shade's Bluetooth network. Contains channels to interact with scenes. |
+| shade3   | 3          | Thing      | A Powerview Generation 3 motorized shade.                                                                                     |
 
 ## Discovery
 
 Make sure your shades are visible in the PowerView app before attempting discovery.
 
-The binding can automatically discover the PowerView hub and/or the PowerView Generation 3 gateway.
+The binding can automatically discover PowerView hubs and gateways.
 The discovery process can be started by pressing the refresh button in the Main Configuration UI Inbox.
 However you can also manually create a (bridge) thing for the hub, and enter the required configuration parameters (see Thing Configuration below).
 If the configuration parameters are all valid, the binding will then automatically attempt to connect to the hub/gateway.
-If the connection succeeds, the hub will indicate its status as Online, otherwise it will show an error status. 
+If the connection succeeds, the hub will indicate its status as Online, otherwise it will show an error status.
 
 Once the hub thing has been created and successfully connected, the binding will automatically discover all shades and scenes that are in it.
 
@@ -203,7 +200,7 @@ In this case, the position of the secondary blackout panel is reported as 0%.
 ### Hard Refresh on Generation 3 Gateways<sup>[3]</sup>
 
 In Generation 3 systems, whenever the state of a shade or scene changes, it immediately notifies the gateway, and the gateway immediately notifies the openHAB binding.
-However in case that any notifications may have been lost, (e.g. due to a network error), the binding occasionally requests a full update (i.e. a 'hard refresh') of all shade and scene states from the gateway.
+However, in case that any notifications have been lost, (e.g. due to a network error), the binding occasionally requests a full update (i.e. a 'hard refresh') of all shade and scene states from the gateway.
 The time interval between hard refreshes is set in the `hardRefresh` configuration parameter.
 
 ### Hard Refresh on Generation 1/2 Hubs<sup>[1/2]</sup>
@@ -262,7 +259,7 @@ Bridge hdpowerview:hub:home "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"
 }
 
 // generation 3
-Bridge hdpowerview:gateway:home "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"] {
+Bridge hdpowerview:gateway:home "Luxaflex Gateway" @ "Living Room" [host="192.168.1.123"] {
     Thing shade3 s50150 "Living Room Shade" @ "Living Room" [id="50150"]
 }
 ```

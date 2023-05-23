@@ -213,11 +213,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
          * Furthermore we need to do periodic refreshes just in case the SSE connection may have been lost. So we
          * schedule the refresh at the 'hardRefresh' interval.
          */
-        ScheduledFuture<?> refreshTask = this.refreshTask;
-        if (refreshTask != null) {
-            refreshTask.cancel(false);
-        }
-        this.refreshTask = scheduler.scheduleWithFixedDelay(() -> doRefresh(), 0, config.hardRefresh, TimeUnit.MINUTES);
+        refreshTask = scheduler.scheduleWithFixedDelay(() -> doRefresh(), 0, config.hardRefresh, TimeUnit.MINUTES);
         updateStatus(ThingStatus.UNKNOWN);
     }
 

@@ -111,7 +111,7 @@ public class HDPowerViewCommandExtension extends AbstractConsoleCommandExtension
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(SHOW_IDS, "list all shades and eventually repeaters"));
+        return Arrays.asList(buildCommandUsage(SHOW_IDS, "list all shades and repeaters"));
     }
 
     @Override

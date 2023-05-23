@@ -70,7 +70,7 @@
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:hdpowerview:shade3"/>
+		<config-description-ref uri="thing-type:hdpowerview:shade"/>
 	</thing-type>
 
 </thing:thing-descriptions>
