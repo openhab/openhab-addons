@@ -43,18 +43,11 @@ public class AlarmHandler extends HomeNodeHandler {
     @Override
     protected State getChannelState(HomeManager homeManager, String channelId, EndpointState state) {
         String value = state.value();
-        if (value != null) {
-            switch (channelId) {
-                case NODE_BATTERY:
-                    return DecimalType.valueOf(value);
-                case ALARM_PIN:
-                    return StringType.valueOf(value);
-                case ALARM_SOUND, ALARM_VOLUME:
-                    return new QuantityType<>(value + " %");
-                case ALARM_TIMEOUT1, ALARM_TIMEOUT2, ALARM_TIMEOUT3:
-                    return new QuantityType<>(value + " s");
-            }
+
+        if (value == null) {
+            return UnDefType.NULL;
         }
+<<<<<<< Upstream, based on origin/main
         return UnDefType.NULL;
 =======
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.BINDING_ID;
@@ -112,5 +105,15 @@ public class AlarmHandler extends HomeNodeHandler {
 =======
         return UnDefType.NULL;
 >>>>>>> 9aef877 Rebooting Home Node part
+=======
+
+        return switch (channelId) {
+            case NODE_BATTERY -> DecimalType.valueOf(value);
+            case ALARM_PIN -> StringType.valueOf(value);
+            case ALARM_SOUND, ALARM_VOLUME -> QuantityType.valueOf(value + " %");
+            case ALARM_TIMEOUT1, ALARM_TIMEOUT2, ALARM_TIMEOUT3 -> QuantityType.valueOf(value + " s");
+            default -> UnDefType.NULL;
+        };
+>>>>>>> c7186a9 Correcting SAT
     }
 }

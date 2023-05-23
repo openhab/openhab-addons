@@ -20,8 +20,6 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 
 import java.util.List;
 
-import javax.measure.quantity.Dimensionless;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
@@ -57,7 +55,7 @@ public class ShutterHandler extends HomeNodeHandler {
     @Override
     protected State getChannelState(HomeManager homeManager, String channelId, EndpointState state) {
         String value = state.value();
-        return value != null && channelId.equals(SHUTTER_POSITION) ? new QuantityType<Dimensionless>(value + " %")
+        return value != null && channelId.equals(SHUTTER_POSITION) ? QuantityType.valueOf(value + " %")
                 : UnDefType.NULL;
     }
 
