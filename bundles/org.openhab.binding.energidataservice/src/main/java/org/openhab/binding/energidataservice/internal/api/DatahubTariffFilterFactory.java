@@ -50,6 +50,7 @@ public class DatahubTariffFilterFactory {
     private static final String GLN_RADIUS = "5790000705689";
     private static final String GLN_RAH_NET = "5790000681327";
     private static final String GLN_RAVDEX = "5790000836727";
+    private static final String GLN_SUNDS_NET = "5790001095444";
     private static final String GLN_TARM_ELVAERK_NET = "5790000706419";
     private static final String GLN_TREFOR_EL_NET = "5790000392261";
     private static final String GLN_TREFOR_EL_NET_OEST = "5790000706686";
@@ -61,6 +62,7 @@ public class DatahubTariffFilterFactory {
     private static final String NOTE_NET_TARIFF_C = NOTE_NET_TARIFF + " C";
     private static final String NOTE_NET_TARIFF_C_HOUR = NOTE_NET_TARIFF_C + " time";
     private static final String NOTE_NET_TARIFF_C_FLEX = NOTE_NET_TARIFF_C + " Flex";
+    private static final String NOTE_NET_TARIFF_C_FLEX_HOUR = NOTE_NET_TARIFF_C_FLEX + " - time";
     private static final String NOTE_SYSTEM_TARIFF = "Systemtarif";
     private static final String NOTE_ELECTRICITY_TAX = "Elafgift";
     private static final String NOTE_TRANSMISSION_NET_TARIFF = "Transmissions nettarif";
@@ -129,6 +131,10 @@ public class DatahubTariffFilterFactory {
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
             case GLN_RAVDEX:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("NT-C")), Set.of(NOTE_NET_TARIFF_C_HOUR),
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+            case GLN_SUNDS_NET:
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("SEF-NT-05")),
+                        Set.of(NOTE_NET_TARIFF_C_FLEX_HOUR),
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
             case GLN_TARM_ELVAERK_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TEV-NT-01")), Set.of(NOTE_NET_TARIFF_C));
