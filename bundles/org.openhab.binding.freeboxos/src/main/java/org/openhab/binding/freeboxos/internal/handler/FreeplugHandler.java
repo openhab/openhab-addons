@@ -78,8 +78,8 @@ public class FreeplugHandler extends ApiConsumerHandler {
             updateChannelString(LINE_STATUS, plug.ethPortStatus());
             updateChannelOnOff(REACHABLE, plug.hasNetwork());
 
-            updateRateChannel(RATE_DOWN, plug.rxRate());
-            updateRateChannel(RATE_UP, plug.txRate());
+            updateRateChannel(RATE + "-down", plug.rxRate());
+            updateRateChannel(RATE + "-up", plug.txRate());
         });
     }
 

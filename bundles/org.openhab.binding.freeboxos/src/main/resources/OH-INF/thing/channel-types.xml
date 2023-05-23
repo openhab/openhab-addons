@@ -77,11 +77,11 @@
 	</channel-type>
 
 	<channel-type id="fanspeed" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Fan Speed</label>
-		<description>Actual measured rotation speed (rpm) of the sensor</description>
+		<description>Actual measured rotation speed of the fan</description>
 		<category>Fan</category>
-		<state readOnly="true" pattern="%d rpm"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="samba-file-status" advanced="true">

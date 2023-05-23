@@ -81,6 +81,7 @@ public class WifiStationHandler extends HostHandler {
         updateChannelString(GROUP_WIFI, SSID, ssid);
         updateChannelQuantity(GROUP_WIFI, RSSI, rssi <= 0 ? new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS) : null);
         updateChannelDecimal(GROUP_WIFI, WIFI_QUALITY, rssi <= 0 ? toQoS(rssi) : null);
+<<<<<<< Upstream, based on origin/main
         updateRateChannel(RATE_DOWN, rxRate);
         updateRateChannel(RATE_UP, txRate);
 =======
@@ -158,6 +159,10 @@ public class WifiStationHandler extends HostHandler {
         updateRateChannel(RATE_DOWN, rxRate);
         updateRateChannel(RATE_UP, txRate);
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+        updateRateChannel(RATE + "-down", rxRate);
+        updateRateChannel(RATE + "-up", txRate);
+>>>>>>> 3d4815a Switched fan speed to RPM unit
     }
 
     private void updateRateChannel(String channel, long rate) {

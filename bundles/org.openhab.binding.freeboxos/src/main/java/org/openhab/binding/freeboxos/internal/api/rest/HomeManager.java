@@ -66,7 +66,7 @@ public class HomeManager extends RestManager {
     private static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
     }
 
-    private static record EndpointValue<T>(T value) {
+    private static record EndpointValue<T> (T value) {
     }
 
     private static enum ValueType {

@@ -44,6 +44,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.UPnPAVManager;
 import org.openhab.binding.freeboxos.internal.api.rest.WifiManager;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -119,8 +120,8 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
     private void fetchSystemConfig() throws FreeboxException {
         Config config = getManager(SystemManager.class).getConfig();
 
-        config.sensors().forEach(sensor -> updateChannelDecimal(GROUP_SENSORS, sensor.id(), sensor.value()));
-        config.fans().forEach(fan -> updateChannelDecimal(GROUP_FANS, fan.id(), fan.value()));
+        config.sensors().forEach(s -> updateChannelQuantity(GROUP_SENSORS, s.id(), s.value(), SIUnits.CELSIUS));
+        config.fans().forEach(f -> updateChannelQuantity(GROUP_FANS, f.id(), f.value(), Units.RPM));
 
         uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
         updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
@@ -137,28 +138,20 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         updateChannelString(CONNECTION_STATUS, IP_ADDRESS, status.ipv4());
         updateChannelString(CONNECTION_STATUS, IPV6_ADDRESS, status.ipv6());
 
-        QuantityType<?> rateUp = new QuantityType<>(status.rateUp() * 8, Units.BIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, RATE_UP, rateUp, KILOBIT_PER_SECOND);
-
-        QuantityType<?> rateDown = new QuantityType<>(status.rateDown() * 8, Units.BIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, RATE_DOWN, rateDown, KILOBIT_PER_SECOND);
-
-        QuantityType<?> bandwidthUp = new QuantityType<>(status.bandwidthUp(), BIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, BW_UP, bandwidthUp, KILOBIT_PER_SECOND);
-
-        QuantityType<?> bandwidthDown = new QuantityType<>(status.bandwidthDown(), BIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, BW_DOWN, bandwidthDown, KILOBIT_PER_SECOND);
+        updateRateBandwidth(status.rateUp(), status.bandwidthUp(), "up");
+        updateRateBandwidth(status.rateDown(), status.bandwidthDown(), "down");
 
         updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET), GIBIOCTET);
         updateChannelQuantity(CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET), GIBIOCTET);
+    }
 
-        updateChannelQuantity(CONNECTION_STATUS, PCT_BW_UP,
+    private void updateRateBandwidth(long rate, long bandwidth, String orientation) {
+        QuantityType<?> rateUp = new QuantityType<>(rate * 8, Units.BIT_PER_SECOND);
+        QuantityType<?> bandwidthUp = new QuantityType<>(bandwidth, BIT_PER_SECOND);
+        updateChannelQuantity(CONNECTION_STATUS, RATE + "-" + orientation, rateUp, KILOBIT_PER_SECOND);
+        updateChannelQuantity(CONNECTION_STATUS, BW + "-" + orientation, bandwidthUp, KILOBIT_PER_SECOND);
+        updateChannelQuantity(CONNECTION_STATUS, PCT_BW + "-" + orientation,
                 !bandwidthUp.equals(QuantityType.ZERO) ? rateUp.multiply(HUNDRED).divide(bandwidthUp)
-                        : QuantityType.ZERO,
-                Units.PERCENT);
-
-        updateChannelQuantity(CONNECTION_STATUS, PCT_BW_DOWN,
-                !bandwidthDown.equals(QuantityType.ZERO) ? rateDown.multiply(HUNDRED).divide(bandwidthDown)
                         : QuantityType.ZERO,
                 Units.PERCENT);
     }
