@@ -92,7 +92,7 @@
 			</channel>
 			<channel id="inVoltageT1T2" typeId="type-volt">
 				<label>Input Voltage T1T2</label>
-				<description>Input Voltage between phase T1 and T2</description>
+				<description>Input voltage between phase T1 and T2</description>
 			</channel>
 			<channel id="inVoltageT1T3" typeId="type-volt">
 				<label>Input Voltage T1T3</label>
