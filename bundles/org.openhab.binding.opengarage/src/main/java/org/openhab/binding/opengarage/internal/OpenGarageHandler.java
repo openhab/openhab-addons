@@ -111,7 +111,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         if (config.hostname == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
-            int requestTimeout = Math.max(OpenGarageWebTargets.DEFAULT_TIMEOUT_MS, config.refresh * 10000);
+            int requestTimeout = Math.max(OpenGarageWebTargets.DEFAULT_TIMEOUT_MS, config.refresh * 1000);
             webTargets = new OpenGarageWebTargets(config.hostname, config.port, config.password, requestTimeout);
             this.pollScheduledFuture = this.scheduler.scheduleWithFixedDelay(this::poll, 1, config.refresh,
                     TimeUnit.SECONDS);
@@ -144,7 +144,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                         OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH);
 
                 if ((controllerVariables.door != 0) && (controllerVariables.door != 1)) {
-                    logger.warn("Received unknown door value: {}", controllerVariables.door);
+                    logger.debug("Received unknown door value: {}", controllerVariables.door);
                 } else {
                     var doorOpen = controllerVariables.door == 1;
                     var onOff = maybeInvert.apply(doorOpen) ? OnOffType.ON : OnOffType.OFF;
@@ -179,16 +179,16 @@ public class OpenGarageHandler extends BaseThingHandler {
                                 new StringType("Vehicle status unknown"));
                         break;
                     default:
-                        logger.warn("Received unknown vehicle value: {}", controllerVariables.vehicle);
+                        logger.debug("Received unknown vehicle value: {}", controllerVariables.vehicle);
                 }
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE_STATUS,
                         new DecimalType(controllerVariables.vehicle));
             }
         } catch (IOException e) {
-            logger.warn("Could not connect to OpenGarage controller", e);
+            logger.debug("Could not connect to OpenGarage controller", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
-            logger.warn("Unexpected error connecting to OpenGarage controller", e);
+            logger.debug("Unexpected error connecting to OpenGarage controller", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
