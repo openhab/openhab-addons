@@ -6,5 +6,6 @@
 	<type>persistence</type>
 	<name>RRD4J persistence</name>
 	<description>This is the persistence add-on for RRD4J.</description>
+	<connection>none</connection>
 
 </addon:addon>

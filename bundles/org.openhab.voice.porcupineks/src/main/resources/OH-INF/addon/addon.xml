@@ -6,6 +6,7 @@
 	<type>voice</type>
 	<name>Porcupine Keyword Spotter</name>
 	<description>This voice service allows you to use the PicoVoice product Porcupine as your keyword spotter in openHAB.</description>
+	<connection>hybrid</connection>
 
 	<service-id>org.openhab.voice.procupineks</service-id>
 

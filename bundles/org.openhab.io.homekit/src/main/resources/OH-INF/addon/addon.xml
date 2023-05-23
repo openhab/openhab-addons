@@ -6,6 +6,7 @@
 	<type>misc</type>
 	<name>HomeKit</name>
 	<description>Exposes openHAB to HomeKit.</description>
+	<connection>hybrid</connection>
 
 	<service-id>org.openhab.homekit</service-id>
 

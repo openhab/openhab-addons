@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>Regex transformation</name>
 	<description>Transforms a source string on basis of the regular expression (regex) search pattern.</description>
+	<connection>none</connection>
 
 </addon:addon>

@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>Exec transformation</name>
 	<description>Transforms an input string with an external program.</description>
+	<connection>none</connection>
 
 </addon:addon>

@@ -7,5 +7,6 @@
 	<name>Roller Shutter Position Emulation</name>
 	<description>Emulates absolute position setting for roller shutter devices which only support basic UP/DOWN/STOP
 		commands.</description>
+	<connection>none</connection>
 
 </addon:addon>

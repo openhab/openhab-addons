@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>Jinja Transformation</name>
 	<description>Transforms a value using a jinja template.</description>
+	<connection>none</connection>
 
 </addon:addon>
