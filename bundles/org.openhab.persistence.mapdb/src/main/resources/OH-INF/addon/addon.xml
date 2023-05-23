@@ -6,5 +6,6 @@
 	<type>persistence</type>
 	<name>MapDB persistence</name>
 	<description>This is the persistence add-on for MapDB.</description>
+	<connection>none</connection>
 
 </addon:addon>
