@@ -80,11 +80,13 @@ public class HomeManager extends RestManager {
 
     public static record EndpointState(@Nullable String value, ValueType valueType, long refresh) {
         public boolean asBoolean() {
-            return value != null ? Boolean.valueOf(value) : false;
+            String local = value;
+            return local != null ? Boolean.valueOf(local) : false;
         }
 
         public int asInt() {
-            return value != null ? Integer.valueOf(value) : Integer.MIN_VALUE;
+            String local = value;
+            return local != null ? Integer.valueOf(local) : Integer.MIN_VALUE;
         }
 
         public @Nullable String value() {
