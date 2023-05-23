@@ -63,10 +63,10 @@ public class HomeManager extends RestManager {
         UNKNOWN;
     }
 
-    private static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
+    private static record EndpointValue<T> (T value) {
     }
 
-    private static record EndpointValue<T> (T value) {
+    private static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
     }
 
     private static enum ValueType {
@@ -80,13 +80,11 @@ public class HomeManager extends RestManager {
 
     public static record EndpointState(@Nullable String value, ValueType valueType, long refresh) {
         public boolean asBoolean() {
-            String local = value;
-            return local != null ? Boolean.valueOf(local) : false;
+            return value != null ? Boolean.valueOf(value) : false;
         }
 
         public int asInt() {
-            String local = value;
-            return local != null ? Integer.valueOf(local) : Integer.MIN_VALUE;
+            return value != null ? Integer.valueOf(value) : Integer.MIN_VALUE;
         }
 
         public @Nullable String value() {
