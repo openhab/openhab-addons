@@ -14,10 +14,8 @@ package org.openhab.binding.hdpowerview.internal;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -187,11 +185,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
     public List<Scene> getScenes() throws HubProcessingException {
         String json = invoke(HttpMethod.GET, scenes, null, null);
         try {
-            Scene[] scenes = jsonParser.fromJson(json, Scene[].class);
-            if (scenes == null || Arrays.stream(scenes).anyMatch(Objects::isNull)) {
-                throw new HubProcessingException("getScenes() response is null or contains null(s)");
-            }
-            return List.of(scenes);
+            return List.of(jsonParser.fromJson(json, Scene[].class));
         } catch (JsonParseException e) {
             throw new HubProcessingException("getScenes() JsonParseException");
         }
@@ -226,11 +220,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
     public List<Shade> getShades() throws HubProcessingException {
         String json = invoke(HttpMethod.GET, shades, null, null);
         try {
-            Shade[] shades = jsonParser.fromJson(json, Shade[].class);
-            if (shades == null || Arrays.stream(shades).anyMatch(Objects::isNull)) {
-                throw new HubProcessingException("getShades() response is null or contains null(s)");
-            }
-            return List.of(shades);
+            return List.of(jsonParser.fromJson(json, Shade[].class));
         } catch (JsonParseException e) {
             throw new HubProcessingException("getShades() JsonParseException");
         }
@@ -283,8 +273,8 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
         if (logger.isTraceEnabled()) {
             logger.trace("invoke() response JSON:{}", jsonResponse);
         }
-        if ((HttpStatus.OK_200 == statusCode) && ((jsonResponse == null) || (jsonResponse.isEmpty()))) {
-            throw new HubProcessingException("Missing response entity");
+        if (method == HttpMethod.GET && jsonResponse.isEmpty()) {
+            throw new HubProcessingException("Empty response entity");
         }
         return jsonResponse;
     }

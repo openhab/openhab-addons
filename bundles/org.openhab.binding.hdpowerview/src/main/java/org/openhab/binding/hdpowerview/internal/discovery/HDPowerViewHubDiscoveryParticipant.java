@@ -25,14 +25,9 @@ import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfigurati
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,16 +43,6 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
     private static final String LABEL_KEY = "discovery.hub.label";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);
-
-    private final TranslationProvider i18nProvider;
-    private final LocaleProvider localeProvider;
-
-    @Activate
-    public HDPowerViewHubDiscoveryParticipant(final @Reference TranslationProvider i18nProvider,
-            final @Reference LocaleProvider localeProvider) {
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
-    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -77,10 +62,8 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
                         .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
-                        .withLabel(i18nProvider.getText(FrameworkUtil.getBundle(getClass()), LABEL_KEY, LABEL_KEY,
-                                localeProvider.getLocale(), host))
-                        .build();
-                logger.debug("mDNS discovered hub on host '{}'", host);
+                        .withLabel(String.format("@text/%s [\"%s\"]", LABEL_KEY, host)).build();
+                logger.debug("mDNS discovered Gen 1/2 hub on host '{}'", host);
                 return hub;
             }
         }
