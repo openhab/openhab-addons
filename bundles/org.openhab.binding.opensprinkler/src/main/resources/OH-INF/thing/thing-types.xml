@@ -36,16 +36,13 @@
 				<label>Retry Count</label>
 				<description>Specifies the number of retries on connection timeouts.</description>
 				<default>3</default>
-			</parameter>
-			<parameter name="retryDelay" type="integer">
-				<label>Retry Delay</label>
-				<description>Specifies delay between retries in seconds∏.</description>
-				<default>10</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="timeout" type="integer">
 				<label>Timeout</label>
 				<description>Specifies the connection timeout in seconds.</description>
 				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="basicUsername" type="text">
 				<label>Basic Auth Username</label>

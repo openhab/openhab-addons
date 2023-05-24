@@ -28,6 +28,8 @@ Due to this method used, it is very slow at finding devices and can saturate net
 - port: Port the OpenSprinkler device is listening on. Usually 80.
 - password: Admin password of the API. Factory default is: opendoor
 - refresh: Number of seconds in between refreshing the Thing state with the API.
+- timeout: (optional) Number of seconds to wait for a timeout when calling the OpenSprinkler HTTP API.
+- retry: (optional) Number of retries on connection timeouts.
 - basicUsername: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 - basicPassword: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 
