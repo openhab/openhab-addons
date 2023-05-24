@@ -380,7 +380,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | TEMP_OVER  | Above "temperature over" threshold                                                               |
 | VIBRATION  | A vibration/tamper was detected (DW2 only)                                                       |
 
-Refer to section [Full Example:shelly.rules](shellyrules) for examples how to catch alarm triggers in openHAB rules
+Refer to section [Full Example](#full-example) for examples how to catch alarm triggers in openHAB rules
 
 ## Channels
 
