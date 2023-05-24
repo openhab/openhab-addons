@@ -235,7 +235,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (coap != null) {
             coap.stop();
         }
-        requestUpdates(1, true);// force re-initialization
+        stopping = false;
+        reinitializeThing();// force re-initialization
     }
 
     /**
@@ -249,7 +250,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     public boolean initializeThing() throws ShellyApiException {
         // Init from thing type to have a basic profile, gets updated when device info is received from API
-        stopping = false;
         refreshSettings = false;
         lastWakeupReason = "";
         cache.setThingName(thingName);
@@ -263,6 +263,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
+        profile.initFromThingType(thingType); // do some basic initialization
+
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
@@ -272,7 +274,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Initialize API access, exceptions will be catched by initialize()
         api.initialize();
-        profile.initFromThingType(thingType);
         ShellySettingsDevice devInfo = api.getDeviceInfo();
         if (getBool(devInfo.auth) && config.password.isEmpty()) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -357,7 +358,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 return;
             }
 
-            if (!profile.isInitialized()) {
+            if (!profile.isInitialized() || (isThingOffline() && profile.alwaysOn)) {
                 logger.debug("{}: {}", thingName, messages.get("command.init", command));
                 initializeThing();
             } else {
@@ -440,7 +441,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Set boost timer to {}", thingName, command);
                     api.setValveBoostTime(0, (int) getNumber(command));
                     break;
-
+                case CHANNEL_SENSOR_MUTE:
+                    if (profile.isSmoke && ((OnOffType) command) == OnOffType.ON) {
+                        logger.debug("{}: Mute Smoke Alarm", thingName);
+                        api.muteSmokeAlarm(0);
+                        updateChannel(getString(channelUID.getGroupId()), CHANNEL_SENSOR_MUTE, OnOffType.OFF);
+                    }
+                    break;
                 default:
                     update = handleDeviceCommand(channelUID, command);
                     break;
@@ -500,11 +507,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
-                // Get profile, if refreshSettings == true reload settings from device
                 ShellySettingsStatus status = api.getStatus();
-                if (status.uptime != null && status.uptime == 0 && profile.alwaysOn) {
-                    status = api.getStatus();
-                }
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
@@ -541,7 +544,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 status = "offline.conf-error-access-denied";
             } else if (isWatchdogStarted()) {
                 if (!isWatchdogExpired()) {
-                    logger.debug("{}: Ignore API Timeout, retry later", thingName);
+                    logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
                 } else {
                     if (isThingOnline()) {
                         status = "offline.status-error-watchdog";
@@ -692,13 +695,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void reinitializeThing() {
         logger.debug("{}: Re-Initialize Thing", thingName);
-        if (stopping) {
+        if (isStopping()) {
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                 messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
+    }
+
+    @Override
+    public boolean isStopping() {
+        return stopping;
     }
 
     @Override
