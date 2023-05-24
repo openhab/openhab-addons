@@ -15,22 +15,54 @@
 			<channel-group id="relax" typeId="relax"/>
 			<channel-group id="audio" typeId="audio"/>
 			<channel-group id="alarm" typeId="alarmCommon"/>
-			<channel-group id="alarm1" typeId="alarm"/>
-			<channel-group id="alarm2" typeId="alarm"/>
-			<channel-group id="alarm3" typeId="alarmErasable"/>
-			<channel-group id="alarm4" typeId="alarmErasable"/>
-			<channel-group id="alarm5" typeId="alarmErasable"/>
-			<channel-group id="alarm6" typeId="alarmErasable"/>
-			<channel-group id="alarm7" typeId="alarmErasable"/>
-			<channel-group id="alarm8" typeId="alarmErasable"/>
-			<channel-group id="alarm9" typeId="alarmErasable"/>
-			<channel-group id="alarm10" typeId="alarmErasable"/>
-			<channel-group id="alarm11" typeId="alarmErasable"/>
-			<channel-group id="alarm12" typeId="alarmErasable"/>
-			<channel-group id="alarm13" typeId="alarmErasable"/>
-			<channel-group id="alarm14" typeId="alarmErasable"/>
-			<channel-group id="alarm15" typeId="alarmErasable"/>
-			<channel-group id="alarm16" typeId="alarmErasable"/>
+			<channel-group id="alarm1" typeId="alarm">
+				<label>Alarm 1</label>
+			</channel-group>
+			<channel-group id="alarm2" typeId="alarm">
+				<label>Alarm 2</label>
+			</channel-group>
+			<channel-group id="alarm3" typeId="alarmErasable">
+				<label>Alarm 3</label>
+			</channel-group>
+			<channel-group id="alarm4" typeId="alarmErasable">
+				<label>Alarm 4</label>
+			</channel-group>
+			<channel-group id="alarm5" typeId="alarmErasable">
+				<label>Alarm 5</label>
+			</channel-group>
+			<channel-group id="alarm6" typeId="alarmErasable">
+				<label>Alarm 6</label>
+			</channel-group>
+			<channel-group id="alarm7" typeId="alarmErasable">
+				<label>Alarm 7</label>
+			</channel-group>
+			<channel-group id="alarm8" typeId="alarmErasable">
+				<label>Alarm 8</label>
+			</channel-group>
+			<channel-group id="alarm9" typeId="alarmErasable">
+				<label>Alarm 9</label>
+			</channel-group>
+			<channel-group id="alarm10" typeId="alarmErasable">
+				<label>Alarm 10</label>
+			</channel-group>
+			<channel-group id="alarm11" typeId="alarmErasable">
+				<label>Alarm 11</label>
+			</channel-group>
+			<channel-group id="alarm12" typeId="alarmErasable">
+				<label>Alarm 12</label>
+			</channel-group>
+			<channel-group id="alarm13" typeId="alarmErasable">
+				<label>Alarm 13</label>
+			</channel-group>
+			<channel-group id="alarm14" typeId="alarmErasable">
+				<label>Alarm 14</label>
+			</channel-group>
+			<channel-group id="alarm15" typeId="alarmErasable">
+				<label>Alarm 15</label>
+			</channel-group>
+			<channel-group id="alarm16" typeId="alarmErasable">
+				<label>Alarm 16</label>
+			</channel-group>
 		</channel-groups>
 
 		<properties>
