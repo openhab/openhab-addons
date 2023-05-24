@@ -252,8 +252,8 @@
 
 	<channel-type id="alarmSound">
 		<item-type>String</item-type>
-		<label>Alarm Sound</label>
-		<description>The type of sound used for the alarm sound.</description>
+		<label>Alarm Clock Sound</label>
+		<description>The type of sound used for the alarm clock sound.</description>
 		<category>Noise</category>
 		<tags>
 			<tag>Control</tag>
