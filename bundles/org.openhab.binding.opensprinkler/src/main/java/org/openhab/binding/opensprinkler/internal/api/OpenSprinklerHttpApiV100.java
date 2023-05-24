@@ -388,10 +388,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
                 location = url;
             }
             ContentResponse response = null;
-            int retriesLeft = config.retry;
-            if (retriesLeft <= 0) {
-                retriesLeft = 1;
-            }
+            int retriesLeft = Math.max(1, config.retry);
             boolean connectionSuccess = false;
             while (connectionSuccess == false && retriesLeft > 0) {
                 retriesLeft--;
