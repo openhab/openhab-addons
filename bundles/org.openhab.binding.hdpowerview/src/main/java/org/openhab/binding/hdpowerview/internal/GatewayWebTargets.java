@@ -266,7 +266,6 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
         }
         int statusCode = response.getStatus();
         if (!HTTP_OK_CODES.contains(statusCode)) {
-            logger.warn("invoke() HTTP status:{}, reason:{}", statusCode, response.getReason());
             throw new HubProcessingException(String.format("HTTP %d error", statusCode));
         }
         String jsonResponse = response.getContentAsString();
