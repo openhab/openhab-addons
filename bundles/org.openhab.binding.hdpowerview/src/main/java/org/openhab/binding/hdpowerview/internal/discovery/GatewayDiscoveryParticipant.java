@@ -14,7 +14,6 @@ package org.openhab.binding.hdpowerview.internal.discovery;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -32,38 +31,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers HD PowerView hubs by means of mDNS
+ * Discovers HD PowerView Generation 3 Gateways by means of mDNS.
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
 @Component
-public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
+public class GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private static final String LABEL_KEY = "discovery.hub.label";
+    private static final String LABEL_KEY = "discovery.gateway.label";
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);
-
-    @Override
-    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_HUB);
-    }
-
-    @Override
-    public String getServiceType() {
-        return "_powerview._tcp.local.";
-    }
+    private final Logger logger = LoggerFactory.getLogger(GatewayDiscoveryParticipant.class);
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, host.replace('.', '_'));
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
                         .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
                         .withLabel(String.format("@text/%s [\"%s\"]", LABEL_KEY, host)).build();
-                logger.debug("mDNS discovered Gen 1/2 hub on host '{}'", host);
+                logger.debug("mDNS discovered Gen 3 gateway on host '{}'", host);
                 return hub;
             }
         }
@@ -71,10 +60,20 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
     }
 
     @Override
+    public String getServiceType() {
+        return "_powerview-g3._tcp.local.";
+    }
+
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+        return Set.of(THING_TYPE_GATEWAY);
+    }
+
+    @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                return new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                return new ThingUID(THING_TYPE_GATEWAY, host.replace('.', '_'));
             }
         }
         return null;

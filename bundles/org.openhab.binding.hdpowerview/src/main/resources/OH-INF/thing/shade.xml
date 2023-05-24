@@ -9,7 +9,7 @@
 			<bridge-type-ref id="hub"/>
 		</supported-bridge-type-refs>
 		<label>PowerView Shade</label>
-		<description>Hunter Douglas (Luxaflex) PowerView Shade</description>
+		<description>Hunter Douglas (Luxaflex) PowerView Gen 1/2 Shade</description>
 
 		<channels>
 			<channel id="position" typeId="shade-position"/>
@@ -31,6 +31,36 @@
 				<label>Repeater RSSI</label>
 				<description>Received Signal Strength Indicator for Repeater</description>
 			</channel>
+		</channels>
+
+		<properties>
+			<property name="vendor">Hunter Douglas (Luxaflex)</property>
+			<property name="modelId">PowerView Motorized Shade</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:hdpowerview:shade"/>
+	</thing-type>
+
+	<thing-type id="shade3">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>PowerView Shade</label>
+		<description>Hunter Douglas (Luxaflex) PowerView Gen3 Shade</description>
+
+		<channels>
+			<channel id="position" typeId="shade-position"/>
+			<channel id="secondary" typeId="shade-position">
+				<label>Secondary Position</label>
+				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
+			</channel>
+			<channel id="vane" typeId="shade-vane"/>
+			<channel id="command" typeId="shade3-command"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="signalStrength" typeId="ble-signal-strength"/>
 		</channels>
 
 		<properties>
