@@ -63,14 +63,14 @@ public class TapoLightEffect {
         if (jso.has(JSON_KEY_LIGHTNING_EFFECT)) {
             this.jsonObject = jso.getAsJsonObject(JSON_KEY_LIGHTNING_EFFECT);
             this.enable = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ENABLE);
-            this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ID);
+            this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ID, JSON_KEY_LIGHTNING_EFFECT_OFF);
             this.name = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_NAME);
             this.custom = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_EFFECT_CUSTOM);
             this.brightness = jsonObjectToInt(jsonObject, JSON_KEY_LIGHTNING_EFFECT_BRIGHNTESS);
         } else if (jso.has(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE)) {
             this.jsonObject = jso;
             this.enable = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_DYNAMIC_ENABLE);
-            this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_DYNAMIC_ID);
+            this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_DYNAMIC_ID, JSON_KEY_LIGHTNING_EFFECT_OFF);
         } else {
             setDefaults();
         }
@@ -83,7 +83,7 @@ public class TapoLightEffect {
     private void setDefaults() {
         this.jsonObject = new JsonObject();
         this.enable = false;
-        this.id = "";
+        this.id = JSON_KEY_LIGHTNING_EFFECT_OFF;
         this.name = "";
         this.custom = false;
         this.brightness = 100;

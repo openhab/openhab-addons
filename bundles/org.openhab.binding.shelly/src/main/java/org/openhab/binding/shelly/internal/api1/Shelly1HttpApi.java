@@ -172,8 +172,12 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
-        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(),
-                ShellyShortLightStatus.class);
+        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(), String.class);
+    }
+
+    @Override
+    public void resetMeterTotal(int id) throws ShellyApiException {
+        callApi(SHELLY_URL_STATUS_EMETER + "/" + id + "/reset_totals=1", ShellyStatusRelay.class);
     }
 
     @Override
@@ -529,6 +533,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         } else if (profile.isLight) {
             setEventUrls(0);
         }
+    }
+
+    @Override
+    public void muteSmokeAlarm(int id) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
     }
 
     /**

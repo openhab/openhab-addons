@@ -54,7 +54,9 @@ public interface ShellyApiInterface {
 
     void setRelayTurn(int id, String turnMode) throws ShellyApiException;
 
-    ShellyRollerStatus getRollerStatus(int rollerIndex) throws ShellyApiException;
+    public void resetMeterTotal(int id) throws ShellyApiException;
+
+    public ShellyRollerStatus getRollerStatus(int rollerIndex) throws ShellyApiException;
 
     void setRollerTurn(int relayIndex, String turnMode) throws ShellyApiException;
 
@@ -90,6 +92,8 @@ public interface ShellyApiInterface {
     void setValveBoostTime(int valveId, int value) throws ShellyApiException;
 
     void startValveBoost(int valveId, int value) throws ShellyApiException;
+
+    void muteSmokeAlarm(int smokeId) throws ShellyApiException;
 
     ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
 
