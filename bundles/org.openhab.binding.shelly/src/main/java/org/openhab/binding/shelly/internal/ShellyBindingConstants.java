@@ -77,10 +77,13 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPRO2PM_RELAY, //
             THING_TYPE_SHELLYPRO2PM_ROLLER, //
             THING_TYPE_SHELLYPRO3, //
+            THING_TYPE_SHELLYPRO3EM, //
             THING_TYPE_SHELLYPRO4PM, //
             THING_TYPE_SHELLYPLUSI4, //
             THING_TYPE_SHELLYPLUSI4DC, //
             THING_TYPE_SHELLYPLUSHT, //
+            THING_TYPE_SHELLYPLUSSMOKE, //
+            THING_TYPE_SHELLYPLUSPLUGS, //
             THING_TYPE_SHELLYPLUSPLUGUS, //
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);
@@ -149,6 +152,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_VOLTAGE = "voltage";
     public static final String CHANNEL_EMETER_CURRENT = "current";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
+    public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
 
     public static final String CHANNEL_GROUP_SENSOR = "sensors";
     public static final String CHANNEL_SENSOR_TEMP = "temperature";
@@ -161,7 +165,9 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_TILT = "tilt";
     public static final String CHANNEL_SENSOR_FLOOD = "flood";
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
+    public static final String CHANNEL_SENSOR_MUTE = "mute";
     public static final String CHANNEL_SENSOR_STATE = "state";
+    public static final String CHANNEL_SENSOR_OPEN = "open";
     public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
     public static final String CHANNEL_SENSOR_MOTION_ACT = "motionActive";
@@ -293,6 +299,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_WATT = 2;
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 1;
+    public static final int DIGITS_AMPERE = 3;
     public static final int DIGITS_TEMP = 1;
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;

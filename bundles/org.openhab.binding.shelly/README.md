@@ -76,27 +76,33 @@ The binding provides the same feature set across all devices as good as possible
 
 ### Generation 2 Plus series
 
-| thing-type           | Model                                                    | Vendor ID     |
-| -------------------- | -------------------------------------------------------- | ------------- |
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU |
-| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU |
-| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU |
-| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU |
-| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X    |
-| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X    |
-| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A    |
+| thing-type           | Model                                                    | Vendor ID                                     |
+| -------------------- | -------------------------------------------------------- | --------------------------------------------- |
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU                                 |
+| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU                                 |
+| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU                  |
+| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU                  |
+| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                                  |
+| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                  |
+| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                  |
+| shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US                                  |
+| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                                    |
+| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                    |
+| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                                    |
+| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                    |
 
 ### Generation 2 Pro series
 
-| thing-type          | Model                                                    | Vendor ID      |
-| ------------------- | -------------------------------------------------------- | -------------- |
-| shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU |
-| shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU |
-| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU |
-| shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU |
-| shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU |
-| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU |
-| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU |
+| thing-type          | Model                                                    | Vendor ID                                      |
+| ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
+| shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
+| shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
+| shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
+| shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
+| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
+| shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
+| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
 
 ## Binding Configuration
 
@@ -374,7 +380,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | TEMP_OVER  | Above "temperature over" threshold                                                               |
 | VIBRATION  | A vibration/tamper was detected (DW2 only)                                                       |
 
-Refer to section [Full Example:shelly.rules](#shellyrules) for examples how to catch alarm triggers in openHAB rules
+Refer to section [Full Example](#full-example) for examples how to catch alarm triggers in openHAB rules
 
 ## Channels
 
@@ -498,6 +504,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
@@ -506,6 +513,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
@@ -514,6 +522,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
@@ -945,6 +954,7 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 | ------- | --------------- | -------- | --------- | ------------------------------------------------------------------- |
 | sensors | temperature     | Number   | yes       | Current Temperature in °C                                           |
 |         | state           | Contact  | yes       | Valve status: OPEN or CLOSED (position = 0)                         |
+|         | open            | Contact  | yes       | ON: "window is open" was detected, OFF: window is closed            |
 |         | lastUpdate      | DateTime | yes       | Timestamp of the last update (any sensor value changed)             |
 | control | targetTemp      | Number   | no        | Temperature in °C: 4=Low/Min; 5..30=target temperature;31=Hi/Max    |
 |         | position        | Dimmer   | no        | Set valve to manual mode (0..100%) disables auto-temp)              |
@@ -1108,6 +1118,23 @@ If the Shelly Add-On is installed:
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
 
+### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug)
+
+| Group | Channel      | Type     | read-only | Description                                                                       |
+| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|       | autoOn       | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds           |
+|       | autoOff      | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds           |
+|       | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                                |
+|       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
+|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
 | Group   | Channel    | Type    | read-only | Description                                                           |
@@ -1131,6 +1158,18 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
+
+### Shelly Plus Smoke (thing-type: shellyplussmoke)
+
+| Group   | Channel      | Type     | read-only | Description                                             |
+| ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
+| sensors | smoke        | Switch   | yes       | ON: Smoke detected                                      |
+|         | mute         | Switch   | no        | ON: Alarm muted                                         |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
+|         | lastError    | String   | yes       | Last device error.                                      |
+| battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
+|         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
+
 
 ## Shelly Pro Series
 
@@ -1257,6 +1296,38 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | autoOff     | Number  | r/w       | Relay #3: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive | Switch  | yes       | Relay #3: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Relay #3:  Event trigger, see section Button Events                               |
+
+### Shelly Pro 3EM (thing-type: shellypro3em)
+
+| Group  | Channel       | Type     | read-only | Description                                                                       |
+| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly Pro 4PM (thing-type: shelly4pro)
 
