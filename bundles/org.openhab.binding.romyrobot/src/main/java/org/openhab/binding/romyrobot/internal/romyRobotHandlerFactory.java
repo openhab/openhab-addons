@@ -12,30 +12,39 @@
  */
 package org.openhab.binding.romyrobot.internal;
 
-import static org.openhab.binding.romyrobot.internal.romyRobotBindingConstants.*;
+import static org.openhab.binding.romyrobot.internal.RomyRobotBindingConstants.ROMYROBOT_DEVICE;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.romyrobot.internal.api.RomyApiFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link romyRobotHandlerFactory} is responsible for creating things and thing
+ * The {@link RomyRobotHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Bernhard Kreuz - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.romyrobot", service = ThingHandlerFactory.class)
-public class romyRobotHandlerFactory extends BaseThingHandlerFactory {
+public class RomyRobotHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ROMYROBOT_DEVICE);
+    private RomyApiFactory apiFactory;
+
+    @Activate
+    public RomyRobotHandlerFactory(@Reference RomyApiFactory apiFactory) {
+        this.apiFactory = apiFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +55,8 @@ public class romyRobotHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new romyRobotHandler(thing);
+        if (ROMYROBOT_DEVICE.equals(thingTypeUID)) {
+            return new RomyRobotHandler(thing, apiFactory);
         }
 
         return null;

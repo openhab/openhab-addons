@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.romyrobot</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: romyRobot Binding</name>
+  <name>openHAB Add-ons :: Bundles :: RomyRobot Binding</name>
 
 </project>

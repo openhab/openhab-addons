@@ -10,24 +10,25 @@
 		<category>CleaningRobot</category>
 
 		<channels>
-			<channel id="fw_version" typeId="firmwareVersion"></channel>
+			<channel id="fwversion" typeId="firmwareVersion"></channel>
 			<channel id="command" typeId="command"></channel>
 			<channel id="mode" typeId="mode"></channel>
-			<channel id="active_pump_volume" typeId="pumpVolume"></channel>
+			<channel id="activepumpvolume" typeId="activepumpvolume"></channel>
 			<channel id="strategy" typeId="strategy"></channel>
-			<channel id="suction_mode" typeId="suctionMode"></channel>
+			<channel id="suctionmode" typeId="suctionmode"></channel>
 			<channel id="battery" typeId="battery"></channel>
 			<channel id="charging" typeId="charging"></channel>
 			<channel id="rssi" typeId="rssi"></channel>
-			<channel id="power_status" typeId="powerStatus"></channel>
-			<channel id="available_maps" typeId="availableMaps"></channel>
+			<channel id="powerstatus" typeId="powerstatus"></channel>
+			<channel id="availablemaps" typeId="availablemaps"></channel>
 		</channels>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>The host name or IP address of the RomyRobot Web API interface. Please take note that you have to first open the URL in your browser and unlock the HTTP interface with the code you find under the dustbin.</description>
+				<description>The host name or IP address of the RomyRobot Web API interface. Please take note that you have to first
+					open the URL in your browser and unlock the HTTP interface with the code you find under the dustbin.</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="true">
 				<label>Port</label>
@@ -49,7 +50,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="fw_version" advanced="true">
+	<channel-type id="firmwareVersion" advanced="true">
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
 		<description>Firmware version installed on vacuum</description>
@@ -60,7 +61,8 @@
 		<label>Command</label>
 		<description>Command to execute</description>
 		<state>
-			<options> <!--available: clean_all=clean all, clean_start_or_continue=clean start or continue,clean_spot=clean spot,clean_map=clean map,stop=stop,go_home=go home-->
+			<options> <!--available: clean_all=clean all, clean_start_or_continue=clean start or continue,clean_spot=clean spot,clean_map=clean
+					map,stop=stop,go_home=go home -->
 				<option value="clean_all">Clean all</option>
 				<option value="clean_start_or_continue">Clean start or continue</option>
 				<option value="clean_spot">Spot</option>
@@ -69,12 +71,12 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="active_pump_volume">
+	<channel-type id="activepumpvolume">
 		<item-type>String</item-type>
 		<label>Pump Volume</label>
 		<description>Intensitiy of water usage</description>
 		<state>
-			<options> <!--available: none=Pump: Default,low=Pump: Low,medium=Pump: Medium, high=Pump: High-->
+			<options> <!--available: none=Pump: Default,low=Pump: Low,medium=Pump: Medium, high=Pump: High -->
 				<option value="none">Pump: Default</option>
 				<option value="low">Pump: Low</option>
 				<option value="medium">Pump: Medium</option>
@@ -87,7 +89,7 @@
 		<label>Cleaning Strategy</label>
 		<description>Choose an available cleaning strategy</description>
 		<state>
-			<options> <!--available: 1=Normal,2=WallsCorners,3=Deep,4=Default-->
+			<options> <!--available: 1=Normal,2=WallsCorners,3=Deep,4=Default -->
 				<option value="1">Normal</option>
 				<option value="2">WallsCorners</option>
 				<option value="3">Deep</option>
@@ -95,12 +97,12 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="suction_mode">
+	<channel-type id="suctionmode">
 		<item-type>String</item-type>
 		<label>Suction Mode</label>
 		<description>Choose an available suction mode</description>
 		<state>
-			<options> <!--available: 1=Normal,2=Silent,3=Intensive,0=Default,4=Super Silent-->
+			<options> <!--available: 1=Normal,2=Silent,3=Intensive,0=Default,4=Super Silent -->
 				<option value="0">Default</option>
 				<option value="1">Normal</option>
 				<option value="2">Silent</option>
@@ -133,13 +135,13 @@
 		<description>Wi-Fi signal strength</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="power_status">
+	<channel-type id="powerstatus">
 		<item-type>String</item-type>
 		<label>Current Power Status</label>
 		<description>Robots current power status</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="available_maps">
+	<channel-type id="availablemaps">
 		<item-type>String</item-type>
 		<label>Available Maps</label>
 		<description>Information about availabler maps. Useful for composing commands</description>
