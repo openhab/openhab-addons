@@ -45,15 +45,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RomyRobotHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(RomyRobotHandler.class);
 
     private @NotNull RomyRobotConfiguration config;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable RomyApi romyDevice;
-    private @Nullable RomyApiFactory apiFactory;
+    private @NotNull RomyApiFactory apiFactory;
 
-    public RomyRobotHandler(Thing thing, RomyApiFactory apiFactory) {
+    public RomyRobotHandler(Thing thing, @NotNull RomyApiFactory apiFactory) {
         super(thing);
         this.apiFactory = apiFactory;
         config = getConfigAs(RomyRobotConfiguration.class);
@@ -82,17 +81,18 @@ public class RomyRobotHandler extends BaseThingHandler {
         pollingJob = scheduler.scheduleWithFixedDelay(this::refreshVacuum, 2, config.refreshInterval, TimeUnit.SECONDS);
     }
 
-    public void refreshVacuum() {
+	public void refreshVacuum() {
+		RomyApiFactory apiFactory = getApiFactory();
         RomyApi localApi = romyDevice;
         if (localApi == null) {
-            setupAPI();
+            setupAPI(apiFactory);
             localApi = romyDevice;
         }
         if (localApi != null) {
             try {
                 localApi.refresh();
                 updateStatus(ThingStatus.ONLINE);
-                this.updateChannels();
+                this.updateChannels(localApi);
 
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -101,27 +101,30 @@ public class RomyRobotHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChannels() {
+	private RomyApiFactory getApiFactory() {
+		return apiFactory;
+	}
+
+	private void updateChannels(RomyApi device) {
         if (romyDevice != null) {
-            updateState(CHANNEL_FW_VERSION, StringType.valueOf(romyDevice.getFirmwareVersion()));
-            updateState(CHANNEL_MODE, StringType.valueOf(romyDevice.getModeString()));
-            updateState(CHANNEL_ACTIVE_PUMP_VOLUME, StringType.valueOf(romyDevice.getActivePumpVolume()));
-            updateState(CHANNEL_BATTERY, QuantityType.valueOf(romyDevice.getBatteryLevel(), PERCENT));
-            updateState(CHANNEL_CHARGING, StringType.valueOf(romyDevice.getChargingStatus()));
-            updateState(CHANNEL_POWER_STATUS, StringType.valueOf(romyDevice.getPowerStatus()));
-            updateState(CHANNEL_RSSI, new DecimalType(romyDevice.getRssi()));
-            updateState(CHANNEL_STRATEGY, StringType.valueOf(romyDevice.getStrategy()));
-            updateState(CHANNEL_SUCTION_MODE, StringType.valueOf(romyDevice.getSuctionMode()));
-            updateState(CHANNEL_AVAILABLE_MAPS, StringType.valueOf(romyDevice.getAvailableMaps()));
+            updateState(CHANNEL_FW_VERSION, StringType.valueOf(device.getFirmwareVersion()));
+            updateState(CHANNEL_MODE, StringType.valueOf(device.getModeString()));
+            updateState(CHANNEL_ACTIVE_PUMP_VOLUME, StringType.valueOf(device.getActivePumpVolume()));
+            updateState(CHANNEL_BATTERY, QuantityType.valueOf(device.getBatteryLevel(), PERCENT));
+            updateState(CHANNEL_CHARGING, StringType.valueOf(device.getChargingStatus()));
+            updateState(CHANNEL_POWER_STATUS, StringType.valueOf(device.getPowerStatus()));
+            updateState(CHANNEL_RSSI, new DecimalType(device.getRssi()));
+            updateState(CHANNEL_STRATEGY, StringType.valueOf(device.getStrategy()));
+            updateState(CHANNEL_SUCTION_MODE, StringType.valueOf(device.getSuctionMode()));
+            updateState(CHANNEL_AVAILABLE_MAPS, StringType.valueOf(device.getAvailableMaps()));
         }
     }
 
-    private void setupAPI() {
+    private void setupAPI(RomyApiFactory apiFactory) {
         logger.debug("Initializing RomyRobot with config (Hostname: {}, Port: {}, Refresh: {}, Timeout {}).",
                 config.hostname, config.port, config.refreshInterval, config.timeout);
         try {
             romyDevice = apiFactory.getHttpApi(config);
-            RomyApi localApi = romyDevice;
 
         } catch (Exception exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
