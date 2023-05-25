@@ -15,17 +15,18 @@ package org.openhab.binding.romyrobot.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link romyRobotConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link RomyRobotConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernhard Kreuz - Initial contribution
  */
 @NonNullByDefault
-public class romyRobotConfiguration {
+public class RomyRobotConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.
      */
     public String hostname = "";
-    public String password = "";
     public int refreshInterval = 600;
+    public int port = 8080;
+    public int timeout = 5;
 }

@@ -12,13 +12,25 @@
  */
 package org.openhab.binding.romyrobot.internal;
 
-import static org.openhab.binding.romyrobot.internal.romyRobotBindingConstants.*;
+import static org.openhab.binding.romyrobot.internal.RomyRobotBindingConstants.*;
+import static org.openhab.core.library.unit.Units.PERCENT;
+
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.romyrobot.internal.api.RomyApi;
+import org.openhab.binding.romyrobot.internal.api.RomyApiFactory;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -26,25 +38,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link romyRobotHandler} is responsible for handling commands, which are
+ * The {@link RomyRobotHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Bernhard Kreuz - Initial contribution
  */
 @NonNullByDefault
-public class romyRobotHandler extends BaseThingHandler {
+public class RomyRobotHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(romyRobotHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RomyRobotHandler.class);
 
-    private @Nullable romyRobotConfiguration config;
+    private @NotNull RomyRobotConfiguration config;
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable RomyApi romyDevice;
+    private @Nullable RomyApiFactory apiFactory;
 
-    public romyRobotHandler(Thing thing) {
+    public RomyRobotHandler(Thing thing, RomyApiFactory apiFactory) {
         super(thing);
+        this.apiFactory = apiFactory;
+        config = getConfigAs(RomyRobotConfiguration.class);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+        if (CHANNEL_FW_VERSION.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
             }
@@ -60,45 +77,56 @@ public class romyRobotHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(romyRobotConfiguration.class);
-
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
+        config = getConfigAs(RomyRobotConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::refreshVacuum, 2, config.refreshInterval, TimeUnit.SECONDS);
+    }
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
+    public void refreshVacuum() {
+        RomyApi localApi = romyDevice;
+        if (localApi == null) {
+            setupAPI();
+            localApi = romyDevice;
+        }
+        if (localApi != null) {
+            try {
+                localApi.refresh();
                 updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
+                this.updateChannels();
+
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Could not sync status with RomyRobot, check your robot is unlocked " + e.getMessage());
             }
-        });
+        }
+    }
 
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
+    private void updateChannels() {
+        if (romyDevice != null) {
+            updateState(CHANNEL_FW_VERSION, StringType.valueOf(romyDevice.getFirmwareVersion()));
+            updateState(CHANNEL_MODE, StringType.valueOf(romyDevice.getModeString()));
+            updateState(CHANNEL_ACTIVE_PUMP_VOLUME, StringType.valueOf(romyDevice.getActivePumpVolume()));
+            updateState(CHANNEL_BATTERY, QuantityType.valueOf(romyDevice.getBatteryLevel(), PERCENT));
+            updateState(CHANNEL_CHARGING, StringType.valueOf(romyDevice.getChargingStatus()));
+            updateState(CHANNEL_POWER_STATUS, StringType.valueOf(romyDevice.getPowerStatus()));
+            updateState(CHANNEL_RSSI, new DecimalType(romyDevice.getRssi()));
+            updateState(CHANNEL_STRATEGY, StringType.valueOf(romyDevice.getStrategy()));
+            updateState(CHANNEL_SUCTION_MODE, StringType.valueOf(romyDevice.getSuctionMode()));
+            updateState(CHANNEL_AVAILABLE_MAPS, StringType.valueOf(romyDevice.getAvailableMaps()));
+        }
+    }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    private void setupAPI() {
+        logger.debug("Initializing RomyRobot with config (Hostname: {}, Port: {}, Refresh: {}, Timeout {}).",
+                config.hostname, config.port, config.refreshInterval, config.timeout);
+        try {
+            romyDevice = apiFactory.getHttpApi(config);
+            RomyApi localApi = romyDevice;
+
+        } catch (Exception exp) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Could not create an API connection to RomyRobot. Error received: " + exp);
+            return;
+        }
     }
 }
