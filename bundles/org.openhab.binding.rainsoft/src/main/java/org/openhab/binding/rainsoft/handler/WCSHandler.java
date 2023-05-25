@@ -174,6 +174,9 @@ public class WCSHandler extends RainSoftDeviceHandler {
                             ((JSONObject) new JSONParser().parse(deviceInfo)).get("drainFlow").toString()));
                     updateChannelState(CHANNEL_STATUS_AVGMONTHSALT, new DecimalType(
                             ((JSONObject) new JSONParser().parse(deviceInfo)).get("averageMonthlySalt").toString()));
+                    int avgmonthwater = Integer.parseInt(
+                            ((JSONObject) new JSONParser().parse(deviceInfo)).get("water28Day").toString()) / 28;
+                    updateChannelState(CHANNEL_STATUS_AVGMONTHWATER, new DecimalType(Integer.toString(avgmonthwater)));
                     updateChannelState(CHANNEL_STATUS_DAILYWATERUSE, new DecimalType(
                             ((JSONObject) new JSONParser().parse(deviceInfo)).get("dailyWaterUse").toString()));
                     updateChannelState(CHANNEL_STATUS_REGENS28DAY, new DecimalType(
@@ -212,7 +215,7 @@ public class WCSHandler extends RainSoftDeviceHandler {
                         String water = dailyWaterUsageDataArray.get(i).toString();
                         String salt = dailySaltUsageDataArray.get(i).toString();
                         int day = i + 1;
-                        logger.trace("WCSHandler - minuteTick - dailyArrays - {} {} {}", label, water, salt);
+                        logger.trace("WCSHandler - minuteTick - dailyArrays - {} {} {} ", label, water, salt);
                         String labelChannel = "usage#day" + day + "date";
                         String waterChannel = "usage#day" + day + "water";
                         String saltChannel = "usage#day" + day + "salt";

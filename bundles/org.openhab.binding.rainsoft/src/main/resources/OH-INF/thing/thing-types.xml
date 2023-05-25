@@ -67,6 +67,7 @@
 			<channel id="ironlevel" typeId="ironlevel"/>
 			<channel id="drainflow" typeId="drainflow"/>
 			<channel id="avgmonthsalt" typeId="avgmonthsalt"/>
+			<channel id="avgmonthwater" typeId="avgmonthwater"/>
 			<channel id="dailywateruse" typeId="dailywateruse"/>
 			<channel id="regens28day" typeId="regens28day"/>
 			<channel id="water28day" typeId="water28day"/>
@@ -269,6 +270,12 @@
 		<item-type>Number</item-type>
 		<label>Average Monthly Salt Usage</label>
 		<description>Average Monthly Salt Usage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="avgmonthwater">
+		<item-type>Number</item-type>
+		<label>Average Monthly Water Usage</label>
+		<description>Average Monthly Water Usage</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="dailywateruse">

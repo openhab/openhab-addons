@@ -46,6 +46,7 @@ public class RainSoftBindingConstants {
     public final static String CHANNEL_STATUS_IRONLEVEL = "status#ironlevel";
     public final static String CHANNEL_STATUS_DRAINFLOW = "status#drainflow";
     public final static String CHANNEL_STATUS_AVGMONTHSALT = "status#avgmonthsalt";
+    public final static String CHANNEL_STATUS_AVGMONTHWATER = "status#avgmonthwater";
     public final static String CHANNEL_STATUS_DAILYWATERUSE = "status#dailywateruse";
     public final static String CHANNEL_STATUS_REGENS28DAY = "status#regens28day";
     public final static String CHANNEL_STATUS_WATER28DAY = "status#water28day";
