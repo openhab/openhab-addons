@@ -54,6 +54,11 @@
 				<default>5</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="timeout" type="integer">
+				<label>Timeout</label>
+				<description>Specifies the connection timeout in seconds.</description>
+				<default>5</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
