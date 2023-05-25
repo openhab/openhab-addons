@@ -4,31 +4,36 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="romyRobotBridge" />
-			</supported-bridge-type-refs>
-		-->
-
-		<label>romyRobot Binding Thing</label>
-		<description>Sample thing for romyRobot Binding</description>
+	<thing-type id="romyrobot">
+		<label>RomyRobot</label>
+		<description>A RomyRobot vacuum robot</description>
+		<category>CleaningRobot</category>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="fw_version" typeId="firmwareVersion"></channel>
+			<channel id="command" typeId="command"></channel>
+			<channel id="mode" typeId="mode"></channel>
+			<channel id="active_pump_volume" typeId="pumpVolume"></channel>
+			<channel id="strategy" typeId="strategy"></channel>
+			<channel id="suction_mode" typeId="suctionMode"></channel>
+			<channel id="battery" typeId="battery"></channel>
+			<channel id="charging" typeId="charging"></channel>
+			<channel id="rssi" typeId="rssi"></channel>
+			<channel id="power_status" typeId="powerStatus"></channel>
+			<channel id="available_maps" typeId="availableMaps"></channel>
 		</channels>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>The host name or IP address of the RomyRobot Web API interface. Please take note that you have to first open the URL in your browser and unlock the HTTP interface with the code you find under the dustbin.</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
+				<label>Port</label>
+				<description>Port of the RomyRobot Web API interface.</description>
+				<default>8080</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
@@ -36,13 +41,108 @@
 				<default>600</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="timeout" type="integer">
+				<label>Timeout</label>
+				<description>Specifies the connection timeout in seconds.</description>
+				<default>5</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for romyRobot Binding</description>
+	<channel-type id="fw_version" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Firmware version installed on vacuum</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Command to execute</description>
+		<state>
+			<options> <!--available: clean_all=clean all, clean_start_or_continue=clean start or continue,clean_spot=clean spot,clean_map=clean map,stop=stop,go_home=go home-->
+				<option value="clean_all">Clean all</option>
+				<option value="clean_start_or_continue">Clean start or continue</option>
+				<option value="clean_spot">Spot</option>
+				<option value="go_home">Dock</option>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="active_pump_volume">
+		<item-type>String</item-type>
+		<label>Pump Volume</label>
+		<description>Intensitiy of water usage</description>
+		<state>
+			<options> <!--available: none=Pump: Default,low=Pump: Low,medium=Pump: Medium, high=Pump: High-->
+				<option value="none">Pump: Default</option>
+				<option value="low">Pump: Low</option>
+				<option value="medium">Pump: Medium</option>
+				<option value="high">Pump: High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="strategy" advanced="true">
+		<item-type>String</item-type>
+		<label>Cleaning Strategy</label>
+		<description>Choose an available cleaning strategy</description>
+		<state>
+			<options> <!--available: 1=Normal,2=WallsCorners,3=Deep,4=Default-->
+				<option value="1">Normal</option>
+				<option value="2">WallsCorners</option>
+				<option value="3">Deep</option>
+				<option value="4">Default</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="suction_mode">
+		<item-type>String</item-type>
+		<label>Suction Mode</label>
+		<description>Choose an available suction mode</description>
+		<state>
+			<options> <!--available: 1=Normal,2=Silent,3=Intensive,0=Default,4=Super Silent-->
+				<option value="0">Default</option>
+				<option value="1">Normal</option>
+				<option value="2">Silent</option>
+				<option value="3">Intensive</option>
+				<option value="4">Super Silent</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Current Status</label>
+		<description>Robots current status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="battery">
+		<item-type>Number</item-type>
+		<label>Battery</label>
+		<description>Battery charge percentage</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="charging">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<description>Indicates the vacuums charging status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Wi-Fi signal strength</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="power_status">
+		<item-type>String</item-type>
+		<label>Current Power Status</label>
+		<description>Robots current power status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="available_maps">
+		<item-type>String</item-type>
+		<label>Available Maps</label>
+		<description>Information about availabler maps. Useful for composing commands</description>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>
