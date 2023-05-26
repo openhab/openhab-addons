@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgthinq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LG Device Type relative to Air Conditioners -->
+	<thing-type id="202">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>LG ThinQ Dryer</label>
+		<description>LG ThinQ Dryer</description>
+
+
+		<channel-groups>
+			<channel-group id="dashboard" typeId="dr-dashboard"/>
+			<channel-group id="remote-start-grp" typeId="dr-remote-start-grp"/>
+		</channel-groups>
+	</thing-type>
+
+	<channel-group-type id="dr-remote-start-grp">
+		<label>Remote Start Options</label>
+		<description>Remote Start Actions and Options.</description>
+		<channels>
+			<channel id="rs-start-stop" typeId="rs-start-stop"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="dr-dashboard">
+		<label>Dashboard</label>
+		<description>This is the Displayed Information.</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="state" typeId="dryer-state"/>
+			<channel id="process-state" typeId="washerdryer-process-state"/>
+			<channel id="course" typeId="washerdryer-course"/>
+			<channel id="child-lock" typeId="dryer-child-lock"/>
+			<channel id="remain-time" typeId="washerdryer-remain-time"/>
+			<channel id="delay-time" typeId="washerdryer-delay-time"/>
+			<channel id="dry-level" typeId="dryer-dry-level"/>
+			<channel id="stand-by" typeId="washerdryer-stand-by"/>
+			<channel id="remote-start-flag" typeId="washerdryer-remote-start"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

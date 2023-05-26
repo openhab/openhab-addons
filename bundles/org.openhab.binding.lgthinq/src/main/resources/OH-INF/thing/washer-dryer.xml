@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgthinq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LG Device Type relative to Washer -->
+	<thing-type id="201">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>LG ThinQ Washer</label>
+		<description>LG ThinQ Washing Machine</description>
+
+		<channel-groups>
+			<channel-group id="dashboard" typeId="dashboard"/>
+			<channel-group id="remote-start-grp" typeId="remote-start-grp"/>
+		</channel-groups>
+	</thing-type>
+
+	<channel-group-type id="remote-start-grp">
+		<label>Remote Start Options</label>
+		<description>Remote Start Actions and Options.</description>
+		<channels>
+			<channel id="rs-start-stop" typeId="rs-start-stop"/>
+			<channel id="rs-rinse" typeId="rs-rinse"/>
+			<channel id="rs-spin" typeId="rs-spin"/>
+			<channel id="rs-temperature-level" typeId="rs-temperature-level"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="dashboard">
+		<label>Dashboard</label>
+		<description>This is the Displayed Information.</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="state" typeId="washer-state"/>
+			<channel id="process-state" typeId="washerdryer-process-state"/>
+			<channel id="course" typeId="washerdryer-course"/>
+			<channel id="temperature-level" typeId="washerdryer-temp-level"/>
+			<channel id="door-lock" typeId="washerdryer-door-lock"/>
+			<channel id="remain-time" typeId="washerdryer-remain-time"/>
+			<channel id="rinse" typeId="washer-rinse"/>
+			<channel id="spin" typeId="washer-spin"/>
+			<channel id="delay-time" typeId="washerdryer-delay-time"/>
+			<channel id="stand-by" typeId="washerdryer-stand-by"/>
+			<channel id="remote-start-flag" typeId="washerdryer-remote-start"/>
+		</channels>
+	</channel-group-type>
+
+	<thing-type id="221">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>LG ThinQ Washer Tower</label>
+		<description>LG ThinQ Washing Tower</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="state" typeId="washer-state"/>
+			<channel id="course" typeId="washer-course"/>
+			<channel id="smart-course" typeId="washer-smart-course"/>
+			<channel id="temperature-level" typeId="washer-temp-level"/>
+			<channel id="door-lock" typeId="washer-door-lock"/>
+			<channel id="remain-time" typeId="washerdryer-remain-time"/>
+			<channel id="delay-time" typeId="washerdryer-delay-time"/>
+		</channels>
+
+	</thing-type>
+
+
+</thing:thing-descriptions>

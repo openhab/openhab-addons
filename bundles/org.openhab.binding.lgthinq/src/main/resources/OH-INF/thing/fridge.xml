@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgthinq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LG Device Type relative to Air Conditioners -->
+	<thing-type id="101">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>LG ThinQ Fridge</label>
+		<description>LG ThinQ Fridge</description>
+
+		<channels>
+			<channel id="some-door-open" typeId="fridge-some-door-open"/>
+			<channel id="freezer-temperature" typeId="fridge-freezer-temperature"/>
+			<channel id="fridge-temperature" typeId="fridge-fridge-temperature"/>
+			<channel id="temp-unit" typeId="fridge-temp-unit"/>
+			<!-- <channel id="water-filter-status" typeId="fridge-water-filter-status"/> -->
+			<!-- <channel id="fresh-air-filter-status" typeId="fridge-fresh-air-filter-status"/> -->
+			<!-- <channel id="mon-status" typeId="fridge-mon-status"/> -->
+		</channels>
+
+	</thing-type>
+
+</thing:thing-descriptions>
