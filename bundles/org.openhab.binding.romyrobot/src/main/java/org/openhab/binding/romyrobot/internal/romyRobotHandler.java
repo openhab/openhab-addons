@@ -56,7 +56,7 @@ public class RomyRobotHandler extends BaseThingHandler {
     private RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider;
 
     public RomyRobotHandler(Thing thing, @NotNull RomyApiFactory apiFactory,
-            RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider) {
+            RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider) throws Exception {
         super(thing);
         this.apiFactory = apiFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
@@ -75,10 +75,18 @@ public class RomyRobotHandler extends BaseThingHandler {
         }
         if (CHANNEL_STRATEGY.equals(channelUID.getId())) {
             updateState(CHANNEL_STRATEGY, new StringType(command.toString()));
-            getRomyApi().setStrategy(command.toString());
+            try {
+				getRomyApi().setStrategy(command.toString());
+			} catch (Exception e) {
+				logger.error("error updating strategy: {}", e);
+			}
         } else if (CHANNEL_SUCTION_MODE.equals(channelUID.getId())) {
             updateState(CHANNEL_SUCTION_MODE, new StringType(command.toString()));
-            getRomyApi().setSuctionMode(command.toString());
+            try {
+				getRomyApi().setSuctionMode(command.toString());
+			} catch (Exception e) {
+				logger.error("error updating suctionmode: {}", e);
+			}
         } else if (CHANNEL_COMMAND.equals(channelUID.getId())) {
             updateState(CHANNEL_COMMAND, new StringType(command.toString()));
             try {
@@ -132,13 +140,13 @@ public class RomyRobotHandler extends BaseThingHandler {
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SELECTED_MAP), options);
     }
 
-    private RomyApi setupAPI(RomyApiFactory apiFactory) {
+    private RomyApi setupAPI(RomyApiFactory apiFactory) throws Exception {
         logger.debug("Initializing RomyRobot with config (Hostname: {}, Port: {}, Refresh: {}, Timeout {}).",
                 config.hostname, config.port, config.refreshInterval, config.timeout);
         return apiFactory.getHttpApi(config);
     }
 
-    private RomyApi getRomyApi() {
+    private RomyApi getRomyApi() throws Exception {
         if (romyDevice == null) {
             romyDevice = apiFactory.getHttpApi(config);
         }
