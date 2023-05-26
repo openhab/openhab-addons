@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgthinq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="current-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cool_jet">
+		<item-type>Switch</item-type>
+		<label>Cool Jet</label>
+		<category>Temperature</category>
+	</channel-type>
+
+	<channel-type id="cool_jet">
+		<item-type>Switch</item-type>
+		<label>Cool Jet</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="air_clean">
+		<item-type>Switch</item-type>
+		<label>Air Clean</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="auto_dry">
+		<item-type>Switch</item-type>
+		<label>Auto Dry</label>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="energy_saving">
+		<item-type>Switch</item-type>
+		<label>Energy Saving</label>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature.</description>
+		<category>Temperature</category>
+		<state min="17" max="30" step="1" readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="fan-speed">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<description>AC Wind Strength</description>
+		<category>Wind</category>
+		<state>
+			<options>
+				<option value="2">Lower</option>
+				<option value="3">Low</option>
+				<option value="4">Medium</option>
+				<option value="5">Fast</option>
+				<option value="6">Faster</option>
+				<option value="8">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="operation-mode">
+		<item-type>Number</item-type>
+		<label>Operation Mode</label>
+		<description>AC Operation Mode</description>
+		<state>
+			<options>
+				<option value="1">Cool</option>
+				<option value="2">Dry</option>
+				<option value="3">Fan</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="washerdryer-remote-start">
+		<item-type>Switch</item-type>
+		<label>Remote Start</label>
+		<description>Remote start</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rs-start-stop">
+		<item-type>Switch</item-type>
+		<label>Remote Start/Stop Switch</label>
+		<description>Remote Start/Stop</description>
+	</channel-type>
+
+	<channel-type id="washerdryer-stand-by">
+		<item-type>Switch</item-type>
+		<label>Standby Mode</label>
+		<description>Standby Mode</description>
+	</channel-type>
+
+	<channel-type id="washer-rinse">
+		<item-type>String</item-type>
+		<label>Rinse</label>
+		<description>Rinse</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rs-rinse">
+		<item-type>String</item-type>
+		<label>Rinse</label>
+		<description>Rinse</description>
+	</channel-type>
+
+	<channel-type id="washer-spin">
+		<item-type>String</item-type>
+		<label>Spin</label>
+		<description>Spin Speed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rs-spin">
+		<item-type>String</item-type>
+		<label>Spin</label>
+		<description>Spin Speed</description>
+	</channel-type>
+
+	<channel-type id="washer-state">
+		<item-type>String</item-type>
+		<label>Washer State</label>
+		<description>Washer State Operation</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washerdryer-remain-time">
+		<item-type>String</item-type>
+		<label>Remaining Time</label>
+		<description>Remaining Time</description>
+		<!-- TODO: change this to String. -->
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washerdryer-delay-time">
+		<item-type>String</item-type>
+		<label>Delay Time</label>
+		<description>Delay Time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washer-course">
+		<item-type>String</item-type>
+		<label>Washer Course</label>
+		<description>Washer Course</description>
+		<state readOnly="true">
+			<options>
+				<option value="COTTON">Cotton</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="washer-smart-course">
+		<item-type>String</item-type>
+		<label>Washer Smart Course</label>
+		<description>Washer Smart Course</description>
+		<state readOnly="true">
+			<options>
+				<option value="COTTON">Cotton</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="washer-downloaded-course">
+		<item-type>String</item-type>
+		<label>Washer Downloaded Course</label>
+		<description>Washer Downloaded Course</description>
+		<state readOnly="true">
+			<options>
+				<option value="COTTON">Cotton</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="washerdryer-temp-level">
+		<item-type>String</item-type>
+		<label>Temperature Level</label>
+		<description>Target Temperature Level</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rs-temperature-level">
+		<item-type>String</item-type>
+		<label>Temperature Level</label>
+		<description>Target Temperature Level</description>
+		<category>Temperature</category>
+	</channel-type>
+	<channel-type id="washerdryer-door-lock">
+		<item-type>String</item-type>
+		<label>Door Lock</label>
+		<description>Door Lock</description>
+		<state readOnly="true">
+			<options>
+				<option value="DOOR_LOCK_ON">Locked</option>
+				<option value="DOOR_LOCK_OFF">Unlocked</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dryer-state">
+		<item-type>String</item-type>
+		<label>Dryer State</label>
+		<description>Dryer Operation State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washerdryer-process-state">
+		<item-type>String</item-type>
+		<label>Process State</label>
+		<description>Process State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washerdryer-course">
+		<item-type>String</item-type>
+		<label>Course</label>
+		<description>Course</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dryer-dry-level">
+		<item-type>String</item-type>
+		<label>Dry Level</label>
+		<description>Dryer Dry</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dryer-child-lock">
+		<item-type>String</item-type>
+		<label>Child Lock</label>
+		<description>Dryer Child Lock</description>
+		<state readOnly="true">
+			<options>
+				<option value="CHILDLOCK_OFF">Unlocked</option>
+				<option value="CHILDLOCK_ON">Locked</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dryer-remain-time">
+		<item-type>DateTime</item-type>
+		<label>Remaining Time</label>
+		<description>Dryer Remaining Time</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="dryer-error">
+		<item-type>String</item-type>
+		<label>Error</label>
+		<description>Dryer Error</description>
+		<state readOnly="true">
+			<options>
+				<option value="ERROR_TE4">ERROR_TE4</option>
+				<option value="ERROR_CE1">ERROR_CE1</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Fridge -->
+	<channel-type id="fridge-some-door-open">
+		<item-type>Contact</item-type>
+		<label>Door Open</label>
+		<description>Door status (at least one if combined fridge/freezer)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="CLOSE">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="fridge-temp-unit">
+		<item-type>String</item-type>
+		<label>Temp. Unit</label>
+		<description>Temperature Unit</description>
+		<state readOnly="true">
+			<options>
+				<option value="CELSIUS">C</option>
+				<option value="FAHRENHEIT">F</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fridge-freezer-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Freezer Setpoint Temperature</label>
+		<description>Freezer setpoint temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="fridge-fridge-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Fridge Setpoint Temperature</label>
+		<description>Fridge setpoint temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

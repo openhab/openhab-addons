@@ -1,0 +1,55 @@
+{
+  "account":{
+    "loginSessionID":"%s",
+    "userID":"%s",
+    "userIDType":"%s",
+    "dateOfBirth":"05-05-1978",
+    "country":"BR",
+    "countryName":"Brazil",
+    "blacklist":"N",
+    "age":"43",
+    "isSubscribe":"N",
+    "changePw":"N",
+    "toEmailId":"N",
+    "periodPW":"N",
+    "lgAccount":"Y",
+    "isService":"Y",
+    "userNickName":"faker",
+    "termsList":[
+
+    ],
+    "userIDList":[
+      {
+        "lgeIDList":[
+          {
+            "lgeIDType":"LGE",
+            "userID":"%s"
+          }
+        ]
+      }
+    ],
+    "serviceList":[
+      {
+        "svcCode":"SVC202",
+        "svcName":"LG ThinQ",
+        "isService":"Y",
+        "joinDate":"30-04-2020"
+      },
+      {
+        "svcCode":"SVC710",
+        "svcName":"EMP OAuth",
+        "isService":"Y",
+        "joinDate":"30-04-2020"
+      }
+    ],
+    "displayUserID":"faker",
+    "notiList":{
+      "totCount":"0",
+      "list":[
+
+      ]
+    },
+    "authUser":"N",
+    "dummyIdFlag":"N"
+  }
+}
