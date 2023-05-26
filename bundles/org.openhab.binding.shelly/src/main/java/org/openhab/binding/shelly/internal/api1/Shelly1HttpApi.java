@@ -177,7 +177,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        callApi(SHELLY_URL_STATUS_EMETER + "/" + id + "/reset_totals=1", ShellyStatusRelay.class);
+        callApi(SHELLY_URL_STATUS_EMETER + "/" + id + "?reset_totals=true", ShellyStatusRelay.class);
     }
 
     @Override
@@ -245,7 +245,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         } else if (profile.isLight) {
             type = SHELLY_CLASS_LIGHT;
         }
-        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + (int) value;
+        String uri = SHELLY_URL_SETTINGS + "/" + type + "/" + index + "?" + timerName + "=" + value;
         httpRequest(uri);
     }
 
@@ -751,5 +751,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void close() {
+    }
+
+    @Override
+    public void startScan() {
     }
 }

@@ -17,9 +17,15 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,6 +71,10 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequ
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfigResponse;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2WsConfigResponse.Shelly2WsConfigResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse.ShellyScriptListEntry;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
@@ -83,7 +93,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final @Nullable ShellyThingTable thingTable;
 
-    private boolean initialized = false;
+    protected boolean initialized = false;
     private boolean discovery = false;
     private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
     private Shelly2AuthResponse authInfo = new Shelly2AuthResponse();
@@ -139,6 +149,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return initialized;
     }
 
+    @Override
+    public void startScan() {
+        if (config.enableBluGateway) {
+            try {
+                installScript(SHELLY2_BLU_GWSCRIPT);
+            } catch (ShellyApiException e) {
+            }
+        }
+    }
+
+    @SuppressWarnings("null")
     @Override
     public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
@@ -269,6 +290,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (!discovery) {
             getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
+
+            try {
+                logger.debug("{}: BLU Gateway support enabled for this device: {}", thingName, config.enableBluGateway);
+                if (config.enableBluGateway) {
+                    if (getBool(profile.settings.bluetooth)) {
+                        installScript(SHELLY2_BLU_GWSCRIPT);
+                    } else {
+                        logger.debug("{}: Bluetooth needs to be enabled to activate BLU Gateway mode", thingName);
+                    }
+                }
+            } catch (ShellyApiException e) {
+                logger.debug("{}: Device config failed", thingName, e);
+            }
         }
 
         return profile;
@@ -303,6 +337,117 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 getThing().getApi().deviceReboot();
                 getThing().reinitializeThing();
             }
+        }
+    }
+
+    protected void installScript(String script) throws ShellyApiException {
+        String json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_LIST));
+        ShellyScriptListResponse scriptList = gson.fromJson(json, ShellyScriptListResponse.class);
+        Integer ourId = -1;
+        String code = "";
+
+        logger.debug("{}: Install or restart script {} on Shelly Device", thingName, script);
+        boolean running = false, upload = false;
+        if (scriptList != null) {
+            for (ShellyScriptListEntry s : scriptList.scripts) {
+                if (s.name.startsWith(script)) {
+                    ourId = s.id;
+                    running = s.running;
+                    logger.debug("{}: Script {} is already installed, id={}", thingName, script, ourId);
+                }
+            }
+        }
+
+        // get script code from bundle resources
+        String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
+        ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
+        if (cl != null) {
+            try (InputStream inputStream = cl.getResourceAsStream(file)) {
+                if (inputStream != null) {
+                    code = new BufferedReader(new InputStreamReader(inputStream)).lines()
+                            .collect(Collectors.joining("\n"));
+                }
+            } catch (IOException | UncheckedIOException e) {
+                logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
+                        thingName, script, file, e);
+            }
+        }
+
+        boolean restart = false;
+        if (ourId == -1) {
+            // script not installed -> install it
+            upload = true;
+        } else {
+            try {
+                // verify that the same code version is active (avoid unnesesary flash updates)
+                json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_GETCODE).withId(ourId));
+                ShellyScriptResponse rsp = gson.fromJson(json, ShellyScriptResponse.class);
+                if (!rsp.data.trim().equals(code.trim())) {
+                    logger.debug("{}: A script version was found, update to newest one", thingName);
+                    upload = true;
+                } else {
+                    logger.debug("{}: Same script version was found, restart", thingName);
+                    restart = true;
+                }
+            } catch (ShellyApiException e) {
+                logger.debug("{}: Unable to read current script code -> force update (deviced returned: {})", thingName,
+                        e.getMessage());
+                upload = true;
+            }
+        }
+
+        if (restart || (running && upload)) {
+            json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_STOP).withId(ourId));
+            // first stop running script
+            running = false;
+        }
+        if (upload && ourId != -1) {
+            // Delete existing script
+            logger.debug("{}: Delete existing script", thingName);
+            json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_DELETE).withId(ourId));
+        }
+
+        if (upload) {
+            logger.debug("{}: Script will be installed...", thingName);
+
+            // Create new script, get id
+            json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script));
+            ShellyScriptResponse rsp = gson.fromJson(json, ShellyScriptResponse.class);
+            if (rsp != null) {
+                ourId = rsp.id;
+                logger.debug("{}: Script has been created, id={}", thingName, ourId);
+                upload = true;
+            }
+        }
+
+        if (upload) {
+            // Put script code for generated id
+            ShellyScriptPutCodeParams parms = new ShellyScriptPutCodeParams();
+            parms.id = ourId;
+            parms.append = false;
+            int length = code.length(), processed = 0, chunk = 1;
+            do {
+                int nextlen = Math.min(1024, length - processed);
+                parms.code = code.substring(processed, processed + nextlen);
+                logger.debug("{}: Uploading chunk {} of script (total {} chars, {} processed)", thingName, chunk,
+                        length, processed);
+                apiRequest(SHELLYRPC_METHOD_SCRIPT_PUTCODE, parms, String.class);
+                processed += nextlen;
+                chunk++;
+                parms.append = true;
+            } while (processed < length);
+            running = false;
+
+            Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
+            params.config.enable = true;
+            apiRequest(SHELLYRPC_METHOD_SCRIPT_SETCONFIG, params, String.class);
+        }
+
+        if (!running) {
+            // Script was created or is there and stopped -> start it
+            json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_START).withId(ourId));
+            logger.debug("{}: Script {} was {} successful", thingName, script,
+                    restart ? "restarted" : "installed and started");
         }
     }
 
@@ -866,6 +1011,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         rpcSocket.sendMessage(gson.toJson(request)); // submit, result wull be async
     }
 
+    @SuppressWarnings("null")
     public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
@@ -905,8 +1051,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 throw e;
             }
         }
-        json = gson.toJson(gson.fromJson(json, Shelly2RpcBaseMessage.class).result);
-        return fromJson(gson, json, classOfT);
+        Shelly2RpcBaseMessage response = gson.fromJson(json, Shelly2RpcBaseMessage.class);
+        if (response == null) {
+            throw new IllegalArgumentException("Unable to cover API result to obhect");
+        }
+        if (response.result != null) {
+            // return sub element result as requested class type
+            json = gson.toJson(gson.fromJson(json, Shelly2RpcBaseMessage.class).result);
+            return fromJson(gson, json, classOfT);
+        } else {
+            // return direct format
+            return gson.fromJson(json, classOfT);
+        }
     }
 
     public <T> T apiRequest(Shelly2RpcRequest request, Class<T> classOfT) throws ShellyApiException {

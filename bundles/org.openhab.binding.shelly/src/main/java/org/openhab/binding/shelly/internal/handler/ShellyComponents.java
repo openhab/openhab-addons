@@ -54,6 +54,9 @@ public class ShellyComponents {
     public static boolean updateDeviceStatus(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
 
+        if (!profile.gateway.isEmpty()) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
+        }
         if (!thingHandler.areChannelsCreated()) {
             thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createDeviceChannels(thingHandler.getThing(),
                     thingHandler.getProfile(), status));
@@ -177,6 +180,8 @@ public class ShellyComponents {
                     break;
             }
             if (pos != -1) {
+                thingHandler.logger.debug("{}: Update roller position to {}/{}, state={}", thingHandler.thingName, pos,
+                        SHELLY_MAX_ROLLER_POS - pos, state);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
                         toQuantityType((double) (SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
@@ -238,7 +243,7 @@ public class ShellyComponents {
 
                             // convert Watt/Min to kw/h
                             if (meter.total != null) {
-                                double kwh = getDouble(meter.total) / 60 / 1000;
+                                double kwh = getDouble(meter.total) / 1000;
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
                                         toQuantityType(kwh, DIGITS_KWH, Units.KILOWATT_HOUR));
                                 accumulatedTotal += kwh;
@@ -263,25 +268,27 @@ public class ShellyComponents {
                                         .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
                             }
 
-                            // convert Watt/Hour tok w/h
+                            // convert Watt/Hour to kw/h
+                            double total = getDouble(emeter.total) / 1000;
+                            double totalReturned = getDouble(emeter.totalReturned) / 1000;
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                                     toQuantityType(getDouble(emeter.power), DIGITS_WATT, Units.WATT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
-                                    toQuantityType(getDouble(emeter.total) / 1000, DIGITS_KWH, Units.KILOWATT_HOUR));
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_TOTALRET, toQuantityType(
-                                    getDouble(emeter.totalReturned) / 1000, DIGITS_KWH, Units.KILOWATT_HOUR));
+                                    toQuantityType(total, DIGITS_KWH, Units.KILOWATT_HOUR));
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_TOTALRET,
+                                    toQuantityType(totalReturned, DIGITS_KWH, Units.KILOWATT_HOUR));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
                                     toQuantityType(getDouble(emeter.reactive), DIGITS_WATT, Units.WATT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, Units.VOLT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
-                                    toQuantityType(getDouble(emeter.current), DIGITS_AMPERE, Units.AMPERE));
+                                    toQuantityType(getDouble(emeter.current), DIGITS_KWH, Units.AMPERE));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                                     toQuantityType(computePF(emeter), Units.PERCENT));
 
                             accumulatedWatts += getDouble(emeter.power);
-                            accumulatedTotal += getDouble(emeter.total) / 1000;
-                            accumulatedReturned += getDouble(emeter.totalReturned) / 1000;
+                            accumulatedTotal += total;
+                            accumulatedReturned += totalReturned;
                             if (updated) {
                                 thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
                             }
@@ -336,12 +343,14 @@ public class ShellyComponents {
             }
 
             if (!profile.isRoller && !profile.isRGBW2) {
-                thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS,
-                        toQuantityType(accumulatedWatts, DIGITS_WATT, Units.WATT));
+                thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS, toQuantityType(
+                        status.totalPower != null ? status.totalPower : accumulatedWatts, DIGITS_WATT, Units.WATT));
                 thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL,
-                        toQuantityType(accumulatedTotal, DIGITS_KWH, Units.KILOWATT_HOUR));
+                        toQuantityType(status.totalCurrent != null ? status.totalCurrent / 1000 : accumulatedTotal,
+                                DIGITS_KWH, Units.KILOWATT_HOUR));
                 thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED,
-                        toQuantityType(accumulatedReturned, DIGITS_KWH, Units.KILOWATT_HOUR));
+                        toQuantityType(status.totalReturned != null ? status.totalReturned / 1000 : accumulatedReturned,
+                                DIGITS_KWH, Units.KILOWATT_HOUR));
             }
         }
 

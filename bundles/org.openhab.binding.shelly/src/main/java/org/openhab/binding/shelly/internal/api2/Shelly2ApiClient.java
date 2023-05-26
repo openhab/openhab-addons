@@ -289,6 +289,16 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return false;
         }
 
+        if (em.totalCurrent != null) {
+            status.totalCurrent = em.totalCurrent;
+        }
+        if (em.totalActPower != null) {
+            status.totalPower = em.totalActPower;
+        }
+        if (em.totalAprtPower != null) {
+            status.totalReturned = em.totalAprtPower;
+        }
+
         ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(0);
         sm.isValid = emeter.isValid = true;
@@ -316,8 +326,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (em.bActPower != null) {
             sm.power = emeter.power = em.bActPower;
         }
-
-        if (em.aAprtPower != null) {
+        if (em.bAprtPower != null) {
             emeter.totalReturned = em.bAprtPower;
         }
         if (em.bVoltage != null) {
@@ -684,7 +693,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         throw new ShellyApiException("Thing/profile not initialized!");
     }
 
-    ShellyDeviceProfile getProfile() throws ShellyApiException {
+    protected ShellyDeviceProfile getProfile() throws ShellyApiException {
         if (thing != null) {
             return thing.getProfile();
         }
