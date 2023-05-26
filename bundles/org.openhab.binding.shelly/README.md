@@ -76,33 +76,41 @@ The binding provides the same feature set across all devices as good as possible
 
 ### Generation 2 Plus series
 
-| thing-type           | Model                                                    | Vendor ID                                     |
-| -------------------- | -------------------------------------------------------- | --------------------------------------------- |
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU                                 |
-| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU                                 |
-| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU                  |
-| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU                  |
-| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                                  |
-| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                  |
-| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                  |
-| shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US                                  |
-| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                                    |
-| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                    |
-| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                                    |
-| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                    |
+| thing-type           | Model                                                    | Vendor ID     |
+| -------------------- | -------------------------------------------------------- | ------------- |
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU |
+| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU |
+| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU |
+| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU |
+| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU  |
+| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT  |
+| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK  |
+| shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US  |
+| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X    |
+| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X    |
+| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A    |
+| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z    |
 
 ### Generation 2 Pro series
 
-| thing-type          | Model                                                    | Vendor ID                                      |
-| ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
+| thing-type          | Model                                                    | Vendor ID      |
+| ------------------- | -------------------------------------------------------- | -------------- |
 | shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
 | shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
 | shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
-| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
-| shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
-| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
+| shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU |
+| shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU |
+| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU |
+
+### Shelly BLU
+
+| thing-type        | Model                                                  | Vendor ID |
+| ----------------- | ------------------------------------------------------ | --------- |
+| shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
+| shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
+
 
 ## Binding Configuration
 
@@ -159,6 +167,29 @@ It's recommended to switch the Shelly devices to CoAP peer mode if you have only
 This allows routing the CoIoT/CoAP messages across multiple IP subnets without special network setup required.
 You could use Shelly Manager (doc/ShellyManager.md) to easily do the setup (configuring the openHAB host as CoAP peer address).
 Keep Multicast mode if you have multiple hosts, which should receive the CoAP updates.
+
+### Discovery of BLU Devices
+
+The BLU devices use Bluetooth Low Energy (BLE).
+The binding can't communicate directly with the device, but the Plus/Pro series with firmware 0.14.1 or newer could be used as a gateway.
+The binding automatically installs a script on the Shelly Device (oh-blu-scanner), which forwards the BLU events to the binding using the WebSocket channel.
+
+Follow these steps to add the Shelly BLU Device to openHAB
+- Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (the Bluetooth Gateway mode is not required)
+- Add this thing to openHAB, make sure thing gets online
+- Enable "BLU Gateway Support" in the thing configuration of the Shelly device acting as gateway.
+- Now press the button on your BLU device, this wakes up the device and the script forwards this event to the binding
+- As a result the corresponding thing should show up in the Inbox
+- Add the thing (at this point no channels are created), the new thing will show status CONFIG_PENDING
+- Click the device button again, the binding gets another event and creates the channels and thing changes status to ONLINE
+- Finally link the channels to the equipment in the model
+
+Note: During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
+
+Every time an event is received sensors#lastUpdate and channels are updated with the reported values.
+device#wifiSignal indicates the Bluetooth signal strength and gets updated when the device sends an event.
+
+The binding supports multiple Shelly Plus/Pro as gateway devices unless they are added as thing and are ONLINE.
 
 ### Password Protected Devices
 
@@ -251,6 +282,7 @@ You could also create a rule to catch those status changes or device alarms (see
 | eventsRoller       | true: register event "trigger" when the roller updates status | no        | true for roller devices                            |
 | favoriteUP         | 0-4: Favorite id for UP (see Roller Favorites)                | no        | 0 = no favorite id                                 |
 | favoriteDOWN       | 0-4: Favorite id for DOWN (see Roller Favorites)              | no        | 0 = no favorite id                                 |
+| enableBluGateway   | true: Active BLU gateway support (install script)             | no        | false                                              ]
 
 ### General Notes
 
@@ -380,7 +412,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | TEMP_OVER  | Above "temperature over" threshold                                                               |
 | VIBRATION  | A vibration/tamper was detected (DW2 only)                                                       |
 
-Refer to section [Full Example](#full-example) for examples how to catch alarm triggers in openHAB rules
+Refer to section [Full Example](#full-example) for examples how to catch alarm triggers in openHAB rules.
 
 ## Channels
 
@@ -1120,7 +1152,6 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 
 ### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug)
 
-
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
 | relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
@@ -1134,6 +1165,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
 
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
@@ -1340,6 +1372,38 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
+
+## Shelly BLU Devices
+
+### Shelly BLU Button 1 (thing-type: shellyblubutton)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| status  | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                        |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+
+
+### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | state         | Contact  | yes       | OPEN: Contact is open, CLOSED: Contact is closed                                    |
+|         | lux           | Number   | yes       | Brightness in Lux                                                                   |
+|         | tilt          | Number   | yes       | Tilt in ° (angle), -1 indicates that the sensor is not calibrated                   |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed)                             |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
 ## Full Example
 
@@ -1582,4 +1646,3 @@ sitemap demo label="Home"
             Number   item=Shelly_Power
         }
 }
-```
