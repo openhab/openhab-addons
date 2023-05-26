@@ -63,10 +63,10 @@ public class RomyRobotHandlerFactory extends BaseThingHandlerFactory {
 
         if (ROMYROBOT_DEVICE.equals(thingTypeUID)) {
             try {
-				return new RomyRobotHandler(thing, apiFactory, stateDescriptionProvider);
-			} catch (Exception e) {
-				logger.error("could not create handler {}", e);
-			}
+                return new RomyRobotHandler(thing, apiFactory, stateDescriptionProvider);
+            } catch (Exception e) {
+                logger.error("could not create handler {}", e);
+            }
         }
 
         return null;
