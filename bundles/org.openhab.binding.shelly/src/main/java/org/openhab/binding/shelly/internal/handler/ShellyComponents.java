@@ -243,7 +243,7 @@ public class ShellyComponents {
 
                             // convert Watt/Min to kw/h
                             if (meter.total != null) {
-                                double kwh = getDouble(meter.total) / 1000;
+                                double kwh = getDouble(meter.total) / 1000 / 60;
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
                                         toQuantityType(kwh, DIGITS_KWH, Units.KILOWATT_HOUR));
                                 accumulatedTotal += kwh;
@@ -269,7 +269,7 @@ public class ShellyComponents {
                             }
 
                             // convert Watt/Hour to kw/h
-                            double total = getDouble(emeter.total) / 1000;
+                            double total = getDouble(emeter.total) / 1000 / 60;
                             double totalReturned = getDouble(emeter.totalReturned) / 1000;
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                                     toQuantityType(getDouble(emeter.power), DIGITS_WATT, Units.WATT));
@@ -334,7 +334,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                         toQuantityType(getDouble(currentWatts), DIGITS_WATT, Units.WATT));
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
-                        toQuantityType(getDouble(totalWatts), DIGITS_KWH, Units.KILOWATT_HOUR));
+                        toQuantityType(totalWatts, DIGITS_KWH, Units.KILOWATT_HOUR));
 
                 if (updated && timestamp > 0) {
                     thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
