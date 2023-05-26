@@ -99,8 +99,8 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
         if (maps.isArray()) {
             availableMaps.clear();
             for (final JsonNode field : maps) {
-                String key = field.get("map_meta_data").textValue();
-                String value = field.get("map_id").asInt() + "";
+                String value = field.get("map_meta_data").textValue();
+                String key = field.get("map_id").asInt() + "";
                 String permanentFlag = field.get("permanent_flag").textValue();
                 if ("true".equalsIgnoreCase(permanentFlag)) {
                     availableMaps.put(key, value);
