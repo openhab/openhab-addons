@@ -27,6 +27,8 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link RomyRobotHandlerFactory} is responsible for creating things and thing
@@ -41,6 +43,7 @@ public class RomyRobotHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ROMYROBOT_DEVICE);
     private RomyApiFactory apiFactory;
     private RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider;
+    private final Logger logger = LoggerFactory.getLogger(RomyRobotHandlerFactory.class);
 
     @Activate
     public RomyRobotHandlerFactory(@Reference RomyApiFactory apiFactory,
@@ -59,7 +62,11 @@ public class RomyRobotHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (ROMYROBOT_DEVICE.equals(thingTypeUID)) {
-            return new RomyRobotHandler(thing, apiFactory, stateDescriptionProvider);
+            try {
+				return new RomyRobotHandler(thing, apiFactory, stateDescriptionProvider);
+			} catch (Exception e) {
+				logger.error("could not create handler {}", e);
+			}
         }
 
         return null;

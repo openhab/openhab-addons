@@ -36,7 +36,19 @@ public class RomyApiFactory {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
-    public RomyApi getHttpApi(RomyRobotConfiguration config) {
-        return new RomyApiAGON_1_2_4_release_3_14_3068(this.httpClient, config);
+	public RomyApi getHttpApi(RomyRobotConfiguration config) throws Exception {
+		int version = -1;
+		RomyApi lowestSupportedApi = new RomyApi_v6(this.httpClient, config);
+		try {
+            version = lowestSupportedApi.getFirmwareVersion();
+		} catch (Exception exp) {
+			throw new Exception("Problem fetching the firmware version from RomyRobot: " + exp.getMessage());
+		}
+		// will start to make sense once a breaking API Version > 6 is introduced
+		if (version >= 6) {
+        	return lowestSupportedApi;
+		} else {
+			return lowestSupportedApi;
+		}
     }
 }

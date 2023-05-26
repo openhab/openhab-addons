@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
+public class RomyApi_v6 implements RomyApi {
 
     private @NonNull String hostname;
     private @NonNull RomyRobotConfiguration config;
@@ -36,18 +36,24 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
     private int rssi;
     private String strategy;
     private String suctionMode;
-    private String selectedMap;
+	private String selectedMap;
+	
+	// that was the newest version when this code was written
+	private int protocolVersionMajor = 6;
+	private int protocolVersionMinor = 49;
+
     private HashMap<String, String> availableMaps = new HashMap<String, String>();
     private static final String CMD_GET_ROBOT_ID = "get/robot_id";
     private static final String CMD_GET_STATUS = "get/status";
     private static final String CMD_GET_MAPS = "get/maps";
     private static final String CMD_GET_WIFI_STATUS = "get/wifi_status";
     private static final String CMD_GET_POWER_STATUS = "get/power_status";
+    private static final String CMD_GET_PROTOCOL_VERSION = "get/protocol_version";
     private static final @NonNull String UNKNOWN = "UNKNOWN";
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public RomyApiAGON_1_2_4_release_3_14_3068(final @NonNull HttpClient httpClient,
+    public RomyApi_v6(final @NonNull HttpClient httpClient,
             final @NonNull RomyRobotConfiguration config) {
         this.config = config;
         if (config.hostname.startsWith("http://") || config.hostname.startsWith("https://")) {
@@ -90,7 +96,12 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
 
         returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_WIFI_STATUS, null);
         jsonNode = new ObjectMapper().readTree(returnContent);
-        rssi = jsonNode.get("rssi").asInt();
+		rssi = jsonNode.get("rssi").asInt();
+		
+		returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_PROTOCOL_VERSION, null);
+        protocolVersionMajor = new ObjectMapper().readTree(returnContent).get("version_major").intValue();
+        protocolVersionMinor = new ObjectMapper().readTree(returnContent).get("version_minor").intValue();
+
     }
 
     private void parseMaps(String jsonString) throws JsonMappingException, JsonProcessingException {
@@ -303,4 +314,14 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
     public HashMap<String, String> getAvailableMaps() {
         return availableMaps;
     }
+
+	@Override
+	public int getProtocolVersionMajor() {
+		return protocolVersionMajor;
+	}
+
+	@Override
+	public int getProtocolVersionMinor() {
+		return protocolVersionMinor;
+	}
 }
