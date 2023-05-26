@@ -34,11 +34,11 @@
 				<label>Energy per Hour</label>
 				<description>Energy transferred per hour.</description>
 			</channel>
-			<channel id="wiFiRSSI" typeId="type-integer">
+			<channel id="wiFiRSSI" typeId="type-rssi">
 				<label>Wi-Fi RSSI</label>
 				<description>Wi-Fi signal quality.</description>
 			</channel>
-			<channel id="cellRSSI" typeId="type-integer">
+			<channel id="cellRSSI" typeId="type-rssi">
 				<label>Cell RSSI</label>
 				<description>Cell signal quality.</description>
 			</channel>
