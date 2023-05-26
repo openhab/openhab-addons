@@ -40,10 +40,13 @@ public class RomyRobotHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ROMYROBOT_DEVICE);
     private RomyApiFactory apiFactory;
+    private RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider;
 
     @Activate
-    public RomyRobotHandlerFactory(@Reference RomyApiFactory apiFactory) {
+    public RomyRobotHandlerFactory(@Reference RomyApiFactory apiFactory,
+            @Reference RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider) {
         this.apiFactory = apiFactory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -56,7 +59,7 @@ public class RomyRobotHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (ROMYROBOT_DEVICE.equals(thingTypeUID)) {
-            return new RomyRobotHandler(thing, apiFactory);
+            return new RomyRobotHandler(thing, apiFactory, stateDescriptionProvider);
         }
 
         return null;

@@ -13,7 +13,7 @@
 
 package org.openhab.binding.romyrobot.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.util.HashMap;
 
 /**
  * The {@link RomyApi} interface defines the functions which are
@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Bernhard Kreuz - Initial contribution
  */
 
-@NonNullByDefault
 public interface RomyApi {
     /**
      * Sends all the GET requests and stores/cache the responses for use by the API to prevent the need for multiple
@@ -111,5 +110,18 @@ public interface RomyApi {
      * 
      * @return a String listing the available maps
      */
-    String getAvailableMaps();
+    HashMap<String, String> getAvailableMaps();
+
+    /**
+     * 
+     * @return a String listing the available maps
+     */
+    String getAvailableMapsJson();
+
+    /**
+     * 
+     * @param command command to execute
+     * @throws Exception
+     */
+    void executeCommand(String command) throws Exception;
 }

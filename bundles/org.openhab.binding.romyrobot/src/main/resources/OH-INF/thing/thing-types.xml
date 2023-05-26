@@ -20,7 +20,8 @@
 			<channel id="charging" typeId="charging"></channel>
 			<channel id="rssi" typeId="rssi"></channel>
 			<channel id="powerstatus" typeId="powerstatus"></channel>
-			<channel id="availablemaps" typeId="availablemaps"></channel>
+			<channel id="selectedmap" typeId="selectedmap"></channel>
+			<channel id="availablemapsjson" typeId="availablemapsjson"></channel>
 		</channels>
 
 		<config-description>
@@ -39,13 +40,14 @@
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
+				<default>180</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="timeout" type="integer">
 				<label>Timeout</label>
 				<description>Specifies the connection timeout in seconds.</description>
 				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -61,13 +63,14 @@
 		<label>Command</label>
 		<description>Command to execute</description>
 		<state>
-			<options> <!--available: clean_all=clean all, clean_start_or_continue=clean start or continue,clean_spot=clean spot,clean_map=clean
-					map,stop=stop,go_home=go home -->
+			<options>
 				<option value="clean_all">Clean all</option>
 				<option value="clean_start_or_continue">Clean start or continue</option>
 				<option value="clean_spot">Spot</option>
+				<option value="clean_map">Clean map</option>
 				<option value="go_home">Dock</option>
 				<option value="stop">Stop</option>
+				<option value="redo_explore">Redo expore</option>
 			</options>
 		</state>
 	</channel-type>
@@ -76,7 +79,7 @@
 		<label>Pump Volume</label>
 		<description>Intensitiy of water usage</description>
 		<state>
-			<options> <!--available: none=Pump: Default,low=Pump: Low,medium=Pump: Medium, high=Pump: High -->
+			<options>
 				<option value="none">Pump: Default</option>
 				<option value="low">Pump: Low</option>
 				<option value="medium">Pump: Medium</option>
@@ -141,7 +144,12 @@
 		<description>Robots current power status</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="availablemaps">
+	<channel-type id="selectedmap">
+		<item-type>String</item-type>
+		<label>Seleted Map</label>
+		<description>selected map if multiple maps are stored, used on commands</description>
+	</channel-type>
+	<channel-type id="availablemapsjson" advanced="true">
 		<item-type>String</item-type>
 		<label>Available Maps</label>
 		<description>Information about availabler maps. Useful for composing commands</description>

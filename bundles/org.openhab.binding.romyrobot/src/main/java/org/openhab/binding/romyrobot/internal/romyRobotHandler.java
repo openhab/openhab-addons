@@ -15,13 +15,14 @@ package org.openhab.binding.romyrobot.internal;
 import static org.openhab.binding.romyrobot.internal.RomyRobotBindingConstants.*;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotNull;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.romyrobot.internal.api.RomyApi;
 import org.openhab.binding.romyrobot.internal.api.RomyApiFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -34,6 +35,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,34 +45,47 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernhard Kreuz - Initial contribution
  */
-@NonNullByDefault
+
 public class RomyRobotHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RomyRobotHandler.class);
 
-    private @NotNull RomyRobotConfiguration config;
-    private @Nullable ScheduledFuture<?> pollingJob;
-    private @Nullable RomyApi romyDevice;
-    private @NotNull RomyApiFactory apiFactory;
+    private RomyRobotConfiguration config;
+    private ScheduledFuture<?> pollingJob;
+    private RomyApi romyDevice;
+    private RomyApiFactory apiFactory;
+    private RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider;
 
-    public RomyRobotHandler(Thing thing, @NotNull RomyApiFactory apiFactory) {
+    public RomyRobotHandler(Thing thing, @NotNull RomyApiFactory apiFactory,
+            RomyRobotStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(thing);
         this.apiFactory = apiFactory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
         config = getConfigAs(RomyRobotConfiguration.class);
+        romyDevice = setupAPI(apiFactory);
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_FW_VERSION.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
+    public void handleCommand(@NotNull ChannelUID channelUID, @NotNull Command command) {
+        if (command instanceof RefreshType) {
+            try {
+                getRomyApi().refresh();
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "RomyRobot refresh threw exception.");
             }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        }
+        if (CHANNEL_STRATEGY.equals(channelUID.getId())) {
+            updateState(CHANNEL_STRATEGY, new StringType(command.toString()));
+            getRomyApi().setStrategy(command.toString());
+        } else if (CHANNEL_SUCTION_MODE.equals(channelUID.getId())) {
+            updateState(CHANNEL_SUCTION_MODE, new StringType(command.toString()));
+            getRomyApi().setSuctionMode(command.toString());
+        } else if (CHANNEL_COMMAND.equals(channelUID.getId())) {
+            updateState(CHANNEL_COMMAND, new StringType(command.toString()));
+            try {
+                getRomyApi().executeCommand(command.toString());
+            } catch (Exception e) {
+                logger.error("error executing command against RomyRobot", e);
+            }
         }
     }
 
@@ -81,32 +96,21 @@ public class RomyRobotHandler extends BaseThingHandler {
         pollingJob = scheduler.scheduleWithFixedDelay(this::refreshVacuum, 2, config.refreshInterval, TimeUnit.SECONDS);
     }
 
-	public void refreshVacuum() {
-		RomyApiFactory apiFactory = getApiFactory();
-        RomyApi localApi = romyDevice;
-        if (localApi == null) {
-            setupAPI(apiFactory);
-            localApi = romyDevice;
-        }
-        if (localApi != null) {
-            try {
-                localApi.refresh();
-                updateStatus(ThingStatus.ONLINE);
-                this.updateChannels(localApi);
+    public void refreshVacuum() {
 
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "Could not sync status with RomyRobot, check your robot is unlocked " + e.getMessage());
-            }
+        try {
+            getRomyApi().refresh();
+            updateStatus(ThingStatus.ONLINE);
+            this.updateChannels(getRomyApi());
+
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Could not sync status with RomyRobot, check your robot is unlocked " + e.getMessage());
         }
     }
 
-	private RomyApiFactory getApiFactory() {
-		return apiFactory;
-	}
-
-	private void updateChannels(RomyApi device) {
-        if (romyDevice != null) {
+    private void updateChannels(RomyApi device) {
+        if (device != null) {
             updateState(CHANNEL_FW_VERSION, StringType.valueOf(device.getFirmwareVersion()));
             updateState(CHANNEL_MODE, StringType.valueOf(device.getModeString()));
             updateState(CHANNEL_ACTIVE_PUMP_VOLUME, StringType.valueOf(device.getActivePumpVolume()));
@@ -114,22 +118,43 @@ public class RomyRobotHandler extends BaseThingHandler {
             updateState(CHANNEL_CHARGING, StringType.valueOf(device.getChargingStatus()));
             updateState(CHANNEL_POWER_STATUS, StringType.valueOf(device.getPowerStatus()));
             updateState(CHANNEL_RSSI, new DecimalType(device.getRssi()));
-            updateState(CHANNEL_STRATEGY, StringType.valueOf(device.getStrategy()));
-            updateState(CHANNEL_SUCTION_MODE, StringType.valueOf(device.getSuctionMode()));
-            updateState(CHANNEL_AVAILABLE_MAPS, StringType.valueOf(device.getAvailableMaps()));
+            updateState(CHANNEL_AVAILABLE_MAPS_JSON, StringType.valueOf(device.getAvailableMapsJson()));
+            updateMapsList(device.getAvailableMaps());
         }
     }
 
-    private void setupAPI(RomyApiFactory apiFactory) {
+    public void updateMapsList(HashMap<String, String> maps) {
+        logger.trace("RomyRobot updating maps list with {} options", maps.size());
+        List<StateOption> options = new ArrayList<>();
+        for (String key : maps.keySet()) {
+            options.add(new StateOption(key, maps.get(key)));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SELECTED_MAP), options);
+    }
+
+    private RomyApi setupAPI(RomyApiFactory apiFactory) {
         logger.debug("Initializing RomyRobot with config (Hostname: {}, Port: {}, Refresh: {}, Timeout {}).",
                 config.hostname, config.port, config.refreshInterval, config.timeout);
-        try {
-            romyDevice = apiFactory.getHttpApi(config);
+        return apiFactory.getHttpApi(config);
+    }
 
-        } catch (Exception exp) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not create an API connection to RomyRobot. Error received: " + exp);
-            return;
+    private RomyApi getRomyApi() {
+        if (romyDevice == null) {
+            romyDevice = apiFactory.getHttpApi(config);
+        }
+        return romyDevice;
+    }
+
+    @Override
+    public void dispose() {
+        RomyApi localApi = romyDevice;
+        if (localApi != null) {
+            romyDevice = null;
+        }
+        ScheduledFuture<?> localFuture = pollingJob;
+        if (localFuture != null) {
+            localFuture.cancel(true);
+            pollingJob = null;
         }
     }
 }

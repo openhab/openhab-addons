@@ -1,5 +1,8 @@
 package org.openhab.binding.romyrobot.internal.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -10,7 +13,11 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.romyrobot.internal.RomyRobotConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,16 +32,20 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
     private String charging;
     private int batteryLevel;
     private String powerStatus;
-    private String maps;
+    private String mapsJson;
     private int rssi;
     private String strategy;
     private String suctionMode;
+    private String selectedMap;
+    private HashMap<String, String> availableMaps = new HashMap<String, String>();
     private static final String CMD_GET_ROBOT_ID = "get/robot_id";
     private static final String CMD_GET_STATUS = "get/status";
     private static final String CMD_GET_MAPS = "get/maps";
     private static final String CMD_GET_WIFI_STATUS = "get/wifi_status";
     private static final String CMD_GET_POWER_STATUS = "get/power_status";
     private static final @NonNull String UNKNOWN = "UNKNOWN";
+
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public RomyApiAGON_1_2_4_release_3_14_3068(final @NonNull HttpClient httpClient,
             final @NonNull RomyRobotConfiguration config) {
@@ -65,7 +76,8 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
         if (firmwareVersion == null) {
             throw new Exception("There was a problem in the HTTP communication: firmware was empty.");
         }
-        maps = http.sendHttpGet(getBaseUrl() + CMD_GET_MAPS, null);
+        mapsJson = http.sendHttpGet(getBaseUrl() + CMD_GET_MAPS, null);
+        parseMaps(mapsJson);
         returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_POWER_STATUS, null);
         powerStatus = new ObjectMapper().readTree(returnContent).get("power_status").asText();
 
@@ -79,6 +91,25 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
         returnContent = http.sendHttpGet(getBaseUrl() + CMD_GET_WIFI_STATUS, null);
         jsonNode = new ObjectMapper().readTree(returnContent);
         rssi = jsonNode.get("rssi").asInt();
+    }
+
+    private void parseMaps(String jsonString) throws JsonMappingException, JsonProcessingException {
+        JsonNode node = new ObjectMapper().readTree(jsonString);
+        JsonNode maps = node.get("maps");
+        if (maps.isArray()) {
+            availableMaps.clear();
+            for (final JsonNode field : maps) {
+                String key = field.get("map_meta_data").textValue();
+                String value = field.get("map_id").asInt() + "";
+                String permanentFlag = field.get("permanent_flag").textValue();
+                if ("true".equalsIgnoreCase(permanentFlag)) {
+                    availableMaps.put(key, value);
+                }
+            }
+        }
+        if (availableMaps.size() == 1 || selectedMap == null) {
+            selectedMap = availableMaps.values().iterator().next();
+        }
     }
 
     @Override
@@ -97,9 +128,8 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
     }
 
     @Override
-    public void setActivePumpVolume(@NonNull String volume) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setActivePumpVolume'");
+    public void setActivePumpVolume(String volume) {
+        this.activePumpVolume = volume;
     }
 
     @Override
@@ -108,7 +138,7 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
     }
 
     @Override
-    public void setStrategy(@NonNull String strategy) {
+    public void setStrategy(String strategy) {
         this.strategy = strategy;
     }
 
@@ -118,7 +148,7 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
     }
 
     @Override
-    public void setSuctionMode(@NonNull String suctionMode) {
+    public void setSuctionMode(String suctionMode) {
         this.suctionMode = suctionMode;
     }
 
@@ -143,8 +173,8 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
     }
 
     @Override
-    public String getAvailableMaps() {
-        return maps;
+    public String getAvailableMapsJson() {
+        return mapsJson;
     }
 
     /**
@@ -236,5 +266,41 @@ public class RomyApiAGON_1_2_4_release_3_14_3068 implements RomyApi {
             }
             return response.getContentAsString();
         }
+    }
+
+    @Override
+    public void executeCommand(String command) throws Exception {
+        if ("REFRESH".equalsIgnoreCase(command)) {
+            return;
+        }
+        // String query = "/$" + command;
+        String query = null;
+        List<String> params = new ArrayList<String>();
+        if ("clean_start_or_continue".equalsIgnoreCase(command) || "clean_all".equalsIgnoreCase(command)
+                || "clean_spot".equalsIgnoreCase(command) || "clean_map".equalsIgnoreCase(command)) {
+            if (suctionMode != null && !"REFRESH".equals(suctionMode)) {
+                params.add("cleaning_parameter_set=" + suctionMode);
+            }
+            if (strategy != null && !"REFRESH".equals(strategy)) {
+                params.add("cleaning_strategy_mode=" + strategy);
+
+            }
+            if (activePumpVolume != null) {
+                params.add("pump_volume=" + activePumpVolume);
+            }
+            if (params.size() > 0) {
+                query = String.join("&", params);
+            }
+        } else if ("redo_explore".equalsIgnoreCase(command) || "clean_map".equalsIgnoreCase(command)) {
+            params.add("map_id" + selectedMap);
+        }
+        String url = getBaseUrl() + "set/" + command;
+        logger.info("executing RomyRobot command: {} at url {}", query, url);
+        http.sendHttpGet(url, query);
+    }
+
+    @Override
+    public HashMap<String, String> getAvailableMaps() {
+        return availableMaps;
     }
 }

@@ -41,5 +41,6 @@ public class RomyRobotBindingConstants {
     public static final String CHANNEL_CHARGING = "charging";
     public static final String CHANNEL_RSSI = "rssi";
     public static final String CHANNEL_POWER_STATUS = "powerstatus";
-    public static final String CHANNEL_AVAILABLE_MAPS = "availablemaps";
+    public static final String CHANNEL_SELECTED_MAP = "seletedmap";
+    public static final String CHANNEL_AVAILABLE_MAPS_JSON = "availablemapsjson";
 }
