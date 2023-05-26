@@ -147,18 +147,18 @@ public interface RomyApi {
      */
     String getAvailableMapsJson();
 
-	    /**
+    /**
      * 
      * @return a String listing the available maps
      */
-	int getProtocolVersionMajor();
-	
-	    /**
+    int getProtocolVersionMajor();
+
+    /**
      * 
      * @return a String listing the available maps
      */
-	int getProtocolVersionMinor();
-	
+    int getProtocolVersionMinor();
+
     /**
      * 
      * @return a String listing the available maps
