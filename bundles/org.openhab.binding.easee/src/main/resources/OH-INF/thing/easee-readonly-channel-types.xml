@@ -6,6 +6,7 @@
 	<channel-type id="type-rssi">
 		<item-type>Number:Power</item-type>
 		<label>Received Signal Strength Indicator</label>
+		<category>QualityOfService</category>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
