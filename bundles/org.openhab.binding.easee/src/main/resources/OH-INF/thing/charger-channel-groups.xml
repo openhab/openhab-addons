@@ -96,39 +96,39 @@
 			</channel>
 			<channel id="inVoltageT1T3" typeId="type-volt">
 				<label>Input Voltage T1T3</label>
-				<description>Input Voltage between phase T1 and T3</description>
+				<description>Input voltage between phase T1 and T3</description>
 			</channel>
 			<channel id="inVoltageT1T4" typeId="type-volt">
 				<label>Input Voltage T1T4</label>
-				<description>Input Voltage between phase T1 and T4</description>
+				<description>Input voltage between phase T1 and T4</description>
 			</channel>
 			<channel id="inVoltageT1T5" typeId="type-volt">
 				<label>Input Voltage T1T5</label>
-				<description>Input Voltage between phase T1 and T5</description>
+				<description>Input voltage between phase T1 and T5</description>
 			</channel>
 			<channel id="inVoltageT2T3" typeId="type-volt">
 				<label>Input Voltage T2T3</label>
-				<description>Input Voltage between phase T2 and T3</description>
+				<description>Input voltage between phase T2 and T3</description>
 			</channel>
 			<channel id="inVoltageT2T4" typeId="type-volt">
 				<label>Input Voltage T2T4</label>
-				<description>Input Voltage between phase T2 and T4</description>
+				<description>Input voltage between phase T2 and T4</description>
 			</channel>
 			<channel id="inVoltageT2T5" typeId="type-volt">
 				<label>Input Voltage T2T5</label>
-				<description>Input Voltage between phase T2 and T5</description>
+				<description>Input voltage between phase T2 and T5</description>
 			</channel>
 			<channel id="inVoltageT3T4" typeId="type-volt">
 				<label>Input Voltage T3T4</label>
-				<description>Input Voltage between phase T3 and T4</description>
+				<description>Input voltage between phase T3 and T4</description>
 			</channel>
 			<channel id="inVoltageT3T5" typeId="type-volt">
 				<label>Input Voltage T3T5</label>
-				<description>Input Voltage between phase T3 and T5</description>
+				<description>Input voltage between phase T3 and T5</description>
 			</channel>
 			<channel id="inVoltageT4T5" typeId="type-volt">
 				<label>Input Voltage T4T5</label>
-				<description>Input Voltage between phase T4 and T5</description>
+				<description>Input voltage between phase T4 and T5</description>
 			</channel>
 			<channel id="ledMode" typeId="type-integer">
 				<label>Led Mode</label>
