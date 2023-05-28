@@ -35,6 +35,7 @@ import org.openhab.core.library.unit.Units;
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Cosem subclasses made into factory classes and introduced quantity type
+ * @author Lennert Coopman - Added capacity tariff channels for Belgium: actual and current month
  */
 @NonNullByDefault
 public enum CosemObjectType {
@@ -69,6 +70,8 @@ public enum CosemObjectType {
     EMETER_TARIFF_INDICATOR(new OBISIdentifier(0, 96, 14, 0), CosemString.INSTANCE),
     EMETER_ACTIVE_IMPORT_POWER(new OBISIdentifier(1, 15, 7, 0), CosemQuantity.WATT),
     EMETER_ACTUAL_DELIVERY(new OBISIdentifier(1, 1, 7, 0), CosemQuantity.KILO_WATT),
+    EMETER_ACTUAL_DEMAND(new OBISIdentifier(1, 1, 4, 0), CosemQuantity.KILO_WATT),
+    EMETER_MAXIMUM_DEMAND_CURRENT_MONTH(new OBISIdentifier(1, 1, 6, 0), CosemDate.INSTANCE, CosemQuantity.KILO_WATT),
     EMETER_ACTUAL_PRODUCTION(new OBISIdentifier(1, 2, 7, 0), CosemQuantity.KILO_WATT),
     EMETER_TRESHOLD_A_V2_1(new OBISIdentifier(1, 17, 0, 0), CosemQuantity.AMPERE),
     EMETER_TRESHOLD_A(new OBISIdentifier(0, 17, 0, 0, true), CosemQuantity.AMPERE),
