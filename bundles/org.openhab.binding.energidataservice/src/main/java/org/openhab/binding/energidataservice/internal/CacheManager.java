@@ -43,7 +43,7 @@ import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 @NonNullByDefault
 public class CacheManager {
 
-    public static final int NUMBER_OF_HISTORIC_HOURS = 12;
+    public static final int NUMBER_OF_HISTORIC_HOURS = 24;
     public static final int SPOT_PRICE_MAX_CACHE_SIZE = 24 + 11 + NUMBER_OF_HISTORIC_HOURS;
     public static final int TARIFF_MAX_CACHE_SIZE = 24 * 2 + NUMBER_OF_HISTORIC_HOURS;
 

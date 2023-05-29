@@ -112,7 +112,7 @@ public class EnergiDataServiceActionsTest {
         mockCommonDatasets(actions);
 
         Map<Instant, BigDecimal> actual = actions.getPrices("NetTariff");
-        assertThat(actual.size(), is(48));
+        assertThat(actual.size(), is(60));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("1.05619"))));
     }
@@ -122,7 +122,7 @@ public class EnergiDataServiceActionsTest {
         mockCommonDatasets(actions);
 
         Map<Instant, BigDecimal> actual = actions.getPrices("SystemTariff");
-        assertThat(actual.size(), is(48));
+        assertThat(actual.size(), is(60));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("0.054"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("0.054"))));
     }
@@ -132,7 +132,7 @@ public class EnergiDataServiceActionsTest {
         mockCommonDatasets(actions);
 
         Map<Instant, BigDecimal> actual = actions.getPrices("ElectricityTax");
-        assertThat(actual.size(), is(48));
+        assertThat(actual.size(), is(60));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("0.008"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("0.008"))));
     }
@@ -142,7 +142,7 @@ public class EnergiDataServiceActionsTest {
         mockCommonDatasets(actions);
 
         Map<Instant, BigDecimal> actual = actions.getPrices("TransmissionNetTariff");
-        assertThat(actual.size(), is(48));
+        assertThat(actual.size(), is(60));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("0.058"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("0.058"))));
     }

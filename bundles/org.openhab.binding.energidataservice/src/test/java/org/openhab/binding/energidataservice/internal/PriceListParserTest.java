@@ -71,7 +71,7 @@ public class PriceListParserTest {
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
-        assertThat(tariffMap.size(), is(48));
+        assertThat(tariffMap.size(), is(60));
         assertThat(tariffMap.get(Instant.parse("2023-01-23T15:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
         assertThat(tariffMap.get(Instant.parse("2023-01-23T16:00:00Z")), is(equalTo(new BigDecimal("1.05619"))));
         assertThat(tariffMap.get(Instant.parse("2023-01-24T15:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
@@ -85,7 +85,7 @@ public class PriceListParserTest {
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
-        assertThat(tariffMap.size(), is(48));
+        assertThat(tariffMap.size(), is(60));
         assertThat(tariffMap.get(Instant.parse("2023-03-31T14:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
         assertThat(tariffMap.get(Instant.parse("2023-03-31T15:00:00Z")), is(equalTo(new BigDecimal("1.05619"))));
         assertThat(tariffMap.get(Instant.parse("2023-04-01T14:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
@@ -99,7 +99,7 @@ public class PriceListParserTest {
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList(), "CD");
 
-        assertThat(tariffMap.size(), is(48));
+        assertThat(tariffMap.size(), is(60));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T22:00:00Z")), is(equalTo(new BigDecimal("0.407717"))));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T23:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
         assertThat(tariffMap.get(Instant.parse("2023-01-01T00:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
@@ -113,7 +113,7 @@ public class PriceListParserTest {
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList(),
                 "CD R");
 
-        assertThat(tariffMap.size(), is(48));
+        assertThat(tariffMap.size(), is(60));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T22:00:00Z")), is(equalTo(new BigDecimal("-0.407717"))));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T23:00:00Z")), is(equalTo(new BigDecimal("0.0"))));
         assertThat(tariffMap.get(Instant.parse("2023-01-01T00:00:00Z")), is(equalTo(new BigDecimal("0.0"))));
@@ -126,7 +126,7 @@ public class PriceListParserTest {
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
-        assertThat(tariffMap.size(), is(45));
+        assertThat(tariffMap.size(), is(57));
         assertThat(tariffMap.get(Instant.parse("2022-11-30T15:00:00Z")), is(equalTo(new BigDecimal("0.387517"))));
         assertThat(tariffMap.get(Instant.parse("2022-11-30T16:00:00Z")), is(equalTo(new BigDecimal("0.973404"))));
     }
@@ -138,7 +138,7 @@ public class PriceListParserTest {
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
-        assertThat(tariffMap.size(), is(48));
+        assertThat(tariffMap.size(), is(60));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T16:00:00Z")), is(equalTo(new BigDecimal("0.000000"))));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T22:00:00Z")), is(equalTo(new BigDecimal("0.000000"))));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T23:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
@@ -168,7 +168,7 @@ public class PriceListParserTest {
                 DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
-        assertThat(tariffMap.size(), is(56));
+        assertThat(tariffMap.size(), is(68));
         assertThat(tariffMap.get(Instant.parse("2023-01-28T04:00:00Z")), is(equalTo(new BigDecimal("0.2581"))));
         assertThat(tariffMap.get(Instant.parse("2023-01-28T05:00:00Z")), is(equalTo(new BigDecimal("0.7742"))));
         assertThat(tariffMap.get(Instant.parse("2023-01-28T16:00:00Z")), is(equalTo(new BigDecimal("2.3227"))));
@@ -187,7 +187,7 @@ public class PriceListParserTest {
                 DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
-        assertThat(tariffMap.size(), is(39));
+        assertThat(tariffMap.size(), is(51));
         assertThat(tariffMap.get(Instant.parse("2023-06-30T21:00:00Z")), is(equalTo(new BigDecimal("0.008"))));
         assertThat(tariffMap.get(Instant.parse("2023-06-30T22:00:00Z")), is(equalTo(new BigDecimal("0.697"))));
     }

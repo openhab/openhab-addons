@@ -40,7 +40,7 @@ public class CacheManagerTest {
     @Test
     void areSpotPricesFullyCachedToday() {
         Instant now = Instant.parse("2023-02-07T08:38:47Z");
-        Instant first = Instant.parse("2023-02-06T20:00:00Z");
+        Instant first = Instant.parse("2023-02-06T08:00:00Z");
         Instant last = Instant.parse("2023-02-07T22:00:00Z");
         Clock clock = Clock.fixed(now, EnergiDataServiceBindingConstants.NORD_POOL_TIMEZONE);
         CacheManager cacheManager = new CacheManager(clock);
@@ -73,7 +73,7 @@ public class CacheManagerTest {
     @Test
     void areSpotPricesFullyCachedTodayOtherTimezoneIsIgnored() {
         Instant now = Instant.parse("2023-02-07T08:38:47Z");
-        Instant first = Instant.parse("2023-02-06T20:00:00Z");
+        Instant first = Instant.parse("2023-02-06T08:00:00Z");
         Instant last = Instant.parse("2023-02-07T22:00:00Z");
         Clock clock = Clock.fixed(now, ZoneId.of("Asia/Tokyo"));
         CacheManager cacheManager = new CacheManager(clock);
@@ -84,7 +84,7 @@ public class CacheManagerTest {
     @Test
     void areSpotPricesFullyCachedTomorrow() {
         Instant now = Instant.parse("2023-02-07T12:00:00Z");
-        Instant first = Instant.parse("2023-02-07T00:00:00Z");
+        Instant first = Instant.parse("2023-02-06T12:00:00Z");
         Instant last = Instant.parse("2023-02-08T22:00:00Z");
         Clock clock = Clock.fixed(now, EnergiDataServiceBindingConstants.NORD_POOL_TIMEZONE);
         CacheManager cacheManager = new CacheManager(clock);
@@ -95,7 +95,7 @@ public class CacheManagerTest {
     @Test
     void areHistoricSpotPricesCached() {
         Instant now = Instant.parse("2023-02-07T08:38:47Z");
-        Instant first = Instant.parse("2023-02-06T20:00:00Z");
+        Instant first = Instant.parse("2023-02-06T08:00:00Z");
         Instant last = Instant.parse("2023-02-07T07:00:00Z");
         Clock clock = Clock.fixed(now, EnergiDataServiceBindingConstants.NORD_POOL_TIMEZONE);
         CacheManager cacheManager = new CacheManager(clock);
