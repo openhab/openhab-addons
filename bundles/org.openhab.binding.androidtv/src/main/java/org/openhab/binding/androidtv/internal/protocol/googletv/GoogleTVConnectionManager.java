@@ -516,8 +516,8 @@ public class GoogleTVConnectionManager {
         synchronized (connectionLock) {
             if (isOnline || config.mode.equals(PIN_MODE)) {
                 try {
-                    logger.debug("{} - Opening GoogleTV SSL connection to {}:{}", handler.getThingID(),
-                            config.ipAddress, config.port);
+                    logger.debug("{} - Opening GoogleTV SSL connection to {}:{} {}", handler.getThingID(),
+                            config.ipAddress, config.port, config.mode);
                     SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
                     sslSocket.startHandshake();
                     this.shimServerChain = ((SSLSocket) sslSocket).getSession().getPeerCertificates();
@@ -527,12 +527,16 @@ public class GoogleTVConnectionManager {
                             new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
                     this.sslSocket = sslSocket;
                     this.sendQueue.clear();
+                    logger.debug("{} - Connection to {}:{} {} successful", handler.getThingID(), config.ipAddress,
+                            config.port, config.mode);
                 } catch (UnknownHostException e) {
                     setStatus(false, "Unknown host");
+                    logger.debug("{} - Unknown host {}", handler.getThingID(), config.ipAddress);
                     return;
                 } catch (IllegalArgumentException e) {
                     // port out of valid range
                     setStatus(false, "Invalid port number");
+                    logger.debug("{} - Invalid port number {}:{}", handler.getThingID(), config.ipAddress, config.port);
                     return;
                 } catch (InterruptedIOException e) {
                     logger.debug("{} - Interrupted while establishing GoogleTV connection", handler.getThingID());
@@ -569,22 +573,36 @@ public class GoogleTVConnectionManager {
 
                 setStatus(false, "Initializing");
 
+                logger.trace("{} - Starting Reader Thread for {}:{}", handler.getThingID(), config.ipAddress,
+                        config.port);
+
                 Thread readerThread = new Thread(this::readerThreadJob, "GoogleTV reader " + handler.getThingID());
                 readerThread.setDaemon(true);
                 readerThread.start();
                 this.readerThread = readerThread;
+
+                logger.trace("{} - Starting Sender Thread for {}:{}", handler.getThingID(), config.ipAddress,
+                        config.port);
 
                 Thread senderThread = new Thread(this::senderThreadJob, "GoogleTV sender " + handler.getThingID());
                 senderThread.setDaemon(true);
                 senderThread.start();
                 this.senderThread = senderThread;
 
+                logger.trace("{} - Checking for PIN MODE for {}:{} {}", handler.getThingID(), config.ipAddress,
+                        config.port, config.mode);
+
                 if (config.mode.equals(PIN_MODE)) {
+                    logger.trace("{} - Sending PIN Login to {}:{}", handler.getThingID(), config.ipAddress,
+                            config.port);
                     // Send app name and device name
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(1))));
                     // Unknown but required
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(2))));
                     // Don't send pin request yet, let user send REQUEST via PINCODE channel
+                } else {
+                    logger.trace("{} - Not PIN Mode {}:{} {}", handler.getThingID(), config.ipAddress, config.port,
+                            config.mode);
                 }
             } else {
                 scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
