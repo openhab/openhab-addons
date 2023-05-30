@@ -349,7 +349,8 @@ public class GoogleTVConnectionManager {
         } else {
             isOnline = true;
         }
-        logger.debug("{} - Device Health - Online: {} - Logged In: {}", handler.getThingID(), isOnline, isLoggedIn);
+        logger.debug("{} - Device Health - Online: {} - Logged In: {} - Mode: {}", handler.getThingID(), isOnline,
+                isLoggedIn, config.mode);
         if (isOnline != this.isOnline) {
             this.isOnline = isOnline;
             if (isOnline) {
@@ -468,8 +469,10 @@ public class GoogleTVConnectionManager {
         androidtvPKI.setKeystoreFileName(config.keystoreFileName);
         androidtvPKI.setAlias("nvidia");
 
-        deviceHealthJob = scheduler.scheduleWithFixedDelay(this::checkHealth, config.heartbeat, config.heartbeat,
-                TimeUnit.SECONDS);
+        if (config.mode.equals(DEFAULT_MODE)) {
+            deviceHealthJob = scheduler.scheduleWithFixedDelay(this::checkHealth, config.heartbeat, config.heartbeat,
+                    TimeUnit.SECONDS);
+        }
 
         try {
             File keystoreFile = new File(config.keystoreFileName);
@@ -511,7 +514,7 @@ public class GoogleTVConnectionManager {
 
     public void connect() {
         synchronized (connectionLock) {
-            if (isOnline) {
+            if (isOnline || config.mode.equals(PIN_MODE)) {
                 try {
                     logger.debug("{} - Opening GoogleTV SSL connection to {}:{}", handler.getThingID(),
                             config.ipAddress, config.port);
