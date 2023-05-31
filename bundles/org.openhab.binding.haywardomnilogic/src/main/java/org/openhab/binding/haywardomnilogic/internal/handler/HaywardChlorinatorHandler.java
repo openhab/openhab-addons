@@ -93,7 +93,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                         data = bridgehandler.evaluateXPath("//Chlorinator/@status", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(i));
 
-                        if ((Integer.parseInt(data.get(i)) & 64) > 0) {
+                        if ((Integer.parseInt(data.get(i)) & 64) > 0 || (Integer.parseInt(data.get(i)) & 128) > 0) {
                             channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1"));
                         } else {
                             channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0"));
