@@ -44,7 +44,6 @@ import org.openhab.binding.surepetcare.internal.dto.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcarePetStatus;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareTag;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareTopology;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +82,7 @@ public class SurePetcareAPIHelper {
     private SurePetcareTopology topologyCache = new SurePetcareTopology();
 
     public SurePetcareAPIHelper() {
-        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+        userAgent = "openHAB/" + org.openhab.core.OpenHAB.getVersion();
     }
 
     /**
