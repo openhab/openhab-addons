@@ -5,7 +5,8 @@
 
 	<type>misc</type>
 	<name>Neeo</name>
-	<description>An additional REST endpoint to retrieve openHAB core metrics.</description>
+	<description>The openHAB NEEO integration allows mapping of openHAB things/item to a NEEO device/capabilities.</description>
+	<connection>local</connection>
 
 	<service-id>org.openhab.io.neeo.NeeoService</service-id>
 

@@ -580,6 +580,12 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="meterResetTotals">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.meterResetTotals.label</label>
+		<description>@text/channel-type.shelly.meterResetTotals.description</description>
+	</channel-type>
+
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>@text/channel-type.shelly.timestamp.label</label>

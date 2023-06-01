@@ -199,6 +199,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_VOLTAGE, "meterVoltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_CURRENT, "meterCurrent", ITEMT_AMP))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_PFACTOR, "meterPowerFactor", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
 
                 // Sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "sensorTemp", ITEMT_TEMP))
@@ -207,6 +208,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ILLUM, "sensorIllumination", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VOLTAGE, "sensorADC", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE, "sensorContact", ITEMT_CONTACT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_OPEN, "sensorOpen", ITEMT_CONTACT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SSTATE, "sensorState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEMT_SWITCH))
@@ -215,6 +217,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VIBRATION, "vibration", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_FLOOD, "sensorFlood", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SMOKE, "sensorSmoke", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MUTE, "sensorMute", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PPM, "sensorPPM", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VALVE, "sensorValve", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
@@ -455,8 +458,8 @@ public class ShellyChannelDefinitions {
         return newChannels;
     }
 
-    public static Map<String, Channel> createEMeterChannels(final Thing thing, final ShellySettingsEMeter emeter,
-            String group) {
+    public static Map<String, Channel> createEMeterChannels(final Thing thing, final ShellyDeviceProfile profile,
+            final ShellySettingsEMeter emeter, String group) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
         addChannel(thing, newChannels, emeter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, emeter.total != null, group, CHANNEL_METER_TOTALKWH);
@@ -465,7 +468,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, emeter.current != null, group, CHANNEL_EMETER_CURRENT);
         addChannel(thing, newChannels, emeter.pf != null, group, CHANNEL_EMETER_PFACTOR); // EM has no PF. but power
-
+        addChannel(thing, newChannels, emeter.total != null && profile.numMeters > 1, group, CHANNEL_EMETER_RESETTOTAL); // 3EM
         addChannel(thing, newChannels, true, group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
@@ -482,7 +485,8 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, sdata.lux != null && sdata.lux.illumination != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
-        addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
+        addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
+        addChannel(thing, newChannels, sdata.mute != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE);
         addChannel(thing, newChannels, profile.settings.externalPower != null || sdata.charger != null, CHGR_DEVST,
                 CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.motion != null || (sdata.sensor != null && sdata.sensor.motion != null),
@@ -528,6 +532,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
             addChannel(thing, newChannels, true, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE);
             addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OPEN);
         }
 
         // Battery
