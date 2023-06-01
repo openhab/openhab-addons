@@ -38,4 +38,9 @@ public class MirekSchema {
     public int getMirekMinimum() {
         return mirekMinimum;
     }
+
+    public String toPropertyValue() {
+        return String.format("%.0f K .. %.0f K", ColorTemperature2.getReciprocal(mirekMaximum),
+                ColorTemperature2.getReciprocal(mirekMinimum));
+    }
 }

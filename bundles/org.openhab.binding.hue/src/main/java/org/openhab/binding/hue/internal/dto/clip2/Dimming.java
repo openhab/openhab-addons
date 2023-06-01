@@ -52,8 +52,16 @@ public class Dimming {
         return this;
     }
 
-    public Dimming setMinimumDimmingLevel(Double minDimLevel) {
-        this.minimumDimmingLevel = minDimLevel;
+    public Dimming setMinimumDimmingLevel(Double minimumDimmingLevel) {
+        this.minimumDimmingLevel = minimumDimmingLevel;
         return this;
+    }
+
+    public @Nullable String toPropertyValue() {
+        Double minimumDimmingLevel = this.minimumDimmingLevel;
+        if (Objects.nonNull(minimumDimmingLevel)) {
+            return String.format("%.1f %% .. 100 %%", minimumDimmingLevel.doubleValue());
+        }
+        return null;
     }
 }

@@ -14,10 +14,13 @@
 
 		<channels>
 			<channel id="color" typeId="system.color"/>
+			<channel id="color-xy-only" typeId="light-color-xy-only"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
 			<channel id="color-temp-kelvin" typeId="system.color-temperature-abs"/>
 			<channel id="brightness" typeId="light-brightness"/>
+			<channel id="dimming-only" typeId="light-dimming-only"/>
 			<channel id="switch" typeId="light-switch"/>
+			<channel id="on-off-only" typeId="light-on-off-only"/>
 			<channel id="dynamics" typeId="dynamics"/>
 			<channel id="alert" typeId="alert-v2"/>
 			<channel id="effect" typeId="effect-v2"/>
@@ -56,9 +59,11 @@
 
 		<channels>
 			<channel id="brightness" typeId="group-brightness"/>
+			<channel id="dimming-only" typeId="group-dimming-only"/>
 			<channel id="switch" typeId="group-switch"/>
-			<channel id="scene" typeId="group-scene"/>
+			<channel id="on-off-only" typeId="group-on-off-only"/>
 			<channel id="dynamics" typeId="dynamics"/>
+			<channel id="scene" typeId="group-scene"/>
 			<channel id="alert" typeId="alert-v2"/>
 		</channels>
 
@@ -84,9 +89,11 @@
 
 		<channels>
 			<channel id="brightness" typeId="group-brightness"/>
+			<channel id="dimming-only" typeId="group-dimming-only"/>
 			<channel id="switch" typeId="group-switch"/>
-			<channel id="scene" typeId="group-scene"/>
+			<channel id="on-off-only" typeId="group-on-off-only"/>
 			<channel id="dynamics" typeId="dynamics"/>
+			<channel id="scene" typeId="group-scene"/>
 			<channel id="alert" typeId="alert-v2"/>
 		</channels>
 

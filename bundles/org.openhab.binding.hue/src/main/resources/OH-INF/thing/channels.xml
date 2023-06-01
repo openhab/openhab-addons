@@ -231,35 +231,15 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="light-switch-advanced" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch the light on/off.</description>
-		<category>Switch</category>
-	</channel-type>
-
 	<channel-type id="light-brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Adjust the brightness of the light.</description>
 		<category>Light</category>
-	</channel-type>
-
-	<channel-type id="light-brightness-advanced" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Adjust the brightness of the light.</description>
-		<category>Light</category>
+		<state pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="group-switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch on/off all the lights in the zone or room.</description>
-		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="group-switch-advanced" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Switch on/off all the lights in the zone or room.</description>
@@ -303,12 +283,49 @@
 		<state pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="dynamics">
+	<channel-type id="dynamics" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Dynamics</label>
 		<description>The duration (mSec) of dynamic transitions between light or scene states.</description>
 		<category>Time</category>
 		<state min="0" step="100" pattern="%d ms"/>
+	</channel-type>
+
+	<channel-type id="light-color-xy-only" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color XY Only</label>
+		<description>Set the color xy parameter of the light without changing other state parameters.</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="light-dimming-only" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Dimming Only</label>
+		<description>Set the dimming parameter of the light without changing other state parameters.</description>
+		<category>Light</category>
+		<state pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="light-on-off-only" advanced="true">
+		<item-type>Switch</item-type>
+		<label>On/Off Only</label>
+		<description>Set the on/off parameter of the light without changing other state parameters.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="group-dimming-only" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Dimming Only</label>
+		<description>Set the dimming parameter of all the lights in the zone or room without changing other state parameters.</description>
+		<category>Light</category>
+		<state pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="group-on-off-only" advanced="true">
+		<item-type>Switch</item-type>
+		<label>On/Off Only</label>
+		<description>Set the on/off parameter of all the lights in the zone or room without changing other state parameters.</description>
+		<category>Switch</category>
 	</channel-type>
 
 </thing:thing-descriptions>

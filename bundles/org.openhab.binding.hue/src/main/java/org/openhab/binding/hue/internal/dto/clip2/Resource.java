@@ -292,9 +292,9 @@ public class Resource {
     }
 
     /**
-     * Get the color as an HSBType. Take its Hue & Saturation parts from the 'ColorXy' JSON element, and take its
-     * Brightness part from the 'On' resp. 'Dimming' JSON elements. If off the B part is 0, otherwise it is the dimming
-     * value.
+     * Get the color as an HSBType. This returns an HSB that is based on an amalgamation of the color xy, dimming, and
+     * on/off JSON elements. It takes its 'H' & 'S' parts from the 'ColorXy' JSON element, and its 'B' part from the
+     * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value.
      *
      * @return an HSBType containing the current color and brightness level, or UNDEF or NULL.
      */
@@ -350,6 +350,52 @@ public class Resource {
                 if (Objects.nonNull(percent)) {
                     return new PercentType(new BigDecimal(percent, PERCENT_MATH_CONTEXT));
                 }
+            } catch (DTOPresentButEmptyException e) {
+                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            }
+        }
+        return UnDefType.NULL;
+    }
+
+    public @Nullable ColorXy getColorXy() {
+        return color;
+    }
+
+    /**
+     * Return an HSB where the HS part is derived from the color xy JSON element (only), so the B part is 100%
+     *
+     * @return an HSBType.
+     */
+    public State getColorXyState() {
+        ColorXy color = this.color;
+        if (Objects.nonNull(color)) {
+            try {
+                Gamut gamut = color.getGamut();
+                gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
+                HSBType hsb = ColorUtil.xyToHsb(color.getXY(), gamut);
+                return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
+            } catch (DTOPresentButEmptyException e) {
+                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            }
+        }
+        return UnDefType.NULL;
+    }
+
+    public @Nullable Dimming getDimming() {
+        return dimming;
+    }
+
+    /**
+     * Return a PercentType which is derived from the dimming JSON element (only).
+     *
+     * @return a PercentType.
+     */
+    public State getDimmingState() {
+        Dimming dimming = this.dimming;
+        if (Objects.nonNull(dimming)) {
+            try {
+                double dimmingValue = Math.max(0f, Math.min(100f, dimming.getBrightness()));
+                return new PercentType(new BigDecimal(dimmingValue, PERCENT_MATH_CONTEXT));
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
             }
@@ -442,6 +488,18 @@ public class Resource {
         return getType().toString();
     }
 
+    /**
+     * Return the state of the On/Off element (only).
+     */
+    public State getOnOffState() {
+        try {
+            OnState on = this.on;
+            return Objects.nonNull(on) ? OnOffType.from(on.isOn()) : UnDefType.NULL;
+        } catch (DTOPresentButEmptyException e) {
+            return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+        }
+    }
+
     public @Nullable ResourceReference getOwner() {
         return owner;
     }
@@ -524,15 +582,6 @@ public class Resource {
         return new JsonObject();
     }
 
-    public State getSwitch() {
-        try {
-            OnState on = this.on;
-            return Objects.nonNull(on) ? OnOffType.from(on.isOn()) : UnDefType.NULL;
-        } catch (DTOPresentButEmptyException e) {
-            return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
-        }
-    }
-
     public @Nullable Temperature getTemperature() {
         return temperature;
     }
@@ -596,54 +645,7 @@ public class Resource {
     }
 
     /**
-     * Set the brightness percent. If this resource has its own minimum dimming level then use that, otherwise if the
-     * 'other' parameter is not null and has a minimum dimming level, then use that, and if neither have one then use
-     * the default.
-     *
-     * @param command a PercentType with the new brightness.
-     * @param other the reference (light) resource to be used for the minimum dimming level.
-     * @return this resource instance.
-     */
-    public Resource setBrightness(Command command, @Nullable Resource other) {
-        if (command instanceof PercentType) {
-            Double min = getMinimumDimmingLevel();
-            min = Objects.nonNull(min) ? min : Objects.nonNull(other) ? other.getMinimumDimmingLevel() : null;
-            min = Objects.nonNull(min) ? min : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-            PercentType brightness = (PercentType) command;
-            if (brightness.doubleValue() < min.doubleValue()) {
-                brightness = new PercentType(new BigDecimal(min, PERCENT_MATH_CONTEXT));
-            }
-            Dimming dimming = this.dimming;
-            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
-            dimming.setBrightness(brightness.doubleValue());
-            this.dimming = dimming;
-        }
-        return this;
-    }
-
-    /**
-     * Set the color from an HSBType. If this resource has its own Gamut then use that, otherwise if the 'other'
-     * parameter is not null and has a Gamut, then use that, and if neither have one then use the default Gamut. Put its
-     * Hue and Saturation parts in the 'ColorXy' JSON element, and its Brightness part in the 'Dimming' JSON element.
-     *
-     * @param command an HSBType with the new color value.
-     * @param other the reference (light) resource to be used for the Gamut.
-     * @return this resource instance.
-     */
-    public Resource setColor(Command command, @Nullable Resource other) {
-        if (command instanceof HSBType) {
-            Gamut gamut = this.getGamut();
-            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(other) ? other.getGamut() : null;
-            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
-            HSBType hsb = (HSBType) command;
-            ColorXy color = this.color;
-            this.color = (Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut));
-        }
-        return this;
-    }
-
-    /**
-     * Set the colour temperature in Kelvin.
+     * Set the colour temperature JSON element (only) from a Number:Temperature (normally in Kelvin).
      *
      * @param command should be a QuantityType(Temperature> (but it can also handle DecimalType).
      * @return this resource instance.
@@ -668,9 +670,9 @@ public class Resource {
     }
 
     /**
-     * Set the color temperature from a PercentType. If this resource has its own MirekSchema then use that, otherwise
-     * if the 'other' parameter is not null and has a MirekSchema, then use that, and if neither have one then use the
-     * default MirekSchema.
+     * Set the color temperature JSON element (only) from a PercentType. If this resource has its own MirekSchema then
+     * use that, otherwise if the 'other' parameter is not null and has a MirekSchema, then use that, and if neither
+     * have one then use the default MirekSchema.
      *
      * @param command a PercentType command value.
      * @param other the reference (light) resource to be used for the MirekSchema.
@@ -685,6 +687,53 @@ public class Resource {
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature2();
             colorTemperature.setPercent(((PercentType) command).doubleValue(), schema);
             this.colorTemperature = colorTemperature;
+        }
+        return this;
+    }
+
+    /**
+     * Set the color XY JSON element (only) from an HSBType. If this resource has its own Gamut then use that, otherwise
+     * if the 'other' parameter is not null and has a Gamut, then use that, and if neither have one then use the default
+     * Gamut. Use the HS parts of the HSB value to set the value of the 'ColorXy' JSON element, and ignore the 'B' part.
+     *
+     * @param command an HSBType with the new color value.
+     * @param other the reference (light) resource to be used for the Gamut.
+     * @return this resource instance.
+     */
+    public Resource setColorXy(Command command, @Nullable Resource other) {
+        if (command instanceof HSBType) {
+            Gamut gamut = this.getGamut();
+            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(other) ? other.getGamut() : null;
+            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
+            HSBType hsb = (HSBType) command;
+            ColorXy color = this.color;
+            this.color = (Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut));
+        }
+        return this;
+    }
+
+    /**
+     * Set the dimming percent JSON element (only). If this resource has its own minimum dimming level then use that,
+     * otherwise if the 'other' parameter is not null and has a minimum dimming level, then use that, and if neither
+     * have one then use the default.
+     *
+     * @param command a PercentType with the new dimming parameter.
+     * @param other the reference (light) resource to be used for the minimum dimming level.
+     * @return this resource instance.
+     */
+    public Resource setDimming(Command command, @Nullable Resource other) {
+        if (command instanceof PercentType) {
+            Double min = getMinimumDimmingLevel();
+            min = Objects.nonNull(min) ? min : Objects.nonNull(other) ? other.getMinimumDimmingLevel() : null;
+            min = Objects.nonNull(min) ? min : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
+            PercentType brightness = (PercentType) command;
+            if (brightness.doubleValue() < min.doubleValue()) {
+                brightness = new PercentType(new BigDecimal(min, PERCENT_MATH_CONTEXT));
+            }
+            Dimming dimming = this.dimming;
+            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
+            dimming.setBrightness(brightness.doubleValue());
+            this.dimming = dimming;
         }
         return this;
     }
@@ -727,6 +776,23 @@ public class Resource {
         return this;
     }
 
+    /**
+     * Set the on/off JSON element (only).
+     *
+     * @param command an OnOffTypee command value.
+     * @return this resource instance.
+     */
+    public Resource setOnOff(Command command) {
+        if (command instanceof OnOffType) {
+            OnOffType onOff = (OnOffType) command;
+            OnState on = this.on;
+            on = Objects.nonNull(on) ? on : new OnState();
+            on.setOn(OnOffType.ON.equals(onOff));
+            this.on = on;
+        }
+        return this;
+    }
+
     public Resource setRecallAction(RecallAction recallAction) {
         Recall recall = this.recall;
         this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
@@ -736,17 +802,6 @@ public class Resource {
     public Resource setRecallDuration(Duration recallDuration) {
         Recall recall = this.recall;
         this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
-        return this;
-    }
-
-    public Resource setSwitch(Command command) {
-        if (command instanceof OnOffType) {
-            OnOffType onOff = (OnOffType) command;
-            OnState on = this.on;
-            on = Objects.nonNull(on) ? on : new OnState();
-            on.setOn(OnOffType.ON.equals(onOff));
-            this.on = on;
-        }
         return this;
     }
 

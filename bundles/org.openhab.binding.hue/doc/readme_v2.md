@@ -134,6 +134,26 @@ When the `dynamics` channel value is changed, it triggers a time window of ten s
 If the second command is sent within the active time window it will be executed gradually according to the `dynamics` channel value.
 However if the second command is sent after the active time window has expired then it will be executed immediately.
 
+### Advanced Channels for Devices, Rooms and Zones
+
+In addition to the normal channels described above, some things support additional advanced channels.
+For convenience the normal channels often amalgamate multiple elements of the state of a light, room or zone into one single channel.
+For example a full color light has one single `color` channel that can accept HSBType commands for changing the color, PercentType commands for changing the brightness, and OnOffType commands for switching it on or off.
+By contrast the purpose of the advanced channels is to access specific individual state elements of the respective lights, rooms or zones individually.
+The possible advanced channels are as follows (although not every thing will have them):
+
+| Channel ID     | Item Type | Description                                                                                                   |
+|----------------|-----------|---------------------------------------------------------------------------------------------------------------|
+| color-xy-only  | Color     | Allows access to the `colorXY` parameter of the light(s) only. Has no impact on dimming or on-off parameters. |
+| dimming-only   | Dimmer    | Allows access to the `dimming` parameter of the light(s) only. Has no impact on colorXY or on/off parameters. |
+| on-off-only    | Switch    | Allows access to the `on-off` parameter of the light(s) only. Has no impact on colorXY or dimming parameters. |
+
+These advance channels can be used as "presets".
+For example, you may want to preset the `dimming-only` channel to 20% at night, and to 100% in the day time.
+Then if somebody turns on the light at night time it will turn on to 20% resp. to 100% in the day time.
+You can also use the `color-xy-only` channel to preset (say) a cool color in the morning, and a warm color in the evening.
+NOTE: you can also preset color temperature values in advance via the `color-temperature` and `color-temp-kelvin` channels described above.
+
 ## Console Command for finding ResourceIds
 
 The openHAB console has a command named `openhab:hue` that (among other things) lists the `resourceId` of all device things in the bridge.

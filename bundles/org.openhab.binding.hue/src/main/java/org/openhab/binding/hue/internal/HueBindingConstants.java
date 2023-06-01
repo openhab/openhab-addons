@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link HueBindingConstants} class defines common constants, which are
@@ -120,6 +119,9 @@ public class HueBindingConstants {
     public static final String PROPERTY_LEGACY_THING_UID = "legacyThingUID";
     public static final String PROPERTY_OWNER = "owner";
     public static final String PROPERTY_OWNER_TYPE = "ownerType";
+    public static final String PROPERTY_DIMMING_RANGE = "dimmingRange";
+    public static final String PROPERTY_COLOR_TEMP_RANGE = "colorTemperatureRange";
+    public static final String PROPERTY_COLOR_GAMUT = "colorGamut";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 
@@ -139,10 +141,10 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
 
     // channels for API v2
-    public static final String CHANNEL_2_BRIGHTNESS = CHANNEL_BRIGHTNESS;
     public static final String CHANNEL_2_COLOR = CHANNEL_COLOR;
     public static final String CHANNEL_2_COLOR_TEMPERATURE = "color-temperature";
     public static final String CHANNEL_2_COLOR_TEMP_KELVIN = "color-temp-kelvin";
+    public static final String CHANNEL_2_BRIGHTNESS = CHANNEL_BRIGHTNESS;
     public static final String CHANNEL_2_SWITCH = CHANNEL_SWITCH;
     public static final String CHANNEL_2_SCENE = CHANNEL_SCENE;
     public static final String CHANNEL_2_DYNAMICS = "dynamics";
@@ -159,6 +161,9 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_BATTERY_LEVEL = "battery-level";
     public static final String CHANNEL_2_BATTERY_LOW = "battery-low";
     public static final String CHANNEL_2_LAST_UPDATED = "last-updated";
+    public static final String CHANNEL_2_COLOR_XY_ONLY = "color-xy-only";
+    public static final String CHANNEL_2_DIMMING_ONLY = "dimming-only";
+    public static final String CHANNEL_2_ON_OFF_ONLY = "on-off-only";
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
@@ -184,33 +189,4 @@ public class HueBindingConstants {
             Map.entry(CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED));
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all-lights.label";
-
-    public static class ChannelInfo {
-        public final String acceptedItemType;
-        public final String description;
-        public final String label;
-        public final ChannelTypeUID typeUID;
-
-        public ChannelInfo(String acceptedItemType, String description, String label, ChannelTypeUID typeUID) {
-            this.acceptedItemType = acceptedItemType;
-            this.description = description;
-            this.label = label;
-            this.typeUID = typeUID;
-        }
-    }
-
-    public static final ChannelInfo CHANNEL_LIGHT_BRIGHTNESS_ADVANCED = new ChannelInfo("Dimmer",
-            "channel-type.hue.light-brightness-advanced.description", //
-            "channel-type.hue.light-brightness-advanced.label", //
-            new ChannelTypeUID(BINDING_ID, "light-brightness-advanced"));
-
-    public static final ChannelInfo CHANNEL_LIGHT_SWITCH_ADVANCED = new ChannelInfo("Switch",
-            "channel-type.hue.light-switch-advanced.description", //
-            "channel-type.hue.light-switch-advanced.label", //
-            new ChannelTypeUID(BINDING_ID, "light-switch-advanced"));
-
-    public static final ChannelInfo CHANNEL_GROUP_SWITCH_ADVANCED = new ChannelInfo("Switch",
-            "channel-type.hue.group-switch-advanced.description", //
-            "channel-type.hue.group-switch-advanced.label", //
-            new ChannelTypeUID(BINDING_ID, "group-switch-advanced"));
 }

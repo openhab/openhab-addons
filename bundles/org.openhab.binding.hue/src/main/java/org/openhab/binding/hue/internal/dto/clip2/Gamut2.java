@@ -30,11 +30,11 @@ public class Gamut2 {
     private @Nullable PairXy blue;
 
     public @Nullable Gamut getGamut() {
-        PairXy r = red;
-        PairXy g = green;
-        PairXy b = blue;
-        if (Objects.nonNull(r) && Objects.nonNull(g) && Objects.nonNull(b)) {
-            return new Gamut(r.getXY(), g.getXY(), b.getXY());
+        PairXy red = this.red;
+        PairXy green = this.green;
+        PairXy blue = this.blue;
+        if (Objects.nonNull(red) && Objects.nonNull(green) && Objects.nonNull(blue)) {
+            return new Gamut(red.getXY(), green.getXY(), blue.getXY());
         }
         return null;
     }
@@ -44,5 +44,18 @@ public class Gamut2 {
         green = new PairXy().setXY(gamut.g());
         blue = new PairXy().setXY(gamut.b());
         return this;
+    }
+
+    public @Nullable String toPropertyValue() {
+        PairXy red = this.red;
+        PairXy green = this.green;
+        PairXy blue = this.blue;
+        if (Objects.nonNull(red) && Objects.nonNull(green) && Objects.nonNull(blue)) {
+            double[] r = red.getXY();
+            double[] g = green.getXY();
+            double[] b = blue.getXY();
+            return String.format("(%.3f,%.3f) (%.3f,%.3f) (%.3f,%.3f)", r[0], r[1], g[0], g[1], b[0], b[1]);
+        }
+        return null;
     }
 }

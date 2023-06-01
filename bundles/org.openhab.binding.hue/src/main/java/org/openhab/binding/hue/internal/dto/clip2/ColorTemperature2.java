@@ -27,7 +27,12 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ColorTemperature2 {
+    public static double getReciprocal(double value) {
+        return 1000000f / value;
+    }
+
     private @Nullable Long mirek;
+
     private @Nullable @SerializedName("mirek_schema") MirekSchema mirekSchema;
 
     /**
@@ -66,10 +71,6 @@ public class ColorTemperature2 {
             return Math.max(0, Math.min(100, percent));
         }
         throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
-    }
-
-    private double getReciprocal(double value) {
-        return 1000000f / value;
     }
 
     public ColorTemperature2 setKelvin(double kelvin) {

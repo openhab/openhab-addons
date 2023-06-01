@@ -17,7 +17,6 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,13 +32,15 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.HueBindingConstants.ChannelInfo;
 import org.openhab.binding.hue.internal.action.DynamicsActions;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
+import org.openhab.binding.hue.internal.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.dto.clip2.Effects;
+import org.openhab.binding.hue.internal.dto.clip2.Gamut2;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
+import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
@@ -71,7 +72,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -158,6 +158,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean disposing;
     private boolean hasConnectivityIssue;
     private boolean updateSceneContributorsDone;
+    private boolean updateLightPropertiesDone;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
 
@@ -313,18 +314,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_EFFECT:
-                putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON).setEffect(command,
+                putResource = new Resource(lightResourceType).setOnOff(OnOffType.ON).setEffect(command,
                         getCachedResource(lightResourceType));
                 break;
 
             case CHANNEL_2_COLOR_TEMPERATURE:
-                putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON)
-                        .setColorTemperaturePercent(command, getCachedResource(ResourceType.LIGHT));
+                if (command instanceof IncreaseDecreaseType) {
+                    cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
+                    if (Objects.nonNull(cache)) {
+                        State current = cache.getColorTemperaturePercentState();
+                        if (current instanceof PercentType) {
+                            int sign = IncreaseDecreaseType.INCREASE == command ? 1 : -1;
+                            int percent = ((PercentType) current).intValue() + (sign * (int) Resource.PERCENT_DELTA);
+                            command = new PercentType(Math.min(100, Math.max(0, percent)));
+                        }
+                    }
+                } else if (command instanceof OnOffType) {
+                    command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
+                }
+                putResource = new Resource(lightResourceType).setColorTemperaturePercent(command,
+                        getCachedResource(ResourceType.LIGHT));
                 break;
 
             case CHANNEL_2_COLOR_TEMP_KELVIN:
-                putResource = new Resource(lightResourceType).setSwitch(OnOffType.ON)
-                        .setColorTemperatureKelvin(command);
+                putResource = new Resource(lightResourceType).setColorTemperatureKelvin(command);
                 break;
 
             case CHANNEL_2_COLOR:
@@ -332,10 +345,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof HSBType) {
                     HSBType color = ((HSBType) command);
                     cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
-                    putResource.setColor(color, cache);
+                    putResource.setColorXy(color, cache);
                     command = color.getBrightness();
                 }
-                // NB fall through !!
+                // NB fall through for handling of brightness and switch related commands !!
 
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
@@ -344,29 +357,38 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     if (Objects.nonNull(cache)) {
                         State current = cache.getBrightnessState();
                         if (current instanceof PercentType) {
-                            int sign = IncreaseDecreaseType.INCREASE.equals(command) ? 1 : -1;
+                            int sign = IncreaseDecreaseType.INCREASE == command ? 1 : -1;
                             double percent = ((PercentType) current).doubleValue() + (sign * Resource.PERCENT_DELTA);
                             command = new PercentType(new BigDecimal(Math.min(100f, Math.max(0f, percent)),
                                     Resource.PERCENT_MATH_CONTEXT));
                         }
                     }
                 }
-                // NB fall through !!
                 if (command instanceof PercentType) {
                     PercentType brightness = (PercentType) command;
                     cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
-                    putResource.setBrightness(brightness, cache);
+                    putResource.setDimming(brightness, cache);
                     Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
                     minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
                     command = OnOffType.from(brightness.doubleValue() >= minDimLevel);
                 }
-                // NB fall through !!
+                // NB fall through for handling of switch related commands !!
 
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
-                if (command instanceof OnOffType) {
-                    putResource.setSwitch(command);
-                }
+                putResource.setOnOff(command);
+                break;
+
+            case CHANNEL_2_COLOR_XY_ONLY:
+                putResource = new Resource(lightResourceType).setColorXy(command, getCachedResource(lightResourceType));
+                break;
+
+            case CHANNEL_2_DIMMING_ONLY:
+                putResource = new Resource(lightResourceType).setDimming(command, getCachedResource(lightResourceType));
+                break;
+
+            case CHANNEL_2_ON_OFF_ONLY:
+                putResource = new Resource(lightResourceType).setOnOff(command);
                 break;
 
             case CHANNEL_2_TEMPERATURE_ENABLED:
@@ -494,6 +516,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateSceneContributorsDone = false;
         updatePropertiesDone = false;
         updateDependenciesDone = false;
+        updateLightPropertiesDone = false;
     }
 
     /**
@@ -530,6 +553,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     resource.copyMissingFieldsFrom(cachedService);
                     resourceConsumed = updateChannels(resource);
                     serviceContributorsCache.put(incomingResourceId, resource);
+                    if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
+                        updateLightProperties(resource);
+                    }
                 }
             }
             if (resourceConsumed) {
@@ -603,13 +629,42 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Set the active list of channels by removing any that had initially been created by the thing XML declaration, but
      * which in fact did not have data returned from the bridge i.e. channels which are not in the supportedChannelIdSet
-     * set. Also warn if there are channels in the supportedChannelIdSet set which are not in the thing.
+     *
+     * Also warn if there are channels in the supportedChannelIdSet set which are not in the thing.
+     *
+     * Adjusts the channel list so that only the highest level channel is available in the normal channel list. If a
+     * light supports the color channel, then it's brightness and switch can be commanded via the 'B' part of the HSB
+     * channel value. And if it supports the brightness channel the switch can be controlled via the brightness. So we
+     * can remove these lower level channels from the normal channel list.
+     *
+     * For more advanced applications, it is necessary to orthogonally command the color xy parameter, dimming
+     * parameter, and/or on/off parameter independently. So we add corresponding advanced level 'CHANNEL_2_BLAH_ONLY'
+     * channels for that purpose. Since they are advanced level, normal users should normally not be confused by them,
+     * yet advanced users can use them nevertheless.
      */
     private void updateChannelList() {
         if (!disposing) {
             synchronized (supportedChannelIdSet) {
-                logger.debug("{} -> updateChannelList() supportedChannelIdSet.size():{}", resourceId,
-                        supportedChannelIdSet.size());
+                logger.debug("{} -> updateChannelList()", resourceId);
+
+                if (supportedChannelIdSet.contains(CHANNEL_2_COLOR)) {
+                    supportedChannelIdSet.add(CHANNEL_2_COLOR_XY_ONLY);
+                    //
+                    supportedChannelIdSet.remove(CHANNEL_2_BRIGHTNESS);
+                    supportedChannelIdSet.add(CHANNEL_2_DIMMING_ONLY);
+                    //
+                    supportedChannelIdSet.remove(CHANNEL_2_SWITCH);
+                    supportedChannelIdSet.add(CHANNEL_2_ON_OFF_ONLY);
+                }
+                if (supportedChannelIdSet.contains(CHANNEL_2_BRIGHTNESS)) {
+                    supportedChannelIdSet.add(CHANNEL_2_DIMMING_ONLY);
+                    //
+                    supportedChannelIdSet.remove(CHANNEL_2_SWITCH);
+                    supportedChannelIdSet.add(CHANNEL_2_ON_OFF_ONLY);
+                }
+                if (supportedChannelIdSet.contains(CHANNEL_2_SWITCH)) {
+                    supportedChannelIdSet.add(CHANNEL_2_ON_OFF_ONLY);
+                }
 
                 // warn about any missing channels
                 supportedChannelIdSet.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
@@ -631,73 +686,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                                         channelId));
                     }
                     updateThing(editThing().withoutChannels(unusedChannels).build());
-                }
-            }
-            updateChannelListAdvanced();
-        }
-    }
-
-    /**
-     * Change subsidiary channels to advanced level so normal users can't see them in the UI. If a light supports the
-     * color channel, then it's brightness and switch can be commanded via the 'B' part of the HSB value. And if it
-     * supports the brightness channel the switch can be controlled via the brightness. In those cases, the subsidiary
-     * channels are strictly speaking no longer necessary. However some users (including the initial contributor) want
-     * to have the subsidiary channels available anyway, in order to have consistent commands across all lights. So in
-     * such circumstances these channels are moved to the 'advanced' level, so normal users will not see them, but
-     * advanced users can use them nevertheless.
-     */
-    private void updateChannelListAdvanced() {
-        if (!disposing) {
-            boolean hasColor = Objects.nonNull(thing.getChannel(CHANNEL_2_COLOR));
-            boolean hasBrightness = Objects.nonNull(thing.getChannel(CHANNEL_2_BRIGHTNESS));
-
-            if (hasColor || hasBrightness) {
-                int changeCount = 0;
-                List<Channel> channels = new ArrayList<>(thing.getChannels());
-
-                for (int i = 0; i < channels.size(); i++) {
-                    ChannelInfo channelInfo;
-                    String channelId = channels.get(i).getUID().getId();
-
-                    switch (channelId) {
-                        case CHANNEL_2_SWITCH:
-                            channelInfo = thisResource.getType() == ResourceType.DEVICE ? CHANNEL_LIGHT_SWITCH_ADVANCED
-                                    : CHANNEL_GROUP_SWITCH_ADVANCED;
-                            break;
-
-                        case CHANNEL_2_BRIGHTNESS:
-                            if (hasColor) {
-                                channelInfo = CHANNEL_LIGHT_BRIGHTNESS_ADVANCED;
-                                break;
-                            }
-
-                        default:
-                            continue;
-                    }
-
-                    try {
-                        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId)) //
-                                .withAcceptedItemType(channelInfo.acceptedItemType) //
-                                .withDescription(getBridgeHandler().getLocalizedText(channelInfo.description)) //
-                                .withLabel(getBridgeHandler().getLocalizedText(channelInfo.label)) //
-                                .withType(channelInfo.typeUID) //
-                                .build();
-                        channels.set(i, channel);
-                        changeCount++;
-                    } catch (AssetNotLoadedException e) {
-                        // should never happen since already online
-                        logger.debug("{} -> updateChannelListAdvanced() unexpected exception", resourceId, e);
-                    }
-                }
-
-                if (changeCount > 0) {
-                    logger.debug("{} -> updateChannelListAdvanced() changed {} channels", resourceId, changeCount);
-                    updateThing(editThing().withChannels(channels).build());
-                    // do a REFRESH to initialise new channels' state
-                    Channel lastUpdateChannel = thing.getChannel(CHANNEL_2_LAST_UPDATED);
-                    if (Objects.nonNull(lastUpdateChannel)) {
-                        handleCommand(lastUpdateChannel.getUID(), RefreshType.REFRESH);
-                    }
                 }
             }
         }
@@ -734,15 +722,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_COLOR_TEMPERATURE, resource.getColorTemperaturePercentState(), fullUpdate);
                 updateState(CHANNEL_2_COLOR_TEMP_KELVIN, resource.getColorTemperatureKelvinState(), fullUpdate);
                 updateState(CHANNEL_2_COLOR, resource.getColorState(), fullUpdate);
+                updateState(CHANNEL_2_COLOR_XY_ONLY, resource.getColorXyState(), fullUpdate);
                 updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
-                // fall through for brightness and switch channels
+                // fall through for dimming and on/off related channels
 
             case GROUPED_LIGHT:
                 if (fullUpdate) {
                     updateAlertChannel(resource);
                 }
                 updateState(CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
-                updateState(CHANNEL_2_SWITCH, resource.getSwitch(), fullUpdate);
+                updateState(CHANNEL_2_DIMMING_ONLY, resource.getDimmingState(), fullUpdate);
+                updateState(CHANNEL_2_SWITCH, resource.getOnOffState(), fullUpdate);
+                updateState(CHANNEL_2_ON_OFF_ONLY, resource.getOnOffState(), fullUpdate);
                 updateState(CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
                 break;
 
@@ -870,6 +861,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Update the light properties.
+     *
+     * @param resource a Resource object containing the property data.
+     */
+    private synchronized void updateLightProperties(Resource resource) {
+        if (!disposing && !updateLightPropertiesDone) {
+            logger.debug("{} -> updateLightProperties()", resourceId);
+
+            Dimming dimming = resource.getDimming();
+            thing.setProperty(PROPERTY_DIMMING_RANGE, Objects.nonNull(dimming) ? dimming.toPropertyValue() : null);
+
+            MirekSchema mirekSchema = resource.getMirekSchema();
+            thing.setProperty(PROPERTY_COLOR_TEMP_RANGE,
+                    Objects.nonNull(mirekSchema) ? mirekSchema.toPropertyValue() : null);
+
+            ColorXy colorXy = resource.getColorXy();
+            Gamut2 gamut = Objects.nonNull(colorXy) ? colorXy.getGamut2() : null;
+            thing.setProperty(PROPERTY_COLOR_GAMUT, Objects.nonNull(gamut) ? gamut.toPropertyValue() : null);
+
+            updateLightPropertiesDone = true;
+        }
+    }
+
+    /**
      * Initialize the lookup maps of resources that contribute to the thing state.
      */
     private void updateLookups() {
@@ -897,7 +912,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private synchronized void updateProperties(Resource resource) {
         if (!disposing && !updatePropertiesDone) {
-
             logger.debug("{} -> updateProperties()", resourceId);
             Map<String, String> properties = new HashMap<>(thing.getProperties());
 
@@ -1037,7 +1051,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateState(String channelID, State state, boolean fullUpdate) {
         boolean isDefined = state != UnDefType.NULL;
-        if (fullUpdate || isDefined) {
+        if ((fullUpdate || isDefined) && Objects.nonNull(thing.getChannel(channelID))) {
             logger.debug("{} -> updateState() '{}' updated to '{}' (fullUpdate:{}, isDefined:{})", resourceId,
                     channelID, state, fullUpdate, isDefined);
             updateState(channelID, state);

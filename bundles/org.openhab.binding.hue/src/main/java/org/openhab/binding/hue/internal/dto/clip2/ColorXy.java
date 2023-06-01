@@ -34,6 +34,10 @@ public class ColorXy {
         return Objects.nonNull(gamut) ? gamut.getGamut() : null;
     }
 
+    public @Nullable Gamut2 getGamut2() {
+        return this.gamut;
+    }
+
     /**
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */

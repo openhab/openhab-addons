@@ -168,7 +168,7 @@ class Clip2DtoTest {
             switch (item.getId()) {
                 case "db4fd630-3798-40de-b642-c1ef464bf770":
                     itemsFound++;
-                    assertEquals(OnOffType.OFF, item.getSwitch());
+                    assertEquals(OnOffType.OFF, item.getOnOffState());
                     assertEquals(PercentType.ZERO, item.getBrightnessState());
                     alert = item.getAlerts();
                     assertNotNull(alert);
@@ -178,7 +178,7 @@ class Clip2DtoTest {
                     break;
                 case "9228d710-3c54-4ae4-8c88-bfe57d8fd220":
                     itemsFound++;
-                    assertEquals(OnOffType.ON, item.getSwitch());
+                    assertEquals(OnOffType.ON, item.getOnOffState());
                     assertEquals(PercentType.HUNDRED, item.getBrightnessState());
                     alert = item.getAlerts();
                     assertNotNull(alert);
@@ -211,11 +211,11 @@ class Clip2DtoTest {
             if (name.contains("Bay Window Lamp")) {
                 itemFoundCount++;
                 assertEquals(ResourceType.LIGHT, item.getType());
-                assertEquals(OnOffType.OFF, item.getSwitch());
+                assertEquals(OnOffType.OFF, item.getOnOffState());
                 state = item.getBrightnessState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(0, ((PercentType) state).doubleValue(), 0.1);
-                item.setSwitch(OnOffType.ON);
+                item.setOnOff(OnOffType.ON);
                 state = item.getBrightnessState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(93.0, ((PercentType) state).doubleValue(), 0.1);
@@ -235,11 +235,11 @@ class Clip2DtoTest {
             if (name.contains("Table Lamp A")) {
                 itemFoundCount++;
                 assertEquals(ResourceType.LIGHT, item.getType());
-                assertEquals(OnOffType.OFF, item.getSwitch());
+                assertEquals(OnOffType.OFF, item.getOnOffState());
                 state = item.getBrightnessState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(0, ((PercentType) state).doubleValue(), 0.1);
-                item.setSwitch(OnOffType.ON);
+                item.setOnOff(OnOffType.ON);
                 state = item.getBrightnessState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(56.7, ((PercentType) state).doubleValue(), 0.1);
@@ -356,23 +356,23 @@ class Clip2DtoTest {
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             fail();
         }
-        one.setColor(HSBType.RED, null);
-        one.setBrightness(PercentType.HUNDRED, null);
+        one.setColorXy(HSBType.RED, null);
+        one.setDimming(PercentType.HUNDRED, null);
         assertTrue(one.getColorState() instanceof HSBType);
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
         assertTrue(HSBType.RED.closeTo((HSBType) one.getColorState(), 0.01));
 
         // switching off should change HSB and Brightness
-        one.setSwitch(OnOffType.OFF);
+        one.setOnOff(OnOffType.OFF);
         assertEquals(0, ((HSBType) one.getColorState()).getBrightness().doubleValue(), 0.01);
         assertEquals(PercentType.ZERO, one.getBrightnessState());
-        one.setSwitch(OnOffType.ON);
+        one.setOnOff(OnOffType.ON);
 
         // setting brightness to zero should change it to the minimum dimming level
-        one.setBrightness(PercentType.ZERO, null);
+        one.setDimming(PercentType.ZERO, null);
         assertEquals(MINIMUM_DIMMING_LEVEL, ((HSBType) one.getColorState()).getBrightness().doubleValue(), 0.01);
         assertEquals(MINIMUM_DIMMING_LEVEL, ((PercentType) one.getBrightnessState()).doubleValue(), 0.01);
-        one.setSwitch(OnOffType.ON);
+        one.setOnOff(OnOffType.ON);
 
         // null its Dimming field
         try {
@@ -394,7 +394,7 @@ class Clip2DtoTest {
         // create resource two
         Resource two = new Resource(ResourceType.DEVICE).setId("ALLIGATOR");
         assertNotNull(two);
-        two.setBrightness(testBrightness, null);
+        two.setDimming(testBrightness, null);
         assertEquals(UnDefType.NULL, two.getColorState());
         assertEquals(testBrightness, two.getBrightnessState());
 
@@ -450,7 +450,7 @@ class Clip2DtoTest {
         assertNotNull(actionEntry);
         Resource action = actionEntry.getAction();
         assertNotNull(action);
-        assertEquals(OnOffType.ON, action.getSwitch());
+        assertEquals(OnOffType.ON, action.getOnOffState());
     }
 
     @Test
@@ -482,7 +482,7 @@ class Clip2DtoTest {
         HSBType magenta = new HSBType("300,100,100");
 
         for (HSBType color : Set.of(HSBType.WHITE, HSBType.RED, HSBType.GREEN, HSBType.BLUE, cyan, yellow, magenta)) {
-            resource.setColor(color, null);
+            resource.setColorXy(color, null);
             State state = resource.getColorState();
             assertTrue(state instanceof HSBType);
             assertTrue(color.closeTo((HSBType) state, 0.01));
