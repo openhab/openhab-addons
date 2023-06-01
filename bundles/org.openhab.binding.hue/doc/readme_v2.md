@@ -62,7 +62,7 @@ Device things support some of the following channels:
 | Channel ID          | Item Type          | Description                                                                                                         |
 |---------------------|--------------------|---------------------------------------------------------------------------------------------------------------------|
 | color               | Color              | Supports full color control with hue, saturation and brightness values, or brightness only, or switching on or off. |
-| brightness          | Dimmer             | Supports adjusting the brightness value, and switching the on or off.                                               |
+| brightness          | Dimmer             | Supports adjusting the brightness value, or switching on or off.                                                    |
 | color-temperature   | Dimmer             | Supports adjusting the color temperature from cold (0%) to warm (100%).                                             |
 | color-temp-kelvin   | Number:Temperature | Supports adjusting the color temperature in Kelvin.                                                                 |
 | switch              | Switch             | Supports switching the device on and off.                                                                           |
@@ -113,7 +113,7 @@ They support the following channels:
 
 | Channel ID          | Item Type          | Description                                                                       |
 |---------------------|--------------------|-----------------------------------------------------------------------------------|
-| brightness          | Dimmer             | Supports adjusting the brightness and switching the lights on and off.            |
+| brightness          | Dimmer             | Supports adjusting the brightness or switching the lights on and off.             |
 | switch              | Switch             | Supports switching the lights on and off.                                         |
 | scene<sup>1)</sup>  | String             | Setting the string to a valid scene friendly name activates the respective scene. |
 | dynamics            | Number:Time        | The duration of dynamic transitions between light or scene states.                |
