@@ -55,11 +55,6 @@ public class OpenSprinklerHttpInterfaceConfig {
     public int retry = 3;
 
     /**
-     * Number of seconds delay between connection retries
-     */
-    public int retryDelay = 10;
-
-    /**
      * The basic auth username to use when the OpenSprinkler device is behind a reverse proxy with basic auth enabled.
      */
     public String basicUsername = "";
