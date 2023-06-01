@@ -44,6 +44,7 @@ import org.openhab.binding.surepetcare.internal.dto.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcarePetStatus;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareTag;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareTopology;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +64,6 @@ public class SurePetcareAPIHelper {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareAPIHelper.class);
 
-    private static final String API_USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36";
-
     private static final String API_URL = "https://app.api.surehub.io/api";
     private static final String TOPOLOGY_URL = API_URL + "/me/start";
     private static final String PET_BASE_URL = API_URL + "/pet";
@@ -78,8 +77,14 @@ public class SurePetcareAPIHelper {
     private String username = "";
     private String password = "";
 
+    private final String userAgent;
+
     private @NonNullByDefault({}) HttpClient httpClient;
     private SurePetcareTopology topologyCache = new SurePetcareTopology();
+
+    public SurePetcareAPIHelper() {
+        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+    }
 
     /**
      * Sets the httpClient object to be used for API calls to Sure Petcare.
@@ -369,7 +374,7 @@ public class SurePetcareAPIHelper {
         request.header(HttpHeader.AUTHORIZATION, "Bearer " + authenticationToken);
         request.header(HttpHeader.CONNECTION, "keep-alive");
         request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
-        request.header(HttpHeader.USER_AGENT, API_USER_AGENT);
+        request.header(HttpHeader.USER_AGENT, userAgent);
         request.header(HttpHeader.REFERER, "https://surepetcare.io/");
         request.header("Origin", "https://surepetcare.io");
         request.header("Referer", "https://surepetcare.io");
