@@ -38,7 +38,7 @@
 				<default>3</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="timeout" type="integer">
+			<parameter name="timeout" type="integer" unit="s">
 				<label>Timeout</label>
 				<description>Specifies the connection timeout in seconds.</description>
 				<default>5</default>
