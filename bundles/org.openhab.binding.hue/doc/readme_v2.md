@@ -59,27 +59,27 @@ The configuration of all things (as described above) is the same regardless of w
 
 Device things support some of the following channels:
 
-| Channel ID          | Item Type          | Description                                                              |
-|---------------------|--------------------|--------------------------------------------------------------------------|
-| switch              | Switch             | Supports switching the device on and off.                                |
-| color               | Color              | Supports full color control with hue, saturation and brightness values.  |
-| brightness          | Dimmer             | Supports adjusting the brightness value.                                 |
-| color-temperature   | Dimmer             | Supports adjusting the color temperature from cold (0%) to warm (100%).  |
-| color-temp-kelvin   | Number:Temperature | Supports adjusting the color temperature in Kelvin.                      |
-| dynamics            | Number:Time        | Sets the duration of dynamic transitions between light states.           |
-| alert               | String             | Allows setting an alert on a light e.g. flashing them.                   |
-| effect              | String             | Allows setting an effect on a light e.g. 'candle' effect.                |
-| button-last-event   | Number             | Shows which button was last pressed in the device.                       |
-| rotary-steps        | Number             | Shows the number of rotary steps of the last rotary dial movement.       |
-| motion              | Switch             | Shows if motion has been detected by the sensor.                         |
-| motion-enabled      | Switch             | Supports enabling / disabling the motion sensor.                         |
-| light-level         | Number:Illuminance | Shows the current light level measured by the sensor.                    |
-| light-level-enabled | Switch             | Supports enabling / disabling the light level sensor.                    |
-| temperature         | Number:Temperature | Shows the current temperature measured by the sensor.                    |
-| temperature-enabled | Switch             | Supports enabling / disabling the temperature sensor.                    |
-| battery-level       | Number             | Shows the battery level.                                                 |
-| battery-low         | Switch             | Indicates whether the battery is low or not.                             |
-| last-updated        | DateTime           | The date and time when the thing state was last updated.                 |
+| Channel ID          | Item Type          | Description                                                                                                         |
+|---------------------|--------------------|---------------------------------------------------------------------------------------------------------------------|
+| color               | Color              | Supports full color control with hue, saturation and brightness values, or brightness only, or switching on or off. |
+| brightness          | Dimmer             | Supports adjusting the brightness value, and switching the on or off.                                               |
+| color-temperature   | Dimmer             | Supports adjusting the color temperature from cold (0%) to warm (100%).                                             |
+| color-temp-kelvin   | Number:Temperature | Supports adjusting the color temperature in Kelvin.                                                                 |
+| switch              | Switch             | Supports switching the device on and off.                                                                           |
+| dynamics            | Number:Time        | Sets the duration of dynamic transitions between light states.                                                      |
+| alert               | String             | Allows setting an alert on a light e.g. flashing them.                                                              |
+| effect              | String             | Allows setting an effect on a light e.g. 'candle' effect.                                                           |
+| button-last-event   | Number             | Shows which button was last pressed in the device. Read only.                                                       |
+| rotary-steps        | Number             | Shows the number of rotary steps of the last rotary dial movement. Read only.                                       |
+| motion              | Switch             | Shows if motion has been detected by the sensor. Read only.                                                         |
+| motion-enabled      | Switch             | Supports enabling / disabling the motion sensor.                                                                    |
+| light-level         | Number:Illuminance | Shows the current light level measured by the sensor. Read only.                                                    |
+| light-level-enabled | Switch             | Supports enabling / disabling the light level sensor.                                                               |
+| temperature         | Number:Temperature | Shows the current temperature measured by the sensor. Read only.                                                    |
+| temperature-enabled | Switch             | Supports enabling / disabling the temperature sensor.                                                               |
+| battery-level       | Number             | Shows the battery level. Read only.                                                                                 |
+| battery-low         | Switch             | Indicates whether the battery is low or not. Read only.                                                             |
+| last-updated        | DateTime           | The date and time when the thing state was last updated. Read only.                                                 |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
@@ -113,8 +113,8 @@ They support the following channels:
 
 | Channel ID          | Item Type          | Description                                                                       |
 |---------------------|--------------------|-----------------------------------------------------------------------------------|
+| brightness          | Dimmer             | Supports adjusting the brightness and switching the lights on and off.            |
 | switch              | Switch             | Supports switching the lights on and off.                                         |
-| brightness          | Dimmer             | Supports adjusting the brightness value.                                          |
 | scene<sup>1)</sup>  | String             | Setting the string to a valid scene friendly name activates the respective scene. |
 | dynamics            | Number:Time        | The duration of dynamic transitions between light or scene states.                |
 | alert<sup>1)</sup>  | String             | This channel allows setting an alert on the lights e.g. flashing them.            |
@@ -142,11 +142,11 @@ For example a full color light has one single `color` channel that can accept HS
 By contrast the purpose of the advanced channels is to access specific individual state elements of the respective lights, rooms or zones individually.
 The possible advanced channels are as follows (although not every thing will have them):
 
-| Channel ID     | Item Type | Description                                                                                                   |
-|----------------|-----------|---------------------------------------------------------------------------------------------------------------|
-| color-xy-only  | Color     | Allows access to the `colorXY` parameter of the light(s) only. Has no impact on dimming or on-off parameters. |
-| dimming-only   | Dimmer    | Allows access to the `dimming` parameter of the light(s) only. Has no impact on colorXY or on/off parameters. |
-| on-off-only    | Switch    | Allows access to the `on-off` parameter of the light(s) only. Has no impact on colorXY or dimming parameters. |
+| Channel ID     | Item Type | Description                                                                                                        |
+|----------------|-----------|--------------------------------------------------------------------------------------------------------------------|
+| color-xy-only  | Color     | Allows access to the `color-xy` parameter of the light(s) only. Has no impact on `dimming` or `on-off` parameters. |
+| dimming-only   | Dimmer    | Allows access to the `dimming` parameter of the light(s) only. Has no impact on `color-xy` or `on-off` parameters. |
+| on-off-only    | Switch    | Allows access to the `on-off` parameter of the light(s) only. Has no impact on `color-xy` or `dimming` parameters. |
 
 These advance channels can be used as "presets".
 For example, you may want to preset the `dimming-only` channel to 20% at night, and to 100% in the day time.
