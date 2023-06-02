@@ -17,7 +17,6 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -145,8 +144,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
         super.beforeNewData();
         getSecurityCapability().ifPresent(cap -> {
             NAObjectMap<HomeDataPerson> persons = cap.getPersons();
-            descriptionProvider.setStateOptions(personChannelUID, persons.values().stream()
-                    .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
+            descriptionProvider.setStateOptions(personChannelUID,
+                    persons.values().stream().map(p -> new StateOption(p.getId(), p.getName())).toList());
         });
     }
 

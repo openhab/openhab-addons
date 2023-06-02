@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -134,8 +133,7 @@ public interface CommonInterface {
         if (thing instanceof Bridge) {
             return ((Bridge) thing).getThings().stream().filter(Thing::isEnabled)
                     .filter(th -> th.getStatusInfo().getStatusDetail() != ThingStatusDetail.BRIDGE_OFFLINE)
-                    .map(Thing::getHandler).filter(Objects::nonNull).map(CommonInterface.class::cast)
-                    .collect(Collectors.toList());
+                    .map(Thing::getHandler).filter(Objects::nonNull).map(CommonInterface.class::cast).toList();
         }
         return List.of();
     }

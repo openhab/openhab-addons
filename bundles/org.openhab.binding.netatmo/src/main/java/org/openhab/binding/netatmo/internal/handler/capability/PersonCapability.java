@@ -18,7 +18,6 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,7 +63,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
             Stream<HomeDataModule> cameras = cap.getModules().values().stream()
                     .filter(module -> module.getType() == ModuleType.WELCOME);
             descriptionProvider.setStateOptions(cameraChannelUID,
-                    cameras.map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
+                    cameras.map(p -> new StateOption(p.getId(), p.getName())).toList());
         });
     }
 

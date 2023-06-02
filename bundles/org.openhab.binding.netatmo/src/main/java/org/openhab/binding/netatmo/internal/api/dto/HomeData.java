@@ -46,7 +46,7 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
         }
 
         public List<HomeDataPerson> getKnownPersons() {
-            return persons.values().stream().filter(HomeDataPerson::isKnown).collect(Collectors.toList());
+            return persons.values().stream().filter(HomeDataPerson::isKnown).toList();
         }
     }
 
