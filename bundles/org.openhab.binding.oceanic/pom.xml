@@ -14,8 +14,4 @@
 
   <name>openHAB Add-ons :: Bundles :: Oceanic Binding</name>
 
-  <properties>
-    <bnd.importpackage>gnu.io;version="[3.12,6)"</bnd.importpackage>
-  </properties>
-
 </project>
