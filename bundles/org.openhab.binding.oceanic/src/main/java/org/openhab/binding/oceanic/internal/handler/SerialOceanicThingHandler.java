@@ -17,23 +17,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Enumeration;
+import java.util.TooManyListenersException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.oceanic.internal.SerialOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
+import org.openhab.core.io.transport.serial.PortInUseException;
+import org.openhab.core.io.transport.serial.SerialPort;
+import org.openhab.core.io.transport.serial.SerialPortEvent;
+import org.openhab.core.io.transport.serial.SerialPortEventListener;
+import org.openhab.core.io.transport.serial.SerialPortIdentifier;
+import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.RXTXCommDriver;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * The {@link SerialOceanicThingHandler} implements {@link OceanicThingHandler} for an Oceanic water softener that is
@@ -41,21 +42,22 @@ import gnu.io.UnsupportedCommOperationException;
  *
  * @author Karel Goderis - Initial contribution
  */
-public class SerialOceanicThingHandler extends OceanicThingHandler {
+public class SerialOceanicThingHandler extends OceanicThingHandler implements SerialPortEventListener {
 
     private static final long REQUEST_TIMEOUT = 10000;
     private static final int BAUD = 19200;
 
     private final Logger logger = LoggerFactory.getLogger(SerialOceanicThingHandler.class);
 
+    private final SerialPortManager serialPortManager;
     private SerialPort serialPort;
-    private CommPortIdentifier portId;
     private InputStream inputStream;
     private OutputStream outputStream;
     private SerialPortReader readerThread;
 
-    public SerialOceanicThingHandler(Thing thing) {
+    public SerialOceanicThingHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -65,73 +67,46 @@ public class SerialOceanicThingHandler extends OceanicThingHandler {
         SerialOceanicBindingConfiguration config = getConfigAs(SerialOceanicBindingConfiguration.class);
 
         if (serialPort == null && config.port != null) {
-            if (portId == null) {
-                try {
-                    RXTXCommDriver rxtxCommDriver = new RXTXCommDriver();
-                    rxtxCommDriver.initialize();
-                    CommPortIdentifier.addPortName(config.port, CommPortIdentifier.PORT_RAW, rxtxCommDriver);
-                    portId = CommPortIdentifier.getPortIdentifier(config.port);
-                } catch (NoSuchPortException e) {
-                    logger.error("An exception occurred while setting up serial port '{}' : '{}'", config.port,
-                            e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not setup serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
+
+            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.port);
+
+            if (portIdentifier == null) {
+                String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
+                        .collect(Collectors.joining(System.lineSeparator()));
+                String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s",
+                        config.port, availablePorts);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+                return;
             }
 
-            if (portId != null) {
-                try {
-                    serialPort = portId.open(this.getThing().getUID().getBindingId(), 2000);
-                } catch (PortInUseException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not open serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
+            try {
+                logger.info("Connecting to the Oceanic water softener using {}.", config.port);
+                serialPort = portIdentifier.open(this.getThing().getUID().getBindingId(), 2000);
 
-                try {
-                    inputStream = serialPort.getInputStream();
-                } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not open serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
+                serialPort.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                        SerialPort.PARITY_NONE);
+                serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+                serialPort.enableReceiveThreshold(1);
+                serialPort.disableReceiveTimeout();
 
+                inputStream = serialPort.getInputStream();
+                outputStream = serialPort.getOutputStream();
+
+                serialPort.addEventListener(this);
                 serialPort.notifyOnDataAvailable(true);
-
-                try {
-                    serialPort.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                            SerialPort.PARITY_NONE);
-                    serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-                } catch (UnsupportedCommOperationException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not configure serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
-
-                try {
-                    outputStream = serialPort.getOutputStream();
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Could not communicate with the serial port " + serialPort + ": " + e.getMessage());
-                    return;
-                }
 
                 readerThread = new SerialPortReader(inputStream);
                 readerThread.start();
-            } else {
-                StringBuilder sb = new StringBuilder();
-                @SuppressWarnings("rawtypes")
-                Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-                while (portList.hasMoreElements()) {
-                    CommPortIdentifier id = (CommPortIdentifier) portList.nextElement();
-                    if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                        sb.append(id.getName() + "\n");
-                    }
-                }
-                logger.error("Serial port '{}' could not be found. Available ports are:\n {}", config.port, sb);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+
+                updateStatus(ThingStatus.ONLINE);
+
+            } catch (PortInUseException portInUseException) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
+            } catch (UnsupportedCommOperationException | IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
+            } catch (TooManyListenersException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Too many listeners to serial port.");
             }
         }
     }
@@ -214,6 +189,13 @@ public class SerialOceanicThingHandler extends OceanicThingHandler {
             Throttler.unlock(config.port);
 
             return response;
+        }
+    }
+
+    @Override
+    public void serialEvent(SerialPortEvent serialPortEvent) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Received a serial port event : {}", serialPortEvent.getEventType());
         }
     }
 
