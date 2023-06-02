@@ -28,6 +28,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public enum EventType {
     UNKNOWN(),
+    @SerializedName("webhook_activation") // Ack of a 'webhook set' Api Call
+    WEBHOOK_ACTIVATION(ModuleType.ACCOUNT),
 
     @SerializedName("person") // When the Indoor Camera detects a face
     PERSON(ModuleType.PERSON, ModuleType.WELCOME),
