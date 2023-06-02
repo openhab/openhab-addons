@@ -142,8 +142,8 @@ public class HueBindingConstants {
 
     // channels for API v2
     public static final String CHANNEL_2_COLOR = CHANNEL_COLOR;
-    public static final String CHANNEL_2_COLOR_TEMPERATURE = "color-temperature";
-    public static final String CHANNEL_2_COLOR_TEMP_KELVIN = "color-temp-kelvin";
+    public static final String CHANNEL_2_COLOR_TEMP_PERCENT = "color-temperature";
+    public static final String CHANNEL_2_COLOR_TEMP_ABSOLUTE = "color-temperature-abs";
     public static final String CHANNEL_2_BRIGHTNESS = CHANNEL_BRIGHTNESS;
     public static final String CHANNEL_2_SWITCH = CHANNEL_SWITCH;
     public static final String CHANNEL_2_SCENE = CHANNEL_SCENE;
@@ -167,7 +167,7 @@ public class HueBindingConstants {
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
-            CHANNEL_2_COLOR_TEMPERATURE, CHANNEL_2_COLOR_TEMP_KELVIN, CHANNEL_2_SCENE);
+            CHANNEL_2_COLOR_TEMP_PERCENT, CHANNEL_2_COLOR_TEMP_ABSOLUTE, CHANNEL_2_SCENE);
 
     /*
      * Map of API v1 channel IDs against API v2 channel IDs where, if the v1 channel exists in the system, then we
@@ -178,8 +178,8 @@ public class HueBindingConstants {
             Map.entry(CHANNEL_COLOR, CHANNEL_2_COLOR), //
             Map.entry(CHANNEL_SWITCH, CHANNEL_2_SWITCH), //
             Map.entry(CHANNEL_SCENE, CHANNEL_2_SCENE), //
-            Map.entry(CHANNEL_COLORTEMPERATURE, CHANNEL_2_COLOR_TEMPERATURE), //
-            Map.entry(CHANNEL_COLORTEMPERATURE_ABS, CHANNEL_2_COLOR_TEMP_KELVIN), //
+            Map.entry(CHANNEL_COLORTEMPERATURE, CHANNEL_2_COLOR_TEMP_PERCENT), //
+            Map.entry(CHANNEL_COLORTEMPERATURE_ABS, CHANNEL_2_COLOR_TEMP_ABSOLUTE), //
             Map.entry(CHANNEL_DIMMER_SWITCH, CHANNEL_2_BUTTON_LAST_EVENT), //
             Map.entry(CHANNEL_LIGHT_LEVEL, CHANNEL_2_LIGHT_LEVEL), //
             Map.entry(CHANNEL_PRESENCE, CHANNEL_2_MOTION), //

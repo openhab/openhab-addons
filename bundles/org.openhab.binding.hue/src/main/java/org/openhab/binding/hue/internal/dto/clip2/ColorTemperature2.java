@@ -17,6 +17,8 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -27,21 +29,19 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ColorTemperature2 {
-    public static double getReciprocal(double value) {
-        return 1000000f / value;
-    }
-
     private @Nullable Long mirek;
-
     private @Nullable @SerializedName("mirek_schema") MirekSchema mirekSchema;
 
     /**
+     * Get the color temperature as a QuantityType value.
+     *
+     * @return a QuantityType value
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */
-    public @Nullable Double getKelvin() throws DTOPresentButEmptyException {
+    public @Nullable QuantityType<?> getAbsolute() throws DTOPresentButEmptyException {
         Long mirek = this.mirek;
         if (Objects.nonNull(mirek)) {
-            return getReciprocal(mirek.doubleValue());
+            return QuantityType.valueOf(mirek, Units.MIRED).toInvertibleUnit(Units.KELVIN);
         }
         throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
     }
@@ -55,7 +55,7 @@ public class ColorTemperature2 {
     }
 
     /**
-     * Convert the mirek value to a percentage value based on the MirekSchema.
+     * Get the color temperature as a percentage based on the MirekSchema.
      *
      * @return the percentage of the mirekSchema range.
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
@@ -73,8 +73,23 @@ public class ColorTemperature2 {
         throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
     }
 
-    public ColorTemperature2 setKelvin(double kelvin) {
-        setMirek(getReciprocal(kelvin));
+    /**
+     * Set the color temperature from a QuantityType. Convert the temperature value to a mirek value based on the passed
+     * MirekSchema argument.
+     *
+     * @param colorTemperature a QuantityType<Temperature> value
+     * @param mirekSchema the reference MirekSchema.
+     * @return this
+     */
+    public ColorTemperature2 setAbsolute(QuantityType<?> colorTemperature, MirekSchema mirekSchema) {
+        QuantityType<?> kelvin = colorTemperature.toInvertibleUnit(Units.KELVIN);
+        if (Objects.nonNull(kelvin)) {
+            QuantityType<?> mirek = kelvin.toInvertibleUnit(Units.MIRED);
+            if (Objects.nonNull(mirek)) {
+                setMirek(Math.max(mirekSchema.getMirekMinimum(),
+                        Math.min(mirekSchema.getMirekMaximum(), mirek.doubleValue())));
+            }
+        }
         return this;
     }
 
@@ -89,9 +104,12 @@ public class ColorTemperature2 {
     }
 
     /**
-     * Convert the percentage value to a mirek value based on the passed MirekSchema argument.
+     * Set the color temperature from a PercentType. Convert the percentage value to a mirek value based on the passed
+     * MirekSchema argument.
      *
+     * @param percent a PercentType value
      * @param mirekSchema the reference MirekSchema.
+     * @return this
      */
     public ColorTemperature2 setPercent(double percent, MirekSchema mirekSchema) {
         double min = mirekSchema.getMirekMinimum();

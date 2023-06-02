@@ -16,7 +16,7 @@
 			<channel id="color" typeId="system.color"/>
 			<channel id="color-xy-only" typeId="light-color-xy-only"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
-			<channel id="color-temp-kelvin" typeId="system.color-temperature-abs"/>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
 			<channel id="brightness" typeId="light-brightness"/>
 			<channel id="dimming-only" typeId="light-dimming-only"/>
 			<channel id="switch" typeId="light-switch"/>

@@ -322,13 +322,13 @@ public class Resource {
         return colorTemperature;
     }
 
-    public State getColorTemperatureKelvinState() {
+    public State getColorTemperatureAbsoluteState() {
         ColorTemperature2 colorTemp = colorTemperature;
         if (Objects.nonNull(colorTemp)) {
             try {
-                Double kelvin = colorTemp.getKelvin();
-                if (Objects.nonNull(kelvin)) {
-                    return new QuantityType<>(kelvin, Units.KELVIN);
+                QuantityType<?> colorTemperature = colorTemp.getAbsolute();
+                if (Objects.nonNull(colorTemperature)) {
+                    return colorTemperature;
                 }
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
@@ -645,25 +645,27 @@ public class Resource {
     }
 
     /**
-     * Set the colour temperature JSON element (only) from a Number:Temperature (normally in Kelvin).
+     * Set the colour temperature JSON element (only) from a Number:Temperature QuantityType or a plain DecimalType.
+     * In the latter case the value is assumed to be in Kelvin.
      *
-     * @param command should be a QuantityType(Temperature> (but it can also handle DecimalType).
+     * @param command should be a QuantityType<Temperature> (but it can also handle DecimalType).
+     * @param other the reference (light) resource to be used for the MirekSchema.
      * @return this resource instance.
      */
-    public Resource setColorTemperatureKelvin(Command command) {
-        Double kelvin = null;
+    public Resource setColorTemperatureAbsolute(Command command, @Nullable Resource other) {
+        QuantityType<?> colorTemp = null;
         if (command instanceof QuantityType<?>) {
-            QuantityType<?> temperature = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
-            if (Objects.nonNull(temperature)) {
-                kelvin = temperature.doubleValue();
-            }
+            colorTemp = (QuantityType<?>) command;
         } else if (command instanceof DecimalType) {
-            kelvin = ((DecimalType) command).doubleValue();
+            colorTemp = QuantityType.valueOf(((DecimalType) command).doubleValue(), Units.KELVIN);
         }
-        if (Objects.nonNull(kelvin)) {
+        if (Objects.nonNull(colorTemp)) {
+            MirekSchema schema = this.getMirekSchema();
+            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(other) ? other.getMirekSchema() : null;
+            schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
             ColorTemperature2 colorTemperature = this.colorTemperature;
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature2();
-            colorTemperature.setKelvin(kelvin);
+            colorTemperature.setAbsolute(colorTemp, schema);
             this.colorTemperature = colorTemperature;
         }
         return this;

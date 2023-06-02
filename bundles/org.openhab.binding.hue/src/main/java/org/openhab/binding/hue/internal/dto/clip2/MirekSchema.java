@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -39,8 +43,12 @@ public class MirekSchema {
         return mirekMinimum;
     }
 
+    private String toKelvin(int mirek) {
+        QuantityType<?> kelvin = QuantityType.valueOf(mirek, Units.MIRED).toInvertibleUnit(Units.KELVIN);
+        return Objects.nonNull(kelvin) ? String.format("%.0f K", kelvin.doubleValue()) : "";
+    }
+
     public String toPropertyValue() {
-        return String.format("%.0f K .. %.0f K", ColorTemperature2.getReciprocal(mirekMaximum),
-                ColorTemperature2.getReciprocal(mirekMinimum));
+        return String.format("%s .. %s", toKelvin(mirekMaximum), toKelvin(mirekMinimum));
     }
 }

@@ -318,7 +318,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         getCachedResource(lightResourceType));
                 break;
 
-            case CHANNEL_2_COLOR_TEMPERATURE:
+            case CHANNEL_2_COLOR_TEMP_PERCENT:
                 if (command instanceof IncreaseDecreaseType) {
                     cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
                     if (Objects.nonNull(cache)) {
@@ -336,8 +336,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         getCachedResource(ResourceType.LIGHT));
                 break;
 
-            case CHANNEL_2_COLOR_TEMP_KELVIN:
-                putResource = new Resource(lightResourceType).setColorTemperatureKelvin(command);
+            case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
+                putResource = new Resource(lightResourceType).setColorTemperatureAbsolute(command,
+                        getCachedResource(ResourceType.LIGHT));
                 break;
 
             case CHANNEL_2_COLOR:
@@ -719,8 +720,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (fullUpdate) {
                     updateEffectChannel(resource);
                 }
-                updateState(CHANNEL_2_COLOR_TEMPERATURE, resource.getColorTemperaturePercentState(), fullUpdate);
-                updateState(CHANNEL_2_COLOR_TEMP_KELVIN, resource.getColorTemperatureKelvinState(), fullUpdate);
+                updateState(CHANNEL_2_COLOR_TEMP_PERCENT, resource.getColorTemperaturePercentState(), fullUpdate);
+                updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, resource.getColorTemperatureAbsoluteState(), fullUpdate);
                 updateState(CHANNEL_2_COLOR, resource.getColorState(), fullUpdate);
                 updateState(CHANNEL_2_COLOR_XY_ONLY, resource.getColorXyState(), fullUpdate);
                 updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);

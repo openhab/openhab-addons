@@ -252,7 +252,7 @@ class Clip2DtoTest {
                 state = item.getColorTemperaturePercentState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(96.3, ((PercentType) state).doubleValue(), 0.1);
-                state = item.getColorTemperatureKelvinState();
+                state = item.getColorTemperatureAbsoluteState();
                 assertTrue(state instanceof QuantityType<?>);
                 assertEquals(2257.3, ((QuantityType<?>) state).doubleValue(), 0.1);
 
@@ -262,7 +262,7 @@ class Clip2DtoTest {
                 state = item.getColorTemperaturePercentState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(83.6, ((PercentType) state).doubleValue(), 0.1);
-                state = item.getColorTemperatureKelvinState();
+                state = item.getColorTemperatureAbsoluteState();
                 assertTrue(state instanceof QuantityType<?>);
                 assertEquals(2257.3, ((QuantityType<?>) state).doubleValue(), 0.1);
                 item.setMirekSchema(temp);
@@ -270,23 +270,23 @@ class Clip2DtoTest {
                 // change colour temperature percent to zero
                 item.setColorTemperaturePercent(PercentType.ZERO, null);
                 assertEquals(PercentType.ZERO, item.getColorTemperaturePercentState());
-                state = item.getColorTemperatureKelvinState();
+                state = item.getColorTemperatureAbsoluteState();
                 assertTrue(state instanceof QuantityType<?>);
                 assertEquals(6535.9, ((QuantityType<?>) state).doubleValue(), 0.1);
 
                 // change colour temperature percent to 100
                 item.setColorTemperaturePercent(PercentType.HUNDRED, null);
                 assertEquals(PercentType.HUNDRED, item.getColorTemperaturePercentState());
-                state = item.getColorTemperatureKelvinState();
+                state = item.getColorTemperatureAbsoluteState();
                 assertTrue(state instanceof QuantityType<?>);
                 assertEquals(2202.6, ((QuantityType<?>) state).doubleValue(), 0.1);
 
                 // change colour temperature kelvin to 4000 K
-                item.setColorTemperatureKelvin(QuantityType.valueOf("4000 K"));
+                item.setColorTemperatureAbsolute(QuantityType.valueOf("4000 K"), null);
                 state = item.getColorTemperaturePercentState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(32.2, ((PercentType) state).doubleValue(), 0.1);
-                assertEquals(QuantityType.valueOf("4000 K"), item.getColorTemperatureKelvinState());
+                assertEquals(QuantityType.valueOf("4000 K"), item.getColorTemperatureAbsoluteState());
 
                 assertEquals(UnDefType.NULL, item.getColorState());
                 Alerts alert = item.getAlerts();
