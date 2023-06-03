@@ -181,82 +181,30 @@
 		<description>The scene channel allows recalling a scene to all lights that belong to the scene.</description>
 	</channel-type>
 
-	<!-- CLIP 2 Channels -->
+	<!-- API v2 Channel Types -->
 	<channel-type id="button-last-event">
-		<item-type>Number</item-type>
+		<kind>trigger</kind>
 		<label>Button Last Event</label>
 		<description>Numeric code (e.g. 1003) representing the last push button event.</description>
-		<state readOnly="true" pattern="%d"/>
-	</channel-type>
-
-	<channel-type id="motion-enabled">
-		<item-type>Switch</item-type>
-		<label>Motion Enabled</label>
-		<description>Motion detector enabled.</description>
-		<category>Lock</category>
-	</channel-type>
-
-	<channel-type id="light-level-v2">
-		<item-type>Number:Illuminance</item-type>
-		<label>Light Level</label>
-		<description>Current light level.</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="light-level-enabled">
-		<item-type>Switch</item-type>
-		<label>Light Level Enabled</label>
-		<description>Light level sensor enabled.</description>
-		<category>Lock</category>
-	</channel-type>
-
-	<channel-type id="temperature-enabled">
-		<item-type>Switch</item-type>
-		<label>Temperature Sensor Enabled</label>
-		<description>Temperature sensor enabled.</description>
-		<category>Lock</category>
+		<event/>
 	</channel-type>
 
 	<channel-type id="rotary-steps">
-		<item-type>Number</item-type>
+		<kind>trigger</kind>
 		<label>Rotary Steps</label>
-		<description>The last 'steps' value (e.g. +/-30) of a rotary dial.</description>
-		<state readOnly="true" pattern="%d"/>
+		<description>The last 'steps' value (e.g. +/-30) of the rotary dial.</description>
+		<event/>
 	</channel-type>
 
-	<channel-type id="light-switch">
+	<channel-type id="sensor-enabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch the light on/off.</description>
-		<category>Switch</category>
+		<label>Sensor Enabled</label>
+		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="light-brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Adjust the brightness of the light.</description>
-		<category>Light</category>
-		<state pattern="%.1f %%"/>
-	</channel-type>
-
-	<channel-type id="group-switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch on/off all the lights in the zone or room.</description>
-		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="group-brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Adjust the brightness of all the lights in the zone or room.</description>
-		<category>Light</category>
-	</channel-type>
-
-	<channel-type id="group-scene">
+	<channel-type id="scene-v2">
 		<item-type>String</item-type>
 		<label>Scene</label>
-		<description>Activate the scene for the lights in the zone or room.</description>
 		<category>MediaControl</category>
 		<state pattern="%s"/>
 	</channel-type>
@@ -272,14 +220,12 @@
 	<channel-type id="alert-v2">
 		<item-type>String</item-type>
 		<label>Alert</label>
-		<description>Activate the alert for the light(s).</description>
 		<state pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="effect-v2">
 		<item-type>String</item-type>
 		<label>Effect</label>
-		<description>Activate the effect for the light.</description>
 		<state pattern="%s"/>
 	</channel-type>
 
@@ -291,40 +237,22 @@
 		<state min="0" step="100" pattern="%d ms"/>
 	</channel-type>
 
-	<channel-type id="light-color-xy-only" advanced="true">
+	<channel-type id="advanced-color" advanced="true">
 		<item-type>Color</item-type>
 		<label>Color XY Only</label>
-		<description>Set the color xy parameter of the light without changing other state parameters.</description>
 		<category>ColorLight</category>
 	</channel-type>
 
-	<channel-type id="light-dimming-only" advanced="true">
+	<channel-type id="advanced-brightness" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Dimming Only</label>
-		<description>Set the dimming parameter of the light without changing other state parameters.</description>
 		<category>Light</category>
 		<state pattern="%.1f %%"/>
 	</channel-type>
 
-	<channel-type id="light-on-off-only" advanced="true">
+	<channel-type id="advanced-power" advanced="true">
 		<item-type>Switch</item-type>
 		<label>On/Off Only</label>
-		<description>Set the on/off parameter of the light without changing other state parameters.</description>
-		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="group-dimming-only" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Dimming Only</label>
-		<description>Set the dimming parameter of all the lights in the zone or room without changing other state parameters.</description>
-		<category>Light</category>
-		<state pattern="%.1f %%"/>
-	</channel-type>
-
-	<channel-type id="group-on-off-only" advanced="true">
-		<item-type>Switch</item-type>
-		<label>On/Off Only</label>
-		<description>Set the on/off parameter of all the lights in the zone or room without changing other state parameters.</description>
 		<category>Switch</category>
 	</channel-type>
 

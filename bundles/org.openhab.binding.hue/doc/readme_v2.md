@@ -69,8 +69,8 @@ Device things support some of the following channels:
 | dynamics              | Number:Time        | Sets the duration of dynamic transitions between light states. (Advanced)                                           |
 | alert                 | String             | Allows setting an alert on a light e.g. flashing them.                                                              |
 | effect                | String             | Allows setting an effect on a light e.g. 'candle' effect.                                                           |
-| button-last-event     | Number             | Shows which button was last pressed in the device. (Read Only)                                                      |
-| rotary-steps          | Number             | Shows the number of rotary steps of the last rotary dial movement. (Read Only)                                      |
+| button-last-event     | Number             | Informs which button was last pressed in the device. (Trigger Channel)                                              |
+| rotary-steps          | Number             | Informs about the number of rotary steps of the last rotary dial movement. (Trigger Channel)                        |
 | motion                | Switch             | Shows if motion has been detected by the sensor. (Read Only)                                                        |
 | motion-enabled        | Switch             | Supports enabling / disabling the motion sensor.                                                                    |
 | light-level           | Number:Illuminance | Shows the current light level measured by the sensor. (Read Only)                                                   |
@@ -84,7 +84,8 @@ Device things support some of the following channels:
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
 
-The `button-last-event` channel value is a number that is calculated from the following formula:
+The `button-last-event` channel is a trigger channel.
+When the button is pressed the channel receives a number as calculated by the following formula:
 
 ```text
 value = (button_id * 1000) + event_id;
@@ -103,8 +104,9 @@ The `event_id` can have the following values:
 
 So (for example) the channel value `1002` ((1 * 1000) + 2) means that the second button in the device had a short release event.
 
-The `rotary-steps` channel value is the number of steps corresponding to the last movement of a rotary dial.
-A positive number means the dial was rotated clock-wise, whereas a negative number means it was roated counter-clockwise.
+The `rotary-steps` channel is a trigger channel.
+When the dial is turned, the channel receives a number corresponding to the number of steps of the last movement of a rotary dial.
+A positive number means the dial was rotated clock-wise, whereas a negative number means it was rotated counter-clockwise.
 
 ### Channels for Rooms and Zones
 

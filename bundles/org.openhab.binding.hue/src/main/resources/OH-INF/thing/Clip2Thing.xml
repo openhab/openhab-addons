@@ -14,27 +14,45 @@
 
 		<channels>
 			<channel id="color" typeId="system.color"/>
-			<channel id="color-xy-only" typeId="light-color-xy-only"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
 			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
-			<channel id="brightness" typeId="light-brightness"/>
-			<channel id="dimming-only" typeId="light-dimming-only"/>
-			<channel id="switch" typeId="light-switch"/>
-			<channel id="on-off-only" typeId="light-on-off-only"/>
-			<channel id="dynamics" typeId="dynamics"/>
-			<channel id="alert" typeId="alert-v2"/>
-			<channel id="effect" typeId="effect-v2"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="alert" typeId="alert-v2">
+				<description>Activate the alert for the light.</description>
+			</channel>
+			<channel id="effect" typeId="effect-v2">
+				<description>Activate the effect for the light.</description>
+			</channel>
 			<channel id="button-last-event" typeId="button-last-event"/>
 			<channel id="rotary-steps" typeId="rotary-steps"/>
 			<channel id="motion" typeId="system.motion"/>
-			<channel id="motion-enabled" typeId="motion-enabled"/>
-			<channel id="light-level" typeId="light-level-v2"/>
-			<channel id="light-level-enabled" typeId="light-level-enabled"/>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="temperature-enabled" typeId="temperature-enabled"/>
+			<channel id="motion-enabled" typeId="sensor-enabled">
+				<description>Motion sensor enabled.</description>
+			</channel>
+			<channel id="light-level" typeId="illuminance">
+				<description>Current light level.</description>
+			</channel>
+			<channel id="light-level-enabled" typeId="sensor-enabled">
+				<description>Light level sensor enabled.</description>
+			</channel>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="temperature-enabled" typeId="sensor-enabled">
+				<description>Temperature sensor enabled.</description>
+			</channel>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="battery-low" typeId="system.low-battery"/>
 			<channel id="last-updated" typeId="last-updated-v2"/>
+			<channel id="dynamics" typeId="dynamics"/>
+			<channel id="color-xy-only" typeId="advanced-color">
+				<description>Set the color xy parameter of the light without changing other state parameters.</description>
+			</channel>
+			<channel id="dimming-only" typeId="advanced-brightness">
+				<description>Set the dimming parameter of the light without changing other state parameters.</description>
+			</channel>
+			<channel id="on-off-only" typeId="advanced-power">
+				<description>Set the on/off parameter of the light without changing other state parameters.</description>
+			</channel>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
@@ -58,13 +76,26 @@
 		<description>A group of Hue API v2 lights that are located in a single room.</description>
 
 		<channels>
-			<channel id="brightness" typeId="group-brightness"/>
-			<channel id="dimming-only" typeId="group-dimming-only"/>
-			<channel id="switch" typeId="group-switch"/>
-			<channel id="on-off-only" typeId="group-on-off-only"/>
+			<channel id="brightness" typeId="system.brightness">
+				<description>Controls the brightness and switches on/off the group of lights in the room.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<description>Switch on/off the group of the lights in the room.</description>
+			</channel>
+			<channel id="scene" typeId="scene-v2">
+				<description>Activate the scene for the group of lights in the room.</description>
+			</channel>
+			<channel id="alert" typeId="alert-v2">
+				<description>Activate the alert for the group of the lights in the room.</description>
+			</channel>
 			<channel id="dynamics" typeId="dynamics"/>
-			<channel id="scene" typeId="group-scene"/>
-			<channel id="alert" typeId="alert-v2"/>
+			<channel id="dimming-only" typeId="advanced-brightness">
+				<description>Set the dimming parameter of the group of lights in the room without changing other state parameters.</description>
+			</channel>
+			<channel id="on-off-only" typeId="advanced-power">
+				<description>Set the on/off parameter of the group of the lights in the room without changing other state
+					parameters.</description>
+			</channel>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
@@ -88,13 +119,25 @@
 		<description>A group of Hue API v2 lights that are located in a zone.</description>
 
 		<channels>
-			<channel id="brightness" typeId="group-brightness"/>
-			<channel id="dimming-only" typeId="group-dimming-only"/>
-			<channel id="switch" typeId="group-switch"/>
-			<channel id="on-off-only" typeId="group-on-off-only"/>
+			<channel id="brightness" typeId="system.brightness">
+				<description>Controls the brightness and switches on/off the group of lights in the zone.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<description>Switch on/off the group of lights in the zone.</description>
+			</channel>
+			<channel id="scene" typeId="scene-v2">
+				<description>Activate the scene for the group of lights in the zone.</description>
+			</channel>
+			<channel id="alert" typeId="alert-v2">
+				<description>Activate the alert for the group of the lights in the zone.</description>
+			</channel>
 			<channel id="dynamics" typeId="dynamics"/>
-			<channel id="scene" typeId="group-scene"/>
-			<channel id="alert" typeId="alert-v2"/>
+			<channel id="dimming-only" typeId="advanced-brightness">
+				<description>Set the dimming parameter of the group of lights in the zone without changing other state parameters.</description>
+			</channel>
+			<channel id="on-off-only" typeId="advanced-power">
+				<description>Set the on/off parameter of the group of lights in the zone without changing other state parameters.</description>
+			</channel>
 		</channels>
 
 		<representation-property>resourceId</representation-property>

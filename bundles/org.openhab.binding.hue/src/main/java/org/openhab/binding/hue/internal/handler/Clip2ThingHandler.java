@@ -52,6 +52,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -1042,9 +1043,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the channel state, and if appropriate add the channel ID to the set of supportedChannelIds. Note: the
-     * particular 'UnDefType.UNDEF' value of the state argument is used to specially indicate the undefined state, but
-     * yet that its channel shall nevertheless continue to be present in the thing.
+     * Update the channel state, and if appropriate add the channel ID to the set of supportedChannelIds. Calls either
+     * OH core updateState() or triggerChannel() methods depending on the channel kind.
+     *
+     * Note: the particular 'UnDefType.UNDEF' value of the state argument is used to specially indicate the undefined
+     * state, but yet that its channel shall nevertheless continue to be present in the thing.
      *
      * @param channelID the id of the channel.
      * @param state the new state of the channel.
@@ -1052,10 +1055,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateState(String channelID, State state, boolean fullUpdate) {
         boolean isDefined = state != UnDefType.NULL;
-        if ((fullUpdate || isDefined) && Objects.nonNull(thing.getChannel(channelID))) {
-            logger.debug("{} -> updateState() '{}' updated to '{}' (fullUpdate:{}, isDefined:{})", resourceId,
+        Channel channel = thing.getChannel(channelID);
+
+        if ((fullUpdate || isDefined) && Objects.nonNull(channel)) {
+            logger.debug("{} -> updateState() '{}' update with '{}' (fullUpdate:{}, isDefined:{})", resourceId,
                     channelID, state, fullUpdate, isDefined);
-            updateState(channelID, state);
+
+            switch (channel.getKind()) {
+                case STATE:
+                    updateState(channelID, state);
+                    break;
+
+                case TRIGGER:
+                    if (state instanceof DecimalType) {
+                        triggerChannel(channelID, String.valueOf(((DecimalType) state).intValue()));
+                    }
+            }
         }
         if (fullUpdate && isDefined) {
             addSupportedChannel(channelID);
