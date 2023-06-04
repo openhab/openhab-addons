@@ -15,7 +15,6 @@
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color-temperature" typeId="system.color-temperature"/>
-			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="alert" typeId="alert-v2">
@@ -44,6 +43,7 @@
 			<channel id="battery-low" typeId="system.low-battery"/>
 			<channel id="last-updated" typeId="last-updated-v2"/>
 			<channel id="dynamics" typeId="dynamics"/>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
 			<channel id="color-xy-only" typeId="advanced-color">
 				<description>Set the color xy parameter of the light without changing other state parameters.</description>
 			</channel>
