@@ -38,6 +38,7 @@ import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -50,6 +51,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -80,9 +82,10 @@ public class RobonectHandler extends BaseThingHandler {
 
     private RobonectClient robonectClient;
 
-    public RobonectHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
+    public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.httpClient = httpClient;
+        httpClient = httpClientFactory
+                .createHttpClient(ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null));
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -362,6 +365,13 @@ public class RobonectHandler extends BaseThingHandler {
                     timeZoneString, timeZoneProvider.getTimeZone(), e);
         }
 
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.error("Exception while trying to start HTTP client", e);
+            throw new IllegalStateException("Could not create HttpClient");
+        }
+
         robonectClient = new RobonectClient(httpClient, endpoint);
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
         int pollInterval = robonectConfig.getPollInterval();
@@ -374,6 +384,12 @@ public class RobonectHandler extends BaseThingHandler {
         if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
+        }
+
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.warn("Exception while trying to stop HTTP client", e);
         }
     }
 
