@@ -55,7 +55,8 @@ public class ColorTemperature2 {
     }
 
     /**
-     * Get the color temperature as a percentage based on the MirekSchema.
+     * Get the color temperature as a percentage based on the MirekSchema. Note: this method is only to be used on
+     * cached state DTOs which already have a defined mirek schema.
      *
      * @return the percentage of the mirekSchema range.
      * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
@@ -67,30 +68,10 @@ public class ColorTemperature2 {
             mirekSchema = Objects.nonNull(mirekSchema) ? mirekSchema : MirekSchema.DEFAULT_SCHEMA;
             double min = mirekSchema.getMirekMinimum();
             double max = mirekSchema.getMirekMaximum();
-            double percent = (100f * (mirek.doubleValue() - min)) / (max - min);
+            double percent = 100f * (mirek.doubleValue() - min) / (max - min);
             return Math.max(0, Math.min(100, percent));
         }
-        throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
-    }
-
-    /**
-     * Set the color temperature from a QuantityType. Convert the temperature value to a mirek value based on the passed
-     * MirekSchema argument.
-     *
-     * @param colorTemperature a QuantityType<Temperature> value
-     * @param mirekSchema the reference MirekSchema.
-     * @return this
-     */
-    public ColorTemperature2 setAbsolute(QuantityType<?> colorTemperature, MirekSchema mirekSchema) {
-        QuantityType<?> kelvin = colorTemperature.toInvertibleUnit(Units.KELVIN);
-        if (Objects.nonNull(kelvin)) {
-            QuantityType<?> mirek = kelvin.toInvertibleUnit(Units.MIRED);
-            if (Objects.nonNull(mirek)) {
-                setMirek(Math.max(mirekSchema.getMirekMinimum(),
-                        Math.min(mirekSchema.getMirekMaximum(), mirek.doubleValue())));
-            }
-        }
-        return this;
+        throw new DTOPresentButEmptyException("'mirek_schema' DTO is present but empty");
     }
 
     public ColorTemperature2 setMirek(double mirek) {
@@ -100,22 +81,6 @@ public class ColorTemperature2 {
 
     public ColorTemperature2 setMirekSchema(@Nullable MirekSchema mirekSchema) {
         this.mirekSchema = mirekSchema;
-        return this;
-    }
-
-    /**
-     * Set the color temperature from a PercentType. Convert the percentage value to a mirek value based on the passed
-     * MirekSchema argument.
-     *
-     * @param percent a PercentType value
-     * @param mirekSchema the reference MirekSchema.
-     * @return this
-     */
-    public ColorTemperature2 setPercent(double percent, MirekSchema mirekSchema) {
-        double min = mirekSchema.getMirekMinimum();
-        double max = mirekSchema.getMirekMaximum();
-        double offset = (max - min) * percent / 100f;
-        setMirek(min + offset);
         return this;
     }
 }

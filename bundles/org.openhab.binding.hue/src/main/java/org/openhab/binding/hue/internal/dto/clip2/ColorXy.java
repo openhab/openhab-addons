@@ -50,11 +50,7 @@ public class ColorXy {
     }
 
     public ColorXy setGamut(@Nullable Gamut gamut) {
-        if (Objects.nonNull(gamut)) {
-            this.gamut = new Gamut2().setGamut(gamut);
-        } else {
-            this.gamut = null;
-        }
+        this.gamut = Objects.nonNull(gamut) ? new Gamut2().setGamut(gamut) : null;
         return this;
     }
 

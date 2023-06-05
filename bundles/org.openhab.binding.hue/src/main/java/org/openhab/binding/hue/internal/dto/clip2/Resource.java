@@ -24,7 +24,6 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
@@ -35,7 +34,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -105,89 +103,6 @@ public class Resource {
         if (Objects.nonNull(resourceType)) {
             setType(resourceType);
         }
-    }
-
-    /**
-     * Put this resource's control id in the given map of control ids.
-     *
-     * @param controlIds the map of control ids to be updated.
-     * @return this resource instance.
-     */
-    public Resource addControlIdToMap(Map<String, Integer> controlIds) {
-        if (!hasSparseData) {
-            MetaData metadata = this.metadata;
-            controlIds.put(getId(), Objects.nonNull(metadata) ? metadata.getControlId() : 0);
-        }
-        return this;
-    }
-
-    /**
-     * Method that copies required fields from another Resource instance into this instance. If the field in this
-     * instance is null and the same field in the other instance is not null, then the value from the other instance is
-     * copied to this instance. This method allows 'hasSparseData' resources to expand themselves to include necessary
-     * fields taken over from a previously cached full data DTO.
-     *
-     * @param other the other resource instance.
-     * @return this instance.
-     */
-    public Resource copyMissingFieldsFrom(Resource other) {
-        // on
-        if (Objects.isNull(this.on) && Objects.nonNull(other.on)) {
-            this.on = other.on;
-        }
-        // dimming
-        if (Objects.isNull(this.dimming) && Objects.nonNull(other.dimming)) {
-            this.dimming = other.dimming;
-        }
-        // minimum dimming level
-        Dimming oD = other.dimming;
-        Double oMDL = Objects.nonNull(oD) ? oD.getMinimumDimmingLevel() : null;
-        if (Objects.nonNull(oMDL)) {
-            Dimming tD = this.dimming;
-            this.dimming = (Objects.nonNull(tD) ? tD : new Dimming()).setMinimumDimmingLevel(oMDL);
-        }
-        // color
-        if (Objects.isNull(this.color) && Objects.nonNull(other.color)) {
-            this.color = other.color;
-        }
-        // color gamut
-        ColorXy oC = other.color;
-        Gamut oG = Objects.nonNull(oC) ? oC.getGamut() : null;
-        if (Objects.nonNull(oG)) {
-            ColorXy tC = this.color;
-            this.color = (Objects.nonNull(tC) ? tC : new ColorXy()).setGamut(oG);
-        }
-        // color temperature
-        if (Objects.isNull(this.colorTemperature) && Objects.nonNull(other.colorTemperature)) {
-            this.colorTemperature = other.colorTemperature;
-        }
-        // mirek schema
-        ColorTemperature2 oCT = other.colorTemperature;
-        MirekSchema oMS = Objects.nonNull(oCT) ? oCT.getMirekSchema() : null;
-        if (Objects.nonNull(oMS)) {
-            ColorTemperature2 tCT = this.colorTemperature;
-            this.colorTemperature = (Objects.nonNull(tCT) ? tCT : new ColorTemperature2()).setMirekSchema(oMS);
-        }
-        // metadata
-        if (Objects.isNull(this.metadata) && Objects.nonNull(other.metadata)) {
-            this.metadata = other.metadata;
-        }
-        // alerts
-        if (Objects.isNull(this.alert) && Objects.nonNull(other.alert)) {
-            this.alert = other.alert;
-        }
-        // effects
-        if (Objects.isNull(this.effects) && Objects.nonNull(other.effects)) {
-            this.effects = other.effects;
-        }
-        // effects values
-        Effects oE = other.effects;
-        List<String> oESV = Objects.nonNull(oE) ? oE.getStatusValues() : null;
-        if (Objects.nonNull(oESV)) {
-            Effects tE = this.effects;
-            this.effects = (Objects.nonNull(tE) ? tE : new Effects()).setStatusValues(oESV);
-        }
-        return this;
     }
 
     public @Nullable List<ActionEntry> getActions() {
@@ -294,7 +209,8 @@ public class Resource {
     /**
      * Get the color as an HSBType. This returns an HSB that is based on an amalgamation of the color xy, dimming, and
      * on/off JSON elements. It takes its 'H' & 'S' parts from the 'ColorXy' JSON element, and its 'B' part from the
-     * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value.
+     * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value. Note: this
+     * method is only to be used on cached state DTOs which already have a defined color gamut.
      *
      * @return an HSBType containing the current color and brightness level, or UNDEF or NULL.
      */
@@ -338,7 +254,8 @@ public class Resource {
     }
 
     /**
-     * Get the colour temperature in percent.
+     * Get the colour temperature in percent. Note: this method is only to be used on cached state DTOs which already
+     * have a defined mirek schema.
      *
      * @return a PercentType with the colour temperature percentage.
      */
@@ -379,6 +296,11 @@ public class Resource {
             }
         }
         return UnDefType.NULL;
+    }
+
+    public int getControlId() {
+        MetaData metadata = this.metadata;
+        return Objects.nonNull(metadata) ? metadata.getControlId() : 0;
     }
 
     public @Nullable Dimming getDimming() {
@@ -498,6 +420,10 @@ public class Resource {
         } catch (DTOPresentButEmptyException e) {
             return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
         }
+    }
+
+    public @Nullable OnState getOnState() {
+        return on;
     }
 
     public @Nullable ResourceReference getOwner() {
@@ -631,112 +557,23 @@ public class Resource {
         return this;
     }
 
-    public Resource setAlert(Command command, @Nullable Resource other) {
-        if ((command instanceof StringType) && Objects.nonNull(other)) {
-            Alerts otherAlert = other.alert;
-            if (Objects.nonNull(otherAlert)) {
-                ActionType actionType = ActionType.of(((StringType) command).toString());
-                if (otherAlert.getActionValues().contains(actionType)) {
-                    this.alert = new Alerts().setAction(actionType);
-                }
-            }
-        }
+    public Resource setAlerts(Alerts alert) {
+        this.alert = alert;
         return this;
     }
 
-    /**
-     * Set the colour temperature JSON element (only) from a Number:Temperature QuantityType or a plain DecimalType.
-     * In the latter case the value is assumed to be in Kelvin.
-     *
-     * @param command should be a QuantityType<Temperature> (but it can also handle DecimalType).
-     * @param other the reference (light) resource to be used for the MirekSchema.
-     * @return this resource instance.
-     */
-    public Resource setColorTemperatureAbsolute(Command command, @Nullable Resource other) {
-        QuantityType<?> colorTemp = null;
-        if (command instanceof QuantityType<?>) {
-            colorTemp = (QuantityType<?>) command;
-        } else if (command instanceof DecimalType) {
-            colorTemp = QuantityType.valueOf(((DecimalType) command).doubleValue(), Units.KELVIN);
-        }
-        if (Objects.nonNull(colorTemp)) {
-            MirekSchema schema = this.getMirekSchema();
-            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(other) ? other.getMirekSchema() : null;
-            schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
-            ColorTemperature2 colorTemperature = this.colorTemperature;
-            colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature2();
-            colorTemperature.setAbsolute(colorTemp, schema);
-            this.colorTemperature = colorTemperature;
-        }
+    public Resource setColorTemperature(ColorTemperature2 colorTemperature) {
+        this.colorTemperature = colorTemperature;
         return this;
     }
 
-    /**
-     * Set the color temperature JSON element (only) from a PercentType. If this resource has its own MirekSchema then
-     * use that, otherwise if the 'other' parameter is not null and has a MirekSchema, then use that, and if neither
-     * have one then use the default MirekSchema.
-     *
-     * @param command a PercentType command value.
-     * @param other the reference (light) resource to be used for the MirekSchema.
-     * @return this resource instance.
-     */
-    public Resource setColorTemperaturePercent(Command command, @Nullable Resource other) {
-        if (command instanceof PercentType) {
-            MirekSchema schema = this.getMirekSchema();
-            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(other) ? other.getMirekSchema() : null;
-            schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
-            ColorTemperature2 colorTemperature = this.colorTemperature;
-            colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature2();
-            colorTemperature.setPercent(((PercentType) command).doubleValue(), schema);
-            this.colorTemperature = colorTemperature;
-        }
+    public Resource setColorXy(ColorXy color) {
+        this.color = color;
         return this;
     }
 
-    /**
-     * Set the color XY JSON element (only) from an HSBType. If this resource has its own Gamut then use that, otherwise
-     * if the 'other' parameter is not null and has a Gamut, then use that, and if neither have one then use the default
-     * Gamut. Use the HS parts of the HSB value to set the value of the 'ColorXy' JSON element, and ignore the 'B' part.
-     *
-     * @param command an HSBType with the new color value.
-     * @param other the reference (light) resource to be used for the Gamut.
-     * @return this resource instance.
-     */
-    public Resource setColorXy(Command command, @Nullable Resource other) {
-        if (command instanceof HSBType) {
-            Gamut gamut = this.getGamut();
-            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(other) ? other.getGamut() : null;
-            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
-            HSBType hsb = (HSBType) command;
-            ColorXy color = this.color;
-            this.color = (Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut));
-        }
-        return this;
-    }
-
-    /**
-     * Set the dimming percent JSON element (only). If this resource has its own minimum dimming level then use that,
-     * otherwise if the 'other' parameter is not null and has a minimum dimming level, then use that, and if neither
-     * have one then use the default.
-     *
-     * @param command a PercentType with the new dimming parameter.
-     * @param other the reference (light) resource to be used for the minimum dimming level.
-     * @return this resource instance.
-     */
-    public Resource setDimming(Command command, @Nullable Resource other) {
-        if (command instanceof PercentType) {
-            Double min = getMinimumDimmingLevel();
-            min = Objects.nonNull(min) ? min : Objects.nonNull(other) ? other.getMinimumDimmingLevel() : null;
-            min = Objects.nonNull(min) ? min : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-            PercentType brightness = (PercentType) command;
-            if (brightness.doubleValue() < min.doubleValue()) {
-                brightness = new PercentType(new BigDecimal(min, PERCENT_MATH_CONTEXT));
-            }
-            Dimming dimming = this.dimming;
-            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
-            dimming.setBrightness(brightness.doubleValue());
-            this.dimming = dimming;
-        }
+    public Resource setDimming(Dimming dimming) {
+        this.dimming = dimming;
         return this;
     }
 
@@ -745,16 +582,8 @@ public class Resource {
         return this;
     }
 
-    public Resource setEffect(Command command, @Nullable Resource other) {
-        if ((command instanceof StringType) && Objects.nonNull(other)) {
-            Effects otherEffects = other.effects;
-            if (Objects.nonNull(otherEffects)) {
-                EffectType effectType = EffectType.of(((StringType) command).toString());
-                if (otherEffects.allows(effectType)) {
-                    this.effects = new Effects().setEffect(effectType);
-                }
-            }
-        }
+    public Resource setEffects(Effects effect) {
+        this.effects = effect;
         return this;
     }
 
@@ -767,6 +596,11 @@ public class Resource {
 
     public Resource setId(String id) {
         this.id = id;
+        return this;
+    }
+
+    public Resource setMetadata(MetaData metadata) {
+        this.metadata = metadata;
         return this;
     }
 
@@ -793,6 +627,10 @@ public class Resource {
             this.on = on;
         }
         return this;
+    }
+
+    public void setOnState(OnState on) {
+        this.on = on;
     }
 
     public Resource setRecallAction(RecallAction recallAction) {

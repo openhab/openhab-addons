@@ -49,6 +49,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
+import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.core.library.types.DateTimeType;
@@ -301,27 +302,26 @@ public class Clip2ThingHandler extends BaseThingHandler {
         ResourceType lightResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
                 : ResourceType.GROUPED_LIGHT;
 
-        Command command = commandParam;
         Resource putResource = null;
-        Resource cache = null;
         String putResourceId = null;
+        Command command = commandParam;
         String channelId = channelUID.getId();
+        Resource cache = getCachedResource(lightResourceType);
 
         switch (channelId) {
             case CHANNEL_2_ALERT:
-                putResource = new Resource(lightResourceType).setAlert(command, getCachedResource(lightResourceType));
+                putResource = Setters.setAlert(new Resource(lightResourceType), command, cache);
                 scheduler.schedule(() -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 10,
                         TimeUnit.SECONDS);
                 break;
 
             case CHANNEL_2_EFFECT:
-                putResource = new Resource(lightResourceType).setOnOff(OnOffType.ON).setEffect(command,
-                        getCachedResource(lightResourceType));
+                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache);
+                putResource.setOnOff(OnOffType.ON);
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
                 if (command instanceof IncreaseDecreaseType) {
-                    cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
                     if (Objects.nonNull(cache)) {
                         State current = cache.getColorTemperaturePercentState();
                         if (current instanceof PercentType) {
@@ -333,21 +333,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 } else if (command instanceof OnOffType) {
                     command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
                 }
-                putResource = new Resource(lightResourceType).setColorTemperaturePercent(command,
-                        getCachedResource(ResourceType.LIGHT));
+                putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
                 break;
 
             case CHANNEL_2_COLOR_TEMP_ABSOLUTE:
-                putResource = new Resource(lightResourceType).setColorTemperatureAbsolute(command,
-                        getCachedResource(ResourceType.LIGHT));
+                putResource = Setters.setColorTemperatureAbsolute(new Resource(lightResourceType), command, cache);
                 break;
 
             case CHANNEL_2_COLOR:
                 putResource = new Resource(lightResourceType);
                 if (command instanceof HSBType) {
                     HSBType color = ((HSBType) command);
-                    cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
-                    putResource.setColorXy(color, cache);
+                    putResource = Setters.setColorXy(putResource, color, cache);
                     command = color.getBrightness();
                 }
                 // NB fall through for handling of brightness and switch related commands !!
@@ -355,7 +352,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType) {
-                    cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
                     if (Objects.nonNull(cache)) {
                         State current = cache.getBrightnessState();
                         if (current instanceof PercentType) {
@@ -368,8 +364,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 if (command instanceof PercentType) {
                     PercentType brightness = (PercentType) command;
-                    cache = Objects.nonNull(cache) ? cache : getCachedResource(lightResourceType);
-                    putResource.setDimming(brightness, cache);
+                    putResource = Setters.setDimming(putResource, brightness, cache);
                     Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
                     minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
                     command = OnOffType.from(brightness.doubleValue() >= minDimLevel);
@@ -382,11 +377,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_COLOR_XY_ONLY:
-                putResource = new Resource(lightResourceType).setColorXy(command, getCachedResource(lightResourceType));
+                putResource = Setters.setColorXy(new Resource(lightResourceType), command, cache);
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
-                putResource = new Resource(lightResourceType).setDimming(command, getCachedResource(lightResourceType));
+                putResource = Setters.setDimming(new Resource(lightResourceType), command, cache);
                 break;
 
             case CHANNEL_2_ON_OFF_ONLY:
@@ -497,7 +492,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Clip2ThingConfig config = getConfigAs(Clip2ThingConfig.class);
 
         String resourceId = config.resourceId;
-        if (Objects.isNull(resourceId) || resourceId.isEmpty()) {
+        if (Objects.isNull(resourceId) || resourceId.isEmpty()
+                || !resourceInBridge(thisResource.getType(), resourceId)) {
             logger.debug("{} -> initialize() configuration resourceId is bad", resourceId);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.api2.conf-error-resource-id-bad");
@@ -545,14 +541,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
             } else if (ResourceType.SCENE == resource.getType()) {
                 Resource cachedScene = sceneContributorsCache.get(incomingResourceId);
                 if (Objects.nonNull(cachedScene)) {
-                    resource.copyMissingFieldsFrom(cachedScene);
+                    Setters.setResource(resource, cachedScene);
                     resourceConsumed = updateChannels(resource);
                     sceneContributorsCache.put(incomingResourceId, resource);
                 }
             } else {
                 Resource cachedService = serviceContributorsCache.get(incomingResourceId);
                 if (Objects.nonNull(cachedService)) {
-                    resource.copyMissingFieldsFrom(cachedService);
+                    Setters.setResource(resource, cachedService);
                     resourceConsumed = updateChannels(resource);
                     serviceContributorsCache.put(incomingResourceId, resource);
                     if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
@@ -580,6 +576,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } else {
             fullResources.stream().filter(r -> resourceId.equals(r.getId())).findAny().ifPresent(r -> onResource(r));
         }
+    }
+
+    /**
+     * Check if the bridge contains a resource of the given target type and id.
+     *
+     * @param targetType the target resource type.
+     * @param targetId the target resource id.
+     * @return true if the bridge contains the target resource.
+     */
+    private boolean resourceInBridge(ResourceType targetType, String targetId) {
+        try {
+            return getBridgeHandler().getResources(new ResourceReference().setId(targetId).setType(targetType))
+                    .getResources().stream().findAny().isPresent();
+        } catch (ApiException | AssetNotLoadedException e) {
+        }
+        return false;
     }
 
     /**
@@ -706,8 +718,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case BUTTON:
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_EVENT);
+                    controlIds.put(resource.getId(), resource.getControlId());
                 }
-                resource.addControlIdToMap(controlIds);
                 State buttonState = resource.getButtonEventState(controlIds);
                 updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 break;

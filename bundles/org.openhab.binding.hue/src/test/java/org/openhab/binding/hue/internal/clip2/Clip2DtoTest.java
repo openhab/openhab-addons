@@ -50,6 +50,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.DirectionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RotationEventType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
+import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -268,21 +269,21 @@ class Clip2DtoTest {
                 item.setMirekSchema(temp);
 
                 // change colour temperature percent to zero
-                item.setColorTemperaturePercent(PercentType.ZERO, null);
+                Setters.setColorTemperaturePercent(item, PercentType.ZERO, null);
                 assertEquals(PercentType.ZERO, item.getColorTemperaturePercentState());
                 state = item.getColorTemperatureAbsoluteState();
                 assertTrue(state instanceof QuantityType<?>);
                 assertEquals(6535.9, ((QuantityType<?>) state).doubleValue(), 0.1);
 
                 // change colour temperature percent to 100
-                item.setColorTemperaturePercent(PercentType.HUNDRED, null);
+                Setters.setColorTemperaturePercent(item, PercentType.HUNDRED, null);
                 assertEquals(PercentType.HUNDRED, item.getColorTemperaturePercentState());
                 state = item.getColorTemperatureAbsoluteState();
                 assertTrue(state instanceof QuantityType<?>);
                 assertEquals(2202.6, ((QuantityType<?>) state).doubleValue(), 0.1);
 
                 // change colour temperature kelvin to 4000 K
-                item.setColorTemperatureAbsolute(QuantityType.valueOf("4000 K"), null);
+                Setters.setColorTemperatureAbsolute(item, QuantityType.valueOf("4000 K"), null);
                 state = item.getColorTemperaturePercentState();
                 assertTrue(state instanceof PercentType);
                 assertEquals(32.2, ((PercentType) state).doubleValue(), 0.1);
@@ -356,8 +357,8 @@ class Clip2DtoTest {
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             fail();
         }
-        one.setColorXy(HSBType.RED, null);
-        one.setDimming(PercentType.HUNDRED, null);
+        Setters.setColorXy(one, HSBType.RED, null);
+        Setters.setDimming(one, PercentType.HUNDRED, null);
         assertTrue(one.getColorState() instanceof HSBType);
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
         assertTrue(HSBType.RED.closeTo((HSBType) one.getColorState(), 0.01));
@@ -369,7 +370,7 @@ class Clip2DtoTest {
         one.setOnOff(OnOffType.ON);
 
         // setting brightness to zero should change it to the minimum dimming level
-        one.setDimming(PercentType.ZERO, null);
+        Setters.setDimming(one, PercentType.ZERO, null);
         assertEquals(MINIMUM_DIMMING_LEVEL, ((HSBType) one.getColorState()).getBrightness().doubleValue(), 0.01);
         assertEquals(MINIMUM_DIMMING_LEVEL, ((PercentType) one.getBrightnessState()).doubleValue(), 0.01);
         one.setOnOff(OnOffType.ON);
@@ -394,12 +395,12 @@ class Clip2DtoTest {
         // create resource two
         Resource two = new Resource(ResourceType.DEVICE).setId("ALLIGATOR");
         assertNotNull(two);
-        two.setDimming(testBrightness, null);
+        Setters.setDimming(two, testBrightness, null);
         assertEquals(UnDefType.NULL, two.getColorState());
         assertEquals(testBrightness, two.getBrightnessState());
 
         // merge two => one
-        one.copyMissingFieldsFrom(two);
+        Setters.setResource(one, two);
 
         // confirm that brightness and color are both once more valid
         assertEquals("AARDVARK", one.getId());
@@ -482,7 +483,7 @@ class Clip2DtoTest {
         HSBType magenta = new HSBType("300,100,100");
 
         for (HSBType color : Set.of(HSBType.WHITE, HSBType.RED, HSBType.GREEN, HSBType.BLUE, cyan, yellow, magenta)) {
-            resource.setColorXy(color, null);
+            Setters.setColorXy(resource, color, null);
             State state = resource.getColorState();
             assertTrue(state instanceof HSBType);
             assertTrue(color.closeTo((HSBType) state, 0.01));
