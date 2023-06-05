@@ -159,6 +159,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private boolean disposing;
     private boolean hasConnectivityIssue;
+    private boolean resourceConsumed;
     private boolean updateSceneContributorsDone;
     private boolean updateLightPropertiesDone;
     private boolean updatePropertiesDone;
@@ -492,8 +493,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Clip2ThingConfig config = getConfigAs(Clip2ThingConfig.class);
 
         String resourceId = config.resourceId;
-        if (Objects.isNull(resourceId) || resourceId.isEmpty()
-                || !resourceInBridge(thisResource.getType(), resourceId)) {
+        if (Objects.isNull(resourceId) || resourceId.isEmpty()) {
             logger.debug("{} -> initialize() configuration resourceId is bad", resourceId);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.api2.conf-error-resource-id-bad");
@@ -511,10 +511,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         disposing = false;
         hasConnectivityIssue = false;
-        updateSceneContributorsDone = false;
+        resourceConsumed = false;
         updatePropertiesDone = false;
         updateDependenciesDone = false;
         updateLightPropertiesDone = false;
+        updateSceneContributorsDone = false;
+
+        scheduler.schedule(() -> updateOnlineState(), 1, TimeUnit.MINUTES);
     }
 
     /**
@@ -558,6 +561,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
             if (resourceConsumed) {
                 logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
+                this.resourceConsumed = true;
             }
         }
     }
@@ -576,22 +580,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } else {
             fullResources.stream().filter(r -> resourceId.equals(r.getId())).findAny().ifPresent(r -> onResource(r));
         }
-    }
-
-    /**
-     * Check if the bridge contains a resource of the given target type and id.
-     *
-     * @param targetType the target resource type.
-     * @param targetId the target resource id.
-     * @return true if the bridge contains the target resource.
-     */
-    private boolean resourceInBridge(ResourceType targetType, String targetId) {
-        try {
-            return getBridgeHandler().getResources(new ResourceReference().setId(targetId).setType(targetType))
-                    .getResources().stream().findAny().isPresent();
-        } catch (ApiException | AssetNotLoadedException e) {
-        }
-        return false;
     }
 
     /**
@@ -916,6 +904,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.clear();
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
+        }
+    }
+
+    /**
+     * Scheduled task checks if any resources were consumed by the time the task executes, and if not changes the thing
+     * status to offline.
+     */
+    private void updateOnlineState() {
+        if (!resourceConsumed && !disposing) {
+            logger.debug("{} -> updateOnlineState() configuration resourceId is bad", resourceId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.api2.conf-error-resource-id-bad");
         }
     }
 
