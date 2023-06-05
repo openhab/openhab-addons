@@ -202,14 +202,14 @@
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="scene-v2">
+	<channel-type id="scene-v2" advanced="true">
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<category>MediaControl</category>
 		<state pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="last-updated-v2">
+	<channel-type id="last-updated-v2" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
 		<description>The date and time when the thing was last updated.</description>
@@ -217,13 +217,13 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
-	<channel-type id="alert-v2">
+	<channel-type id="alert-v2" advanced="true">
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<state pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="effect-v2">
+	<channel-type id="effect-v2" advanced="true">
 		<item-type>String</item-type>
 		<label>Effect</label>
 		<state pattern="%s"/>
