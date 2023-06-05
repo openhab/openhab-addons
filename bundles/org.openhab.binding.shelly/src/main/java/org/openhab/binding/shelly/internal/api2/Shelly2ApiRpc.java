@@ -41,6 +41,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheck
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
@@ -60,6 +61,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp.Shelly2DeviceConfigApRE;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
@@ -82,6 +84,8 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.internal.Primitives;
 
 /**
  * {@link Shelly2ApiRpc} implements Gen2 RPC interface
@@ -275,7 +279,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
 
-        profile.status.dimmers = profile.isDimmer ? new ArrayList<>() : null;
+        if (profile.isDimmer) {
+            profile.settings.dimmers = new ArrayList<>();
+            profile.settings.dimmers.add(new ShellySettingsDimmer());
+            profile.status.dimmers = new ArrayList<>();
+            profile.status.dimmers.add(new ShellyShortLightStatus());
+            fillDimmerSettings(profile, dc);
+        }
         profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
         profile.status.thermostats = profile.isTRV ? new ArrayList<>() : null;
 
@@ -284,6 +294,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.sleepMode.unit = "m";
             profile.settings.sleepMode.period = dc.sys.sleep != null ? dc.sys.sleep.wakeupPeriod / 60 : 720;
             checkSetWsCallback();
+        }
+
+        if (dc.led != null) {
+            profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
+            profile.settings.ledPowerDisable = getString(dc.led.powerLed).equals("off");
         }
 
         profile.initialized = true;
@@ -766,16 +781,57 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
+    public ShellyStatusLight getLightStatus() throws ShellyApiException {
+        throw new ShellyApiException("API call not implemented");
+    }
+
+    @Override
+    public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException {
+        ShellyShortLightStatus status = new ShellyShortLightStatus();
+        Shelly2DeviceStatusLight ls = apiRequest(
+                new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_STATUS).withId(index),
+                Shelly2DeviceStatusLight.class);
+        status.ison = ls.output;
+        status.hasTimer = ls.timerStartedAt != null;
+        status.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
+        if (ls.brightness != null) {
+            status.brightness = ls.brightness.intValue();
+        }
+        return status;
+    }
+
+    @Override
+    public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.id = id;
+        params.brightness = brightness;
+        params.on = brightness > 0;
+        apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
+    }
+
+    @Override
+    public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.id = id;
+        params.on = turnMode.equals(SHELLY_API_ON);
+        apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
+        return getLightStatus(id);
+    }
+
+    @Override
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
         return sensorData;
     }
 
     @Override
     public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException {
-        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SWITCH_SETCONFIG).withId(index);
-
+        ShellyDeviceProfile profile = getProfile();
+        boolean isLight = profile.isLight || profile.isDimmer;
+        String method = isLight ? SHELLYRPC_METHOD_LIGHT_SETCONFIG : SHELLYRPC_METHOD_SWITCH_SETCONFIG;
+        String component = isLight ? "Light" : "Switch";
+        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(index);
         req.params.withConfig();
-        req.params.config.name = "Switch" + index;
+        req.params.config.name = component + index;
         if (timerName.equals(SHELLY_TIMER_AUTOON)) {
             req.params.config.autoOn = value > 0;
             req.params.config.autoOnDelay = value;
@@ -784,6 +840,20 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             req.params.config.autoOffDelay = value;
         }
         apiRequest(req);
+    }
+
+    @Override
+    public void setLedStatus(String ledName, boolean value) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
+        params.id = 0;
+        if (ledName.equals(SHELLY_LED_STATUS_DISABLE)) {
+            params.config.sysLedEnable = value;
+        } else if (ledName.equals(SHELLY_LED_POWER_DISABLE)) {
+            params.config.powerLed = value ? SHELLY2_POWERLED_OFF : SHELLY2_POWERLED_MATCH;
+        } else {
+            throw new ShellyApiException("API call not implemented for this LED type");
+        }
+        apiRequest(SHELLYRPC_METHOD_LED_SETCONFIG, params, Shelly2WsConfigResult.class);
     }
 
     @Override
@@ -899,20 +969,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * The following API calls are not yet relevant, because currently there a no Plus/Pro (Gen2) devices of those
      * categories (e.g. bulbs)
      */
-    @Override
-    public void setLedStatus(String ledName, boolean value) throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
-    }
-
-    @Override
-    public ShellyStatusLight getLightStatus() throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
-    }
-
-    @Override
-    public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
-    }
 
     @Override
     public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
@@ -921,16 +977,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
-    }
-
-    @Override
-    public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
-    }
-
-    @Override
-    public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 
@@ -1060,6 +1106,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             json = gson.toJson(gson.fromJson(json, Shelly2RpcBaseMessage.class).result);
             return fromJson(gson, json, classOfT);
         } else {
+            if (classOfT == String.class) {
+                return Primitives.wrap(classOfT).cast(json);
+            }
             // return direct format
             return gson.fromJson(json, classOfT);
         }

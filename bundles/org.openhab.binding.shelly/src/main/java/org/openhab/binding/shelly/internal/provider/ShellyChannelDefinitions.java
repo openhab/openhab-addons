@@ -350,9 +350,11 @@ public class ShellyChannelDefinitions {
         }
 
         // Shelly 1/1PM and Plus 1/1PM Addon
-        if (profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
-                && idx == getInteger(profile.settings.extSwitch.input0.relayNum)) {
-            addChannel(thing, add, true, CHGR_SENSOR, CHANNEL_ESENSOR_INPUT + (idx + 1));
+        boolean addon = profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
+                && idx == getInteger(profile.settings.extSwitch.input0.relayNum);
+        if (addon) {
+            addChannel(thing, add, addon, CHGR_SENSOR,
+                    CHANNEL_ESENSOR_INPUT + (profile.settings.extSwitch.input0.relayNum + 1));
         }
         if (profile.status.extTemperature != null) {
             addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1);
@@ -379,6 +381,7 @@ public class ShellyChannelDefinitions {
 
         if (profile.settings.dimmers != null) {
             ShellySettingsDimmer ds = profile.settings.dimmers.get(idx);
+            addChannel(thing, add, ds.name != null, group, CHANNEL_OUTPUT_NAME);
             addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             ShellyShortLightStatus dss = dstatus.dimmers.get(idx);

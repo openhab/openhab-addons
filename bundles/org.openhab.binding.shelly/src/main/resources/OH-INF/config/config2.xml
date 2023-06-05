@@ -89,4 +89,33 @@
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
+
+	<config-description uri="thing-type:shelly:dimmer-gen2">
+		<parameter name="deviceIp" type="text" required="true">
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="userId" type="text" required="false">
+			<label>@text/thing-type.config.shelly.userId.label</label>
+			<description>@text/thing-type.config.shelly.userId.description</description>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="brightnessAutoOn" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.light.brightnessAutoOn.label</label>
+			<description>@text/thing-type.config.shelly.light.brightnessAutoOn.description</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<default>60</default>
+			<unitLabel>seconds</unitLabel>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

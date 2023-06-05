@@ -825,6 +825,8 @@ public class Shelly1ApiJsonDTO {
         public Integer brightness; // brightness: 0.100%
         @SerializedName("has_timer")
         public Boolean hasTimer;
+        @SerializedName("timer_duration")
+        public Integer timerDuration;
     }
 
     public static class ShellyStatusRelay {

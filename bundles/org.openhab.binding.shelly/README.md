@@ -1201,6 +1201,15 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
+### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+| relay | brightness   | Dimmer   | r/w       | Currently selected brightness.                                                    |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| 
 
 ## Shelly Pro Series
 

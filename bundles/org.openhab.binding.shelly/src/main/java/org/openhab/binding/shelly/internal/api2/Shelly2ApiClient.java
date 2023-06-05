@@ -32,12 +32,14 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyFavPos;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorTmp;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
@@ -55,6 +57,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
@@ -177,7 +180,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             boolean channelUpdate) throws ShellyApiException {
         boolean updated = false;
 
-        if (result.temperature0 != null && !getProfile().isSensor) {
+        if (result.temperature0 != null && result.temperature0.tC != null && !getProfile().isSensor) {
             status.temperature = status.tmp.tC = result.temperature0.tC;
         }
 
@@ -188,6 +191,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateRelayStatus(status, result.switch3, channelUpdate);
         updated |= updateEmStatus(status, result.em0, channelUpdate);
         updated |= updateRollerStatus(status, result.cover0, channelUpdate);
+        updated |= updateDimmerStatus(status, result.light0, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -480,6 +484,46 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
 
         return updateChannels ? ShellyComponents.updateRoller((ShellyBaseHandler) getThing(), rs, cs.id) : false;
+    }
+
+    protected void fillDimmerSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
+        if (!profile.isDimmer || dc.light0 == null) {
+            return;
+        }
+
+        if (profile.settings.dimmers != null) {
+            ShellySettingsDimmer ds = profile.settings.dimmers.get(0);
+            ds.autoOn = dc.light0.autoOnDelay;
+            ds.autoOff = dc.light0.autoOffDelay;
+            ds.name = dc.light0.name;
+            profile.settings.dimmers.set(0, ds);
+        }
+    }
+
+    private boolean updateDimmerStatus(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
+            boolean channelUpdate) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (!profile.isDimmer || value == null) {
+            return false;
+        }
+
+        ShellyShortLightStatus ds = status.dimmers.get(0);
+        if (value.brightness != null) {
+            ds.brightness = value.brightness.intValue();
+        }
+        ds.ison = value.output;
+        ds.hasTimer = value.timerStartedAt != null;
+        ds.timerDuration = getDuration(value.timerStartedAt, value.timerDuration);
+        status.dimmers.set(0, ds);
+        return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
+    }
+
+    protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Integer timerDuration) {
+        if (timerStartedAt == null || timerDuration == null) {
+            return null;
+        }
+        int duration = (int) (now() - timerStartedAt.longValue());
+        return duration <= timerDuration ? timerDuration - duration : 0;
     }
 
     // Addon
