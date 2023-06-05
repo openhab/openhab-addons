@@ -85,6 +85,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.internal.Primitives;
+
 /**
  * {@link Shelly2ApiRpc} implements Gen2 RPC interface
  *
@@ -1149,6 +1151,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             return fromJson(gson, isString && ((String) response.result).equalsIgnoreCase("null") ? "{}" : json,
                     classOfT);
         } else {
+            if (classOfT == String.class) {
+                return Primitives.wrap(classOfT).cast(json);
+            }
             // return direct format
             return gson.fromJson(json, classOfT == String.class ? Shelly2RpcBaseMessage.class : classOfT);
         }
