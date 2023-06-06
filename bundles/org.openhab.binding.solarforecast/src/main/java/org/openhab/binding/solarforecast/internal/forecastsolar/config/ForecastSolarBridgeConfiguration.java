@@ -10,28 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast.internal.forecastsolar;
+package org.openhab.binding.solarforecast.internal.forecastsolar.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 
 /**
- * The {@link ForecastSolarPlaneConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ForecastSolarBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ForecastSolarPlaneConfiguration {
-    public int declination = -1;
-    public int azimuth = 360;
-    public double kwp = 0;
-    public int refreshInterval = -1;
-    public double dampAM = 0;
-    public double dampPM = 0;
-    public String horizon = SolarForecastBindingConstants.EMPTY;
+public class ForecastSolarBridgeConfiguration {
+    public String location = "0.0,0.0";
+    public int channelRefreshInterval = -1;
+    public String apiKey = SolarForecastBindingConstants.EMPTY;
+    public double inverterKwp = Double.MAX_VALUE;
 
     @Override
     public String toString() {
-        return " Dec " + declination + " Azi " + azimuth + " KWP " + kwp + " Ref " + refreshInterval;
+        return "Loc " + location + " Ref " + channelRefreshInterval;
     }
 }
