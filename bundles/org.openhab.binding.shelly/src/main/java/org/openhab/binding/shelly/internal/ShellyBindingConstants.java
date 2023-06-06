@@ -96,6 +96,9 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYBLUBUTTON, //
             THING_TYPE_SHELLYBLUDW, //
 
+            // Shelly Wall Display
+            THING_TYPE_SHELLYPLUSWALLDISPLAY, //
+
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);
 
