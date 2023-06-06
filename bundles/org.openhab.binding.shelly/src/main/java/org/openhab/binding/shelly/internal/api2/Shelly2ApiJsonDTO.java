@@ -562,6 +562,12 @@ public class Shelly2ApiJsonDTO {
                 public Double rh;
             }
 
+            public class Shelly2DeviceStatusIlluminance {
+                public Integer id;
+                public Double lux;
+                public String illumination;
+            }
+
             public class Shelly2DeviceStatusVoltage {
                 public Integer id;
                 public Double voltage;
@@ -699,6 +705,10 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusHumidity humidity0;
             @SerializedName("humidity:100")
             public Shelly2DeviceStatusHumidity humidity100;
+
+            @SerializedName("illuminance:0")
+            Shelly2DeviceStatusIlluminance illuminance0;
+
             @SerializedName("smoke:0")
             public Shelly2DeviceStatusSmoke smoke0;
 

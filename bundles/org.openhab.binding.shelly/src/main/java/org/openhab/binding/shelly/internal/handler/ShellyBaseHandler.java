@@ -149,7 +149,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         Map<String, String> properties = thing.getProperties();
         String gen = getString(properties.get(PROPERTY_DEV_GEN));
         String thingType = getThingType();
-        if (gen.isEmpty() && thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")) {
+        if (gen.isEmpty() && thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")
+                || thingType.startsWith("shellywalldisplay")) {
             gen = "2";
         }
         gen2 = "2".equals(gen);

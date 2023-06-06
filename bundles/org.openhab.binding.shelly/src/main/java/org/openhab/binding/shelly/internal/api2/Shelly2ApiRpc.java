@@ -208,6 +208,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.deviceType = device.type;
         profile.mac = device.mac;
         profile.auth = device.auth;
+        profile.isGen2 = device.gen == 2;
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(profile.hostname);
         }
