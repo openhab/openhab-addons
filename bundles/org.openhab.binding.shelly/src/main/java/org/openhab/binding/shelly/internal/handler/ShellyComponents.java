@@ -274,9 +274,9 @@ public class ShellyComponents {
                                         .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
                             }
 
-                            // convert Watt/Hour to kw/h
-                            double total = getDouble(emeter.total) / 60 / 1000;
-                            double totalReturned = getDouble(emeter.totalReturned) / 60 / 1000;
+                            // convert Watt/h to KW/h
+                            double total = getDouble(emeter.total) / 1000;
+                            double totalReturned = getDouble(emeter.totalReturned) / 1000;
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                                     toQuantityType(getDouble(emeter.power), DIGITS_WATT, Units.WATT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
@@ -335,10 +335,10 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                         toQuantityType(getDouble(lastMin1), DIGITS_WATT, Units.WATT));
 
-                // convert totalWatts from Watt/Min into kw/h
-                totalWatts = totalWatts / 60 / 1000;
+                // convert totalWatts into kw/h
+                totalWatts = totalWatts / (60.0 * 1000.0);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(getDouble(currentWatts), DIGITS_WATT, Units.WATT));
+                        toQuantityType(currentWatts, DIGITS_WATT, Units.WATT));
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
                         toQuantityType(totalWatts, DIGITS_KWH, Units.KILOWATT_HOUR));
 
