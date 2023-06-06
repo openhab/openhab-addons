@@ -36,7 +36,7 @@ class ConfigurationTest {
     void testScope() {
         AccountConfiguration ac = new AccountConfiguration();
         assertEquals(
-                "openid offline_access mb:vehicle:mbdata:payasyoudrive mb:vehicle:mbdata:vehiclestatus mb:vehicle:mbdata:vehiclelock mb:vehicle:mbdata:fuelstatus mb:vehicle:mbdata:evstatus",
+                "offline_access openid mb:vehicle:mbdata:payasyoudrive mb:vehicle:mbdata:vehiclestatus mb:vehicle:mbdata:vehiclelock mb:vehicle:mbdata:fuelstatus mb:vehicle:mbdata:evstatus",
                 ac.getScope());
     }
 
