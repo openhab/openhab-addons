@@ -132,13 +132,16 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                            "Wrong Handler " + handler);
+                            "@text/solarforecast.site.status.wrong-handler" + " [\"" + handler + "\"]");
+
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "BridgeHandler not found");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                        "@text/solarforecast.site.status.bridge-handler-not-found");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/solarforecast.site.status.bridge-missing");
         }
     }
 

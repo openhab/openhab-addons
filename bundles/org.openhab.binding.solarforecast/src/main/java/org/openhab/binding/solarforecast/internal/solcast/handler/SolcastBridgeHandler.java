@@ -77,14 +77,13 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             updateStatus(ThingStatus.ONLINE);
             startSchedule(configuration.get().channelRefreshInterval);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key is mandatory");
-            logger.info("API Key missing");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/solarforecast.site.status.api-key-missing");
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Handle command {} for channel {}", channelUID, command);
         if (command instanceof RefreshType) {
             getData();
         }
