@@ -15,9 +15,11 @@ package org.openhab.binding.solarforecast.internal.solcast.handler;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -172,8 +174,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
                 ContentResponse crEstimate = estimateRequest.send();
                 if (crEstimate.getStatus() == 200) {
-                    SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(), ZonedDateTime
-                            .now(timeZoneProvider.getTimeZone()).plusMinutes(configuration.get().refreshInterval),
+                    SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(),
+                            Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES),
                             timeZoneProvider);
                     logger.trace("{} Fetched data {}", thing.getLabel(), localForecast.toString());
 

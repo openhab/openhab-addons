@@ -22,6 +22,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import javax.measure.quantity.Energy;
@@ -42,14 +43,15 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 class ForecastSolarTest {
-    // double comparison tolerance = 1 Watt
     private static final double TOLERANCE = 0.001;
+    public static final ZoneId TEST_ZONE = ZoneId.of("Europe/Berlin");
 
     @Test
     void testForecastObject() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime);
+        ForecastSolarObject fo = new ForecastSolarObject(content,
+                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
         // "2022-07-17 21:32:00": 63583,
         assertEquals(63.583, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
         // "2022-07-17 17:00:00": 52896,
@@ -72,7 +74,8 @@ class ForecastSolarTest {
     void testActualPower() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 10, 00);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime);
+        ForecastSolarObject fo = new ForecastSolarObject(content,
+                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
         // "2022-07-17 10:00:00": 4874,
         assertEquals(4.874, fo.getActualPowerValue(queryDateTime), TOLERANCE, "Actual estimation");
 
@@ -85,7 +88,8 @@ class ForecastSolarTest {
     void testInterpolation() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 0);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime);
+        ForecastSolarObject fo = new ForecastSolarObject(content,
+                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
 
         // test steady value increase
         double previousValue = 0;
@@ -106,7 +110,8 @@ class ForecastSolarTest {
     void testForecastSum() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime);
+        ForecastSolarObject fo = new ForecastSolarObject(content,
+                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
         QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
         State st = Utils.getEnergyState(fo.getActualValue(queryDateTime));
         assertTrue(st instanceof QuantityType);
@@ -130,7 +135,7 @@ class ForecastSolarTest {
         // valid object - query date one day too early
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         query = LocalDateTime.of(2022, 7, 16, 23, 59);
-        fo = new ForecastSolarObject(content, query);
+        fo = new ForecastSolarObject(content, query.toInstant(TEST_ZONE.getRules().getOffset(query)));
         assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
         assertEquals(-1.0, fo.getActualValue(query), TOLERANCE, "Actual out of scope");
         assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
@@ -173,29 +178,29 @@ class ForecastSolarTest {
     @Test
     void testActions() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        LocalDateTime query = LocalDateTime.of(2022, 7, 17, 16, 23);
-        ForecastSolarObject fo = new ForecastSolarObject(content, query);
+        LocalDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23);
+        ForecastSolarObject fo = new ForecastSolarObject(content,
+                queryDateTime.toInstant(TEST_ZONE.getRules().getOffset(queryDateTime)));
         assertEquals("2022-07-17T05:31:00", fo.getForecastBegin().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 "Forecast begin");
         assertEquals("2022-07-18T21:31:00", fo.getForecastEnd().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 "Forecast end");
         assertEquals(QuantityType.valueOf(63.583, Units.KILOWATT_HOUR).toString(),
-                fo.getDay(query.toLocalDate()).toFullString(), "Actual out of scope");
+                fo.getDay(queryDateTime.toLocalDate()).toFullString(), "Actual out of scope");
 
-        query = LocalDateTime.of(2022, 7, 17, 0, 0);
+        queryDateTime = LocalDateTime.of(2022, 7, 17, 0, 0);
         // "watt_hours_day": {
         // "2022-07-17": 63583,
         // "2022-07-18": 65554
         // }
         assertEquals(QuantityType.valueOf(129.137, Units.KILOWATT_HOUR).toString(),
-                fo.getEnergy(query, query.plusDays(2)).toFullString(), "Actual out of scope");
+                fo.getEnergy(queryDateTime, queryDateTime.plusDays(2)).toFullString(), "Actual out of scope");
 
-        assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "optimistic"));
-        assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "pessimistic"));
-        assertEquals(UnDefType.UNDEF, fo.getDay(query.toLocalDate(), "total", "rubbish"));
+        assertEquals(UnDefType.UNDEF, fo.getDay(queryDateTime.toLocalDate(), "optimistic"));
+        assertEquals(UnDefType.UNDEF, fo.getDay(queryDateTime.toLocalDate(), "pessimistic"));
+        assertEquals(UnDefType.UNDEF, fo.getDay(queryDateTime.toLocalDate(), "total", "rubbish"));
     }
 
-    @Test
     public void testHorizon() throws URISyntaxException, IOException, InterruptedException {
         String url = "https://api.forecast.solar/estimate/50.55598767987004/8.49558522179684/12/-40/5.525";
         String horizon = "2,2,2,2,1,1,3,3,4,3,3,4,3,3,3,3,4,5,7,5,4,2,2,2,2,1,1,1,1,1,2,2,2,2,1,2";
@@ -203,12 +208,8 @@ class ForecastSolarTest {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        System.out.println(url);
-        System.out.println(response.body());
         url += "?horizon=" + horizon;
         request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
         response = client.send(request, BodyHandlers.ofString());
-        System.out.println(url);
-        System.out.println(response.body());
     }
 }

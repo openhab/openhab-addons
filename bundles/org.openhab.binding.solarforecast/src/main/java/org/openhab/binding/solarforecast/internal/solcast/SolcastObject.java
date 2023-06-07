@@ -51,7 +51,7 @@ public class SolcastObject implements SolarForecast {
     private final TimeZoneProvider timeZoneProvider;
 
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
-    private ZonedDateTime expirationDateTime;
+    private Instant expirationDateTime;
     private boolean valid = false;
 
     public enum QueryMode {
@@ -75,10 +75,10 @@ public class SolcastObject implements SolarForecast {
     public SolcastObject(TimeZoneProvider tzp) {
         // invalid forecast object
         timeZoneProvider = tzp;
-        expirationDateTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        expirationDateTime = Instant.now();
     }
 
-    public SolcastObject(String content, ZonedDateTime expiration, TimeZoneProvider tzp) {
+    public SolcastObject(String content, Instant expiration, TimeZoneProvider tzp) {
         expirationDateTime = expiration;
         timeZoneProvider = tzp;
         add(content);
@@ -150,7 +150,7 @@ public class SolcastObject implements SolarForecast {
     public boolean isValid() {
         if (valid) {
             if (!estimationDataMap.isEmpty()) {
-                if (expirationDateTime.isAfter(ZonedDateTime.now(timeZoneProvider.getTimeZone()))) {
+                if (expirationDateTime.isAfter(Instant.now())) {
                     return true;
                 } else {
                     logger.debug("Forecast data expired");

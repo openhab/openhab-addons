@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarforecast.internal.forecastsolar;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,13 +48,13 @@ public class ForecastSolarObject implements SolarForecast {
 
     private Optional<String> rawData = Optional.empty();
     private boolean valid = false;
-    private LocalDateTime expirationDateTime;
+    private Instant expirationDateTime;
 
     public ForecastSolarObject() {
-        expirationDateTime = LocalDateTime.now();
+        expirationDateTime = Instant.now();
     }
 
-    public ForecastSolarObject(String content, LocalDateTime expirationDate) {
+    public ForecastSolarObject(String content, Instant expirationDate) {
         expirationDateTime = expirationDate;
         if (!content.equals(SolarForecastBindingConstants.EMPTY)) {
             rawData = Optional.of(content);
@@ -81,7 +82,7 @@ public class ForecastSolarObject implements SolarForecast {
     public boolean isValid() {
         if (valid) {
             if (!wattHourMap.isEmpty()) {
-                if (expirationDateTime.isAfter(LocalDateTime.now())) {
+                if (expirationDateTime.isAfter(Instant.now())) {
                     return true;
                 } else {
                     logger.debug("Forecast data expired");

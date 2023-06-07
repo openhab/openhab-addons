@@ -25,7 +25,7 @@ public class ForecastSolarPlaneConfiguration {
     public int declination = -1;
     public int azimuth = 360;
     public double kwp = 0;
-    public int refreshInterval = -1;
+    public long refreshInterval = -1;
     public double dampAM = 0;
     public double dampPM = 0;
     public String horizon = SolarForecastBindingConstants.EMPTY;

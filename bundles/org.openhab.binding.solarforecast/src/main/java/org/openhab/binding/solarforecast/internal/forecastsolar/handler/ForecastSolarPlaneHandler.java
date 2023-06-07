@@ -15,7 +15,9 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 import static org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarConstants.BASE_URL;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -150,8 +152,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     ContentResponse cr = httpClient.GET(url);
                     if (cr.getStatus() == 200) {
                         ForecastSolarObject localForecast = new ForecastSolarObject(cr.getContentAsString(),
-
-                                LocalDateTime.now().plusMinutes(configuration.get().refreshInterval));
+                                Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
                         setForecast(localForecast);
                         logger.debug("Fetched new data. {} {} HTTP errors since last successful update",
                                 thing.getLabel(), failureCounter);
