@@ -73,6 +73,15 @@ public enum EventType {
     @SerializedName("module_end_update") // Module's firmware update is over
     MODULE_END_UPDATE(ModuleType.WELCOME),
 
+    @SerializedName("tag_big_move") // Module's firmware update is over
+    TAG_BIG_MOVE(ModuleType.WELCOME),
+
+    @SerializedName("tag_open") // Module's firmware update is over
+    TAG_OPEN(ModuleType.WELCOME),
+
+    @SerializedName("tag_small_move") // Module's firmware update is over
+    TAG_SMALL_MOVE(ModuleType.WELCOME),
+
     @SerializedName("connection") // When the camera connects to Netatmo servers
     CONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
