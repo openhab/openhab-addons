@@ -29,7 +29,6 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class PlexBindingConstants {
-
     private static final String BINDING_ID = "plex";
 
     // Bridge thing
@@ -49,7 +48,6 @@ public class PlexBindingConstants {
             Stream.concat(SUPPORTED_PLAYER_THING_TYPES_UIDS.stream(), SUPPORTED_SERVER_THING_TYPES_UIDS.stream())
                     .collect(Collectors.toSet()));
     // General purpose stuff
-    public static final String EMPTY = "";
     public static final int DEFAULT_REFRESH_PERIOD_SEC = 5;
     // Config parameters
     // Server

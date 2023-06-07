@@ -15,17 +15,17 @@ package org.openhab.binding.plex.internal.handler;
 import static org.openhab.binding.plex.internal.PlexBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.plex.internal.PlexBindingConstants;
 import org.openhab.binding.plex.internal.config.PlexPlayerConfiguration;
 import org.openhab.binding.plex.internal.dto.MediaContainer.MediaType;
 import org.openhab.binding.plex.internal.dto.PlexPlayerState;
 import org.openhab.binding.plex.internal.dto.PlexSession;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -42,18 +42,14 @@ import org.slf4j.LoggerFactory;
 public class PlexPlayerHandler extends BaseThingHandler {
     private @NonNullByDefault({}) String playerID;
 
-    private @Nullable PlexServerHandler bridgeHandler;
     private PlexSession currentSessionData;
     private boolean foundInSession;
 
     private final Logger logger = LoggerFactory.getLogger(PlexPlayerHandler.class);
 
-    private PlexApiConnector plexAPIConnector;
-
     public PlexPlayerHandler(Thing thing) {
         super(thing);
         currentSessionData = new PlexSession();
-        plexAPIConnector = new PlexApiConnector(scheduler);
     }
 
     /**
@@ -65,7 +61,7 @@ public class PlexPlayerHandler extends BaseThingHandler {
         PlexPlayerConfiguration config = getConfigAs(PlexPlayerConfiguration.class);
         foundInSession = false;
         playerID = config.playerID;
-        logger.warn("Initializing PLEX player : {}", playerID);
+        logger.debug("Initializing PLEX player : {}", playerID);
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -74,15 +70,20 @@ public class PlexPlayerHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        assert bridgeHandler != null;
-        PlexApiConnector plexApiConnector = bridgeHandler.getPlexAPIConnector();
-        switch (channelUID.getId()) {
-            case CHANNEL_PLAYER_CONTROL:
-                plexApiConnector.controlPlayer(command, playerID);
-                break;
-            default:
-                logger.debug("Channel {} not implemented/supported to control player {}", channelUID.getId(),
-                        this.thing.getUID());
+        Bridge bridge = getBridge();
+        PlexServerHandler bridgeHandler = bridge == null ? null : (PlexServerHandler) bridge.getHandler();
+
+        if (bridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+        } else {
+            switch (channelUID.getId()) {
+                case CHANNEL_PLAYER_CONTROL:
+                    bridgeHandler.getPlexAPIConnector().controlPlayer(command, playerID);
+                    break;
+                default:
+                    logger.debug("Channel {} not implemented/supported to control player {}", channelUID.getId(),
+                            this.thing.getUID());
+            }
         }
     }
 
@@ -145,7 +146,7 @@ public class PlexPlayerHandler extends BaseThingHandler {
      */
     public synchronized void updateStateChannel(String state) {
         currentSessionData.setState(PlexPlayerState.of(state));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_STATE),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_STATE),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getState() : "Stopped")));
     }
 
@@ -153,35 +154,33 @@ public class PlexPlayerHandler extends BaseThingHandler {
      * Updates the channel states to match reality.
      */
     public synchronized void updateChannels() {
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_STATE),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_STATE),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getState() : "Stopped")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_POWER),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_POWER),
                 new StringType(String.valueOf(foundInSession ? "ON" : "OFF")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_TITLE),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_TITLE),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getTitle() : "")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_TYPE),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_TYPE),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getType() : "")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_ART),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_ART),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getArt() : "")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_THUMB),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_THUMB),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getThumb() : "")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_PROGRESS),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_PROGRESS),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getProgress() : "0")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_ENDTIME),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_ENDTIME),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getEndTime() : "")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_ENDTIME),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_ENDTIME),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getEndTime() : "")));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_USER),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_USER),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getUserTitle() : "")));
 
         // Make sure player control is in sync with the play state
         if (currentSessionData.getState() == PlexPlayerState.PLAYING) {
-            updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_CONTROL),
-                    PlayPauseType.PLAY);
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_CONTROL), PlayPauseType.PLAY);
         }
         if (currentSessionData.getState() == PlexPlayerState.PAUSED) {
-            updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_PLAYER_CONTROL),
-                    PlayPauseType.PAUSE);
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_CONTROL), PlayPauseType.PAUSE);
         }
     }
 }

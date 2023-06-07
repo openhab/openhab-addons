@@ -13,7 +13,6 @@
 package org.openhab.binding.plex.internal.handler;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
@@ -76,7 +75,7 @@ public class PlexApiConnector {
     private boolean isShutDown = false;
 
     private @Nullable ScheduledFuture<?> socketReconnect;
-    private @Nullable ScheduledExecutorService scheduler;
+    private ScheduledExecutorService scheduler;
     private @Nullable URI uri;
 
     private String username = "";
@@ -92,17 +91,17 @@ public class PlexApiConnector {
     }
 
     public void setParameters(PlexServerConfiguration connProps) {
-        username = connProps.getUsername();
-        password = connProps.getPassword();
-        token = connProps.getToken();
-        host = connProps.getHost();
-        port = connProps.getPort();
+        username = connProps.username;
+        password = connProps.password;
+        token = connProps.token;
+        host = connProps.host;
+        port = connProps.portNumber;
         wsClient = new WebSocketClient();
         plexSocket = new PlexSocket();
     }
 
     private String getSchemeWS() {
-        return scheme.equals("http") ? "ws" : "wss";
+        return "http".equals(scheme) ? "ws" : "wss";
     }
 
     public boolean hasToken() {
@@ -129,11 +128,11 @@ public class PlexApiConnector {
     public @Nullable MediaContainer getSessionData() {
         try {
             String url = "http://" + host + ":" + String.valueOf(port) + "/status/sessions" + "?X-Plex-Token=" + token;
-            logger.warn("Getting session data '{}'", url);
+            logger.debug("Getting session data '{}'", url);
             MediaContainer mediaContainer = doHttpRequest("GET", url, getClientHeaders(), MediaContainer.class);
             return mediaContainer;
-        } catch (Exception e) {
-            logger.warn("An exception occurred while polling the PLEX Server: '{}'", e.getMessage());
+        } catch (IOException e) {
+            logger.debug("An exception occurred while polling the PLEX Server: '{}'", e.getMessage());
             return null;
         }
     }
@@ -154,18 +153,24 @@ public class PlexApiConnector {
      * and use this in the communication with the plex server
      */
     public void getToken() {
-        String url = SIGNIN_URL;
+        User user;
         String authString = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
         Properties headers = getClientHeaders();
         headers.put("Authorization", "Basic " + authString);
-        User user = doHttpRequest("POST", url, headers, User.class);
 
-        if (user == null) {
-            throw new ConfigurationException("Invalid credentials for Plex account, please check config");
+        try {
+            user = doHttpRequest("POST", SIGNIN_URL, headers, User.class);
+        } catch (IOException e) {
+            logger.debug("An exception occurred while fetching PLEX user token :'{}'", e.getMessage(), e);
+            throw new ConfigurationException("Error occurred while fetching PLEX user token, please check config");
         }
 
-        logger.debug("PLEX login successful using username/password");
-        token = user.getAuthenticationToken();
+        if (user.getAuthenticationToken() != null) {
+            token = user.getAuthenticationToken();
+            logger.debug("PLEX login successful using username/password");
+        } else {
+            throw new ConfigurationException("Invalid credentials for PLEX account, please check config");
+        }
     }
 
     /**
@@ -173,17 +178,16 @@ public class PlexApiConnector {
      */
     public boolean getApi() {
         try {
-            String url = API_URL;
-            MediaContainer api = doHttpRequest("GET", url, getClientHeaders(), MediaContainer.class);
-            logger.warn("MediaContainer {}", api.getSize());
+            MediaContainer api = doHttpRequest("GET", API_URL, getClientHeaders(), MediaContainer.class);
+            logger.debug("MediaContainer {}", api.getSize());
             if (api.getDevice() != null) {
                 for (Device tmpDevice : api.getDevice()) {
                     if (tmpDevice.getConnection() != null) {
                         for (Connection tmpConn : tmpDevice.getConnection()) {
                             if (host.equals(tmpConn.getAddress())) {
                                 scheme = tmpConn.getProtocol();
-                                logger.warn(
-                                        "Plex Api fetched. Found configured PLEX server in Api request, applied. Protocol used : {}",
+                                logger.debug(
+                                        "PLEX Api fetched. Found configured PLEX server in Api request, applied. Protocol used : {}",
                                         scheme);
                                 return true;
                             }
@@ -192,8 +196,8 @@ public class PlexApiConnector {
                 }
             }
             return false;
-        } catch (Exception e) {
-            logger.warn("An exception occurred while fetching API :'{}'", e.getMessage(), e);
+        } catch (IOException e) {
+            logger.debug("An exception occurred while fetching API :'{}'", e.getMessage(), e);
         }
         return false;
     }
@@ -207,22 +211,14 @@ public class PlexApiConnector {
      * @param headers Additional headers that will be used
      * @param type class type for the XML parsing
      * @return Returns a class object from the data returned by the call
+     * @throws IOException
      */
-    private <T> T doHttpRequest(String method, String url, Properties headers, Class<T> type) {
-        try {
-            String response = HttpUtil.executeUrl(method, url, headers, null, null, REQUEST_TIMEOUT_MS);
-            @SuppressWarnings("unchecked")
-            T obj = (T) xStream.fromXML(response);
-            logger.debug("HTTP response {}", response);
-            return obj;
-        } catch (MalformedURLException e) {
-            logger.debug("{}", e.getMessage(), e);
-        } catch (IOException e) {
-            logger.debug("{}", e.getMessage(), e);
-        } catch (Exception e) {
-            logger.debug("{}", e.getMessage(), e);
-        }
-        return null;
+    private <T> T doHttpRequest(String method, String url, Properties headers, Class<T> type) throws IOException {
+        String response = HttpUtil.executeUrl(method, url, headers, null, null, REQUEST_TIMEOUT_MS);
+        @SuppressWarnings("unchecked")
+        T obj = (T) xStream.fromXML(response);
+        logger.debug("HTTP response {}", response);
+        return obj;
     }
 
     /**
@@ -263,12 +259,13 @@ public class PlexApiConnector {
         isShutDown = true;
         try {
             wsClient.stop();
-            ScheduledFuture<?> mySocketReconnect = socketReconnect;
-            if (mySocketReconnect != null) {
-                mySocketReconnect.cancel(true);
+            ScheduledFuture<?> socketReconnect = this.socketReconnect;
+            if (socketReconnect != null) {
+                socketReconnect.cancel(true);
+                this.socketReconnect = null;
             }
         } catch (Exception e) {
-            logger.warn("Could not stop webSocketClient,  message {}", e.getMessage());
+            logger.debug("Could not stop webSocketClient,  message {}", e.getMessage());
         }
     }
 
@@ -283,7 +280,7 @@ public class PlexApiConnector {
             wsClient = new WebSocketClient(sslContextFactory);
             uri = new URI(getSchemeWS() + "://" + host + ":32400/:/websockets/notifications?X-Plex-Token=" + token); // WS_ENDPOINT_TOUCHWAND);
         } catch (URISyntaxException e) {
-            logger.warn("URI not valid {} message {}", uri, e.getMessage());
+            logger.debug("URI not valid {} message {}", uri, e.getMessage());
             return;
         }
         wsClient.setConnectTimeout(2000);
@@ -293,9 +290,9 @@ public class PlexApiConnector {
             wsClient.start();
             wsClient.connect(plexSocket, uri, request);
         } catch (IOException e) {
-            logger.warn("Could not connect webSocket URI {} message {}", uri, e.getMessage(), e);
+            logger.debug("Could not connect webSocket URI {} message {}", uri, e.getMessage(), e);
         } catch (Exception e) {
-            logger.warn("Could not connect webSocket URI {} message {}", uri, e.getMessage(), e);
+            logger.debug("Could not connect webSocket URI {} message {}", uri, e.getMessage(), e);
             return;
         }
     }
@@ -309,14 +306,14 @@ public class PlexApiConnector {
         public void onClose(int statusCode, String reason) {
             logger.debug("Connection closed: {} - {}", statusCode, reason);
             if (!isShutDown) {
-                logger.debug("Plex websocket closed - reconnecting");
+                logger.debug("PLEX websocket closed - reconnecting");
                 asyncWeb();
             }
         }
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
-            logger.debug("Plex Socket connected to ");
+            logger.debug("PLEX Socket connected to ");
             try {
                 logger.debug("Connected to PLEX websocket");
             } catch (Exception e) { // was IOExcept
@@ -328,14 +325,13 @@ public class PlexApiConnector {
         public void onMessage(String msg) {
             NotificationContainer notification = gson.fromJson(msg, NotificationContainer.class);
             if (notification != null) {
-                if (notification.getNotificationContainer().getType().equals("playing")) {
-                    if (listener != null) {
-                        listener.onItemStatusUpdate(
-                                notification.getNotificationContainer().getPlaySessionStateNotification().get(0)
-                                        .getSessionKey(),
-                                notification.getNotificationContainer().getPlaySessionStateNotification().get(0)
-                                        .getState());
-                    }
+                PlexUpdateListener listenerLocal = listener;
+                if (listenerLocal != null && notification.getNotificationContainer().getType().equals("playing")) {
+                    listenerLocal.onItemStatusUpdate(
+                            notification.getNotificationContainer().getPlaySessionStateNotification().get(0)
+                                    .getSessionKey(),
+                            notification.getNotificationContainer().getPlaySessionStateNotification().get(0)
+                                    .getState());
                 }
             }
         }
@@ -351,9 +347,7 @@ public class PlexApiConnector {
         private void asyncWeb() {
             ScheduledFuture<?> mySocketReconnect = socketReconnect;
             if (mySocketReconnect == null || mySocketReconnect.isDone()) {
-                if (scheduler != null) {
-                    socketReconnect = scheduler.schedule(PlexApiConnector.this::connect, 5, TimeUnit.SECONDS); // WEBSOCKET_RECONNECT_INTERVAL_SEC,
-                }
+                socketReconnect = scheduler.schedule(PlexApiConnector.this::connect, 5, TimeUnit.SECONDS); // WEBSOCKET_RECONNECT_INTERVAL_SEC,
             }
         }
     }
@@ -366,7 +360,7 @@ public class PlexApiConnector {
      * - Previous / Next
      *
      * @param command The control command
-     * @param playerID The ID of the Plex player
+     * @param playerID The ID of the PLEX player
      */
     public void controlPlayer(Command command, String playerID) {
         String commandPath = null;
@@ -394,8 +388,8 @@ public class PlexApiConnector {
                 Properties headers = getClientHeaders();
                 headers.put("X-Plex-Target-Client-Identifier", playerID);
                 HttpUtil.executeUrl("GET", url, headers, null, null, REQUEST_TIMEOUT_MS);
-            } catch (Exception e) {
-                logger.warn("An exception occurred trying to send command '{}' to the play player: {}", commandPath,
+            } catch (IOException e) {
+                logger.debug("An exception occurred trying to send command '{}' to the player: {}", commandPath,
                         e.getMessage());
             }
         } else {

@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.plex.internal.PlexBindingConstants;
 import org.openhab.binding.plex.internal.config.PlexServerConfiguration;
 import org.openhab.binding.plex.internal.dto.MediaContainer;
 import org.openhab.binding.plex.internal.dto.MediaContainer.MediaType;
@@ -52,14 +51,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateListener {
-
     private final Logger logger = LoggerFactory.getLogger(PlexServerHandler.class);
 
     // Maintain mapping of handler and players
     private final Map<String, PlexPlayerHandler> playerHandlers = new ConcurrentHashMap<>();
 
     private PlexServerConfiguration config = new PlexServerConfiguration();
-    // private @Nullable PlexServerHandler bridge;
     private PlexApiConnector plexAPIConnector;
 
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -83,7 +80,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
     @Override
     public void initialize() {
         config = getConfigAs(PlexServerConfiguration.class);
-        if (!EMPTY.equals(config.host)) { // Check if a hostname is set
+        if (!config.host.isEmpty()) { // Check if a hostname is set
             plexAPIConnector.setParameters(config);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -93,7 +90,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
         if (!plexAPIConnector.hasToken()) {
             // No token is set by config, let's see if we can fetch one from username/password
             logger.debug("Token is not set, trying to fetch one");
-            if ((EMPTY.equals(config.getUsername()) || EMPTY.equals(config.getPassword()))) {
+            if (config.username.isEmpty() || config.password.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Username, password and Token is not set, unable to connect to PLEX without. ");
                 return;
@@ -155,13 +152,12 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
     public List<String> getAvailablePlayers() {
         List<String> availablePlayers = new ArrayList<String>();
         MediaContainer sessionData = plexAPIConnector.getSessionData();
-        if (sessionData != null) {
-            if (sessionData.getSize() > 0) {
-                for (MediaType tmpMeta : sessionData.getMediaTypes()) {
-                    if (playerHandlers.get(tmpMeta.getPlayer().getMachineIdentifier()) == null) {
-                        if (tmpMeta.getPlayer().getLocal().equals("1")) {
-                            availablePlayers.add(tmpMeta.getPlayer().getMachineIdentifier());
-                        }
+
+        if (sessionData != null && sessionData.getSize() > 0) {
+            for (MediaType tmpMeta : sessionData.getMediaTypes()) {
+                if (tmpMeta != null && playerHandlers.get(tmpMeta.getPlayer().getMachineIdentifier()) == null) {
+                    if ("1".equals(tmpMeta.getPlayer().getLocal())) {
+                        availablePlayers.add(tmpMeta.getPlayer().getMachineIdentifier());
                     }
                 }
             }
@@ -177,7 +173,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
     public synchronized void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         String playerID = (String) childThing.getConfiguration().get(CONFIG_PLAYER_ID);
         playerHandlers.put(playerID, (PlexPlayerHandler) childHandler);
-        logger.warn("Bridge: Monitor handler was initialized for {} with id {}", childThing.getUID(), playerID);
+        logger.debug("Bridge: Monitor handler was initialized for {} with id {}", childThing.getUID(), playerID);
     }
 
     /**
@@ -187,7 +183,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
     public synchronized void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         String playerID = (String) childThing.getConfiguration().get(CONFIG_PLAYER_ID);
         playerHandlers.remove(playerID);
-        logger.warn("Bridge: Monitor handler was disposed for {} with id {}", childThing.getUID(), playerID);
+        logger.debug("Bridge: Monitor handler was disposed for {} with id {}", childThing.getUID(), playerID);
     }
 
     /**
@@ -202,7 +198,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
                 }
             }
         } catch (Exception e) {
-            logger.warn("Failed setting item status : {}", e.getMessage());
+            logger.debug("Failed setting item status : {}", e.getMessage());
         }
     }
 
@@ -223,33 +219,32 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
             playerCount++;
             valueIterator.next().setFoundInSession(false);
         }
-        if (sessionData != null) {
-            if (sessionData.getSize() > 0) { // Cover condition where nothing is playing
-                for (MediaContainer.MediaType tmpMeta : sessionData.getMediaTypes()) { // Roll through mediaType objects
-                                                                                       // looking for machineID
-                    if (playerHandlers.get(tmpMeta.getPlayer().getMachineIdentifier()) != null) { // if we have a player
-                                                                                                  // configured, update
-                                                                                                  // it
-                        tmpMeta.setArt(plexAPIConnector.getURL(tmpMeta.getArt()));
-                        if (tmpMeta.getType().equals("episode")) {
-                            tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getGrandparentThumb()));
-                            tmpMeta.setTitle(tmpMeta.getGrandparentTitle() + " : " + tmpMeta.getTitle());
-                        } else if (tmpMeta.getType().equals("track")) {
-                            tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getThumb()));
-                            tmpMeta.setTitle(tmpMeta.getGrandparentTitle() + " - " + tmpMeta.getParentTitle() + " - "
-                                    + tmpMeta.getTitle());
-                        } else {
-                            tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getThumb()));
-                        }
-                        playerHandlers.get(tmpMeta.getPlayer().getMachineIdentifier()).refreshSessionData(tmpMeta);
-                        playerActiveCount++;
+        if (sessionData != null && sessionData.getSize() > 0) { // Cover condition where nothing is playing
+            for (MediaContainer.MediaType tmpMeta : sessionData.getMediaTypes()) { // Roll through mediaType objects
+                                                                                   // looking for machineID
+                if (playerHandlers.get(tmpMeta.getPlayer().getMachineIdentifier()) != null) { // if we have a player
+                                                                                              // configured, update
+                                                                                              // it
+                    tmpMeta.setArt(plexAPIConnector.getURL(tmpMeta.getArt()));
+                    if (tmpMeta.getType().equals("episode")) {
+                        tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getGrandparentThumb()));
+                        tmpMeta.setTitle(tmpMeta.getGrandparentTitle() + " : " + tmpMeta.getTitle());
+                    } else if (tmpMeta.getType().equals("track")) {
+                        tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getThumb()));
+                        tmpMeta.setTitle(tmpMeta.getGrandparentTitle() + " - " + tmpMeta.getParentTitle() + " - "
+                                + tmpMeta.getTitle());
+                    } else {
+                        tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getThumb()));
                     }
+                    playerHandlers.get(tmpMeta.getPlayer().getMachineIdentifier()).refreshSessionData(tmpMeta);
+                    playerActiveCount++;
                 }
             }
         }
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_SERVER_COUNT),
+
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SERVER_COUNT),
                 new StringType(String.valueOf(playerCount)));
-        updateState(new ChannelUID(getThing().getUID(), PlexBindingConstants.CHANNEL_SERVER_COUNTACTIVE),
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SERVER_COUNTACTIVE),
                 new StringType(String.valueOf(playerActiveCount)));
     }
 
@@ -267,9 +262,10 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
      * This is called to start the refresh job and also to reset that refresh job when a config change is done.
      */
     private synchronized void onUpdate() {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob == null || pollingJob.isCancelled()) {
             int pollingInterval = ((BigDecimal) getConfig().get(CONFIG_REFRESH_RATE)).intValue();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
+            this.pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -285,7 +281,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Plex is not returning valid session data");
+                        "PLEX is not returning valid session data");
             }
             refreshAllPlayers();
         } catch (Exception e) {
@@ -299,9 +295,11 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
         logger.debug("Disposing PLEX Bridge Handler.");
         isRunning = false;
         plexAPIConnector.dispose();
+
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
     }
 }

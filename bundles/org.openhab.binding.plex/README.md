@@ -23,8 +23,8 @@ This binding supports 2 things.
 
 ## Discovery
 
-For the auto discovery to work correctly you first need to configure and add the `PLEX Server Thing`.
-Next step is to *PLAY* something on the desired player. Only when media is played on the player it will show up in the autodiscovery!
+For the auto discovery to work correctly you first need to configure and add the `PLEX Server` Thing.
+Next step is to *PLAY* something on the desired player. Only when media is played on the player it will show up in the auto discovery!
 
 ## Thing Configuration
 
@@ -47,7 +47,7 @@ Then find the PLEX token please follow the instructions from the PLEX support fo
 | password    | text    | If you're using Plex Home you need to supply the username and password of your Plex account here. If you don't want to enter your credentials you can also directly set your account token below instead. | N/A     | no       | no      |
 | token       | text    | The authentication token when username/password is left blank                                                                                                                                             | N/A     | no       | no      |
 
-### `PLEX player` Thing Configuration
+### `PLEX Player` Thing Configuration
 
 You can add multiple PLEX players. You can choose to find the player by autodiscovery or add them manually.
 
@@ -97,25 +97,25 @@ Find the `Device` block of the player you want to add and fill in the `clientIde
 
 The PLEX Player supports the following channels:
 
-| Channel              | Type | Read/Write | Description                                                           |
-|----------------------|--|------------|-----------------------------------------------------------------------|
-| currentPlayers       | Number | RO         | The number of players currently configured to watch on PLEX           |
-| currentPlayersActive | Number | RO         | The number of players currently being used on PLEX                    |
-| state                | String | RO         | The current state of the Player (BUFFERING, PLAYING, PAUSED, STOPPED) |
-| power                | Switch | RO         | The power status of the player                                        |
-| title                | String | RO         | The title of media that is playing                                    |
-| type                 | String | RO         | The current type of playing media                                     |
+| Channel              | Type     | Read/Write | Description                                                           |
+|----------------------|----------|------------|-----------------------------------------------------------------------|
+| currentPlayers       | Number   | RO         | The number of players currently configured to watch on PLEX           |
+| currentPlayersActive | Number   | RO         | The number of players currently being used on PLEX                    |
+| state                | String   | RO         | The current state of the Player (BUFFERING, PLAYING, PAUSED, STOPPED) |
+| power                | Switch   | RO         | The power status of the player                                        |
+| title                | String   | RO         | The title of media that is playing                                    |
+| type                 | String   | RO         | The current type of playing media                                     |
 | endtime              | DateTime | RO         | Time at which the media that is playing will end                      |
-| progress             | Dimmer | RO         | The current progress of playing media                                 |
-| art                  | String | RO         | The URL of the background art for currently playing media             |
-| thumb                | String | RO         | The URL of the cover art for currently playing media                  |
-| player               | Player | RW         | The control channel for the player `PLAY/PAUSE/NEXT/PREVIOUS`         |
+| progress             | Dimmer   | RO         | The current progress of playing media                                 |
+| art                  | String   | RO         | The URL of the background art for currently playing media             |
+| thumb                | String   | RO         | The URL of the cover art for currently playing media                  |
+| player               | Player   | RW         | The control channel for the player `PLAY/PAUSE/NEXT/PREVIOUS`         |
 
 ## Full Example
 
 `.things` file:
 
-```
+```java
 Bridge plex:server:plexrServer "Bridge Plex : Plex" [host="IP.Address.Or.Hostname", token="SadhjsajjA3AG", refreshRate=5]
 {
     Thing plex:player:MyViewerName01 "My Viewer Name 01" [playerID="ClientIdentifierFromDevices.XML1"]
@@ -125,7 +125,7 @@ Bridge plex:server:plexrServer "Bridge Plex : Plex" [host="IP.Address.Or.Hostnam
 
 `.items` file
 
-```
+```java
 String    BridgePlexCurrent            "Current players"           {channel="plex:server:plexrServer:currentPlayers"}
 String    BridgePlexCurrentActive      "Current players active"    {channel="plex:server:plexrServer:currentPlayersActive"}
 Switch    PlexTVPower01                "Power"                     {channel="plex:player:MyViewerName01:power"}
@@ -148,7 +148,7 @@ String    ShellArt02                   "Background art"            {channel="ple
 
 `.rules` file
 
-```
+```java
 rule "Send telegram with title for My Viewer Name 01"
 when
     Item PlexTVTitle01 changed

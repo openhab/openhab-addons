@@ -64,6 +64,7 @@ public class PlexHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof PlexServerHandler) {
+            ServiceRegistration<?> plexDiscoveryServiceRegistration = this.plexDiscoveryServiceRegistration;
             if (plexDiscoveryServiceRegistration != null) {
                 // remove discovery service, if bridge handler is removed
                 plexDiscoveryServiceRegistration.unregister();

@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum PlexPlayerState {
-
     STOPPED,
     BUFFERING,
     PLAYING,

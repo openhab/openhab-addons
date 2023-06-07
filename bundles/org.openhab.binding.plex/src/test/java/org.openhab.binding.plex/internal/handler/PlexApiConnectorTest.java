@@ -34,7 +34,6 @@ import org.openhab.binding.plex.internal.config.PlexServerConfiguration;
  */
 @NonNullByDefault
 public class PlexApiConnectorTest {
-
     private @NonNullByDefault({}) @Mock ScheduledExecutorService scheduler;
 
     private @NonNullByDefault({}) PlexApiConnector plexApiConnector;
@@ -51,7 +50,7 @@ public class PlexApiConnectorTest {
     @MethodSource("tokenProvider")
     public void testHasToken(String token, Boolean result) {
         PlexServerConfiguration config = new PlexServerConfiguration();
-        config.setToken(token);
+        config.token = token;
         plexApiConnector.setParameters(config);
         assertThat(plexApiConnector.hasToken(), is(result));
     }

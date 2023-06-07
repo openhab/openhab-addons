@@ -28,33 +28,19 @@ import org.slf4j.LoggerFactory;
  * @author Aron Beurskens - Binding development
  */
 public class PlexSession {
-
     private String title;
-
     private String thumb;
-
     private String art;
-
     private long viewOffset;
-
     private String type;
-
     private BigDecimal progress;
-
     private String machineIdentifier;
-
     private PlexPlayerState state;
-
     private String local;
-
     private long duration;
-
     private Date endTime;
-
     private String sessionKey = "";
-
     private Integer userId;
-
     private String userTitle = "";
 
     private final Logger logger = LoggerFactory.getLogger(PlexSession.class);
@@ -185,7 +171,7 @@ public class PlexSession {
                 this.progress = progress;
             }
         } catch (Exception e) {
-            logger.warn("An exception occurred while polling the updating Progress: '{}'", e.getMessage());
+            logger.debug("An exception occurred while polling the updating Progress: '{}'", e.getMessage());
         }
     }
 }

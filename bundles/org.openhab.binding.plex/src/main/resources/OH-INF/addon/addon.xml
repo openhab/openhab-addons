@@ -5,6 +5,7 @@
 
 	<type>binding</type>
 	<name>Plex Binding</name>
-	<description>Monitor your plex server and players</description>
-	<keywords>plex, cinema, media</keywords>
+	<description>Monitor your PLEX server and players</description>
+	<connection>hybrid</connection>
+
 </addon:addon>

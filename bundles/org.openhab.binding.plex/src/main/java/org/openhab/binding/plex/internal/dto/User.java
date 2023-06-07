@@ -22,7 +22,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("user")
 public class User {
-
     private String username;
     private String email;
     @XStreamAlias("authentication-token")

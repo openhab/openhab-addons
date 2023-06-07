@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="server">
-		<label>Plex Server Thing</label>
-		<description>PLEX Server Thing</description>
+		<label>PLEX Server</label>
+		<description>Represents a PLEX Server</description>
 		<channels>
 			<channel id="currentPlayer" typeId="currentPlayers"/>
 			<channel id="currentPlayersActive" typeId="currentPlayersActive"/>
@@ -18,7 +18,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
-		<label>PLEX Player Monitor</label>
+		<label>PLEX Player</label>
 		<description>Represents a PLEX player</description>
 		<channels>
 			<channel id="state" typeId="state"/>
@@ -96,12 +96,12 @@
 	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>
-		<label>Player Control Play/Pause/Next/Previous</label>
+		<label>Player Control</label>
 		<description>The control channel for the player `PLAY/PAUSE/NEXT/PREVIOUS`</description>
 	</channel-type>
 	<channel-type id="user">
 		<item-type>String</item-type>
-		<label>User controlling the player</label>
+		<label>Player User</label>
 		<description>The title of the user controlling the player</description>
 	</channel-type>
 </thing:thing-descriptions>
