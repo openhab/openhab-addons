@@ -94,7 +94,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                             "@text/solarforecast.site.status.wrong-handler" + " [\"" + handler + "\"]");
-
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,

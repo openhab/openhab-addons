@@ -135,7 +135,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                             "@text/solarforecast.site.status.wrong-handler" + " [\"" + handler + "\"]");
-
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
