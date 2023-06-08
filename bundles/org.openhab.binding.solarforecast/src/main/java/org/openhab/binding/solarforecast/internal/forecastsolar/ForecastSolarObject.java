@@ -74,7 +74,7 @@ public class ForecastSolarObject implements SolarForecast {
                 }
                 valid = true;
             } catch (JSONException je) {
-                logger.info("Error parsing JSON response {} - {}", content, je.getMessage());
+                logger.debug("Error parsing JSON response {} - {}", content, je.getMessage());
             }
         }
     }
@@ -84,14 +84,8 @@ public class ForecastSolarObject implements SolarForecast {
             if (!wattHourMap.isEmpty()) {
                 if (expirationDateTime.isAfter(Instant.now())) {
                     return true;
-                } else {
-                    logger.debug("Forecast data expired");
                 }
-            } else {
-                logger.debug("Empty data map");
             }
-        } else {
-            logger.debug("No Forecast data available");
         }
         return false;
     }
@@ -219,7 +213,6 @@ public class ForecastSolarObject implements SolarForecast {
             return UnDefType.UNDEF;
         }
         double measure = getDayTotal(localDate);
-        logger.trace("Actions: deliver measure {}", measure);
         return Utils.getEnergyState(measure);
     }
 
@@ -260,7 +253,6 @@ public class ForecastSolarObject implements SolarForecast {
             return UnDefType.UNDEF;
         }
         double measure = getActualPowerValue(localDateTime);
-        logger.trace("Actions: deliver measure {}", measure);
         return Utils.getPowerState(measure);
     }
 

@@ -103,7 +103,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     /**
-     * Get data for all planes. Protect parts map from being modified during update
+     * Get data for all planes. Synchronized to protect parts map from being modified during update
      */
     private synchronized void getData() {
         if (parts.isEmpty()) {
@@ -164,8 +164,6 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         List<SolarForecast> l = new ArrayList<SolarForecast>();
         parts.forEach(entry -> {
             l.addAll(entry.getSolarForecasts());
-            logger.trace("Actions: {} forecast added", entry.getSolarForecasts().size());
-
         });
         return l;
     }

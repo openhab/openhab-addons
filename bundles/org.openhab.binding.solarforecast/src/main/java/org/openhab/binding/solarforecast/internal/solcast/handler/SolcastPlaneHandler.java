@@ -96,7 +96,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         timeZoneProvider = tzp;
         forecast = new SolcastObject(timeZoneProvider);
         nextMeasurement = Utils.getNextTimeframe(ZonedDateTime.now(timeZoneProvider.getTimeZone()));
-        logger.debug("{} Constructor", thing.getLabel());
     }
 
     @Override
@@ -106,7 +105,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     @Override
     public void initialize() {
-        logger.debug("{} initialize", thing.getLabel());
         SolcastPlaneConfiguration c = getConfigAs(SolcastPlaneConfiguration.class);
         configuration = Optional.of(c);
 
@@ -117,10 +115,10 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             if (item != null) {
                 powerItem = Optional.of(item);
             } else {
-                logger.info("Item {} not found", c.powerItem);
+                logger.debug("Item {} not found", c.powerItem);
             }
         } else {
-            logger.debug("No Power item configured");
+            logger.trace("No Power item configured");
         }
 
         // connect Bridge & Status
@@ -156,7 +154,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Handle command {} for channel {}", channelUID, command);
         if (command instanceof RefreshType) {
             fetchData();
         }
@@ -166,7 +163,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         if (!forecast.isValid()) {
             String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
             String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
-            logger.debug("{} Call {}", thing.getLabel(), currentEstimateUrl);
             try {
                 // get actual estimate
                 Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
@@ -176,10 +172,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(),
                             Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES),
                             timeZoneProvider);
-                    logger.trace("{} Fetched data {}", thing.getLabel(), localForecast.toString());
 
                     // get forecast
-                    logger.debug("{} Call {}", thing.getLabel(), forecastUrl);
                     Request forecastRequest = httpClient.newRequest(forecastUrl);
                     forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
                     ContentResponse crForecast = forecastRequest.send();
@@ -188,21 +182,18 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         localForecast.join(crForecast.getContentAsString());
                         setForecast(localForecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
-                        logger.trace("{} Fetched data {}", thing.getLabel(), forecast.toString());
                     } else {
-                        logger.info("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
+                        logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
                     }
                 } else {
-                    logger.info("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, crEstimate.getStatus());
+                    logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, crEstimate.getStatus());
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                logger.info("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, e.getMessage());
+                logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, e.getMessage());
             }
-        } else {
-            logger.trace("{} use available forecast", thing.getLabel());
-        }
+        } // else use available forecast
         updateChannels(forecast);
-        if (ZonedDateTime.now(timeZoneProvider.getTimeZone()).isAfter(nextMeasurement)) {
+        if (ZonedDateTime.now(timeZoneProvider.getTimeZone()).isAfter(nextMeasurement)) { // [Todo] switch to Instant
             sendMeasure();
         }
         return forecast;
@@ -214,7 +205,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private void sendMeasure() {
         State updateState = UnDefType.UNDEF;
         if (persistenceService.isPresent() && powerItem.isPresent()) {
-            logger.debug("Get item {}", configuration.get().powerItem);
             ZonedDateTime beginPeriodDT = nextMeasurement.minusMinutes(MEASURE_INTERVAL_MIN);
             ZonedDateTime endPeriodDT = nextMeasurement;
             FilterCriteria fc = new FilterCriteria();
@@ -225,7 +215,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             int count = 0;
             double total = 0;
             for (HistoricItem historicItem : historicItems) {
-                // logger.info("Found {} item with average {} power", historicItem.getTimestamp(),
                 // historicItem.getState().toFullString());
                 DecimalType dt = historicItem.getState().as(DecimalType.class);
                 if (dt != null) {
@@ -248,11 +237,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         // just round and keep 3 digits after comma
                         power = Math.round(power * 1000.0) / 1000.0;
                     } else {
-                        logger.info("No Power unit detected - result is {}", unitDetected.toString());
+                        logger.trace("No valid Power unit detected {}", unitDetected.toString());
                         power = UNDEF_DOUBLE;
                     }
                 } else {
-                    logger.info("No autodetection for State class {} possible", state.getClass());
+                    logger.trace("No autodetection for State class {} possible", state.getClass());
                     power = UNDEF_DOUBLE;
                 }
             } else if (Units.WATT.toString().equals(configuration.get().powerUnit)) {
@@ -262,19 +251,18 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 // just round and keep 3 digits after comma
                 power = Math.round(power * 1000.0) / 1000.0;
             } else {
-                logger.info("No Unit conversion possible for {}", configuration.get().powerUnit);
+                logger.trace("No Unit conversion possible for {}", configuration.get().powerUnit);
                 power = UNDEF_DOUBLE;
             }
 
             if (power >= 0) {
-                logger.debug("Found {} items with average {} power", count, total / count);
                 JSONObject measureObject = new JSONObject();
                 JSONObject measure = new JSONObject();
                 measure.put("period_end", endPeriodDT.format(DateTimeFormatter.ISO_INSTANT));
                 measure.put("period", "PT" + MEASURE_INTERVAL_MIN + "M");
                 measure.put("total_power", power);
                 measureObject.put("measurement", measure);
-                logger.debug("Send {}", measureObject.toString());
+                logger.trace("Send {}", measureObject.toString());
 
                 String measureUrl = String.format(MEASUREMENT_URL, configuration.get().resourceId);
                 Request request = httpClient.POST(measureUrl);
@@ -284,18 +272,16 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 try {
                     ContentResponse crMeasure = request.send();
                     if (crMeasure.getStatus() == 200) {
-                        logger.debug("{} Call {} finished {}", thing.getLabel(), measureUrl,
-                                crMeasure.getContentAsString());
                         updateState = StringType.valueOf(crMeasure.getContentAsString());
                     } else {
-                        logger.info("{} Call {} failed {} - {}", thing.getLabel(), measureUrl, crMeasure.getStatus(),
+                        logger.debug("{} Call {} failed {} - {}", thing.getLabel(), measureUrl, crMeasure.getStatus(),
                                 crMeasure.getContentAsString());
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    logger.info("{} Call {} failed {}", thing.getLabel(), measureUrl, e.getMessage());
+                    logger.debug("{} Call {} failed {}", thing.getLabel(), measureUrl, e.getMessage());
                 }
             } else {
-                logger.info("Persistence empty");
+                logger.debug("Persistence for {} empty", powerItem);
             }
         }
         updateState(CHANNEL_RAW_TUNING, updateState);
@@ -330,7 +316,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     private synchronized void setForecast(SolcastObject f) {
-        logger.debug("{} Forecast set", thing.getLabel());
         forecast = f;
     }
 

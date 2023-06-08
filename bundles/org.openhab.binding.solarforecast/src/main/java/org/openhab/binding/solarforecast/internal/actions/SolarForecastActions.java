@@ -14,7 +14,6 @@ package org.openhab.binding.solarforecast.internal.actions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -54,25 +53,28 @@ public class SolarForecastActions implements ThingActions {
             String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            logger.trace("Found {} SolarForecast entries", l.size());
             if (!l.isEmpty()) {
                 QuantityType<Energy> measure = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getDay(localDate, args);
-                    logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Energy>) s);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.debug("Found measure {} - break", s);
+                        logger.trace("Ambiguous measure {} found for {} - return UNDEF", s, localDate);
                         return UnDefType.UNDEF;
                     }
                 }
                 return measure;
+            } else {
+                logger.trace("No forecasts found for {} - return UNDEF", localDate);
+                return UnDefType.UNDEF;
             }
+        } else {
+            logger.trace("Handler missing - return UNDEF");
+            return UnDefType.UNDEF;
         }
-        return UnDefType.UNDEF;
     }
 
     @RuleAction(label = "@text/actionPowerLabel", description = "@text/actionPowerDesc")
@@ -81,25 +83,28 @@ public class SolarForecastActions implements ThingActions {
             String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            logger.trace("Found {} SolarForecast entries", l.size());
             if (!l.isEmpty()) {
                 QuantityType<Power> measure = QuantityType.valueOf(0, MetricPrefix.KILO(Units.WATT));
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getPower(localDateTime, args);
-                    logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Power>) s);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.debug("Found measure {} - break", s);
+                        logger.trace("Ambiguous measure {} found for {} - return UNDEF", s, localDateTime);
                         return UnDefType.UNDEF;
                     }
                 }
                 return measure;
+            } else {
+                logger.trace("No forecasts found for {} - return UNDEF", localDateTime);
+                return UnDefType.UNDEF;
             }
+        } else {
+            logger.trace("Handler missing - return UNDEF");
+            return UnDefType.UNDEF;
         }
-        return UnDefType.UNDEF;
     }
 
     @RuleAction(label = "@text/actionEnergyLabel", description = "@text/actionEnergyDesc")
@@ -109,57 +114,64 @@ public class SolarForecastActions implements ThingActions {
             String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            logger.trace("Found {} SolarForecast entries", l.size());
             if (!l.isEmpty()) {
                 QuantityType<Energy> measure = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     State s = solarForecast.getEnergy(localDateTimeBegin, localDateTimeEnd, args);
-                    logger.trace("Found measure {}", s);
                     if (s instanceof QuantityType<?>) {
                         measure = measure.add((QuantityType<Energy>) s);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.debug("Found measure {} - break", s);
+                        logger.trace("Ambiguous measure {} found between {} and {} - return UNDEF", s,
+                                localDateTimeBegin, localDateTimeEnd);
                         return UnDefType.UNDEF;
                     }
                 }
                 return measure;
+            } else {
+                logger.trace("No forecasts found for between {} and {} - return UNDEF", localDateTimeBegin,
+                        localDateTimeEnd);
+                return UnDefType.UNDEF;
             }
+        } else {
+            logger.trace("Handler missing - return UNDEF");
+            return UnDefType.UNDEF;
         }
-        return UnDefType.UNDEF;
     }
 
     @RuleAction(label = "@text/actionForecastBeginLabel", description = "@text/actionForecastBeginDesc")
     public LocalDateTime getForecastBegin() {
-        LocalDateTime returnLdt = LocalDateTime.MIN;
+        LocalDateTime returnLdt = LocalDateTime.MAX;
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            logger.trace("Found {} SolarForecast entries", l.size());
             if (!l.isEmpty()) {
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
                     LocalDateTime forecastLdt = solarForecast.getForecastBegin();
-                    logger.trace("Found {}", forecastLdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     // break in case of failure getting values to avoid ambiguous values
-                    if (forecastLdt.equals(LocalDateTime.MIN)) {
-                        return LocalDateTime.MIN;
+                    if (forecastLdt.equals(LocalDateTime.MAX)) {
+                        return LocalDateTime.MAX;
                     }
                     // take latest possible timestamp to avoid ambiguous values
-                    if (forecastLdt.isAfter(returnLdt)) {
+                    if (forecastLdt.isBefore(returnLdt)) {
                         returnLdt = forecastLdt;
-                        logger.trace("Set {}", forecastLdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                 }
                 return returnLdt;
+            } else {
+                logger.trace("No forecasts found - return invalid date MAX");
+                return LocalDateTime.MAX;
             }
+        } else {
+            logger.trace("Handler missing - return invalid date MAX");
+            return LocalDateTime.MAX;
         }
-        return LocalDateTime.MIN;
     }
 
     @RuleAction(label = "@text/actionForecastEndLabel", description = "@text/actionForecastEndDesc")
     public LocalDateTime getForecastEnd() {
-        LocalDateTime returnLdt = LocalDateTime.MAX;
+        LocalDateTime returnLdt = LocalDateTime.MIN;
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
@@ -168,17 +180,22 @@ public class SolarForecastActions implements ThingActions {
                     LocalDateTime forecastLdt = solarForecast.getForecastEnd();
                     // break in case of failure getting values to avoid ambiguous values
                     if (forecastLdt.equals(LocalDateTime.MIN)) {
-                        return LocalDateTime.MAX;
+                        return LocalDateTime.MIN;
                     }
                     // take earliest possible timestamp to avoid ambiguous values
-                    if (forecastLdt.isBefore(returnLdt)) {
+                    if (forecastLdt.isAfter(returnLdt)) {
                         returnLdt = forecastLdt;
                     }
                 }
                 return returnLdt;
+            } else {
+                logger.trace("No forecasts found - return invalid date MIN");
+                return LocalDateTime.MIN;
             }
+        } else {
+            logger.trace("Handler missing - return invalid date MIN");
+            return LocalDateTime.MIN;
         }
-        return LocalDateTime.MAX;
     }
 
     public static State getDay(ThingActions actions, LocalDate ld, String... args) {
@@ -203,7 +220,6 @@ public class SolarForecastActions implements ThingActions {
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        logger.trace("ThingHandler {} set", handler.toString());
         thingHandler = Optional.of(handler);
     }
 

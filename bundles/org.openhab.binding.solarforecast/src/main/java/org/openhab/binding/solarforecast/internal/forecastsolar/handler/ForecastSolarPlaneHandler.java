@@ -13,7 +13,6 @@
 package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
-import static org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarConstants.BASE_URL;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -57,6 +56,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ForecastSolarPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
+    public static final String BASE_URL = "https://api.forecast.solar/";
+
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarPlaneHandler.class);
     private final HttpClient httpClient;
 
@@ -70,7 +71,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     public ForecastSolarPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
         httpClient = hc;
-        logger.debug("{} Constructor", thing.getLabel());
     }
 
     @Override
@@ -80,7 +80,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public void initialize() {
-        logger.debug("{} initialize", thing.getLabel());
         ForecastSolarPlaneConfiguration c = getConfigAs(ForecastSolarPlaneConfiguration.class);
         configuration = Optional.of(c);
         Bridge bridge = getBridge();
@@ -115,7 +114,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Handle command {} for channel {}", channelUID, command);
         if (command instanceof RefreshType) {
             fetchData();
         }
@@ -146,27 +144,22 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 if (!SolarForecastBindingConstants.EMPTY.equals(configuration.get().horizon)) {
                     url += "?horizon=" + configuration.get().horizon;
                 }
-                logger.debug("{} Call {}", thing.getLabel(), url);
                 try {
                     ContentResponse cr = httpClient.GET(url);
                     if (cr.getStatus() == 200) {
                         ForecastSolarObject localForecast = new ForecastSolarObject(cr.getContentAsString(),
                                 Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
                         setForecast(localForecast);
-                        logger.debug("Fetched new data. {} {} HTTP errors since last successful update",
-                                thing.getLabel(), failureCounter);
                         failureCounter = 0;
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
                     } else {
-                        logger.debug("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
+                        logger.info("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
                         failureCounter++;
                     }
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    logger.debug("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
+                    logger.info("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
                 }
-            } else {
-                logger.trace("{} use available forecast", thing.getLabel());
-            }
+            } // else use available forecast
             updateChannels(forecast);
         } else {
             logger.info("{} Location not present", thing.getLabel());
@@ -204,7 +197,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     private synchronized void setForecast(ForecastSolarObject f) {
-        logger.debug("Forecast set - valid? {}", f.isValid());
         forecast = f;
     }
 

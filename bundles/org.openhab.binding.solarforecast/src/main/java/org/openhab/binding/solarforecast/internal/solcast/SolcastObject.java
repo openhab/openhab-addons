@@ -152,14 +152,8 @@ public class SolcastObject implements SolarForecast {
             if (!estimationDataMap.isEmpty()) {
                 if (expirationDateTime.isAfter(Instant.now())) {
                     return true;
-                } else {
-                    logger.debug("Forecast data expired");
                 }
-            } else {
-                logger.debug("Empty data map");
             }
-        } else {
-            logger.debug("No Forecast data available");
         }
         return false;
     }
@@ -186,7 +180,7 @@ public class SolcastObject implements SolarForecast {
                     forecastValue += addedValue;
                     previousEstimate = endValue.doubleValue();
                 } else {
-                    logger.info("No estimation found for {}", key);
+                    logger.trace("No estimation found for {}", key);
                 }
             }
         }
@@ -275,7 +269,7 @@ public class SolcastObject implements SolarForecast {
                 forecastValue += addedValue;
                 previousEstimate = endValue.doubleValue();
             } else {
-                logger.info("No estimation found for {}", key);
+                logger.trace("No estimation found for {}", key);
             }
         }
         return forecastValue;
