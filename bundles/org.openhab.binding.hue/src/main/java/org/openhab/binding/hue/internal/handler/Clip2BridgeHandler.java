@@ -96,7 +96,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * NOTE: the SCENE resources must be mass down loaded first!
      */
     private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = Arrays.asList(SCENE, DEVICE, ROOM,
-            ZONE, BRIDGE_HOME);
+            ZONE);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -700,6 +700,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES) {
                 ResourceType resourceType = reference.getType();
                 List<Resource> resourceList = bridge.getResources(reference).getResources();
+                if (resourceType == ResourceType.ZONE) {
+                    // add special 'All Lights' zone to the zone resource list
+                    resourceList.addAll(bridge.getResources(BRIDGE_HOME).getResources());
+                }
                 getThing().getThings().forEach(thing -> {
                     ThingHandler handler = thing.getHandler();
                     if (handler instanceof Clip2ThingHandler) {

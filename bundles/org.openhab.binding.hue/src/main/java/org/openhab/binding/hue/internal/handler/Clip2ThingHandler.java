@@ -159,7 +159,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private boolean disposing;
     private boolean hasConnectivityIssue;
-    private boolean resourceConsumed;
     private boolean updateSceneContributorsDone;
     private boolean updateLightPropertiesDone;
     private boolean updatePropertiesDone;
@@ -511,13 +510,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         disposing = false;
         hasConnectivityIssue = false;
-        resourceConsumed = false;
         updatePropertiesDone = false;
         updateDependenciesDone = false;
         updateLightPropertiesDone = false;
         updateSceneContributorsDone = false;
-
-        scheduler.schedule(() -> updateOnlineState(), 1, TimeUnit.MINUTES);
     }
 
     /**
@@ -561,7 +557,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
             if (resourceConsumed) {
                 logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
-                this.resourceConsumed = true;
             }
         }
     }
@@ -569,7 +564,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Update the thing internal state depending on a full list of resources sent from the bridge. If the resourceType
      * is SCENE then call updateScenes(), otherwise if the resource refers to this thing, consume it via onResource() as
-     * any other resource.
+     * any other resource, or else if the resourceType nevertheless matches the thing type, set the thing state offline.
      *
      * @param resourceType the type of the resources in the list.
      * @param fullResources the full list of resources of the given type.
@@ -578,7 +573,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (resourceType == ResourceType.SCENE) {
             updateSceneContributors(fullResources);
         } else {
-            fullResources.stream().filter(r -> resourceId.equals(r.getId())).findAny().ifPresent(r -> onResource(r));
+            fullResources.stream().filter(r -> resourceId.equals(r.getId())).findAny()
+                    .ifPresentOrElse(r -> onResource(r), () -> {
+                        if (resourceType == thisResource.getType()) {
+                            logger.debug("{} -> onResourcesList() configuration error: unknown resourceId", resourceId);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "@text/offline.api2.conf-error-resource-id-bad");
+                        }
+                    });
         }
     }
 
@@ -904,18 +906,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             commandResourceIds.clear();
             commandResourceIds.putAll(services.stream() // use a 'mergeFunction' to prevent duplicates
                     .collect(Collectors.toMap(ResourceReference::getType, ResourceReference::getId, (r1, r2) -> r1)));
-        }
-    }
-
-    /**
-     * Scheduled task checks if any resources were consumed by the time the task executes, and if not changes the thing
-     * status to offline.
-     */
-    private void updateOnlineState() {
-        if (!resourceConsumed && !disposing) {
-            logger.debug("{} -> updateOnlineState() configuration resourceId is bad", resourceId);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error-resource-id-bad");
         }
     }
 
