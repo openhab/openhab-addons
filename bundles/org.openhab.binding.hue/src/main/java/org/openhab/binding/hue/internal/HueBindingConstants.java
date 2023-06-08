@@ -89,6 +89,8 @@ public class HueBindingConstants {
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
+    public static final String PORT = "port";
+    public static final String PROTOCOL = "protocol";
     public static final String USER_NAME = "userName";
 
     // Thing configuration properties
@@ -101,7 +103,9 @@ public class HueBindingConstants {
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 
-    //
+    public static final String DISCOVERY_LABEL_PATTERN = "Philips Hue (%s)";
+
+    // I18N string references
     public static final String TEXT_OFFLINE_COMMUNICATION_ERROR = "@text/offline.communication-error";
     public static final String TEXT_OFFLINE_CONFIGURATION_ERROR_INVALID_SSL_CERIFICATE = "@text/offline.conf-error-invalid-ssl-certificate";
 

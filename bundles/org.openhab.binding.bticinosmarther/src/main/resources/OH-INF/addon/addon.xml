@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>BTicino Smarther Binding</name>
 	<description>This is the binding for BTicino Smarther chronothermostat units</description>
+	<connection>cloud</connection>
 
 </addon:addon>

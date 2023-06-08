@@ -32,6 +32,8 @@ public class BoschIndegoBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_INDEGO = new ThingTypeUID(BINDING_ID, "indego");
 
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_INDEGO);
+
     // List of all Channel ids
     public static final String STATE = "state";
     public static final String TEXTUAL_STATE = "textualstate";
@@ -48,7 +50,11 @@ public class BoschIndegoBindingConstants {
     public static final String GARDEN_SIZE = "gardenSize";
     public static final String GARDEN_MAP = "gardenMap";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_INDEGO);
+    // Device properties
+    public static final String PROPERTY_BARE_TOOL_NUMBER = "bareToolNumber";
+    public static final String PROPERTY_SERVICE_COUNTER = "serviceCounter";
+    public static final String PROPERTY_NEEDS_SERVICE = "needsService";
+    public static final String PROPERTY_RENEW_DATE = "renewDate";
 
     // Bosch SingleKey ID OAuth2
     private static final String BSK_BASE_URI = "https://prodindego.b2clogin.com/prodindego.onmicrosoft.com/b2c_1a_signup_signin/oauth2/v2.0/";

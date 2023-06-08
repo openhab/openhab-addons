@@ -67,6 +67,7 @@ public class ZmBindingConstants {
     public static final String DEFAULT_URL_PATH = "/zm";
 
     // List of all channel ids
+    public static final String CHANNEL_RUN_STATE = "runState";
     public static final String CHANNEL_IMAGE_MONITOR_ID = "imageMonitorId";
     public static final String CHANNEL_VIDEO_MONITOR_ID = "videoMonitorId";
     public static final String CHANNEL_ID = "id";

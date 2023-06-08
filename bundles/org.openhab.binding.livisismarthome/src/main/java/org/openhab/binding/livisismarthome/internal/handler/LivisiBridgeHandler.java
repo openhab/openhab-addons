@@ -114,7 +114,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> reInitJob;
     private @Nullable ScheduledFuture<?> bridgeRefreshJob;
     private @NonNullByDefault({}) LivisiBridgeConfiguration bridgeConfiguration;
-    private @NonNullByDefault({}) OAuthClientService oAuthService;
+    private @Nullable OAuthClientService oAuthService;
     private String configVersion = "";
 
     /**
@@ -153,8 +153,9 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      */
     private void initializeClient() {
         String tokenURL = URLCreator.createTokenURL(bridgeConfiguration.host);
-        oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), tokenURL, tokenURL,
-                "clientId", "clientPass", null, true);
+        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), tokenURL,
+                tokenURL, "clientId", "clientPass", null, true);
+        this.oAuthService = oAuthService;
         client = createClient(oAuthService);
         deviceStructMan = new DeviceStructureManager(createFullDeviceManager(client));
         oAuthService.addAccessTokenRefreshListener(this);
@@ -349,11 +350,23 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         unregisterDeviceStatusListener(bridgeId);
         cancelJobs();
         stopWebSocket();
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService != null) {
+            oAuthService.removeAccessTokenRefreshListener(this);
+            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+            this.oAuthService = null;
+        }
         client = null;
         deviceStructMan = null;
 
         super.dispose();
         logger.debug("LIVISI SmartHome bridge handler shut down.");
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     private synchronized void cancelJobs() {
@@ -884,6 +897,10 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void requestAccessToken() throws OAuthException, IOException, OAuthResponseException {
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService == null) {
+            throw new OAuthException("OAuth service is not initialized");
+        }
         oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(LivisiBindingConstants.USERNAME,
                 bridgeConfiguration.password, null);
     }

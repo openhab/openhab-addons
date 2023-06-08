@@ -205,64 +205,64 @@ Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
 demo.items:
 
 ```java
-DateTime            TeslaEventstamp             {channel="model3:myaccount:mycar:eventstamp"}
-String              TeslaState                  {channel="model3:myaccount:mycar:state"}
-Number              TeslaSpeed                  {channel="model3:myaccount:mycar:speed"}
-String              TeslaShiftState             {channel="model3:myaccount:mycar:shiftstate"}
-Number              TeslaOdometer               {channel="model3:myaccount:mycar:odometer"}
-Number              TeslaRange                  {channel="model3:myaccount:mycar:range"}
+DateTime            TeslaEventstamp             {channel="account:model3:myaccount:mycar:eventstamp"}
+String              TeslaState                  {channel="account:model3:myaccount:mycar:state"}
+Number              TeslaSpeed                  {channel="account:model3:myaccount:mycar:speed"}
+String              TeslaShiftState             {channel="account:model3:myaccount:mycar:shiftstate"}
+Number              TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer"}
+Number              TeslaRange                  {channel="account:model3:myaccount:mycar:range"}
 
-Number              TeslaBatteryLevel           {channel="model3:myaccount:mycar:batterylevel"}
-Number              TeslaPower                  {channel="model3:myaccount:mycar:power"}
-Number              TeslaBatteryCurrent         {channel="model3:myaccount:mycar:batterycurrent"}
-Number              TeslaBatteryRange           {channel="model3:myaccount:mycar:batteryrange"}
-Number              TeslaEstBatteryRange        {channel="model3:myaccount:mycar:estimatedbatteryrange"}
-Number              TeslaIdealBatteryRange      {channel="model3:myaccount:mycar:idealbatteryrange"}
-Number              TeslaUsableBatteryLevel     {channel="model3:myaccount:mycar:usablebatterylevel"}
-Switch              TeslaPreconditioning        {channel="model3:myaccount:mycar:preconditioning"}
+Number              TeslaBatteryLevel           {channel="account:model3:myaccount:mycar:batterylevel"}
+Number              TeslaPower                  {channel="account:model3:myaccount:mycar:power"}
+Number              TeslaBatteryCurrent         {channel="account:model3:myaccount:mycar:batterycurrent"}
+Number              TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange"}
+Number              TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange"}
+Number              TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange"}
+Number              TeslaUsableBatteryLevel     {channel="account:model3:myaccount:mycar:usablebatterylevel"}
+Switch              TeslaPreconditioning        {channel="account:model3:myaccount:mycar:preconditioning"}
 
-Switch              TeslaCharge                 {channel="model3:myaccount:mycar:charge"}
-Switch              TeslaChargeToMax            {channel="model3:myaccount:mycar:chargetomax"}
+Switch              TeslaCharge                 {channel="account:model3:myaccount:mycar:charge"}
+Switch              TeslaChargeToMax            {channel="account:model3:myaccount:mycar:chargetomax"}
 
-Dimmer              TeslaChargeLimit            {channel="model3:myaccount:mycar:chargelimit"}
-Number              TeslaChargeRate             {channel="model3:myaccount:mycar:chargerate"}
-String              TeslaChargingState          {channel="model3:myaccount:mycar:chargingstate"}
-Number              TeslaChargerPower           {channel="model3:myaccount:mycar:chargerpower"}
-Number              TeslaTimeToFullCharge       {channel="model3:myaccount:mycar:timetofullcharge"}
-Number              TeslaMaxCharges             {channel="model3:myaccount:mycar:maxcharges"}
+Dimmer              TeslaChargeLimit            {channel="account:model3:myaccount:mycar:chargelimit"}
+Number              TeslaChargeRate             {channel="account:model3:myaccount:mycar:chargerate"}
+String              TeslaChargingState          {channel="account:model3:myaccount:mycar:chargingstate"}
+Number              TeslaChargerPower           {channel="account:model3:myaccount:mycar:chargerpower"}
+Number              TeslaTimeToFullCharge       {channel="account:model3:myaccount:mycar:timetofullcharge"}
+Number              TeslaMaxCharges             {channel="account:model3:myaccount:mycar:maxcharges"}
 
-Number              TeslaChargerVoltage         {channel="model3:myaccount:mycar:chargervoltage"}
-Number              TeslaChargerPower           {channel="model3:myaccount:mycar:chargerpower"}
-Number              TeslaChargerCurrent         {channel="model3:myaccount:mycar:chargercurrent"}
+Number              TeslaChargerVoltage         {channel="account:model3:myaccount:mycar:chargervoltage"}
+Number              TeslaChargerPower           {channel="account:model3:myaccount:mycar:chargerpower"}
+Number              TeslaChargerCurrent         {channel="account:model3:myaccount:mycar:chargercurrent"}
 
-DateTime            TeslaScheduledChargingStart {channel="model3:myaccount:mycar:scheduledchargingstart"}
-Dimmer              TeslaSoC                    {channel="model3:myaccount:mycar:soc"}
+DateTime            TeslaScheduledChargingStart {channel="account:model3:myaccount:mycar:scheduledchargingstart"}
+Dimmer              TeslaSoC                    {channel="account:model3:myaccount:mycar:soc"}
 
-Switch              TeslaDoorLock               {channel="model3:myaccount:mycar:doorlock"}
-Switch              TeslaHorn                   {channel="model3:myaccount:mycar:honkhorn"}
-Switch              TeslaStart                  {channel="model3:myaccount:mycar:remotestart"}
-Switch              TeslaSentry                 {channel="model3:myaccount:mycar:sentrymode"}
-Switch              TeslaLights                 {channel="model3:myaccount:mycar:flashlights"}
-Switch              TeslaValet                  {channel="model3:myaccount:mycar:valetmode"}
+Switch              TeslaDoorLock               {channel="account:model3:myaccount:mycar:doorlock"}
+Switch              TeslaHorn                   {channel="account:model3:myaccount:mycar:honkhorn"}
+Switch              TeslaStart                  {channel="account:model3:myaccount:mycar:remotestart"}
+Switch              TeslaSentry                 {channel="account:model3:myaccount:mycar:sentrymode"}
+Switch              TeslaLights                 {channel="account:model3:myaccount:mycar:flashlights"}
+Switch              TeslaValet                  {channel="account:model3:myaccount:mycar:valetmode"}
 
-Switch              TeslaWakeup                 {channel="model3:myaccount:mycar:wakeup"}
+Switch              TeslaWakeup                 {channel="account:model3:myaccount:mycar:wakeup"}
 
-Switch              TeslaBatteryHeater          {channel="model3:myaccount:mycar:batteryheater"}
-Switch              TeslaFrontDefrost           {channel="model3:myaccount:mycar:frontdefroster"}
-Switch              TeslaRearDefrost            {channel="model3:myaccount:mycar:reardefroster"}
-Switch              TeslaLeftSeatHeater         {channel="model3:myaccount:mycar:leftseatheater"}
-Switch              TeslaRightSeatHeater        {channel="model3:myaccount:mycar:rightseatheater"}
+Switch              TeslaBatteryHeater          {channel="account:model3:myaccount:mycar:batteryheater"}
+Switch              TeslaFrontDefrost           {channel="account:model3:myaccount:mycar:frontdefroster"}
+Switch              TeslaRearDefrost            {channel="account:model3:myaccount:mycar:reardefroster"}
+Switch              TeslaLeftSeatHeater         {channel="account:model3:myaccount:mycar:leftseatheater"}
+Switch              TeslaRightSeatHeater        {channel="account:model3:myaccount:mycar:rightseatheater"}
 
-Switch              TeslaHomelink               {channel="model3:myaccount:mycar:homelink"}
-Location            TeslaLocation               {channel="model3:myaccount:mycar:location"}
-Number              TeslaHeading                {channel="model3:myaccount:mycar:heading"}
-DateTime            TeslaLocationTime           {channel="model3:myaccount:mycar:gpstimestamp"}
+Switch              TeslaHomelink               {channel="account:model3:myaccount:mycar:homelink"}
+Location            TeslaLocation               {channel="account:model3:myaccount:mycar:location"}
+Number              TeslaHeading                {channel="account:model3:myaccount:mycar:heading"}
+DateTime            TeslaLocationTime           {channel="account:model3:myaccount:mycar:gpstimestamp"}
 
-Switch              TeslaAutoconditioning       {channel="model3:myaccount:mycar:autoconditioning"}
-Number:Temperature  TeslaTemperature            {channel="model3:myaccount:mycar:temperature"}
-Number:Temperature  TeslaTemperatureCombined    {channel="model3:myaccount:mycar:combinedtemp"}
-Number:Temperature  TeslaInsideTemperature      {channel="model3:myaccount:mycar:insidetemp"}
-Number:Temperature  TeslaOutsideTemperature     {channel="model3:myaccount:mycar:outsidetemp"}
+Switch              TeslaAutoconditioning       {channel="account:model3:myaccount:mycar:autoconditioning"}
+Number:Temperature  TeslaTemperature            {channel="account:model3:myaccount:mycar:temperature"}
+Number:Temperature  TeslaTemperatureCombined    {channel="account:model3:myaccount:mycar:combinedtemp"}
+Number:Temperature  TeslaInsideTemperature      {channel="account:model3:myaccount:mycar:insidetemp"}
+Number:Temperature  TeslaOutsideTemperature     {channel="account:model3:myaccount:mycar:outsidetemp"}
 ```
 
 demo.sitemap:
@@ -337,23 +337,7 @@ sitemap main label="Main"
         }
         Frame
         {
-            Switch label="State" item=nTeslaState_chart icon=line mappings=[0="Hide", 1="Hour", 2="Day", 3="Week", 4="Month"]
-            Chart  item=nTeslaState  period=h refresh=30000  visibility=[nTeslaState_chart==1]
-            Chart  item=nTeslaState  period=D refresh=30000  visibility=[nTeslaState_chart==2]
-            Chart  item=nTeslaState  period=W refresh=30000  visibility=[nTeslaState_chart==3]
-            Chart  item=nTeslaState  period=M refresh=30000  visibility=[nTeslaState_chart==4]
-        }       
-        Frame
-        {
-            Switch label="Battery" item=TeslaBatteryLevel_chart icon=line mappings=[0="Hide", 1="Hour", 2="Day", 3="Week", 4="Month"]
-            Chart  item=TeslaUsableBatteryLevel period=h refresh=30000  visibility=[TeslaBatteryLevel_chart==1]
-            Chart  item=TeslaUsableBatteryLevel period=D refresh=30000  visibility=[TeslaBatteryLevel_chart==2] 
-            Chart  item=TeslaUsableBatteryLevel period=W refresh=30000  visibility=[TeslaBatteryLevel_chart==3]
-            Chart  item=TeslaUsableBatteryLevel period=M refresh=30000  visibility=[TeslaBatteryLevel_chart==4]
-        }
-        Frame
-        {
-            Mapview item=TeslaLocation height=10 icon=location
+            Mapview item=TeslaLocation height=10
         }
     }
 }

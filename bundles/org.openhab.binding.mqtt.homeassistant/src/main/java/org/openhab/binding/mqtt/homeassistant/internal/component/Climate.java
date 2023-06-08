@@ -232,9 +232,8 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.awayModeStateTopic, commandFilter);
 
         buildOptionalChannel(CURRENT_TEMPERATURE_CH_ID,
-                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp, precision,
-                        channelConfiguration.temperatureUnit.getUnit()),
-                updateListener, null, null, channelConfiguration.currentTemperatureTemplate,
+                new NumberValue(null, null, precision, channelConfiguration.temperatureUnit.getUnit()), updateListener,
+                null, null, channelConfiguration.currentTemperatureTemplate,
                 channelConfiguration.currentTemperatureTopic, commandFilter);
 
         buildOptionalChannel(FAN_MODE_CH_ID, new TextValue(channelConfiguration.fanModes.toArray(new String[0])),

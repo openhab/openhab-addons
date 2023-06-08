@@ -5,4 +5,5 @@
 	<type>binding</type>
 	<name>evohome Binding</name>
 	<description>The evohome binding controls the Honeywell evohome system.</description>
+	<connection>cloud</connection>
 </addon:addon>

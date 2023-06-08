@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -163,6 +165,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     private VeluxBridgeConfiguration veluxBridgeConfiguration = new VeluxBridgeConfiguration();
 
     private Duration offlineDelay = Duration.ofMinutes(5);
+    private int initializeRetriesDone = 0;
 
     /*
      * ************************
@@ -298,6 +301,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         offlineDelay = Duration.ofMillis(
                 ((long) Math.pow(2, veluxBridgeConfiguration.retries + 1) - 1) * veluxBridgeConfiguration.refreshMSecs);
 
+        initializeRetriesDone = 0;
+
         scheduler.execute(() -> {
             disposing = false;
             initializeSchedulerJob();
@@ -315,6 +320,17 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         synchronized (LOCK_MODIFIER.concat(veluxBridgeConfiguration.ipAddress).intern()) {
             logger.trace("initializeSchedulerJob(): adopt new bridge configuration parameters.");
             bridgeParamsUpdated();
+
+            if ((thing.getStatus() == ThingStatus.OFFLINE)
+                    && (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)) {
+                if (initializeRetriesDone <= veluxBridgeConfiguration.retries) {
+                    initializeRetriesDone++;
+                    scheduler.schedule(() -> initializeSchedulerJob(),
+                            ((long) Math.pow(2, initializeRetriesDone) * veluxBridgeConfiguration.timeoutMsecs),
+                            TimeUnit.MILLISECONDS);
+                }
+                return;
+            }
 
             long mSecs = veluxBridgeConfiguration.refreshMSecs;
             logger.trace("initializeSchedulerJob(): scheduling refresh at {} milliseconds.", mSecs);
@@ -448,7 +464,16 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.trace("bridgeParamsUpdated() done.");
             return;
         }
-
+        try {
+            InetAddress bridgeAddress = InetAddress.getByName(veluxBridgeConfiguration.ipAddress);
+            if (!bridgeAddress.isReachable(veluxBridgeConfiguration.timeoutMsecs)) {
+                throw new IOException();
+            }
+        } catch (IOException e) {
+            logger.debug("bridgeParamsUpdated(): Bridge ip address not reachable.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
         logger.trace("bridgeParamsUpdated(): Trying to authenticate towards bridge.");
 
         if (!thisBridge.bridgeLogin()) {

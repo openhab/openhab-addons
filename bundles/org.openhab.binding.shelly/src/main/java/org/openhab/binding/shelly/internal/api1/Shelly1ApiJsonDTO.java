@@ -124,7 +124,7 @@ public class Shelly1ApiJsonDTO {
     //
     // API values
     //
-    public static final double SHELLY_API_INVTEMP = -999.0;
+    public static final double SHELLY_API_INVTEMP = 999.0;
 
     public static final String SHELLY_BTNT_MOMENTARY = "momentary";
     public static final String SHELLY_BTNT_MOM_ON_RELEASE = "momentary_on_release";
@@ -920,6 +920,8 @@ public class Shelly1ApiJsonDTO {
         public ShellyThermTemp tmp;
         @SerializedName("boost_minutes")
         public Integer boostMinutes;
+        @SerializedName("window_open")
+        public Boolean windowOpen;
     }
 
     public static class ShellySensorTmp {
@@ -1103,6 +1105,7 @@ public class Shelly1ApiJsonDTO {
         public ShellySensorState sensor;
         public Boolean smoke; // SHelly Smoke
         public Boolean flood; // Shelly Flood: true = flood condition detected
+        public Boolean mute; // mute enabled/disabled
         @SerializedName("rain_sensor")
         public Boolean rainSensor; // Shelly Flood: true=in rain mode
 
