@@ -14,5 +14,11 @@
 			<description>Refresh rate of channel data</description>
 			<default>1</default>
 		</parameter>
+        <parameter name="timeZone" type="text" required="false">
+            <label>Time Zone</label>
+            <description>Time Zone of Forecast Location</description>
+            <default>auto-detect</default>
+            <advanced>true</advanced>
+        </parameter>
 	</config-description>
 </config-description:config-descriptions>

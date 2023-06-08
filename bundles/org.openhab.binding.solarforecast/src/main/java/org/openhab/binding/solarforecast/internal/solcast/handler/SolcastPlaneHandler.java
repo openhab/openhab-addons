@@ -43,7 +43,6 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.solcast.config.SolcastPlaneConfiguration;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.types.DecimalType;
@@ -79,23 +78,18 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private final Logger logger = LoggerFactory.getLogger(SolcastPlaneHandler.class);
     private final HttpClient httpClient;
     private final ItemRegistry itemRegistry;
-    private final TimeZoneProvider timeZoneProvider;
     private Optional<SolcastPlaneConfiguration> configuration = Optional.empty();
     private Optional<SolcastBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<Item> powerItem = Optional.empty();
     private Optional<QueryablePersistenceService> persistenceService;
-    private SolcastObject forecast;
-    private Instant nextMeasurement;
+    private Optional<SolcastObject> forecast = Optional.empty();
+    private Optional<Instant> nextMeasurement = Optional.empty();
 
-    public SolcastPlaneHandler(Thing thing, HttpClient hc, Optional<QueryablePersistenceService> qps, ItemRegistry ir,
-            TimeZoneProvider tzp) {
+    public SolcastPlaneHandler(Thing thing, HttpClient hc, Optional<QueryablePersistenceService> qps, ItemRegistry ir) {
         super(thing);
         httpClient = hc;
         persistenceService = qps;
         itemRegistry = ir;
-        timeZoneProvider = tzp;
-        forecast = new SolcastObject(timeZoneProvider);
-        nextMeasurement = Utils.getNextTimeframe(Instant.now(), timeZoneProvider);
     }
 
     @Override
@@ -129,6 +123,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 if (handler instanceof SolcastBridgeHandler) {
                     bridgeHandler = Optional.of((SolcastBridgeHandler) handler);
                     bridgeHandler.get().addPlane(this);
+                    forecast = Optional.of(new SolcastObject(bridgeHandler.get()));
+                    nextMeasurement = Optional.of(Utils.getNextTimeframe(Instant.now(), bridgeHandler.get()));
+
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
@@ -160,7 +157,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     protected SolcastObject fetchData() {
-        if (!forecast.isValid()) {
+        if (!forecast.get().isValid()) {
             String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
             String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
             try {
@@ -171,7 +168,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 if (crEstimate.getStatus() == 200) {
                     SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(),
                             Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES),
-                            timeZoneProvider);
+                            bridgeHandler.get());
 
                     // get forecast
                     Request forecastRequest = httpClient.newRequest(forecastUrl);
@@ -181,7 +178,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     if (crForecast.getStatus() == 200) {
                         localForecast.join(crForecast.getContentAsString());
                         setForecast(localForecast);
-                        updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
+                        updateState(CHANNEL_RAW, StringType.valueOf(forecast.get().getRaw()));
                     } else {
                         logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
                     }
@@ -192,11 +189,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, e.getMessage());
             }
         } // else use available forecast
-        updateChannels(forecast);
-        if (Instant.now().isAfter(nextMeasurement)) { // [Todo] switch to Instant
+        updateChannels(forecast.get());
+        if (Instant.now().isAfter(nextMeasurement.get())) {
             sendMeasure();
         }
-        return forecast;
+        return forecast.get();
     }
 
     /**
@@ -205,9 +202,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private void sendMeasure() {
         State updateState = UnDefType.UNDEF;
         if (persistenceService.isPresent() && powerItem.isPresent()) {
-            ZonedDateTime beginPeriodDT = nextMeasurement.atZone(timeZoneProvider.getTimeZone())
+            ZonedDateTime beginPeriodDT = nextMeasurement.get().atZone(bridgeHandler.get().getTimeZone())
                     .minusMinutes(MEASURE_INTERVAL_MIN);
-            ZonedDateTime endPeriodDT = nextMeasurement.atZone(timeZoneProvider.getTimeZone());
+            ZonedDateTime endPeriodDT = nextMeasurement.get().atZone(bridgeHandler.get().getTimeZone());
             FilterCriteria fc = new FilterCriteria();
             fc.setBeginDate(beginPeriodDT);
             fc.setEndDate(endPeriodDT);
@@ -286,11 +283,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             }
         }
         updateState(CHANNEL_RAW_TUNING, updateState);
-        nextMeasurement = Utils.getNextTimeframe(Instant.now(), timeZoneProvider);
+        nextMeasurement = Optional.of(Utils.getNextTimeframe(Instant.now(), bridgeHandler.get()));
     }
 
     private void updateChannels(SolcastObject f) {
-        ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        ZonedDateTime now = ZonedDateTime.now(bridgeHandler.get().getTimeZone());
         updateState(CHANNEL_ACTUAL, Utils.getEnergyState(f.getActualValue(now, QueryMode.Estimation)));
         updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Estimation)));
         updateState(CHANNEL_REMAINING, Utils.getEnergyState(f.getRemainingProduction(now, QueryMode.Estimation)));
@@ -317,11 +314,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     private synchronized void setForecast(SolcastObject f) {
-        forecast = f;
+        forecast = Optional.of(f);
     }
 
     @Override
     public synchronized List<SolarForecast> getSolarForecasts() {
-        return List.of(forecast);
+        return List.of(forecast.get());
     }
 }

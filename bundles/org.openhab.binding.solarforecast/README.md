@@ -57,13 +57,16 @@ After measurement is sent the `raw-tuning` channel is reporting the result.
 
 ### Solcast Bridge Configuration
 
-| Name                   | Type    | Description                           | Default | Required |
-|------------------------|---------|---------------------------------------|---------|----------|
-| apiKey                 | text    | API Key                               | N/A     | yes      |
-| channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1       | yes      |
+| Name                   | Type    | Description                           | Default     | Required | Advanced |
+|------------------------|---------|---------------------------------------|-------------|----------|----------|
+| apiKey                 | text    | API Key                               | N/A         | yes      | no       |
+| channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1           | yes      | no       |
+| timeZone               | text    | Time Zone of forecast location        | auto-detect | no       | yes      |
 
 `apiKey` can be obtained in your [Account Settings](https://toolkit.solcast.com.au/account)
 
+`timeZone` is set to `auto-detect` to evaluate Regional Settings of your openHAB installation. 
+See [DateTime](#date-time) section for more information.
 
 ### Solcast Plane Configuration
 
@@ -192,6 +195,7 @@ While channels are providing actual forecast data and daily forecasts in future 
 You can execute this for each `xx-plane` for specific plane values or `xx-site` to sum up all attached planes.
 
 Input for queries are `LocalDateTime` and `LocalDate` objects. 
+See [Date Time](#date-time) section for more information.
 Double check your time zone in *openHAB - Settings - Regional Settings* which is crucial for calculation.
 
 ### Get Forecast Begin
@@ -396,3 +400,18 @@ shall produce following output
 2022-08-10 00:02:16.574 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Optimist  6 days 319.827 kWh
 2022-08-10 00:02:16.578 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Pessimist 6 days 208.235 kWh
 ````
+
+## Date Time
+Each forecast is bound to a certain location and this location is automatically bound to the TimeZone.
+This binding is translating the forecast timestamps according to your Regional Settings in openHAB.
+So you can query forecast data based on `LocalDate` and `LocalDateTime`.
+This shall cover the majority of use cases.
+
+There might be rare use cases querying foreign locations, e.g. `Aisa/Tokyo`.
+For this
+
+- Forecast.Solar is every time delivering the local asia date time measures
+- Solcast needs to be configured with parameter `timeZone` in the advanced settings
+
+Taking this into account every time you query forecast data e.g. at 12 PM it will deliver the data at _high noon_ time of this location.
+

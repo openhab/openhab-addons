@@ -15,6 +15,7 @@ package org.openhab.binding.solarforecast.internal.solcast.handler;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,9 +52,9 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
+public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider, TimeZoneProvider {
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
-    private final TimeZoneProvider timeZoneProvider;
+    private final TimeZoneProvider localTimeZoneProvider;
 
     private List<SolcastPlaneHandler> parts = new ArrayList<SolcastPlaneHandler>();
     private Optional<SolcastBridgeConfiguration> configuration = Optional.empty();
@@ -61,7 +62,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     public SolcastBridgeHandler(Bridge bridge, TimeZoneProvider tzp) {
         super(bridge);
-        timeZoneProvider = tzp;
+        localTimeZoneProvider = tzp;
     }
 
     @Override
@@ -119,7 +120,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             logger.debug("No PV plane defined yet");
             return;
         }
-        ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        ZonedDateTime now = ZonedDateTime.now(localTimeZoneProvider.getTimeZone());
         double actualSum = 0;
         double actualPowerSum = 0;
         double remainSum = 0;
@@ -216,5 +217,19 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             l.addAll(entry.getSolarForecasts());
         });
         return l;
+    }
+
+    @Override
+    public ZoneId getTimeZone() {
+        if (AUTODETECT.equals(configuration.get().timeZone)) {
+            return localTimeZoneProvider.getTimeZone();
+        } else {
+            try {
+                return ZoneId.of(configuration.get().timeZone);
+            } catch (Throwable t) {
+                logger.info("Timezone {} not found", configuration.get().timeZone);
+                return localTimeZoneProvider.getTimeZone();
+            }
+        }
     }
 }

@@ -97,7 +97,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         } else if (SOLCAST_BRIDGE_STRING.equals(thingTypeUID)) {
             return new SolcastBridgeHandler((Bridge) thing, timeZoneProvider);
         } else if (SOLCAST_PART_STRING.equals(thingTypeUID)) {
-            return new SolcastPlaneHandler(thing, httpClient, qps, itemRegistry, timeZoneProvider);
+            return new SolcastPlaneHandler(thing, httpClient, qps, itemRegistry);
         }
         return null;
     }
