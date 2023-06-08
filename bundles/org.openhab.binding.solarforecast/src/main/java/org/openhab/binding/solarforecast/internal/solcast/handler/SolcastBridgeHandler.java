@@ -14,6 +14,7 @@ package org.openhab.binding.solarforecast.internal.solcast.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -226,8 +227,8 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         } else {
             try {
                 return ZoneId.of(configuration.get().timeZone);
-            } catch (Throwable t) {
-                logger.info("Timezone {} not found", configuration.get().timeZone);
+            } catch (DateTimeException e) {
+                logger.info("Timezone {} not found {}", configuration.get().timeZone, e.getMessage());
                 return localTimeZoneProvider.getTimeZone();
             }
         }

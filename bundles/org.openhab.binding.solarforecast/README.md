@@ -402,6 +402,7 @@ shall produce following output
 ````
 
 ## Date Time
+
 Each forecast is bound to a certain location and this location is automatically bound to the TimeZone.
 This binding is translating the forecast timestamps according to your Regional Settings in openHAB.
 So you can query forecast data based on `LocalDate` and `LocalDateTime`.
