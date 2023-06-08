@@ -85,7 +85,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private Optional<Item> powerItem = Optional.empty();
     private Optional<QueryablePersistenceService> persistenceService;
     private SolcastObject forecast;
-    private ZonedDateTime nextMeasurement;
+    private Instant nextMeasurement;
 
     public SolcastPlaneHandler(Thing thing, HttpClient hc, Optional<QueryablePersistenceService> qps, ItemRegistry ir,
             TimeZoneProvider tzp) {
@@ -95,7 +95,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         itemRegistry = ir;
         timeZoneProvider = tzp;
         forecast = new SolcastObject(timeZoneProvider);
-        nextMeasurement = Utils.getNextTimeframe(ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+        nextMeasurement = Utils.getNextTimeframe(Instant.now(), timeZoneProvider);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             }
         } // else use available forecast
         updateChannels(forecast);
-        if (ZonedDateTime.now(timeZoneProvider.getTimeZone()).isAfter(nextMeasurement)) { // [Todo] switch to Instant
+        if (Instant.now().isAfter(nextMeasurement)) { // [Todo] switch to Instant
             sendMeasure();
         }
         return forecast;
@@ -205,8 +205,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private void sendMeasure() {
         State updateState = UnDefType.UNDEF;
         if (persistenceService.isPresent() && powerItem.isPresent()) {
-            ZonedDateTime beginPeriodDT = nextMeasurement.minusMinutes(MEASURE_INTERVAL_MIN);
-            ZonedDateTime endPeriodDT = nextMeasurement;
+            ZonedDateTime beginPeriodDT = nextMeasurement.atZone(timeZoneProvider.getTimeZone())
+                    .minusMinutes(MEASURE_INTERVAL_MIN);
+            ZonedDateTime endPeriodDT = nextMeasurement.atZone(timeZoneProvider.getTimeZone());
             FilterCriteria fc = new FilterCriteria();
             fc.setBeginDate(beginPeriodDT);
             fc.setEndDate(endPeriodDT);
@@ -285,7 +286,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             }
         }
         updateState(CHANNEL_RAW_TUNING, updateState);
-        nextMeasurement = Utils.getNextTimeframe(ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+        nextMeasurement = Utils.getNextTimeframe(Instant.now(), timeZoneProvider);
     }
 
     private void updateChannels(SolcastObject f) {

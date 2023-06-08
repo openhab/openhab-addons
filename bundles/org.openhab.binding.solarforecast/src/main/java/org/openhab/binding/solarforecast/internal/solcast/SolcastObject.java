@@ -113,13 +113,13 @@ public class SolcastObject implements SolarForecast {
         for (int i = 0; i < resultJsonArray.length(); i++) {
             JSONObject jo = resultJsonArray.getJSONObject(i);
             String periodEnd = jo.getString("period_end");
-            LocalDate ld = getZdtFromUTC(periodEnd).toLocalDate();
+            LocalDate ld = Utils.getZdtFromUTC(periodEnd, timeZoneProvider).toLocalDate();
             TreeMap<ZonedDateTime, Double> forecastMap = estimationDataMap.get(ld);
             if (forecastMap == null) {
                 forecastMap = new TreeMap<ZonedDateTime, Double>();
                 estimationDataMap.put(ld, forecastMap);
             }
-            forecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
+            forecastMap.put(Utils.getZdtFromUTC(periodEnd, timeZoneProvider), jo.getDouble("pv_estimate"));
 
             // fill pessimistic values
             TreeMap<ZonedDateTime, Double> pessimisticForecastMap = pessimisticDataMap.get(ld);
@@ -128,9 +128,11 @@ public class SolcastObject implements SolarForecast {
                 pessimisticDataMap.put(ld, pessimisticForecastMap);
             }
             if (jo.has("pv_estimate10")) {
-                pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate10"));
+                pessimisticForecastMap.put(Utils.getZdtFromUTC(periodEnd, timeZoneProvider),
+                        jo.getDouble("pv_estimate10"));
             } else {
-                pessimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
+                pessimisticForecastMap.put(Utils.getZdtFromUTC(periodEnd, timeZoneProvider),
+                        jo.getDouble("pv_estimate"));
             }
 
             // fill optimistic values
@@ -140,9 +142,11 @@ public class SolcastObject implements SolarForecast {
                 optimisticDataMap.put(ld, optimisticForecastMap);
             }
             if (jo.has("pv_estimate90")) {
-                optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate90"));
+                optimisticForecastMap.put(Utils.getZdtFromUTC(periodEnd, timeZoneProvider),
+                        jo.getDouble("pv_estimate90"));
             } else {
-                optimisticForecastMap.put(getZdtFromUTC(periodEnd), jo.getDouble("pv_estimate"));
+                optimisticForecastMap.put(Utils.getZdtFromUTC(periodEnd, timeZoneProvider),
+                        jo.getDouble("pv_estimate"));
             }
         }
     }
@@ -291,11 +295,6 @@ public class SolcastObject implements SolarForecast {
 
     public String getRaw() {
         return rawData.get().toString();
-    }
-
-    public ZonedDateTime getZdtFromUTC(String utc) {
-        Instant timestamp = Instant.parse(utc);
-        return timestamp.atZone(timeZoneProvider.getTimeZone());
     }
 
     private TreeMap<ZonedDateTime, Double> getDataMap(LocalDate ld, QueryMode mode) {

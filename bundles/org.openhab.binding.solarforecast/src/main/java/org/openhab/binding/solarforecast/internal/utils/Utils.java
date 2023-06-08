@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.solarforecast.internal.utils;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import javax.measure.MetricPrefix;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -50,7 +52,8 @@ public class Utils {
      *
      * @return
      */
-    public static ZonedDateTime getNextTimeframe(ZonedDateTime now) {
+    public static Instant getNextTimeframe(Instant timeStamp, TimeZoneProvider tzp) {
+        ZonedDateTime now = timeStamp.atZone(tzp.getTimeZone());
         ZonedDateTime nextTime;
         int quarter = now.getMinute() / 15;
         switch (quarter) {
@@ -70,6 +73,11 @@ public class Utils {
                 nextTime = now;
                 break;
         }
-        return nextTime;
+        return nextTime.toInstant();
+    }
+
+    public static ZonedDateTime getZdtFromUTC(String utc, TimeZoneProvider tzp) {
+        Instant timestamp = Instant.parse(utc);
+        return timestamp.atZone(tzp.getTimeZone());
     }
 }

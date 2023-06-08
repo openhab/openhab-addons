@@ -36,7 +36,7 @@ Each service needs one `xx-site` for your location and at least one photovoltaic
 [Solcast service](https://solcast.com/) requires a personal registration with an email address.
 A free version for your personal home PV system is available in [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist)
 You need to configure your home photovoltaic system within the web interface.
-After configuration the necessary information is available.
+The `resourceId` for each PV plane is provided afterwards.
 
 In order to receive proper timestamps double check your time zone in *openHAB - Settings - Regional Settings*.
 Correct time zone is necessary to show correct forecast times in UI. 
@@ -47,13 +47,13 @@ You've the opportunity to [send your own measurements back to Solcast API](https
 This data is used internally to improve the forecast for your specific site.
 Configuration and channels can be set after checking the *Show advanced* checkbox.
 You need an item which reports the electric power for the specific rooftop. 
-If this item isn't set no measures will be sent.
+If item isn't set no measures will be sent.
 As described in [Solcast Rooftop Measurement](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) check in beforehand if your measures are *sane*.
 
-- item is delivering good values and they are stored in persistence
+- item is delivering correct values and they are stored in persistence
 - time settings in openHAB are correct in order to so measurements are matching to the measure time frame
 
-After the measurement is sent the `raw-tuning` channel is reporting the result.
+After measurement is sent the `raw-tuning` channel is reporting the result.
 
 ### Solcast Bridge Configuration
 
@@ -83,7 +83,7 @@ Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-confi
 
 `powerItem` shall reflect the power for this specific rooftop. 
 It's an optional setting and the [measure is sent to Solcast API in order to tune the forecast](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) in the future.
-If you don't want to sent measures to Solcast leave this configuration item empty.
+If you don't want to send measures to Solcast leave this configuration item empty.
 
 `powerUnit` is set to `auto-detect`. 
 In case the `powerItem` is delivering a valid `QuantityType<Power>` state this setting is fine.
@@ -91,7 +91,7 @@ If the item delivers a raw number without unit please select `powerUnit` accordi
 
 ## Solcast Channels
 
-Each `sc-plane` reports it's own values including a `raw` channel holding json content.
+Each `sc-plane` reports its own values including a `raw` channel holding json content.
 The `sc-site` bridge sums up all attached `sc-plane` values and provides the total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
@@ -117,7 +117,7 @@ Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day 
 ## ForecastSolar Configuration
 
 [ForecastSolar service](https://forecast.solar/) provides a [public free](https://forecast.solar/#accounts) plan.
-You can try it without any registration or other pre-conditions.
+You can try it without any registration or other preconditions.
 
 ### ForecastSolar Bridge Configuration
 
@@ -207,7 +207,7 @@ Double check your time zone in *openHAB - Settings - Regional Settings* which is
 
 Returns `LocalDateTime` of the earliest possible forecast data available.
 It's located in the past, e.g. Solcast provides data from the last 7 days.
-`LocalDateTime.MIN` is returned in case of no forecast data is available.
+`LocalDateTime.MAX` is returned in case of no forecast data is available.
 
 ### Get Forecast End
 
@@ -221,7 +221,7 @@ It's located in the past, e.g. Solcast provides data from the last 7 days.
 ````
 
 Returns `LocalDateTime` of the latest possible forecast data available.
-`LocalDateTime.MAX` is returned in case of no forecast data is available.
+`LocalDateTime.MIN` is returned in case of no forecast data is available.
 
 ### Get Power
 
