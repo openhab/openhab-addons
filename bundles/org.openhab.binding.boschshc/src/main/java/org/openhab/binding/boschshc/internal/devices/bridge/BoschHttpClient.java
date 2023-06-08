@@ -287,7 +287,7 @@ public class BoschHttpClient extends HttpClient {
         logger.trace("Create request for http client {}", this);
 
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
-                .header("api-version", "2.1") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/46
+                .header("api-version", "3.2") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/80
                 .timeout(10, TimeUnit.SECONDS); // Set default timeout
 
         if (content != null) {
