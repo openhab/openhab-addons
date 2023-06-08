@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.inmemory.internal;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,10 +23,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigParser;
+import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
@@ -35,35 +40,64 @@ import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the implementation of the InMemory {@link PersistenceService}.
+ * This is the implementation of the volatile {@link PersistenceService}.
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { PersistenceService.class, ModifiablePersistenceService.class })
+@Component(service = { PersistenceService.class,
+        ModifiablePersistenceService.class }, configurationPid = "org.openhab.inmemory", //
+        property = Constants.SERVICE_PID + "=org.openhab.inmemory")
+@ConfigurableService(category = "persistence", label = "InMemory Persistence Service", description_uri = InMemoryPersistenceService.CONFIG_URI)
 public class InMemoryPersistenceService implements ModifiablePersistenceService {
 
     private static final String SERVICE_ID = "inmemory";
-    private static final String SERVICE_LABEL = "InMemory";
+    private static final String SERVICE_LABEL = "In Memory";
 
-    private final Map<String, TreeSet<PersistEntry>> persistMap = new ConcurrentHashMap<>();
+    protected static final String CONFIG_URI = "persistence:inmemory";
+    private final String MAX_ENTRIES_CONFIG = "maxEntries";
+    private final long MAX_ENTRIES_DEFAULT = 512;
+
     private final Logger logger = LoggerFactory.getLogger(InMemoryPersistenceService.class);
 
+    private final Map<String, PersistItem> persistMap = new ConcurrentHashMap<>();
+    private long maxEntries = MAX_ENTRIES_DEFAULT;
+
     @Activate
-    public void activate() {
-        logger.debug("InMemory persistence service is now activated");
+    public void activate(Map<String, Object> config) {
+        modified(config);
+        logger.debug("InMemory persistence service is now activated.");
+    }
+
+    @Modified
+    public void modified(Map<String, Object> config) {
+        maxEntries = ConfigParser.valueAsOrElse(config.get(MAX_ENTRIES_CONFIG), Long.class, MAX_ENTRIES_DEFAULT);
+
+        persistMap.values().forEach(persistItem -> {
+            Lock lock = persistItem.lock();
+            lock.lock();
+            try {
+                while (persistItem.database().size() > maxEntries) {
+                    persistItem.database().pollFirst();
+                }
+            } finally {
+                lock.unlock();
+            }
+        });
     }
 
     @Deactivate
     public void deactivate() {
-        logger.debug("InMemory persistence service deactivated");
+        logger.debug("InMemory persistence service deactivated.");
     }
 
     @Override
@@ -104,14 +138,19 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
             return false;
         }
 
-        TreeSet<PersistEntry> valueSet = persistMap.get(itemName);
-        if (valueSet == null) {
+        PersistItem persistItem = persistMap.get(itemName);
+        if (persistItem == null) {
             return false;
         }
 
-        List<PersistEntry> toRemove = valueSet.stream().filter(e -> applies(e, filter)).toList();
-        toRemove.forEach(valueSet::remove);
-
+        Lock lock = persistItem.lock();
+        lock.lock();
+        try {
+            List<PersistEntry> toRemove = persistItem.database().stream().filter(e -> applies(e, filter)).toList();
+            toRemove.forEach(persistItem.database()::remove);
+        } finally {
+            lock.unlock();
+        }
         return true;
     }
 
@@ -122,12 +161,19 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
             return List.of();
         }
 
-        TreeSet<PersistEntry> valueSet = persistMap.get(itemName);
-        if (valueSet == null) {
+        PersistItem persistItem = persistMap.get(itemName);
+        if (persistItem == null) {
             return List.of();
         }
 
-        return valueSet.stream().filter(e -> applies(e, filter)).map(e -> toHistoricItem(itemName, e)).toList();
+        Lock lock = persistItem.lock();
+        lock.lock();
+        try {
+            return persistItem.database().stream().filter(e -> applies(e, filter)).map(e -> toHistoricItem(itemName, e))
+                    .toList();
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
@@ -136,29 +182,39 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
         return List.of();
     }
 
-    private PersistenceItemInfo toItemInfo(Map.Entry<String, TreeSet<PersistEntry>> itemEntry) {
-        return new PersistenceItemInfo() {
+    private PersistenceItemInfo toItemInfo(Map.Entry<String, PersistItem> itemEntry) {
+        Lock lock = itemEntry.getValue().lock();
+        lock.lock();
+        try {
+            String name = itemEntry.getKey();
+            Integer count = itemEntry.getValue().database().size();
+            Instant earliest = itemEntry.getValue().database().first().timestamp().toInstant();
+            Instant latest = itemEntry.getValue().database.last().timestamp.toInstant();
+            return new PersistenceItemInfo() {
 
-            @Override
-            public String getName() {
-                return itemEntry.getKey();
-            }
+                @Override
+                public String getName() {
+                    return name;
+                }
 
-            @Override
-            public @Nullable Integer getCount() {
-                return itemEntry.getValue().size();
-            }
+                @Override
+                public @Nullable Integer getCount() {
+                    return count;
+                }
 
-            @Override
-            public @Nullable Date getEarliest() {
-                return Date.from(itemEntry.getValue().first().timestamp().toInstant());
-            }
+                @Override
+                public @Nullable Date getEarliest() {
+                    return Date.from(earliest);
+                }
 
-            @Override
-            public @Nullable Date getLatest() {
-                return Date.from(itemEntry.getValue().last().timestamp().toInstant());
-            }
-        };
+                @Override
+                public @Nullable Date getLatest() {
+                    return Date.from(latest);
+                }
+            };
+        } finally {
+            lock.unlock();
+        }
     }
 
     private HistoricItem toHistoricItem(String itemName, PersistEntry entry) {
@@ -185,9 +241,21 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
             return;
         }
 
-        TreeSet<PersistEntry> valueSet = Objects.requireNonNull(persistMap.computeIfAbsent(itemName,
-                k -> new TreeSet<>(Comparator.comparing(PersistEntry::timestamp))));
-        valueSet.add(new PersistEntry(timestamp, state));
+        PersistItem persistItem = Objects.requireNonNull(persistMap.computeIfAbsent(itemName,
+                k -> new PersistItem(new TreeSet<>(Comparator.comparing(PersistEntry::timestamp)),
+                        new ReentrantLock())));
+
+        Lock lock = persistItem.lock();
+        lock.lock();
+        try {
+            persistItem.database().add(new PersistEntry(timestamp, state));
+
+            while (persistItem.database.size() > maxEntries) {
+                persistItem.database().pollFirst();
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     @SuppressWarnings({ "rawType", "unchecked" })
@@ -236,5 +304,8 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     private record PersistEntry(ZonedDateTime timestamp, State state) {
+    };
+
+    private record PersistItem(TreeSet<PersistEntry> database, Lock lock) {
     };
 }

@@ -5,7 +5,17 @@
 
 	<type>persistence</type>
 	<name>InMemory Persistence</name>
-	<description>A "volatile" persistence service to temporarily store data.</description>
+	<description>A volatile persistence service to temporarily store data.</description>
 	<connection>none</connection>
+
+	<service-id>org.openhab.inmemory</service-id>
+
+	<config-description>
+		<parameter name="maxEntries" type="integer" min="0">
+			<label>Maximum Entries</label>
+			<description>The maximum number of values stored for each item (0 = infinite).</description>
+			<default>512</default>
+		</parameter>
+	</config-description>
 
 </addon:addon>

@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.persistence.inmemory</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Persistence Service :: In Memory</name>
+  <name>openHAB Add-ons :: Bundles :: Persistence Service :: InMemory</name>
 
 </project>
