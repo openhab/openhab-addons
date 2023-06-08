@@ -8,4 +8,6 @@
 	<description>This adds a JS (Nashorn) script engine.</description>
 	<connection>none</connection>
 
+	<service-id>org.openhab.jsscriptingnashorn</service-id>
+
 </addon:addon>
