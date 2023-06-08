@@ -25,10 +25,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.plex.internal.config.PlexServerConfiguration;
 import org.openhab.binding.plex.internal.dto.MediaContainer;
 import org.openhab.binding.plex.internal.dto.MediaContainer.MediaType;
 import org.openhab.core.i18n.ConfigurationException;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -37,6 +40,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +56,9 @@ import org.slf4j.LoggerFactory;
 public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateListener {
     private final Logger logger = LoggerFactory.getLogger(PlexServerHandler.class);
 
+    private final HttpClientFactory httpClientFactory;
+    private @Nullable HttpClient httpClient;
+
     // Maintain mapping of handler and players
     private final Map<String, PlexPlayerHandler> playerHandlers = new ConcurrentHashMap<>();
 
@@ -62,9 +69,10 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
 
     private volatile boolean isRunning = false;
 
-    public PlexServerHandler(Bridge bridge) {
+    public PlexServerHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
-        plexAPIConnector = new PlexApiConnector(scheduler);
+        this.httpClientFactory = httpClientFactory;
+        plexAPIConnector = new PlexApiConnector(scheduler, httpClientFactory.getCommonHttpClient());
         logger.debug("Initializing server handler");
     }
 
@@ -78,6 +86,24 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
      */
     @Override
     public void initialize() {
+        final String httpClientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
+        try {
+            SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+            sslContextFactory.setEndpointIdentificationAlgorithm(null);
+            httpClient = httpClientFactory.createHttpClient(httpClientName, sslContextFactory);
+            final HttpClient localHttpClient = this.httpClient;
+            if (localHttpClient != null) {
+                localHttpClient.start();
+                plexAPIConnector = new PlexApiConnector(scheduler, localHttpClient);
+            }
+        } catch (Exception e) {
+            logger.error(
+                    "Long running HttpClient for PlexServerHandler {} cannot be started. Creating Handler failed. Exception: {}",
+                    httpClientName, e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+
         config = getConfigAs(PlexServerConfiguration.class);
         if (!config.host.isEmpty()) { // Check if a hostname is set
             plexAPIConnector.setParameters(config);
@@ -116,10 +142,14 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
         scheduler.execute(() -> { // Start the web socket
             synchronized (this) {
                 if (isRunning) {
-                    PlexApiConnector localSockets = plexAPIConnector = new PlexApiConnector(scheduler);
-                    localSockets.setParameters(config);
-                    localSockets.registerListener(this);
-                    localSockets.connect();
+                    final HttpClient localHttpClient = this.httpClient;
+                    if (localHttpClient != null) {
+                        PlexApiConnector localSockets = plexAPIConnector = new PlexApiConnector(scheduler,
+                                localHttpClient);
+                        localSockets.setParameters(config);
+                        localSockets.registerListener(this);
+                        localSockets.connect();
+                    }
                 }
             }
         });

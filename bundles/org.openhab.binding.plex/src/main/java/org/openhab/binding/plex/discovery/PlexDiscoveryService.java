@@ -50,7 +50,7 @@ public class PlexDiscoveryService extends AbstractDiscoveryService {
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(playerThingUid).withThingType(thingTypeUID)
                     .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(CONFIG_PLAYER_ID)
-                    .withLabel("PLEX Player Thing (" + machineId + ")").build();
+                    .withLabel("PLEX Player (" + machineId + ")").build();
 
             thingDiscovered(discoveryResult);
         }

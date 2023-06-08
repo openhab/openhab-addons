@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -64,6 +64,7 @@ public class PlexApiConnector {
     private static final String SIGNIN_URL = "https://plex.tv/users/sign_in.xml";
     private static final String CLIENT_ID = "928dcjhd-91ka-la91-md7a-0msnan214563";
     private static final String API_URL = "https://plex.tv/api/resources?includeHttps=1";
+    private final HttpClient httpClient;
     private WebSocketClient wsClient = new WebSocketClient();
     private PlexSocket plexSocket = new PlexSocket();
 
@@ -85,8 +86,9 @@ public class PlexApiConnector {
     private int port = 0;
     private static String scheme = "";
 
-    public PlexApiConnector(ScheduledExecutorService scheduler) {
+    public PlexApiConnector(ScheduledExecutorService scheduler, HttpClient httpClient) {
         this.scheduler = scheduler;
+        this.httpClient = httpClient;
         setupXstream();
     }
 
@@ -264,6 +266,7 @@ public class PlexApiConnector {
                 socketReconnect.cancel(true);
                 this.socketReconnect = null;
             }
+            httpClient.stop();
         } catch (Exception e) {
             logger.debug("Could not stop webSocketClient,  message {}", e.getMessage());
         }
@@ -273,11 +276,9 @@ public class PlexApiConnector {
      * Connect to the websocket
      */
     public void connect() {
-        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
-        sslContextFactory.setEndpointIdentificationAlgorithm(null);
         logger.debug("Connecting to WebSocket");
         try {
-            wsClient = new WebSocketClient(sslContextFactory);
+            wsClient = new WebSocketClient(httpClient);
             uri = new URI(getSchemeWS() + "://" + host + ":32400/:/websockets/notifications?X-Plex-Token=" + token); // WS_ENDPOINT_TOUCHWAND);
         } catch (URISyntaxException e) {
             logger.debug("URI not valid {} message {}", uri, e.getMessage());

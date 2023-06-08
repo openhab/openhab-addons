@@ -22,6 +22,7 @@ import org.openhab.binding.plex.discovery.PlexDiscoveryService;
 import org.openhab.binding.plex.internal.handler.PlexPlayerHandler;
 import org.openhab.binding.plex.internal.handler.PlexServerHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -29,7 +30,9 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link PlexHandlerFactory} is responsible for creating things and thing
@@ -41,7 +44,13 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.plex", service = ThingHandlerFactory.class)
 public class PlexHandlerFactory extends BaseThingHandlerFactory {
+    private final HttpClientFactory httpClientFactory;
     private @Nullable ServiceRegistration<?> plexDiscoveryServiceRegistration;
+
+    @Activate
+    public PlexHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -52,7 +61,7 @@ public class PlexHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_SERVER_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            PlexServerHandler handler = new PlexServerHandler((Bridge) thing);
+            PlexServerHandler handler = new PlexServerHandler((Bridge) thing, httpClientFactory);
             registerPlexDiscoveryService(handler);
             return handler;
         } else if (SUPPORTED_PLAYER_THING_TYPES_UIDS.contains(thingTypeUID)) {

@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,12 +36,13 @@ import org.openhab.binding.plex.internal.config.PlexServerConfiguration;
 @NonNullByDefault
 public class PlexApiConnectorTest {
     private @NonNullByDefault({}) @Mock ScheduledExecutorService scheduler;
+    private @NonNullByDefault({}) @Mock HttpClient httpClient;
 
     private @NonNullByDefault({}) PlexApiConnector plexApiConnector;
 
     @BeforeEach
     public void setUp() {
-        plexApiConnector = new PlexApiConnector(scheduler);
+        plexApiConnector = new PlexApiConnector(scheduler, httpClient);
     }
 
     /**
