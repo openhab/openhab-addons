@@ -165,15 +165,19 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
-        final InfluxDB currentClient = client;
-        if (currentClient != null) {
-            String query = queryCreator.createQuery(filter, retentionPolicy);
-            logger.trace("Query {}", query);
-            Query parsedQuery = new Query(query, configuration.getDatabaseName());
-            List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
-            return convertClientResultToRepository(results);
-        } else {
-            logger.warn("Returning empty list because queryAPI isn't present");
+        try {
+            final InfluxDB currentClient = client;
+            if (currentClient != null) {
+                String query = queryCreator.createQuery(filter, retentionPolicy);
+                logger.trace("Query {}", query);
+                Query parsedQuery = new Query(query, configuration.getDatabaseName());
+                List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
+                return convertClientResultToRepository(results);
+            } else {
+                throw new InfluxException("API not present");
+            }
+        } catch (InfluxException e) {
+            logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
             return List.of();
         }
     }
