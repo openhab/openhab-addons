@@ -66,7 +66,6 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     private Optional<PointType> location = Optional.empty();
     private Optional<String> apiKey = Optional.empty();
     private ForecastSolarObject forecast = new ForecastSolarObject();
-    private int failureCounter = 0;
 
     public ForecastSolarPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
@@ -150,11 +149,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                         ForecastSolarObject localForecast = new ForecastSolarObject(cr.getContentAsString(),
                                 Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
                         setForecast(localForecast);
-                        failureCounter = 0;
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
                     } else {
                         logger.info("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
-                        failureCounter++;
                     }
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
                     logger.info("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
