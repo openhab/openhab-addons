@@ -289,11 +289,8 @@ public class PlexApiConnector {
             isShutDown = false;
             wsClient.start();
             wsClient.connect(plexSocket, uri, request);
-        } catch (IOException e) {
-            logger.debug("Could not connect webSocket URI {} message {}", uri, e.getMessage(), e);
         } catch (Exception e) {
             logger.debug("Could not connect webSocket URI {} message {}", uri, e.getMessage(), e);
-            return;
         }
     }
 
@@ -313,12 +310,7 @@ public class PlexApiConnector {
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
-            logger.debug("PLEX Socket connected to ");
-            try {
-                logger.debug("Connected to PLEX websocket");
-            } catch (Exception e) { // was IOExcept
-                logger.debug("onConnect : {}", e.getMessage());
-            }
+            logger.debug("PLEX Socket connected to {}", session.getRemoteAddress().getAddress());
         }
 
         @OnWebSocketMessage
