@@ -31,7 +31,6 @@ import org.openhab.binding.plex.internal.dto.MediaContainer.MediaType;
 import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -127,20 +126,11 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
     }
 
     /**
-     * Not currently used, this is a read-only binding.
+     * Not currently used, all channels in this thing are read-only.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handling command '{}' for {}", command, channelUID);
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.debug("PLEX is offline, ignoring command {} for channel {}", command, channelUID);
-            return;
-        }
-        Channel channel = getThing().getChannel(channelUID.getId());
-        if (channel == null) {
-            logger.debug("No such channel for UID {}", channelUID);
-            return;
-        }
+        return;
     }
 
     /**

@@ -103,5 +103,6 @@
 		<item-type>String</item-type>
 		<label>Player User</label>
 		<description>The title of the user controlling the player</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
