@@ -90,12 +90,10 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
         try {
             SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
             sslContextFactory.setEndpointIdentificationAlgorithm(null);
-            httpClient = httpClientFactory.createHttpClient(httpClientName, sslContextFactory);
-            final HttpClient localHttpClient = this.httpClient;
-            if (localHttpClient != null) {
-                localHttpClient.start();
-                plexAPIConnector = new PlexApiConnector(scheduler, localHttpClient);
-            }
+            HttpClient localHttpClient = httpClient = httpClientFactory.createHttpClient(httpClientName,
+                    sslContextFactory);
+            localHttpClient.start();
+            plexAPIConnector = new PlexApiConnector(scheduler, localHttpClient);
         } catch (Exception e) {
             logger.error(
                     "Long running HttpClient for PlexServerHandler {} cannot be started. Creating Handler failed. Exception: {}",
