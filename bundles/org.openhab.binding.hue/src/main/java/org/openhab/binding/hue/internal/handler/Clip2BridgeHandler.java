@@ -236,10 +236,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     /**
      * If a child thing has been added, and the bridge is online, update the child's data.
      */
-    @Override
-    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (thing.getStatus() == ThingStatus.ONLINE && (childHandler instanceof Clip2ThingHandler)) {
-            logger.debug("childHandlerInitialized() {}", childThing.getUID());
+    public void childInitialized() {
+        if (thing.getStatus() == ThingStatus.ONLINE) {
             updateThingsScheduled(5000);
         }
     }

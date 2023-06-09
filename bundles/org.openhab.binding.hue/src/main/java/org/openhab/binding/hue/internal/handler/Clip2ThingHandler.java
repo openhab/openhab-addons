@@ -514,6 +514,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateDependenciesDone = false;
         updateLightPropertiesDone = false;
         updateSceneContributorsDone = false;
+
+        Bridge bridge = getBridge();
+        if (Objects.nonNull(bridge)) {
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof Clip2BridgeHandler) {
+                ((Clip2BridgeHandler) bridgeHandler).childInitialized();
+            }
+        }
     }
 
     /**
