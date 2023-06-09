@@ -90,8 +90,9 @@ public class OnvifDiscovery {
                             && inetAddress.isSiteLocalAddress()) {
                         if (inetAddress.getHostAddress().equals(primaryHostAddress)) {
                             results.add(networkInterface);
+                            logger.info("Scanning network {} for any ONVIF cameras", primaryHostAddress);
                         } else {
-                            logger.debug("Skipping network {} as it was not selected as openHAB's primary network",
+                            logger.debug("Skipping network {} as it was not selected as openHAB's 'Primary Address'",
                                     inetAddress.getHostAddress());
                         }
                     } else {
@@ -210,7 +211,8 @@ public class OnvifDiscovery {
     public void discoverCameras() throws UnknownHostException, InterruptedException {
         List<NetworkInterface> nics = getLocalNICs();
         if (nics == null || nics.isEmpty()) {
-            logger.debug("No valid networks detected to use for camera discovery");
+            logger.warn(
+                    "No 'Primary Address' selected to use for camera discovery. Check openHAB's Network Settings page to select a valid Primary Address.");
             return;
         }
         NetworkInterface networkInterface = nics.get(0);
