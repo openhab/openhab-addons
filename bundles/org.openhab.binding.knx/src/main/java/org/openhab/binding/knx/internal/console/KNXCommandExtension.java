@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.knx.internal.console;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ConsoleCommandExtension.class)
 public class KNXCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
-    private static final String CMD_LIST_UNKNOWN_GA = "list_unknown_ga";
+    private static final String CMD_LIST_UNKNOWN_GA = "list-unknown-ga";
     private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_LIST_UNKNOWN_GA), false);
 
     private final ThingRegistry thingRegistry;
@@ -59,8 +61,12 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
                 ThingHandler thingHandler = thing.getHandler();
                 if (thingHandler instanceof KNXBridgeBaseThingHandler handler) {
                     console.println("KNX bridge \"" + thing.getLabel()
-                            + "\", group addresses and number of occurence since last reload of binding:");
-                    console.println(handler.commandExtensionData.unknownGA.toString());
+                            + "\": group address, type, number of bytes, and number of occurence since last reload of binding:");
+                    // console.println(handler.getCommandExtensionData().unknownGA().toString());
+                    for (Entry<String, BigDecimal> entry : handler.getCommandExtensionData().unknownGA().entrySet()) {
+                        console.println(entry.getKey() + " " + entry.getValue());
+                    }
+
                 }
             }
             return;

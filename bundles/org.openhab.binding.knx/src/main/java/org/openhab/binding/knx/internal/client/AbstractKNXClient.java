@@ -335,18 +335,25 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);
             }
         }
-        // store information about unhandled GAs, can be shown on console using knx:show_unknown_ga
+        // store information about unhandled GAs, can be shown on console using knx:list-unknown-ga
         if (!isHandled) {
             logger.trace("Address '{}' is not configured in openHAB", destination);
-            if (!commandExtensionData.unknownGA.containsKey(destination)) {
-                commandExtensionData.unknownGA.put(destination, BigDecimal.valueOf(1));
+            final String type = switch (event.getServiceCode()) {
+                case 0x80 -> " GROUP_WRITE(";
+                case 0x40 -> " GROUP_RESPONSE(";
+                case 0x20 -> " GROUP_READ(";
+                default -> "?(";
+            };
+            final String key = destination.toString() + type + event.getASDU().length + ")";
+            if (!commandExtensionData.unknownGA().containsKey(key)) {
+                commandExtensionData.unknownGA().put(key, BigDecimal.ONE);
             } else {
                 @Nullable
-                BigDecimal counter = commandExtensionData.unknownGA.get(destination);
+                BigDecimal counter = commandExtensionData.unknownGA().get(key);
                 if (counter != null) {
-                    commandExtensionData.unknownGA.put(destination, BigDecimal.valueOf(1).add(counter));
+                    commandExtensionData.unknownGA().put(key, BigDecimal.ONE.add(counter));
                 } else {
-                    commandExtensionData.unknownGA.put(destination, BigDecimal.valueOf(1));
+                    commandExtensionData.unknownGA().put(key, BigDecimal.ONE);
                 }
             }
         }
