@@ -114,11 +114,6 @@ The binding provides the same feature set across all devices as good as possible
 | shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
 
-### Shelly Wall Display
-
-| thing-type        | Model                                                  | Vendor ID       |
-| ----------------- | ------------------------------------------------------ | --------------- |
-| shellywalldisplay | Shelly Wall Display                                    | SAWD-0A1XX10EU1 |
 
 ## Binding Configuration
 

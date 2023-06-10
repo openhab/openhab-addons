@@ -421,6 +421,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         if (restart || (running && upload)) {
+            apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_STOP).withId(ourId));
             // first stop running script
             startScript(ourId, false);
             running = false;
