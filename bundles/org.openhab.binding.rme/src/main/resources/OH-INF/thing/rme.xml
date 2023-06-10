@@ -42,6 +42,18 @@
 				<limitToOptions>false</limitToOptions>
 				<description>Serial Port the RME Rain Manager is connected to</description>
 			</parameter>
+			<parameter name="baudrate" type="integer" required="false">
+				<label>Baud Rate</label>
+				<description>Baud rate the RME Rain Manager is communicating at</description>
+				<default>2400</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="buffer" type="integer" required="false">
+				<label>Buffer Size</label>
+				<description>Size of the buffer that will be used to read data from the RME Rain Manager</description>
+				<default>1024</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
