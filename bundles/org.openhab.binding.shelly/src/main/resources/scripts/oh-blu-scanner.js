@@ -147,22 +147,11 @@ function scanCB(ev, res) {
   }
 }
 
-// retry several times to start the scanner if script was started before
-// BLE infrastructure was up in the Shelly
-function startBLEScan() {
-  let bleScanSuccess = BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
-  if( bleScanSuccess === null ) {
-    console.log('Unable to start OH-BLU Scanner, make sure Shelly Gateway Support is disabled in device config.');
-    Timer.set(3000, false, startBLEScan);
-  } else {
-    console.log('Success: OH-BLU Event Gateway running');
-  }
-}
-
 let BLEConfig = Shelly.getComponentConfig('ble');
 if(BLEConfig.enable === false) {
   console.log('Error: BLE not enabled, unable to start OH-BLU Scanner');
 } else {
-  Timer.set(1000, false, startBLEScan);
+    BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
+    console.log('OH-BLU Event Gateway running');
 }
-  
+ 

@@ -304,13 +304,14 @@ public class ShellyChannelDefinitions {
                 && ((status.temperature != null && getDouble(status.temperature) != SHELLY_API_INVTEMP)
                         || (status.tmp != null && getDouble(status.tmp.tC) != SHELLY_API_INVTEMP))) {
             // Only some devices report the internal device temp
-            addChannel(thing, add, status.tmp != null || status.temperature != null, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
+            addChannel(thing, add,
+                    !profile.isLight && (status.temperature != null || (status.tmp != null && !profile.isSensor)),
+                    CHGR_DEVST, CHANNEL_DEVST_ITEMP);
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
-        boolean accuChannel = (((status.meters != null) && (status.meters.size() > 1) && !profile.isRoller
-                && !profile.isRGBW2) || ((status.emeters != null && status.emeters.size() > 1)));
+        boolean accuChannel = profile.numMeters > 0 && !profile.isRoller && !profile.isRGBW2;
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         addChannel(thing, add, accuChannel && (status.emeters != null), CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
@@ -476,7 +477,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, emeter.current != null, group, CHANNEL_EMETER_CURRENT);
         addChannel(thing, newChannels, emeter.pf != null, group, CHANNEL_EMETER_PFACTOR); // EM has no PF. but power
-        addChannel(thing, newChannels, emeter.total != null && profile.numMeters > 1, group, CHANNEL_EMETER_RESETTOTAL); // 3EM
+        addChannel(thing, newChannels, profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL); // 3EM
         addChannel(thing, newChannels, true, group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }

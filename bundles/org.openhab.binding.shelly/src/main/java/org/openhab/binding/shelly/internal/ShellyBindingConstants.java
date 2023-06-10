@@ -80,6 +80,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSPLUGS, //
             THING_TYPE_SHELLYPLUSPLUGUS, //
             THING_TYPE_SHELLYPLUSDIMMERUS, //
+            THING_TYPE_SHELLYPLUSWALLDISPLAY, //
 
             // Shelly Pro
             THING_TYPE_SHELLYPRO1, //
@@ -94,9 +95,6 @@ public class ShellyBindingConstants {
             // Shelly BLU
             THING_TYPE_SHELLYBLUBUTTON, //
             THING_TYPE_SHELLYBLUDW, //
-
-            // Shelly Wall Display
-            THING_TYPE_SHELLYWALLDISPLAY, //
 
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);

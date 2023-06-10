@@ -92,6 +92,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                   |
+| shellypluswalldisplay| Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                               |
 
 ### Generation 2 Pro series
 
@@ -113,11 +114,6 @@ The binding provides the same feature set across all devices as good as possible
 | shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
 
-### Shelly Wall Display
-
-| thing-type        | Model                                                  | Vendor ID       |
-| ----------------- | ------------------------------------------------------ | --------------- |
-| shellywalldisplay | Shelly Wall Display                                    | SAWD-0A1XX10EU1 |
 
 ## Binding Configuration
 

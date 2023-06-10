@@ -355,20 +355,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     protected void installScript(String script) throws ShellyApiException {
-        String json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_LIST));
-        ShellyScriptListResponse scriptList = gson.fromJson(json, ShellyScriptListResponse.class);
+        ShellyScriptListResponse scriptList = apiRequest(
+                new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_LIST), ShellyScriptListResponse.class);
         Integer ourId = -1;
         String code = "";
 
         logger.debug("{}: Install or restart script {} on Shelly Device", thingName, script);
         boolean running = false, upload = false;
-        if (scriptList != null) {
-            for (ShellyScriptListEntry s : scriptList.scripts) {
-                if (s.name.startsWith(script)) {
-                    ourId = s.id;
-                    running = s.running;
-                    logger.debug("{}: Script {} is already installed, id={}", thingName, script, ourId);
-                }
+        for (ShellyScriptListEntry s : scriptList.scripts) {
+            if (s.name.startsWith(script)) {
+                ourId = s.id;
+                running = s.running;
+                logger.debug("{}: Script {} is already installed, id={}", thingName, script, ourId);
             }
         }
 
@@ -394,8 +392,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         } else {
             try {
                 // verify that the same code version is active (avoid unnesesary flash updates)
-                json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_GETCODE).withId(ourId));
-                ShellyScriptResponse rsp = gson.fromJson(json, ShellyScriptResponse.class);
+                ShellyScriptResponse rsp = apiRequest(
+                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_GETCODE).withId(ourId),
+                        ShellyScriptResponse.class);
                 if (!rsp.data.trim().equals(code.trim())) {
                     logger.debug("{}: A script version was found, update to newest one", thingName);
                     upload = true;
@@ -411,27 +410,26 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         if (restart || (running && upload)) {
-            json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_STOP).withId(ourId));
+            apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_STOP).withId(ourId));
             // first stop running script
             running = false;
         }
         if (upload && ourId != -1) {
             // Delete existing script
             logger.debug("{}: Delete existing script", thingName);
-            json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_DELETE).withId(ourId));
+            apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_DELETE).withId(ourId));
         }
 
         if (upload) {
             logger.debug("{}: Script will be installed...", thingName);
 
             // Create new script, get id
-            json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script));
-            ShellyScriptResponse rsp = gson.fromJson(json, ShellyScriptResponse.class);
-            if (rsp != null) {
-                ourId = rsp.id;
-                logger.debug("{}: Script has been created, id={}", thingName, ourId);
-                upload = true;
-            }
+            ShellyScriptResponse rsp = apiRequest(
+                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script),
+                    ShellyScriptResponse.class);
+            ourId = rsp.id;
+            logger.debug("{}: Script has been created, id={}", thingName, ourId);
+            upload = true;
         }
 
         if (upload) {
@@ -459,7 +457,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         if (!running) {
             // Script was created or is there and stopped -> start it
-            json = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_START).withId(ourId));
+            apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_START).withId(ourId));
             logger.debug("{}: Script {} was {} successful", thingName, script,
                     restart ? "restarted" : "installed and started");
         }
@@ -1114,8 +1112,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return apiRequest(request.method, request.params, classOfT);
     }
 
-    public String apiRequest(Shelly2RpcRequest request) throws ShellyApiException {
-        return apiRequest(request.method, request.params, String.class);
+    public void apiRequest(Shelly2RpcRequest request) throws ShellyApiException {
+        apiRequest(request.method, request.params, Shelly2RpcBaseMessage.class);
     }
 
     private String rpcPost(String postData) throws ShellyApiException {
