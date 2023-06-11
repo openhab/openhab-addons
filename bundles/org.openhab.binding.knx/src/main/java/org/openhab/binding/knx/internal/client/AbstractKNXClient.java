@@ -14,7 +14,6 @@ package org.openhab.binding.knx.internal.client;
 
 import static org.openhab.binding.knx.internal.dpt.DPTUtil.NORMALIZED_DPT;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
@@ -345,17 +344,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 default -> "?(";
             };
             final String key = destination.toString() + type + event.getASDU().length + ")";
-            if (!commandExtensionData.unknownGA().containsKey(key)) {
-                commandExtensionData.unknownGA().put(key, BigDecimal.ONE);
-            } else {
-                @Nullable
-                BigDecimal counter = commandExtensionData.unknownGA().get(key);
-                if (counter != null) {
-                    commandExtensionData.unknownGA().put(key, BigDecimal.ONE.add(counter));
-                } else {
-                    commandExtensionData.unknownGA().put(key, BigDecimal.ONE);
-                }
-            }
+            commandExtensionData.unknownGA().compute(key, (k, v) -> v == null ? 1 : v + 1);
         }
     }
 

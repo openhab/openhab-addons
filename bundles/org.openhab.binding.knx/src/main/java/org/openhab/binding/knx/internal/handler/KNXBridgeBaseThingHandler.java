@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,7 +71,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
      * Helper class to carry information which can be used by the
      * command line extension (openHAB console).
      */
-    public record CommandExtensionData(Map<String, BigDecimal> unknownGA) {
+    public record CommandExtensionData(Map<String, Long> unknownGA) {
     }
 
     protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();

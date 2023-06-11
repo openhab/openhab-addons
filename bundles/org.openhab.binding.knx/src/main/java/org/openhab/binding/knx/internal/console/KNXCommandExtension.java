@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.knx.internal.console;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
@@ -63,7 +62,7 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
                     console.println("KNX bridge \"" + thing.getLabel()
                             + "\": group address, type, number of bytes, and number of occurence since last reload of binding:");
                     // console.println(handler.getCommandExtensionData().unknownGA().toString());
-                    for (Entry<String, BigDecimal> entry : handler.getCommandExtensionData().unknownGA().entrySet()) {
+                    for (Entry<String, Long> entry : handler.getCommandExtensionData().unknownGA().entrySet()) {
                         console.println(entry.getKey() + " " + entry.getValue());
                     }
 
