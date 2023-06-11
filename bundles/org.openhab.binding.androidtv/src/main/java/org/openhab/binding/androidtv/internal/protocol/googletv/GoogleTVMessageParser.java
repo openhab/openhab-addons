@@ -42,19 +42,20 @@ public class GoogleTVMessageParser {
             return; // Ignore empty lines
         }
 
+        String thingId = callback.getThingID();
         char[] charArray = msg.toCharArray();
         String lenString = "" + charArray[0] + charArray[1];
         int len = Integer.parseInt(lenString, 16);
         msg = msg.substring(2);
         charArray = msg.toCharArray();
 
-        logger.trace("{} - Received GoogleTV message - Length: {} Message: {}", callback.getThingID(), len, msg);
+        logger.trace("{} - Received GoogleTV message - Length: {} Message: {}", thingId, len, msg);
 
         callback.validMessageReceived();
 
         try {
             if (msg.startsWith(DELIMITER_1A)) {
-                logger.warn("{} - GoogleTV Error Message: {}", callback.getThingID(), msg);
+                logger.warn("{} - GoogleTV Error Message: {}", thingId, msg);
             } else if (msg.startsWith(DELIMITER_0A)) {
                 // First message on connection from GTV
                 //
@@ -81,7 +82,7 @@ public class GoogleTVMessageParser {
                 // 0d352e322e343733323534313333
 
                 if (callback.getLoggedIn()) {
-                    logger.warn("{} - Unexpected Login Message: {}", callback.getThingID(), msg);
+                    logger.warn("{} - Unexpected Login Message: {}", thingId, msg);
                 } else {
                     callback.sendCommand(
                             new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4))));
@@ -165,8 +166,8 @@ public class GoogleTVMessageParser {
                 String remoteServer = GoogleTVRequest.encodeMessage(remoteServerSb.toString());
                 String remoteServerVersion = GoogleTVRequest.encodeMessage(remoteServerVersionSb.toString());
 
-                logger.debug("{} - {} \"{}\" \"{}\" {} {} {}", callback.getThingID(), preamble, model, manufacturer,
-                        androidVersion, remoteServer, remoteServerVersion);
+                logger.debug("{} - {} \"{}\" \"{}\" {} {} {}", thingId, preamble, model, manufacturer, androidVersion,
+                        remoteServer, remoteServerVersion);
 
                 callback.setModel(model);
                 callback.setManufacturer(manufacturer);
@@ -179,7 +180,7 @@ public class GoogleTVMessageParser {
                 // Login successful
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(5))));
-                logger.info("{} - Login Successful", callback.getThingID());
+                logger.info("{} - Login Successful", thingId);
                 callback.setLoggedIn(true);
             } else if (msg.startsWith(DELIMITER_92)) {
                 // Third message on connection from GTV
@@ -259,15 +260,15 @@ public class GoogleTVMessageParser {
 
                 String preamble = preambleSb.toString();
                 String model = GoogleTVRequest.encodeMessage(modelSb.toString());
-                logger.debug("{} - Device Update: {} \"{}\" {} {} {} {}", callback.getThingID(), preamble, model,
-                        audioMode, volMax, volCurr, volMute);
+                logger.debug("{} - Device Update: {} \"{}\" {} {} {} {}", thingId, preamble, model, audioMode, volMax,
+                        volCurr, volMute);
                 callback.setAudioMode(audioMode);
 
             } else if (msg.startsWith(DELIMITER_08)) {
                 // PIN Process Messages. Only used on 6467.
                 if (msg.startsWith(MESSAGE_PINSUCCESS)) {
                     // PIN Process Successful
-                    logger.debug("{} - PIN Process Successful!", callback.getThingID());
+                    logger.debug("{} - PIN Process Successful!", thingId);
                     callback.finishPinProcess();
                 } else {
                     // 080210c801a201081204080310061801
@@ -282,7 +283,7 @@ public class GoogleTVMessageParser {
                 } else if (MESSAGE_POWERON.equals(msg)) {
                     callback.setPower(true);
                 } else {
-                    logger.info("{} - Unknown power state received. {}", callback.getThingID(), msg);
+                    logger.info("{} - Unknown power state received. {}", thingId, msg);
                 }
             } else if (msg.startsWith(DELIMITER_42)) {
                 // Keepalive request
@@ -321,13 +322,13 @@ public class GoogleTVMessageParser {
                 String preamble = preambleSb.toString();
                 String appName = GoogleTVRequest.encodeMessage(appNameSb.toString());
 
-                logger.debug("{} - Current App: {} {}", callback.getThingID(), preamble, appName);
+                logger.debug("{} - Current App: {} {}", thingId, preamble, appName);
                 callback.setCurrentApp(appName);
             } else {
-                logger.info("{} - Unknown payload received. {} {}", callback.getThingID(), len, msg);
+                logger.info("{} - Unknown payload received. {} {}", thingId, len, msg);
             }
         } catch (Exception e) {
-            logger.debug("{} - Message Parser Exception on {}", callback.getThingID(), msg);
+            logger.debug("{} - Message Parser Exception on {}", thingId, msg);
             logger.debug("Message Parser Caught Exception", e);
         }
     }

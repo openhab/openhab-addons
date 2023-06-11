@@ -1336,7 +1336,7 @@ public class GoogleTVConnectionManager {
                 String keyPress = "";
                 for (int i = 0; i < command.toString().length(); i++) {
                     keyPress = "aa01071a0512031a01"
-                            + GoogleTVRequest.decodeMessage(new String("" + command.toString().charAt(i)));
+                            + GoogleTVRequest.decodeMessage(String.valueOf(command.toString().charAt(i)));
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(keyPress)));
                 }
             }
