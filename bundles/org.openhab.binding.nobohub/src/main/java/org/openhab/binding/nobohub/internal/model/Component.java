@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.util.StringJoiner;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A Component in the Nobø Hub can be a oven, a floor or a switch.
+ * A Component in the Nobø Hub can be an oven, a floor or a switch.
  *
  * @author Jørgen Austvik - Initial contribution
  * @author Espen Fossen - Initial contribution

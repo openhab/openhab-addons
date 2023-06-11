@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="knx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>KNX Binding</name>
+	<description>This binding supports connecting to a KNX bus</description>
+	<connection>local</connection>
+
+	<config-description>
+		<parameter name="disableUoM" type="boolean">
+			<default>false</default>
+			<label>Disable UoM</label>
+			<description>This disables Units of Measurement support for incoming values.</description>
+		</parameter>
+	</config-description>
+
+</addon:addon>

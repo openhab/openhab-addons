@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,13 +22,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface ResponseListener {
 
-    public void receivedResponse(GetBatteryLevelCommand command);
+    void receivedResponse(GetBatteryLevelCommand command);
 
-    public void receivedResponse(GetAllCommand command);
+    void receivedResponse(GetAllCommand command);
 
-    public void receivedResponse(GetLightLevelCommand command);
+    void receivedResponse(GetLightLevelCommand command);
 
-    public void receivedResponse(GetPositionCommand command);
+    void receivedResponse(GetPositionCommand command);
 
-    public void receivedResponse(GetSpeedCommand command);
+    void receivedResponse(GetSpeedCommand command);
 }

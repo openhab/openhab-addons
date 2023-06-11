@@ -8,7 +8,7 @@ There is one supported Thing, the "avnode".
 
 ## Discovery
 
-Binding will do autodiscovery for AirVisual Node by searching for a host advertised with the NetBIOS name 'AVISUAL-<SerialNumber>'.
+Binding will do autodiscovery for AirVisual Node by searching for a host advertised with the NetBIOS name `AVISUAL-<SerialNumber>`.
 
 All discovered devices will be added to the inbox. Please note you will need to set the Node username and password in the configuration
 of the newly discovered thing before a connection can be made.
@@ -56,7 +56,7 @@ The Node updates measurements data every 5 minutes in active mode and every 15 m
 The preferred way to add AirVisual Node to the openHAB installation is autodiscovery,
 but the AirVisual Node also can be configured using `.things` file:
 
-```
+```java
 airvisualnode:avnode:1a2b3c4 [ address="192.168.1.32", username="airvisual", password="12345", share="airvisual", refresh=60 ]
 ```
 
@@ -64,7 +64,7 @@ airvisualnode:avnode:1a2b3c4 [ address="192.168.1.32", username="airvisual", pas
 
 Here is an example of items for the AirVisual Node:
 
-```
+```java
 Number:Temperature Livingroom_Temperature "Temperature [%.1f %unit%]" <temperature> {channel="airvisualnode:avnode:1a2b3c4:temperature"}
 Number:Dimensionless Livingroom_Humidity "Humidity [%d %unit%]" <humidity> {channel="airvisualnode:avnode:1a2b3c4:humidity"}
 Number:Dimensionless Livingroom_CO2_Level "CO₂" {channel="airvisualnode:avnode:1a2b3c4:co2"}
@@ -77,7 +77,7 @@ DateTime Livingroom_Aqi_Timestamp "AQI Timestamp [%1$tH:%1$tM]" { channel="airvi
 
 Example rules:
 
-```
+```java
 rule "AirVisual Node Temperature Rule"
 when
     Item Livingroom_Temperature changed
@@ -119,7 +119,7 @@ end
 
 Example sitemap:
 
-```
+```perl
 sitemap home label="Home" {
     Frame label="Living Room" {
         Text item=Livingroom_Temperature

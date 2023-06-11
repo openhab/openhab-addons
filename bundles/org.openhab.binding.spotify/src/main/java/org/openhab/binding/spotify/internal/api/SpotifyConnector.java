@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -166,7 +166,7 @@ class SpotifyConnector {
         /**
          * Processes the response of the Spotify Web Api call and handles the HTTP status codes. The method returns true
          * if the response indicates a successful and false if the call should be retried. If there were other problems
-         * a Spotify exception is thrown indicating no retry should be done an the user should be informed.
+         * a Spotify exception is thrown indicating no retry should be done and the user should be informed.
          *
          * @param response the response given by the Spotify Web Api
          * @return true if the response indicated a successful call, false if the call should be retried

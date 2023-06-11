@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.boschshc.internal.devices.thermostat;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CHILD_LOCK;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VALVE_TAPPET_POSITION;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.childlock.ChildLockService;
 import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockServiceState;
+import org.openhab.binding.boschshc.internal.services.silentmode.SilentModeService;
+import org.openhab.binding.boschshc.internal.services.silentmode.dto.SilentModeServiceState;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.dto.TemperatureLevelServiceState;
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
@@ -33,24 +33,30 @@ import org.openhab.core.types.Command;
 
 /**
  * Handler for a thermostat device.
- * 
+ *
  * @author Christian Oeing - Initial contribution
+ * @author David Pace - Added silent mode service
  */
 @NonNullByDefault
-public final class ThermostatHandler extends BoschSHCDeviceHandler {
+public final class ThermostatHandler extends AbstractBatteryPoweredDeviceHandler {
 
     private ChildLockService childLockService;
+    private SilentModeService silentModeService;
 
     public ThermostatHandler(Thing thing) {
         super(thing);
         this.childLockService = new ChildLockService();
+        this.silentModeService = new SilentModeService();
     }
 
     @Override
     protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
+
         this.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
         this.createService(ValveTappetService::new, this::updateChannels, List.of(CHANNEL_VALVE_TAPPET_POSITION));
         this.registerService(this.childLockService, this::updateChannels, List.of(CHANNEL_CHILD_LOCK));
+        this.registerService(this.silentModeService, this::updateChannels, List.of(CHANNEL_SILENT_MODE));
     }
 
     @Override
@@ -61,13 +67,16 @@ public final class ThermostatHandler extends BoschSHCDeviceHandler {
             case CHANNEL_CHILD_LOCK:
                 this.handleServiceCommand(this.childLockService, command);
                 break;
+            case CHANNEL_SILENT_MODE:
+                this.handleServiceCommand(this.silentModeService, command);
+                break;
         }
     }
 
     /**
      * Updates the channels which are linked to the {@link TemperatureLevelService}
      * of the device.
-     * 
+     *
      * @param state Current state of {@link TemperatureLevelService}.
      */
     private void updateChannels(TemperatureLevelServiceState state) {
@@ -77,7 +86,7 @@ public final class ThermostatHandler extends BoschSHCDeviceHandler {
     /**
      * Updates the channels which are linked to the {@link ValveTappetService} of
      * the device.
-     * 
+     *
      * @param state Current state of {@link ValveTappetService}.
      */
     private void updateChannels(ValveTappetServiceState state) {
@@ -87,10 +96,19 @@ public final class ThermostatHandler extends BoschSHCDeviceHandler {
     /**
      * Updates the channels which are linked to the {@link ChildLockService} of the
      * device.
-     * 
+     *
      * @param state Current state of {@link ChildLockService}.
      */
     private void updateChannels(ChildLockServiceState state) {
         super.updateState(CHANNEL_CHILD_LOCK, state.getActiveState());
+    }
+
+    /**
+     * Updates the channels which are linked to the {@link SilentModeService} of the device.
+     * 
+     * @param state current state of {@link SilentModeService}
+     */
+    private void updateChannels(SilentModeServiceState state) {
+        super.updateState(CHANNEL_SILENT_MODE, state.toOnOffType());
     }
 }

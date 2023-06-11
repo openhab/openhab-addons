@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.bluetooth;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link BluetoothAddress} class defines a bluetooth address
  *
  * @author Chris Jackson - Initial contribution
  */
+@NonNullByDefault
 public class BluetoothAddress {
 
     public static final int BD_ADDRESS_LENGTH = 17;
@@ -28,7 +32,7 @@ public class BluetoothAddress {
      *
      * @param address the device address
      */
-    public BluetoothAddress(String address) {
+    public BluetoothAddress(@Nullable String address) {
         if (address == null || address.length() != BD_ADDRESS_LENGTH) {
             throw new IllegalArgumentException("BT Address cannot be null and must be in format XX:XX:XX:XX:XX:XX");
         }
@@ -58,12 +62,12 @@ public class BluetoothAddress {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((address == null) ? 0 : address.hashCode());
+        result = prime * result + address.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -74,14 +78,8 @@ public class BluetoothAddress {
             return false;
         }
         BluetoothAddress other = (BluetoothAddress) obj;
-        if (address == null) {
-            if (other.address != null) {
-                return false;
-            }
-        } else if (!address.equals(other.address)) {
-            return false;
-        }
-        return true;
+
+        return address.equals(other.address);
     }
 
     @Override

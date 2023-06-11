@@ -1,6 +1,6 @@
 # Orbit B-hyve Binding
 
-This is the binding for the [Orbit B-hyve](https://bhyve.orbitonline.com/) wi-fi sprinklers. 
+This is the binding for the [Orbit B-hyve](https://bhyve.orbitonline.com/) wi-fi sprinklers.
 
 ## Supported Things
 
@@ -19,7 +19,7 @@ There is no user configuration related to sprinkler things. Sprinklers do need a
 
 ## Channels
 
-This binding automatically detects all zones and programs for each sprinkler and creates these dynamic channels: 
+This binding automatically detects all zones and programs for each sprinkler and creates these dynamic channels:
 
 | channel          | type   | description                                                      |
 |------------------|--------|------------------------------------------------------------------|
@@ -40,34 +40,34 @@ Beside the dynamic channels each sprinkler thing provides these standard channel
 
 ## Full Example
 
-_*.things example_
+### Things Example
 
-```
+```java
 Bridge orbitbhyve:bridge:mybridge "Orbit Bridge" [ email="your@ema.il", password="yourPass", refresh=30 ] {  
   Thing sprinkler indoor_timer "Sprinkler" [ id="4cab55704e0d7ddf98c1cc37" ]  
 }
 ```
 
-_*.items example_
+### Items Example
 
-```
-Switch IrrigationControl "Irrigation active" <bhyve>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:control" }  
-Switch IrrigationSmartWatering "Smart watering" <bhyve>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:smart_watering" }  
-Switch Irrigation1 "Zone 1" <water>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:zone_1" }  
-Switch Irrigation2 "Zone 2" <water>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:zone_2" }  
-Switch Irrigation3 "Zone 3" <water>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:zone_3" }  
-Switch Irrigation4 "Zone 4" <water>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:zone_4" }  
-Switch IrrigationP1 "Run program A" <program>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:program_a" }  
-Switch IrrigationP1Enable "Schedule program A" <program>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:enable_program_a" }  
-String IrrigationMode "Irrigation mode [%s]" <water>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:mode" }  
-Number IrrigationTime "Irrigation time [%d min]" <clock>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:watering_time" }  
-Number IrrigationRainDelay "Rain delay [%d h]" <hourglass>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:rain_delay" }  
-DateTime IrrigationNextStart "Next start A [%1$td.%1$tm.%1$tY %1$tR]" <clock>	(Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:next_start" }  
+```java
+Switch IrrigationControl "Irrigation active" <bhyve>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:control" }  
+Switch IrrigationSmartWatering "Smart watering" <bhyve> (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:smart_watering" }  
+Switch Irrigation1 "Zone 1" <water> (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:zone_1" }  
+Switch Irrigation2 "Zone 2" <water> (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:zone_2" }  
+Switch Irrigation3 "Zone 3" <water> (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:zone_3" }  
+Switch Irrigation4 "Zone 4" <water> (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:zone_4" }  
+Switch IrrigationP1 "Run program A" <program> (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:program_a" }  
+Switch IrrigationP1Enable "Schedule program A" <program>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:enable_program_a" }  
+String IrrigationMode "Irrigation mode [%s]" <water>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:mode" }  
+Number IrrigationTime "Irrigation time [%d min]" <clock>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:watering_time" }  
+Number IrrigationRainDelay "Rain delay [%d h]" <hourglass>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:rain_delay" }  
+DateTime IrrigationNextStart "Next start A [%1$td.%1$tm.%1$tY %1$tR]" <clock>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:next_start" }  
 ```
 
-_*.sitemap example_
+### Sitemap Example
 
-```
+```perl
 Switch item=IrrigationControl  
 Switch item=IrrigationSmartWatering  
 Switch item=Irrigation1  

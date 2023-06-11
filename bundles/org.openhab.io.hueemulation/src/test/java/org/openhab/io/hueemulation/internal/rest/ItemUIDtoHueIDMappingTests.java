@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,5 +115,37 @@ public class ItemUIDtoHueIDMappingTests {
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
 
         assertThat(cs.getHighestAssignedHueID(), CoreMatchers.is(1));
+    }
+
+    @Test
+    public void uniqueIdForLargeHueID() {
+        ConfigStore cs = commonSetup.cs;
+        assertThat(cs.getHighestAssignedHueID(), CoreMatchers.is(1));
+
+        SwitchItem item = new SwitchItem("switch1");
+        item.setCategory("Light");
+        commonSetup.metadataRegistry.add(new Metadata(new MetadataKey(ConfigStore.METAKEY, "switch1"), "255", null));
+        itemRegistry.add(item);
+
+        String hueID = cs.mapItemUIDtoHueID(item);
+        assertThat(hueID, CoreMatchers.is("255"));
+
+        HueLightEntry device = cs.ds.lights.get(hueID);
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+        assertThat(device.uniqueid, CoreMatchers.is("A6:68:DC:9B:71:72:00:00-FF"));
+
+        item = new SwitchItem("switch2");
+        item.setCategory("Light");
+        commonSetup.metadataRegistry.add(new Metadata(new MetadataKey(ConfigStore.METAKEY, "switch2"), "256000", null));
+        itemRegistry.add(item);
+
+        hueID = cs.mapItemUIDtoHueID(item);
+        assertThat(hueID, CoreMatchers.is("256000"));
+
+        device = cs.ds.lights.get(hueID);
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+        assertThat(device.uniqueid, CoreMatchers.is("A6:68:DC:9B:71:72:03:E8-00"));
     }
 }

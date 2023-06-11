@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.regex.Pattern;
 
 import org.apache.commons.net.util.SubnetUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.zway.internal.ZWayBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Patrick Hecker - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.zway")
 public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
 
@@ -124,7 +126,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
                             .withLabel("Z-Way Server " + ipAddress).build();
                     thingDiscovered(discoveryResult);
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.warn("Discovery resulted in an unexpected exception", e);
             }
         }

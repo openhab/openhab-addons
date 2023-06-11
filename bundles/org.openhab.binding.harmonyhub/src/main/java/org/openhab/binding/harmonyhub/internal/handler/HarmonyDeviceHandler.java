@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
+import org.openhab.binding.harmonyhub.internal.HarmonyHubDynamicTypeProvider;
 import org.openhab.binding.harmonyhub.internal.config.HarmonyDeviceConfig;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -67,13 +67,13 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
 
-    private HarmonyHubHandlerFactory factory;
+    private final HarmonyHubDynamicTypeProvider typeProvider;
 
     private @NonNullByDefault({}) HarmonyDeviceConfig config;
 
-    public HarmonyDeviceHandler(Thing thing, HarmonyHubHandlerFactory factory) {
+    public HarmonyDeviceHandler(Thing thing, HarmonyHubDynamicTypeProvider typeProvider) {
         super(thing);
-        this.factory = factory;
+        this.typeProvider = typeProvider;
     }
 
     protected @Nullable HarmonyHubHandler getHarmonyHubHandler() {
@@ -142,8 +142,9 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
-        factory.removeChannelTypesForThing(getThing().getUID());
+    public void handleRemoval() {
+        typeProvider.removeChannelTypesForThing(getThing().getUID());
+        super.handleRemoval();
     }
 
     /**
@@ -190,7 +191,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
                 .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withOptions(states).build())
                 .build();
 
-        factory.addChannelType(channelType);
+        typeProvider.putChannelType(channelType);
 
         Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), CHANNEL_BUTTON_PRESS), "String")
                 .withType(channelTypeUID).build();

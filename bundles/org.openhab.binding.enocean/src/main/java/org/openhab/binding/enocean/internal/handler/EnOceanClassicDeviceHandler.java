@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.SwitchMode;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchListenerConfig;
@@ -51,12 +52,14 @@ import org.openhab.core.util.HexUtils;
  *         This class defines base functionality for sending eep messages. This class extends EnOceanBaseSensorHandler
  *         class as most actuator things send status or response messages, too.
  */
+@NonNullByDefault
 public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
     // List of thing types which support sending of eep messages
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_CLASSICDEVICE);
 
     private StringType lastTriggerEvent = StringType.valueOf(CommonTriggerEvents.DIR1_PRESSED);
+    @Nullable
     ScheduledFuture<?> releaseFuture = null;
 
     public EnOceanClassicDeviceHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -76,7 +79,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     }
 
     @Override
-    public void channelLinked(@NonNull ChannelUID channelUID) {
+    public void channelLinked(ChannelUID channelUID) {
         super.channelLinked(channelUID);
 
         // if linked channel is a listening channel => put listener
@@ -90,7 +93,10 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
         // it seems that there does not exist a channel update callback
         // => remove all listeners and add them again
-        getBridgeHandler().removePacketListener(this);
+        EnOceanBridgeHandler handler = getBridgeHandler();
+        if (handler != null) {
+            handler.removePacketListener(this);
+        }
 
         this.getThing().getChannels().forEach(c -> {
             if (isLinked(c.getUID()) && !addListener(c)) {
@@ -100,7 +106,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     }
 
     @Override
-    public void channelUnlinked(@NonNull ChannelUID channelUID) {
+    public void channelUnlinked(ChannelUID channelUID) {
         super.channelUnlinked(channelUID);
 
         // if unlinked channel is listening channel => remove listener
@@ -108,7 +114,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         removeListener(channel);
     }
 
-    protected boolean addListener(Channel channel) {
+    protected boolean addListener(@Nullable Channel channel) {
         if (channel == null) {
             return true;
         }
@@ -120,7 +126,11 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             EnOceanChannelRockerSwitchListenerConfig config = channel.getConfiguration()
                     .as(EnOceanChannelRockerSwitchListenerConfig.class);
             try {
-                getBridgeHandler().addPacketListener(this, Long.parseLong(config.enoceanId, 16));
+                @Nullable
+                EnOceanBridgeHandler handler = getBridgeHandler();
+                if (handler != null) {
+                    handler.addPacketListener(this, Long.parseLong(config.enoceanId, 16));
+                }
                 return true;
             } catch (NumberFormatException e) {
             }
@@ -130,7 +140,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         return true;
     }
 
-    protected void removeListener(Channel channel) {
+    protected void removeListener(@Nullable Channel channel) {
         if (channel == null) {
             return;
         }
@@ -142,7 +152,10 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             EnOceanChannelRockerSwitchListenerConfig config = channel.getConfiguration()
                     .as(EnOceanChannelRockerSwitchListenerConfig.class);
             try {
-                getBridgeHandler().removePacketListener(this, Long.parseLong(config.enoceanId, 16));
+                EnOceanBridgeHandler handler = getBridgeHandler();
+                if (handler != null) {
+                    handler.removePacketListener(this, Long.parseLong(config.enoceanId, 16));
+                }
             } catch (NumberFormatException e) {
             }
         }
@@ -166,7 +179,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
                 : StringType.valueOf(CommonTriggerEvents.DIR2_RELEASED);
     }
 
-    private StringType convertToPressedCommand(Command command, SwitchMode switchMode) {
+    private @Nullable StringType convertToPressedCommand(Command command, SwitchMode switchMode) {
         if (command instanceof StringType) {
             return (StringType) command;
         } else if (command instanceof OnOffType) {
@@ -203,9 +216,9 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         // We must have a valid sendingEEPType and sender id to send commands
-        if (sendingEEPType == null || senderId == null || command == RefreshType.REFRESH) {
+        if (sendingEEPType == null || senderId.length == 0 || command == RefreshType.REFRESH) {
             return;
         }
 
@@ -228,22 +241,34 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
         if (result != null) {
             lastTriggerEvent = result;
-
-            EEP eep = EEPFactory.createEEP(sendingEEPType);
-            if (eep.setSenderId(senderId).setDestinationId(destinationId).convertFromCommand(channelId, channelTypeId,
-                    result, id -> this.getCurrentState(id), channel.getConfiguration()).hasData()) {
-                BasePacket press = eep.setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
-
-                getBridgeHandler().sendMessage(press, null);
-
-                if (channelConfig.duration > 0) {
-                    releaseFuture = scheduler.schedule(() -> {
-                        if (eep.convertFromCommand(channelId, channelTypeId, convertToReleasedCommand(lastTriggerEvent),
-                                id -> this.getCurrentState(id), channel.getConfiguration()).hasData()) {
-                            BasePacket release = eep.getERP1Message();
-                            getBridgeHandler().sendMessage(release, null);
+            EEPType localSendType = sendingEEPType;
+            if (localSendType != null) {
+                EEP eep = EEPFactory.createEEP(localSendType);
+                if (eep.setSenderId(senderId).setDestinationId(destinationId).convertFromCommand(channelId,
+                        channelTypeId, result, id -> this.getCurrentState(id), channel.getConfiguration()).hasData()) {
+                    BasePacket press = eep.setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+                    if (press != null) {
+                        EnOceanBridgeHandler handler = getBridgeHandler();
+                        if (handler != null) {
+                            handler.sendMessage(press, null);
                         }
-                    }, channelConfig.duration, TimeUnit.MILLISECONDS);
+                    }
+
+                    if (channelConfig.duration > 0) {
+                        releaseFuture = scheduler.schedule(() -> {
+                            if (eep.convertFromCommand(channelId, channelTypeId,
+                                    convertToReleasedCommand(lastTriggerEvent), id -> this.getCurrentState(id),
+                                    channel.getConfiguration()).hasData()) {
+                                BasePacket release = eep.getERP1Message();
+                                if (release != null) {
+                                    EnOceanBridgeHandler handler = getBridgeHandler();
+                                    if (handler != null) {
+                                        handler.sendMessage(release, null);
+                                    }
+                                }
+                            }
+                        }, channelConfig.duration, TimeUnit.MILLISECONDS);
+                    }
                 }
             }
         }
@@ -251,8 +276,10 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
     @Override
     public void handleRemoval() {
-        if (releaseFuture != null && !releaseFuture.isDone()) {
-            releaseFuture.cancel(true);
+        ScheduledFuture<?> future = releaseFuture;
+        if (future != null && !future.isDone()) {
+            future.cancel(true);
+            future = null;
         }
 
         releaseFuture = null;

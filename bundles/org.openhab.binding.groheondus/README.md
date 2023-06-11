@@ -75,7 +75,7 @@ Note: Be aware that the Sense reports data once a day (at most), and that the va
 
 Things file:
 
-````
+```java
 Bridge groheondus:account:account1 [ username="user@example.com", password="YourStrongPasswordHere!" ] {
     groheondus:senseguard:550e8400-e29b-11d4-a716-446655440000 [ applianceId="550e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ] {
         Channels:
@@ -85,11 +85,11 @@ Bridge groheondus:account:account1 [ username="user@example.com", password="Your
     }
     groheondus:sense:550e8400-e29b-11d4-a716-446655440000 [ applianceId="444e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ]
 }
-````
+```
 
 Items file:
 
-````
+```java
 String Name_Sense_Guard "Appliance Name" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:name"}
 Number:Pressure Pressure_Sense_Guard "Pressure [%.1f %unit%]" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:pressure"}
 Number:Temperature Temperature_Sense_Guard "Temperature [%.1f %unit%]" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:temperature_guard"}
@@ -98,4 +98,4 @@ Number:Volume Water_Usage_Since_Midnight_Sense_Guard "Water usage since midnight
 String Name_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:name"}
 Number:Temperature Temperature_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:temperature"}
 Number Humidity_Sense "Humidity [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:humidity"}
-````
+```

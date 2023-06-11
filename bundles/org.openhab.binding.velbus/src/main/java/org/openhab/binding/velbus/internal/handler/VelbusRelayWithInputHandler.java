@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,11 +91,7 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
     private boolean isTriggerChannel(byte address, byte channel) {
         VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address, channel);
 
-        if (getModuleAddress().getChannelNumber(velbusChannelIdentifier) == 6) {
-            return true;
-        } else {
-            return false;
-        }
+        return getModuleAddress().getChannelNumber(velbusChannelIdentifier) == 6;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,17 +35,17 @@ public interface NhcThermostatEvent {
      * @param overrule the overrule temperature in 0.1°C multiples
      * @param demand 0 if no demand, > 0 if heating, < 0 if cooling
      */
-    public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand);
+    void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand);
 
     /**
      * Called to indicate the thermostat has been initialized.
      *
      */
-    public void thermostatInitialized();
+    void thermostatInitialized();
 
     /**
      * Called to indicate the thermostat has been removed from the Niko Home Control controller.
      *
      */
-    public void thermostatRemoved();
+    void thermostatRemoved();
 }

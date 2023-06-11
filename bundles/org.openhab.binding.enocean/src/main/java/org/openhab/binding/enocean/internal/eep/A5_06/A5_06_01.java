@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -28,6 +30,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public class A5_06_01 extends _4BSMessage {
 
     public A5_06_01(ERP1Message packet) {
@@ -35,7 +38,7 @@ public class A5_06_01 extends _4BSMessage {
     }
 
     private State getBatteryVoltage() {
-        int db3 = getDB_3Value();
+        int db3 = getDB3Value();
 
         double voltage = db3 / 50.0; // 0..255 = 0.0..5.1V
 
@@ -43,16 +46,16 @@ public class A5_06_01 extends _4BSMessage {
     }
 
     private State getIllumination() {
-        boolean rs = getBit(getDB_0(), 0);
+        boolean rs = getBit(getDB0(), 0);
 
-        double illumination = rs ? getDB_2Value() * 116.48 + 300.0 : getDB_1Value() * 232.94 + 600.0;
+        double illumination = rs ? getDB2Value() * 116.48 + 300.0 : getDB1Value() * 232.94 + 600.0;
 
         return new QuantityType<>(illumination, Units.LUX);
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_BATTERY_VOLTAGE:
                 return getBatteryVoltage();

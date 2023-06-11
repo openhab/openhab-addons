@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -184,7 +184,7 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
     }
 
     private void testHandlerCanBeCreatedForMieleDevice(ThingTypeUID thingTypeUid, ThingUID thingUid, String label,
-            Class<? extends ThingHandler> expectedHandlerClass)
+            Class<? extends ThingHandler> expectedHandlerClass, String thingTypeVersion)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         // given:
         MieleWebservice webservice = mock(MieleWebservice.class);
@@ -196,7 +196,7 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         Thing device = ThingBuilder.create(thingTypeUid, thingUid)
                 .withConfiguration(new Configuration(Collections
                         .singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, DEVICE_IDENTIFIER)))
-                .withLabel(label).build();
+                .withLabel(label).withProperty("thingTypeVersion", thingTypeVersion).build();
 
         assertNotNull(device);
         verifyHandlerCreation(webservice, device, expectedHandlerClass);
@@ -227,77 +227,77 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
     public void testHandlerCanBeCreatedForWashingDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_WASHING_MACHINE,
-                WASHING_MACHINE_TYPE, "DA-6996", WashingDeviceThingHandler.class);
+                WASHING_MACHINE_TYPE, "DA-6996", WashingDeviceThingHandler.class, "1");
     }
 
     @Test
     public void testHandlerCanBeCreatedForOvenDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_OVEN, OVEN_DEVICE_TYPE, "OV-6887",
-                OvenDeviceThingHandler.class);
+                OvenDeviceThingHandler.class, "0");
     }
 
     @Test
     public void testHandlerCanBeCreatedForHobDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_HOB, HOB_DEVICE_TYPE, "HB-3887",
-                HobDeviceThingHandler.class);
+                HobDeviceThingHandler.class, "0");
     }
 
     @Test
     public void testHandlerCanBeCreatedForFridgeFreezerDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_FRIDGE_FREEZER,
-                FRIDGE_FREEZER_DEVICE_TYPE, "CD-6097", CoolingDeviceThingHandler.class);
+                FRIDGE_FREEZER_DEVICE_TYPE, "CD-6097", CoolingDeviceThingHandler.class, "0");
     }
 
     @Test
     public void testHandlerCanBeCreatedForHoodDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_HOOD, HOOD_DEVICE_TYPE, "HD-2097",
-                HoodDeviceThingHandler.class);
+                HoodDeviceThingHandler.class, "0");
     }
 
     @Test
     public void testHandlerCanBeCreatedForCoffeeDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_COFFEE_SYSTEM, COFFEE_DEVICE_TYPE,
-                "DA-6997", CoffeeSystemThingHandler.class);
+                "DA-6997", CoffeeSystemThingHandler.class, "0");
     }
 
     @Test
     public void testHandlerCanBeCreatedForWineStorageDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_WINE_STORAGE,
-                WINE_STORAGE_DEVICE_TYPE, "WS-6907", WineStorageDeviceThingHandler.class);
+                WINE_STORAGE_DEVICE_TYPE, "WS-6907", WineStorageDeviceThingHandler.class, "0");
     }
 
     @Test
     public void testHandlerCanBeCreatedForDryerDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_DRYER, DRYER_DEVICE_TYPE, "DR-0907",
-                DryerDeviceThingHandler.class);
+                DryerDeviceThingHandler.class, "1");
     }
 
     @Test
     public void testHandlerCanBeCreatedForDishwasherDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_DISHWASHER, DISHWASHER_DEVICE_TYPE,
-                "DR-0907", DishwasherDeviceThingHandler.class);
+                "DR-0907", DishwasherDeviceThingHandler.class, "1");
     }
 
     @Test
     public void testHandlerCanBeCreatedForDishWarmerDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_DISH_WARMER,
-                DISH_WARMER_DEVICE_TYPE, "DW-0907", DishWarmerDeviceThingHandler.class);
+                DISH_WARMER_DEVICE_TYPE, "DW-0907", DishWarmerDeviceThingHandler.class, "0");
     }
 
     @Test
     public void testHandlerCanBeCreatedForRoboticVacuumCleanerDevice()
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         testHandlerCanBeCreatedForMieleDevice(MieleCloudBindingConstants.THING_TYPE_ROBOTIC_VACUUM_CLEANER,
-                ROBOTIC_VACUUM_CLEANER_DEVICE_TYPE, "RVC-0907", RoboticVacuumCleanerDeviceThingHandler.class);
+                ROBOTIC_VACUUM_CLEANER_DEVICE_TYPE, "RVC-0907", RoboticVacuumCleanerDeviceThingHandler.class, "0");
     }
 
     /**

@@ -23,11 +23,11 @@ The binding was tested with QinHeng Electronics HL-340 USB-Serial adapter (RS485
 
 If there are many modules on one bridge, the initialization can take a few minutes. If it does not work you can plug in the modules one after the other.
 Sometimes after initialization, you might have to switch two times or the reaction could be a bit slow, but after you used a channel it should all work fine.
- 
+
 For all devices running with Linux that use the ch341 driver (HL-340), the new version (ch34x) is needed.
 A guide how to install this can be found here: [CH340/341 UART Driver for Raspberry Pi](https://github.com/aperepel/raspberrypi-ch340-driver).  
 
-If you don´t have the same kernel as used in the guide you have to compile the module yourself. In the guide is described a specific way for the Raspberry Pi. With another Linux version you can go the normal way with linux-headers.   
+If you don´t have the same kernel as used in the guide you have to compile the module yourself. In the guide is described a specific way for the Raspberry Pi. With another Linux version you can go the normal way with linux-headers.
 
 According to the [Wiki of the PHC-Forum](https://wiki.phc-forum.de/index.php/PHC-Protokoll_des_internen_Bus#USB_RS-485_Adapter) the newer version of the FTDI adapter doesn't really work anymore either.
 
@@ -55,7 +55,7 @@ Connect a RJ12 plug with the RS485 adaptor and the power supply as follows.
 | 0V                         | 0V on power supply          |
 | B-                         | 485- on adaptor             |
 | A+                         | 485+ on adaptor             |
-| 24+                        | +24V on power supply        | 
+| 24+                        | +24V on power supply        |
 
 ![RJ12 Connector](doc/RJ12-Connector.png)
 
@@ -65,7 +65,7 @@ The Bridge manages the communication between the things and the modules via a se
 It represents the STM.
 At the Moment you can only use one Bridge (like one STM).
 
-#### Configurations
+### Configurations
 
 **Serial Port:** Type the serial port of the RS485 adaptor, e.g. COM3 (Windows) or /dev/ttyUSB0 (Linux).
 
@@ -88,7 +88,7 @@ Not implemented yet.
 A thing accords with a module in the PHC software and the channels (with linked items) accord with the inputs and outputs.
 Please note, if you define the things manually (not in the UI) that the ThingID always have to be the address (like the PID switches on the module).
 
-#### Parameters
+### Parameters
 
 - **address:** Type the address of the module like the DIP switches (you can also find in the PHC software) of the module, e.g. 10110. (mandatory)
 
@@ -124,7 +124,7 @@ After reboot the config parameter is used by default.
 
 .things
 
-```
+```java
 Bridge phc:bridge:demo [port="/dev/ttyUSB0"]{
     // The ThingID have to be the address.
     Thing AM 01101 [address="01101"]
@@ -135,7 +135,7 @@ Bridge phc:bridge:demo [port="/dev/ttyUSB0"]{
 
 .items
 
-```
+```java
 //AM Module
 Switch Switch_1 {channel="phc:AM:01101:am#00"}
 Switch Switch_2 {channel="phc:AM:01101:am#01"}

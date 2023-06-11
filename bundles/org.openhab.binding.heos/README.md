@@ -14,7 +14,6 @@ Bridge:
 The binding supports a bridge to connect to the HEOS-Network.
 A bridge uses the thing ID "bridge".
 
-
 Player:
 A generic player is supported via this binding.
 Currently no differences are made between the players.
@@ -24,13 +23,12 @@ Groups:
 The binding supports HEOS groups.
 A group uses the Thing ID "group"
 
-
 ## Discovery
 
 This binding supports full automatic discovery of available players to be used as a bridge, players and groups.
 You need to add a Bridge device first (which is also auto-discovered by the binding) which can be any HEOS device in your network (preferably which has wired connection).
 
-__Important!__
+**Important!**
 Please note that only one bridge is required to establish a connection.
 Adding a second bridge can cause trouble with the connection.
 
@@ -59,9 +57,9 @@ The password and the user name are used to login to the HEOS account.
 This is required to load the favorites, playlists and so on from personal settings.
 If no login information is provided these features can't be used.
 
-````
+```java
 Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", unsername="xxx", password="123456"]
-````
+```
 
 ### Player Configuration
 
@@ -73,9 +71,9 @@ Player have the following configuration parameter
 
 For manual configuration a player can be defined as followed:
 
-````
+```java
 Thing heos:player:player1 "name" [pid="123456789"]
-````
+```
 
 PID behind the heos:player:--- should be changed as required.
 It is recommended to use the Player PID.
@@ -94,7 +92,7 @@ Player have the following configuration parameter
 Groups will automatically appear in the Inbox if that Group is active.
 To do this, build your Group from the HEOS app, then the group will appear in the Inbox.
 
-```
+```java
 Thing heos:group:group1 "name" [members="45345634;35534567"]
 ```
 
@@ -103,11 +101,11 @@ Thing heos:group:group1 "name" [members="45345634;35534567"]
 Defining Player and Bridge together.
 To ensure that the players and groups are attached to the bridge the definition can be like:
 
-```
+```java
 Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
-	player Kitchen "Kitchen"[pid="434523813"]
-	player LivingRoom "Living Room"[pid="918797451"]
-	group 813793755 "Ground Level"[members="434523813;918797451"]
+    player Kitchen "Kitchen"[pid="434523813"]
+    player LivingRoom "Living Room"[pid="918797451"]
+    group 813793755 "Ground Level"[members="434523813;918797451"]
 }
 ```
 
@@ -143,7 +141,7 @@ You can send commands to these channels from rules by sending the name of the se
 
 #### Example
 
-```
+```java
 Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Control"}
 Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
 ```
@@ -224,7 +222,7 @@ A current list can be found within the HEOS CLI protocol which can be found [her
 
 For a list of the commands please refer to the [HEOS CLI protocol](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf).
 
-## *Dynamic Channels*
+## _Dynamic Channels_
 
 Also the bridge supports dynamic channels which represent the players of the network.
 They are added dynamically if a player is found. The player and group channels are only shown on the bridge.
@@ -237,7 +235,7 @@ They are added dynamically if a player is found. The player and group channels a
 
 Example
 
- ```
+ ```java
  Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}
  ```
 
@@ -247,7 +245,7 @@ Example
 
 ### demo.things:
 
-```
+```java
 Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
     player Kitchen "Kitchen"[pid="434523813"]
     player LivingRoom "Living Room"[pid="918797451"]
@@ -257,7 +255,7 @@ Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", 
 
 ### demo.items:
 
-```
+```java
 Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Control"}
 Switch LivingRoom_Mute "Mute"{channel="heos:player:main:LivingRoom:Mute"}
 Dimmer LivingRoom_Volume "Volume" {channel="heos:player:main:LivingRoom:Volume"}
@@ -270,17 +268,17 @@ String LivingRoom_Playlists {channel="heos:player:main:LivingRoom:Playlists"}
 
 ### demo.sitemap
 
-```
-   Frame label="LivingRoom" {
-    	Default item=LivingRoom_Control
-    	Default item=LivingRoom_Mute
-    	Default item=LivingRoom_Volume
-    	Default item=LivingRoom_Title
-    	Default item=LivingRoom_Interpret
-    	Default item=LivingRoom_Album
-        Selection item=LivingRoom_Favorites     label="Favorite" icon="music"
-        Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
-    }
+```perl
+Frame label="LivingRoom" {
+    Default item=LivingRoom_Control
+    Default item=LivingRoom_Mute
+    Default item=LivingRoom_Volume
+    Default item=LivingRoom_Title
+    Default item=LivingRoom_Interpret
+    Default item=LivingRoom_Album
+    Selection item=LivingRoom_Favorites label="Favorite" icon="music"
+    Selection item=LivingRoom_Playlists label="Playlist" icon="music"
+}
 ```
 
 ## Detailed Explanation
@@ -310,33 +308,34 @@ Player B = Living Room (source)
 
 Items:
 
-```
-Switch HeosBridge_Play_Living	"Living Room"	(gHeos)	{channel="heos:bridge:ed0ac1ff-0193-65c6-c1b8-506137456a50:P918797451"}
-String HeosKitchen_Input			(gHeos) {channel="heos:player:918797451:Inputs"}
-String HeosKitchen_InputSelect	"Input"		(gHeos)
+```java
+Switch HeosBridge_Play_Living "Living Room" (gHeos) {channel="heos:bridge:ed0ac1ff-0193-65c6-c1b8-506137456a50:P918797451"}
+String HeosKitchen_Input   (gHeos) {channel="heos:player:918797451:Inputs"}
+String HeosKitchen_InputSelect "Input"  (gHeos)
 ```
 
 Rule for kitchen:
 
-```
+```java
 rule "Play AuxIn from Living Room"
-	when
-		Item HeosKitchen_InputSelect received command
-	then
-		if (receivedCommand.toString == "aux_in_1") {
-			sendCommand(HeosKitchen_Input, "aux_in_1")
-
-		} if (receivedCommand.toString == "LivingRoom") {
-			sendCommand(HeosBridge_Play_Living, ON)
-			sendCommand(HeosKitchen_Input, "aux_in_1")
-			sendCommand(HeosBridge_Play_Living, OFF)	//Switch player channel off again to be sure that it is OFF
-		}
+when
+    Item HeosKitchen_InputSelect received command
+then
+    if (receivedCommand.toString == "aux_in_1") {
+        sendCommand(HeosKitchen_Input, "aux_in_1")
+    }
+    if (receivedCommand.toString == "LivingRoom") {
+        sendCommand(HeosBridge_Play_Living, ON)
+        sendCommand(HeosKitchen_Input, "aux_in_1")
+        sendCommand(HeosBridge_Play_Living, OFF) //Switch player channel off again to be sure that it is OFF
+    }
+end
 ```
 
 Sitemap:
 
-```
-Switch item=HeosKitchen_InputSelect	mappings=[aux_in_1 = "Aux In" , LivingRoom = "Living Room"]
+```java
+Switch item=HeosKitchen_InputSelect mappings=[aux_in_1 = "Aux In" , LivingRoom = "Living Room"]
 ```
 
 ### The Online status of Groups and Players
@@ -350,16 +349,15 @@ First you have to define a new Item within the Item section which is used later 
 
 Items:
 
-```
+```java
 String HeosGroup_Status
-
 ```
 
 Then we need a rule which triggers the state if an Item goes Online or Offline.
 
 Rules:
 
-```
+```java
 rule "Online State Heos Group"
 
 when
@@ -373,21 +371,21 @@ end
 
 Sitemap:
 
-```
+```perl
 Frame label="Heos Group" visibility=[HeosGroup_Status==ONLINE] {
 
-	Default item=HeosGroup1_Player
-	Default item=HeosGroup1_Volume
-	Default item=HeosGroup1_Mute
-	Default item=HeosGroup1_Favorites
-	Default item=HeosGroup1_Playlist
+    Default item=HeosGroup1_Player
+    Default item=HeosGroup1_Volume
+    Default item=HeosGroup1_Mute
+    Default item=HeosGroup1_Favorites
+    Default item=HeosGroup1_Playlist
 
-	Text item=HeosGroup1_Song {
-		Default item=HeosGroup1_Song
-		Default item=HeosGroup1_Artist
-		Default item=HeosGroup1_Album
-		Image item=HeosGroup1_Cover url=""
-	}
+    Text item=HeosGroup1_Song {
+        Default item=HeosGroup1_Song
+        Default item=HeosGroup1_Artist
+        Default item=HeosGroup1_Album
+        Image item=HeosGroup1_Cover url=""
+    }
 
 }
 ```
@@ -396,7 +394,7 @@ Frame label="Heos Group" visibility=[HeosGroup_Status==ONLINE] {
 
 Multiple actions are supported by this binding. In classic rules these are accessible as shown in the example below:
 
-```
+```java
  val actions = getActions("heos","heos:bridge:bridgeId")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
@@ -408,4 +406,4 @@ Multiple actions are supported by this binding. In classic rules these are acces
 
 ### playInputFromPlayer(sourcePlayer, sourceInput, destination)
 
-Allows to play a source from a player to another player. 
+Allows to play a source from a player to another player.

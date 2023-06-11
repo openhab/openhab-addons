@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
 /**
  * Class to implement the BlueGiga command <b>indicateConfirm</b>.
  * <p>
- * This command can be used to send a acknowledge a received indication from a remote device.
+ * This command can be used to send an acknowledge a received indication from a remote device.
  * This function allows the application to manually confirm the indicated values instead of
  * the smart stack Bluetooth automatically doing it. The benefit of this is extra reliability
  * since the application can for example store the received value on the flash memory before
@@ -33,8 +33,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  */
 @NonNullByDefault
 public class BlueGigaIndicateConfirmResponse extends BlueGigaDeviceResponse {
-    public static int COMMAND_CLASS = 0x04;
-    public static int COMMAND_METHOD = 0x07;
+    public static final int COMMAND_CLASS = 0x04;
+    public static final int COMMAND_METHOD = 0x07;
 
     /**
      * Command result.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class DataPointBool extends DataPointBase<@Nullable Boolean> {
     @Override
     protected byte[] convertWriteValue(Object value) {
         String valueText = value.toString().toLowerCase();
-        if (valueText.equalsIgnoreCase("true") || valueText.equalsIgnoreCase("1")) {
+        if ("true".equalsIgnoreCase(valueText) || "1".equalsIgnoreCase(valueText)) {
             this.setValue(true);
             return new byte[] { 0x01 };
         }

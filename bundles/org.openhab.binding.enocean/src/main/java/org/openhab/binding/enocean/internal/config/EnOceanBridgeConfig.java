@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanBridgeConfig {
 
     public enum ESPVersion {
@@ -40,23 +44,16 @@ public class EnOceanBridgeConfig {
         }
     }
 
-    public String path;
+    public String path = "";
 
-    public String espVersion;
+    public String espVersion = "ESP3";
     public boolean rs485;
-    public String rs485BaseId;
+    public String rs485BaseId = "";
 
-    public Integer nextSenderId;
+    public @Nullable Integer nextSenderId;
 
-    public boolean enableSmack;
+    public boolean enableSmack = true;
     public boolean sendTeachOuts;
-
-    public EnOceanBridgeConfig() {
-        espVersion = "ESP3";
-        sendTeachOuts = false;
-        enableSmack = true;
-        nextSenderId = null;
-    }
 
     public ESPVersion getESPVersion() {
         return ESPVersion.getESPVersion(espVersion);

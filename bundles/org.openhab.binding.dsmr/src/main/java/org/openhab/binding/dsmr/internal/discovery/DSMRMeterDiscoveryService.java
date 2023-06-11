@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectType;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
@@ -37,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This implements the discovery service for new DSMR Meters on a active DSMR bridge.
+ * This implements the discovery service for new DSMR Meters on an active DSMR bridge.
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Refactored code to detect meters during actual discovery phase.
@@ -74,7 +75,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
+    public void setThingHandler(final ThingHandler handler) {
         if (handler instanceof DSMRBridgeHandler) {
             dsmrBridgeHandler = (DSMRBridgeHandler) handler;
         }
@@ -96,7 +97,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
     }
 
     @Override
-    public void telegramReceived(P1Telegram telegram) {
+    public void telegramReceived(final P1Telegram telegram) {
         if (logger.isDebugEnabled()) {
             logger.debug("Detect meters from #{} objects", telegram.getCosemObjects().size());
         }
@@ -108,7 +109,12 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
         detectedMeters.getKey().forEach(m -> meterDiscovered(m, dsmrBridgeHandler.getThing().getUID()));
     }
 
-    protected void verifyUnregisteredCosemObjects(P1Telegram telegram, List<CosemObject> list) {
+    @Override
+    public void onError(final DSMRErrorStatus state, final String message) {
+        logger.info("Telegram could not be parsed correctly, failed with state: {}, {}", state, message);
+    }
+
+    protected void verifyUnregisteredCosemObjects(final P1Telegram telegram, final List<CosemObject> list) {
         if (!list.isEmpty()) {
             if (list.stream()
                     .anyMatch(e -> e.getType() == CosemObjectType.METER_EQUIPMENT_IDENTIFIER
@@ -138,7 +144,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
      *
      * @param list Map with the unrecognized.
      */
-    protected void reportUnrecognizedCosemObjects(List<CosemObject> list) {
+    protected void reportUnrecognizedCosemObjects(final List<CosemObject> list) {
         list.forEach(c -> logger.info("Unrecognized cosem object '{}' found in the data: {}", c.getType(), c));
     }
 
@@ -158,7 +164,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
      * @param things The list of configured things
      * @param configuredMeterTypes The set of meters detected in the telegram
      */
-    private void validateConfiguredMeters(List<Thing> things, Set<DSMRMeterType> configuredMeterTypes) {
+    private void validateConfiguredMeters(final List<Thing> things, final Set<DSMRMeterType> configuredMeterTypes) {
         // @formatter:off
         final Set<DSMRMeterType> configuredMeters = things.stream()
                 .map(Thing::getHandler)
@@ -188,8 +194,8 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
      * @param invalidConfigured The list of invalid configured meters
      * @param unconfiguredMeters The list of meters that were detected, but not configured
      */
-    protected void reportConfigurationValidationResults(List<DSMRMeterType> invalidConfigured,
-            List<DSMRMeterType> unconfiguredMeters) {
+    protected void reportConfigurationValidationResults(final List<DSMRMeterType> invalidConfigured,
+            final List<DSMRMeterType> unconfiguredMeters) {
         logger.info(
                 "Possible incorrect meters configured. These are configured: {}."
                         + "But the following unconfigured meters are found in the data received from the meter: {}",

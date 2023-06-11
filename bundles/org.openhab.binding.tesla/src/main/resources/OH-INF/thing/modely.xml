@@ -108,6 +108,7 @@
 			<channel id="shiftstate" typeId="shiftstate"/>
 			<channel id="sidemirrorheaters" typeId="sidemirrorheaters"/>
 			<channel id="smartpreconditioning" typeId="smartpreconditioning"/>
+			<channel id="steeringwheelheater" typeId="steeringwheelheater"/>
 			<channel id="soc" typeId="soc"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="state" typeId="state"/>

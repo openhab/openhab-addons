@@ -7,12 +7,25 @@
 	<config-description uri="automation:jsscripting">
 		<parameter name="injectionEnabled" type="boolean" required="true">
 			<label>Use Built-in Global Variables</label>
-			<description><![CDATA[ Import all variables from the OH scripting library into all rules for common services like items, things, actions, log, etc... <br>
-			If disabled, the OH scripting library can be imported manually using "<i>require('openhab')</i>"
+			<description><![CDATA[
+			Import all variables from the openHAB JavaScript library into all rules for common services like items, things, actions, log, etc... <br>
+			If disabled, the openHAB JavaScript library can be imported manually using "<i>require('openhab')</i>"
 			]]></description>
 			<options>
 				<option value="true">Use Built-in Variables</option>
 				<option value="false">Do Not Use Built-in Variables</option>
+			</options>
+			<default>true</default>
+		</parameter>
+		<parameter name="useIncludedLibrary" type="boolean" required="true">
+			<label>Use Included openHAB JavaScript Library</label>
+			<description><![CDATA[
+			Use the included openHAB JavaScript library for optimal performance.<br>
+			Disable this option to allow loading the library from the local user configuration directory "automation/js/node_modules". Using a user provided version of the library may increase script loading times, especially on less powerful systems.
+			]]></description>
+			<options>
+				<option value="true">Use Included Library</option>
+				<option value="false">Do Not Use Included Library</option>
 			</options>
 			<default>true</default>
 		</parameter>

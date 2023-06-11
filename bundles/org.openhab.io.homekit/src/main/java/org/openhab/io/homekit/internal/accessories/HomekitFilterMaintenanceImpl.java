@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.FILTER_CHANGE_INDICATION;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
@@ -32,20 +33,19 @@ import io.github.hapjava.services.impl.FilterMaintenanceService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitFilterMaintenanceImpl extends AbstractHomekitAccessoryImpl implements FilterMaintenanceAccessory {
-    private BooleanItemReader filterChangeIndication;
+    private final Map<FilterChangeIndicationEnum, String> mapping;
 
     public HomekitFilterMaintenanceImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        filterChangeIndication = createBooleanReader(FILTER_CHANGE_INDICATION);
+        mapping = createMapping(FILTER_CHANGE_INDICATION, FilterChangeIndicationEnum.class);
         getServices().add(new FilterMaintenanceService(this));
     }
 
     @Override
     public CompletableFuture<FilterChangeIndicationEnum> getFilterChangeIndication() {
-        return CompletableFuture
-                .completedFuture(filterChangeIndication.getValue() ? FilterChangeIndicationEnum.CHANGE_NEEDED
-                        : FilterChangeIndicationEnum.NO_CHANGE_NEEDED);
+        return CompletableFuture.completedFuture(
+                getKeyFromMapping(FILTER_CHANGE_INDICATION, mapping, FilterChangeIndicationEnum.NO_CHANGE_NEEDED));
     }
 
     @Override

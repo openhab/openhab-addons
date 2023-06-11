@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -28,13 +27,18 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.core.io.net.http.WebSocketFactory;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
- * Handles the ASCII based communication via web socket between openHAB and NeoHub
+ * Handles the text based communication via web socket between openHAB and NeoHub
  *
  * @author Andrew Fiddian-Green - Initial contribution
  *
@@ -53,7 +57,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
 
     private @Nullable Session session = null;
     private String responseOuter = "";
-    private boolean responseWaiting;
+    private boolean responsePending;
 
     /**
      * DTO to receive and parse the response JSON.
@@ -69,33 +73,28 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         public @Nullable String response;
     }
 
-    public NeoHubWebSocket(NeoHubConfiguration config) throws NeoHubException {
-        super(config);
+    public NeoHubWebSocket(NeoHubConfiguration config, WebSocketFactory webSocketFactory, ThingUID bridgeUID)
+            throws IOException {
+        super(config, bridgeUID.getAsString());
 
-        // initialise and start ssl context factory, http client, web socket client
         SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
         sslContextFactory.setTrustAll(true);
-        HttpClient httpClient = new HttpClient(sslContextFactory);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            throw new NeoHubException(String.format("Error starting http client: '%s'", e.getMessage()));
-        }
-        webSocketClient = new WebSocketClient(httpClient);
+        String name = ThingWebClientUtil.buildWebClientConsumerName(bridgeUID, null);
+        webSocketClient = webSocketFactory.createWebSocketClient(name, sslContextFactory);
         webSocketClient.setConnectTimeout(config.socketTimeout * 1000);
         try {
             webSocketClient.start();
         } catch (Exception e) {
-            throw new NeoHubException(String.format("Error starting web socket client: '%s'", e.getMessage()));
+            throw new IOException("Error starting Web Socket client", e);
         }
     }
 
     /**
      * Open the web socket session.
      *
-     * @throws NeoHubException
+     * @throws IOException if unable to open the web socket
      */
-    private void startSession() throws NeoHubException {
+    private void startSession() throws IOException {
         Session session = this.session;
         if (session == null || !session.isOpen()) {
             closeSession();
@@ -105,9 +104,9 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
                 webSocketClient.connect(this, uri).get();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new NeoHubException(String.format("Error starting session: '%s'", e.getMessage(), e));
+                throw new IOException("Error starting session", e);
             } catch (ExecutionException | IOException | URISyntaxException e) {
-                throw new NeoHubException(String.format("Error starting session: '%s'", e.getMessage(), e));
+                throw new IOException("Error starting session", e);
             }
         }
     }
@@ -161,7 +160,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         // session start failed
         Session session = this.session;
         if (session == null) {
-            throw new NeoHubException("Session is null.");
+            throw new IOException("Session is null");
         }
 
         // wrap the inner request in an outer request string
@@ -170,35 +169,61 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
 
         // initialise the response
         responseOuter = "";
-        responseWaiting = true;
+        responsePending = true;
 
-        // send the request
-        logger.trace("Sending request: {}", requestOuter);
-        session.getRemote().sendString(requestOuter);
+        IOException caughtException = null;
+        try {
+            // send the request
+            logger.debug("hub '{}' sending characters:{}", hubId, requestOuter.length());
+            session.getRemote().sendString(requestOuter);
+            logger.trace("hub '{}' sent:{}", hubId, requestOuter);
 
-        // sleep and loop until we get a response or the socket is closed
-        int sleepRemainingMilliseconds = config.socketTimeout * 1000;
-        while (responseWaiting && (sleepRemainingMilliseconds > 0)) {
-            try {
-                Thread.sleep(SLEEP_MILLISECONDS);
-                sleepRemainingMilliseconds = sleepRemainingMilliseconds - SLEEP_MILLISECONDS;
-            } catch (InterruptedException e) {
-                throw new NeoHubException(String.format("Read timeout '%s'", e.getMessage()));
+            // sleep and loop until we get a response or the socket is closed
+            int sleepRemainingMilliseconds = config.socketTimeout * 1000;
+            while (responsePending) {
+                try {
+                    Thread.sleep(SLEEP_MILLISECONDS);
+                    sleepRemainingMilliseconds = sleepRemainingMilliseconds - SLEEP_MILLISECONDS;
+                    if (sleepRemainingMilliseconds <= 0) {
+                        throw new IOException("Read timed out");
+                    }
+                } catch (InterruptedException e) {
+                    throw new IOException("Read interrupted", e);
+                }
             }
+        } catch (IOException e) {
+            caughtException = e;
         }
 
-        // extract the inner response from the outer response string
-        Response responseDto = gson.fromJson(responseOuter, Response.class);
-        if (responseDto != null && NeoHubBindingConstants.HM_SET_COMMAND_RESPONSE.equals(responseDto.message_type)) {
+        logger.debug("hub '{}' received characters:{}", hubId, responseOuter.length());
+        logger.trace("hub '{}' received:{}", hubId, responseOuter);
+
+        // if an IOException was caught above, re-throw it again
+        if (caughtException != null) {
+            throw caughtException;
+        }
+
+        try {
+            Response responseDto = gson.fromJson(responseOuter, Response.class);
+            if (responseDto == null) {
+                throw new JsonSyntaxException("Response DTO is invalid");
+            }
+            if (!NeoHubBindingConstants.HM_SET_COMMAND_RESPONSE.equals(responseDto.message_type)) {
+                throw new JsonSyntaxException("DTO 'message_type' field is invalid");
+            }
             String responseJson = responseDto.response;
-            if (responseJson != null) {
-                responseJson = jsonUnEscape(responseJson);
-                logger.trace("Received response: {}", responseJson);
-                return responseJson;
+            if (responseJson == null) {
+                throw new JsonSyntaxException("DTO 'response' field is null");
             }
+            responseJson = jsonUnEscape(responseJson).strip();
+            if (!JsonParser.parseString(responseJson).isJsonObject()) {
+                throw new JsonSyntaxException("DTO 'response' field is not a JSON object");
+            }
+            return responseJson;
+        } catch (JsonSyntaxException e) {
+            logger.debug("hub '{}' {}; response:{}", hubId, e.getMessage(), responseOuter);
+            throw new NeoHubException("Invalid response");
         }
-        logger.debug("Null or invalid response.");
-        return "";
     }
 
     @Override
@@ -212,27 +237,26 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        logger.trace("onConnect: ok");
+        logger.debug("hub '{}' onConnect() ok", hubId);
         this.session = session;
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        logger.trace("onClose: code:{}, reason:{}", statusCode, reason);
-        responseWaiting = false;
+        logger.debug("hub '{}' onClose() statusCode:{}, reason:{}", hubId, statusCode, reason);
+        responsePending = false;
         this.session = null;
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        logger.trace("onError: cause:{}", cause.getMessage());
+        logger.debug("hub '{}' onError() cause:{}", hubId, cause.getMessage());
         closeSession();
     }
 
     @OnWebSocketMessage
     public void onMessage(String msg) {
-        logger.trace("onMessage: msg:{}", msg);
-        responseOuter = msg;
-        responseWaiting = false;
+        responseOuter = msg.strip();
+        responsePending = false;
     }
 }

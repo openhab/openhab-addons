@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.Base;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTeachInConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPType;
@@ -23,6 +25,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class _4BSMessage extends EEP {
 
     protected boolean supportsTeachInVariation3 = false;
@@ -39,49 +42,65 @@ public abstract class _4BSMessage extends EEP {
         super();
     }
 
-    public static final byte TeachInBit = 0x08;
-    public static final byte LRN_Type_Mask = (byte) 0x80;
+    public static final byte TEACHIN_BIT = 0x08;
+    public static final byte LRN_TYPE_MASK = (byte) 0x80;
 
-    public byte getDB_0() {
+    public long getDBByOffsetSizeValue(int offset, int size) {
+        if ((offset < 0 || offset > 31) || (size < 1 || size > 32 - offset)) {
+            logger.warn("4BSMessage get DB value by offset: {} and size: {}", offset, size);
+            return 0;
+        }
+
+        long msg = (((long) bytes[0] & 0xFF) << 24) | (((long) bytes[1] & 0xFF) << 16) | (((long) bytes[2] & 0xFF) << 8)
+                | bytes[3];
+        msg = (msg >> (32 - offset - size)) & ((1 << size) - 1);
+
+        logger.debug("_4BSMessage get DB value message bytes {} {} {} {} resulted in {} with offset: {} and size: {}",
+                bytes[0], bytes[1], bytes[2], bytes[3], msg, offset, size);
+
+        return msg;
+    }
+
+    public byte getDB0() {
         return bytes[3];
     }
 
-    public int getDB_0Value() {
-        return (getDB_0() & 0xFF);
+    public int getDB0Value() {
+        return (getDB0() & 0xFF);
     }
 
-    public byte getDB_1() {
+    public byte getDB1() {
         return bytes[2];
     }
 
-    public int getDB_1Value() {
-        return (getDB_1() & 0xFF);
+    public int getDB1Value() {
+        return (getDB1() & 0xFF);
     }
 
-    public byte getDB_2() {
+    public byte getDB2() {
         return bytes[1];
     }
 
-    public int getDB_2Value() {
-        return (getDB_2() & 0xFF);
+    public int getDB2Value() {
+        return (getDB2() & 0xFF);
     }
 
-    public byte getDB_3() {
+    public byte getDB3() {
         return bytes[0];
     }
 
-    public int getDB_3Value() {
-        return (getDB_3() & 0xFF);
+    public int getDB3Value() {
+        return (getDB3() & 0xFF);
     }
 
     @Override
-    protected void teachInQueryImpl(Configuration config) {
+    protected void teachInQueryImpl(@Nullable Configuration config) {
         if (config == null) {
             return;
         }
 
         EnOceanChannelTeachInConfig c = config.as(EnOceanChannelTeachInConfig.class);
-        if (c.teachInMSG == null || c.teachInMSG.isEmpty()) {
+        if (c.teachInMSG.isEmpty()) {
             EEPType type = getEEPType();
 
             byte db3 = (byte) ((getEEPType().getFunc() << 2) | ((type.getType()) >>> 5));
@@ -95,12 +114,14 @@ public abstract class _4BSMessage extends EEP {
             } catch (Exception e) {
             }
 
-            setData(db3, db2, db1, LRN_Type_Mask);
+            setData(db3, db2, db1, LRN_TYPE_MASK);
         } else {
             try {
                 byte[] msg = HexUtils.hexToBytes(c.teachInMSG);
                 setData(msg);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
+                logger.debug("Command TeachIn could not transformed");
+                throw e;
             }
         }
     }

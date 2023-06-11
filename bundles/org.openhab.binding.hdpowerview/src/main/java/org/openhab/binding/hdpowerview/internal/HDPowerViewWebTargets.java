@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,9 +102,9 @@ public class HDPowerViewWebTargets {
     private final HttpClient httpClient;
 
     /**
-     * private helper class for passing http url query parameters
+     * helper class for passing http url query parameters
      */
-    private static class Query {
+    public static class Query {
         private final String key;
         private final String value;
 
@@ -425,7 +425,7 @@ public class HDPowerViewWebTargets {
 
     /**
      * Enables or disables a scheduled event in the hub.
-     * 
+     *
      * @param scheduledEventId id of the scheduled event to be enabled or disabled
      * @param enable true to enable scheduled event, false to disable
      * @throws HubInvalidResponseException if response is invalid
@@ -527,7 +527,7 @@ public class HDPowerViewWebTargets {
 
     /**
      * Enables or disables blinking for a repeater
-     * 
+     *
      * @param repeaterId id of the repeater for which to be enable or disable blinking
      * @param enable true to enable blinking, false to disable
      * @return RepeaterData class instance

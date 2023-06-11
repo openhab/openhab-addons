@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,11 @@ package org.openhab.binding.airquality.internal.api.dto;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airquality.internal.api.Pollutant;
 
 /**
@@ -26,12 +28,13 @@ import org.openhab.binding.airquality.internal.api.Pollutant;
  * @author Kuba Wolanin - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityData {
+public class AirQualityData extends ResponseRoot {
+
     private int aqi;
     private int idx;
 
-    private @NonNullByDefault({}) AirQualityTime time;
-    private @NonNullByDefault({}) AirQualityCity city;
+    private @Nullable AirQualityTime time;
+    private @Nullable AirQualityCity city;
     private List<Attribution> attributions = List.of();
     private Map<String, AirQualityValue> iaqi = Map.of();
     private String dominentpol = "";
@@ -59,8 +62,8 @@ public class AirQualityData {
      *
      * @return {AirQualityJsonTime}
      */
-    public AirQualityTime getTime() {
-        return time;
+    public Optional<AirQualityTime> getTime() {
+        return Optional.ofNullable(time);
     }
 
     /**
@@ -68,8 +71,8 @@ public class AirQualityData {
      *
      * @return {AirQualityJsonCity}
      */
-    public AirQualityCity getCity() {
-        return city;
+    public Optional<AirQualityCity> getCity() {
+        return Optional.ofNullable(city);
     }
 
     /**

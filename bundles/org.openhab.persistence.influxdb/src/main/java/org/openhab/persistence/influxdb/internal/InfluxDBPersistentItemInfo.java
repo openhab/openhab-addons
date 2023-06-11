@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.persistence.influxdb.internal;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,9 +29,9 @@ public class InfluxDBPersistentItemInfo implements PersistenceItemInfo {
     private final String name;
     private final Integer count;
 
-    public InfluxDBPersistentItemInfo(String name, Integer count) {
-        this.name = name;
-        this.count = count;
+    public InfluxDBPersistentItemInfo(Map.Entry<String, Integer> itemInfo) {
+        this.name = itemInfo.getKey();
+        this.count = itemInfo.getValue();
     }
 
     @Override

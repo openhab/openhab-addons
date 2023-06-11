@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,9 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler for an Train-Thing in DeutscheBahn Binding.
+ * Handler for a Train-Thing in DeutscheBahn Binding.
  *
- * Represents an Train that arrives / departs at the station selected by the DeutscheBahnTimetable-Bridge.
+ * Represents a Train that arrives / departs at the station selected by the DeutscheBahnTimetable-Bridge.
  *
  * @author Sönke Küper - Initial contribution
  */
@@ -49,7 +49,7 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
         private final AttributeSelection attributeSelection;
 
         /**
-         * Creates an new ChannelWithConfig.
+         * Creates a new ChannelWithConfig.
          * 
          * @param channelUid The UID of the channel
          * @param attributeSelection The attribute that provides the state that will be displayed.
@@ -88,7 +88,7 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
     private final List<ChannelWithConfig> configuredChannels = new ArrayList<>();
 
     /**
-     * Creates an new {@link DeutscheBahnTrainHandler}.
+     * Creates a new {@link DeutscheBahnTrainHandler}.
      */
     public DeutscheBahnTrainHandler(Thing thing) {
         super(thing);
@@ -123,7 +123,7 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
     }
 
     /**
-     * Creates an {@link ChannelWithConfig} for an channel that represents an attribute of an
+     * Creates a {@link ChannelWithConfig} for a channel that represents an attribute of an
      * {@link org.openhab.binding.deutschebahn.internal.timetable.dto.TripLabel}.
      */
     private void createTripChannelConfiguration(Channel channel) {
@@ -141,7 +141,7 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
     }
 
     /**
-     * Creates the {@link ChannelWithConfig} for an channel that represents an attribute of an
+     * Creates the {@link ChannelWithConfig} for a channel that represents an attribute of an
      * {@link org.openhab.binding.deutschebahn.internal.timetable.dto.Event}.}
      */
     private void createEventChannelConfiguration(EventType eventType, Channel channel) {

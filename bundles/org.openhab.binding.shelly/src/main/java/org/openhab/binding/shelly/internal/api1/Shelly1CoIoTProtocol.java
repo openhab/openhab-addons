@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -207,11 +207,11 @@ public class Shelly1CoIoTProtocol {
             // event count
             updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(idx), getDecimal(count));
             logger.trace(
-                    "{}: Check button[{}] for event trigger (isButtonMode={}, isButton={}, hasBattery={}, serial={}, count={}, lastEventCount[{}]={}",
+                    "{}: Check button[{}] for event trigger (inButtonMode={}, isButton={}, hasBattery={}, serial={}, count={}, lastEventCount[{}]={}",
                     thingName, idx, profile.inButtonMode(idx), profile.isButton, profile.hasBattery, serial, count, idx,
                     lastEventCount[idx]);
-            if (profile.inButtonMode(idx) && ((profile.hasBattery && (count == 1))
-                    || ((lastEventCount[idx] != -1) && (count != lastEventCount[idx])))) {
+            if (profile.inButtonMode(idx) && ((profile.hasBattery && count == 1)
+                    || (lastEventCount[idx] != -1 && count != lastEventCount[idx]))) {
                 if (!profile.isButton || (profile.isButton && (serial != 0x200))) { // skip duplicate on wake-up
                     logger.debug("{}: Trigger event {}", thingName, inputEvent[idx]);
                     thingHandler.triggerButton(group, idx, inputEvent[idx]);

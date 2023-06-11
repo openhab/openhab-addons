@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:bondhome:bondbridge">
+		<parameter name="serialNumber" type="text" required="true">
+			<label>Bond Serial Number</label>
+			<description>The Bond ID (serial number) of the Bond Bridge. Viewable in the Bond Home app or on the bottom of the
+				bridge itself.</description>
+		</parameter>
+		<parameter name="localToken" type="text" required="true">
+			<label>Bond Bridge Local Token</label>
+			<description>The local token associated with the Bond Bridge. This is viewable in the Bond Home app.</description>
+		</parameter>
+		<parameter name="ipAddress" type="text" required="false">
+			<context>network-address</context>
+			<label>Bond Bridge IP Address</label>
+			<description>The IP Address of the Bond Bridge.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:bondhome:bonddevice">
+		<parameter name="deviceId" type="text" required="true">
+			<label>Device ID</label>
+			<description>The device ID assigned to the fan. Available in the Bond Home app.</description>
+		</parameter>
+		<parameter name="lastDeviceConfigurationHash" type="text" required="false">
+			<label>Bond Device Hash State</label>
+			<description>The current hash value of the device.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

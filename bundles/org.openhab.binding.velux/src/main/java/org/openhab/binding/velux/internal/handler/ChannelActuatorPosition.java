@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,10 +95,18 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
                 break;
             }
 
+            final VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
+
             GetProduct bcp = null;
             switch (channelId) {
                 case CHANNEL_ACTUATOR_POSITION:
                 case CHANNEL_ACTUATOR_STATE:
+                    // apparently Somfy products do not to support new API; so use older API instead
+                    if (existingProducts.get(veluxActuator.getProductBridgeIndex()).isSomfyProduct()) {
+                        bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProduct();
+                        break;
+                    }
+                    // fall through
                 case CHANNEL_VANE_POSITION:
                     bcp = thisBridgeHandler.thisBridge.bridgeAPI().getProductStatus();
                 default:
@@ -118,7 +126,6 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
 
             VeluxProduct newProduct = bcp.getProduct();
             ProductBridgeIndex productBridgeIndex = newProduct.getBridgeProductIndex();
-            VeluxExistingProducts existingProducts = thisBridgeHandler.existingProducts();
             VeluxProduct existingProduct = existingProducts.get(productBridgeIndex);
             ProductState productState = newProduct.getProductState();
             switch (productState) {

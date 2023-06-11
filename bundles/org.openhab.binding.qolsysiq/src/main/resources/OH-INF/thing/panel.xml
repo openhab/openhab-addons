@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="qolsysiq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="panel">
+		<label>Qolsys IQ Panel</label>
+		<description>A Qolsys IQ Panel Bridge</description>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the panel</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>The port to connect to on the panel.</description>
+				<default>12345</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="key" type="text" required="true">
+				<context>password</context>
+				<label>key</label>
+				<description>Key to access the device</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

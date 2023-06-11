@@ -50,8 +50,8 @@ Thing exec:command:uniquename [command="/command/to/execute here", interval=15, 
 The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax).
 The following parameters are automatically added:
 
--   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
--   the current (or last) command to the input channel (see below, example: `%2$s`)
+- the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
+- the current (or last) command to the input channel (see below, example: `%2$s`)
 
 note - if you trigger execution using interval or the run channel, the `%2` substitution will use the most recent command (if there has been one) sent to the input channel.  The state of the Item linked to input channel is ignored.
 
@@ -73,14 +73,14 @@ Also note that only commands (e.g. `sendCommand`) to the `input` channel are rec
 
 ## Minimal Example
 
-**demo.things**
+### demo.things
 
 ```java
 Thing exec:command:apc [command="/usr/local/bin/apcaccess status", interval=15, timeout=5]
 Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2$s", transform="REGEX((.*?))"]
 ```
 
-**demo.items**
+### demo.items
 
 ```java
 String APCRaw "[%s]" (All) {channel="exec:command:apc:output"}
@@ -91,9 +91,9 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to an Number Item. 
+Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to a Number Item.
 
-**demo.things**
+### demo.things
 
 ```java
 // "%2$s" will be replace by the input channel command, this makes it possible to use one command line with different arguments.
@@ -101,7 +101,7 @@ Following is an example how to set up an exec command thing, pass it a parameter
 Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=false ]
 ```
 
-**demo.items**
+### demo.items
 
 ```java
 Switch YourTrigger "External trigger [%s]"
@@ -115,7 +115,7 @@ String yourcommand_Args {channel="exec:command:yourcommand:input"}
 String yourcommand_Out {channel="exec:command:yourcommand:output"}
 ```
 
-**demo.sitemap**
+### demo.sitemap
 
 ```java
 // Name of file and name of sitemap has to be the same
@@ -128,7 +128,7 @@ sitemap demo label="Your Value"
 }
 ```
 
-**demo.rules**
+### demo.rules
 
 ```java
 rule "Set up your parameters"

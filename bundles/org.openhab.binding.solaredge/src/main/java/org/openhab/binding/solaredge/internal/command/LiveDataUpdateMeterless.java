@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
+import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformer;
@@ -33,14 +33,14 @@ import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformer;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class LiveDataUpdateMeterless extends AbstractCommandCallback implements SolarEdgeCommand {
+public class LiveDataUpdateMeterless extends AbstractCommand implements SolarEdgeCommand {
 
     private final SolarEdgeHandler handler;
     private final LiveDataResponseTransformer transformer;
     private int retries = 0;
 
-    public LiveDataUpdateMeterless(SolarEdgeHandler handler) {
-        super(handler.getConfiguration());
+    public LiveDataUpdateMeterless(SolarEdgeHandler handler, StatusUpdateListener listener) {
+        super(handler.getConfiguration(), listener);
         this.handler = handler;
         this.transformer = new LiveDataResponseTransformer(handler);
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class DSMRDeviceConfiguration {
     /**
      * Austria smart meter additional decryption key
      */
-    public String additionalKey = DSMRBindingConstants.ADDITIONAL_KEY_DEFAULT;
+    public String additionalKey = DSMRBindingConstants.CONFIGURATION_ADDITIONAL_KEY_DEFAULT;
 
     /**
      * When no message was received after the configured number of seconds action will be taken.

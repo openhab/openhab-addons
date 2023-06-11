@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.enphase.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Exception thrown when a api call is made while the hostname / ip address is not set.
+ * Exception thrown when an api call is made while the hostname / ip address is not set.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */

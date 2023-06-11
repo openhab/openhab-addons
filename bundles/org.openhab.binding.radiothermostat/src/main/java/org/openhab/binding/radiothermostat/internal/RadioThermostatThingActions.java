@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ public class RadioThermostatThingActions implements ThingActions {
 
     private @Nullable RadioThermostatHandler handler;
 
-    @RuleAction(label = "send a raw command", description = "Send a raw command to the thermostat.")
+    @RuleAction(label = "send a raw command", description = "Send a raw command to the thermostat's 'tstat' endpoint.")
     public void sendRawCommand(@ActionInput(name = "sendRawCommand") @Nullable String rawCommand) {
         if (rawCommand == null) {
             logger.warn("sendRawCommand called with null command, ignoring");
@@ -49,9 +49,28 @@ public class RadioThermostatThingActions implements ThingActions {
         }
     }
 
-    /** Static alias to support the old DSL rules engine and make the action available there. */
+    @RuleAction(label = "send a raw command", description = "Send a raw command to a specific endpoint on the thermostat.")
+    public void sendRawCommand(@ActionInput(name = "sendRawCommand") @Nullable String rawCommand,
+            @Nullable String resource) {
+        if (rawCommand == null || resource == null) {
+            logger.warn("sendRawCommand called with null command, ignoring");
+            return;
+        }
+
+        RadioThermostatHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.handleRawCommand(rawCommand, resource);
+            logger.debug("sendRawCommand called with raw command: {}, resource: {}", rawCommand, resource);
+        }
+    }
+
+    /** Static aliases to support the old DSL rules engine and make the action available there. */
     public static void sendRawCommand(ThingActions actions, @Nullable String rawCommand) {
         ((RadioThermostatThingActions) actions).sendRawCommand(rawCommand);
+    }
+
+    public static void sendRawCommand(ThingActions actions, @Nullable String rawCommand, @Nullable String resource) {
+        ((RadioThermostatThingActions) actions).sendRawCommand(rawCommand, resource);
     }
 
     @Override

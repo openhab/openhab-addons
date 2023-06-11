@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,7 @@ public class TapoUniversalDevice extends TapoDevice {
         } else {
             switch (channel) {
                 case CHANNEL_OUTPUT:
-                    connector.sendDeviceCommand(DEVICE_PROPERTY_ON, command == OnOffType.ON);
+                    connector.sendDeviceCommand(JSON_KEY_ON, command == OnOffType.ON);
                     refreshInfo = true;
                     break;
                 case CHANNEL_BRIGHTNESS:
@@ -121,11 +121,11 @@ public class TapoUniversalDevice extends TapoDevice {
     protected void setBrightness(Integer newBrightness) {
         /* switch off if 0 */
         if (newBrightness == 0) {
-            connector.sendDeviceCommand(DEVICE_PROPERTY_ON, false);
+            connector.sendDeviceCommand(JSON_KEY_ON, false);
         } else {
             HashMap<String, Object> newState = new HashMap<>();
-            newState.put(DEVICE_PROPERTY_ON, true);
-            newState.put(DEVICE_PROPERTY_BRIGHTNES, newBrightness);
+            newState.put(JSON_KEY_ON, true);
+            newState.put(JSON_KEY_BRIGHTNESS, newBrightness);
             connector.sendDeviceCommands(newState);
         }
     }
@@ -137,10 +137,10 @@ public class TapoUniversalDevice extends TapoDevice {
      */
     protected void setColor(HSBType command) {
         HashMap<String, Object> newState = new HashMap<>();
-        newState.put(DEVICE_PROPERTY_ON, true);
-        newState.put(DEVICE_PROPERTY_HUE, command.getHue());
-        newState.put(DEVICE_PROPERTY_SATURATION, command.getSaturation());
-        newState.put(DEVICE_PROPERTY_BRIGHTNES, command.getBrightness());
+        newState.put(JSON_KEY_ON, true);
+        newState.put(JSON_KEY_HUE, command.getHue());
+        newState.put(JSON_KEY_SATURATION, command.getSaturation());
+        newState.put(JSON_KEY_BRIGHTNESS, command.getBrightness());
         connector.sendDeviceCommands(newState);
     }
 
@@ -152,8 +152,8 @@ public class TapoUniversalDevice extends TapoDevice {
     protected void setColorTemp(Integer colorTemp) {
         HashMap<String, Object> newState = new HashMap<>();
         colorTemp = limitVal(colorTemp, BULB_MIN_COLORTEMP, BULB_MAX_COLORTEMP);
-        newState.put(DEVICE_PROPERTY_ON, true);
-        newState.put(DEVICE_PROPERTY_COLORTEMP, colorTemp);
+        newState.put(JSON_KEY_ON, true);
+        newState.put(JSON_KEY_COLORTEMP, colorTemp);
         connector.sendDeviceCommands(newState);
     }
 

@@ -421,7 +421,7 @@
 	</channel-type>
 	<channel-type id="notenoughpower" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Not Enought Power</label>
+		<label>Not Enough Power</label>
 		<description>Indicates if not enough power (ON) is available to heat the vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -606,8 +606,8 @@
 	<channel-type id="steeringwheelheater" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Steering Wheel Heater</label>
-		<description>Indicates if the steering wheel heater is switched on</description>
-		<state readOnly="true"></state>
+		<description>Turns On/Off the steering wheel heater</description>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="sunroofstate" advanced="true">
 		<item-type>String</item-type>

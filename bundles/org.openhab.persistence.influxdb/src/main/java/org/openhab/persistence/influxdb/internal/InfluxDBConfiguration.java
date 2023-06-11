@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,13 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,6 @@ public class InfluxDBConfiguration {
     public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
-    public static InfluxDBConfiguration NO_CONFIGURATION = new InfluxDBConfiguration(Collections.emptyMap());
     private final Logger logger = LoggerFactory.getLogger(InfluxDBConfiguration.class);
     private final String url;
     private final String user;
@@ -49,36 +48,23 @@ public class InfluxDBConfiguration {
     private final String databaseName;
     private final String retentionPolicy;
     private final InfluxDBVersion version;
-
     private final boolean replaceUnderscore;
     private final boolean addCategoryTag;
     private final boolean addTypeTag;
     private final boolean addLabelTag;
 
     public InfluxDBConfiguration(Map<String, Object> config) {
-        url = (String) config.getOrDefault(URL_PARAM, "http://127.0.0.1:8086");
-        user = (String) config.getOrDefault(USER_PARAM, "openhab");
-        password = (String) config.getOrDefault(PASSWORD_PARAM, "");
-        token = (String) config.getOrDefault(TOKEN_PARAM, "");
-        databaseName = (String) config.getOrDefault(DATABASE_PARAM, "openhab");
-        retentionPolicy = (String) config.getOrDefault(RETENTION_POLICY_PARAM, "autogen");
+        url = ConfigParser.valueAsOrElse(config.get(URL_PARAM), String.class, "http://127.0.0.1:8086");
+        user = ConfigParser.valueAsOrElse(config.get(USER_PARAM), String.class, "openhab");
+        password = ConfigParser.valueAsOrElse(config.get(PASSWORD_PARAM), String.class, "");
+        token = ConfigParser.valueAsOrElse(config.get(TOKEN_PARAM), String.class, "");
+        databaseName = ConfigParser.valueAsOrElse(config.get(DATABASE_PARAM), String.class, "openhab");
+        retentionPolicy = ConfigParser.valueAsOrElse(config.get(RETENTION_POLICY_PARAM), String.class, "autogen");
         version = parseInfluxVersion((String) config.getOrDefault(VERSION_PARAM, InfluxDBVersion.V1.name()));
-
-        replaceUnderscore = getConfigBooleanValue(config, REPLACE_UNDERSCORE_PARAM, false);
-        addCategoryTag = getConfigBooleanValue(config, ADD_CATEGORY_TAG_PARAM, false);
-        addLabelTag = getConfigBooleanValue(config, ADD_LABEL_TAG_PARAM, false);
-        addTypeTag = getConfigBooleanValue(config, ADD_TYPE_TAG_PARAM, false);
-    }
-
-    private static boolean getConfigBooleanValue(Map<String, Object> config, String key, boolean defaultValue) {
-        Object object = config.get(key);
-        if (object instanceof Boolean) {
-            return (Boolean) object;
-        } else if (object instanceof String) {
-            return "true".equalsIgnoreCase((String) object);
-        } else {
-            return defaultValue;
-        }
+        replaceUnderscore = ConfigParser.valueAsOrElse(config.get(REPLACE_UNDERSCORE_PARAM), Boolean.class, false);
+        addCategoryTag = ConfigParser.valueAsOrElse(config.get(ADD_CATEGORY_TAG_PARAM), Boolean.class, false);
+        addLabelTag = ConfigParser.valueAsOrElse(config.get(ADD_LABEL_TAG_PARAM), Boolean.class, false);
+        addTypeTag = ConfigParser.valueAsOrElse(config.get(ADD_TYPE_TAG_PARAM), Boolean.class, false);
     }
 
     private InfluxDBVersion parseInfluxVersion(@Nullable String value) {
@@ -171,19 +157,10 @@ public class InfluxDBConfiguration {
 
     @Override
     public String toString() {
-        String sb = "InfluxDBConfiguration{" + "url='" + url + '\'' + ", user='" + user + '\'' + ", password='"
-                + password.length() + " chars" + '\'' + ", token='" + token.length() + " chars" + '\''
-                + ", databaseName='" + databaseName + '\'' + ", retentionPolicy='" + retentionPolicy + '\''
-                + ", version=" + version + ", replaceUnderscore=" + replaceUnderscore + ", addCategoryTag="
-                + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag=" + addLabelTag + '}';
-        return sb;
-    }
-
-    public int getTokenLength() {
-        return token.length();
-    }
-
-    public char[] getTokenAsCharArray() {
-        return token.toCharArray();
+        return "InfluxDBConfiguration{url='" + url + "', user='" + user + "', password='" + password.length()
+                + " chars', token='" + token.length() + " chars', databaseName='" + databaseName
+                + "', retentionPolicy='" + retentionPolicy + "', version=" + version + ", replaceUnderscore="
+                + replaceUnderscore + ", addCategoryTag=" + addCategoryTag + ", addTypeTag=" + addTypeTag
+                + ", addLabelTag=" + addLabelTag + '}';
     }
 }

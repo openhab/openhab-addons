@@ -2,7 +2,6 @@
 
 This binding provides access to the hourly prices for electricity for the German and Austrian provider aWATTar.
 
-
 ## Supported Things
 
 There are three supported things.
@@ -13,7 +12,7 @@ The `bridge` reads price data from the aWATTar API and stores the (optional) con
 
 ### Prices Thing
 
-The `prices` Thing provides todays and (after 14:00) tomorrows net and gross prices. 
+The `prices` Thing provides todays and (after 14:00) tomorrows net and gross prices.
 
 ### Bestprice Thing
 
@@ -26,7 +25,6 @@ Auto discovery is not supported.
 ## Thing Configuration
 
 ### aWATTar Bridge
-
 
 | Parameter      | Description                                                                                                                |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------|
@@ -60,7 +58,7 @@ Also, due to the time the aWATTar API delivers the data for the next day, it doe
 ### Prices Thing
 
 For every hour, the `prices` thing provides the following prices:
- 
+
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | market-net  | Number | This net market price per kWh. This is directly taken from the price the aWATTar API delivers.  |
@@ -68,16 +66,13 @@ For every hour, the `prices` thing provides the following prices:
 | total-net | Number | Sum of net market price and configured base price |
 | total-gross | Number | Sum of market and base price with VAT applied. Most probably this is the final price you will have to pay for one kWh in a certain hour |
 
-
 All prices are available in each of the following channel groups:
-
 
 | channel group | description                  |
 |----------|--------------------------------|
 | current | The prices for the current hour |
 | today00, today01, today02 ... today23 |  Hourly prices for today. `today00` provides the price from 0:00 to 1:00, `today01` from 1:00 to 02:00 and so on. As long as the API is working, this data should always be available |
 | tomorrow00, tomorrow01, ... tomorrow23 | Hourly prices for the next day. They should be available starting at  14:00. |
-
 
 ### Bestprice Thing
 
@@ -90,24 +85,21 @@ All prices are available in each of the following channel groups:
 | remaining | Number:Time | The time in minutes until end of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                                      |
 | hours | String      | A comma separated list of hours this bestprice period contains.                                                                                                                                          |
 
-
-
-
 ## Full Example
 
 ### Things
 
 awattar.things:
 
-```
+```java
 Bridge awattar:bridge:bridge1 "aWATTar Bridge" [ country="DE", vatPercent="19", basePrice="17.22"] {
-	Thing prices price1 "aWATTar Price" [] 
+ Thing prices price1 "aWATTar Price" [] 
 // The car should be loaded for 4 hours during the night
-	Thing bestprice carloader "Car Loader" [ rangeStart="22", rangeDuration="8", length="4", consecutive="true" ]
+ Thing bestprice carloader "Car Loader" [ rangeStart="22", rangeDuration="8", length="4", consecutive="true" ]
 // In the cheapest hour of the night the garden should be watered
-	Thing bestprice water "Water timer" [ rangeStart="19", rangeDuration="12", length="1" ]
+ Thing bestprice water "Water timer" [ rangeStart="19", rangeDuration="12", length="1" ]
 // The heatpump should run the 12 cheapest hours per day
-	Thing bestprice heatpump "Heat pump" [ length="12", consecutive="false" ]
+ Thing bestprice heatpump "Heat pump" [ length="12", consecutive="false" ]
 }
 ```
 
@@ -115,7 +107,7 @@ Bridge awattar:bridge:bridge1 "aWATTar Bridge" [ country="DE", vatPercent="19", 
 
 awattar.items:
 
-```
+```java
 Number:Dimensionless currentnet "Current price [%2.2f ct/kWh]"  { channel="awattar:prices:bridge1:price1:current#market-net" }
 Number:Dimensionless currentgross "Current price [%2.2f ct/kWh]"  { channel="awattar:prices:bridge1:price1:current#market-gross" }
 Number:Dimensionless totalnet "Current price [%2.2f ct/kWh]"  { channel="awattar:prices:bridge1:price1:current#total-net" }
@@ -184,74 +176,74 @@ Switch HeatpumpActive { channel="awattar:bestprice:bridge1:heatpump:active" }
 
 ### Sitemap
 
-```
+```perl
 sitemap default label="aWATTar Sitemap"
 {
-	Frame label="Car Loader" {
-		Switch item=CarActive
-		Text item=CarCountdown
-		Text item=CarStart
-		Text item=CarEnd
-		Text item=CarHours
-	}
-	Frame label="Current Prices" {
-		Text label="Current Net" item=currentnet
-		Text label="Current Gross" item=currentgross
-		Text label="Total Net" item=totalnet
-		Text label="Total Gross" item=totalgross
-	}
-	Frame label="Todays Prices (total gross)" {
-		Text item=today00
-		Text item=today01
-		Text item=today02
-		Text item=today03
-		Text item=today04
-		Text item=today05
-		Text item=today06
-		Text item=today07
-		Text item=today08
-		Text item=today09
-		Text item=today10
-		Text item=today11
-		Text item=today12
-		Text item=today13
-		Text item=today14
-		Text item=today15
-		Text item=today16
-		Text item=today17
-		Text item=today18
-		Text item=today19
-		Text item=today20
-		Text item=today21
-		Text item=today22
-		Text item=today23
-	}
-	Frame label="Tomorrows Prices (total gross)" {
-		Text item=tomorrow00
-		Text item=tomorrow01
-		Text item=tomorrow02
-		Text item=tomorrow03
-		Text item=tomorrow04
-		Text item=tomorrow05
-		Text item=tomorrow06
-		Text item=tomorrow07
-		Text item=tomorrow08
-		Text item=tomorrow09
-		Text item=tomorrow10
-		Text item=tomorrow11
-		Text item=tomorrow12
-		Text item=tomorrow13
-		Text item=tomorrow14
-		Text item=tomorrow15
-		Text item=tomorrow16
-		Text item=tomorrow17
-		Text item=tomorrow18
-		Text item=tomorrow19
-		Text item=tomorrow20
-		Text item=tomorrow21
-		Text item=tomorrow22
-		Text item=tomorrow23
-	}
+ Frame label="Car Loader" {
+  Switch item=CarActive
+  Text item=CarCountdown
+  Text item=CarStart
+  Text item=CarEnd
+  Text item=CarHours
+ }
+ Frame label="Current Prices" {
+  Text label="Current Net" item=currentnet
+  Text label="Current Gross" item=currentgross
+  Text label="Total Net" item=totalnet
+  Text label="Total Gross" item=totalgross
+ }
+ Frame label="Todays Prices (total gross)" {
+  Text item=today00
+  Text item=today01
+  Text item=today02
+  Text item=today03
+  Text item=today04
+  Text item=today05
+  Text item=today06
+  Text item=today07
+  Text item=today08
+  Text item=today09
+  Text item=today10
+  Text item=today11
+  Text item=today12
+  Text item=today13
+  Text item=today14
+  Text item=today15
+  Text item=today16
+  Text item=today17
+  Text item=today18
+  Text item=today19
+  Text item=today20
+  Text item=today21
+  Text item=today22
+  Text item=today23
+ }
+ Frame label="Tomorrows Prices (total gross)" {
+  Text item=tomorrow00
+  Text item=tomorrow01
+  Text item=tomorrow02
+  Text item=tomorrow03
+  Text item=tomorrow04
+  Text item=tomorrow05
+  Text item=tomorrow06
+  Text item=tomorrow07
+  Text item=tomorrow08
+  Text item=tomorrow09
+  Text item=tomorrow10
+  Text item=tomorrow11
+  Text item=tomorrow12
+  Text item=tomorrow13
+  Text item=tomorrow14
+  Text item=tomorrow15
+  Text item=tomorrow16
+  Text item=tomorrow17
+  Text item=tomorrow18
+  Text item=tomorrow19
+  Text item=tomorrow20
+  Text item=tomorrow21
+  Text item=tomorrow22
+  Text item=tomorrow23
+ }
 }
 ```
 

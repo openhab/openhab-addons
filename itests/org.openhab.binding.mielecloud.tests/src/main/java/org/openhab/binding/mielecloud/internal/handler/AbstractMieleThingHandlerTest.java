@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
@@ -169,7 +170,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         OAuthFactory oAuthFactory = mock(OAuthFactory.class);
         when(oAuthFactory
                 .getOAuthClientService(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString()))
-                        .thenReturn(oAuthClientService);
+                .thenReturn(oAuthClientService);
 
         OpenHabOAuthTokenRefresher tokenRefresher = getService(OAuthTokenRefresher.class,
                 OpenHabOAuthTokenRefresher.class);
@@ -208,7 +209,8 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
     }
 
     protected AbstractMieleThingHandler createThingHandler(ThingTypeUID thingTypeUid, ThingUID thingUid,
-            Class<? extends AbstractMieleThingHandler> expectedHandlerClass, String deviceIdentifier) {
+            Class<? extends AbstractMieleThingHandler> expectedHandlerClass, String deviceIdentifier,
+            String thingTypeVersion) {
         ThingRegistry registry = getThingRegistry();
 
         List<Channel> channels = createChannelsForThingHandler(thingTypeUid, thingUid);
@@ -216,7 +218,8 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         Thing thing = ThingBuilder.create(thingTypeUid, thingUid)
                 .withConfiguration(new Configuration(Collections
                         .singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceIdentifier)))
-                .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996").build();
+                .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996")
+                .withProperty("thingTypeVersion", thingTypeVersion).build();
         assertNotNull(thing);
 
         registry.add(thing);
@@ -365,6 +368,12 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
      * @return The created {@link ThingHandler}.
      */
     protected abstract AbstractMieleThingHandler setUpThingHandler();
+
+    @AfterEach
+    public void tearDownAbstractMieleThingHandlerTest() {
+        getThingRegistry().forceRemove(getThingHandler().getThing().getUID());
+        getThingRegistry().forceRemove(getBridge().getUID());
+    }
 
     @Test
     public void testCachedStateIsQueriedOnInitialize() throws Exception {

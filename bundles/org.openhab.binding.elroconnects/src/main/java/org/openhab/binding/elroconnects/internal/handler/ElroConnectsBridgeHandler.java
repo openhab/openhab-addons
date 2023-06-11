@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -853,7 +853,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         logger.debug("Sync scenes");
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
                 ELRO_SYNC_SCENES, legacyFirmware).withSceneGroup(0).withSceneContent(SYNC_COMMAND)
-                        .withAnswerContent(SYNC_COMMAND);
+                .withAnswerContent(SYNC_COMMAND);
         sendElroMessage(elroMessage, true);
     }
 

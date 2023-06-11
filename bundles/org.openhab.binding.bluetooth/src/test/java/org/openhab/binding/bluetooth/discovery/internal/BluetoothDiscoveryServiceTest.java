@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,13 +47,12 @@ import org.openhab.binding.bluetooth.TestUtils;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
+import org.openhab.binding.bluetooth.util.StringUtil;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests {@link BluetoothDiscoveryService}.
@@ -68,8 +65,6 @@ import org.slf4j.LoggerFactory;
 public class BluetoothDiscoveryServiceTest {
 
     private static final int TIMEOUT = 2000;
-
-    private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryServiceTest.class);
 
     private @NonNullByDefault({}) BluetoothDiscoveryService discoveryService;
 
@@ -201,7 +196,7 @@ public class BluetoothDiscoveryServiceTest {
 
         MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
         MockBluetoothDevice mockDevice = mockAdapter1.getDevice(address);
-        String deviceName = RandomStringUtils.randomAlphanumeric(10);
+        String deviceName = StringUtil.randomAlphanummeric(10);
         mockDevice.setDeviceName(deviceName);
 
         BluetoothDevice device = Mockito.spy(mockDevice);
@@ -228,7 +223,7 @@ public class BluetoothDiscoveryServiceTest {
         MockBluetoothAdapter mockAdapter2 = new MockBluetoothAdapter();
         MockBluetoothDevice mockDevice1 = mockAdapter1.getDevice(address);
         MockBluetoothDevice mockDevice2 = mockAdapter2.getDevice(address);
-        String deviceName = RandomStringUtils.randomAlphanumeric(10);
+        String deviceName = StringUtil.randomAlphanummeric(10);
         mockDevice1.setDeviceName(deviceName);
         mockDevice2.setDeviceName(deviceName);
 
@@ -266,7 +261,7 @@ public class BluetoothDiscoveryServiceTest {
     public void nonConnectionParticipantTest() {
         MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
         MockBluetoothDevice mockDevice = mockAdapter1.getDevice(TestUtils.randomAddress());
-        String deviceName = RandomStringUtils.randomAlphanumeric(10);
+        String deviceName = StringUtil.randomAlphanummeric(10);
         mockDevice.setDeviceName(deviceName);
 
         BluetoothDevice device = Mockito.spy(mockDevice);
@@ -423,7 +418,7 @@ public class BluetoothDiscoveryServiceTest {
         MockBluetoothAdapter mockAdapter2 = new MockBluetoothAdapter();
         MockBluetoothDevice mockDevice1 = mockAdapter1.getDevice(address);
         MockBluetoothDevice mockDevice2 = mockAdapter2.getDevice(address);
-        String deviceName = RandomStringUtils.randomAlphanumeric(10);
+        String deviceName = StringUtil.randomAlphanummeric(10);
 
         MockDiscoveryParticipant participant2 = new MockDiscoveryParticipant() {
             @Override
@@ -539,8 +534,7 @@ public class BluetoothDiscoveryServiceTest {
         private ThingTypeUID typeUID;
 
         public MockDiscoveryParticipant() {
-            this.typeUID = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
-                    RandomStringUtils.randomAlphabetic(6));
+            this.typeUID = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID, StringUtil.randomAlphabetic(6));
         }
 
         @Override
@@ -550,16 +544,20 @@ public class BluetoothDiscoveryServiceTest {
 
         @Override
         public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
-            String repProp = RandomStringUtils.randomAlphabetic(6);
-            return DiscoveryResultBuilder.create(getThingUID(device)).withLabel(RandomStringUtils.randomAlphabetic(6))
-                    .withProperty(repProp, RandomStringUtils.randomAlphabetic(6)).withRepresentationProperty(repProp)
+            String repProp = StringUtil.randomAlphabetic(6);
+            ThingUID thingUID = getThingUID(device);
+            if (thingUID == null) {
+                return null;
+            }
+            return DiscoveryResultBuilder.create(thingUID).withLabel(StringUtil.randomAlphabetic(6))
+                    .withProperty(repProp, StringUtil.randomAlphabetic(6)).withRepresentationProperty(repProp)
                     .withBridge(device.getAdapter().getUID()).build();
         }
 
         @Override
-        public @NonNull ThingUID getThingUID(BluetoothDiscoveryDevice device) {
+        public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
             String deviceName = device.getName();
-            String id = deviceName != null ? deviceName : RandomStringUtils.randomAlphabetic(6);
+            String id = deviceName != null ? deviceName : StringUtil.randomAlphabetic(6);
             return new ThingUID(typeUID, device.getAdapter().getUID(), id);
         }
     }

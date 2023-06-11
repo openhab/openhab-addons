@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public interface DeviceStatusListener {
      * @param device
      *            The device which received the state update.
      */
-    public void onDeviceStateChanged(Bridge bridge, Device device, TellstickEvent deviceEvent);
+    void onDeviceStateChanged(Bridge bridge, Device device, TellstickEvent deviceEvent);
 
     /**
      * This method us called whenever a device is removed.
@@ -43,7 +43,7 @@ public interface DeviceStatusListener {
      * @param device
      *            The device which is removed.
      */
-    public void onDeviceRemoved(Bridge bridge, Device device);
+    void onDeviceRemoved(Bridge bridge, Device device);
 
     /**
      * This method us called whenever a device is added.
@@ -53,5 +53,5 @@ public interface DeviceStatusListener {
      * @param device
      *            The device which is added.
      */
-    public void onDeviceAdded(Bridge bridge, Device device);
+    void onDeviceAdded(Bridge bridge, Device device);
 }

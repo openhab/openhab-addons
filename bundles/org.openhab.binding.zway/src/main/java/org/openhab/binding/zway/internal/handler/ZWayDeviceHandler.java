@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -257,7 +257,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         Map<String, String> properties = getThing().getProperties();
         // Load location from properties
         String location = properties.get(ZWayBindingConstants.DEVICE_PROP_LOCATION);
-        if (location != null && !location.equals("") && getThing().getLocation() == null) {
+        if (location != null && !location.isBlank() && getThing().getLocation() == null) {
             logger.debug("Set location to {}", location);
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withLocation(location);
@@ -371,7 +371,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
         // Load device id from channel's properties for the compatibility of ZAutomation and ZWave devices
         final Channel channel = getThing().getChannel(channelUID.getId());
-        final String deviceId = channel.getProperties().get("deviceId");
+        final String deviceId = channel != null ? channel.getProperties().get("deviceId") : null;
 
         if (deviceId != null) {
             DeviceList deviceList = zwayBridgeHandler.getDeviceList();
@@ -707,7 +707,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             }
 
             // If at least one rule could mapped to a channel
-            if (!id.equals("")) {
+            if (!id.isBlank()) {
                 addChannel(id, acceptedItemType, device.getMetrics().getTitle(), properties);
 
                 logger.debug(

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,15 @@ import static org.openhab.binding.globalcache.internal.GlobalCacheBindingConstan
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.Enumeration;
 
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
@@ -37,6 +41,7 @@ public class MulticastListener {
     private final Logger logger = LoggerFactory.getLogger(MulticastListener.class);
 
     private MulticastSocket socket;
+    private InetSocketAddress inetSocketAddress;
 
     private String serialNumber = "";
     private String vendor = "";
@@ -59,23 +64,29 @@ public class MulticastListener {
     public static final int DEFAULT_SOCKET_TIMEOUT = 3000;
 
     /*
-     * Constructor joins the multicast group, throws IOException on failure.
+     * Constructor joins the multicast group
      */
-    public MulticastListener(String ipv4Address) throws IOException, SocketException {
+    public MulticastListener(String ipv4Address) throws IOException, SocketException, UnknownHostException {
         InetAddress ifAddress = InetAddress.getByName(ipv4Address);
+        NetworkInterface networkInterface = getMulticastInterface(ipv4Address);
         logger.debug("Discovery job using address {} on network interface {}", ifAddress.getHostAddress(),
-                NetworkInterface.getByInetAddress(ifAddress).getName());
+                networkInterface.getName());
         socket = new MulticastSocket(GC_MULTICAST_PORT);
-        socket.setInterface(ifAddress);
+        socket.setNetworkInterface(networkInterface);
         socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
-        InetAddress mcastAddress = InetAddress.getByName(GC_MULTICAST_GROUP);
-        socket.joinGroup(mcastAddress);
+        inetSocketAddress = new InetSocketAddress(InetAddress.getByName(GC_MULTICAST_GROUP), GC_MULTICAST_PORT);
+        socket.joinGroup(inetSocketAddress, null);
         logger.debug("Multicast listener joined multicast group {}:{}", GC_MULTICAST_GROUP, GC_MULTICAST_PORT);
     }
 
     public void shutdown() {
         logger.debug("Multicast listener closing down multicast socket");
-        socket.close();
+        try {
+            socket.leaveGroup(inetSocketAddress, null);
+            socket.close();
+        } catch (IOException e) {
+            logger.debug("Exception shutting down multicast socket: {}", e.getMessage());
+        }
     }
 
     /*
@@ -240,6 +251,27 @@ public class MulticastListener {
         uid = "";
         ipAddress = "";
         macAddress = "";
+    }
+
+    private NetworkInterface getMulticastInterface(String interfaceIpAddress) throws SocketException {
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        NetworkInterface networkInterface;
+        while (networkInterfaces.hasMoreElements()) {
+            networkInterface = networkInterfaces.nextElement();
+            if (networkInterface.isLoopback()) {
+                continue;
+            }
+            for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Found interface address {} -> {}", interfaceAddress.toString(),
+                            interfaceAddress.getAddress().toString());
+                }
+                if (interfaceAddress.getAddress().toString().endsWith("/" + interfaceIpAddress)) {
+                    return networkInterface;
+                }
+            }
+        }
+        throw new SocketException("Unable to get network interface for " + interfaceIpAddress);
     }
 
     public String getSerialNumber() {

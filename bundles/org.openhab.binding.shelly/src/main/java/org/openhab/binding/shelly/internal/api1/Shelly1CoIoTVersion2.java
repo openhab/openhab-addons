@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,8 +93,10 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             // Special handling for TRV, because it uses duplicate ID values with different meanings
             switch (sen.id) {
                 case "3101": // current temp
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
-                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    if (value != SHELLY_API_INVTEMP) {
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                                toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    }
                     break;
                 case "3103": // target temp in C. 4/31, 999=unknown
                     updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
@@ -196,7 +198,7 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             case "3201": // sensor_1: T, extTemp, C, -55/125; unknown 999
             case "3301": // sensor_2: T, extTemp, C, -55/125; unknown 999
                 int idx = getExtTempId(sen.id);
-                if (idx >= 0) {
+                if (idx >= 0 && value != SHELLY_API_INVTEMP) {
                     // H&T, Fllod, DW only have 1 channel, 1/1PM with Addon have up to to 3 sensors
                     String channel = profile.isSensor ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + idx;
                     // Some devices report values = -999 or 99 during fw update

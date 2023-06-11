@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntry;
@@ -406,14 +405,14 @@ public class UpnpXMLParser {
     public static String compileMetadataString(UpnpEntry entry) {
         String id = entry.getId();
         String parentId = entry.getParentId();
-        String title = StringEscapeUtils.escapeXml(entry.getTitle());
+        String title = StringUtils.escapeXml(entry.getTitle());
         String upnpClass = entry.getUpnpClass();
-        String album = StringEscapeUtils.escapeXml(entry.getAlbum());
+        String album = StringUtils.escapeXml(entry.getAlbum());
         String albumArtUri = entry.getAlbumArtUri();
-        String creator = StringEscapeUtils.escapeXml(entry.getCreator());
-        String artist = StringEscapeUtils.escapeXml(entry.getArtist());
-        String publisher = StringEscapeUtils.escapeXml(entry.getPublisher());
-        String genre = StringEscapeUtils.escapeXml(entry.getGenre());
+        String creator = StringUtils.escapeXml(entry.getCreator());
+        String artist = StringUtils.escapeXml(entry.getArtist());
+        String publisher = StringUtils.escapeXml(entry.getPublisher());
+        String genre = StringUtils.escapeXml(entry.getGenre());
         Integer trackNumber = entry.getOriginalTrackNumber();
 
         final MessageFormat messageFormat = new MessageFormat(METADATA_PATTERN);

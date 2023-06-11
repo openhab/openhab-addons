@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -208,6 +208,11 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
                         response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
             }
+            if (thingHandler.isStopping()) {
+                logger.debug("{}: Thing is shutting down, ignore CoIOT message", thingName);
+                return;
+            }
+
             if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
                 logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
                 thingHandler.incProtErrors();

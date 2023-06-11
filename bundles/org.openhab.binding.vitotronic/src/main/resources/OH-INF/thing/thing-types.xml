@@ -89,7 +89,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Hotwater Storagetank</label>
+		<label>Hot Water Storage Tank</label>
 		<description>Storage Tank, stores heat in a water tank on 3 levels: bottom, middle, top=hot water</description>
 
 		<channels>
@@ -114,6 +114,7 @@
 			<channel id="flowtemperature" typeId="flow_temp"/>
 			<channel id="pump" typeId="pump"/>
 			<channel id="operationmode" typeId="operationmode"/>
+			<channel id="currentmode" typeId="currentmode"/>
 			<channel id="savemode" typeId="savemode"/>
 			<channel id="partymode" typeId="partymode"/>
 			<channel id="party_temp_setpoint" typeId="party_temp_setpoint"/>
@@ -310,7 +311,8 @@
 
 	<channel-type id="systemtime">
 		<item-type>DateTime</item-type>
-		<label>DateTime of the Heating System</label>
+		<label>DateTime Heating System</label>
+		<description>Date and time of the Heating System</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -372,14 +374,14 @@
 
 	<channel-type id="airshutter_prim" advanced="true">
 		<item-type>Number</item-type>
-		<label>Primary Airshutter</label>
+		<label>Primary Air Shutter</label>
 		<description>Position of the primary air shutter</description>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="airshutter_sec" advanced="true">
 		<item-type>Number</item-type>
-		<label>Secondary Airshutter</label>
+		<label>Secondary Air Shutter</label>
 		<description>Position of the secondary air shutter</description>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
@@ -394,21 +396,21 @@
 	<channel-type id="fanspeed">
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
-		<description>Fan Speed in rpm</description>
+		<description>Fan speed in rpm</description>
 		<state pattern="%d rpm" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fanspeed_target" advanced="true">
 		<item-type>Number</item-type>
 		<label>Target Fan Speed</label>
-		<description>Fan Speed in rpm</description>
+		<description>Target fan speed in rpm</description>
 		<state pattern="%d rpm" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ontime" advanced="true">
 		<item-type>Number</item-type>
 		<label>On Time</label>
-		<description>Ontime in hours</description>
+		<description>On time in hours</description>
 		<state pattern="%.2f h" readOnly="true"/>
 	</channel-type>
 
@@ -445,14 +447,14 @@
 	<channel-type id="ontimelevel1" advanced="true">
 		<item-type>Number</item-type>
 		<label>On Time Level 1</label>
-		<description>Ontime in hours</description>
+		<description>On time in hours</description>
 		<state pattern="%.2f h" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ontimelevel2" advanced="true">
 		<item-type>Number</item-type>
 		<label>On Time Level 2</label>
-		<description>Ontime in hours</description>
+		<description>On time in hours</description>
 		<state pattern="%.2f h" readOnly="true"/>
 	</channel-type>
 
@@ -498,8 +500,8 @@
 
 	<channel-type id="hotwater_temp_setpoint">
 		<item-type>Number</item-type>
-		<label>Hotwater TempSet</label>
-		<description>Set the hot water temperature</description>
+		<label>Hot Water Set Point</label>
+		<description>Set the hot water temperature set point</description>
 		<category>Temperature</category>
 		<state pattern="%d °C" readOnly="false" max="60" min="30" step="1"/>
 	</channel-type>
@@ -523,28 +525,42 @@
 
 	<channel-type id="operationmode">
 		<item-type>Number</item-type>
-		<label>Operationmode</label>
-		<description>Operationmode</description>
+		<label>Operation Mode</label>
+		<description>Operation mode</description>
 		<state pattern="%d" readOnly="false" max="4" min="0" step="1"/>
+	</channel-type>
+
+	<channel-type id="currentmode">
+		<item-type>Number</item-type>
+		<label>Current Mode</label>
+		<description>Current functional mode</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Standby Operation</option>
+				<option value="1">Reduced Operation</option>
+				<option value="2">Normal Operation</option>
+				<option value="3">Continuous Normal Operation</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="partymode">
 		<item-type>Switch</item-type>
-		<label>Partymode</label>
-		<description>Partymode on/off</description>
+		<label>Party Mode</label>
+		<description>Party mode on/off</description>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="savemode">
 		<item-type>Switch</item-type>
-		<label>Savemode</label>
-		<description>Savemode on/off</description>
+		<label>Save Mode</label>
+		<description>Save mode on/off</description>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="party_temp_setpoint" advanced="true">
 		<item-type>Number</item-type>
-		<label>Partymode TempSet</label>
+		<label>Party Mode Temperature Set Point</label>
 		<description>Target temperature of party mode</description>
 		<category>Temperature</category>
 		<state min="6" step="1" pattern="%.1f °C" readOnly="false"/>
@@ -552,7 +568,7 @@
 
 	<channel-type id="save_temp_setpoint" advanced="true">
 		<item-type>Number</item-type>
-		<label>Savemode TempSet</label>
+		<label>Save Mode Temperature Set Point</label>
 		<description>Target temperature of save mode</description>
 		<category>Temperature</category>
 		<state min="6" step="1" pattern="%.1f °C" readOnly="false"/>
@@ -560,7 +576,7 @@
 
 	<channel-type id="room_temp" advanced="true">
 		<item-type>Number</item-type>
-		<label>Room Temp</label>
+		<label>Room Temperature</label>
 		<description>Temperature of rooms</description>
 		<category>Temperature</category>
 		<state pattern="%.1f °C" readOnly="true"/>
@@ -568,7 +584,7 @@
 
 	<channel-type id="room_temp_setpoint">
 		<item-type>Number</item-type>
-		<label>Room TempSet</label>
+		<label>Room Temperature Set Point</label>
 		<description>Target temperature of rooms</description>
 		<category>Temperature</category>
 		<state min="6" step="1" pattern="%.1f °C" readOnly="false"/>
@@ -583,14 +599,15 @@
 
 	<channel-type id="niveau" advanced="true">
 		<item-type>Number</item-type>
-		<label>Niveau</label>
-		<description>The niveau relative to outside temperature</description>
+		<label>Level</label>
+		<description>The level relative to outside temperature</description>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timer" advanced="true">
 		<item-type>String</item-type>
-		<label>Timer for Heating or Warm Water</label>
+		<label>Timer</label>
+		<description>Timer for Heating or Warm Water</description>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -606,7 +623,7 @@
 
 	<channel-type id="storagetank_temp">
 		<item-type>Number</item-type>
-		<label>Storagetank</label>
+		<label>Storage Tank</label>
 		<description>Actual temperature of the storage tank (solar sensor)</description>
 		<category>Temperature</category>
 		<state pattern="%.1f °C" readOnly="true"/>

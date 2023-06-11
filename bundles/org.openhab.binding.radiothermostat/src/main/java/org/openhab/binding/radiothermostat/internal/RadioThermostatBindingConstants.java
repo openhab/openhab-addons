@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,6 @@ package org.openhab.binding.radiothermostat.internal;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
@@ -41,6 +39,8 @@ public class RadioThermostatBindingConstants {
     public static final String PROPERTY_IP = "hostName";
     public static final String PROPERTY_ISCT80 = "isCT80";
     public static final String JSON_TIME = "{\"day\":%s,\"hour\":%s,\"minute\":%s}";
+    public static final String JSON_PMA = "{\"line\":1,\"message\":\"%s\"}";
+    public static final String BLANK = "";
 
     public static final String KEY_ERROR = "error";
 
@@ -50,6 +50,9 @@ public class RadioThermostatBindingConstants {
     public static final String HUMIDITY_RESOURCE = "tstat/humidity";
     public static final String REMOTE_TEMP_RESOURCE = "tstat/remote_temp";
     public static final String TIME_RESOURCE = "tstat/time";
+    public static final String HEAT_PROGRAM_RESOURCE = "tstat/program/heat";
+    public static final String COOL_PROGRAM_RESOURCE = "tstat/program/cool";
+    public static final String PMA_RESOURCE = "tstat/pma";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RTHERM = new ThingTypeUID(BINDING_ID, "rtherm");
@@ -74,12 +77,15 @@ public class RadioThermostatBindingConstants {
     public static final String YESTERDAY_HEAT_RUNTIME = "yesterday_heat_runtime";
     public static final String YESTERDAY_COOL_RUNTIME = "yesterday_cool_runtime";
     public static final String REMOTE_TEMP = "remote_temp";
+    public static final String MESSAGE = "message";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE,
-            PROGRAM_MODE, SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP,
-            TODAY_HEAT_RUNTIME, TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, REMOTE_TEMP)
-            .collect(Collectors.toSet());
+
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE,
+            SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME,
+            TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, MESSAGE);
+
+    public static final Set<String> NO_UPDATE_CHANNEL_IDS = Set.of(REMOTE_TEMP, MESSAGE);
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = ImperialUnits.FAHRENHEIT;

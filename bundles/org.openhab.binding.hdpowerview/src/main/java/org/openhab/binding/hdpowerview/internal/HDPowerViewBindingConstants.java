@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.hdpowerview.internal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -74,6 +75,17 @@ public class HDPowerViewBindingConstants {
 
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 
+    public static final Pattern VALID_IP_V4_ADDRESS = Pattern
+            .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+
+    // generation 3
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
+    public static final ThingTypeUID THING_TYPE_SHADE3 = new ThingTypeUID(BINDING_ID, "shade3");
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HUB, THING_TYPE_SHADE,
-            THING_TYPE_REPEATER);
+            THING_TYPE_REPEATER, THING_TYPE_GATEWAY, THING_TYPE_SHADE3);
+
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_POWER_TYPE = "powerType";
+    public static final String PROPERTY_BLE_NAME = "bleName";
 }

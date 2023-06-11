@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,7 @@ public class OwserverConnectionTest extends JavaTest {
     }
 
     @Test
-    public void successfullConnectionReportedToBridgeHandler() {
+    public void successfulConnectionReportedToBridgeHandler() {
         final OwserverConnection owserverConnection = this.owserverConnection;
         if (owserverConnection == null) {
             fail("connection is null");

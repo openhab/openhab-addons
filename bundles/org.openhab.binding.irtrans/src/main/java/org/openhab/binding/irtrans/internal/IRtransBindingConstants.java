@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class IRtransBindingConstants {
     public static final String BLASTER_CHANNEL_TYPE = "blaster";
     public static final String RECEIVER_CHANNEL_TYPE = "receiver";
 
-    // List of possible leds on a IRtrans transceiver
+    // List of possible leds on an IRtrans transceiver
     public enum Led {
         DEFAULT("D"),
         INTERNAL("I"),

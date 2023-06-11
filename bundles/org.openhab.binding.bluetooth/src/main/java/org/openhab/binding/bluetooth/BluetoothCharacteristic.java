@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link BluetoothCharacteristic} class defines the Bluetooth characteristic.
@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Cleaned up code
  * @author Peter Rosenberg - Improve properties support
  */
+@NonNullByDefault
 public class BluetoothCharacteristic {
     public static final int PROPERTY_BROADCAST = 0x01;
     public static final int PROPERTY_READ = 0x02;
@@ -55,8 +56,6 @@ public class BluetoothCharacteristic {
     public static final int WRITE_TYPE_NO_RESPONSE = 0x01;
     public static final int WRITE_TYPE_SIGNED = 0x04;
 
-    private final Logger logger = LoggerFactory.getLogger(BluetoothCharacteristic.class);
-
     /**
      * The {@link UUID} for this characteristic
      */
@@ -79,7 +78,7 @@ public class BluetoothCharacteristic {
     /**
      * The {@link BluetoothService} to which this characteristic belongs
      */
-    protected BluetoothService service;
+    protected @Nullable BluetoothService service;
 
     /**
      * Create a new BluetoothCharacteristic.
@@ -217,7 +216,7 @@ public class BluetoothCharacteristic {
      *
      * @return the {@link BluetoothService}
      */
-    public BluetoothService getService() {
+    public @Nullable BluetoothService getService() {
         return service;
     }
 
@@ -253,22 +252,23 @@ public class BluetoothCharacteristic {
      *
      * @return the {@link BluetoothDescriptor}
      */
-    public BluetoothDescriptor getDescriptor(UUID uuid) {
+    public @Nullable BluetoothDescriptor getDescriptor(UUID uuid) {
         return gattDescriptors.get(uuid);
     }
 
     @Override
     public int hashCode() {
+        BluetoothService btService = service;
         final int prime = 31;
         int result = 1;
         result = prime * result + instance;
-        result = prime * result + ((service == null) ? 0 : service.hashCode());
-        result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+        result = prime * result + ((btService == null) ? 0 : btService.hashCode());
+        result = prime * result + uuid.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -282,24 +282,19 @@ public class BluetoothCharacteristic {
         if (instance != other.instance) {
             return false;
         }
-        if (service == null) {
+        BluetoothService btService = service;
+        if (btService == null) {
             if (other.service != null) {
                 return false;
             }
-        } else if (!service.equals(other.service)) {
+        } else if (!btService.equals(other.service)) {
             return false;
         }
-        if (uuid == null) {
-            if (other.uuid != null) {
-                return false;
-            }
-        } else if (!uuid.equals(other.uuid)) {
-            return false;
-        }
-        return true;
+
+        return uuid.equals(other.uuid);
     }
 
-    public GattCharacteristic getGattCharacteristic() {
+    public @Nullable GattCharacteristic getGattCharacteristic() {
         return GattCharacteristic.getCharacteristic(uuid);
     }
 
@@ -410,7 +405,7 @@ public class BluetoothCharacteristic {
         REMOVABLE(0x2A3A),
         SERVICE_REQUIRED(0x2A3B);
 
-        private static Map<UUID, GattCharacteristic> uuidToServiceMapping;
+        private static @Nullable Map<UUID, GattCharacteristic> uuidToServiceMapping;
 
         private UUID uuid;
 
@@ -418,18 +413,16 @@ public class BluetoothCharacteristic {
             this.uuid = BluetoothBindingConstants.createBluetoothUUID(key);
         }
 
-        private static void initMapping() {
-            uuidToServiceMapping = new HashMap<>();
-            for (GattCharacteristic s : values()) {
-                uuidToServiceMapping.put(s.uuid, s);
+        public static @Nullable GattCharacteristic getCharacteristic(UUID uuid) {
+            Map<UUID, GattCharacteristic> localServiceMapping = uuidToServiceMapping;
+            if (localServiceMapping == null) {
+                localServiceMapping = new HashMap<>();
+                for (GattCharacteristic s : values()) {
+                    localServiceMapping.put(s.uuid, s);
+                }
+                uuidToServiceMapping = localServiceMapping;
             }
-        }
-
-        public static GattCharacteristic getCharacteristic(UUID uuid) {
-            if (uuidToServiceMapping == null) {
-                initMapping();
-            }
-            return uuidToServiceMapping.get(uuid);
+            return localServiceMapping.get(uuid);
         }
 
         /**

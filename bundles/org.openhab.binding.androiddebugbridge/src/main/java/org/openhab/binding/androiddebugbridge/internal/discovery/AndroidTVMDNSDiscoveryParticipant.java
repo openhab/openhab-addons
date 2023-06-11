@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,8 +34,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AndroidTVMDNSDiscoveryParticipant} is responsible for discovering new and removed Android TV devices. It
@@ -50,7 +48,6 @@ public class AndroidTVMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     private static final String SERVICE_TYPE = "_androidtvremote2._tcp.local.";
     private static final String MDNS_PROPERTY_MAC_ADDRESS = "bt";
-    private final Logger logger = LoggerFactory.getLogger(AndroidTVMDNSDiscoveryParticipant.class);
 
     private boolean isAutoDiscoveryEnabled = true;
 

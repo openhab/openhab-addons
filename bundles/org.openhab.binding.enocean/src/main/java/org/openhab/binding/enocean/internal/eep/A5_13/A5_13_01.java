@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -30,6 +32,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_13_01 extends A5_13 {
 
     public A5_13_01(ERP1Message packet) {
@@ -37,7 +40,7 @@ public class A5_13_01 extends A5_13 {
     }
 
     protected State getIllumination() {
-        return new QuantityType<>(((getDB_3Value() * 1000.0) / 255.0), Units.LUX);
+        return new QuantityType<>(((getDB3Value() * 1000.0) / 255.0), Units.LUX);
     }
 
     protected State getIllumination(double value) {
@@ -45,32 +48,32 @@ public class A5_13_01 extends A5_13 {
     }
 
     protected State getIlluminationWest() {
-        return getIllumination(getDB_3Value());
+        return getIllumination(getDB3Value());
     }
 
     protected State getIlluminationSouthNorth() {
-        return getIllumination(getDB_2Value());
+        return getIllumination(getDB2Value());
     }
 
     protected State getIlluminationEast() {
-        return getIllumination(getDB_1Value());
+        return getIllumination(getDB1Value());
     }
 
     protected State getTemperature() {
-        return new QuantityType<>(-40.0 + ((getDB_2Value() * 120.0) / 255.0), SIUnits.CELSIUS);
+        return new QuantityType<>(-40.0 + ((getDB2Value() * 120.0) / 255.0), SIUnits.CELSIUS);
     }
 
     protected State getWindSpeed() {
-        return new QuantityType<>(((getDB_1Value() * 70.0) / 255.0), Units.METRE_PER_SECOND);
+        return new QuantityType<>(((getDB1Value() * 70.0) / 255.0), Units.METRE_PER_SECOND);
     }
 
     protected State getRainStatus() {
-        return getBit(getDB_0Value(), 1) ? OnOffType.ON : OnOffType.OFF;
+        return getBit(getDB0Value(), 1) ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         if (isPartOne()) {
             switch (channelId) {
                 case CHANNEL_ILLUMINATION:

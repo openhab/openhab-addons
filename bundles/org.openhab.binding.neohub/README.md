@@ -23,7 +23,7 @@ The binding automatically searches for NeoHub devices, and puts them in the Main
 Alternatively you can manually create a (Bridge) Thing for the NeoHub.
 In either case you need to enter any missing Configuration Parameters (see Thing Configuration for NeoHub below).
 Once the Configuration Parameters are all valid, then the NeoHub Thing will automatically attempt to connect and sign on to the hub.
-If the sign on succeeds, the Thing will indicate its status as Online, otherwise it will show an error status. 
+If the sign on succeeds, the Thing will indicate its status as Online, otherwise it will show an error status.
 
 Once the NeoHub Thing has been created and it has successfully signed on, it will automatically interrogate the HeoHub to discover all the respective Heatmiser device Things that are connected to it.
 If in the future, you add additional Heatmiser devices to your system, the binding will discover them too.
@@ -56,7 +56,7 @@ But you can override this in special cases if you want to use (say) port forward
 ## Connection Refused Errors
 
 From early 2022 Heatmiser introduced NeoHub firmware that has the ability to enable / disable connecting to it via a TCP port.
-If the TCP port is disabled the OpenHAB binding cannot connect and the binding will report a *"Connection Refused"* warning in the log.
+If the TCP port is disabled the OpenHAB binding cannot connect and the binding will report a _"Connection Refused"_ warning in the log.
 In prior firmware versions the TCP port was always enabled.
 But in the new firmware the TCP port is initially enabled on power up but if no communication occurs for 48 hours it is automatically disabled.
 Alternatively the Heatmiser mobile app has a setting (Settings | System | API Access | Legacy API Enable | On) whereby the TCP port can be permanently enabled.
@@ -66,7 +66,7 @@ Alternatively the Heatmiser mobile app has a setting (Settings | System | API Ac
 The NeoHub Thing connects to the hub (bridge) to communicate with any Heatmiser devices that are connected to it.
 Each such Heatmiser device is identified by means of a unique device name in the hub.
 The device name is automatically discovered by the NeoHub Thing, and it is also visible (and changeable) via the Heatmiser App.
-    
+
 | Configuration Parameter | Description                                                                          |
 |-------------------------|--------------------------------------------------------------------------------------|
 | deviceNameInHub         | Device name that identifies the Heatmiser device in the NeoHub and the Heatmiser App |
@@ -138,7 +138,7 @@ Note: if a drop out occurs, the Thing will always change its status to `OFFLINE`
 
 ### `demo.things` File
 
-```
+```java
 Bridge neohub:neohub:myhubname "Heatmiser NeoHub" [ hostName="192.168.1.123", portNumber=4242, pollingInterval=60, socketTimeout=5, preferLegacyApi=true ] {
     Thing neoplug mydownstairs "Downstairs Plug" @ "Hall" [ deviceNameInHub="Hall Plug" ]
     Thing neostat myupstairs "Upstairs Thermostat" @ "Landing" [ deviceNameInHub="Landing Thermostat" ]
@@ -149,7 +149,7 @@ Bridge neohub:neohub:myhubname "Heatmiser NeoHub" [ hostName="192.168.1.123", po
 
 ### `demo.items` File
 
-```
+```java
 Number:Temperature Upstairs_RoomTemperature "Room Temperature" { channel="neohub:neostat:myhubname:myupstairs:roomTemperature" }
 Number:Temperature Upstairs_TargetTemperature "Target Temperature" { channel="neohub:neostat:myhubname:myupstairs:targetTemperature" }
 Number:Temperature Upstairs_FloorTemperature "Floor Temperature" { channel="neohub:neostat:myhubname:myupstairs:floorTemperature" }
@@ -167,30 +167,29 @@ Number:Temperature Kitchen_Temperature "Kitchen Temperature" { channel="neohub:n
 
 ### `demo.sitemap` File
 
-```
+```perl
 sitemap neohub label="Heatmiser NeoHub"
 {
-	Frame label="Thermostat" {
-		Text      item=Upstairs_RoomTemperature 
-		Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
-		Text      item=Upstairs_ThermostatOutputState
-		Switch    item=Upstairs_OccupancyModePresent
-		Text      item=Upstairs_FloorTemperature 
-	}
+    Frame label="Thermostat" {
+        Text      item=Upstairs_RoomTemperature 
+        Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
+        Text      item=Upstairs_ThermostatOutputState
+        Switch    item=Upstairs_OccupancyModePresent
+        Text      item=Upstairs_FloorTemperature 
+    }
 
-	Frame label="Plug" {
-		Switch item=Downstairs_PlugOutputState 	
-		Switch item=Downstairs_PlugAutoMode
-	}
+    Frame label="Plug" {
+        Switch item=Downstairs_PlugOutputState  
+        Switch item=Downstairs_PlugAutoMode
+    }
 
-	Frame label="Contact" {
-		Contact item=Window_Contact_State
-		Switch item=Window_Contact_Battery_Low
-	}
+    Frame label="Contact" {
+        Contact item=Window_Contact_State
+        Switch item=Window_Contact_Battery_Low
+    }
 
-	Frame label="Sensor" {
-		Text item=Kitchen_Temperature
-	}
+    Frame label="Sensor" {
+        Text item=Kitchen_Temperature
+    }
 }
 ```
-

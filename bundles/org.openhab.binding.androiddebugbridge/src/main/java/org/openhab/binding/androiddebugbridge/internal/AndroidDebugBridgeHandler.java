@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -320,8 +320,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         if (mediaStateJSONConfig != null && !mediaStateJSONConfig.isEmpty()) {
             loadMediaStateConfig(mediaStateJSONConfig);
         }
-        adbConnection.configure(currentConfig.ip, currentConfig.port, currentConfig.timeout,
-                currentConfig.recordDuration);
+        adbConnection.configure(currentConfig);
         var androidVersion = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
         if (androidVersion != null) {
             // configure android implementation to use

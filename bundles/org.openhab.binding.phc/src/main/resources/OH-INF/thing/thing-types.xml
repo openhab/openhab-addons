@@ -69,7 +69,7 @@
 		</supported-bridge-type-refs>
 
 		<label>PHC JRM</label>
-		<description>Thing for an shutter module (JRM).</description>
+		<description>Thing for a shutter module (JRM).</description>
 
 		<channel-groups>
 			<channel-group id="jrm" typeId="jrmChannels"/>

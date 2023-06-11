@@ -7,15 +7,14 @@ It uses your Honeywell Total Connect Comfort account to access your locations an
 
 The binding supports the following things:
 
-* evohome Account
-* evotouch control display
-* Heating zones
+- evohome Account
+- evotouch control display
+- Heating zones
 
 ### evohome Account
 
 This thing functions as the bridge between all the other things.
 It contains your credentials and connects to the Honeywell web API.
-
 
 ### evotouch
 
@@ -26,7 +25,7 @@ It is used to view and change the current system mode.
 
 The heating zone thing represents the evohome heating zone.
 It displays the current temperature, the temperature set point and the status of the set point.
-It also allows you to permanently override the current temperature set point as well as canceling any active overrides. 
+It also allows you to permanently override the current temperature set point as well as canceling any active overrides.
 
 ## Discovery
 
@@ -65,16 +64,18 @@ None
 
 ### Zone
 
-| Channel Type ID   | Item Type | Description                                                                                                                                                                                                            |
-|-------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Temperature       | Number    | Allows for viewing the current actual temperature of the zone.                                                                                                                                                     |
-| SetPointStatus    | String    | Allows for viewing the current set point mode of the zone.                                                                                                                                                      |
-| SetPoint          | Number    | Allows for viewing and permanently overriding the temperature set point of the zone. Sending 0 cancels any active set point overrides.                                                                                                                                         |
+| Channel Type ID | Item Type          | Description                                                                                                                            |
+|-----------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| Temperature     | Number:Temperature | Allows for viewing the current actual temperature of the zone.                                                                         |
+| SetPointStatus  | String             | Allows for viewing the current set point mode of the zone.                                                                             |
+| SetPoint        | Number:Temperature | Allows for viewing and permanently overriding the temperature set point of the zone. Sending 0 cancels any active set point overrides. |
+                                                                                                                                 |
+
 ## Full Example
 
 ### demo.things
 
-```
+```java
 Bridge evohome:account:your_account_alias [ username="your_user_name", password="your_password" ]
 {
     display your_display_alias  [ id="1234" ]
@@ -84,19 +85,19 @@ Bridge evohome:account:your_account_alias [ username="your_user_name", password=
 
 ### demo.items  
 
-```
+```java
 // evohome Display
 String DemoMode                 { channel="evohome:display:your_account_alias:your_display_alias:SystemMode" }
 
 // evohome Heatingzone
-Number DemoZoneTemperature    { channel="evohome:heatingzone:your_account_alias:your_zone_alias:Temperature" }
-String DemoZoneSetPointStatus { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPointStatus" }
-Number DemoZoneSetPoint       { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPoint" }
+Number:Temperature DemoZoneTemperature  { channel="evohome:heatingzone:your_account_alias:your_zone_alias:Temperature" }
+String DemoZoneSetPointStatus           { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPointStatus" }
+Number:Temperature DemoZoneSetPoint     { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPoint" }
 ```
 
 ### demo.sitemap
 
-```
+```perl
 sitemap evohome label="evohome Menu"
 {
     Frame label="evohome display" {

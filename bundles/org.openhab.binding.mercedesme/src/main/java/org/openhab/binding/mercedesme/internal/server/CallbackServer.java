@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,8 @@ public class CallbackServer {
     private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<Integer, CallbackServer>();
     private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
+    private final OAuthFactory oAuthFactory;
+
     private Optional<Server> server = Optional.empty();
     private AccessTokenRefreshListener listener;
     private AccountConfiguration config;
@@ -54,6 +56,7 @@ public class CallbackServer {
 
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
             AccountConfiguration config, String callbackUrl) {
+        this.oAuthFactory = oAuthFactory;
         oacs = oAuthFactory.createOAuthClientService(config.clientId, Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL,
                 config.clientId, config.clientSecret, config.getScope(), false);
         listener = l;
@@ -62,6 +65,16 @@ public class CallbackServer {
         this.config = config;
         this.callbackUrl = callbackUrl;
         INVALID_ACCESS_TOKEN.setAccessToken(Constants.EMPTY);
+    }
+
+    public void dispose() {
+        oAuthFactory.ungetOAuthService(config.clientId);
+        AUTH_MAP.remove(Integer.valueOf(config.callbackPort));
+        SERVER_MAP.remove(Integer.valueOf(config.callbackPort));
+    }
+
+    public void deleteOAuthServiceAndAccessToken() {
+        oAuthFactory.deleteServiceAndAccessToken(config.clientId);
     }
 
     public String getAuthorizationUrl() {

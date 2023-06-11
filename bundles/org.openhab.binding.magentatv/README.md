@@ -15,13 +15,15 @@ The binding provides device discovery, sending keys for the remote and also rece
 
 ### Supported Models
 
-* Deutsche Telekom Media Receiver MR401B - fully supported
-* Deutsche Telekom Media Receiver MR201  - fully supported
-* Deutsche Telekom Media Receiver MR400  - supported with minor restrictions (POWER key)
-* Deutsche Telekom Media Receiver MR200  - supported with minor restrictions (POWER key)
-* Deutsche Telekom Media Receiver MR601  - should be supported (not verified)
-* Deutsche Telekom Media Receiver MR3xx  - NOT supported (different platform)
-* Deutsche Telekom Media Receiver MR1xx  - NOT supported (different platform)
+| Model                                  | Status                                        |
+|----------------------------------------|-----------------------------------------------|
+| Deutsche Telekom Media Receiver MR401B | fully supported                               |
+| Deutsche Telekom Media Receiver MR201  | fully supported                               |
+| Deutsche Telekom Media Receiver MR400  | supported with minor restrictions (POWER key) |
+| Deutsche Telekom Media Receiver MR200  | supported with minor restrictions (POWER key) |
+| Deutsche Telekom Media Receiver MR601  | should be supported (not verified)            |
+| Deutsche Telekom Media Receiver MR3xx  | NOT supported (different platform)            |
+| Deutsche Telekom Media Receiver MR1xx  | NOT supported (different platform)            |
 
 ## Auto Discovery
 
@@ -84,7 +86,7 @@ There are different ways to setup the User ID:
 
 Run the following command on the console and provide your Telekom account credentials:
 
-```
+```shell
 openhab> openhab:magentatv login
 Username (email): mail@example.com
 Password: topsecret
@@ -97,7 +99,7 @@ Edit thing configuration and copy this value to the field userId
 On successful login the console will show the User ID value. Copy&amp;Paste this value to the Thing configuration (parameter `userId`) of the receiver.
 If you have multiple receivers under the same MagentaTV subscription you can use this value for all of them.
 
-2. Provide your credentials in the UI
+1. Provide your credentials in the UI
 
 If you do not want to use the openHAB console, you can also setup the credentials in the Thing configuration
 
@@ -199,18 +201,18 @@ In addition you could send any key code in the 0xHHHH format., refer to
 
 ### magentatv.things
 
-```
+```java
 Thing magentatv:receiver:XXXXXXXXXXX "MagentaTV" [
-udn="XXXXXXXXXXX",
-ipAddress="xxx.xxx.xxx.xxx",
-accountName="xxxxxx.xxxx@t-online.de",
-accountPassword="xxxxxxxxxx"
+  udn="XXXXXXXXXXX",
+  ipAddress="xxx.xxx.xxx.xxx",
+  accountName="xxxxxx.xxxx@t-online.de",
+  accountPassword="xxxxxxxxxx"
 ]
 ```
 
 ### magentatv.items
 
-```
+```java
 # MagentaTV Control
 Switch MagentaTV_Power        "Power"        {channel="magentatv:receiver:XXXXXXXXXXX:control#power"}
 Number MagentaTV_Channel      "Channel"      {channel="magentatv:receiver:XXXXXXXXXXX:status#channel"}
@@ -231,7 +233,7 @@ String MagentaTV_RunStatus "Run Status"      {channel="magentatv:receiver:XXXXXX
 
 or
 
-```
+```java
 Group    gRB_GF_LR_TVReceiver "RB_GF_LR: TV Receiver"
          (gRB_GF_LivingRoom, gMedia, gSpeechCmnd)
 
@@ -283,7 +285,7 @@ String   RB_GF_LR_TVReceiver_PlayMode
 
 ### sitemap
 
-```
+```perl
 Text label="TV" icon="it_television" {
   Frame label="Bedienung"  {
     Switch item=RB_GF_LR_TVReceiver_Power label="Ein/Aus []" icon="control_on_off" mappings=[ ON="Ein/Aus" ]
@@ -312,18 +314,18 @@ Due to the fact the POWER is a toggle button and the binding cannot detect the c
 
 Beginning with models 401/201 and new the binding is able to detect the Power-OFF condition, which can be used in a rule to improve this situation
 
-```
-        if (MagentaTV_Power.state != ON) {
-            sendCommand(MagentaTV_Power, ON)
-        }
+```java
+if (MagentaTV_Power.state != ON) {
+    sendCommand(MagentaTV_Power, ON)
+}
 ```
 
 to switch it ON and
 
-```
-        if (MagentaTV_Power.state != OFF) {
-            sendCommand(MagentaTV_Power, OFF)
-        }
+```java
+if (MagentaTV_Power.state != OFF) {
+    sendCommand(MagentaTV_Power, OFF)
+}
 ```
 
 to switch it off.

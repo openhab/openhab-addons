@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ecobee.internal.dto.thermostat;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ public class WeatherDTO {
     /*
      * The time stamp in UTC of the weather forecast
      */
-    public Date timestamp;
+    public Instant timestamp;
 
     /*
      * The weather station identifier

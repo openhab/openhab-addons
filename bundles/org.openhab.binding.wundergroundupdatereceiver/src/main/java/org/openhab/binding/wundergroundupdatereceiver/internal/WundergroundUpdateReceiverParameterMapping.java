@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public class WundergroundUpdateReceiverParameterMapping {
     }
 
     private static final List<String> UNMAPPED_PARAMETERS = List.of(STATION_ID_PARAMETER, PASSWORD, ACTION,
-            REALTIME_MARKER);
+            REALTIME_MARKER, LAST_QUERY);
 
     private static final WundergroundUpdateReceiverParameterMapping[] KNOWN_MAPPINGS = {
             new WundergroundUpdateReceiverParameterMapping(LAST_RECEIVED, LAST_RECEIVED_DATETIME_CHANNELTYPEUID,
@@ -173,7 +173,7 @@ public class WundergroundUpdateReceiverParameterMapping {
         }
         Optional<WundergroundUpdateReceiverParameterMapping> knownMapping = lookupMapping(parameterName);
         return knownMapping.orElseGet(() -> new WundergroundUpdateReceiverParameterMapping(parameterName,
-                channelTypeProvider.getOrCreateChannelType(parameterName, value).getUID(), "Uncategorized", null, false,
+                channelTypeProvider.getOrCreateChannelType(parameterName, value).getUID(), UNCATEGORIZED, null, false,
                 null));
     }
 

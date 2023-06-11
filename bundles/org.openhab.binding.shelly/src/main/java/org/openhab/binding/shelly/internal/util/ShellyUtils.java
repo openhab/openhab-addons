@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -94,7 +95,8 @@ public class ShellyUtils {
                 throw new ShellyApiException(
                         PRE + className + " from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
             } catch (RuntimeException e) {
-                throw new ShellyApiException(PRE + className + " from JSON: " + json, e);
+                throw new ShellyApiException(
+                        PRE + className + " from JSON (" + getString(e.getMessage() + "), JSON=" + json), e);
             }
         }
     }
@@ -244,7 +246,11 @@ public class ShellyUtils {
     }
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
-        return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+        return (value != null && value ? OnOffType.ON : OnOffType.OFF);
+    }
+
+    public static OpenClosedType getOpenClosed(@Nullable Boolean value) {
+        return (value != null && value ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
     }
 
     public static OnOffType getOnOff(int value) {

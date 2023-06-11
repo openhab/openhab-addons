@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -160,7 +160,7 @@ public class KM200ServiceHandler {
                     serviceObject.setJSONData(dataObject);
                     remoteDevice.virtualList.add(serviceObject);
                     break;
-                case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
+                case DATA_TYPE_ERROR_LIST: /* Check whether the type is an errorList */
                     logger.trace("initDevice: type errorList: {}", dataObject);
                     KM200ErrorServiceHandler eService = new KM200ErrorServiceHandler();
                     eService.updateErrors(nodeRoot);

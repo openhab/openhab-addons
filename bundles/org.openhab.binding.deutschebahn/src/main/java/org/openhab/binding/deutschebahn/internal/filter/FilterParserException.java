@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ public final class FilterParserException extends Exception {
     private static final long serialVersionUID = 3104578924298682889L;
 
     /**
-     * Creates an new {@link FilterParserException}.
+     * Creates a new {@link FilterParserException}.
      */
     public FilterParserException(String message) {
         super(message);

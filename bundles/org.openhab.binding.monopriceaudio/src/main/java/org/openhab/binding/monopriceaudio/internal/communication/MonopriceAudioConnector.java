@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.monopriceaudio.internal.communication;
 
+import static org.openhab.binding.monopriceaudio.internal.MonopriceAudioBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,20 +32,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  * @author Michael Lobstein - Adapted for the MonopriceAudio binding
+ * @author Michael Lobstein - Add support for additional amplifier types
  */
 @NonNullByDefault
 public abstract class MonopriceAudioConnector {
-    public static final String READ_ERROR = "Command Error.";
-
     // Message types
     public static final String KEY_ZONE_UPDATE = "zone_update";
-    // Special keys used by the binding
-    public static final String KEY_ERROR = "error";
-    public static final String MSG_VALUE_ON = "on";
-
-    private static final Pattern PATTERN = Pattern.compile("^.*#>(\\d{22})$", Pattern.DOTALL);
-    private static final String BEGIN_CMD = "<";
-    private static final String END_CMD = "\r";
+    public static final String KEY_PING = "ping";
 
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioConnector.class);
 
@@ -57,6 +50,9 @@ public abstract class MonopriceAudioConnector {
 
     /** true if the connection is established, false if not */
     private boolean connected;
+    private boolean pingResponseOnly;
+
+    private @Nullable AmplifierModel amp;
 
     private @Nullable Thread readerThread;
 
@@ -78,6 +74,16 @@ public abstract class MonopriceAudioConnector {
      */
     protected void setConnected(boolean connected) {
         this.connected = connected;
+        this.pingResponseOnly = false;
+    }
+
+    /**
+     * Set the AmplifierModel
+     *
+     * @param amp the AmplifierModel being used
+     */
+    protected void setAmplifierModel(AmplifierModel amp) {
+        this.amp = amp;
     }
 
     /**
@@ -105,6 +111,7 @@ public abstract class MonopriceAudioConnector {
      * Stop the thread that handles the feedback messages and close the opened input and output streams
      */
     protected void cleanup() {
+        this.pingResponseOnly = false;
         Thread readerThread = this.readerThread;
         OutputStream dataOut = this.dataOut;
         if (dataOut != null) {
@@ -129,7 +136,7 @@ public abstract class MonopriceAudioConnector {
             try {
                 readerThread.join(3000);
             } catch (InterruptedException e) {
-                logger.warn("Error joining readerThread: {}", e.getMessage());
+                logger.debug("Error joining readerThread: {}", e.getMessage());
             }
             this.readerThread = null;
         }
@@ -161,39 +168,74 @@ public abstract class MonopriceAudioConnector {
     }
 
     /**
+     * Get only ping success events from the connector. If amplifier does not have keypads or supports
+     * unsolicited updates, the use of this method will cause the connector to only send ping success events until the
+     * next time the connection is reset.
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void sendPing() throws MonopriceAudioException {
+        pingResponseOnly = true;
+        // poll zone 1 status only to see if the amp responds
+        queryZone(amp.getZoneIds().get(0));
+    }
+
+    /**
      * Get the status of a zone
      *
      * @param zone the zone to query for current status
      *
      * @throws MonopriceAudioException - In case of any problem
      */
-    public void queryZone(MonopriceAudioZone zone) throws MonopriceAudioException {
-        sendCommand(zone, MonopriceAudioCommand.QUERY, null);
+    public void queryZone(String zoneId) throws MonopriceAudioException {
+        sendCommand(amp.getQueryPrefix() + zoneId + amp.getQuerySuffix());
     }
 
     /**
-     * Request the MonopriceAudio controller to execute a command
+     * Monoprice 31028 and OSD Audio PAM1270 amps do not report treble, bass and balance with the main status inquiry,
+     * so we must send three extra commands to retrieve those values
      *
-     * @param zone the zone for which the command is to be run
-     * @param cmd the command to execute
-     * @param value the integer value to consider for volume, bass, treble, etc. adjustment
+     * @param zone the zone to query for current treble, bass and balance status
      *
      * @throws MonopriceAudioException - In case of any problem
      */
-    public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value)
-            throws MonopriceAudioException {
-        String messageStr = "";
+    public void queryTrebBassBalance(String zoneId) throws MonopriceAudioException {
+        sendCommand(amp.getQueryPrefix() + zoneId + amp.getTrebleCmd());
+        sendCommand(amp.getQueryPrefix() + zoneId + amp.getBassCmd());
+        sendCommand(amp.getQueryPrefix() + zoneId + amp.getBalanceCmd());
+    }
 
-        if (cmd == MonopriceAudioCommand.QUERY) {
-            // query special case (ie: ? + zoneId)
-            messageStr = cmd.getValue() + zone.getZoneId();
-        } else if (value != null) {
-            // if the command passed a value, append it to the messageStr
-            messageStr = BEGIN_CMD + zone.getZoneId() + cmd.getValue() + String.format("%02d", value);
+    /**
+     * Request the MonopriceAudio amplifier to execute a raw command
+     *
+     * @param cmd the command to execute
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void sendCommand(String cmd) throws MonopriceAudioException {
+        sendCommand(null, cmd, null);
+    }
+
+    /**
+     * Request the MonopriceAudio amplifier to execute a command
+     *
+     * @param zoneId the zone for which the command is to be run
+     * @param cmd the command to execute
+     * @param value the integer value to consider for power, volume, bass, treble, etc. adjustment
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void sendCommand(@Nullable String zoneId, String cmd, @Nullable Integer value)
+            throws MonopriceAudioException {
+        String messageStr;
+
+        if (zoneId != null && value != null) {
+            // if the command passed a value, build messageStr with prefix, zoneId, command, value and suffix
+            messageStr = amp.getCmdPrefix() + zoneId + cmd + amp.getFormattedValue(value) + amp.getCmdSuffix();
         } else {
-            throw new MonopriceAudioException("Send command \"" + messageStr + "\" failed: passed in value is null");
+            // otherwise send the raw cmd from the query() methods
+            messageStr = cmd + amp.getCmdSuffix();
         }
-        messageStr += END_CMD;
         logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
@@ -204,7 +246,7 @@ public abstract class MonopriceAudioConnector {
             dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException e) {
-            throw new MonopriceAudioException("Send command \"" + cmd.getValue() + "\" failed: " + e.getMessage(), e);
+            throw new MonopriceAudioException("Send command \"" + messageStr + "\" failed: " + e.getMessage(), e);
         }
     }
 
@@ -232,20 +274,20 @@ public abstract class MonopriceAudioConnector {
      * @param incomingMessage the received message
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
-        String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
-
-        logger.debug("handleIncomingMessage: {}", message);
-
-        if (READ_ERROR.equals(message)) {
-            dispatchKeyValue(KEY_ERROR, MSG_VALUE_ON);
+        if (pingResponseOnly) {
+            dispatchKeyValue(KEY_PING, EMPTY);
             return;
         }
 
-        // Amp controller sends status string: #>1200010000130809100601
-        Matcher matcher = PATTERN.matcher(message);
-        if (matcher.find()) {
-            // pull out just the digits and send them as an event
-            dispatchKeyValue(KEY_ZONE_UPDATE, matcher.group(1));
+        String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
+
+        if (EMPTY.equals(message)) {
+            return;
+        }
+
+        if (message.startsWith(amp.getRespPrefix())) {
+            logger.debug("handleIncomingMessage: {}", message);
+            dispatchKeyValue(KEY_ZONE_UPDATE, message);
         } else {
             logger.debug("no match on message: {}", message);
         }

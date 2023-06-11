@@ -9,7 +9,7 @@
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
 		<label>Milight RGBCCT</label>
-		<description>Led globe with full Colour, and both cool and warm whites.</description>
+		<description>LED globe with full Colour, and both cool and warm whites.</description>
 		<category>Lightbulb</category>
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -60,7 +60,7 @@
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
 		<label>Milight CCT</label>
-		<description>Led globe with both cool and warm white controls</description>
+		<description>LED globe with both cool and warm white controls</description>
 		<category>Lightbulb</category>
 		<channels>
 			<channel id="level" typeId="level"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,12 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
 
@@ -28,15 +30,11 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
  *
  */
 @NonNullByDefault
-class TypeDateTime extends KNXChannelType {
+class TypeDateTime extends KNXChannel {
+    public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_DATETIME, CHANNEL_DATETIME_CONTROL);
 
-    TypeDateTime() {
-        super(CHANNEL_DATETIME, CHANNEL_DATETIME_CONTROL);
-    }
-
-    @Override
-    protected Set<String> getAllGAKeys() {
-        return Collections.singleton(GA);
+    TypeDateTime(Channel channel) {
+        super(List.of(DateTimeType.class), channel);
     }
 
     @Override

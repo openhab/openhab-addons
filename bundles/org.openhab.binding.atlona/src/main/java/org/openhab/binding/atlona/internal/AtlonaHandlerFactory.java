@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Tim Roberts - Initial contribution
- * @author Michael Lobstein - Add support for AT-PRO3HD66M
+ * @author Michael Lobstein - Add support for AT-PRO3HD 44/66 M
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.atlona")
@@ -47,7 +47,7 @@ public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
      * The set of supported Atlona products
      */
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PRO3_44M, THING_TYPE_PRO3_66M,
-            THING_TYPE_PRO3_88M, THING_TYPE_PRO3_1616M, THING_TYPE_PRO3HD_66M);
+            THING_TYPE_PRO3_88M, THING_TYPE_PRO3_1616M, THING_TYPE_PRO3HD_44M, THING_TYPE_PRO3HD_66M);
 
     /**
      * {@inheritDoc}
@@ -82,6 +82,10 @@ public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_PRO3_1616M)) {
             return new AtlonaPro3Handler(thing, new AtlonaPro3Capabilities(5, 3, Set.of(17, 18, 19, 20), true));
+        }
+
+        if (thingTypeUID.equals(THING_TYPE_PRO3HD_44M)) {
+            return new AtlonaPro3Handler(thing, new AtlonaPro3Capabilities(0, 0, Set.of(1, 2, 3, 4), false));
         }
 
         if (thingTypeUID.equals(THING_TYPE_PRO3HD_66M)) {

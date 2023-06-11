@@ -20,7 +20,6 @@ The following configuration options are available for the API binding:
 | `apiKey`    | API Key    | The API key given to you by a transit provider for their deployment.                | yes      |
 | `apiServer` | API Server | The domain name of the deployment to talk to, e.g. `api.pugetsound.onebusaway.org`. | yes      |
 
-
 The following configuration options are available for the Stop binding (which requires an API binding):
 
 | Parameter | Name | Description | Required |
@@ -36,7 +35,6 @@ The following configuration options are available for a Route (which requires a 
 |-----------|----------|---------------------------------------------------------------------|----------|
 | `routeId` | Route ID | The OneBusAway ID of the route to obtain data for, e.g. `1_102574`. | yes      |
 
-
 ## Channels
 
 The Route Thing supports the following state channels:
@@ -48,7 +46,6 @@ The Route Thing supports the following state channels:
 | update           | state        | DateTime  | The last time this data was updated (per the data provider, not the last time openHAB updated the data). |
 | arrivalDeparture | trigger      | DateTime  | Triggered when a Route arrives or departs a Stop.                                                        |
 
-
 ### Channel Configurations
 
 The `arrival`, `departure`, and `arrivalDeparture` channels can be configured with an `offset` specifying the number of seconds to move an event back in time.
@@ -59,7 +56,7 @@ Here is an example of a configuration for a bus stop in Seattle, WA, USA that ha
 
 `demo.things`:
 
-```
+```java
 Bridge onebusaway:api:pugetsound [apiKey="your-api-key", apiServer="api.pugetsound.onebusaway.org"] {
   Bridge onebusaway:stop:1_26860 [stopId="1_26860"] {
     Thing onebusaway:route:1_100193 [routeId="1_100193"]
@@ -71,7 +68,7 @@ Bridge onebusaway:api:pugetsound [apiKey="your-api-key", apiServer="api.pugetsou
 
 `demo.items`:
 
-```
+```java
 // Route 1_100193 (#32)
 DateTime Fremont_32_Arrival "32 - University District" { channel="onebusaway:route:1_100193:arrival" }
 DateTime Fremont_32_Departure "32 - University District" { channel="onebusaway:route:1_100193:departure" }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +75,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         if (handler != null) {
             handler.getBridgeFullState().thenAccept(fullState -> {
                 stopScan();
-                removeOlderResults(getTimestampOfLastScan());
                 fullState.ifPresent(state -> {
                     state.sensors.forEach(this::addSensor);
                     state.lights.forEach(this::addLight);
@@ -83,6 +83,12 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
             });
         }
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        removeOlderResults(getTimestampOfLastScan());
+        super.stopScan();
     }
 
     @Override
@@ -127,14 +133,17 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         properties.put(CONFIG_ID, groupId);
 
         switch (groupType) {
-            case LIGHT_GROUP:
-                thingTypeUID = THING_TYPE_LIGHTGROUP;
-                break;
-            default:
+            case LIGHT_GROUP -> thingTypeUID = THING_TYPE_LIGHTGROUP;
+            case LUMINAIRE, LIGHT_SOURCE, ROOM -> {
+                logger.debug("Group {} ({}), type {} ignored.", group.id, group.name, group.type);
+                return;
+            }
+            default -> {
                 logger.debug(
                         "Found group: {} ({}), type {} but no thing type defined for that type. This should be reported.",
                         group.id, group.name, group.type);
                 return;
+            }
         }
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, group.id);
@@ -179,42 +188,24 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         switch (lightType) {
-            case ON_OFF_LIGHT:
-            case ON_OFF_PLUGIN_UNIT:
-            case SMART_PLUG:
-                thingTypeUID = THING_TYPE_ONOFF_LIGHT;
-                break;
-            case DIMMABLE_LIGHT:
-            case DIMMABLE_PLUGIN_UNIT:
-                thingTypeUID = THING_TYPE_DIMMABLE_LIGHT;
-                break;
-            case COLOR_TEMPERATURE_LIGHT:
-                thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
-                break;
-            case COLOR_DIMMABLE_LIGHT:
-            case COLOR_LIGHT:
-                thingTypeUID = THING_TYPE_COLOR_LIGHT;
-                break;
-            case EXTENDED_COLOR_LIGHT:
-                thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
-                break;
-            case WINDOW_COVERING_DEVICE:
-                thingTypeUID = THING_TYPE_WINDOW_COVERING;
-                break;
-            case WARNING_DEVICE:
-                thingTypeUID = THING_TYPE_WARNING_DEVICE;
-                break;
-            case DOORLOCK:
-                thingTypeUID = THING_TYPE_DOORLOCK;
-                break;
-            case CONFIGURATION_TOOL:
+            case ON_OFF_LIGHT, ON_OFF_PLUGIN_UNIT, SMART_PLUG -> thingTypeUID = THING_TYPE_ONOFF_LIGHT;
+            case DIMMABLE_LIGHT, DIMMABLE_PLUGIN_UNIT -> thingTypeUID = THING_TYPE_DIMMABLE_LIGHT;
+            case COLOR_TEMPERATURE_LIGHT -> thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
+            case COLOR_DIMMABLE_LIGHT, COLOR_LIGHT -> thingTypeUID = THING_TYPE_COLOR_LIGHT;
+            case EXTENDED_COLOR_LIGHT -> thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
+            case WINDOW_COVERING_DEVICE -> thingTypeUID = THING_TYPE_WINDOW_COVERING;
+            case WARNING_DEVICE -> thingTypeUID = THING_TYPE_WARNING_DEVICE;
+            case DOORLOCK -> thingTypeUID = THING_TYPE_DOORLOCK;
+            case CONFIGURATION_TOOL -> {
                 // ignore configuration tool device
                 return;
-            default:
+            }
+            default -> {
                 logger.debug(
                         "Found light: {} ({}), type {} but no thing type defined for that type. This should be reported.",
                         light.modelid, light.name, light.type);
                 return;
+            }
         }
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, light.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
@@ -261,6 +252,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             }
         } else if (sensor.type.contains("LightLevel")) { // ZHALightLevel
             thingTypeUID = THING_TYPE_LIGHT_SENSOR;
+        } else if (sensor.type.contains("ZHAAirQuality")) { // ZHAAirQuality
+            thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
             thingTypeUID = THING_TYPE_TEMPERATURE_SENSOR;
         } else if (sensor.type.contains("ZHAHumidity")) { // ZHAHumidity
@@ -279,10 +272,10 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             thingTypeUID = THING_TYPE_VIBRATION_SENSOR; // ZHAVibration
         } else if (sensor.type.contains("ZHABattery")) {
             thingTypeUID = THING_TYPE_BATTERY_SENSOR; // ZHABattery
+        } else if (sensor.type.contains("ZHAMoisture")) {
+            thingTypeUID = THING_TYPE_MOISTURE_SENSOR; // ZHAMoisture
         } else if (sensor.type.contains("ZHAThermostat")) {
             thingTypeUID = THING_TYPE_THERMOSTAT; // ZHAThermostat
-        } else if (sensor.type.contains("ZHAAirQuality")) {
-            thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR;
         } else {
             logger.debug("Unknown type {}", sensor.type);
             return;
@@ -316,6 +309,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
     @Override
     public void deactivate() {
+        removeOlderResults(new Date().getTime());
         super.deactivate();
     }
 }

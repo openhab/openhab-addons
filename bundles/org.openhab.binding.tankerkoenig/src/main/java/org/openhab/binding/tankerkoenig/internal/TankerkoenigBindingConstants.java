@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,6 @@ public class TankerkoenigBindingConstants {
     public static final String CONFIG_REFRESH = "refresh";
     public static final String CONFIG_MODE_OPENINGTIME = "modeOpeningTime";
 
-    // String used Identify unsucessful web-return
+    // String used Identify unsuccessful web-return
     public static final String NO_VALID_RESPONSE = "No valid response from the web-request!";
 }

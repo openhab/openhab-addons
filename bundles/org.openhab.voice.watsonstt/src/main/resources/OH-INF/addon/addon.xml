@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="watsonstt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>voice</type>
+	<name>IBM Watson Speech-to-Text</name>
+	<description>Watson STT Service uses the non-free IBM Watson Speech-to-Text API to transcript audio data to text.</description>
+	<connection>cloud</connection>
+
+	<service-id>org.openhab.voice.watsonstt</service-id>
+
+	<config-description-ref uri="voice:watsonstt"/>
+
+</addon:addon>

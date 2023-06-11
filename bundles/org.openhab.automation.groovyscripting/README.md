@@ -1,6 +1,6 @@
 # Groovy Scripting
 
-This add-on provides support for [Groovy](https://groovy-lang.org/) 3.0.9 that can be used as a scripting language within automation rules and which eliminates the need to manually install Groovy.
+This add-on provides support for [Groovy](https://groovy-lang.org/) 4.0.11 that can be used as a scripting language within automation rules and which eliminates the need to manually install Groovy.
 
 ## Creating Groovy Scripts
 
@@ -31,7 +31,7 @@ The openHAB server uses the [SLF4J](https://www.slf4j.org/) library for logging.
 ```groovy
 import org.slf4j.LoggerFactory
 
-LoggerFactory.getLogger("org.openhab.core.automation.examples").info("Hello world!")
+LoggerFactory.getLogger("org.openhab.core.automation.examples").info("Hello, World!")
 ```
 
 Depending on the openHAB logging configuration, you may need to prefix logger names with `org.openhab.core.automation` for them to show up in the log file (or you modify the logging configuration).
@@ -39,5 +39,5 @@ Depending on the openHAB logging configuration, you may need to prefix logger na
 The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logger.html) to obtain a named logger and then logs a message like:
 
 ```text
-    ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello world!
+    ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello, World!
 ```

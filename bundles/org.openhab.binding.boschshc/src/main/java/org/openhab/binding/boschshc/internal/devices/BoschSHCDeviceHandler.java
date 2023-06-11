@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for physical Bosch devices with configurable IDs (as opposed to system services, which have static IDs).
@@ -42,18 +44,19 @@ import org.openhab.core.thing.ThingStatusDetail;
 @NonNullByDefault
 public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /**
      * Bosch SHC configuration loaded from openHAB configuration.
      */
     private @Nullable BoschSHCConfiguration config;
 
-    public BoschSHCDeviceHandler(Thing thing) {
+    protected BoschSHCDeviceHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-
         var config = this.config = getConfigAs(BoschSHCConfiguration.class);
 
         String deviceId = config.id;

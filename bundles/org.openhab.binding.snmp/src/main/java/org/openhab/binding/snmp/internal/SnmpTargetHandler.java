@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.snmp.internal;
 import static org.openhab.binding.snmp.internal.SnmpBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -28,13 +27,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
-import javax.measure.format.MeasurementParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.snmp.internal.config.SnmpChannelConfiguration;
 import org.openhab.binding.snmp.internal.config.SnmpInternalChannelConfiguration;
 import org.openhab.binding.snmp.internal.config.SnmpTargetConfiguration;
+import org.openhab.binding.snmp.internal.types.SnmpChannelMode;
+import org.openhab.binding.snmp.internal.types.SnmpDatatype;
+import org.openhab.binding.snmp.internal.types.SnmpProtocolVersion;
+import org.openhab.binding.snmp.internal.types.SnmpSecurityModel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -51,6 +53,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.AbstractTarget;
@@ -59,7 +62,9 @@ import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
+import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
+import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.SnmpConstants;
@@ -68,6 +73,7 @@ import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.Opaque;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.UnsignedInteger32;
 import org.snmp4j.smi.Variable;
@@ -114,11 +120,13 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             if (command instanceof RefreshType) {
                 SnmpInternalChannelConfiguration channel = readChannelSet.stream()
                         .filter(c -> channelUID.equals(c.channelUID)).findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("no writable channel found"));
-                PDU pdu = new PDU(PDU.GET, Collections.singletonList(new VariableBinding(channel.oid)));
+                        .orElseThrow(() -> new IllegalArgumentException("no readable channel found"));
+                PDU pdu = getPDU();
+                pdu.setType(PDU.GET);
+                pdu.add(new VariableBinding(channel.oid));
                 snmpService.send(pdu, target, null, this);
-            } else if (command instanceof DecimalType || command instanceof StringType
-                    || command instanceof OnOffType) {
+            } else if (command instanceof DecimalType || command instanceof QuantityType
+                    || command instanceof StringType || command instanceof OnOffType) {
                 SnmpInternalChannelConfiguration channel = writeChannelSet.stream()
                         .filter(config -> channelUID.equals(config.channelUID)).findFirst()
                         .orElseThrow(() -> new IllegalArgumentException("no writable channel found"));
@@ -130,9 +138,25 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                         return;
                     }
                 } else {
-                    variable = convertDatatype(command, channel.datatype);
+                    Command rawValue = command;
+                    if (command instanceof QuantityType) {
+                        Unit<?> channelUnit = channel.unit;
+                        if (channelUnit == null) {
+                            rawValue = new DecimalType(((QuantityType<?>) command).toBigDecimal());
+                        } else {
+                            QuantityType<?> convertedValue = ((QuantityType<?>) command).toUnit(channelUnit);
+                            if (convertedValue == null) {
+                                logger.warn("Cannot convert '{}' to configured unit '{}'", command, channelUnit);
+                                return;
+                            }
+                            rawValue = new DecimalType(convertedValue.toBigDecimal());
+                        }
+                    }
+                    variable = convertDatatype(rawValue, channel.datatype);
                 }
-                PDU pdu = new PDU(PDU.SET, Collections.singletonList(new VariableBinding(channel.oid, variable)));
+                PDU pdu = getPDU();
+                pdu.setType(PDU.SET);
+                pdu.add(new VariableBinding(channel.oid, variable));
                 snmpService.send(pdu, target, null, this);
             }
         } catch (IllegalArgumentException e) {
@@ -148,22 +172,70 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
 
         generateChannelConfigs();
 
-        if (config.protocol.toInteger() == SnmpConstants.version1
-                || config.protocol.toInteger() == SnmpConstants.version2c) {
-            CommunityTarget target = new CommunityTarget();
-            target.setCommunity(new OctetString(config.community));
+        if (thing.getThingTypeUID().equals(THING_TYPE_TARGET3)) {
+            // override default for target3 things
+            config.protocol = SnmpProtocolVersion.v3;
+        }
+
+        try {
+            if (config.protocol.toInteger() == SnmpConstants.version1
+                    || config.protocol.toInteger() == SnmpConstants.version2c) {
+                CommunityTarget target = new CommunityTarget();
+                target.setCommunity(new OctetString(config.community));
+                this.target = target;
+            } else if (config.protocol.toInteger() == SnmpConstants.version3) {
+                String userName = config.user;
+                if (userName == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "user not set");
+                    return;
+                }
+                String engineIdHexString = config.engineId;
+                if (engineIdHexString == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "engineId not set");
+                    return;
+                }
+                String authPassphrase = config.authPassphrase;
+                if ((config.securityModel == SnmpSecurityModel.AUTH_PRIV
+                        || config.securityModel == SnmpSecurityModel.AUTH_NO_PRIV)
+                        && (authPassphrase == null || authPassphrase.isEmpty())) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Authentication passphrase not configured");
+                    return;
+                }
+                String privPassphrase = config.privPassphrase;
+                if (config.securityModel == SnmpSecurityModel.AUTH_PRIV
+                        && (privPassphrase == null || privPassphrase.isEmpty())) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Privacy passphrase not configured");
+                    return;
+                }
+                byte[] engineId = HexUtils.hexToBytes(engineIdHexString);
+                snmpService.addUser(userName, config.authProtocol, authPassphrase, config.privProtocol, privPassphrase,
+                        engineId);
+                UserTarget target = new UserTarget();
+                target.setAuthoritativeEngineID(engineId);
+                target.setSecurityName(new OctetString(config.user));
+                target.setSecurityLevel(config.securityModel.getSecurityLevel());
+                this.target = target;
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "SNMP version not supported");
+                return;
+            }
+
+            snmpService.addCommandResponder(this);
+
             target.setRetries(config.retries);
             target.setTimeout(config.timeout);
             target.setVersion(config.protocol.toInteger());
             target.setAddress(null);
-            this.target = target;
-            snmpService.addCommandResponder(this);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "SNMP version not supported");
+
+            timeoutCounter = 0;
+        } catch (IllegalArgumentException e) {
+            // some methods of SNMP4J throw an unchecked IllegalArgumentException if they receive invalid values
+            String message = "Exception during initialization: " + e.getMessage();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
             return;
         }
-
-        timeoutCounter = 0;
 
         updateStatus(ThingStatus.UNKNOWN);
         refresh = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.SECONDS);
@@ -230,9 +302,8 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         final String address = ((UdpAddress) event.getPeerAddress()).getInetAddress().getHostAddress();
         final String community = new String(event.getSecurityName());
 
-        if ((pdu.getType() == PDU.V1TRAP) && config.community.equals(community) && (pdu instanceof PDUv1)) {
+        if ((pdu.getType() == PDU.V1TRAP) && config.community.equals(community) && (pdu instanceof PDUv1 pduv1)) {
             logger.trace("{} received trap is PDUv1.", thing.getUID());
-            PDUv1 pduv1 = (PDUv1) pdu;
             OID oidEnterprise = pduv1.getEnterprise();
             int trapValue = pduv1.getGenericTrap();
             if (trapValue == PDUv1.ENTERPRISE_SPECIFIC) {
@@ -262,8 +333,8 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         SnmpDatatype datatype = config.datatype; // maybe null, override later
         Variable onValue = null;
         Variable offValue = null;
-        State exceptionValue = UnDefType.UNDEF;
         Unit<?> unit = null;
+        State exceptionValue = UnDefType.UNDEF;
 
         if (CHANNEL_TYPE_UID_NUMBER.equals(channel.getChannelTypeUID())) {
             if (datatype == null) {
@@ -275,15 +346,11 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             if (configExceptionValue != null) {
                 exceptionValue = DecimalType.valueOf(configExceptionValue);
             }
-            if (config.unit != null) {
-                if (config.mode != SnmpChannelMode.READ) {
-                    logger.warn("units only supported for readonly channels, ignored for channel {}", channel.getUID());
-                } else {
-                    try {
-                        unit = UnitUtils.parseUnit(config.unit);
-                    } catch (MeasurementParseException e) {
-                        logger.warn("unrecognised unit '{}', ignored for channel '{}'", config.unit, channel.getUID());
-                    }
+            String configUnit = config.unit;
+            if (configUnit != null) {
+                unit = UnitUtils.parseUnit(configUnit);
+                if (unit == null) {
+                    logger.warn("Failed to parse unit from '{}'for channel '{}'", unit, channel.getUID());
                 }
             }
         } else if (CHANNEL_TYPE_UID_STRING.equals(channel.getChannelTypeUID())) {
@@ -323,13 +390,12 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             return null;
         }
         return new SnmpInternalChannelConfiguration(channel.getUID(), new OID(oid), config.mode, datatype, onValue,
-                offValue, exceptionValue, config.doNotLogException, unit);
+                offValue, exceptionValue, unit, config.doNotLogException);
     }
 
     private void generateChannelConfigs() {
-        Set<SnmpInternalChannelConfiguration> channelConfigs = Collections
-                .unmodifiableSet(thing.getChannels().stream().map(channel -> getChannelConfigFromChannel(channel))
-                        .filter(Objects::nonNull).collect(Collectors.toSet()));
+        Set<SnmpInternalChannelConfiguration> channelConfigs = Collections.unmodifiableSet(thing.getChannels().stream()
+                .map(this::getChannelConfigFromChannel).filter(Objects::nonNull).collect(Collectors.toSet()));
         this.readChannelSet = channelConfigs.stream()
                 .filter(c -> c.mode == SnmpChannelMode.READ || c.mode == SnmpChannelMode.READ_WRITE)
                 .collect(Collectors.toSet());
@@ -359,17 +425,37 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     state = channelConfig.exceptionValue;
                 } else if (CHANNEL_TYPE_UID_NUMBER.equals(channel.getChannelTypeUID())) {
                     try {
-                        BigDecimal numericState;
-                        final @Nullable Unit<?> unit = channelConfig.unit;
                         if (channelConfig.datatype == SnmpDatatype.FLOAT) {
-                            numericState = new BigDecimal(value.toString());
+                            if (value instanceof Opaque opaque) {
+                                byte[] octets = opaque.toByteArray();
+                                if (octets.length < 3) {
+                                    // two bytes identifier and one byte length should always be present
+                                    throw new UnsupportedOperationException("Not enough octets");
+                                }
+                                if (octets.length != (3 + octets[2])) {
+                                    // octet 3 contains the lengths of the value
+                                    throw new UnsupportedOperationException("Not enough octets");
+                                }
+                                if (octets[0] == (byte) 0x9f && octets[1] == 0x78 && octets[2] == 0x04) {
+                                    // floating point value
+                                    Unit<?> channelUnit = channelConfig.unit;
+                                    float floatValue = Float.intBitsToFloat(
+                                            octets[3] << 24 | octets[4] << 16 | octets[5] << 8 | octets[6]);
+                                    state = channelUnit == null ? new DecimalType(floatValue)
+                                            : new QuantityType<>(floatValue, channelUnit);
+
+                                } else {
+                                    throw new UnsupportedOperationException("Unknown opaque datatype" + value);
+                                }
+                            } else {
+                                Unit<?> channelUnit = channelConfig.unit;
+                                state = channelUnit == null ? new DecimalType(value.toString())
+                                        : new QuantityType<>(value + channelUnit.getSymbol());
+                            }
                         } else {
-                            numericState = BigDecimal.valueOf(value.toLong());
-                        }
-                        if (unit != null) {
-                            state = new QuantityType<>(numericState, unit);
-                        } else {
-                            state = new DecimalType(numericState);
+                            Unit<?> channelUnit = channelConfig.unit;
+                            state = channelUnit == null ? new DecimalType(value.toLong())
+                                    : new QuantityType<>(value.toLong(), channelUnit);
                         }
                     } catch (UnsupportedOperationException e) {
                         logger.warn("could not convert {} to number for channel {}", value, channelUID);
@@ -404,36 +490,35 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
 
     private Variable convertDatatype(Command command, SnmpDatatype datatype) {
         switch (datatype) {
-            case INT32:
+            case INT32 -> {
                 if (command instanceof DecimalType) {
                     return new Integer32(((DecimalType) command).intValue());
                 } else if (command instanceof StringType) {
                     return new Integer32((new DecimalType(((StringType) command).toString())).intValue());
                 }
-                break;
-            case UINT32:
+            }
+            case UINT32 -> {
                 if (command instanceof DecimalType) {
                     return new UnsignedInteger32(((DecimalType) command).intValue());
                 } else if (command instanceof StringType) {
                     return new UnsignedInteger32((new DecimalType(((StringType) command).toString())).intValue());
                 }
-                break;
-            case COUNTER64:
+            }
+            case COUNTER64 -> {
                 if (command instanceof DecimalType) {
                     return new Counter64(((DecimalType) command).longValue());
                 } else if (command instanceof StringType) {
                     return new Counter64((new DecimalType(((StringType) command).toString())).longValue());
                 }
-                break;
-            case FLOAT:
-            case STRING:
+            }
+            case FLOAT, STRING -> {
                 if (command instanceof DecimalType) {
                     return new OctetString(((DecimalType) command).toString());
                 } else if (command instanceof StringType) {
                     return new OctetString(((StringType) command).toString());
                 }
-                break;
-            case HEXSTRING:
+            }
+            case HEXSTRING -> {
                 if (command instanceof StringType) {
                     String commandString = ((StringType) command).toString().toLowerCase();
                     Matcher commandMatcher = HEXSTRING_VALIDITY.matcher(commandString);
@@ -442,13 +527,14 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                         return OctetString.fromHexStringPairs(commandString);
                     }
                 }
-                break;
-            case IPADDRESS:
+            }
+            case IPADDRESS -> {
                 if (command instanceof StringType) {
                     return new IpAddress(((StringType) command).toString());
                 }
-                break;
-            default:
+            }
+            default -> {
+            }
         }
         throw new IllegalArgumentException("illegal conversion of " + command + " to " + datatype);
     }
@@ -472,14 +558,23 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                 return;
             }
         }
-        PDU pdu = new PDU(PDU.GET,
-                readChannelSet.stream().map(c -> new VariableBinding(c.oid)).collect(Collectors.toList()));
+        PDU pdu = getPDU();
+        pdu.setType(PDU.GET);
+        readChannelSet.stream().map(c -> new VariableBinding(c.oid)).forEach(pdu::add);
         if (!pdu.getVariableBindings().isEmpty()) {
             try {
                 snmpService.send(pdu, target, null, this);
             } catch (IOException e) {
                 logger.info("Could not send PDU", e);
             }
+        }
+    }
+
+    private PDU getPDU() {
+        if (config.protocol == SnmpProtocolVersion.v3 || config.protocol == SnmpProtocolVersion.V3) {
+            return new ScopedPDU();
+        } else {
+            return new PDU();
         }
     }
 }

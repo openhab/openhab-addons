@@ -1,6 +1,6 @@
 # Airthings
 
-This extension adds support for [Airthings](https://www.airthings.com) indoor air quality monitor sensors. 
+This extension adds support for [Airthings](https://www.airthings.com) indoor air quality monitor sensors.
 
 ## Supported Things
 
@@ -14,7 +14,7 @@ Following thing types are supported by this extension:
 
 ## Discovery
 
-As any other Bluetooth device, Airthings devices are discovered automatically by the corresponding bridge. 
+As any other Bluetooth device, Airthings devices are discovered automatically by the corresponding bridge.
 
 ## Thing Configuration
 
@@ -37,21 +37,21 @@ Following channels are supported for `Airthings Wave Mini` thing:
 
 The `Airthings Wave Plus` thing has additionally the following channels:
 
-| Channel ID         | Item Type                | Description                                 |
-| ------------------ | ------------------------ | ------------------------------------------- |
-| pressure           | Number:Pressure          | The measured air pressure                   |
-| co2                | Number:Dimensionless     | The measured CO2 level                      |
-| radon_st_avg       | Number:Density           | The measured radon short term average level |
-| radon_lt_avg       | Number:Density           | The measured radon long term average level  |
+| Channel ID         | Item Type                        | Description                                 |
+| ------------------ | -------------------------------- | ------------------------------------------- |
+| pressure           | Number:Pressure                  | The measured air pressure                   |
+| co2                | Number:Dimensionless             | The measured CO2 level                      |
+| radon_st_avg       | Number:RadiationSpecificActivity | The measured radon short term average level |
+| radon_lt_avg       | Number:RadiationSpecificActivity | The measured radon long term average level  |
 
 The `Airthings Wave Gen 1` thing has the following channels:
 
-| Channel ID         | Item Type                | Description                                 |
-| ------------------ | ------------------------ | ------------------------------------------- |
-| radon_st_avg       | Number:Density           | The measured radon short term average level |
-| radon_lt_avg       | Number:Density           | The measured radon long term average level  |
-| temperature        | Number:Temperature       | The measured temperature                    |
-| humidity           | Number:Dimensionless     | The measured humidity                       |
+| Channel ID         | Item Type                        | Description                                 |
+| ------------------ | -------------------------------- | ------------------------------------------- |
+| radon_st_avg       | Number:RadiationSpecificActivity | The measured radon short term average level |
+| radon_lt_avg       | Number:RadiationSpecificActivity | The measured radon long term average level  |
+| temperature        | Number:Temperature               | The measured temperature                    |
+| humidity           | Number:Dimensionless             | The measured humidity                       |
 
 Note: For the `Airthings Wave Gen 1`, only one channel can be updated at each refreshInterval, so it will take refreshInterval x 4 cycles to sequentially update all 4 channels  
 
@@ -59,18 +59,18 @@ Note: For the `Airthings Wave Gen 1`, only one channel can be updated at each re
 
 airthings.things (assuming you have a Bluetooth bridge with the ID `bluetooth:bluegiga:adapter1`:
 
-```
+```java
 bluetooth:airthings_wave_plus:adapter1:sensor1  "Airthings Wave Plus Sensor 1" (bluetooth:bluegiga:adapter1) [ address="12:34:56:78:9A:BC", refreshInterval=300 ]
 ```
 
 airthings.items:
 
-```
-Number:Temperature      temperature     "Temperature [%.1f %unit%]"                   { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:temperature" }
-Number:Dimensionless    humidity        "Humidity [%d %unit%]"                        { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:humidity" }
-Number:Pressure         pressure        "Air Pressure [%d %unit%]"                    { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:pressure" }
-Number:Dimensionless    co2             "CO2 level [%d %unit%]"                       { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:co2" }
-Number:Dimensionless    tvoc            "TVOC level [%d %unit%]"                      { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:tvoc" }
-Number:Density          radon_st_avg    "Radon short term average level [%d %unit%]"  { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:radon_st_avg" }
-Number:Density          radon_lt_avg    "Radon long term average level [%d %unit%]"   { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:radon_lt_avg" }
+```java
+Number:Temperature                  temperature     "Temperature [%.1f %unit%]"                   { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:temperature" }
+Number:Dimensionless                humidity        "Humidity [%d %unit%]"                        { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:humidity" }
+Number:Pressure                     pressure        "Air Pressure [%d %unit%]"                    { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:pressure" }
+Number:Dimensionless                co2             "CO2 level [%d %unit%]"                       { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:co2" }
+Number:Dimensionless                tvoc            "TVOC level [%d %unit%]"                      { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:tvoc" }
+Number:RadiationSpecificActivity    radon_st_avg    "Radon short term average level [%d %unit%]"  { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:radon_st_avg" }
+Number:RadiationSpecificActivity    radon_lt_avg    "Radon long term average level [%d %unit%]"   { channel="bluetooth:airthings_wave_plus:adapter1:sensor1:radon_lt_avg" }
 ```

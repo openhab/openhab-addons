@@ -1,11 +1,11 @@
 # E3DC
 
-Integrates the Home Power Plants from E3/DC GmbH into openHAB. 
+Integrates the Home Power Plants from E3/DC GmbH into openHAB.
 See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
 The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
-E3DC devices are integrated into the Modbus Binding. 
+E3DC devices are integrated into the Modbus Binding.
 
-See chapter [Thing Configuration](#thing-configuration) how to set them up or check the [full example Things](#things) for manual setup. 
+See chapter [Thing Configuration](#thing-configuration) how to set them up or check the [full example Things](#things) for manual setup.
 
 ## Supported Things
 
@@ -16,11 +16,10 @@ First you need a Bridge which establishes the basic connection towards your E3DC
 | E3DC Home Power Plant | e3dc          | Provides Power values, String Details, Emergency Power Status and general Information of your E3DC Home Power Plant    |
 | E3DC Wallbox          | e3dc-wallbox  | Provides your Wallbox Settings. Switches like "Sunmode" or "1-Phase Charging" can be changed     |
 
-
 ## Discovery
 
-There's no discovery. 
-Modbus registers are available for all devices. 
+There's no discovery.
+Modbus registers are available for all devices.
 
 ## Thing Configuration
 
@@ -30,43 +29,42 @@ The needed Things can be found in the **Modbus Binding** and have to be added ma
 
 1. Create _Modbus TCP Bridge_ with matching Settings of your E3DC Device
 
-* IP Address
-* Device ID
-* Port ID
+- IP Address
+- Device ID
+- Port ID
 
-2. Create _E3DC Home Power Plant_ and attach it to the previous installed _Modbus TCP Bridge_. Configuration requires an approriate Data Refresh Interval with more than 1000 Milliseconds
+1. Create _E3DC Home Power Plant_ and attach it to the previous installed _Modbus TCP Bridge_. Configuration requires an approriate Data Refresh Interval with more than 1000 Milliseconds
 
-3. If you have a Wallbox attached add _E3DC Wallbox_ Thing with your previous installed _E3DC Home Power Plant_ as Bridge. Configuration requires a Wallbox ID between 0 and 7.
+1. If you have a Wallbox attached add _E3DC Wallbox_ Thing with your previous installed _E3DC Home Power Plant_ as Bridge. Configuration requires a Wallbox ID between 0 and 7.
 
 Check the [full example Things](#things) for manual setup.
 
-### Modbus TCP Slave 
+### Modbus TCP Slave
 
-| Parameter       | Type    | Description                                                             |           
+| Parameter       | Type    | Description                                                             |
 |-----------------|---------|-------------------------------------------------------------------------|
 | host            | text    | IP Address of your device                                               |
 | port            | integer | TCP Port of your E3DC device Modbus Settings.. Default is 502 |
 | deviceid        | integer | Modbus ID of your E3DC device Modbus Settings. Default is 1           |
 
-### E3DC Home Power Plant 
+### E3DC Home Power Plant
 
 Select as Bridge your previously created Modbus TCP Slave.
-| Parameter       | Type    | Description                                                             |           
+| Parameter       | Type    | Description                                                             |
 |-----------------|---------|-------------------------------------------------------------------------|
 | refresh         | integer | Refresh Rate of E3DC values in Milliseconds                             |
-
 
 ### E3DC Wallbox
 
 Select as Bridge your previously created E3DC Home Power Plant.
 
-| Parameter       | Type    | Description                                                                 |           
+| Parameter       | Type    | Description                                                                 |
 |-----------------|---------|-----------------------------------------------------------------------------|
 | wallboxId       | integer | E3DC supports up to 8 Wallboxes - select a value from 0 to 7                |
 
 ## Channels
 
-The E3DC device offers quite an amount of channels. For clustering 4 Channel Groups are used: 
+The E3DC device offers quite an amount of channels. For clustering 4 Channel Groups are used:
 
 ### Channel Group _Information Block_
 
@@ -79,7 +77,6 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 | E3DC Model Name       | info             | model-name          | String | Name of the E3DC Model                            |
 | E3DC Firmware Release | info             | firmware-release    | String | Firmware installed on this particular E3DC Device |
 | E3DC Serial Number    | info             | serial-number       | String | Serial Number of this particular E3DC Device      |
-
 
 ### Channel Group _Power Block_
 
@@ -98,7 +95,6 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 | Self Consumption              | power             | self-consumption             |  Number:Dimensionless  | Your current Photovoltaic Self Consumption Level in Percent                            |
 | Battery State Of Charge       | power             | battery-soc                  |  Number:Dimensionless  | Charge Level of your attached Battery in Percent                                       |
 
-
 ### Channel Group _String Details Block_
 
 | Channel Label         | Channel Group ID | Channel ID         | Type                      | Description                |
@@ -112,7 +108,6 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 | String 1 Power        | strings          | string1-dc-output  |  Number:Power             | Power produced by String 1 |
 | String 2 Power        | strings          | string2-dc-output  |  Number:Power             | Power produced by String 2 |
 | String 3 Power        | strings          | string3-dc-output  |  Number:Power             | Power produced by String 3 |
-
 
 ### Channel _EMS Block_
 
@@ -149,22 +144,22 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 
 ## Full Example
 
-Following example provides the full configuration. 
+Following example provides the full configuration.
 If you enter the correct Connection Data, IP Address, Device ID and Port number in the thing configuration you should be fine.
 
 ### Things
 
-```
+```java
 Bridge modbus:tcp:device "E3DC Modbus TCP" [ host="192.168.178.56", port=502, id=1 ] {
-	Bridge e3dc powerplant "E3DC Power Plant" [ refresh=2500 ] {
-    	 Thing e3dc-wallbox wallbox0		"E3DC Wallbox"				[ wallboxId=0]
+ Bridge e3dc powerplant "E3DC Power Plant" [ refresh=2500 ] {
+      Thing e3dc-wallbox wallbox0  "E3DC Wallbox"    [ wallboxId=0]
     }
 }
 ```
 
 ### Items
 
-```
+```java
 String    E3DC_ModbusId                 "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#modbus-id" }
 String    E3DC_ModbusFirmware           "E3DC Modbus Firmware"      (e3dc)      { channel="modbus:e3dc:device:powerplant:info#modbus-firmware" }
 Number    E3DC_SupportedRegisters       "E3DC Supported Registers"  (e3dc)      { channel="modbus:e3dc:device:powerplant:info#supported-registers" }
@@ -222,7 +217,7 @@ Switch    E3DC_EMS_DischargeLockTime            "E3DC EMS Discharge Lock TIme"  
 
 ### Sitemap
 
-```
+```perl
 sitemap E3DC label="E3DC Binding Sitemap" {
   Frame label="Info" {
     Text    item=E3DC_ModbusId                  label="Modbus-ID [%s]"
@@ -298,18 +293,17 @@ sitemap E3DC label="E3DC Binding Sitemap" {
 }
 ```
 
-
 ## Going further
 
 Setup and configured everything the right way? Congratulations, you've now the recent E3DC values on your table. Don't stop and go ahead!
 
 ### Persistence
 
-You can see in the example item configuration, that I added some items to the "persist". 
-Feel free to choose your own group name but this opens the possibility to store the items in a database. 
+You can see in the example item configuration, that I added some items to the "persist".
+Feel free to choose your own group name but this opens the possibility to store the items in a database.
 See following *.persist file configuration how this can be established.
 
-```
+```text
 Strategies {
     everyMinute : "0 * * * * ?"
     everyHour : "0 0 * * * ?"
@@ -323,9 +317,9 @@ Items {
 }
 ```
 
-### Visualization 
+### Visualization
 
-After the timeline is available in your database you can continue with Visualization. 
+After the timeline is available in your database you can continue with Visualization.
 I like the Grafana approach and I used the [InfluxDB & Grafana Tutorial](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
 from the Community to set this up.
 I prepared my machine and I'm quite pleased with the results.
@@ -334,22 +328,22 @@ I prepared my machine and I'm quite pleased with the results.
 
 In the above picture there are two graphs
 
-* The top one shows the Photovoltaic Production of my 2 attached Strings. You can clearly see when the sky wasn't bright the production goes down
-* The bottom graph show the producers & consumers. 
-    * Battery in blue charging during the day, discharging at night
-    * Household consumption in green 
-    * Wallbox consumption in orange
-    * Grid consumption / supply in yellow
+- The top one shows the Photovoltaic Production of my 2 attached Strings. You can clearly see when the sky wasn't bright the production goes down
+- The bottom graph show the producers & consumers.
+  - Battery in blue charging during the day, discharging at night
+  - Household consumption in green
+  - Wallbox consumption in orange
+  - Grid consumption / supply in yellow
 
-### Cross Connections 
+### Cross Connections
 
-With the above setup you have now a great visualization and overview regarding your electric production and consumption. 
-Now use the Power of openHAB and cross connect your data. 
+With the above setup you have now a great visualization and overview regarding your electric production and consumption.
+Now use the Power of openHAB and cross connect your data.
 For example you can use the [OpenweatherMap API Binding](https://www.openhab.org/addons/bindings/openweathermap/)
-the cloudiness in Percent. 
+the cloudiness in Percent.
 With a modified *.persist file I store the cloudiness forecast also in the database
 
-```
+```text
 Strategies {
     everyMinute : "0 * * * * ?"
     everyHour : "0 0 * * * ?"
@@ -364,7 +358,7 @@ Items {
 }
 ```
 
-Having these values in the timeline you're able to cross check how the forecast influences the Photovoltaic Production. 
+Having these values in the timeline you're able to cross check how the forecast influences the Photovoltaic Production.
 
 <img align="right" src="./doc/GrafanaCloudiness.png"/>
 

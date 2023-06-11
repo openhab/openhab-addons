@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,9 @@ public class SDMAPI {
     private final Logger logger = LoggerFactory.getLogger(SDMAPI.class);
 
     private final HttpClient httpClient;
+    private final OAuthFactory oAuthFactory;
     private final OAuthClientService oAuthService;
+    private final String oAuthServiceHandleId;
     private final String projectId;
 
     private final Set<SDMAPIRequestListener> requestListeners = ConcurrentHashMap.newKeySet();
@@ -92,13 +94,20 @@ public class SDMAPI {
     public SDMAPI(HttpClientFactory httpClientFactory, OAuthFactory oAuthFactory, String ownerId, String projectId,
             String clientId, String clientSecret) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.oAuthService = oAuthFactory.createOAuthClientService(String.format(SDM_HANDLE_FORMAT, ownerId), TOKEN_URL,
-                AUTH_URL, clientId, clientSecret, SDM_SCOPE, false);
+        this.oAuthFactory = oAuthFactory;
+        this.oAuthServiceHandleId = String.format(SDM_HANDLE_FORMAT, ownerId);
+        this.oAuthService = oAuthFactory.createOAuthClientService(oAuthServiceHandleId, TOKEN_URL, AUTH_URL, clientId,
+                clientSecret, SDM_SCOPE, false);
         this.projectId = projectId;
     }
 
     public void dispose() {
         requestListeners.clear();
+        oAuthFactory.ungetOAuthService(oAuthServiceHandleId);
+    }
+
+    public void deleteOAuthServiceAndAccessToken() {
+        oAuthFactory.deleteServiceAndAccessToken(oAuthServiceHandleId);
     }
 
     public void authorizeClient(String authorizationCode) throws InvalidSDMAuthorizationCodeException, IOException {

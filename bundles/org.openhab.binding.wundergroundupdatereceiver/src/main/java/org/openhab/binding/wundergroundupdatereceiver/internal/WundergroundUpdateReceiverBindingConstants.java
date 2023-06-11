@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,8 @@ public class WundergroundUpdateReceiverBindingConstants {
 
     public static final String NOW = "now";
 
+    public static final String UNCATEGORIZED = "Uncategorized";
+
     // Excluded technical paramter names
     public static final String REALTIME_MARKER = "realtime";
     public static final String PASSWORD = "PASSWORD";
@@ -56,8 +58,8 @@ public class WundergroundUpdateReceiverBindingConstants {
 
     // List of default synthetic channeltypes added to a new thing
     public static final String DATEUTC_DATETIME = "dateutc-datetime";
-    public static final String LAST_RECEIVED_DATETIME = "last-received-datetime";
     public static final String LAST_RECEIVED = "last-received";
+    public static final String LAST_RECEIVED_DATETIME = LAST_RECEIVED + "-datetime";
     public static final String LAST_QUERY = "last-query";
     public static final String LAST_QUERY_STATE = LAST_QUERY + "-state";
     public static final String LAST_QUERY_TRIGGER = LAST_QUERY + "-trigger";
@@ -72,7 +74,7 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final String PRESSURE_GROUP = "pressure";
     public static final String POLLUTION_GROUP = "pollution";
 
-    // Known or observed request paramters received from devices submitting to wunderground.com
+    // Known or observed request parameters received from devices submitting to wunderground.com
     public static final String DATEUTC = "dateutc";
     public static final String SOFTWARE_TYPE = "softwaretype";
     public static final String LOW_BATTERY = "lowbatt";
@@ -125,7 +127,7 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final String AQ_OC = "AqOC";
     public static final String AQ_BC = "AqBC";
     public static final String AQ_UV_AETH = "AqUV-AETH";
-    public static final String AQ_PM2_5 = "AqPM2.5";
+    public static final String AQ_PM2_5 = "AqPM2-5";
     public static final String AQ_PM10 = "AqPM10";
     public static final String AQ_OZONE = "AqOZONE";
 

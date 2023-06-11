@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,104 +34,108 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
  */
 @NonNullByDefault
 public interface ShellyApiInterface {
-    public boolean isInitialized();
+    boolean isInitialized();
 
-    public void initialize() throws ShellyApiException;
+    void initialize() throws ShellyApiException;
 
-    public void setConfig(String thingName, ShellyThingConfiguration config);
+    void setConfig(String thingName, ShellyThingConfiguration config);
 
-    public ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
+    ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
 
-    public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException;
+    ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException;
 
-    public ShellySettingsStatus getStatus() throws ShellyApiException;
+    ShellySettingsStatus getStatus() throws ShellyApiException;
 
-    public void setLedStatus(String ledName, Boolean value) throws ShellyApiException;
+    void setLedStatus(String ledName, Boolean value) throws ShellyApiException;
 
-    public void setSleepTime(int value) throws ShellyApiException;
+    void setSleepTime(int value) throws ShellyApiException;
 
-    public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException;
+    ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException;
 
-    public void setRelayTurn(int id, String turnMode) throws ShellyApiException;
+    void setRelayTurn(int id, String turnMode) throws ShellyApiException;
+
+    public void resetMeterTotal(int id) throws ShellyApiException;
 
     public ShellyRollerStatus getRollerStatus(int rollerIndex) throws ShellyApiException;
 
-    public void setRollerTurn(int relayIndex, String turnMode) throws ShellyApiException;
+    void setRollerTurn(int relayIndex, String turnMode) throws ShellyApiException;
 
-    public void setRollerPos(int relayIndex, int position) throws ShellyApiException;
+    void setRollerPos(int relayIndex, int position) throws ShellyApiException;
 
-    public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException;
+    void setAutoTimer(int index, String timerName, double value) throws ShellyApiException;
 
-    public ShellyStatusSensor getSensorStatus() throws ShellyApiException;
+    ShellyStatusSensor getSensorStatus() throws ShellyApiException;
 
-    public ShellyStatusLight getLightStatus() throws ShellyApiException;
+    ShellyStatusLight getLightStatus() throws ShellyApiException;
 
-    public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException;
+    ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException;
 
-    public void setLightMode(String mode) throws ShellyApiException;
+    void setLightMode(String mode) throws ShellyApiException;
 
-    public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException;
+    void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException;
 
-    public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException;
+    void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException;
 
-    public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException;
+    ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException;
 
-    public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException;
+    void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException;
 
     // Valve
-    public void setValveMode(int id, boolean auto) throws ShellyApiException;
+    void setValveMode(int id, boolean auto) throws ShellyApiException;
 
-    public void setValveTemperature(int valveId, int value) throws ShellyApiException;
+    void setValveTemperature(int valveId, int value) throws ShellyApiException;
 
-    public void setValveProfile(int valveId, int value) throws ShellyApiException;
+    void setValveProfile(int valveId, int value) throws ShellyApiException;
 
-    public void setValvePosition(int valveId, double value) throws ShellyApiException;
+    void setValvePosition(int valveId, double value) throws ShellyApiException;
 
-    public void setValveBoostTime(int valveId, int value) throws ShellyApiException;
+    void setValveBoostTime(int valveId, int value) throws ShellyApiException;
 
-    public void startValveBoost(int valveId, int value) throws ShellyApiException;
+    void startValveBoost(int valveId, int value) throws ShellyApiException;
 
-    public ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
+    void muteSmokeAlarm(int smokeId) throws ShellyApiException;
 
-    public ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException;
+    ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
 
-    public ShellySettingsLogin getLoginSettings() throws ShellyApiException;
+    ShellySettingsUpdate firmwareUpdate(String uri) throws ShellyApiException;
 
-    public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException;
+    ShellySettingsLogin getLoginSettings() throws ShellyApiException;
 
-    public String setWiFiRecovery(boolean enable) throws ShellyApiException;
+    ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException;
 
-    public boolean setWiFiRangeExtender(boolean enable) throws ShellyApiException;
+    String setWiFiRecovery(boolean enable) throws ShellyApiException;
 
-    public boolean setEthernet(boolean enable) throws ShellyApiException;
+    boolean setWiFiRangeExtender(boolean enable) throws ShellyApiException;
 
-    public boolean setBluetooth(boolean enable) throws ShellyApiException;
+    boolean setEthernet(boolean enable) throws ShellyApiException;
 
-    public String deviceReboot() throws ShellyApiException;
+    boolean setBluetooth(boolean enable) throws ShellyApiException;
 
-    public String setDebug(boolean enabled) throws ShellyApiException;
+    String deviceReboot() throws ShellyApiException;
 
-    public String getDebugLog(String id) throws ShellyApiException;
+    String setDebug(boolean enabled) throws ShellyApiException;
 
-    public String setCloud(boolean enabled) throws ShellyApiException;
+    String getDebugLog(String id) throws ShellyApiException;
 
-    public String setApRoaming(boolean enable) throws ShellyApiException;
+    String setCloud(boolean enabled) throws ShellyApiException;
 
-    public String factoryReset() throws ShellyApiException;
+    String setApRoaming(boolean enable) throws ShellyApiException;
 
-    public String resetStaCache() throws ShellyApiException;
+    String factoryReset() throws ShellyApiException;
 
-    public int getTimeoutsRecovered();
+    String resetStaCache() throws ShellyApiException;
 
-    public int getTimeoutErrors();
+    int getTimeoutsRecovered();
 
-    public String getCoIoTDescription() throws ShellyApiException;
+    int getTimeoutErrors();
 
-    public ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException;
+    String getCoIoTDescription() throws ShellyApiException;
 
-    public void setActionURLs() throws ShellyApiException;
+    ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException;
 
-    public void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException;
+    void setActionURLs() throws ShellyApiException;
 
-    public void close();
+    void sendIRKey(String keyCode) throws ShellyApiException, IllegalArgumentException;
+
+    void close();
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,6 @@ public class SetLightPowerRequest extends Packet {
     public SetLightPowerRequest() {
         state = PowerState.OFF;
         this.duration = 0;
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }
@@ -55,7 +54,6 @@ public class SetLightPowerRequest extends Packet {
     public SetLightPowerRequest(PowerState state) {
         this.state = state;
         this.duration = 0;
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

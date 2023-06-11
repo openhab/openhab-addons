@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.bigassfan")
 public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(BigAssFanDiscoveryService.class);
@@ -53,12 +56,9 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
 
     // Our own thread pool for the long-running listener job
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-    private ScheduledFuture<?> listenerJob;
-
-    DiscoveryListener discoveryListener;
-
+    private @Nullable ScheduledFuture<?> listenerJob;
+    private @Nullable DiscoveryListener discoveryListener;
     private boolean terminate;
-
     private final Pattern announcementPattern = Pattern.compile("[(](.*);DEVICE;ID;(.*);(.*)[)]");
 
     private Runnable listenerRunnable = () -> {
@@ -70,9 +70,9 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     };
 
     // Frequency (in seconds) with which we poll for new devices
-    private final long POLL_FREQ = 300L;
-    private final long POLL_DELAY = 12L;
-    private ScheduledFuture<?> pollJob;
+    private static final long POLL_FREQ = 300L;
+    private static final long POLL_DELAY = 12L;
+    private @Nullable ScheduledFuture<?> pollJob;
 
     public BigAssFanDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 0, BACKGROUND_DISCOVERY_ENABLED);
@@ -84,7 +84,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void activate(Map<String, Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
         logger.trace("BigAssFan discovery service ACTIVATED");
     }
@@ -97,7 +97,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     @Modified
-    protected void modified(Map<String, Object> configProperties) {
+    protected void modified(@Nullable Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -115,21 +115,22 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         cancelListenerJob();
     }
 
-    private void startListenerJob() {
-        if (listenerJob == null) {
-            terminate = false;
+    private synchronized void startListenerJob() {
+        if (this.listenerJob == null) {
             logger.debug("Starting discovery listener job in {} seconds", BACKGROUND_DISCOVERY_DELAY);
-            listenerJob = scheduledExecutorService.schedule(listenerRunnable, BACKGROUND_DISCOVERY_DELAY,
+            terminate = false;
+            this.listenerJob = scheduledExecutorService.schedule(listenerRunnable, BACKGROUND_DISCOVERY_DELAY,
                     TimeUnit.SECONDS);
         }
     }
 
     private void cancelListenerJob() {
-        if (listenerJob != null) {
+        ScheduledFuture<?> localListenerJob = this.listenerJob;
+        if (localListenerJob != null) {
             logger.debug("Canceling discovery listener job");
-            listenerJob.cancel(true);
+            localListenerJob.cancel(true);
             terminate = true;
-            listenerJob = null;
+            this.listenerJob = null;
         }
     }
 
@@ -143,9 +144,11 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
 
     private synchronized void listen() {
         logger.info("BigAssFan discovery service is running");
+        DiscoveryListener localDiscoveryListener;
 
         try {
-            discoveryListener = new DiscoveryListener();
+            localDiscoveryListener = new DiscoveryListener();
+            discoveryListener = localDiscoveryListener;
         } catch (SocketException se) {
             logger.warn("Got Socket exception creating multicast socket: {}", se.getMessage(), se);
             return;
@@ -158,7 +161,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         while (!terminate) {
             try {
                 // Wait for a discovery message
-                processMessage(discoveryListener.waitForMessage());
+                processMessage(localDiscoveryListener.waitForMessage());
             } catch (SocketTimeoutException e) {
                 // Read on socket timed out; check for termination
                 continue;
@@ -167,14 +170,11 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
                 break;
             }
         }
-        discoveryListener.shutdown();
+        localDiscoveryListener.shutdown();
         logger.debug("DiscoveryListener job is exiting");
     }
 
     private void processMessage(BigAssFanDevice device) {
-        if (device == null) {
-            return;
-        }
         Matcher matcher = announcementPattern.matcher(device.getDiscoveryMessage());
         if (matcher.find()) {
             logger.debug("Match: grp1={}, grp2={}, grp(3)={}", matcher.group(1), matcher.group(2), matcher.group(3));
@@ -242,23 +242,30 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
                 .withRepresentationProperty(THING_PROPERTY_MAC).withLabel(device.getLabel()).build());
     }
 
-    private void schedulePollJob() {
-        logger.debug("Scheduling discovery poll job to run every {} seconds starting in {} sec", POLL_FREQ, POLL_DELAY);
+    private synchronized void schedulePollJob() {
         cancelPollJob();
-        pollJob = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                discoveryListener.pollForDevices();
-            } catch (RuntimeException e) {
-                logger.warn("Poll job got unexpected exception: {}", e.getMessage(), e);
-            }
-        }, POLL_DELAY, POLL_FREQ, TimeUnit.SECONDS);
+        if (this.pollJob == null) {
+            logger.debug("Scheduling discovery poll job to run every {} seconds starting in {} sec", POLL_FREQ,
+                    POLL_DELAY);
+            pollJob = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    DiscoveryListener localListener = discoveryListener;
+                    if (localListener != null) {
+                        localListener.pollForDevices();
+                    }
+                } catch (RuntimeException e) {
+                    logger.warn("Poll job got unexpected exception: {}", e.getMessage(), e);
+                }
+            }, POLL_DELAY, POLL_FREQ, TimeUnit.SECONDS);
+        }
     }
 
     private void cancelPollJob() {
-        if (pollJob != null) {
+        ScheduledFuture<?> localPollJob = pollJob;
+        if (localPollJob != null) {
             logger.debug("Canceling poll job");
-            pollJob.cancel(true);
-            pollJob = null;
+            localPollJob.cancel(true);
+            this.pollJob = null;
         }
     }
 }

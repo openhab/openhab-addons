@@ -4,10 +4,10 @@ This binding is intended to provide basic support for Paradox Alarm system.
 
 With the power of openHAB this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
 
-Examples: 
+Examples:
 
-* All partitions are armed, therefore there is no one at home. 
-* Window is opened for more than 10 minutes and temperature outside is bellow XXX degrees, send mail/any other supported notification to particular people.
+- All partitions are armed, therefore there is no one at home.
+- Window is opened for more than 10 minutes and temperature outside is bellow XXX degrees, send mail/any other supported notification to particular people.
 
 ## Supported Paradox panels/systems
 
@@ -52,7 +52,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 |--------|------------------------------------------------------------------------------------|
 | LOGOUT | Logs out and disconnects from Paradox alarm system                                 |
 | LOGIN  | Creates socket if necessary, connects to paradox system and uses the logon data from the thing parameters to connect.|
-| RESET  | Does logout and then login with recreation of communicator objects inside the code.| 
+| RESET  | Does logout and then login with recreation of communicator objects inside the code.|
 
 ### Entities (zones, partitions) configuration parameters:
 
@@ -102,6 +102,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | zoneLabel       | String  | Label of zone inside Paradox configuration                                     |
 | openedState     | Contact | Zone opened / closed                                                           |
 | tamperedState   | Switch  | Zone is tampered / not tampered                                                |
+
 ## Example things configuration
 
 ```java
@@ -159,10 +160,10 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
             Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset"]
         }
         Frame label="Panel" {
-				Text item=paradoxTime
-				Text item=paradoxAcVoltage
-				Text item=paradoxDcVoltage
-				Text item=paradoxBatteryVoltage
+            Text item=paradoxTime
+            Text item=paradoxAcVoltage
+            Text item=paradoxDcVoltage
+            Text item=paradoxBatteryVoltage
         }
         Frame label="Partitions" {
             Text item=partition1State valuecolor=[partition1State=="Disarmed"="green", partition1State=="Armed"="red"]
@@ -181,8 +182,8 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 
 This binding would not be possible without the reverse engineering of the byte level protocol and the development by other authors in python, C# and other languages. Many thanks to the following authors and their respective GitHub repositories for their development that helped in creating this binding:
 
-João Paulo Barraca - https://github.com/ParadoxAlarmInterface/pai
+João Paulo Barraca - <https://github.com/ParadoxAlarmInterface/pai>
 
 Jean Henning - repository not available
 
-Tertuish - https://github.com/Tertiush/ParadoxIP150v2 / https://github.com/Tertiush/ParadoxIP150
+Tertuish - <https://github.com/Tertiush/ParadoxIP150v2> / <https://github.com/Tertiush/ParadoxIP150>

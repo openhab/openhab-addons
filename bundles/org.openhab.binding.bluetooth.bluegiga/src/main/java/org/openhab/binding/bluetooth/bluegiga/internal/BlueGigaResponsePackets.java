@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,89 +103,88 @@ class BlueGigaResponsePackets {
 
     private static Logger logger = LoggerFactory.getLogger(BlueGigaResponsePackets.class);
 
-    private static final Map<Integer, Class<?>> packetMap = new HashMap<>();
+    private static final Map<Integer, Class<?>> PACKETMAP = new HashMap<>();
 
     static {
-        packetMap.put(Objects.hash(0x00, 0x06, true), BlueGigaProtocolErrorEvent.class);
-        packetMap.put(Objects.hash(0x00, 0x02, true), BlueGigaEndpointWatermarkRxEvent.class);
-        packetMap.put(Objects.hash(0x00, 0x03, true), BlueGigaEndpointWatermarkTxEvent.class);
-        packetMap.put(Objects.hash(0x00, 0x05, true), BlueGigaNoLicenseKeyEvent.class);
-        packetMap.put(Objects.hash(0x04, 0x05, false), BlueGigaAttributeWriteResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x0A, false), BlueGigaExecuteWriteResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x00, false), BlueGigaFindByTypeValueResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x03, false), BlueGigaFindInformationResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x07, false), BlueGigaIndicateConfirmResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x09, false), BlueGigaPrepareWriteResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x01, false), BlueGigaReadByGroupTypeResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x04, false), BlueGigaReadByHandleResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x02, false), BlueGigaReadByTypeResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x08, false), BlueGigaReadLongResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x0B, false), BlueGigaReadMultipleResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x06, false), BlueGigaWriteCommandResponse.class);
-        packetMap.put(Objects.hash(0x04, 0x01, true), BlueGigaProcedureCompletedEvent.class);
-        packetMap.put(Objects.hash(0x04, 0x05, true), BlueGigaAttributeValueEvent.class);
-        packetMap.put(Objects.hash(0x04, 0x04, true), BlueGigaFindInformationFoundEvent.class);
-        packetMap.put(Objects.hash(0x04, 0x02, true), BlueGigaGroupFoundEvent.class);
-        packetMap.put(Objects.hash(0x04, 0x00, true), BlueGigaIndicatedEvent.class);
-        packetMap.put(Objects.hash(0x04, 0x00, true), BlueGigaReadMultipleResponseEvent.class);
-        packetMap.put(Objects.hash(0x02, 0x01, false), BlueGigaReadResponse.class);
-        packetMap.put(Objects.hash(0x02, 0x02, false), BlueGigaReadTypeResponse.class);
-        packetMap.put(Objects.hash(0x02, 0x02, false), BlueGigaSendAttributesResponse.class);
-        packetMap.put(Objects.hash(0x02, 0x03, false), BlueGigaUserReadResponseResponse.class);
-        packetMap.put(Objects.hash(0x02, 0x04, false), BlueGigaUserWriteResponseResponse.class);
-        packetMap.put(Objects.hash(0x02, 0x00, false), BlueGigaWriteResponse.class);
-        packetMap.put(Objects.hash(0x02, 0x02, true), BlueGigaAttributeStatusEvent.class);
-        packetMap.put(Objects.hash(0x02, 0x01, true), BlueGigaUserReadRequestEvent.class);
-        packetMap.put(Objects.hash(0x02, 0x00, true), BlueGigaValueEvent.class);
-        packetMap.put(Objects.hash(0x03, 0x04, false), BlueGigaChannelMapGetResponse.class);
-        packetMap.put(Objects.hash(0x03, 0x00, false), BlueGigaDisconnectResponse.class);
-        packetMap.put(Objects.hash(0x03, 0x01, false), BlueGigaGetRssiResponse.class);
-        packetMap.put(Objects.hash(0x03, 0x07, false), BlueGigaGetStatusResponse.class);
-        packetMap.put(Objects.hash(0x03, 0x02, false), BlueGigaUpdateResponse.class);
-        packetMap.put(Objects.hash(0x03, 0x04, true), BlueGigaDisconnectedEvent.class);
-        packetMap.put(Objects.hash(0x03, 0x02, true), BlueGigaFeatureIndEvent.class);
-        packetMap.put(Objects.hash(0x03, 0x00, true), BlueGigaConnectionStatusEvent.class);
-        packetMap.put(Objects.hash(0x03, 0x01, true), BlueGigaVersionIndEvent.class);
-        packetMap.put(Objects.hash(0x06, 0x07, false), BlueGigaSetScanParametersResponse.class);
-        packetMap.put(Objects.hash(0x06, 0x03, false), BlueGigaConnectDirectResponse.class);
-        packetMap.put(Objects.hash(0x06, 0x05, false), BlueGigaConnectSelectiveResponse.class);
-        packetMap.put(Objects.hash(0x06, 0x02, false), BlueGigaDiscoverResponse.class);
-        packetMap.put(Objects.hash(0x06, 0x08, false), BlueGigaSetAdvParametersResponse.class);
-        packetMap.put(Objects.hash(0x06, 0x09, false), BlueGigaSetAdvDataResponse.class);
-        packetMap.put(Objects.hash(0x06, 0x04, false), BlueGigaEndProcedureResponse.class);
-        packetMap.put(Objects.hash(0x06, 0x01, false), BlueGigaSetModeResponse.class);
-        packetMap.put(Objects.hash(0x06, 0x00, true), BlueGigaScanResponseEvent.class);
-        packetMap.put(Objects.hash(0x05, 0x02, false), BlueGigaDeleteBondingResponse.class);
-        packetMap.put(Objects.hash(0x05, 0x00, false), BlueGigaEncryptStartResponse.class);
-        packetMap.put(Objects.hash(0x05, 0x05, false), BlueGigaGetBondsResponse.class);
-        packetMap.put(Objects.hash(0x05, 0x04, false), BlueGigaPassKeyResponse.class);
-        packetMap.put(Objects.hash(0x05, 0x01, false), BlueGigaSetBondableModeResponse.class);
-        packetMap.put(Objects.hash(0x05, 0x03, false), BlueGigaSetParametersResponse.class);
-        packetMap.put(Objects.hash(0x05, 0x07, false), BlueGigaWhitelistBondsResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x0A, false), BlueGigaWhitelistAppendResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x0B, false), BlueGigaWhitelistRemoveResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x0C, false), BlueGigaWhitelistClearResponse.class);
-        packetMap.put(Objects.hash(0x05, 0x01, true), BlueGigaBondingFailEvent.class);
-        packetMap.put(Objects.hash(0x05, 0x04, true), BlueGigaBondStatusEvent.class);
-        packetMap.put(Objects.hash(0x05, 0x02, true), BlueGigaPasskeyDisplayEvent.class);
-        packetMap.put(Objects.hash(0x05, 0x03, true), BlueGigaPasskeyRequestEvent.class);
-        packetMap.put(Objects.hash(0x00, 0x02, false), BlueGigaAddressGetResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x01, false), BlueGigaHelloResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x00, false), BlueGigaResetResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x06, false), BlueGigaGetConnectionsResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x05, false), BlueGigaGetCountersResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x08, false), BlueGigaGetInfoResponse.class);
-        packetMap.put(Objects.hash(0x00, 0x00, true), BlueGigaBootEvent.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x06, true), BlueGigaProtocolErrorEvent.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x02, true), BlueGigaEndpointWatermarkRxEvent.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x03, true), BlueGigaEndpointWatermarkTxEvent.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x05, true), BlueGigaNoLicenseKeyEvent.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x05, false), BlueGigaAttributeWriteResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x0A, false), BlueGigaExecuteWriteResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x00, false), BlueGigaFindByTypeValueResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x03, false), BlueGigaFindInformationResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x07, false), BlueGigaIndicateConfirmResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x09, false), BlueGigaPrepareWriteResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x01, false), BlueGigaReadByGroupTypeResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x04, false), BlueGigaReadByHandleResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x02, false), BlueGigaReadByTypeResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x08, false), BlueGigaReadLongResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x0B, false), BlueGigaReadMultipleResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x06, false), BlueGigaWriteCommandResponse.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x01, true), BlueGigaProcedureCompletedEvent.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x05, true), BlueGigaAttributeValueEvent.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x04, true), BlueGigaFindInformationFoundEvent.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x02, true), BlueGigaGroupFoundEvent.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x00, true), BlueGigaIndicatedEvent.class);
+        PACKETMAP.put(Objects.hash(0x04, 0x00, true), BlueGigaReadMultipleResponseEvent.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x01, false), BlueGigaReadResponse.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x02, false), BlueGigaReadTypeResponse.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x02, false), BlueGigaSendAttributesResponse.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x03, false), BlueGigaUserReadResponseResponse.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x04, false), BlueGigaUserWriteResponseResponse.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x00, false), BlueGigaWriteResponse.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x02, true), BlueGigaAttributeStatusEvent.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x01, true), BlueGigaUserReadRequestEvent.class);
+        PACKETMAP.put(Objects.hash(0x02, 0x00, true), BlueGigaValueEvent.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x04, false), BlueGigaChannelMapGetResponse.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x00, false), BlueGigaDisconnectResponse.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x01, false), BlueGigaGetRssiResponse.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x07, false), BlueGigaGetStatusResponse.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x02, false), BlueGigaUpdateResponse.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x04, true), BlueGigaDisconnectedEvent.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x02, true), BlueGigaFeatureIndEvent.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x00, true), BlueGigaConnectionStatusEvent.class);
+        PACKETMAP.put(Objects.hash(0x03, 0x01, true), BlueGigaVersionIndEvent.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x07, false), BlueGigaSetScanParametersResponse.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x03, false), BlueGigaConnectDirectResponse.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x05, false), BlueGigaConnectSelectiveResponse.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x02, false), BlueGigaDiscoverResponse.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x08, false), BlueGigaSetAdvParametersResponse.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x09, false), BlueGigaSetAdvDataResponse.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x04, false), BlueGigaEndProcedureResponse.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x01, false), BlueGigaSetModeResponse.class);
+        PACKETMAP.put(Objects.hash(0x06, 0x00, true), BlueGigaScanResponseEvent.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x02, false), BlueGigaDeleteBondingResponse.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x00, false), BlueGigaEncryptStartResponse.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x05, false), BlueGigaGetBondsResponse.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x04, false), BlueGigaPassKeyResponse.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x01, false), BlueGigaSetBondableModeResponse.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x03, false), BlueGigaSetParametersResponse.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x07, false), BlueGigaWhitelistBondsResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x0A, false), BlueGigaWhitelistAppendResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x0B, false), BlueGigaWhitelistRemoveResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x0C, false), BlueGigaWhitelistClearResponse.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x01, true), BlueGigaBondingFailEvent.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x04, true), BlueGigaBondStatusEvent.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x02, true), BlueGigaPasskeyDisplayEvent.class);
+        PACKETMAP.put(Objects.hash(0x05, 0x03, true), BlueGigaPasskeyRequestEvent.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x02, false), BlueGigaAddressGetResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x01, false), BlueGigaHelloResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x00, false), BlueGigaResetResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x06, false), BlueGigaGetConnectionsResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x05, false), BlueGigaGetCountersResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x08, false), BlueGigaGetInfoResponse.class);
+        PACKETMAP.put(Objects.hash(0x00, 0x00, true), BlueGigaBootEvent.class);
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @Nullable
     public static BlueGigaResponse getPacket(int[] data) {
         int cmdClass = data[2];
         int cmdMethod = data[3];
         boolean isEvent = (data[0] & 0x80) != 0;
 
-        Class<?> bleClass = packetMap.get(Objects.hash(cmdClass, cmdMethod, isEvent));
+        Class<?> bleClass = PACKETMAP.get(Objects.hash(cmdClass, cmdMethod, isEvent));
 
         if (bleClass == null) {
             return null;

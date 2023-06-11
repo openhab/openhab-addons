@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import org.openhab.binding.solarwatt.internal.domain.model.S0Counter;
 import org.openhab.binding.solarwatt.internal.domain.model.ScheduleApp;
 import org.openhab.binding.solarwatt.internal.domain.model.SimpleSwitcher;
 import org.openhab.binding.solarwatt.internal.domain.model.SmartEnergyManagement;
+import org.openhab.binding.solarwatt.internal.domain.model.SmartHeater;
 import org.openhab.binding.solarwatt.internal.domain.model.SunSpecInverter;
 
 /**
@@ -124,6 +125,9 @@ public class EnergyManagerDevicesFactory {
         }
         if (deviceDTO.getDeviceModelStrings().contains(ProfileApp.SOLAR_WATT_CLASSNAME)) {
             return new ProfileApp(deviceDTO);
+        }
+        if (deviceDTO.getDeviceModelStrings().contains(SmartHeater.SOLAR_WATT_CLASSNAME)) {
+            return new SmartHeater(deviceDTO);
         }
 
         // Objects on level 0

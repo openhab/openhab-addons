@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
             .flatMap(List::stream) //
             .collect(Collectors.toUnmodifiableList());
 
-    private final GroovyClassLoader gcl = new GroovyClassLoader();
+    private final GroovyClassLoader gcl = new GroovyClassLoader(GroovyScriptEngineFactory.class.getClassLoader());
 
     public GroovyScriptEngineFactory() {
         String scriptDir = OpenHAB.getConfigFolder() + File.separator + FILE_DIRECTORY;

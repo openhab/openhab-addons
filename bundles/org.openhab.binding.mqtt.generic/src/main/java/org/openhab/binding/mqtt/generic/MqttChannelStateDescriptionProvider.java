@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,9 @@ public class MqttChannelStateDescriptionProvider implements DynamicStateDescript
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         StateDescription description = descriptions.get(channel.getUID());
-        logger.trace("Providing state description for channel {}", channel.getUID());
+        if (description != null) {
+            logger.trace("Providing state description for channel {}", channel.getUID());
+        }
         return description;
     }
 

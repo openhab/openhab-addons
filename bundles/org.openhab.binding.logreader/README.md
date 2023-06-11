@@ -8,13 +8,13 @@ When certain log events are recognized, openHAB rules can be used to send notifi
 This binding supports one ThingType: `reader`.
 A reader supports 3 separate channels
 
-  * One for errors
-  * one for warnings
-  * one custom channel for other purposes.
+- One for errors
+- one for warnings
+- one custom channel for other purposes.
 
 ## Thing Configuration
 
-The `reader` Thing has the following configuration parameters: 
+The `reader` Thing has the following configuration parameters:
 
 | Parameter                     | Type    | Required | Default if omitted               | Description                                                                             |
 | ------------------------------| ------- | -------- | -------------------------------- |-----------------------------------------------------------------------------------------|
@@ -51,7 +51,7 @@ List of channels
 
 ### example.things
 
-```xtend
+```java
 
 logreader:reader:openhablog[ refreshRate=1000, errorPatterns="ERROR+", errorBlacklistingPatterns="annoying error which should be ignored|Another annoying error which should be ignored" ]
 
@@ -59,7 +59,7 @@ logreader:reader:openhablog[ refreshRate=1000, errorPatterns="ERROR+", errorBlac
 
 ### example.items
 
-```xtend
+```java
 
 DateTime logreaderLogRotated        "Last Log Rotation [%1$tY.%1$tm.%1$te %1$tR]"   <time>  { channel="logreader:reader:openhablog:logRotated" }
 Number   logreaderErrors            "Error events matched [%d]"                     <alarm> { channel="logreader:reader:openhablog:errorEvents" }
@@ -73,25 +73,25 @@ String   logreaderLastCustom        "Last Custom [%s]"                          
 
 ### example.sitemap
 
-```xtend
+```perl
 
 sitemap logreader_example label="Example" {
-	Frame label="openHAB Log Reader" {
-		Text item=logreaderErrors
-		Text item=logreaderLastError
-		Text item=logreaderWarnings
-		Text item=logreaderLastWarning
-		Text item=logreaderCustoms
-		Text item=logreaderLastCustom
-		Text item=logreaderLogRotated
-	}
+ Frame label="openHAB Log Reader" {
+  Text item=logreaderErrors
+  Text item=logreaderLastError
+  Text item=logreaderWarnings
+  Text item=logreaderLastWarning
+  Text item=logreaderCustoms
+  Text item=logreaderLastCustom
+  Text item=logreaderLogRotated
+ }
 }
 
 ```
 
 ### example.rules
 
-```xtend
+```java
 rule "LogReader"
     when
         Channel "logreader:reader:openhablog:newErrorEvent" triggered
@@ -102,7 +102,7 @@ rule "LogReader"
 
 Use the rules with your Telegram Bot (need openHAB Telegram Binding installed and configured)
 
-```xtend
+```java
 rule "LogReader"
     when
         Channel 'logreader:reader:openhablog:newErrorEvent' triggered
@@ -113,7 +113,7 @@ rule "LogReader"
 ```
 
 Be careful when sending e.g. email notifications.
-You could easily send thousand of *spam* emails in short period if e.g. one binding is in error loop.
+You could easily send thousand of _spam_ emails in short period if e.g. one binding is in error loop.
 
 ### Thing status
 

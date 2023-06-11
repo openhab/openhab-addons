@@ -5,7 +5,7 @@ Currently only one model is supported, the SDS011.
 
 It basically implements the protocol specified in [this document](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
 One can measure the PM 2.5 and PM 10 values with this device.
-It comes very handy for detecting air pollution like neighbors firing their oven with wet wood etc. so one can deactivate the ventilation system. 
+It comes very handy for detecting air pollution like neighbors firing their oven with wet wood etc. so one can deactivate the ventilation system.
 
 ## Supported Things
 
@@ -43,7 +43,7 @@ A full overview about the parameters of the `SDS011` thing is given in the follo
 
 ## Channels
 
-Since the supported device is a sensor, both channels are read-only channels. 
+Since the supported device is a sensor, both channels are read-only channels.
 
 | channel  | type           | description                   |
 |----------|----------------|-------------------------------|
@@ -54,21 +54,21 @@ Since the supported device is a sensor, both channels are read-only channels.
 
 demo.things:
 
-```
+```java
 Thing novafinedust:SDS011:mySDS011Report "My SDS011 Fine Dust Sensor with reporting" [ port="/dev/ttyUSB0", reporting=true, reportingInterval=1 ]
 Thing novafinedust:SDS011:mySDS011Poll "My SDS011 Fine Dust Sensor with polling" [ port="/dev/ttyUSB0", reporting=false, pollingInterval=10 ]
 ```
 
 demo.items:
 
-```
+```java
 Number:Density PM25 "My PM 2.5 value" { channel="novafinedust:SDS011:mySDS011Report:pm25" }
 Number:Density PM10 "My PM 10 value" { channel="novafinedust:SDS011:mySDS011Report:pm10" }
 ```
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame {

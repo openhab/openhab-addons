@@ -17,7 +17,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>WolfSmartset System</label>
-		<description>An WolfSmartset system</description>
+		<description>A WolfSmartset system</description>
 		<representation-property>systemId</representation-property>
 		<config-description-ref uri="thing-type:wolfsmartset:system"/>
 	</bridge-type>
@@ -28,7 +28,7 @@
 			<bridge-type-ref id="system"/>
 		</supported-bridge-type-refs>
 		<label>WolfSmartset Unit</label>
-		<description>An WolfSmartset remote unit</description>
+		<description>A WolfSmartset remote unit</description>
 
 		<representation-property>unitId</representation-property>
 		<config-description-ref uri="thing-type:wolfsmartset:unit"/>

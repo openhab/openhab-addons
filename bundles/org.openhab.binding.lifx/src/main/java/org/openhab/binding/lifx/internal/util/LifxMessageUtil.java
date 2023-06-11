@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,9 @@ import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.Command;
 
 /**
  * Utility class for sharing message utility methods between objects.
@@ -102,9 +105,17 @@ public final class LifxMessageUtil {
         return new PercentType(value);
     }
 
-    public static int commandToKelvin(DecimalType temperature, TemperatureRange temperatureRange) {
-        return temperature instanceof PercentType ? percentTypeToKelvin((PercentType) temperature, temperatureRange)
-                : decimalTypeToKelvin(temperature, temperatureRange);
+    public static int commandToKelvin(Command temperature, TemperatureRange temperatureRange) {
+        if (temperature instanceof PercentType) {
+            return percentTypeToKelvin((PercentType) temperature, temperatureRange);
+        } else if (temperature instanceof QuantityType) {
+            return quantityTypeToKelvin((QuantityType) temperature, temperatureRange);
+        } else if (temperature instanceof DecimalType) {
+            return decimalTypeToKelvin((DecimalType) temperature, temperatureRange);
+        } else {
+            throw new IllegalStateException(
+                    "Unexpected command type " + temperature.getClass().getName() + " for color temperature command.");
+        }
     }
 
     public static int decimalTypeToKelvin(DecimalType temperature, TemperatureRange temperatureRange) {
@@ -115,6 +126,16 @@ public final class LifxMessageUtil {
     public static int percentTypeToKelvin(PercentType temperature, TemperatureRange temperatureRange) {
         return Math.round(
                 temperatureRange.getMaximum() - (temperature.floatValue() * (temperatureRange.getRange() / 100)));
+    }
+
+    public static int quantityTypeToKelvin(QuantityType temperature, TemperatureRange temperatureRange) {
+        QuantityType<?> asKelvin = temperature.toInvertibleUnit(Units.KELVIN);
+        if (asKelvin == null) {
+            throw new IllegalStateException(
+                    "Cannot convert color temperature " + temperature.toString() + " to Kelvin");
+        }
+
+        return asKelvin.intValue();
     }
 
     public static PercentType infraredToPercentType(int infrared) {

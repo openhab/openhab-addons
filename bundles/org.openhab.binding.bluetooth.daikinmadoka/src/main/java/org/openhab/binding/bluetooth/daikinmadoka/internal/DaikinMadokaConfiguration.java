@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DaikinMadokaConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Benjamin Lafois - Initial contribution
  */
+@NonNullByDefault
 public class DaikinMadokaConfiguration {
 
-    public String address;
-    public Integer refreshInterval;
-    public Integer commandTimeout;
+    public String address = "";
+    public int refreshInterval;
+    public int commandTimeout;
 }

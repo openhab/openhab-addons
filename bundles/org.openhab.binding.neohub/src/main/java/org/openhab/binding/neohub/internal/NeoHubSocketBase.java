@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Base abstract class for ASCII based communication between openHAB and NeoHub
+ * Base abstract class for text based communication between openHAB and NeoHub
  *
  * @author Andrew Fiddian-Green - Initial contribution
  *
@@ -27,9 +27,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public abstract class NeoHubSocketBase implements Closeable {
 
     protected final NeoHubConfiguration config;
+    protected final String hubId;
 
-    public NeoHubSocketBase(NeoHubConfiguration config) {
+    public NeoHubSocketBase(NeoHubConfiguration config, String hubId) {
         this.config = config;
+        this.hubId = hubId;
     }
 
     /**
@@ -37,8 +39,8 @@ public abstract class NeoHubSocketBase implements Closeable {
      *
      * @param requestJson the message to be sent to the NeoHub
      * @return responseJson received from NeoHub
-     * @throws NeoHubException, IOException
-     *
+     * @throws IOException if there was a communication error or the socket state would not permit communication
+     * @throws NeoHubException if the communication returned a response but the response was not valid JSON
      */
     public abstract String sendMessage(final String requestJson) throws IOException, NeoHubException;
 }

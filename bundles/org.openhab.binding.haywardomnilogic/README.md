@@ -29,13 +29,13 @@ The binding will automatically discover the Omnilogic pool things from the cloud
 
 Hayward OmniLogic Connection Parameters:
 
-| Property             | Default                                                        | Required | Description                                  |
-|----------------------|----------------------------------------------------------------|----------|----------------------------------------------|
-| Host Name            | https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ash | Yes      | Host name of the Hayward API server          |
-| User Name            | None                                                           | Yes      | Your Hayward User Name (not email address)   |
-| Password             | None                                                           | Yes      | Your Hayward User Password                   |
-| Telemetry Poll Delay | 12                                                             | Yes      | Telemetry Poll Delay (10-60 seconds)         |
-| Alarm Poll Delay     | 60                                                             | Yes      | Alarm Poll Delay (0-120 seconds, 0 disabled) |
+| Property             | Default                                                          | Required | Description                                  |
+|----------------------|------------------------------------------------------------------|----------|----------------------------------------------|
+| Host Name            | <https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ash> | Yes      | Host name of the Hayward API server          |
+| User Name            | None                                                             | Yes      | Your Hayward User Name (not email address)   |
+| Password             | None                                                             | Yes      | Your Hayward User Password                   |
+| Telemetry Poll Delay | 12                                                               | Yes      | Telemetry Poll Delay (10-60 seconds)         |
+| Alarm Poll Delay     | 60                                                               | Yes      | Alarm Poll Delay (0-120 seconds, 0 disabled) |
 
 ## Channels
 

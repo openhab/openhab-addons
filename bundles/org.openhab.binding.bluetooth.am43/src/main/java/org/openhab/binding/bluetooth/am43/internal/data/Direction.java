@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bluetooth.am43.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This is an enum representing possible motor direction settings
  *
  * @author Connor Petty - Initial contribution
  */
+@NonNullByDefault
 public enum Direction {
     Forward(0x1),
     Reverse(0x0);

@@ -30,7 +30,6 @@ The `controller` Thing has the following configuration parameters:
 | createChannelsAutomatically | Create channels automatically from project file. Project file loading parameter should be enabled as well.                                                                                  | no       | true          |
 | tlsVersion                  | TLS version used for controller communication. Choose `TLSv1` for older firmware versions and `TLSv1.2` for never versions (since fall 2021). `AUTO` mode try to recognize correct version. | no       | TLSv1         |
 
-
 ## Channels
 
 List of default controller channels.
@@ -75,10 +74,10 @@ Channel parameters:
 There are several ways to find the correct resource id's:
 
 1. Find directly from your IHC / ELKO LS project file (.vis file).
-2. Via IHC / ELKO Visual application. Hold ctrl button from keyboard while mouse over the select item in Visual.
-3. Enable debug level from binding. Binding will then print basic resource ID from the project file, if `loadProjectFile` configuration variable is enabled. 
+1. Via IHC / ELKO Visual application. Hold ctrl button from keyboard while mouse over the select item in Visual.
+1. Enable debug level from binding. Binding will then print basic resource ID from the project file, if `loadProjectFile` configuration variable is enabled.
 
-The binding supports resource id's ***only*** in decimal format.
+The binding supports resource id's _**only**_ in decimal format.
 Hexadecimal values (start with 0x prefix) need to be converted to decimal format.
 Conversion can be done e.g. via Calculator in Windows or Mac.
 
@@ -131,24 +130,23 @@ Supported commands:
 | DOWN        | Rollershutter       |
 | TOGGLE      | Switch              |
 
-All commands but `TOGGLE` are standard openHAB commands. 
-When `TOGGLE` command is specified, profile will toggle switch item state. 
+All commands but `TOGGLE` are standard openHAB commands.
+When `TOGGLE` command is specified, profile will toggle switch item state.
 E.g. if item state has been OFF, profile will send ON command to item.
- 
+
 Example:
 
-```xtend
+```java
 Dimmer test { channel="ihc:controller:elko:my_test_trigger"[profile="ihc:pushbutton-to-command", short-press-command="TOGGLE", long-press-command="INCREASE", long-press-time=1000, repeat-time=200] }
 ```
 
 Will send TOGGLE (ON/OFF) command to Dimmer test item when short button press is detected (button press less than 1000ms) and send INCREASE commands as long button is pressed over 1000ms (200ms interval).
 
-
 ## Examples
 
 ### example.things
 
-```xtend
+```java
 ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secret", timeout=5000, loadProjectFile=true, createChannelsAutomatically=false, tlsVersion="TLSv1" ] {
     Channels:
         Type switch                : my_test_switch  "My Test Switch"          [ resourceId=3988827 ]
@@ -169,7 +167,7 @@ ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secr
 
 ### example.items
 
-```xtend
+```java
 Switch test_switch  "Test Switch"    { channel="ihc:controller:elko:my_test_switch" }
 Switch test_contact "Test Contact"   { channel="ihc:controller:elko:my_test_contact" }
 Number test_number  "Test Number"    { channel="ihc:controller:elko:my_test_number" }
@@ -184,7 +182,7 @@ Dimmer dimmer { channel="ihc:controller:elko:my_test_trigger"[profile="ihc:pushb
 
 ### example.rules
 
-```xtend
+```java
 rule "My test trigger test rule"
 when
     Channel 'ihc:controller:elko:my_test_trigger' triggered LONG_PRESS 

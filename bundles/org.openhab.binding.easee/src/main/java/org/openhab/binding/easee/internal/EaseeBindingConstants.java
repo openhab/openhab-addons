@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,6 +104,7 @@ public class EaseeBindingConstants {
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
     public static final String COMMAND_SEND_COMMAND = "SendCommand";
     public static final String COMMAND_SEND_COMMAND_START_STOP = "SendCommandStartStop";
+    public static final String COMMAND_SEND_COMMAND_PAUSE_RESUME = "SendCommandPauseResume";
     public static final String COMMAND_SET_CIRCUIT_SETTINGS = "SetCircuitSettings";
     public static final String COMMAND_SET_DYNAMIC_CIRCUIT_CURRENTS = "SetDynamicCircuitCurrents";
     public static final String COMMAND_SET_MAX_CIRCUIT_CURRENTS = "SetMaxCircuitCurrents";
@@ -150,8 +151,10 @@ public class EaseeBindingConstants {
     public static final String GENERIC_NO = "No";
     public static final int CHARGER_OP_STATE_WAITING = 2;
     public static final int CHARGER_OP_STATE_CHARGING = 3;
+    public static final int CHARGER_OP_STATE_NOT_AUTHENTICATED = 7;
     public static final double CHARGER_DYNAMIC_CURRENT_PAUSE = 0;
-    public static final int CHARGER_REASON_FOR_NO_CURRENT_PAUSED = 52;
+    public static final int CHARGER_REASON_FOR_NO_CURRENT_CIRCUIT_LIMIT = 2;
+    public static final int CHARGER_REASON_FOR_NO_CURRENT_CHARGER_LIMIT = 52;
 
     public static final String THING_CONFIG_ID = "id";
     public static final String THING_CONFIG_SITE_ID = "siteId";

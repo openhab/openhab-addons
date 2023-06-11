@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,13 +20,13 @@ import com.google.gson.JsonObject;
 /**
  * The {@link JSONDeviceConfigImpl} is the implementation of the {@link DeviceConfig}.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - change from SimpleJSON to GSON
  * @author Matthias Siegele - change from SimpleJSON to GSON
  */
 public class JSONDeviceConfigImpl implements DeviceConfig {
 
-    private int class_ = -1;
+    private int clazz = -1;
     private int index = -1;
     private int value = -1;
 
@@ -37,7 +37,7 @@ public class JSONDeviceConfigImpl implements DeviceConfig {
      */
     public JSONDeviceConfigImpl(JsonObject object) {
         if (object.get(JSONApiResponseKeysEnum.CLASS.getKey()) != null) {
-            class_ = object.get(JSONApiResponseKeysEnum.CLASS.getKey()).getAsInt();
+            clazz = object.get(JSONApiResponseKeysEnum.CLASS.getKey()).getAsInt();
         }
         if (object.get(JSONApiResponseKeysEnum.INDEX.getKey()) != null) {
             index = object.get(JSONApiResponseKeysEnum.INDEX.getKey()).getAsInt();
@@ -49,7 +49,7 @@ public class JSONDeviceConfigImpl implements DeviceConfig {
 
     @Override
     public int getConfigurationClass() {
-        return class_;
+        return clazz;
     }
 
     @Override
@@ -64,6 +64,6 @@ public class JSONDeviceConfigImpl implements DeviceConfig {
 
     @Override
     public String toString() {
-        return "class: " + this.class_ + ", " + "index: " + this.index + ", " + "value: " + this.value;
+        return "class: " + this.clazz + ", " + "index: " + this.index + ", " + "value: " + this.value;
     }
 }

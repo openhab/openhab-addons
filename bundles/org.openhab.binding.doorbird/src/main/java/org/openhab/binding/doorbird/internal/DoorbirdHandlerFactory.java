@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,7 @@ public class DoorbirdHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_D101.equals(thingTypeUID) || THING_TYPE_D210X.equals(thingTypeUID)) {
-            return new DoorbellHandler(thing, timeZoneProvider, httpClient);
+            return new DoorbellHandler(thing, timeZoneProvider, httpClient, bundleContext);
         } else if (THING_TYPE_A1081.equals(thingTypeUID)) {
             return new ControllerHandler(thing);
         }

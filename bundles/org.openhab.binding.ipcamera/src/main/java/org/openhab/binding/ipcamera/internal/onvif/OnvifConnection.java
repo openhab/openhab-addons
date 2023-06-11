@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -316,13 +316,18 @@ public class OnvifConnection {
             } finally {
                 connecting.unlock();
             }
-            sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             parseDateAndTime(message);
             logger.debug("Openhabs UTC dateTime is:{}", getUTCdateTime());
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
             parseXAddr(message);
             sendOnvifRequest(requestBuilder(RequestType.GetProfiles, mediaXAddr));
         } else if (message.contains("GetProfilesResponse")) {// 3rd to be sent.
+            connecting.lock();
+            try {
+                isConnected = true;
+            } finally {
+                connecting.unlock();
+            }
             parseProfiles(message);
             sendOnvifRequest(requestBuilder(RequestType.GetSnapshotUri, mediaXAddr));
             sendOnvifRequest(requestBuilder(RequestType.GetStreamUri, mediaXAddr));
@@ -409,7 +414,7 @@ public class OnvifConnection {
         request.headers().add("Content-Type",
                 "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
         request.headers().add("Charset", "utf-8");
-        request.headers().set("Host", extractIPportFromUrl(xAddr));
+        request.headers().set("Host", ipAddress + ":" + onvifPort);
         request.headers().set("Connection", HttpHeaderValues.CLOSE);
         request.headers().set("Accept-Encoding", "gzip, deflate");
         String fullXml = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\"" + extraEnvelope + ">"
@@ -472,7 +477,21 @@ public class OnvifConnection {
         ptzXAddr = Helper.fetchXML(message, "<tt:PTZ", "tt:XAddr");
         if (ptzXAddr.isEmpty()) {
             ptzDevice = false;
-            logger.trace("Camera must not support PTZ, it failed to give a <tt:PTZ><tt:XAddr>:{}", message);
+            logger.debug("Camera has no ONVIF PTZ support.");
+            List<org.openhab.core.thing.Channel> removeChannels = new ArrayList<>();
+            org.openhab.core.thing.Channel channel = ipCameraHandler.getThing().getChannel(CHANNEL_PAN);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = ipCameraHandler.getThing().getChannel(CHANNEL_TILT);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = ipCameraHandler.getThing().getChannel(CHANNEL_ZOOM);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+            ipCameraHandler.removeChannels(removeChannels);
         } else {
             logger.debug("ptzXAddr:{}", ptzXAddr);
         }
@@ -578,8 +597,11 @@ public class OnvifConnection {
             onvifPort = Integer.parseInt(url.substring(beginIndex + 1, endIndex));
         } else {// 192.168.1.1
             ipAddress = url;
+            deviceXAddr = "http://" + ipAddress + "/onvif/device_service";
             logger.debug("No Onvif Port found when parsing:{}", url);
+            return;
         }
+        deviceXAddr = "http://" + ipAddress + ":" + onvifPort + "/onvif/device_service";
     }
 
     public void gotoPreset(int index) {
@@ -598,11 +620,13 @@ public class OnvifConnection {
 
     public void eventRecieved(String eventMessage) {
         String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
+        if (topic.isEmpty()) {
+            sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
+            return;
+        }
         String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
         String dataValue = Helper.fetchXML(eventMessage, "tt:Data", "Value=\"");
-        if (!topic.isEmpty()) {
-            logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
-        }
+        logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
         switch (topic) {
             case "RuleEngine/CellMotionDetector/Motion":
                 if ("true".equals(dataValue)) {
@@ -689,7 +713,43 @@ public class OnvifConnection {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
+            case "RuleEngine/MyRuleDetector/Visitor":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.OFF);
+                }
+                break;
+            case "RuleEngine/MyRuleDetector/VehicleDetect":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.OFF);
+                }
+                break;
+            case "RuleEngine/MyRuleDetector/DogCatDetect":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
+                }
+                break;
+            case "RuleEngine/MyRuleDetector/FaceDetect":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
+                }
+                break;
+            case "RuleEngine/MyRuleDetector/PeopleDetect":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
+                }
+                break;
             default:
+                logger.debug("Please report this camera has an un-implemented ONVIF event. Topic:{}", topic);
         }
         sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
     }
@@ -853,6 +913,7 @@ public class OnvifConnection {
                 threadPool = Executors.newScheduledThreadPool(2);
                 sendOnvifRequest(requestBuilder(RequestType.GetSystemDateAndTime, deviceXAddr));
                 usingEvents = useEvents;
+                sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             }
         } finally {
             connecting.unlock();

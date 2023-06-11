@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public abstract class RockerSwitchActionBaseProfile implements TriggerProfile {
 
     protected @Nullable State previousState;
 
-    final String ANYDIR = "*";
+    protected static final String ANY_DIR = "*";
 
     public RockerSwitchActionBaseProfile(ProfileCallback callback, ProfileContext context) {
         this.callback = callback;
@@ -46,9 +46,9 @@ public abstract class RockerSwitchActionBaseProfile implements TriggerProfile {
 
         EnOceanProfileRockerSwitchActionConfig config = context.getConfiguration()
                 .as(EnOceanProfileRockerSwitchActionConfig.class);
-        if (!(config.channelAFilter.equals(ANYDIR) || config.channelAFilter.equals(directions[0]))) {
+        if (!(config.channelAFilter.equals(ANY_DIR) || config.channelAFilter.equals(directions[0]))) {
             return false;
-        } else if (!(config.channelBFilter.equals(ANYDIR) || config.channelBFilter.equals(directions[1]))) {
+        } else if (!(config.channelBFilter.equals(ANY_DIR) || config.channelBFilter.equals(directions[1]))) {
             return false;
         }
 

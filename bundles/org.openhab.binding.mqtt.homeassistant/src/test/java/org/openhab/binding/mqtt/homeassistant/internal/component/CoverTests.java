@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,11 +28,11 @@ import org.openhab.core.library.types.StopMoveType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
 @NonNullByDefault
 public class CoverTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "cover/0x0000000000000000_cover_zigbee2mqtt";
 
+    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         // @formatter:off

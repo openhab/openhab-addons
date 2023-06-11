@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -34,6 +36,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_38_08_Blinds extends _4BSMessage {
 
     static final byte COMMAND_ID = 0x07;
@@ -63,10 +66,10 @@ public class A5_38_08_Blinds extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
-                byte db0 = ZERO | SEND_NEW_STATE | TeachInBit;
+                byte db0 = ZERO | SEND_NEW_STATE | TEACHIN_BIT;
                 byte db1 = ZERO;
                 byte db2 = ZERO;
 
@@ -114,11 +117,11 @@ public class A5_38_08_Blinds extends _4BSMessage {
     }
 
     protected State getPositionData() {
-        byte db0 = getDB_0();
+        byte db0 = getDB0();
         boolean paf = getBit(db0, 1);
 
         if (paf) {
-            int bsp = getDB_2Value();
+            int bsp = getDB2Value();
 
             if ((bsp >= 0) && (bsp <= 100)) {
                 return new PercentType(bsp);
@@ -129,11 +132,11 @@ public class A5_38_08_Blinds extends _4BSMessage {
     }
 
     protected State getAngleData() {
-        byte db0 = getDB_0();
+        byte db0 = getDB0();
         boolean paf = getBit(db0, 1);
 
         if (paf) {
-            byte db1 = getDB_1();
+            byte db1 = getDB1();
 
             boolean as = getBit(db1, 7);
             int an = (db1 & 0x7F) * 2;
@@ -147,8 +150,8 @@ public class A5_38_08_Blinds extends _4BSMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
                 return getPositionData();

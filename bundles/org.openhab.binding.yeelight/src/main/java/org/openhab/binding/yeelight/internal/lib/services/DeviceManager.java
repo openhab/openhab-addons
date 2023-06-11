@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -335,6 +335,8 @@ public class DeviceManager {
                 return "Yeelight LED Ceiling";
             case ceiling1:
             case ceiling3:
+            case ceil26:
+            case ceiling11:
                 return "Yeelight LED Ceiling with night mode";
             case ceiling4:
                 return "Yeelight LED Ceiling with ambient light";
@@ -346,6 +348,7 @@ public class DeviceManager {
             case ct_bulb:
                 return "Yeelight White LED Bulb v2";
             case stripe:
+            case strip6:
                 return "Yeelight Color LED Stripe";
             case desklamp:
                 return "Yeelight Mi LED Desk Lamp";

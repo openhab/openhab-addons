@@ -84,7 +84,7 @@ The Thing configuration for the **bridge** uses the following syntax:
 
 For Niko Home Control I:
 
-```
+```java
 Bridge nikohomecontrol:bridge:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
                                            refresh=<Refresh interval> ]
 ```
@@ -97,7 +97,7 @@ Bridge nikohomecontrol:bridge:<bridgeId> [ addr="<IP-address of IP-interface>", 
 
 For Niko Home Control II:
 
-```
+```java
 Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>, profile="<profile>",
                                            password="<token>", refresh=<Refresh interval> ]
 ```
@@ -120,7 +120,7 @@ The API token parameter should be set to the profile password.
 
 The Thing configuration for **Niko Home Control actions** has the following syntax:
 
-```
+```java
 Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId> "Label" @ "Location"
                         [ actionId="<Niko Home Control action ID>",
                           step=<dimmer increase/decrease step value> ]
@@ -128,14 +128,14 @@ Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId> "Label" @ "Location"
 
 or nested in the bridge configuration:
 
-```
+```java
 <thing type> <thingId> "Label" @ "Location" [ actionId="<Niko Home Control action ID>",
                          step=<dimmer increase/decrease step value> ]
 ```
 
 The following action thing types are valid for the configuration:
 
-```
+```text
 pushButton, onOff, dimmer, blind
 ```
 
@@ -168,7 +168,7 @@ The parameter is optional and set to 10 by default.
 
 The Thing configuration for **Niko Home Control thermostats** has the following syntax:
 
-```
+```java
 Thing nikohomecontrol:thermostat:<bridgeId>:<thingId> "Label" @ "Location"
                         [ thermostatId="<Niko Home Control thermostat ID>",
                           overruleTime=<default duration for overrule temperature in minutes> ]
@@ -176,7 +176,7 @@ Thing nikohomecontrol:thermostat:<bridgeId>:<thingId> "Label" @ "Location"
 
 or nested in the bridge configuration:
 
-```
+```java
 thermostat <thingId> "Label" @ "Location" [ thermostatId="<Niko Home Control thermostat ID>" ]
 ```
 
@@ -200,14 +200,14 @@ The default value is 60 minutes.
 
 The Thing configuration for **Niko Home Control energy meters** has the following syntax:
 
-```
+```java
 Thing nikohomecontrol:energymeter:<bridgeId>:<thingId> "Label" @ "Location"
                         [ energyMeterId="<Niko Home Control energy meter ID>" ]
 ```
 
 or nested in the bridge configuration:
 
-```
+```java
 energymeter <thingId> "Label" @ "Location" [ energyMeterId="<Niko Home Control energy meter ID>" ]
 ```
 
@@ -283,7 +283,7 @@ Electricity power consumption/production has only been implemented for Niko Home
 
 .things:
 
-```
+```java
 Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300 ] {
     pushButton 1 "AllOff" [ actionId="1" ]
     onOff 2 "LivingRoom" @ "Downstairs" [ actionId="2" ]
@@ -311,7 +311,7 @@ Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
 
 .items:
 
-```
+```java
 Switch AllOff           {channel="nikohomecontrol:onOff:nhc1:1:button"}           # Pushbutton for All Off action
 Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc1:2:switch"}           # Switch for onOff type action
 Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc1:3:brightness"}      # Changing brightness dimmer type action
@@ -326,7 +326,7 @@ Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeter:nhc2:6
 
 .sitemap:
 
-```
+```perl
 Switch item=AllOff
 Switch item=LivingRoom
 Slider item=TVRoom
@@ -341,7 +341,7 @@ Text item=Power
 
 Example trigger rule:
 
-```
+```java
 rule "example trigger rule"
 when
     Channel 'nikohomecontrol:bridge:nhc1:alarm' triggered or

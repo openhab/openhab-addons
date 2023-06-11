@@ -3,10 +3,10 @@
 This binding integrates with [Lutron](https://www.lutron.com) lighting control and home automation systems.
 It contains support for four different types of Lutron systems via different bridge things:
 
-* RadioRA 2, HomeWorks QS, Caseta, RA2 Select, and other current systems that can be controlled via Lutron Integration Protocol (LIP) or LEAP
-* The original RadioRA system, referred to here as RadioRA Classic
-* Legacy HomeWorks RS232 Processors
-* Grafik Eye 3x/4x systems with GRX-PRG or GRX-CI-PRG control interfaces
+- RadioRA 2, HomeWorks QS, Caseta, RA2 Select, and other current systems that can be controlled via Lutron Integration Protocol (LIP) or LEAP
+- The original RadioRA system, referred to here as RadioRA Classic
+- Legacy HomeWorks RS232 Processors
+- Grafik Eye 3x/4x systems with GRX-PRG or GRX-CI-PRG control interfaces
 
 Each is described in a separate section below.
 
@@ -22,29 +22,29 @@ The binding has not been tested with Quantum, QS Standalone, myRoom Plus, or Ath
 
 This binding currently supports the following thing types:
 
-* **ipbridge** - The Lutron main repeater/processor/hub
-* **leapbridge** - Experimental bridge that uses LEAP protocol (Caseta & RA2 Select only)
-* **dimmer** - Light dimmer
-* **switch** - Switch or relay module
-* **fan** - Fan controller
-* **occupancysensor** - Occupancy/vacancy sensor
-* **ogroup** - Occupancy group
-* **keypad** - Lutron seeTouch or Hybrid seeTouch Keypad
-* **ttkeypad** - Tabletop seeTouch Keypad
-* **intlkeypad** - International seeTouch Keypad (HomeWorks QS only)
-* **palladiomkeypad** - Palladiom Keypad (HomeWorks QS only)
-* **pico** - Pico Keypad
-* **grafikeyekeypad** - GRAFIK Eye QS Keypad (RadioRA 2/HomeWorks QS only)
-* **virtualkeypad** - Repeater/processor integration buttons or Caseta Smart Bridge scene buttons
-* **vcrx** - Visor control receiver module (VCRX)
-* **qsio** - QS IO Interface (HomeWorks QS only)
-* **wci** - QS Wallbox Closure Interface (WCI) (HomeWorks QS only)
-* **cco** - Contact closure output module or VCRX CCO
-* **shade** - Lutron shade, motorized drape, or motor controller
-* **blind** - Lutron venetian blind or horizontal sheer blind [**Experimental**]
-* **greenmode** - Green Mode subsystem
-* **timeclock** - Scheduling subsystem
-* **sysvar** - System state variable (HomeWorks QS only) [**Experimental**]
+- **ipbridge** - The Lutron main repeater/processor/hub
+- **leapbridge** - Experimental bridge that uses LEAP protocol (Caseta & RA2 Select only)
+- **dimmer** - Light dimmer
+- **switch** - Switch or relay module
+- **fan** - Fan controller
+- **occupancysensor** - Occupancy/vacancy sensor
+- **ogroup** - Occupancy group
+- **keypad** - Lutron seeTouch or Hybrid seeTouch Keypad
+- **ttkeypad** - Tabletop seeTouch Keypad
+- **intlkeypad** - International seeTouch Keypad (HomeWorks QS only)
+- **palladiomkeypad** - Palladiom Keypad (HomeWorks QS only)
+- **pico** - Pico Keypad
+- **grafikeyekeypad** - GRAFIK Eye QS Keypad (RadioRA 2/HomeWorks QS only)
+- **virtualkeypad** - Repeater/processor integration buttons or Caseta Smart Bridge scene buttons
+- **vcrx** - Visor control receiver module (VCRX)
+- **qsio** - QS IO Interface (HomeWorks QS only)
+- **wci** - QS Wallbox Closure Interface (WCI) (HomeWorks QS only)
+- **cco** - Contact closure output module or VCRX CCO
+- **shade** - Lutron shade, motorized drape, or motor controller
+- **blind** - Lutron venetian blind or horizontal sheer blind [**Experimental**]
+- **greenmode** - Green Mode subsystem
+- **timeclock** - Scheduling subsystem
+- **sysvar** - System state variable (HomeWorks QS only) [**Experimental**]
 
 ## Discovery
 
@@ -92,14 +92,14 @@ If you have a system that supports both protocols, you must decide which you wis
 
 You should be aware of the following functional differences between the protocols:
 
-* Using LIP on Caseta you can’t receive notifications of occupancy group status changes (occupied/unoccupied/unknown), but using LEAP you can.
-* Conversely, LIP provides notifications of keypad key presses, while LEAP does not (as far as is currently known).
+- Using LIP on Caseta you can’t receive notifications of occupancy group status changes (occupied/unoccupied/unknown), but using LEAP you can.
+- Conversely, LIP provides notifications of keypad key presses, while LEAP does not (as far as is currently known).
 This means that using ipbridge you can trigger rules and take actions on keypad key presses/releases, but using leapbridge you can’t.
-* Caseta and RA2 Select device discovery is supported via LEAP, but not via LIP.
-* The leapbridge is a bit more complicated to configure because LEAP uses an SSL connections and authenticates using certificates.
-* LIP is a publicly documented protocol, while LEAP is not. This means that Lutron could make a change that breaks LEAP support at any time.
+- Caseta and RA2 Select device discovery is supported via LEAP, but not via LIP.
+- The leapbridge is a bit more complicated to configure because LEAP uses an SSL connections and authenticates using certificates.
+- LIP is a publicly documented protocol, while LEAP is not. This means that Lutron could make a change that breaks LEAP support at any time.
 
-It is possible to run leapbridge and ipbridge at the same time, for the same bridge device, but each managed device (e.g. keypad or dimmer) should only be configured through *one* bridge.
+It is possible to run leapbridge and ipbridge at the same time, for the same bridge device, but each managed device (e.g. keypad or dimmer) should only be configured through _one_ bridge.
 Remember that LEAP device IDs and LIP integration IDs are not necessarily equal!
 
 #### ipbridge
@@ -131,7 +131,7 @@ Note that the user which openHAB runs under must have permission to read the fil
 
 Thing configuration file example:
 
-```
+```java
 Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", password="integration" ] {
     Thing ...
     Thing ...
@@ -167,7 +167,7 @@ It should not normally need to be changed.
 
 Thing configuration file example:
 
-```
+```java
 Bridge lutron:leapbridge:caseta [ ipAddress="192.168.1.3", keystore="/home/openhab/lutron.keystore", keystorePassword="secret" ] {
     Thing ...
     Thing ...
@@ -189,12 +189,12 @@ The `onToLast` parameter is a boolean that defaults to false.
 If set to "true", the dimmer will go to its last non-zero level when sent an ON command.
 If the last non-zero level cannot be determined, the value of `onLevel` will be used instead.
 
-A **dimmer** thing has a single channel *lightlevel* with type Dimmer and category DimmableLight.
+A **dimmer** thing has a single channel _lightlevel_ with type Dimmer and category DimmableLight.
 The **dimmer** thing was previously also used to control fan speed controllers, but now you should use the **fan** thing instead.
 
 Thing configuration file example:
 
-```
+```java
 Thing dimmer livingroom [ integrationId=8, fadeInTime=0.5, fadeOutTime=5 ]
 ```
 
@@ -202,9 +202,9 @@ The **dimmer** thing supports the thing action `setLevel(Double level, Double fa
 
 The parameters are:
 
-* `level` The new light level to set (0-100)
-* `fadeTime` The time in seconds over which the dimmer should fade to the new level
-* `delayTime` The time in seconds to delay before starting to fade to the new level
+- `level` The new light level to set (0-100)
+- `fadeTime` The time in seconds over which the dimmer should fade to the new level
+- `delayTime` The time in seconds to delay before starting to fade to the new level
 
 The fadeTime and delayTime parameters are significant to 2 digits after the decimal point (i.e. to hundredths of a second), but some Lutron systems may round the time to the nearest 0.25 seconds when processing the command.
 Times of 100 seconds or more will be rounded to the nearest integer value.
@@ -214,11 +214,11 @@ See below for an example rule using thing actions.
 #### Switches
 
 Switches take no additional parameters besides `integrationId`.
-A **switch** thing has a single channel *switchstatus* with type Switch and category Switch.
+A **switch** thing has a single channel _switchstatus_ with type Switch and category Switch.
 
 Thing configuration file example:
 
-```
+```java
 Thing switch porch [ integrationId=8 ]
 ```
 
@@ -226,11 +226,11 @@ Thing switch porch [ integrationId=8 ]
 
 Fan speed controllers are interfaced with using the **fan** thing.
 It accepts no additional parameters besides `integrationId`.
-A **fan** thing has two channels, *fanspeed* and *fanlevel*.
+A **fan** thing has two channels, _fanspeed_ and _fanlevel_.
 
 Thing configuration file example:
 
-```
+```java
 Thing fan porchfan [ integrationId=12 ]
 ```
 
@@ -242,14 +242,14 @@ For Caseta Smart Motion Sensors, you must use the **group** thing instead.
 
 It accepts no configuration parameters other than `integrationId`.
 
-The binding creates one *occupancystatus* channel, Item type Switch, category Motion.
+The binding creates one _occupancystatus_ channel, Item type Switch, category Motion.
 It is read-only, and ignores all commands.
 The channel state can be monitored for occupied (ON) or unoccupied (OFF) events coming from the sensor.
 The sensors cannot be queried for their state, so initial channel state at startup will be undefined (NULL).
 
 Thing configuration file example:
 
-```
+```java
 Thing occupancysensor shopsensor [ integrationId=7 ]
 ```
 
@@ -257,15 +257,15 @@ Thing occupancysensor shopsensor [ integrationId=7 ]
 
 A **ogroup** thing interfaces to an occupancy group, which shows occcupancy/vacancy status for an area or room with one or more occupancy sensors.
 On RadioRA2 and HomeWorks QS systems, you should generally choose to interface to either an occupancy group or individual occupancy sensors for a given area.
-On Caseta systems, you cannot interface to individual sensors and must use the *ogroup* thing.
+On Caseta systems, you cannot interface to individual sensors and must use the _ogroup_ thing.
 The `integrationId` parameter must be set to the occupancy group ID.
 
-The binding creates one read-only *groupstate* channel, item type String, category Motion.
+The binding creates one read-only _groupstate_ channel, item type String, category Motion.
 The value can be "OCCUPIED", "UNOCCUPIED", or "UNKNOWN".
 
 Thing configuration file example:
 
-```
+```java
 Thing ogroup lrgroup [ integrationId=7 ]
 ```
 
@@ -291,12 +291,12 @@ The `autorelease` parameter also effects behavior when sending an ON command to 
 If `autorelease` is set, the handler will send action "release" to the device component immediately after sending action "press".
 When the controller responds, the channel state will be transitioned back to OFF.
 
-A channel *button[nn]* with item type Switch and category Switch is created for each button, and a channel *led[nn]* with item type Switch and category Light is created for each button indicator LED.
+A channel _button[nn]_ with item type Switch and category Switch is created for each button, and a channel _led[nn]_ with item type Switch and category Light is created for each button indicator LED.
 You can monitor button channels for ON and OFF state changes to indicate button presses and releases, and send ON and OFF commands to remotely press and release buttons.
 Ditto for the indicator LED channels.
 Note, however, that version 11.6 or higher of the RadioRA 2 software may be required in order to drive keypad LED states, and then this may only be done on unbound buttons.
 
-Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate keypad thing under Settings/Things in the Administration UI and click on the Channels tab.
 You can also run the command `things show <thingUID>` (e.g. `things show lutron:keypad:radiora2:entrykeypad`) from the openHAB CLI to list the channels.
 
@@ -304,13 +304,13 @@ Supported settings for `model` parameter: H1RLD, H2RLD, H3BSRL, H3S, H4S, H5BRL,
 
 Thing configuration file example:
 
-```
+```java
 Thing keypad entrykeypad [ integrationId=10, model="W7B" autorelease=true ]
 ```
 
 Example rule triggered by a keypad button press:
 
-```
+```java
 rule ExampleScene
 when
   Item entrykeypad_button4 received update ON
@@ -325,16 +325,15 @@ Tabletop seeTouch keypads use the **ttkeypad** thing.
 It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
-Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate ttkeypad thing under Settings/Things in the Administration UI and click on the Channels tab.
 You can also run the command `things show <thingUID>` (e.g. `things show lutron:ttkeypad:radiora2:bedroomkeypad`) from the openHAB CLI to list the channels.
-
 
 Supported settings for `model` parameter: T5RL, T10RL, T15RL, T5CRL, T10CRL, T15CRL, Generic (default)
 
 Thing configuration file example:
 
-```
+```java
 Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true ]
 ```
 
@@ -344,11 +343,11 @@ International seeTouch keypads used in the HomeWorks QS system use the **intlkey
 It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
-To support this keypad's contact closure inputs, CCI channels named *cci1* and *cci2* are created with item type Contact and category Switch.
+To support this keypad's contact closure inputs, CCI channels named _cci1_ and _cci2_ are created with item type Contact and category Switch.
 They are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
 They present ON/OFF states the same as a keypad button.
 
-Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.107 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.107 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate intlkeypad thing under Settings/Things in the Administration UI and click on the Channels tab.
 You can also run the command `things show <thingUID>` (e.g. `things show lutron:intlkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
 
@@ -356,7 +355,7 @@ Supported settings for `model` parameter: 2B, 3B, 4B, 5BRL, 6BRL, 7BRL, 8BRL, 10
 
 Thing configuration file example:
 
-```
+```java
 Thing intlkeypad kitchenkeypad [ integrationId=15, model="10BRL" autorelease=true ]
 ```
 
@@ -366,7 +365,7 @@ Palladiom keypads used in the HomeWorks QS system use the **palladiomkeypad** th
 It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
-Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.95 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.95 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate palladiomkeypad thing under Settings/Things in the Administration UI and click on the Channels tab.
 You can also run the command `things show <thingUID>` (e.g. `things show lutron:palladiomkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
 
@@ -374,10 +373,9 @@ Supported settings for `model` parameter: 2W, 3W, 4W, RW, 22W, 24W, 42W, 44W, 2R
 
 Thing configuration file example:
 
-```
+```java
 Thing palladiomkeypad kitchenkeypad [ integrationId=16, model="4W" autorelease=true ]
 ```
-
 
 #### Pico Keypads
 
@@ -386,7 +384,7 @@ It accepts the same `integrationId`, `model`, and `autorelease` parameters and c
 The only difference is that no LED channels will be created, since Pico keypads have no indicator LEDs.
 See the discussion above for a full discussion of configuration and use.
 
-Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (<https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf>).
 If you are having problems determining which channels have been created for a given keypad model, select the appropriate pico thing under Settings/Things in the Administration UI and click on the Channels tab.
 You can also run the command `things show <thingUID>` (e.g. `things show lutron:pico:radiora2:hallpico`) from the openHAB CLI to list the channels.
 
@@ -394,7 +392,7 @@ Supported settings for `model` parameter: 2B, 2BRL, 3B, 3BRL, 4B, Generic (defau
 
 Thing configuration file example:
 
-```
+```java
 Thing pico hallpico [ integrationId=12, model="3BRL", autorelease=true ]
 ```
 
@@ -405,14 +403,14 @@ They can be used as peripheral devices in a RadioRA 2 or HomeWorks QS system, or
 The **grafikeyekeypad** thing is used to interface to the GRAFIK Eye QS front panel keypad when it is used in a RadioRA 2 or HomeWorks QS system.
 In this configuration, the integrated dimmers will appear to openHAB as separate output devices.
 
-If your GRAFIK Eye is being used as a stand-alone device and is not integrated in to a RadioRA 2 or HomeWorks QS system, then *this is not the thing you are looking for*.
+If your GRAFIK Eye is being used as a stand-alone device and is not integrated in to a RadioRA 2 or HomeWorks QS system, then _this is not the thing you are looking for_.
 You should instead be using the **grafikeye** thing (see below).
 
 The **grafikeyekeypad** thing accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button, LED, and CCI, channel types as the other keypad things (see above).
 The model parameter should be set to indicate whether there are zero, one, two, or three columns of buttons on the left side of the panel.
 Note that this count does not include the column of 5 scene buttons always found on the right side of the panel.
 
-To support the GRAFIK Eye's contact closure input, a CCI channel named *cci1* will be created with item type Contact and category Switch.
+To support the GRAFIK Eye's contact closure input, a CCI channel named _cci1_ will be created with item type Contact and category Switch.
 It is marked as Advanced, so you will need to check "Show advanced" in order to see it listed in the Administration UI.
 It presents ON/OFF states the same as a keypad button.
 
@@ -424,7 +422,7 @@ Supported settings for `model` parameter: 0COL, 1COL, 2COL, 3COL (default)
 
 Thing configuration file example:
 
-```
+```java
 Thing lutron:grafikeyekeypad:theaterkeypad (lutron:ipbridge:radiora2) [ integrationId=12, model="3COL", autorelease="true" ]
 ```
 
@@ -448,7 +446,7 @@ Supported settings for `model` parameter: Caseta, Other (default)
 
 Thing configuration file example:
 
-```
+```java
 Thing virtualkeypad repeaterbuttons [ integrationId=1, autorelease=true ]
 ```
 
@@ -461,7 +459,7 @@ The contact closure outputs (CCOs) have their own integration IDs and are handle
 Supported options are `integrationId` and `autorelease`.
 Supplying a model is not required, as there is only one model.
 
-To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
+To support the contact closure inputs, CCI channels named _cci[n]_ are created with item type Contact and category Switch.
 The VCRX security (Full/Flash) input controls both the cci1 and cci2 channels, while input connections 1 and 2 map to the cci3 and cci4 channels respectively.
 The cci channels are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
 They present OPEN/CLOSED states but do not accept commands since Contact items are read-only in openHAB.
@@ -469,7 +467,7 @@ Note that the `autorelease` option **does not** apply to CCI channels.
 
 Thing configuration file example:
 
-```
+```java
 Thing vcrx vcrx1 [ integrationId=13, autorelease=true ]
 ```
 
@@ -480,7 +478,7 @@ The 5 contact closure inputs (CCIs) are handled by the **qsio** thing.
 The 5 contact closure outputs (CCOs) are handled by the **cco** thing (see below).
 The only configuration option is `integrationId`
 
-To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
+To support the contact closure inputs, CCI channels named _cci[n]_ are created with item type Contact and category Switch.
 They are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
 They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
 
@@ -488,7 +486,7 @@ Some functionality may depend on QSE-IO DIP switch settings. See the Lutron docu
 
 Thing configuration file example:
 
-```
+```java
 Thing qsio sensorinputs [ integrationId=42 ]
 ```
 
@@ -506,7 +504,7 @@ See the Lutron documentation for more information.
 
 Thing configuration file example:
 
-```
+```java
 Thing wci specialkeypad [ integrationId=48, autorelease=true ]
 ```
 
@@ -522,7 +520,7 @@ Be aware that the Lutron controller may round the pulse length down to the neare
 **Note:** The **ccopulsed** and **ccomaintained** things are now deprecated.
 You should use the **cco** thing with the appropriate `outputType` setting instead.
 
-Each **cco** thing creates one switch channel called *switchstatus*.
+Each **cco** thing creates one switch channel called _switchstatus_.
 For pulsed CCOs, sending an ON command will close the output for the configured pulse time.
 Sending an OFF command does nothing.
 Because of limitations in RadioRA 2, you cannot monitor the state of a pulsed CCO.
@@ -532,7 +530,7 @@ For maintained CCOs, sending ON and OFF commands works as expected, and the chan
 
 Thing configuration file example:
 
-```
+```java
 Thing cco garage [ integrationId=5, outputType="Pulsed", pulseLength=0.5 ]
 Thing cco relay1 [ integrationId=7, outputType="Maintained"]
 ```
@@ -542,7 +540,7 @@ Thing cco relay1 [ integrationId=7, outputType="Maintained"]
 Each Lutron shade, motorized drape, or QS motor controller output (LQSE-4M-D) is controlled by a **shade** thing.
 The only configuration parameter it accepts is `integrationId`.
 
-A single channel *shadelevel* with item type Rollershutter and category Rollershutter will be created for each **shade** thing.
+A single channel _shadelevel_ with item type Rollershutter and category Rollershutter will be created for each **shade** thing.
 It accepts Percent, Up, Down, Stop and Refresh commands.
 Sending a Percent command will cause the shade to immediately move so as to be open the specified percentage.
 You can also read the current shade level from the channel.
@@ -551,14 +549,14 @@ The shade handler should be compatible with all Lutron devices which appear to t
 
 Motor controller outputs on a LQSE-4M-D (HomeWorks QS only) behave similarly to a shade.
 The only difference is that percentages other than 0% and 100% will be ignored, since arbitrary positioning is not supported by the hardware.
-The value of *shadelevel* for a motor will likewise always be either 0% or 100%, depending on whether the last command sent was Up or Down.
+The value of _shadelevel_ for a motor will likewise always be either 0% or 100%, depending on whether the last command sent was Up or Down.
 
 **Note:** While a shade is moving to a specific level because of a Percent command, the system will report the target level for the shade rather than the actual current level.
 While a shade is moving because of an Up or Down command, it will report the previous level until it stops moving.
 
 Thing configuration file example:
 
-```
+```java
 Thing shade libraryshade [ integrationId=33]
 ```
 
@@ -569,7 +567,7 @@ Besides `integrationId`, it requires that the parameter `type` be set to either 
 There is no default.
 If discovery is used, the `type` parameter will set automatically when the **blind** thing is created.
 
-Two channels, *blindliftlevel* and *blindtiltlevel*, with item type Rollershutter and category Rollershutter will be created for each **blind** thing.
+Two channels, _blindliftlevel_ and _blindtiltlevel_, with item type Rollershutter and category Rollershutter will be created for each **blind** thing.
 They control the up/down motion and the slat tilt motions of the blinds, respectively.
 Each channel accepts Percent, Up, Down, Stop and Refresh commands.
 Sending a Percent command will cause the blind to immediately move so as to be open the specified percentage.
@@ -584,7 +582,7 @@ Please comment on your use of it in the openHAB community forum.
 
 Thing configuration file example:
 
-```
+```java
 Thing blind officeblinds [ integrationId=76, type="Venetian"]
 ```
 
@@ -597,7 +595,7 @@ Typically step 1 is "Off" or "Normal", and step 2 is "Green Mode", however other
 The **greenmode** thing is used to interface to the green mode subsystem.
 It requires that the `integrationId` parameter be set to the ID of the green mode subsystem.
 This should generally be 22.
-It creates a single channel *step* that can be used to set or query the active green mode step number.
+It creates a single channel _step_ that can be used to set or query the active green mode step number.
 
 Unlike other Lutron system state settings, the binding is not automatically notified by the bridge device of changes to the current green mode step.
 This may be due to a bug in the Lutron firmware.
@@ -610,7 +608,7 @@ Note that it should usually be unnecessary for the poll interval to be set to le
 
 Thing configuration file example:
 
-```
+```java
 Thing greenmode greenmode [ integrationId=22 ]
 ```
 
@@ -626,24 +624,24 @@ The `integrationId` parameter must be set to the ID of the timeclock subsystem.
 
 It creates the following six channels:
 
-* *clockmode* - Gets or sets the current timeclock mode.
-* *sunrise* - The timeclock's local sunrise time for the current day. Read only. You must send a refresh command (RefreshType.REFRESH) to query the system for the current day's sunrise time, as it is not automatically updated.
-* *sunset* - The timeclock's local sunset time for the current day. Read only. You must send a refresh command to query the system for the current day's sunset time, as it is not automatically updated.
-* *execevent* - Updates with the index number of each executing event. Send an event's index number to start execution of it.
-* *enableevent* - Updates with an event's index number when it is enabled. Send an event's index number to enable it.
-* *disableevent* - Updates with an event's index number when it is disabled. Send an event's index number to disable it.
+- _clockmode_ - Gets or sets the current timeclock mode.
+- _sunrise_ - The timeclock's local sunrise time for the current day. Read only. You must send a refresh command (RefreshType.REFRESH) to query the system for the current day's sunrise time, as it is not automatically updated.
+- _sunset_ - The timeclock's local sunset time for the current day. Read only. You must send a refresh command to query the system for the current day's sunset time, as it is not automatically updated.
+- _execevent_ - Updates with the index number of each executing event. Send an event's index number to start execution of it.
+- _enableevent_ - Updates with an event's index number when it is enabled. Send an event's index number to enable it.
+- _disableevent_ - Updates with an event's index number when it is disabled. Send an event's index number to disable it.
 
-All channels except *clockmode* are marked as advanced.
+All channels except _clockmode_ are marked as advanced.
 
 Thing configuration file example:
 
-```
+```java
 Thing timeclock timeclock [ integrationId=23 ]
 ```
 
 Example rule to refresh sunrise/sunset channels daily and at restart:
 
-```
+```java
 import org.openhab.core.types.RefreshType
 
 rule "Lutron sunrise/sunset daily refresh"
@@ -664,13 +662,13 @@ HomeWorks QS systems allow for conditional programming logic based on state vari
 The **sysvar** thing allows state variable values to be read and set from openHAB.
 This makes sophisticated integration schemes possible.
 Each **sysvar** thing represents one system state variable.
-It has a single channel *varstate* with type Number and category Number.
+It has a single channel _varstate_ with type Number and category Number.
 Automatic discovery of state variables is not yet supported.
 They must be manually configured.
 
 Thing configuration file example:
 
-```
+```java
 Thing sysvar qsstate [ integrationId=80 ]
 ```
 
@@ -713,34 +711,33 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 |switch     |switchstatus   |OnOffType     |OnOffType                                              |
 |fan        |fanspeed       |StringType    |"OFF","LOW","MEDIUM","MEDIUMHIGH","HIGH"               |
 |fan        |fanlevel       |PercentType   |OnOffType, PercentType                                 |
-|occ. sensor|occupancystatus|OnOffType     |(*readonly*)                                           |
-|ogroup     |groupstate     |StringType    |"OCCUPIED","UNOCCUPIED","UNKNOWN" (*readonly*)         |
+|occ. sensor|occupancystatus|OnOffType     |(_readonly_)                                           |
+|ogroup     |groupstate     |StringType    |"OCCUPIED","UNOCCUPIED","UNKNOWN" (_readonly_)         |
 |cco        |switchstatus   |OnOffType     |OnOffType, RefreshType                                 |
 |keypads    |button*        |OnOffType     |OnOffType                                              |
 |           |led*           |OnOffType     |OnOffType, RefreshType                                 |
-|           |cci*           |OpenClosedType|(*readonly*)                                           |
+|           |cci*           |OpenClosedType|(_readonly_)                                           |
 |shade      |shadelevel     |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
 |blind      |blindliftlevel |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
 |           |blindtiltlevel |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
 |greenmode  |step           |DecimalType   |DecimalType, OnOffType (ON=2,OFF=1), RefreshType       |
 |timeclock  |clockmode      |DecimalType   |DecimalType, RefreshType                               |
-|           |sunrise        |DateTimeType  |RefreshType (*readonly*)                               |
-|           |sunset         |DateTimeType  |RefreshType (*readonly*)                               |
+|           |sunrise        |DateTimeType  |RefreshType (_readonly_)                               |
+|           |sunset         |DateTimeType  |RefreshType (_readonly_)                               |
 |           |execevent      |DecimalType   |DecimalType                                            |
 |           |enableevent    |DecimalType   |DecimalType                                            |
 |           |disableevent   |DecimalType   |DecimalType                                            |
 |sysvar     |varstate       |DecimalType   |DecimalType (rounded/truncated to integer)             |
 
 Most channels receive immediate notifications of device state changes from the Lutron control system.
-The only exceptions are **greenmode** *step*, which is periodically polled and accepts REFRESH commands to initiate immediate polling, and **timeclock** *sunrise* and *sunset*, which must be polled daily using REFRESH commands to retrieve current values.
+The only exceptions are **greenmode** _step_, which is periodically polled and accepts REFRESH commands to initiate immediate polling, and **timeclock** _sunrise_ and _sunset_, which must be polled daily using REFRESH commands to retrieve current values.
 Many other channels accept REFRESH commands to initiate a poll, but sending one should not normally be necessary.
-
 
 ## RadioRA 2/HomeWorks QS Configuration File Examples:
 
 demo.things:
 
-```
+```java
 Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.123", user="lutron", password="integration" ] {
         Thing dimmer lrtable "Table Lamp" @ "Living Room" [ integrationId=45, fadeInTime=0.5, fadeOutTime=5 ]
         Thing dimmer lrtorch "Torch Lamp" @ "Living Room" [ integrationId=44, fadeInTime=0.5, fadeOutTime=5 ]
@@ -760,7 +757,7 @@ Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.123", user="lutron", pass
 
 demo.items:
 
-```
+```java
 Dimmer   LivingRm_TableLamp  "Table Lamp"      { channel="lutron:dimmer:radiora2:lrtable:lightlevel" }
 Switch   FrontYard_PathLight "Path Light"      { channel="lutron:switch:radiora2:path:switchstatus" }
 Switch   LaundryRm_Sensor    "Occ Sensor"      { channel="lutron:occupancysensor:radiora2:laundryocc:occupancystatus" }
@@ -778,7 +775,7 @@ Rollershutter Lib_Shade1     "Shade 1"         { channel="lutron:shade:radiora2:
 
 dimmerAction.rules:
 
-```
+```java
 rule "Test dimmer action"
 when
     Item TestSwitch received command ON
@@ -787,7 +784,6 @@ then
     actions.setLevel(100, 5.5, 0)
 end
 ```
-
 
 # Lutron RadioRA (Classic) Binding
 
@@ -811,7 +807,6 @@ This binding currently supports the following thing types:
 | ra-dimmer        | Thing   | Dimmer control                                       |
 | ra-switch        | Thing   | Switch control                                       |
 | ra-phantomButton | Thing   | Phantom Button to control multiple controls (Scenes) |
-
 
 ## Thing Configuration Parameters
 
@@ -841,7 +836,7 @@ The following channels are supported:
 
 lutronradiora.things
 
-```
+```java
 Bridge lutronradiora:ra-rs232:chronos1 [portName="/dev/ttys002"] {
     Thing ra-dimmer dimmer1 [ zoneNumber=1 ]
     Thing ra-dimmer dimmer2 [ zoneNumber=2 ]
@@ -853,7 +848,7 @@ Bridge lutronradiora:ra-rs232:chronos1 [portName="/dev/ttys002"] {
 
 lutronradiora.items
 
-```
+```java
 Dimmer Dimmer_Kitchen "Kitchen Lights" { channel="lutronradiora:dimmer:chronos1:dimmer1:lightlevel" }
 Dimmer Dimmer_FamilyRoom "Family Room Lights" { channel="lutronradiora:dimmer:chronos1:dimmer2:lightlevel" }
 Switch Switch_Patio "Patio Light" { channel="lutronradiora:dimmer:chronos1:switch1:switchstatus" }
@@ -870,13 +865,13 @@ Please see [HomeWorks RS232 Protocol Guide](https://www.lutron.com/TechnicalDocu
 
 ## Supported Things
 
-* HomeWorks RS232-connected Processor Units
-* Dimmers
+- HomeWorks RS232-connected Processor Units
+- Dimmers
 
 Supported in future updates:
 
-* Keypads
-* Keypad LEDs
+- Keypads
+- Keypad LEDs
 
 ## Discovery
 
@@ -887,13 +882,13 @@ It will detect dimmers as they are manually raised or lowered, or can be made to
 
 The bridge requires the port location (e.g., /dev/ttyUSB1 or COM1) and the baud rate.  The default baud rate for HomeWorks processors is set to 9600.
 
-```
+```java
 lutron:hwserialbridge:home [serialPort="/dev/ttyUSB1", baudRate="9600]
 ```
 
 Dimmers have one required parameter ``address`` that specifies the device address (e.g., [01:01:03:02:04]) and two optional parameters: ``fadeTime`` which sets the time it takes to set the light level when changed, and ``defaultLevel`` which sets the level to use for the dimmer when turning it on (with a switch rather than a slider).
 
-```
+```java
 lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="75"]
 ```
 
@@ -904,7 +899,6 @@ The following channels are supported:
 | Thing Type      | Channel Type ID   | Item Type    | Description                                  |
 |-----------------|-------------------|--------------|--------------------------------------------- |
 | dimmer          | lightlevel        | Dimmer       | Increase/decrease the light level            |
-
 
 # Lutron Grafik Eye 3x/4x binding via GRX-PRG or GRX-CI-PRG
 
@@ -926,7 +920,7 @@ The bridge requires the IP address/Host name of the bridge.
 Optionally, you may specify the username (defaults to 'nwk') and retryPolling (in seconds) to retry connections if the connection fails (defaults to 10 seconds).
 This bridge does support two way communication with the Grafik Eye units (if a scene is selected or a zone changed on the unit or via a keypad, that information is immediately available in openHAB).
 
-```
+```java
 lutron:prgbridge:home [ ipAddress="192.168.1.51", user="nwk", retryPolling=10 ]
 ```
 
@@ -935,7 +929,7 @@ Optionally you may specify the default fade time (when raising/lowering zones or
 If any of the zones control a QED shade (via the SG/SO-SVCN/SVCI keypad), those zones
 should be listed (comma separated list) in the shadeZones.
 
-```
+```java
 lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=30, shadeZones="2,3,4" ]
 ```
 
@@ -960,8 +954,6 @@ lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=
 | ssnextsecond    | Yes      | Number    | How many seconds until the next step in the Super Sequence    |
 | buttonpress     | Yes      | String    | Last keypad button pressed (see Appendix A) in protocol guide |
 
-
-
 ### Grafik Eye channels
 
 | Channel Type ID   | Readonly | Item Type     | Description                                                    |
@@ -978,28 +970,27 @@ lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=
 
 ### Notes
 
-* The "buttonpress" channel reports which keypad button was pressed.  DIP switch 6 must be set on the interface for this to be reported.  The "buttonpress" channel is only useful in rules to take action when a specific button (on a specific keypad) has been pressed.
-* Sunset/sunrise will only be available if configured via the Liasion software
-* scenelock, sceneseq, zonelock cannot be determined from the API and will default to OFF on startup
-* Replace the "X" on zonelowerX, zoneraiseX, etc with the zone in question.  "zonelower1" will affect zone 1.  Specifying a zone larger than you have will have no effect (such as using zonelower8 on a Grafik Eye 3506 which only has 6 zones).
-* The zonefade value will only be used when zonelower/zonereaise/zoneintensity is issued.
-* zoneshade does not support PercentType nor StopMoveType.Move and those commands will be ignored
-* zoneintensity can be used on a shade zone if the intensity is from 0 to 5 and should be used if wanting to set a QED preset: 0=Stop, 1=Open, 2=Close, 3=Preset 1, 4=Preset 2, 5=Preset 3
-* If you started a zonelower or zoneraise, the only way to stop the action is by executing an all zone stop on the bridge (i.e. zonelowerstop or zoneraisestop).  The PRG API does not provide a way to stop the lowering/raising of any specific zone.
-
+- The "buttonpress" channel reports which keypad button was pressed.  DIP switch 6 must be set on the interface for this to be reported.  The "buttonpress" channel is only useful in rules to take action when a specific button (on a specific keypad) has been pressed.
+- Sunset/sunrise will only be available if configured via the Liasion software
+- scenelock, sceneseq, zonelock cannot be determined from the API and will default to OFF on startup
+- Replace the "X" on zonelowerX, zoneraiseX, etc with the zone in question.  "zonelower1" will affect zone 1.  Specifying a zone larger than you have will have no effect (such as using zonelower8 on a Grafik Eye 3506 which only has 6 zones).
+- The zonefade value will only be used when zonelower/zonereaise/zoneintensity is issued.
+- zoneshade does not support PercentType nor StopMoveType.Move and those commands will be ignored
+- zoneintensity can be used on a shade zone if the intensity is from 0 to 5 and should be used if wanting to set a QED preset: 0=Stop, 1=Open, 2=Close, 3=Preset 1, 4=Preset 2, 5=Preset 3
+- If you started a zonelower or zoneraise, the only way to stop the action is by executing an all zone stop on the bridge (i.e. zonelowerstop or zoneraisestop).  The PRG API does not provide a way to stop the lowering/raising of any specific zone.
 
 ## Example
 
 demo.Things:
 
-```
+```java
 lutron:prgbridge:home [ ipAddress="192.168.1.51", user="nwk", retryPolling=10 ]
 lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=10 ]
 ```
 
 demo.items:
 
-```
+```java
 String Prg_ButtonPress "Last Button Press [%s]" { channel = "lutron:prgbridge:home:buttonpress" }
 Switch Prg_ZoneLowerStop "Zone Lower Stop" { channel = "lutron:prgbridge:home:zonelowerstop",autoupdate="false" }
 Switch Prg_ZoneRaiseStop "Zone Raise Stop" { channel = "lutron:prgbridge:home:zoneraisestop",autoupdate="false" }

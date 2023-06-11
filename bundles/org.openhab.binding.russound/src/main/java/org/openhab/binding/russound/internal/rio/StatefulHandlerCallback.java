@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.core.types.State;
 
 /**
  * Defines an implementation of {@link RioHandlerCallback} that will remember the last state
- * for an channelId and suppress the callback if the state hasn't changed
+ * for a channelId and suppress the callback if the state hasn't changed
  *
  * @author Tim Roberts - Initial contribution
  */

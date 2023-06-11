@@ -4,10 +4,10 @@ This binding allows you to have native access for MCP23017 I/O expander on I2C b
 It was tested with Raspberry Pi 2 and Raspberry Pi 3, but probably should work with other devices supported by [Pi4J](https://pi4j.com/) library.
 
 On Raspberry Pi the user on which openHAB is running (default user name is "openhab") needs to be added to groups "i2c" and  "gpio".
-As the MCP23017 has 3 address pins, you are restricted to 8 devices on a I2C bus.
+As the MCP23017 has 3 address pins, you are restricted to 8 devices on an I2C bus.
 To use more devices you have to open further I2C busses.
 Therefore you can use overlays to enable bit banging I2C busses on the Raspberry Pi connector, up to I2C6.
-(https://github.com/raspberrypi/firmware/tree/master/boot/overlays)
+<https://github.com/raspberrypi/firmware/tree/master/boot/overlays>
 
 ## Dependencies
 
@@ -23,7 +23,7 @@ mcp23017 - which is a mcp23017 chip connected to an I2C bus on specified HEX add
 
 ## Thing Configuration
 
-* Required configuration for mcp23017 thing:
+- Required configuration for mcp23017 thing:
 
 | Parameter  | Description                                                                                                                       | Default value |
 |------------|-----------------------------------------------------------------------------------------------------------------------------------|---------------|
@@ -52,23 +52,23 @@ When PIN should work as DIGITAL_OUTPUT, channel from group "output" should be us
 Let's imagine a setup with:
 
 1. a wall switch connected to pin B1 on the MCP23017 chip which should turn on/off your LED light when pressed (released).
-2. a relay which is connected to pin A0 on the MCP23017 chip. This relay takes care of turning on/off your light.
+1. a relay which is connected to pin A0 on the MCP23017 chip. This relay takes care of turning on/off your light.
 
 Pressing (and releasing) a wall switch should notify openHAB, and then openHAB should change state of relay to on/off the light.
 Your pin B1 should work as DIGITAL_INPUT, because it READS state of a PIN (state of wall switch). Your pin A0 should work as DIGITAL_OUTPUT
 because openHAB will SET state of this PIN. So your config should look like this:
 
-*   Things:
+- Things:
 
 Minimal configuration:
 
-```
+```java
 Thing mcp23017:mcp23017:chipA  "MCP23017 chip A" [address=20,bus=1]
 ```
 
 Configuration with default_state and pull_mode:
 
-```
+```java
 Thing mcp23017:mcp23017:chipA  "MCP23017 chip A" [address=20,bus=1] {
     Type output_pin : output#A0 [default_state="HIGH"]
     Type output_pin : output#A1 [default_state="LOW"]
@@ -80,16 +80,16 @@ Thing mcp23017:mcp23017:chipA  "MCP23017 chip A" [address=20,bus=1] {
 }
 ```
 
-*   Items:
+- Items:
 
-```
+```java
 Switch living_room_led_switch "Living room LED switch"  {channel="mcp23017:mcp23017:chipA:output#A0"}
 Contact living_room_led_contact "Living room LED contact"  {channel="mcp23017:mcp23017:chipA:input#B1"}
 ```
 
-*   Rules:
+- Rules:
 
-```
+```java
 rule "living_room_led contact"
 when
     Item living_room_led_contact changed to OPEN

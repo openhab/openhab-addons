@@ -7,7 +7,7 @@ The latter can be requested from the [Miele Developer Portal](https://www.miele.
 ## Supported Things
 
 Most Miele appliances that directly connect to the cloud via a Wi-Fi module are supported.
-Appliances connecting to the XGW3000 gateway via ZigBee are also supported when registered with the cloud account.
+Appliances connecting to the XGW3000 gateway via Zigbee are also supported when registered with the cloud account.
 However they might be better supported by the [gateway-based Miele binding](https://www.openhab.org/addons/bindings/miele/).
 Depending on the age of your appliance the functionality of the binding might be limited.
 Appliances from recent generations will support all functionality.
@@ -76,7 +76,6 @@ The account has the following parameters:
 | email       | required  | E-mail address identifying this account. This exists only to distinguish accounts. If the address is changed after authorization then the account needs to be authorized again. |
 | locale      | optional  | The locale to use for full text channels of things from this account. Possible values are `en`, `de`, `da`, `es`, `fr`, `it`, `nl`, `nb`. Default is `en`.                      |
 
-
 ### Appliance Configuration
 
 The binding configuration UI will show a things-file template containing things for all supported appliances from the paired account.
@@ -87,7 +86,6 @@ All Miele cloud appliance things have the following parameters:
 | Name             | Type      | Description                                                                                                                              |
 | ---------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | deviceIdentifier | required  | Technical device identifier uniquely identifying the Miele appliance. Use the discovery result or the things-file template to obtain it. |
-
 
 ## Channels
 
@@ -153,6 +151,8 @@ Channel ID and channel type ID match unless noted.
 | plate_power_step_raw | Number | The raw power level of the heating plate. | Yes |
 | door_state | Switch | Indicates if the door of the device is open. | Yes |
 | door_alarm | Switch | Indicates if the door alarm of the device is active. | Yes |
+| water_consumption_current | Number | The amount of water used by the current running program up to the present moment. | Yes |
+| energy_consumption_current | Number | The amount of energy used by the current running program up to the present moment. | Yes |
 | battery_level | Number | The battery level of the robotic vacuum cleaner. | Yes |
 
 ### Coffee System
@@ -217,6 +217,8 @@ Channel ID and channel type ID match unless noted.
 - error_state
 - info_state
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Tumble Dryer
 
@@ -244,6 +246,7 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- energy_consumption_current
 
 ### Freezer
 
@@ -389,6 +392,8 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Washing Machine
 
@@ -417,6 +422,8 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Wine Storage
 
@@ -493,7 +500,7 @@ The following chapters list the properties offered by appliances.
 
 ### demo.things:
 
-```
+```java
 Bridge mielecloud:account:home [ email="me@openhab.org", locale="en" ] {
     Thing coffee_system 000703261234 "Coffee machine CVA7440" [ deviceIdentifier="000703261234" ]
     Thing hob 000160102345 "Cooktop KM7677" [ deviceIdentifier="000160102345" ]
@@ -502,7 +509,7 @@ Bridge mielecloud:account:home [ email="me@openhab.org", locale="en" ] {
 
 ### demo.items:
 
-```
+```java
 // Coffee system
 Switch coffee_system_remote_control_can_be_started      { channel="mielecloud:coffee_system:home:000703261234:remote_control_can_be_started" }
 Switch coffee_system_remote_control_can_be_stopped      { channel="mielecloud:coffee_system:home:000703261234:remote_control_can_be_stopped" }
@@ -541,7 +548,7 @@ String hob_plate_6_power_step            { channel="mielecloud:hob:home:00016010
 
 ### demo.sitemap:
 
-```
+```perl
 sitemap demo label="Kitchen"
 {
     Frame {
@@ -620,4 +627,3 @@ Here are some ideas on what could be done with this binding. You have more ideas
 ## Acknowledgements
 
 The development of this binding was initiated and sponsored by Miele & Cie. KG.
-

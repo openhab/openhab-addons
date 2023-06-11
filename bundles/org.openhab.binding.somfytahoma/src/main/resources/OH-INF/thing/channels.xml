@@ -279,11 +279,11 @@
 	<channel-type id="alarm_check">
 		<item-type>String</item-type>
 		<label>Alarm Check Trigger</label>
-		<description>A channel for triggering the smoke sensor's check</description>
+		<description>A channel for triggering the smoke sensor's beep check</description>
 		<command>
 			<options>
-				<option value="SHORT">Short check</option>
-				<option value="LONG">Long check</option>
+				<option value="short">Short check</option>
+				<option value="long">Long check</option>
 			</options>
 		</command>
 	</channel-type>

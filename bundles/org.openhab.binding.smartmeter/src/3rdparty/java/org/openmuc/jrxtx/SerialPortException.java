@@ -3,7 +3,7 @@ package org.openmuc.jrxtx;
 import java.io.IOException;
 
 /**
- * Signals that a I/O exception with the SerialPort occurred.
+ * Signals that an I/O exception with the SerialPort occurred.
  * 
  * @see SerialPort
  */

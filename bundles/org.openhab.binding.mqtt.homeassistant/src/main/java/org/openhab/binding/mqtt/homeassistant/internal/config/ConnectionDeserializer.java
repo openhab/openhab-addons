@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,8 +33,9 @@ import com.google.gson.JsonParseException;
  */
 @NonNullByDefault
 public class ConnectionDeserializer implements JsonDeserializer<Connection> {
-    public @Nullable Connection deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
+    @Override
+    public @Nullable Connection deserialize(@Nullable JsonElement json, Type typeOfT,
+            JsonDeserializationContext context) throws JsonParseException {
         JsonArray list;
         if (json == null) {
             throw new JsonParseException("JSON element is null, but must be connection definition.");

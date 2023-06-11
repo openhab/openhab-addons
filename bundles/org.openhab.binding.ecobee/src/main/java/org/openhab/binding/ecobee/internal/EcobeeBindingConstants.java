@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -224,6 +224,10 @@ public class EcobeeBindingConstants {
     public static final String CH_DESIRED_HEAT_RANGE_HIGH = "desiredHeatRangeHigh";
     public static final String CH_DESIRED_COOL_RANGE_LOW = "desiredCoolRangeLow";
     public static final String CH_DESIRED_COOL_RANGE_HIGH = "desiredCoolRangeHigh";
+    public static final String CH_ACTUAL_AQ_ACCURACY = "actualAQAccuracy";
+    public static final String CH_ACTUAL_AQ_SCORE = "actualAQScore";
+    public static final String CH_ACTUAL_CO2 = "actualCO2";
+    public static final String CH_ACTUAL_VOC = "actualVOC";
 
     // Thermostat bridge SETTINGS channels
     public static final String CH_HVAC_MODE = "hvacMode";
@@ -405,4 +409,5 @@ public class EcobeeBindingConstants {
     public static final String ECOBEE_AUTHORIZE_URL = ECOBEE_BASE_URL + "authorize";
     public static final String ECOBEE_TOKEN_URL = ECOBEE_BASE_URL + "token";
     public static final String ECOBEE_SCOPE = "smartWrite";
+    public static final String ECOBEE_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }

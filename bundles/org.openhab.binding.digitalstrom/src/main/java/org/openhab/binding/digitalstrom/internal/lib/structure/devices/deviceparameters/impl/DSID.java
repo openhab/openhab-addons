@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,15 +15,15 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link DSID} represents the digitalSTROM-Device identifier.
  *
- * @author Alexander Betker - initial contributor
+ * @author Alexander Betker - Initial contribution
  * @author Alexander Friese - simplified constructor
  */
 public class DSID {
 
     private final String dsid;
-    private final String DEFAULT_DSID = "3504175fe000000000000001";
-    private final String PRE = "3504175fe0000000";
-    private final String ALL = "ALL";
+    private static final String DEFAULT_DSID = "3504175fe000000000000001";
+    private static final String PRE = "3504175fe0000000";
+    private static final String ALL = "ALL";
 
     /**
      * Creates a new {@link DSID}.
@@ -35,7 +35,7 @@ public class DSID {
         if (trimmedDsid.length() == 24) {
             this.dsid = trimmedDsid;
         } else if (trimmedDsid.length() == 8) {
-            this.dsid = this.PRE + trimmedDsid;
+            this.dsid = PRE + trimmedDsid;
         } else if (trimmedDsid.toUpperCase().equals(ALL)) {
             this.dsid = ALL;
         } else {

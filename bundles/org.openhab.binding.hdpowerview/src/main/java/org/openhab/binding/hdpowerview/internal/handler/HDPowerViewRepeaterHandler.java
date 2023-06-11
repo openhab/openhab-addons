@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,11 +100,10 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
 
             switch (channelUID.getId()) {
                 case CHANNEL_REPEATER_COLOR:
-                    if (command instanceof HSBType) {
+                    if (command instanceof HSBType hsbCommand) {
                         Color currentColor = webTargets.getRepeater(repeaterId).color;
                         if (currentColor != null) {
-                            HSBType hsbCommand = (HSBType) command;
-                            var color = new Color(currentColor.brightness, hsbCommand);
+                            var color = new Color(currentColor.brightness, ColorUtil.hsbTosRgb(hsbCommand));
                             repeaterData = webTargets.setRepeaterColor(repeaterId, color);
                             scheduler.submit(() -> updatePropertyAndStates(repeaterData));
                         }
@@ -119,11 +119,10 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
                     }
                     break;
                 case CHANNEL_REPEATER_BRIGHTNESS:
-                    if (command instanceof PercentType) {
+                    if (command instanceof PercentType brightnessCommand) {
                         Color currentColor = webTargets.getRepeater(repeaterId).color;
                         if (currentColor != null) {
-                            PercentType brightness = (PercentType) command;
-                            var color = new Color(brightness.intValue(), currentColor.red, currentColor.green,
+                            var color = new Color(brightnessCommand.intValue(), currentColor.red, currentColor.green,
                                     currentColor.blue);
                             repeaterData = webTargets.setRepeaterColor(repeaterId, color);
                             scheduler.submit(() -> updatePropertyAndStates(repeaterData));
@@ -131,8 +130,8 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
                     }
                     break;
                 case CHANNEL_REPEATER_IDENTIFY:
-                    if (command instanceof StringType) {
-                        if (COMMAND_IDENTIFY.equals(((StringType) command).toString())) {
+                    if (command instanceof StringType stringCommand) {
+                        if (COMMAND_IDENTIFY.equals(stringCommand.toString())) {
                             repeaterData = webTargets.identifyRepeater(repeaterId);
                             scheduler.submit(() -> updatePropertyAndStates(repeaterData));
                             cancelResetIdentifyStateJob();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,11 +57,13 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
         this.httpClientFactory = httpClientFactory;
     }
 
+    @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Nullable
+    @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (NanoleafBindingConstants.THING_TYPE_CONTROLLER.equals(thingTypeUID)) {

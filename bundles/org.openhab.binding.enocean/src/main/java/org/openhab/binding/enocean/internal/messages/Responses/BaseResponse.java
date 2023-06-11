@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,8 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.Responses;
+package org.openhab.binding.enocean.internal.messages.responses;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.Response;
 
@@ -19,6 +20,7 @@ import org.openhab.binding.enocean.internal.messages.Response;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class BaseResponse extends Response {
 
     public BaseResponse(Response response) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
      * Query to get all enabled application tokens. Can be executed with {@link DsAPI#query(String, String)} or
      * {@link DsAPI#query2(String, String)}.
      */
-    public final String QUERY_GET_ENABLED_APPLICATION_TOKENS = "/system/security/applicationTokens/enabled/*(*)";
+    public static final String QUERY_GET_ENABLED_APPLICATION_TOKENS = "/system/security/applicationTokens/enabled/*(*)";
     private final Logger logger = LoggerFactory.getLogger(ConnectionManagerImpl.class);
 
     private Config config;
@@ -92,7 +92,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     /**
      * The same constructor like {@link #ConnectionManagerImpl(Config, ConnectionListener)}, but through genApToken it
-     * can be set, if a application token will be automatically generated.
+     * can be set, if an application token will be automatically generated.
      *
      * @param config (must not be null)
      * @param connectionListener (can be null)
@@ -108,7 +108,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     /**
      * Creates a new {@link ConnectionManagerImpl} with the given parameters, which are needed to create the
      * {@link HttpTransport} and to login into the digitalSTROM server. If the application token is null and the
-     * username and password are valid, a application token will be automatically generated or a existing application
+     * username and password are valid, an application token will be automatically generated or an existing application
      * token for the at {@link Config#getApplicationName()} set application name will be set.
      *
      * @param hostAddress (must not be null)
@@ -179,7 +179,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     /**
      * The same constructor like {@link #ConnectionManagerImpl(String, String, String)}, but through genApToken it
-     * can be set, if a application token will be automatically generated.
+     * can be set, if an application token will be automatically generated.
      *
      * @param hostAddress (must not be null)
      * @param username (must not be null)
@@ -194,7 +194,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     /**
      * The same constructor like {@link #ConnectionManagerImpl(String, String, String, String)}, but through genApToken
-     * it can be set, if a application token will be automatically generated.
+     * it can be set, if an application token will be automatically generated.
      *
      * @param hostAddress (must not be null)
      * @param username (can be null, if application token is set)
@@ -424,7 +424,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
                             applicationToken = this.digitalSTROMClient
                                     .requestAppplicationToken(config.getApplicationName());
                             logger.debug(
-                                    "no application-token for application {} found, generate a application-token {}",
+                                    "no application-token for application {} found, generate an application-token {}",
                                     config.getApplicationName(), applicationToken);
                             if (applicationToken != null && !applicationToken.isBlank()) {
                                 // enable applicationToken

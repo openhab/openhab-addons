@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,6 +83,7 @@ public class VeSyncConstants {
     public static final String DEVICE_PROP_DEVICE_NAME = "Device Name";
     public static final String DEVICE_PROP_DEVICE_TYPE = "Device Type";
     public static final String DEVICE_PROP_DEVICE_MAC_ID = "MAC Id";
+    public static final String DEVICE_PROP_DEVICE_FAMILY = "Device Family";
     public static final String DEVICE_PROP_DEVICE_UUID = "UUID";
 
     // Property name for config constants

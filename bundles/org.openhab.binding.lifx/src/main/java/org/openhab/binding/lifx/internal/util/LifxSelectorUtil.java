@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -276,8 +276,10 @@ public class LifxSelectorUtil {
 
         try {
             if (castType == UNICAST) {
+                packet.setTagged(false);
                 LifxThrottlingUtil.lock(packet.getTarget());
             } else {
+                packet.setTagged(true);
                 LifxThrottlingUtil.lock();
             }
 

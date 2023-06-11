@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NetworkOceanicThingHandler} implements {@link OceanicThingHandler} for a Oceanic water softener that is
+ * The {@link NetworkOceanicThingHandler} implements {@link OceanicThingHandler} for an Oceanic water softener that is
  * reached using a socat TCP proxy
  *
  * @author Karel Goderis - Initial contribution
@@ -63,10 +63,12 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
 
         try {
             socket = new Socket(config.ipAddress, config.portNumber);
-            socket.setSoTimeout(REQUEST_TIMEOUT);
-            outputStream = socket.getOutputStream();
-            inputStream = socket.getInputStream();
-            updateStatus(ThingStatus.ONLINE);
+            if (socket != null) {
+                socket.setSoTimeout(REQUEST_TIMEOUT);
+                outputStream = socket.getOutputStream();
+                inputStream = socket.getInputStream();
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (UnknownHostException e) {
             logger.error("An exception occurred while resolving host {}:{} : '{}'", config.ipAddress, config.portNumber,
                     e.getMessage());

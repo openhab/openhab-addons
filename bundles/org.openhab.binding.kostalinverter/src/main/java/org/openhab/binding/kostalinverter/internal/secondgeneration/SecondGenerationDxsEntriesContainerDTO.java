@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.kostalinverter.internal.secondgeneration;
 import java.util.List;
 
 /**
- * The {@link SecondGenerationDxsEntriesContainer} class defines an Container, which is
+ * The {@link SecondGenerationDxsEntriesContainer} class defines a Container, which is
  * used in the second generation part of the binding.
  *
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation

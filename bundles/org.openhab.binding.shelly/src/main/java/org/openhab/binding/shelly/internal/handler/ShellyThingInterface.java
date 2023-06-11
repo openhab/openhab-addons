@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,81 +39,84 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public interface ShellyThingInterface {
 
-    public ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException;
+    ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException;
 
-    public @Nullable List<StateOption> getStateOptions(ChannelTypeUID uid);
+    @Nullable
+    List<StateOption> getStateOptions(ChannelTypeUID uid);
 
-    public double getChannelDouble(String group, String channel);
+    double getChannelDouble(String group, String channel);
 
-    public boolean updateChannel(String group, String channel, State value);
+    boolean updateChannel(String group, String channel, State value);
 
-    public boolean updateChannel(String channelId, State value, boolean force);
+    boolean updateChannel(String channelId, State value, boolean force);
 
-    public void setThingOnline();
+    void setThingOnline();
 
-    public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
+    void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
 
-    public String getThingType();
+    boolean isStopping();
 
-    public ThingStatus getThingStatus();
+    String getThingType();
 
-    public ThingStatusDetail getThingStatusDetail();
+    ThingStatus getThingStatus();
 
-    public boolean isThingOnline();
+    ThingStatusDetail getThingStatusDetail();
 
-    public boolean requestUpdates(int requestCount, boolean refreshSettings);
+    boolean isThingOnline();
 
-    public void triggerUpdateFromCoap();
+    boolean requestUpdates(int requestCount, boolean refreshSettings);
 
-    public void reinitializeThing();
+    void triggerUpdateFromCoap();
 
-    public void restartWatchdog();
+    void reinitializeThing();
 
-    public void publishState(String channelId, State value);
+    void restartWatchdog();
 
-    public boolean areChannelsCreated();
+    void publishState(String channelId, State value);
 
-    public State getChannelValue(String group, String channel);
+    boolean areChannelsCreated();
 
-    public boolean updateInputs(ShellySettingsStatus status);
+    State getChannelValue(String group, String channel);
 
-    public void updateChannelDefinitions(Map<String, Channel> dynChannels);
+    boolean updateInputs(ShellySettingsStatus status);
 
-    public void postEvent(String event, boolean force);
+    void updateChannelDefinitions(Map<String, Channel> dynChannels);
 
-    public void triggerChannel(String group, String channelID, String event);
+    void postEvent(String event, boolean force);
 
-    public void triggerButton(String group, int idx, String value);
+    void triggerChannel(String group, String channelID, String event);
 
-    public ShellyDeviceStats getStats();
+    void triggerButton(String group, int idx, String value);
 
-    public void resetStats();
+    ShellyDeviceStats getStats();
 
-    public Thing getThing();
+    void resetStats();
 
-    public String getThingName();
+    Thing getThing();
 
-    public ShellyThingConfiguration getThingConfig();
+    String getThingName();
 
-    public HttpClient getHttpClient();
+    ShellyThingConfiguration getThingConfig();
 
-    public String getProperty(String key);
+    HttpClient getHttpClient();
 
-    public void updateProperties(String key, String value);
+    String getProperty(String key);
 
-    public boolean updateWakeupReason(@Nullable List<Object> valueArray);
+    void updateProperties(String key, String value);
 
-    public ShellyApiInterface getApi();
+    boolean updateWakeupReason(@Nullable List<Object> valueArray);
 
-    public ShellyDeviceProfile getProfile();
+    ShellyApiInterface getApi();
 
-    public long getScheduledUpdates();
+    ShellyDeviceProfile getProfile();
 
-    public void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
+    long getScheduledUpdates();
 
-    public boolean checkRepresentation(String key);
+    void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
 
-    public void incProtMessages();
+    boolean checkRepresentation(String key);
 
-    public void incProtErrors();
+    void incProtMessages();
+
+    void incProtErrors();
 }

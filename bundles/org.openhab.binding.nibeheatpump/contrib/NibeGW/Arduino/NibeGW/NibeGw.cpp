@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -279,12 +279,6 @@ int NibeGw::checkNibeMessage(const byte* const data, byte len)
     if (data[0] != 0x5C)
       return -1;
 
-    if (len >= 2)
-    {
-      if (data[1] != 0x00)
-        return -1;
-    }
-
     if (len >= 6)
     {
       int datalen = data[4];
@@ -295,7 +289,7 @@ int NibeGw::checkNibeMessage(const byte* const data, byte len)
       byte checksum = 0;
 
       // calculate XOR checksum
-      for (int i = 2; i < (datalen + 5); i++)
+      for (int i = 1; i < (datalen + 5); i++)
         checksum ^= data[i];
 
       byte msg_checksum = data[datalen + 5];

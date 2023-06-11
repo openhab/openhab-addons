@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback.BlindCommand;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetColorCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetColorTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingModeCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetLevelPercentageCallback;
@@ -53,6 +54,7 @@ import org.slf4j.LoggerFactory;
  *         DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Christoph Sommer - Added support for color temperature
  */
 @NonNullByDefault
 public class FritzAhaWebInterface {
@@ -337,6 +339,12 @@ public class FritzAhaWebInterface {
 
     public FritzAhaContentExchange setUnmappedHueAndSaturation(String ain, int hue, int saturation, int duration) {
         FritzAhaSetColorCallback callback = new FritzAhaSetColorCallback(this, ain, hue, saturation, duration, false);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setColorTemperature(String ain, int temperature, int duration) {
+        FritzAhaSetColorTemperatureCallback callback = new FritzAhaSetColorTemperatureCallback(this, ain, temperature,
+                duration);
         return asyncGet(callback);
     }
 

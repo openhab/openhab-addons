@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,6 +173,10 @@ public class OpenGarageHandler extends BaseThingHandler {
                 case 2:
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
                             new StringType("Vehicle status unknown"));
+                    break;
+                case 3:
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                            new StringType("Vehicle status not available"));
                     break;
                 default:
                     logger.warn("Received unknown vehicle value: {}", controllerVariables.vehicle);

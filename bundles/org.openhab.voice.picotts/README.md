@@ -1,7 +1,5 @@
 # Pico Text-to-Speech
 
-## Overview
-
 The Pico Text-to-Speech (TTS) service uses the TTS binary from SVOX for producing spoken text.
 
 You manually need to install the pico2wave binary in order for this service to work correctly. You can,

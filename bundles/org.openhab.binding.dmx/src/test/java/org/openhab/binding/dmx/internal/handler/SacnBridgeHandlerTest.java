@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,17 +42,16 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class SacnBridgeHandlerTest extends JavaTest {
     private static final String TEST_ADDRESS = "localhost";
     private static final int TEST_UNIVERSE = 1;
+    private static final ThingUID BRIDGE_UID_SACN = new ThingUID(THING_TYPE_SACN_BRIDGE, "sacnbridge");
+    private static final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_SACN, CHANNEL_MUTE);
 
-    private final ThingUID BRIDGE_UID_SACN = new ThingUID(THING_TYPE_SACN_BRIDGE, "sacnbridge");
-    private final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_SACN, CHANNEL_MUTE);
-
-    Map<String, Object> bridgeProperties;
-
-    private Bridge bridge;
-    private SacnBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) Map<String, Object> bridgeProperties;
+    private @NonNullByDefault({}) Bridge bridge;
+    private @NonNullByDefault({}) SacnBridgeHandler bridgeHandler;
 
     @BeforeEach
     public void setUp() {

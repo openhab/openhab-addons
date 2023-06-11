@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
@@ -37,10 +35,9 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class EDSSensorThingHandler extends OwBaseThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_EDS_ENV);
-    public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections
-            .unmodifiableSet(Stream.of(OwSensorType.EDS0064, OwSensorType.EDS0065, OwSensorType.EDS0066,
-                    OwSensorType.EDS0067, OwSensorType.EDS0068).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_EDS_ENV);
+    public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Set.of(OwSensorType.EDS0064, OwSensorType.EDS0065,
+            OwSensorType.EDS0066, OwSensorType.EDS0067, OwSensorType.EDS0068);
     private static final Set<String> REQUIRED_PROPERTIES = Collections.singleton(PROPERTY_HW_REVISION);
 
     public EDSSensorThingHandler(Thing thing, OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
@@ -56,9 +53,7 @@ public class EDSSensorThingHandler extends OwBaseThingHandler {
         // add sensors
         sensors.add(new EDS006x(sensorId, sensorType, this));
 
-        scheduler.execute(() -> {
-            configureThingChannels();
-        });
+        scheduler.execute(this::configureThingChannels);
     }
 
     @Override
@@ -70,7 +65,7 @@ public class EDSSensorThingHandler extends OwBaseThingHandler {
         OwSensorType sensorType = OwSensorType.UNKNOWN;
         try {
             sensorType = OwSensorType.valueOf(new String(pages.getPage(0), 0, 7, StandardCharsets.US_ASCII));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
         }
 
         if (!SUPPORTED_SENSOR_TYPES.contains(sensorType)) {

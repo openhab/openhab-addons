@@ -1,13 +1,12 @@
 # Smhi Binding
 
-This binding gets hourly and daily forecast from SMHI - the Swedish Meteorological and Hydrological Institute. 
+This binding gets hourly and daily forecast from SMHI - the Swedish Meteorological and Hydrological Institute.
 It can get forecasts for the nordic countries (Sweden, Norway, Denmark and Finland).
 
 ## Supported Things
 
-The binding support only one thing-type: forecast. 
+The binding support only one thing-type: forecast.
 The thing can be configured to get hourly forecasts for up to 24 hours, and daily forecasts for up to 10 days.
-
 
 ## Discovery
 
@@ -15,7 +14,7 @@ This binding does not support automatic discovery.
 
 ## Thing Configuration
 
-The forecast thing needs to be configured with the latitude and longitude for the location of the forecast. 
+The forecast thing needs to be configured with the latitude and longitude for the location of the forecast.
 You can also choose for which hours and which days you would like to get forecasts.
 
 | Parameter        | Description                     | Required |
@@ -35,10 +34,10 @@ or the number of hours/days from now) + the channel id, concatenated with a `#`.
 
 Examples:
 
-* Temperature for the current hour: `hour_0#t`
-* Total precipitation 3 days from now: `day_3#ptotal`
+- Temperature for the current hour: `hour_0#t`
+- Total precipitation 3 days from now: `day_3#ptotal`
 
-#### Basic channels
+### Basic channels
 
 | channel                 | type                 | channel id | description                                                               |
 |-------------------------|----------------------|------------|---------------------------------------------------------------------------|
@@ -59,7 +58,7 @@ Examples:
 | Total cloud cover       | Number:Dimensionless | tcc_mean   | Mean value of total cloud cover in percent                                |
 | Weather condition**     | Number               | wsymb2     | Short description of the weather conditions                               |
 
-#### Advanced channels
+### Advanced channels
 
 | channel                  | type                 | channel id | description                                                                                |
 |--------------------------|----------------------|------------|--------------------------------------------------------------------------------------------|
@@ -116,18 +115,17 @@ Examples:
 | 26    | Moderate snowfall      |
 | 27    | Heavy snowfall         |
 
-
 ## Full Example
 
-demo.things
+### demo.things
 
-```
+```java
 Thing smhi:forecast:demoforecast "Demo forecast" [ latitude=57.997072, longitude=15.990068, hourlyForecasts=0,1,2, dailyForecasts=0,1 ]
 ```
 
-demo.items
+### demo.items
 
-```
+```java
 Number:Temperature Smhi_Temperature_Now "Current temperature [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_0#t"}
 Number:Speed Smhi_Min_Precipitation_Now "Current precipitation (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_0#pmin"}
 
@@ -138,9 +136,9 @@ Number:Temperature Smhi_Temperature_Tomorrow "Temperature tomorrow [%.1f °C]" {
 Number:Speed Smhi_Min_Precipitation_Tomorrow "Precipitaion tomorrow (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#pmin"}
 ```
 
-demo.sitemap
+### demo.sitemap
 
-```
+```java
 sitemap demo label="Smhi" {
     Frame label="Current weather" {
         Text item=Smhi_Temperature_Now

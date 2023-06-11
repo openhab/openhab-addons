@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,7 @@ public class Location extends Device {
     public void update(DeviceDTO deviceDTO) {
         super.update(deviceDTO);
 
-        // values to put on a overview dashboard
+        // values to put on an overview dashboard
         this.addWattQuantity(CHANNEL_POWER_BUFFERED, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_SELF_CONSUMED, deviceDTO);
         this.addWattQuantity(CHANNEL_POWER_SELF_SUPPLIED, deviceDTO);

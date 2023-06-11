@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.somfytahoma.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SomfyTahomaActionGroup} holds information about a action
+ * The {@link SomfyTahomaActionGroup} holds information about an action
  * group and current actions.
  *
  * @author Ondrej Pecta - Initial contribution

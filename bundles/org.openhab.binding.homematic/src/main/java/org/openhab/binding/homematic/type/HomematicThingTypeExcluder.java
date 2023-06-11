@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public interface HomematicThingTypeExcluder {
      * @return {@link ThingTypeUID}s of ThingTypes that are supposed to be
      *         excluded from the binding's thing-type generation
      */
-    public Set<ThingTypeUID> getExcludedThingTypes();
+    Set<ThingTypeUID> getExcludedThingTypes();
 
     /**
      * Check for the given {@link ThingTypeUID} whether it is excluded by this
@@ -57,7 +57,7 @@ public interface HomematicThingTypeExcluder {
      * @param thingType a specific ThingType, specified by its {@link ThingTypeUID}
      * @return <i>true</i>, if the {@link ThingType} is excluded
      */
-    public boolean isThingTypeExcluded(ThingTypeUID thingType);
+    boolean isThingTypeExcluded(ThingTypeUID thingType);
 
     /**
      * Check for the given {@link ChannelTypeUID} whether it is excluded by this
@@ -67,7 +67,7 @@ public interface HomematicThingTypeExcluder {
      * @return <i>true</i>, if the {@link org.openhab.core.thing.type.ChannelType} is
      *         excluded
      */
-    public boolean isChannelTypeExcluded(ChannelTypeUID channelType);
+    boolean isChannelTypeExcluded(ChannelTypeUID channelType);
 
     /**
      * Check for the given {@link ChannelGroupTypeUID} whether it is excluded by
@@ -78,7 +78,7 @@ public interface HomematicThingTypeExcluder {
      *         {@link org.openhab.core.thing.type.ChannelGroupType} is
      *         excluded
      */
-    public boolean isChannelGroupTypeExcluded(ChannelGroupTypeUID channelGroupType);
+    boolean isChannelGroupTypeExcluded(ChannelGroupTypeUID channelGroupType);
 
     /**
      * Check for the given config-description-{@link URI} whether it is excluded by
@@ -88,5 +88,5 @@ public interface HomematicThingTypeExcluder {
      * @return <i>true</i>, if the {@link org.openhab.core.config.core.ConfigDescription} is
      *         excluded
      */
-    public boolean isConfigDescriptionExcluded(URI configDescriptionURI);
+    boolean isConfigDescriptionExcluded(URI configDescriptionURI);
 }

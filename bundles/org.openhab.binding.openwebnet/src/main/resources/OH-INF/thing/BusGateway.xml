@@ -7,8 +7,8 @@
 	<!-- OpenWebNet BUS gateway -->
 	<bridge-type id="bus_gateway">
 		<label>BUS Gateway</label>
-		<description>This thing allows to connect to a IP BUS/SCS gateway that supports the OpenWebNet protocol (models: F454,
-			MyHOMEServer1, F455, MH200N, F453, etc.)</description>
+		<description>This thing allows to connect to an IP BUS/SCS gateway that supports the OpenWebNet protocol (models:
+			F454, MyHOMEServer1, F455, MH200N, F453, etc.)</description>
 
 		<properties>
 			<property name="vendor">BTicino</property>

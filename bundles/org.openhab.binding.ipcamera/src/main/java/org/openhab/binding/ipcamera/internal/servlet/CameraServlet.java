@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,9 @@ import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.HLS
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletInputStream;
@@ -41,13 +44,16 @@ import org.osgi.service.http.HttpService;
 @NonNullByDefault
 public class CameraServlet extends IpCameraServlet {
     private static final long serialVersionUID = -134658667574L;
+    private static final Dictionary<Object, Object> INIT_PARAMETERS = new Hashtable<>(
+            Map.of("async-supported", "true"));
+
     private final IpCameraHandler handler;
     public OpenStreams openStreams = new OpenStreams();
     private OpenStreams openSnapshotStreams = new OpenStreams();
     private OpenStreams openAutoFpsStreams = new OpenStreams();
 
     public CameraServlet(IpCameraHandler handler, HttpService httpService) {
-        super(handler, httpService);
+        super(handler, httpService, INIT_PARAMETERS);
         this.handler = handler;
     }
 
@@ -183,17 +189,15 @@ public class CameraServlet extends IpCameraServlet {
                     } else {
                         output = new StreamOutput(resp, handler.mjpegContentType);
                     }
+                } else if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
+                    output = new StreamOutput(resp);
                 } else {
-                    if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
-                        output = new StreamOutput(resp);
-                    } else {
-                        ChannelTracking tracker = handler.channelTrackingMap.get(handler.getTinyUrl(handler.mjpegUri));
-                        if (tracker == null || !tracker.getChannel().isOpen()) {
-                            logger.debug("Not the first stream requested but the stream from camera was closed");
-                            handler.openCamerasStream();
-                        }
-                        output = new StreamOutput(resp, handler.mjpegContentType);
+                    ChannelTracking tracker = handler.channelTrackingMap.get(handler.getTinyUrl(handler.mjpegUri));
+                    if (tracker == null || !tracker.getChannel().isOpen()) {
+                        logger.debug("Not the first stream requested but the stream from camera was closed");
+                        handler.openCamerasStream();
                     }
+                    output = new StreamOutput(resp, handler.mjpegContentType);
                 }
                 openStreams.addStream(output);
                 do {
@@ -208,6 +212,9 @@ public class CameraServlet extends IpCameraServlet {
                                 Ffmpeg localMjpeg = handler.ffmpegMjpeg;
                                 if (localMjpeg != null) {
                                     localMjpeg.stopConverting();
+                                    // Set reference to ffmpegMjpeg to null to prevent automatic reconnection
+                                    // in handler's pollCameraRunnable() check for frozen camera
+                                    handler.ffmpegMjpeg = null;
                                 }
                             } else {
                                 handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));

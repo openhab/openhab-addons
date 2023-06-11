@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.neato.internal.NeatoBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.neato.internal.CouldNotFindRobotException;
 import org.openhab.binding.neato.internal.NeatoBindingConstants;
@@ -146,7 +145,9 @@ public class NeatoHandler extends BaseThingHandler {
         updateProperty(Thing.PROPERTY_MODEL_ID, neatoState.getMeta().getModelName());
 
         updateState(CHANNEL_STATE, new StringType(neatoState.getRobotState().name()));
-        updateState(CHANNEL_ERROR, new StringType((String) ObjectUtils.defaultIfNull(neatoState.getError(), "")));
+
+        String error = neatoState.getError() != null ? neatoState.getError() : "";
+        updateState(CHANNEL_ERROR, new StringType(error));
         updateState(CHANNEL_ACTION, new StringType(neatoState.getRobotAction().name()));
 
         Details details = neatoState.getDetails();

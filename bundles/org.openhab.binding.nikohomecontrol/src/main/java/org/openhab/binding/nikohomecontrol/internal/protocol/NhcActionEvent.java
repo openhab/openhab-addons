@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,17 +30,17 @@ public interface NhcActionEvent {
      *
      * @param state
      */
-    public void actionEvent(int state);
+    void actionEvent(int state);
 
     /**
      * Called to indicate the action has been initialized.
      *
      */
-    public void actionInitialized();
+    void actionInitialized();
 
     /**
      * Called to indicate the action has been removed from the Niko Home Control controller.
      *
      */
-    public void actionRemoved();
+    void actionRemoved();
 }

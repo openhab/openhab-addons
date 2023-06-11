@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants.JSONApiResponseKeysEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.impl.DeviceImpl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -5,7 +5,7 @@ As the binding uses the [broadlink-java-api](https://github.com/mob41/broadlink-
 
 ## Supported Things
 
-*Note:* So far only the Floureon Thermostat and Rm Mini 3 devices has been tested! The other things are "best guess" implementations.
+_Note:_ So far only the Floureon Thermostat and Rm Mini 3 devices has been tested! The other things are "best guess" implementations.
 
 | Things                  | Description                                                         | Thing Type           |
 |-------------------------|---------------------------------------------------------------------|----------------------|
@@ -56,13 +56,13 @@ The autodiscovery process finds both parts automatically.
 
 demo.things:
 
-```
+```java
 Thing broadlinkthermostat:floureonthermostat:bathroomthermostat "Bathroom Thermostat" [ host="192.168.0.23", macAddress="00:10:FA:6E:38:4A"]
 ```
 
 demo.items:
 
-```
+```java
 Number:Temperature  Bathroom_Thermostat_Temperature      "Room temperature [%.1f %unit%]"        <temperature>  { channel="broadlinkthermostat:floureonthermostat:bathroomthermostat:roomtemperature"}
 Number:Temperature  Bathroom_Thermostat_Temperature_Ext  "Room temperature (ext) [%.1f %unit%]"  <temperature>  { channel="broadlinkthermostat:floureonthermostat:bathroomthermostat:roomtemperature"}
 Number:Temperature  Bathroom_Thermostat_Setpoint         "Setpoint [%.1f %unit%]"                <temperature>  { channel="broadlinkthermostat:floureonthermostat:bathroomthermostat:setpoint"}

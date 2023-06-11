@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,10 @@ package org.openhab.binding.mqtt.generic;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,9 +53,9 @@ import org.osgi.service.component.annotations.Reference;
 public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupTypeProvider, ChannelTypeProvider {
     private final ThingTypeRegistry typeRegistry;
 
-    private final Map<ChannelTypeUID, ChannelType> types = new HashMap<>();
-    private final Map<ChannelGroupTypeUID, ChannelGroupType> groups = new HashMap<>();
-    private final Map<ThingTypeUID, ThingType> things = new HashMap<>();
+    private final Map<ChannelTypeUID, ChannelType> types = new ConcurrentHashMap<>();
+    private final Map<ChannelGroupTypeUID, ChannelGroupType> groups = new ConcurrentHashMap<>();
+    private final Map<ThingTypeUID, ThingType> things = new ConcurrentHashMap<>();
 
     @Activate
     public MqttChannelTypeProvider(@Reference ThingTypeRegistry typeRegistry) {

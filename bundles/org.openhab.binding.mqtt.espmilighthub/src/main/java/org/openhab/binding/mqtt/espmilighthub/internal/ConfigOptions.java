@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.espmilighthub.internal;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -21,9 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConfigOptions {
+    public BigDecimal duvThreshold = new BigDecimal("0.003");
     public int whiteThreshold = -1;
-    public int whiteSat = 32;
-    public int whiteHue = 35;
+    public int whiteSat = -1;
+    public int whiteHue = -1;
     public int favouriteWhite = 200;
     public boolean oneTriggersNightMode = false;
     public boolean powerFailsToMinimum = false;

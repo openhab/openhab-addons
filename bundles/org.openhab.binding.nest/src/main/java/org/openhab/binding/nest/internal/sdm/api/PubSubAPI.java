@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,7 +144,9 @@ public class PubSubAPI {
     private final Logger logger = LoggerFactory.getLogger(PubSubAPI.class);
 
     private final HttpClient httpClient;
+    private final OAuthFactory oAuthFactory;
     private final OAuthClientService oAuthService;
+    private final String oAuthServiceHandleId;
     private final String projectId;
     private final ScheduledThreadPoolExecutor scheduler;
     private final Map<String, Set<PubSubSubscriptionListener>> subscriptionListeners = new HashMap<>();
@@ -153,14 +155,21 @@ public class PubSubAPI {
             String clientId, String clientSecret) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.projectId = projectId;
-        this.oAuthService = oAuthFactory.createOAuthClientService(String.format(PUBSUB_HANDLE_FORMAT, ownerId),
-                TOKEN_URL, AUTH_URL, clientId, clientSecret, PUBSUB_SCOPE, false);
+        this.oAuthFactory = oAuthFactory;
+        this.oAuthServiceHandleId = String.format(PUBSUB_HANDLE_FORMAT, ownerId);
+        this.oAuthService = oAuthFactory.createOAuthClientService(oAuthServiceHandleId, TOKEN_URL, AUTH_URL, clientId,
+                clientSecret, PUBSUB_SCOPE, false);
         scheduler = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory(ownerId, true));
     }
 
     public void dispose() {
         subscriptionListeners.clear();
         scheduler.shutdownNow();
+        oAuthFactory.ungetOAuthService(oAuthServiceHandleId);
+    }
+
+    public void deleteOAuthServiceAndAccessToken() {
+        oAuthFactory.deleteServiceAndAccessToken(oAuthServiceHandleId);
     }
 
     public void authorizeClient(String authorizationCode) throws InvalidPubSubAuthorizationCodeException, IOException {

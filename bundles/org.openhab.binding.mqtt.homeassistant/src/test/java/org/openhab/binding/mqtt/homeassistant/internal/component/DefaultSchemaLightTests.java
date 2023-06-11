@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,7 +137,7 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
 
         // Brightness commands should route to the correct topic, converted to RGB
         sendCommand(component, Light.COLOR_CHANNEL_ID, new PercentType(50));
-        assertPublished("zigbee2mqtt/light/set/rgb", "127,127,127");
+        assertPublished("zigbee2mqtt/light/set/rgb", "128,128,128");
 
         // OnOff commands should route to the correct topic
         sendCommand(component, Light.COLOR_CHANNEL_ID, OnOffType.OFF);

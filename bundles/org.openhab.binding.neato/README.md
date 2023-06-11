@@ -2,16 +2,16 @@
 
 This binding is used to connect your openHAB system with Neato web (where you log in and find Your Neato's).
 The binding supports discovery via configuring your login and password to a bridge.
-From the binding, you will get status of your vacuum cleaners and also a command channel where you can control them. Since the binding uses a polling mechanism, there may be some latency depending on your setting regarding refresh time. 
+From the binding, you will get status of your vacuum cleaners and also a command channel where you can control them. Since the binding uses a polling mechanism, there may be some latency depending on your setting regarding refresh time.
 
-For log in transaction, the binding uses Neato Beehive API and for status and control, the binding uses Nucleao API. 
+For log in transaction, the binding uses Neato Beehive API and for status and control, the binding uses Nucleao API.
 
 ## Supported Things
 
 Supported thing types
 
-* neatoaccount (bridge)
-* vacuumcleaner
+- neatoaccount (bridge)
+- vacuumcleaner
 
 A bridge is required to connect to your Neato Cloud account.  
 
@@ -22,36 +22,36 @@ All "Connected" type vacuum cleaners should be supported by this binding since t
 Discovery is used _after_ a bridge has been created and configured with your login information.
 
 1. Add the binding
-2. Add a new thing of type NeatoAccount and configure with username and password
-3. Go to Inbox and start discovery of Vacuums using Neato Binding
-4. Vacuums should appear in your inbox!
+1. Add a new thing of type NeatoAccount and configure with username and password
+1. Go to Inbox and start discovery of Vacuums using Neato Binding
+1. Vacuums should appear in your inbox!
 
 ## Thing Configuration
 
 In order to manually create a thing file and not use the discovery routine you will need to know the vacuums serial number as well as the secret used in web service calls.
 This is a bit difficult to get.
-The easiest way of getting this information is to use the third party python library that is available at https://github.com/stianaske/pybotvac.
+The easiest way of getting this information is to use the third party python library that is available at <https://github.com/stianaske/pybotvac>.
 
 Neato Account Config
 
 | Config   | Description                         |
-|----------|------------------------------------ |
+| -------- | ----------------------------------- |
 | email    | Email address tied to Neato Account |
 | password | Password tied to Neato Account      |
 
 Vacuum Cleaner Config
 
-| Config   | Description                             |
-|----------|-----------------------------------------|
-| serial   | Serial Number of your Neato Robot       |
-| secret   | Secret for accessing Neato web services (see note above) |
-| refresh  | Refresh time interval in seconds for updates from the Neato Web Service.  Defaults to 60 sec |
+| Config  | Description                                                                                  |
+| ------- | -------------------------------------------------------------------------------------------- |
+| serial  | Serial Number of your Neato Robot                                                            |
+| secret  | Secret for accessing Neato web services (see note above)                                     |
+| refresh | Refresh time interval in seconds for updates from the Neato Web Service.  Defaults to 60 sec |
 
 ## Channels
 
 | Channel             | Type   | Label                      | Description                                                                               | Read Only |
-|---------------------|--------|----------------------------|-------------------------------------------------------------------------------------------|-----------|
-| battery-level| Number | Battery Level              | Battery Level of the vacuum cleaner.                                                      | True      |
+| ------------------- | ------ | -------------------------- | ----------------------------------------------------------------------------------------- | --------- |
+| battery-level       | Number | Battery Level              | Battery Level of the vacuum cleaner.                                                      | True      |
 | state               | String | Current State              | Current state of the vacuum cleaner.                                                      | True      |
 | available-services  | String | Current available services | List of services that are currently available for the vacuum cleaner                      | True      |
 | action              | String | Current Action             | Current action of the vacuum cleaner.                                                     | True      |
@@ -61,7 +61,7 @@ Vacuum Cleaner Config
 | is-charging         | Switch | Is Charging                | Is the vacuum cleaner currently charging?                                                 | True      |
 | available-commands  | String | Available Commands         | List of available commands.                                                               | True      |
 | error               | String | Error                      | Current error message in system.                                                          | True      |
-| command             | String | Send Command               | Send Commands to Vacuum Cleaner. (clean with map, clean, pause, resume, stop, dock)                       | False     |
+| command             | String | Send Command               | Send Commands to Vacuum Cleaner. (clean with map, clean, pause, resume, stop, dock)       | False     |
 | cleaning-category   | String | Cleaning Category          | Current or Last category of the cleaning. Manual, Normal House Cleaning or Spot Cleaning. | True      |
 | cleaning-mode       | String | Cleaning Mode              | Current or Last cleaning mode. Eco or Turbo.                                              | True      |
 | cleaning-modifier   | String | Cleaning Modifier          | Modifier of current or last cleaning. Normal or Double.                                   | True      |
@@ -72,9 +72,9 @@ Vacuum Cleaner Config
 
 Below you will find examples of the necessary files:
 
-**neato.items**
+### neato.items
 
-```
+```java
 Group GNeato
 Number FannDammBattery  "Battery level [%.0f %%]" <battery> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:battery-level" }
 String FannDammState  "Status [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:state" }
@@ -92,9 +92,9 @@ Number FannDammSpotHeight  "SpotHeight [%.0f]" <niveau> (GNeato)  { channel = "n
 String FannDammCommand  "Send Command" { channel = "neato:vacuumcleaner:fanndamm:command" }
 ```
 
-**sitemap**
+### neato.sitemap
 
-```
+```perl
 Frame label="Neato BotVac Connected" {
     Switch item=FannDammCommand mappings=[cleanWithMap="cleanWithMap", clean="Clean",stop="Stop",pause="Pause",resume="Resume", dock="Send to dock"]
     Text item=FannDammBattery label="Battery level"
@@ -106,8 +106,8 @@ Frame label="Neato BotVac Connected" {
 }
 ```
 
-**neato.things**
+### neato.things
 
-```
+```java
 neato:vacuumcleaner:fanndamm [ serial="vacuumcleaner-serial", secret="secret-string"]
 ```

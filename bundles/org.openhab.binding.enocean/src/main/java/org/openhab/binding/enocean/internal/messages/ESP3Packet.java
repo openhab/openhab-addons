@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,17 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.EnOceanException;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class ESP3Packet {
 
-    private static byte[] crc8_table = new byte[] { (byte) 0x00, (byte) 0x07, (byte) 0x0e, (byte) 0x09, (byte) 0x1c,
+    private static byte[] crc8Table = new byte[] { (byte) 0x00, (byte) 0x07, (byte) 0x0e, (byte) 0x09, (byte) 0x1c,
             (byte) 0x1b, (byte) 0x12, (byte) 0x15, (byte) 0x38, (byte) 0x3f, (byte) 0x36, (byte) 0x31, (byte) 0x24,
             (byte) 0x23, (byte) 0x2a, (byte) 0x2d, (byte) 0x70, (byte) 0x77, (byte) 0x7e, (byte) 0x79, (byte) 0x6c,
             (byte) 0x6b, (byte) 0x62, (byte) 0x65, (byte) 0x48, (byte) 0x4f, (byte) 0x46, (byte) 0x41, (byte) 0x54,
@@ -75,7 +77,7 @@ public class ESP3Packet {
         byte output = 0;
         for (int i = offset; i < offset + length; i++) {
             int index = (output ^ data[i]) & 0xff;
-            output = crc8_table[index];
+            output = crc8Table[index];
         }
         return (byte) (output & 0xff);
     }
@@ -85,26 +87,24 @@ public class ESP3Packet {
             byte[] payload = basePacket.getPayload();
             byte[] optionalPayload = basePacket.getOptionalPayload();
 
-            int optionalLength = optionalPayload != null ? optionalPayload.length : 0;
-
             byte[] result = new byte[ESP3_SYNC_BYTE_LENGTH + ESP3_HEADER_LENGTH + ESP3_CRC3_HEADER_LENGTH
-                    + payload.length + optionalLength + ESP3_CRC8_DATA_LENGTH];
+                    + payload.length + optionalPayload.length + ESP3_CRC8_DATA_LENGTH];
 
             result[0] = ESP3_SYNC_BYTE;
             result[1] = (byte) ((payload.length >> 8) & 0xff);
             result[2] = (byte) (payload.length & 0xff);
-            result[3] = (byte) (optionalLength & 0xff);
+            result[3] = (byte) (optionalPayload.length & 0xff);
             result[4] = basePacket.getPacketType().getValue();
             result[5] = calcCRC8(result, ESP3_SYNC_BYTE_LENGTH, ESP3_HEADER_LENGTH);
-            for (int i = 0; i < payload.length; i++) {
-                result[6 + i] = payload[i];
+
+            System.arraycopy(payload, 0, result, 6, payload.length);
+
+            for (int i = 0; i < optionalPayload.length; i++) {
+                result[6 + payload.length + i] = (byte) (optionalPayload[i] & 0xff);
             }
-            if (optionalPayload != null) {
-                for (int i = 0; i < optionalPayload.length; i++) {
-                    result[6 + payload.length + i] = (byte) (optionalPayload[i] & 0xff);
-                }
-            }
-            result[6 + payload.length + optionalLength] = calcCRC8(result, 6, payload.length + optionalLength);
+
+            result[6 + payload.length + optionalPayload.length] = calcCRC8(result, 6,
+                    payload.length + optionalPayload.length);
 
             return result;
         } catch (Exception e) {
@@ -116,7 +116,7 @@ public class ESP3Packet {
         byte output = 0;
         for (int i = 0; i < length; i++) {
             int index = (output ^ data[i]) & 0xff;
-            output = crc8_table[index];
+            output = crc8Table[index];
         }
         return output == crc8;
     }

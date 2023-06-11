@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,10 +28,10 @@ import tuwien.auto.calimero.secure.KnxSecureException;
  *
  */
 @NonNullByDefault
-public class KNXBridgeBaseThingHandlerTest {
+class KNXBridgeBaseThingHandlerTest {
 
     @Test
-    public void testSecurityHelpers() {
+    void testSecurityHelpers() {
         // now check router settings:
         String bbKeyHex = "D947B12DDECAD528B1D5A88FD347F284";
         byte[] bbKeyParsedLower = KNXBridgeBaseThingHandler.secHelperParseBackboneKey(bbKeyHex.toLowerCase());
@@ -42,7 +42,7 @@ public class KNXBridgeBaseThingHandlerTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testInitializeSecurity() {
+    void testInitializeSecurity() {
         Bridge bridge = mock(Bridge.class);
         NetworkAddressService nas = mock(NetworkAddressService.class);
         IPBridgeThingHandler handler = new IPBridgeThingHandler(bridge, nas);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,9 @@ package org.openhab.binding.bsblan.internal.helper;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
-import org.openhab.binding.bsblan.internal.handler.BsbLanParameterHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -27,6 +25,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.unbescape.html.HtmlEscape;
 
 /**
  * The {@link BsbLanParameterHandler} is responsible for updating the data, which are
@@ -76,7 +75,7 @@ public class BsbLanParameterConverter {
     }
 
     private static State getStateForUnitChannel(BsbLanApiParameterDTO parameter) {
-        String value = StringEscapeUtils.unescapeHtml4(parameter.unit);
+        String value = HtmlEscape.unescapeHtml(parameter.unit);
         return new StringType(value);
     }
 

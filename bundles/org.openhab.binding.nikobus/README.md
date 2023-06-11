@@ -6,21 +6,21 @@ This binding allows openHAB to interact with the Nikobus home automation system.
 
 More specifically, it allows openHAB to:
 
-* send (simulated) button presses to the Nikobus,
-* react to button presses which occur on the Nikobus,
-* change the status of switch channels on a Nikobus switch module,
-* request the status of switch channels on a Nikobus switch module,
-* change the status of dimmer channels on a Nikobus dimmer module,
-* request the status of dimmer channels on a Nikobus dimmer module,
-* send commands to the Nikobus roller shutter module.
+- send (simulated) button presses to the Nikobus,
+- react to button presses which occur on the Nikobus,
+- change the status of switch channels on a Nikobus switch module,
+- request the status of switch channels on a Nikobus switch module,
+- change the status of dimmer channels on a Nikobus dimmer module,
+- request the status of dimmer channels on a Nikobus dimmer module,
+- send commands to the Nikobus roller shutter module.
 
 This binding works with at least the following hardware:
 
-* PC-link module (05-200),
-* Push buttons (05-060-01, 05-064-01), RF Transmitter (05-314), PIR Sensor (430-00500),
-* 4 channel switch module (05-002-02),
-* 12 channel switch module (05-000-02),
-* 12 channel dimmer module.
+- PC-link module (05-200),
+- Push buttons (05-060-01, 05-064-01), RF Transmitter (05-314), PIR Sensor (430-00500),
+- 4 channel switch module (05-002-02),
+- 12 channel switch module (05-000-02),
+- 12 channel dimmer module.
 
 ## Supported Things
 
@@ -28,33 +28,33 @@ The binding supports a serial connection via `nikobus:pc-link` bridge to the Nik
 
 The bridge enables communication with other Nikobus components:
 
-* `switch-module` - Nikobus switch module, i.e. `05-000-02`,
-* `dimmer-module` - Nikobus dim-controller module, i.e. `05-007-02`,
-* `rollershutter-module` - Nikobus roller shutter module,
-* `push-button` - Nikobus physical push button.
+- `switch-module` - Nikobus switch module, i.e. `05-000-02`,
+- `dimmer-module` - Nikobus dim-controller module, i.e. `05-007-02`,
+- `rollershutter-module` - Nikobus roller shutter module,
+- `push-button` - Nikobus physical push button.
 
 ## Bridge Configuration
 
 The binding can connect to the PC-Link via serial interface.
 
-```
+```java
 Bridge nikobus:pc-link:mypclink [ port="<serial port>", refreshInterval=<interval> ] {
 }
 ```
 
 where:
 
-* `port` is the name of the serial port used to connect to the Nikobus installation
-* `refreshInterval` defines how often the binding reads Nikobus module's status, so having i.e. 30 as above, the binding will read one module’s status each 30s, iterating through all modules, one by one. If one does not specify `refreshInterval`, a default value of 60s is used.
+- `port` is the name of the serial port used to connect to the Nikobus installation
+- `refreshInterval` defines how often the binding reads Nikobus module's status, so having i.e. 30 as above, the binding will read one module’s status each 30s, iterating through all modules, one by one. If one does not specify `refreshInterval`, a default value of 60s is used.
 
 ## Thing Configuration
 
 Once connected to the Nikobus installation using a bridge, one can communicate with:
 
-* `switch-module`,
-* `dimmer-module`,
-* `rollershutter-module`,
-* `push-button`.
+- `switch-module`,
+- `dimmer-module`,
+- `rollershutter-module`,
+- `push-button`.
 
 ### Modules
 
@@ -70,7 +70,7 @@ In order to be able to read the status of a Nikobus module channel or to switch 
 
 #### switch-module
 
-```
+```java
 Thing switch-module s1 [ address = "BC00" ]
 ```
 
@@ -93,7 +93,7 @@ Defines a `switch-module` with address `BC00`.
 
 #### dimmer-module
 
-```
+```java
 Thing dimmer-module d1 [ address = "D969" ]
 ```
 
@@ -116,7 +116,7 @@ Defines a `dimmer-module` with address `D969`.
 
 #### rollershutter-module
 
-```
+```java
 Thing rollershutter-module r1 [ address = "4C6C" ]
 ```
 
@@ -159,7 +159,7 @@ This means one could also define virtual buttons in openHAB with non-existing ad
 
 To configure an item for a button in openHAB with address `28092A`, use the following format:
 
-```
+```java
 Thing push-button pb1 [ address = "28092A" ]
 ```
 
@@ -171,19 +171,19 @@ In order to keep an up to date state of the channels in openHAB, button configur
 When configured, the status of the channel groups to which the button is linked, will be queried every time the button is pressed.
 Every status query takes between ~300 ms, so to get the best performance, only add the affected channel groups in the configuration, which has the following format:
 
-```
+```java
 Thing push-button <id> [ address = "<address>", impactedModules = "<moduleType>:<moduleId>:<channelGroup>, <moduleType>:<moduleId>:<channelGroup>, ..." ]
 ```
 
 where:
 
-* `moduleType` represents module's type,
-* `moduleId` represents module's id,
-* `channelGroup` represents the first (1) or second (2) channel group in the module.
+- `moduleType` represents module's type,
+- `moduleId` represents module's id,
+- `channelGroup` represents the first (1) or second (2) channel group in the module.
 
  Example configurations may look like:
 
-```
+```java
 Thing switch-module s1 [ address = "FF2A" ]
 Thing push-button pb1 [ address = "28092A", impactedModules = "switch-module:s1:1" ]
 ```
@@ -194,20 +194,19 @@ In addition to the status requests triggered by button presses, there is also a 
 
 Beside receiving a status update (ON) when a physical Nikobus push button is pressed (and kept pressed), additional triggers can be added and configured to determine how press&hold of a physical push button should generate trigger events. Two types of trigger channels are supported:
 
-* filter trigger and
-* button trigger.
+- filter trigger and
+- button trigger.
 
 ##### Filter Trigger
 
-* `command` - command to be send,
-* `delay` - a required delay in milliseconds defining how much time must a button be pressed before an initial trigger event is fired,
-* `period` - optional time in milliseconds between successive triggers.
+- `command` - command to be send,
+- `delay` - a required delay in milliseconds defining how much time must a button be pressed before an initial trigger event is fired,
+- `period` - optional time in milliseconds between successive triggers.
 
 Examples:
 
-* `command = PRESSED, delay = 0, period = <empty>` - triggers `PRESSED` event immediatelly when Nikobus button is pressed and is not triggered anymore while holding down the button,
-* `command = INCREMENT, delay = 1000, period = 500` - triggers initial `INCREMENT` event after 1 second and then every half a second while holding down the button.
-
+- `command = PRESSED, delay = 0, period = <empty>` - triggers `PRESSED` event immediatelly when Nikobus button is pressed and is not triggered anymore while holding down the button,
+- `command = INCREMENT, delay = 1000, period = 500` - triggers initial `INCREMENT` event after 1 second and then every half a second while holding down the button.
 
 ##### Button Trigger
 
@@ -219,7 +218,7 @@ Pressing a physical Nikobus push-button will generate a new inbox entry with an 
 
 Nikobus push buttons have the following format in inbox:
 
-```
+```text
 Nikobus Push Button 14E7F4:3
 4BF9CA
 nikobus:push-button
@@ -229,54 +228,54 @@ where first line contains name of the discovered button and second one contains 
 
 Each discovered button has a Nikobus address appended to its name, same as can be seen in Nikobus's PC application, `14E7F4:3` in above example.
 
- * `14E7F4` - address of the Nikobus switch, as can be seen in Nikobus PC software and
- * `3` - represents a button on Nikobus switch.
+- `14E7F4` - address of the Nikobus switch, as can be seen in Nikobus PC software and
+- `3` - represents a button on Nikobus switch.
 
 ### Button mappings
 
-##### 2 buttons switch
+#### 2 buttons switch
 
 ![Nikobus Switch with 2 buttons](doc/s2.png)
 
-```
+```text
  1 = A
  2 = B
- ```
+```
 
-##### 4 buttons switch
+#### 4 buttons switch
 
 ![Nikobus Switch with 4 buttons](doc/s4.png)
 
-maps as 
+maps as
 
-```
+```text
  3  1  
  4  2
 ```
 
 so
 
-```
+```text
 1 = C
 2 = D
 3 = A
 4 = B
 ```
 
-##### 8 buttons switch
+#### 8 buttons switch
 
 ![Nikobus Switch with 8 buttons](doc/s8.png)
 
 maps as
 
-```
+```text
  7  5  3  1  
  8  6  4  2
 ```
 
 so
 
-```
+```text
 1 = 2C
 2 = 2D
 3 = 2A
@@ -289,14 +288,14 @@ so
 
 Above example `14E7F4:3` would give:
 
-* for 4 buttons switch - push button A,
-* for 8 buttons switch - push button 2A.
+- for 4 buttons switch - push button A,
+- for 8 buttons switch - push button 2A.
 
 ## Full Example
 
 ### nikobus.things
 
-```
+```java
 Bridge nikobus:pc-link:mypclink [ port = "/dev/ttyUSB0", refreshInterval = 10 ] {
     Thing dimmer-module d1 [ address = "0700" ]
     Thing dimmer-module d2 [ address = "6B00" ]
@@ -325,19 +324,19 @@ Bridge nikobus:pc-link:mypclink [ port = "/dev/ttyUSB0", refreshInterval = 10 ] 
 
 ### nikobus.items
 
-```
+```java
 Dimmer Light_FF_Gallery_Ceiling "Ceiling" (FF_Gallery, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-1" }
 Dimmer Light_FF_Bed_Ceiling "Ceiling" (FF_Bed, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-7" }
 Dimmer Light_FF_Child_Ceiling "Ceiling" (FF_Child, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d2:output-10" }
 Dimmer Light_FF_Child_Wall_Left "Wall Left" (FF_Child, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-11" }
-Dimmer Light_FF_Child_Wall_Right "Wall Right" (FF_Child, Lights) [ "Lighting" ]	{ channel="nikobus:dimmer-module:mypclink:d1:output-12" }
-Dimmer Light_FF_PlayRoom_Ceiling "Ceiling" (FF_PlayRoom, Lights)	[ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-6" }
-Dimmer Light_FF_PlayRoom_Wall "Wall" (FF_PlayRoom, Lights) [ "Lighting" ]	{ channel="nikobus:dimmer-module:mypclink:d1:output-4" }
+Dimmer Light_FF_Child_Wall_Right "Wall Right" (FF_Child, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-12" }
+Dimmer Light_FF_PlayRoom_Ceiling "Ceiling" (FF_PlayRoom, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-6" }
+Dimmer Light_FF_PlayRoom_Wall "Wall" (FF_PlayRoom, Lights) [ "Lighting" ]  { channel="nikobus:dimmer-module:mypclink:d1:output-4" }
 
 Switch Light_FF_Gallery_Wall "Wall" (FF_Gallery, Lights) [ "Lighting" ] { channel="nikobus:switch-module:mypclink:s1:output-4" }
 Switch Light_FF_Bath_Ceiling "Ceiling" (FF_Bath, Lights) [ "Lighting" ] { channel="nikobus:switch-module:mypclink:s3:output-2" }
-Switch Light_FF_Wardrobe_Ceiling "Ceiling"	(FF_Wardrobe, Lights)	[ "Lighting" ] { channel="nikobus:switch-module:mypclink:s1:output-1" }
-Switch Light_FF_Corridor_Ceiling "Ceiling" (FF_Corridor, Lights) [ "Lighting" ]	{ channel="nikobus:switch-module:mypclink:s2:output-3" }
+Switch Light_FF_Wardrobe_Ceiling "Ceiling" (FF_Wardrobe, Lights) [ "Lighting" ] { channel="nikobus:switch-module:mypclink:s1:output-1" }
+Switch Light_FF_Corridor_Ceiling "Ceiling" (FF_Corridor, Lights) [ "Lighting" ] { channel="nikobus:switch-module:mypclink:s2:output-3" }
 
 Rollershutter Shutter_GF_Corridor "Corridor" (GF_Corridor, gShuttersGF) { channel="nikobus:rollershutter-module:mypclink:r1:output-1" }
 Rollershutter Shutter_GF_Bed "Bedroom" (GF_Bed, gShuttersGF) { channel="nikobus:rollershutter-module:mypclink:r1:output-3" }

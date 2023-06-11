@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,30 +32,30 @@ public interface GardenaSmart {
     /**
      * Disposes Gardena smart system.
      */
-    public void dispose();
+    void dispose();
 
     /**
      * Returns all devices from all locations.
      */
-    public Collection<Device> getAllDevices();
+    Collection<Device> getAllDevices();
 
     /**
      * Returns a device with the given id.
      */
-    public Device getDevice(String deviceId) throws GardenaDeviceNotFoundException;
+    Device getDevice(String deviceId) throws GardenaDeviceNotFoundException;
 
     /**
      * Sends a command to Gardena smart system.
      */
-    public void sendCommand(DataItem<?> dataItem, GardenaCommand gardenaCommand) throws GardenaException;
+    void sendCommand(DataItem<?> dataItem, GardenaCommand gardenaCommand) throws GardenaException;
 
     /**
      * Returns the id.
      */
-    public String getId();
+    String getId();
 
     /**
      * Restarts all WebSocket.
      */
-    public void restartWebsockets();
+    void restartWebsockets();
 }

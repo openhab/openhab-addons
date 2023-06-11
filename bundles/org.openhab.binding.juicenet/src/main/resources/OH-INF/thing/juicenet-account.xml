@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="juicenet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>JuiceNet Account</label>
+		<description>This is the account for which your device(s) are registered at home.juice.net.</description>
+
+		<config-description>
+			<parameter name="apiToken" type="text" required="true">
+				<label>API Token</label>
+				<description>API Token from the user profile page. (https://home.juice.net/Manage) </description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

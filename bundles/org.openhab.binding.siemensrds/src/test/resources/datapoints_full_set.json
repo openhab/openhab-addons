@@ -371,7 +371,7 @@
 				-50,
 				80
 			],
-			"descr": "캜",
+			"descr": "째C",
 			"descriptionName": "Outside air temperature",
 			"objectName": "R(1)'TOa",
 			"memberName": "PresentValue",
@@ -420,7 +420,7 @@
 				0,
 				50
 			],
-			"descr": "캜",
+			"descr": "째C",
 			"descriptionName": "Comfort heating setpoint",
 			"objectName": "R(1)'RHvacCoo'TCtlH'SpHCmf",
 			"memberName": "PresentValue",
@@ -444,7 +444,7 @@
 				0,
 				50
 			],
-			"descr": "캟",
+			"descr": "째F",
 			"descriptionName": "Pre-comfort heating setpoint",
 			"objectName": "R(1)'RHvacCoo'TCtlH'SpHPcf",
 			"memberName": "PresentValue",
@@ -468,7 +468,7 @@
 				0,
 				50
 			],
-			"descr": "캜",
+			"descr": "째C",
 			"descriptionName": "Economy heating setpoint",
 			"objectName": "R(1)'RHvacCoo'TCtlH'SpHEco",
 			"memberName": "PresentValue",
@@ -492,7 +492,7 @@
 				0,
 				50
 			],
-			"descr": "캜",
+			"descr": "째C",
 			"descriptionName": "Protection heating setpoint",
 			"objectName": "R(1)'RHvacCoo'TCtlH'SpHPrt",
 			"memberName": "PresentValue",
@@ -517,7 +517,7 @@
 				12,
 				35
 			],
-			"descr": "캜",
+			"descr": "째C",
 			"descriptionName": "Room temperature setpoint",
 			"objectName": "R(1)'RHvacCoo'SpTRDtr'SpTR",
 			"memberName": "PresentValue",
@@ -590,7 +590,7 @@
 				0,
 				50
 			],
-			"descr": "캜",
+			"descr": "째C",
 			"descriptionName": "Room temperature",
 			"objectName": "R(1)'RHvacCoo'RTemp",
 			"memberName": "PresentValue",
@@ -614,7 +614,7 @@
 				0,
 				50
 			],
-			"descr": "캜",
+			"descr": "째C",
 			"descriptionName": "Max. heating setpoint",
 			"objectName": "R(1)'SpTRMaxHCmf",
 			"memberName": "PresentValue",

@@ -1,4 +1,4 @@
-# Flic Button Binding 
+# Flic Button Binding
 
 openHAB binding for using [Flic Buttons](https://flic.io/)
 with a [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci) bridge.
@@ -20,8 +20,8 @@ After buttons are initially added to flicd, an internet connection is not requir
 
 ## Discovery
 
-* There is no automatic discovery for flicd-bridge available.
-* After flicd-bridge is (manually) configured, buttons will be automatically discovered via background discovery as soon
+- There is no automatic discovery for flicd-bridge available.
+- After flicd-bridge is (manually) configured, buttons will be automatically discovered via background discovery as soon
   as they're added with [simpleclient](https://github.com/50ButtonsEach/fliclib-linux-hci).
 
 If they're already attached to the flicd-bridge before configuring this binding, they can be discovered by triggering an
@@ -33,14 +33,14 @@ active scan.
 
 Example for textual configuration:
 
-```
+```java
 Bridge flicbutton:flicd-bridge:mybridge
 ```
 
 The default host is localhost:5551 (this should be sufficient if flicd is running with default settings on the same server as openHAB).
 If your flicd service is running somewhere else, specify it like this:
 
-```
+```java
 Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port=<YOUR_PORT>]
 ```
 
@@ -52,7 +52,7 @@ For the button, the only config parameter is the MAC address.
 Normally, no textual configuration is necessary as buttons are auto discovered as soon as the bridge is configured.
 If you want to use textual configuration anyway, you can do it like this:
 
-```
+```java
 Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port=<YOUR_PORT>] {
     Thing button myflic1 "<YOUR_LABEL>" [address ="<MAC_ADDRESS>"]
     Thing button myflic2 "<YOUR_LABEL>" [address ="<MAC_ADDRESS>"]
@@ -70,11 +70,12 @@ You're free to choose any label you like for your button.
 | rawbutton                | [System Trigger Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-trigger-channel-types) `system.rawbutton`  | Depends on the  [Trigger Profile](https://www.openhab.org/docs/configuration/items.html#profiles) used | Raw Button channel that triggers `PRESSED` and `RELEASED` events, allows to use openHAB profiles or own implementations via rules to detect e.g. double clicks, long presses etc.  |
 | button                   | [System Trigger Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-trigger-channel-types) `system.button`    | Depends on the [Trigger Profile](https://www.openhab.org/docs/configuration/items.html#profiles) used | Button channel that is using Flic's implementation for detecting long, short or double clicks. Triggers `SHORT_PRESSED`,`DOUBLE_PRESSED` and `LONG_PRESSED` events.   |
 | battery-level            | [System State Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-state-channel-types) `system.battery-level`     | Number | Represents the battery level as a percentage (0-100%).
+
 ## Example
 
 ### Initial setup
 
-1. Setup and run flicd as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). 
+1. Setup and run flicd as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci).
    Please consider that you need a separate Bluetooth adapter. Shared usage with other Bluetooth services (e.g. Bluez)
    is not possible.
 1. Connect your buttons to flicd using the simpleclient as described in
@@ -92,16 +93,16 @@ You're free to choose any label you like for your button.
 
 demo.things:
 
-```
+```java
 Bridge flicbutton:flicd-bridge:local-flicd {
-	Thing button flic_livingroom "Yellow Button Living Room" [address = "60:13:B3:02:18:BD"]
-	Thing button flic_kitchen "Black Button Kitchen" [address = "B5:7E:59:78:86:9F"]
+    Thing button flic_livingroom "Yellow Button Living Room" [address = "60:13:B3:02:18:BD"]
+    Thing button flic_kitchen "Black Button Kitchen" [address = "B5:7E:59:78:86:9F"]
 }
 ```
 
 demo.items:
 
-```
+```java
 Dimmer Light_LivingRoom  { channel="milight:rgbLed:milight2:4:ledbrightness", channel="flicbutton:button:local-flicd:flic_livingroom:rawbutton" [profile="rawbutton-toggle-switch"], channel="flicbutton:button:local-flicd:flic_kitchen:rawbutton" [profile="rawbutton-toggle-switch"] }  // We have a combined kitchen / livingroom, so we control the living room lights with switches from the living room and from the kitchen
 Switch Light_Kitchen    { channel="hue:group:1:kitchen-bulbs:switch", channel="flicbutton:button:local-flicd:flic_kitchen:rawbutton" [profile="rawbutton-toggle-switch"] }
 ```
@@ -111,7 +112,7 @@ Switch Light_Kitchen    { channel="hue:group:1:kitchen-bulbs:switch", channel="f
 It's also possible to setup [Rules](https://www.openhab.org/docs/configuration/rules-dsl.html).
 The following rules help to initially test your setup as they'll trigger log messages on incoming events.
 
-```
+```java
 rule "Button rule using the button channel"
 
 when

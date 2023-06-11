@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Björn Lange - Added locale config parameter, added i18n key collection
  * @author Benjamin Bolte - Add pre-heat finished and plate step channels, door state and door alarm channels, info
  *         state channel and map signal flags from API
- * @author Björn Lange - Add elapsed time channel, dish warmer thing, removed e-mail validation
+ * @author Björn Lange - Add elapsed time channel, dish warmer thing, removed e-mail validation, add eco feedback
  */
 @NonNullByDefault
 public final class MieleCloudBindingConstants {
@@ -214,6 +214,8 @@ public final class MieleCloudBindingConstants {
         public static final String PLATE_6_POWER_STEP_RAW = "plate_6_power_step_raw";
         public static final String DOOR_STATE = "door_state";
         public static final String DOOR_ALARM = "door_alarm";
+        public static final String WATER_CONSUMPTION_CURRENT = "water_consumption_current";
+        public static final String ENERGY_CONSUMPTION_CURRENT = "energy_consumption_current";
         public static final String BATTERY_LEVEL = "battery_level";
     }
 

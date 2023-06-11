@@ -38,28 +38,28 @@ The `projector-tcp` thing has the following configuration parameters:
 
 Some notes:
 
-* The binding should work on all Epson projectors that support the ESC/VP21 protocol, however not all binding channels will be useable on all projectors.
-* The _source_ channel includes a dropdown with the most common source inputs.
-* If your projector has a source input that is not in the dropdown, the two character hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
-* By using the sitemap mapping or a rule to send the input's code back to the _source_ channel, any source on the projector can be accessed by the binding.
-* The following channels _aspectratio_, _colormode_, _luminance_, _gamma_ and _background_ are pre-populated with a full set of options but not every option will be useable on all projectors.
-* If your projector has an option in one of the above mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.
-* The volume channel is a dimmer (0-100%) that is scaled to the range on the projector, either 0-20 or 0-40 per the maxVolume configuration setting. If your projector uses a different range, then the volume channel will not work.
-* If the projector power is switched to off in the middle of a polling operation, some of the channel values may become undefined until the projector is switched on again.
-* If the binding fails to connect to the projector using the direct IP connection, ensure that no password is configured on the projctor.
+- The binding should work on all Epson projectors that support the ESC/VP21 protocol, however not all binding channels will be useable on all projectors.
+- The _source_ channel includes a dropdown with the most common source inputs.
+- If your projector has a source input that is not in the dropdown, the two character hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
+- By using the sitemap mapping or a rule to send the input's code back to the _source_ channel, any source on the projector can be accessed by the binding.
+- The following channels _aspectratio_, _colormode_, _luminance_, _gamma_ and _background_ are pre-populated with a full set of options but not every option will be useable on all projectors.
+- If your projector has an option in one of the above mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.
+- The volume channel is a dimmer (0-100%) that is scaled to the range on the projector, either 0-20 or 0-40 per the maxVolume configuration setting. If your projector uses a different range, then the volume channel will not work.
+- If the projector power is switched to off in the middle of a polling operation, some of the channel values may become undefined until the projector is switched on again.
+- If the binding fails to connect to the projector using the direct IP connection, ensure that no password is configured on the projctor.
 
-* On Linux, you may get an error stating the serial port cannot be opened when the epsonprojector binding tries to load.
-* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. epsonprojector and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Epson projector):
+- On Linux, you may get an error stating the serial port cannot be opened when the epsonprojector binding tries to load.
+- You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. epsonprojector and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Epson projector):
 
-```
+```text
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
 ```
 
-* Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Epson projector):
+- Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Epson projector):
 
-```
+```yaml
 connection: &conEpson
     accepter: tcp,4444
     enable: on
@@ -72,42 +72,42 @@ connection: &conEpson
 
 ## Channels
 
-| Channel            | Item Type | Purpose                                                                                    | Values    | 
-| ------------------ | --------- | ------------------------------------------------------------------------------------------ | --------- | 
-| power              | Switch    | Powers the projector on or off.                                                            |           | 
-| powerstate         | String    | Retrieves the textual power state of the projector.                                        | Read only | 
-| source             | String    | Retrieve or set the input source.                                                          | See above | 
-| aspectratio        | String    | Retrieve or set the aspect ratio.                                                          | See above | 
-| colormode          | String    | Retrieve or set the color mode.                                                            | See above | 
-| freeze             | Switch    | Turn the freeze screen mode on or off.                                                     |           | 
-| mute               | Switch    | Turn the AV mute on or off.                                                                |           | 
-| volume             | Dimmer    | Retrieve or set the volume. Scaled to 0-20 or 0-40 on the projector per maxVolume setting. | 0% - 100% | 
-| luminance          | String    | Retrieve or set the lamp mode.                                                             | See above | 
-| brightness         | Number    | Retrieve or set the brightness.                                                            | -24 - +24 | 
-| contrast           | Number    | Retrieve or set the contrast.                                                              | -24 - +24 | 
-| density            | Number    | Retrieve or set the density (color saturation).                                            | -32 - +32 | 
-| tint               | Number    | Retrieve or set the tint.                                                                  | -32 - +32 | 
-| colortemperature   | Number    | Retrieve or set the color temperature.                                                     | 0   - +9  | 
-| fleshtemperature   | Number    | Retrieve or set the flesh temperature.                                                     | 0   - +6  | 
-| gamma              | String    | Retrieve or set the gamma setting.                                                         | See above | 
-| autokeystone       | Switch    | Turn the auto keystone mode on or off.                                                     |           | 
-| verticalkeystone   | Number    | Retrieve or set the vertical keystone.                                                     | -30 - +30 | 
-| horizontalkeystone | Number    | Retrieve or set the horizontal keystone.                                                   | -30 - +30 | 
-| verticalposition   | Number    | Retrieve or set the vertical position.                                                     | -8  - +10 | 
-| horizontalposition | Number    | Retrieve or set the horizontal position.                                                   | -23 - +26 | 
-| verticalreverse    | Switch    | Turn the vertical reverse mode on or off.                                                  |           | 
-| horizontalreverse  | Switch    | Turn the horizontal reverse mode on or off.                                                |           | 
-| background         | String    | Retrieve or set the background color/logo.                                                 | See above | 
-| keycode            | String    | Send a key operation command to the projector. (2 character code)                          | Send only | 
-| lamptime           | Number    | Retrieves the lamp hours.                                                                  | Read only | 
-| errcode            | Number    | Retrieves the last error code.                                                             | Read only | 
-| errmessage         | String    | Retrieves the description of the last error.                                               | Read only | 
+| Channel            | Item Type | Purpose                                                                                    | Values    |
+| ------------------ | --------- | ------------------------------------------------------------------------------------------ | --------- |
+| power              | Switch    | Powers the projector on or off.                                                            |           |
+| powerstate         | String    | Retrieves the textual power state of the projector.                                        | Read only |
+| source             | String    | Retrieve or set the input source.                                                          | See above |
+| aspectratio        | String    | Retrieve or set the aspect ratio.                                                          | See above |
+| colormode          | String    | Retrieve or set the color mode.                                                            | See above |
+| freeze             | Switch    | Turn the freeze screen mode on or off.                                                     |           |
+| mute               | Switch    | Turn the AV mute on or off.                                                                |           |
+| volume             | Dimmer    | Retrieve or set the volume. Scaled to 0-20 or 0-40 on the projector per maxVolume setting. | 0% - 100% |
+| luminance          | String    | Retrieve or set the lamp mode.                                                             | See above |
+| brightness         | Number    | Retrieve or set the brightness.                                                            | -24 - +24 |
+| contrast           | Number    | Retrieve or set the contrast.                                                              | -24 - +24 |
+| density            | Number    | Retrieve or set the density (color saturation).                                            | -32 - +32 |
+| tint               | Number    | Retrieve or set the tint.                                                                  | -32 - +32 |
+| colortemperature   | Number    | Retrieve or set the color temperature.                                                     | 0   - +9  |
+| fleshtemperature   | Number    | Retrieve or set the flesh temperature.                                                     | 0   - +6  |
+| gamma              | String    | Retrieve or set the gamma setting.                                                         | See above |
+| autokeystone       | Switch    | Turn the auto keystone mode on or off.                                                     |           |
+| verticalkeystone   | Number    | Retrieve or set the vertical keystone.                                                     | -30 - +30 |
+| horizontalkeystone | Number    | Retrieve or set the horizontal keystone.                                                   | -30 - +30 |
+| verticalposition   | Number    | Retrieve or set the vertical position.                                                     | -8  - +10 |
+| horizontalposition | Number    | Retrieve or set the horizontal position.                                                   | -23 - +26 |
+| verticalreverse    | Switch    | Turn the vertical reverse mode on or off.                                                  |           |
+| horizontalreverse  | Switch    | Turn the horizontal reverse mode on or off.                                                |           |
+| background         | String    | Retrieve or set the background color/logo.                                                 | See above |
+| keycode            | String    | Send a key operation command to the projector. (2 character code)                          | Send only |
+| lamptime           | Number    | Retrieves the lamp hours.                                                                  | Read only |
+| errcode            | Number    | Retrieves the last error code.                                                             | Read only |
+| errmessage         | String    | Retrieves the description of the last error.                                               | Read only |
 
 ## Full Example
 
 things/epson.things:
 
-```
+```java
 // serial port connection
 epsonprojector:projector-serial:hometheater "Projector" [ serialPort="COM5", pollingInterval=10, maxVolume=20 ]
 
@@ -118,7 +118,7 @@ epsonprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port
 
 items/epson.items
 
-```
+```java
 Switch epsonPower                                      { channel="epsonprojector:projector-serial:hometheater:power" }
 String epsonSource       "Source [%s]"                 { channel="epsonprojector:projector-serial:hometheater:source" }
 String epsonAspectRatio  "Aspect Ratio [%s]"           { channel="epsonprojector:projector-serial:hometheater:aspectratio" }
@@ -154,7 +154,7 @@ String epsonErrMessage  "Error Message [%s]" <error>   { channel="epsonprojector
 
 sitemaps/epson.sitemap
 
-```
+```perl
 sitemap epson label="Epson Projector"
 {
     Frame label="Controls" {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,41 +12,44 @@
  */
 package org.openhab.binding.bigassfan.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BigAssFanDevice} is responsible for storing information about a fan.
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class BigAssFanDevice {
     /**
      * Name of device (e.g. Master Bedroom Fan)
      */
-    private String label;
+    private String label = "";
 
     /**
      * IP address of the device extracted from UDP packet
      */
-    private String ipAddress;
+    private String ipAddress = "";
 
     /**
      * MAC address of the device extracted from discovery message
      */
-    private String macAddress;
+    private String macAddress = "";
 
     /**
      * Type of device extracted from discovery message (e.g. FAN or SWITCH)
      */
-    private String type;
+    private String type = "";
 
     /**
      * Model of device extracted from discovery message (e.g. HSERIES)
      */
-    private String model;
+    private String model = "";
 
     /**
      * The raw discovery message
      */
-    private String discoveryMessage;
+    private String discoveryMessage = "";
 
     public String getLabel() {
         return label;

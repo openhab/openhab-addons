@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import com.google.gson.Gson;
 
 /**
  * The implementation of the client-side Webthing representation. This is based on HTTP. Bindings to alternative
- * application protocols such as CoAP may be defined in the future (which may be implemented by a another class)
+ * application protocols such as CoAP may be defined in the future (which may be implemented by another class)
  *
  * @author Gregor Roth - Initial contribution
  */

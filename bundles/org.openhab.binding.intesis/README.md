@@ -2,8 +2,6 @@
 
 This binding connects to WiFi [IntesisHome](https://www.intesis.com/products/cloud-solutions/ac-cloud-control) devices using their local REST Api and to [IntesisBox](https://www.intesis.com/products/ac-interfaces/wifi-gateways) devices using TCP connection.
 
-
-
 ## Supported Things
 
 This binding only supports one thing type:
@@ -26,7 +24,6 @@ The binding uses the following configuration parameters.
 | ipAddress | Both                | IP-Address of the device                                       |
 | password  | IntesisHome         | Password to login to the local webserver of IntesisHome device |
 | port      | IntesisBox          | TCP port to connect to IntesisBox device, defaults to 3310     |
-
 
 ## Channels
 
@@ -58,16 +55,16 @@ IntesisBox firmware 1.3.3 reports temperatures by full degrees only (e.g. 23.0) 
 
 The binding can be fully setup from the UI but if you decide to use files here is a full example:
 
-**Things**
+### Things
 
-```
+```java
 Thing intesis:intesisHome:acOffice "AC Unit Adapter" @ "AC" [ipAddress="192.168.1.100", password="xxxxx"]
 Thing intesis:intesisBox:acOffice  "AC Unit Adapter" @ "AC" [ipAddress="192.168.1.100", port=3310]
 ```
 
-**Items**
+### Items
 
-```intesishome.items
+```java
 Switch              ac               "Power"                                        { channel="intesis:intesisHome:acOffice:power" }
 String              acMode           "Mode"                                         { channel="intesis:intesisHome:acOffice:mode" }
 String              acFanSpeed       "Fan Speed"             <fan>                  { channel="intesis:intesisHome:acOffice:fanSpeed" }
@@ -81,9 +78,9 @@ String              acErrorCode      "Errorcode"                                
 String              acWifiSignal     "Wifi Signal Quality"   <qualityofservice>     { channel="intesis:intesisBox:acOffice:wifiSignal" }
 ```
 
-**Sitemap**
+### Sitemap
 
-```intesisHome.sitemap
+```perl
 sitemap intesishome label="My AC control" {
 
     Frame label="Climate" {

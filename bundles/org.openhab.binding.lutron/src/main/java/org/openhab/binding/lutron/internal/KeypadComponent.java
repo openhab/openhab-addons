@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,11 +24,11 @@ import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
 @NonNullByDefault
 public interface KeypadComponent {
 
-    public int id();
+    int id();
 
-    public String channel();
+    String channel();
 
-    public String description();
+    String description();
 
-    public ComponentType type();
+    ComponentType type();
 }

@@ -88,23 +88,26 @@ Finally, an SDM Account Thing can be created to access the SDM project using the
 1. Copy/paste the saved OAuth 2.0 **Client Secret** to SDM group parameter (e.g. `726kcU-d1W4RXxEJA79oZ0oG`)
 1. Create an authorization code for the binding:
     1. Replace the **Project ID** and **Client ID** in the URL below with your SDM Project ID and SDM OAuth 2.0 Client ID and open the URL in a new browser tab:
-       
+
        `https://nestservices.google.com/partnerconnections/<ProjectID>/auth?scope=https://www.googleapis.com/auth/sdm.service&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<ClientID>`
-       
+
        For the example values used so far this is:
-       
+
        `https://nestservices.google.com/partnerconnections/585de72e-968c-435c-b16a-31d1d3f76833/auth?scope=https://www.googleapis.com/auth/sdm.service&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com`
     1. Enable all the permissions you want to use with the binding and click "Next" to continue
     1. Login using your Google account when prompted
     1. On the "Google hasn't verified this app" page, click on "Advanced"
     1. Then click on "Go to ... (advanced)"
     1. Now "Allow" the SDM permissions and confirm your choices again by clicking "Allow"
-    1. After your browser has been redirected to https://www.google.com, the **Authorization Code** will be set in the browser URL as value of the "code" URL query parameter
+    1. After your browser has been redirected to <https://www.google.com>, the **Authorization Code** will be set in the browser URL as value of the "code" URL query parameter
     1. Copy/paste the **Authorization Code** to the SDM group parameter in the openHAB Nest SDM Account Thing configuration
 1. All required SDM Account Thing configuration parameters have now been entered so create it by clicking "Create Thing"
 
 The SDM Account Thing should now be ONLINE and have as status description "Using periodic refresh".
-It should also be possible to use the configured account to discover your Nest devices via the Inbox.
+
+Next click the "Enable" button on the [Smart Device Management API](https://console.cloud.google.com/apis/library/smartdevicemanagement.googleapis.com) page for your GCP project to enable the SDM API.
+
+Now it should also be possible to use the configured account to discover your Nest devices via the Inbox.
 
 You can monitor the SDM API using the Google Cloud Platform Console via [API & Services > Smart Device Management API](https://console.cloud.google.com/apis/api/smartdevicemanagement.googleapis.com/overview).
 
@@ -146,23 +149,23 @@ Finally, the existing SDM Account Thing can be updated so it can subscribe to SD
 1. Open the configuration details of your existing "Nest SDM Account" Thing in openHAB
 1. Copy/paste the saved GCP **Project ID** to Pub/Sub group parameter (e.g. `openhab-123`)
 1. Enter a name in **Subscription ID** that uniquely identifies the Pub/Sub subscription used by the binding
-   
+
    > Must be 3-255 characters, start with a letter, and contain only the following characters: letters, numbers, dashes (-), periods (.), underscores (_), tildes (~), percents (%) or plus signs (+). Cannot start with  goog.
 1. Copy/paste the saved OAuth 2.0 **Client ID** to Pub/Sub group parameter (e.g. `1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com`)
 1. Copy/paste the saved OAuth 2.0 **Client Secret** to Pub/Sub group parameter (e.g. `1-k78-XcHhp_gdZF-I6JaIHp`)
 1. Create an authorization code for the binding:
     1. Replace the **Client ID** in the URL below with your Pub/Sub OAuth 2.0 Client ID and open the URL in a new browser tab:
-       
+
        `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/pubsub&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=<ClientID>`
-       
+
        For the example client this is:
-       
+
        `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/pubsub&access_type=offline&prompt=consent&include_granted_scopes=true&response_type=code&redirect_uri=https://www.google.com&client_id=1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com`
     1. Login using your Google account when prompted
     1. On the "Google hasn't verified this app" page, click on "Advanced"
     1. Then click on "Go to ... (advanced)"
     1. Now "Allow" the Pub/Sub permissions and confirm your choices again by clicking "Allow"
-    1. After your browser has been redirected to https://www.google.com, the **Authorization Code** will be set in the browser URL as value of the "code" URL query parameter
+    1. After your browser has been redirected to <https://www.google.com>, the **Authorization Code** will be set in the browser URL as value of the "code" URL query parameter
     1. Copy/paste the **Authorization Code** to the Pub/Sub group parameter in the openHAB Nest SDM Account Thing configuration
 1. All required Pub/Sub Account Thing configuration parameters have now been entered so click "Save" to update the SDM Account Thing configuration
 
@@ -241,7 +244,7 @@ Similarly, when a DateTime command is sent to the `fan_timer_timeout` channel, t
 
 ### WWN Camera Channels
 
-**Camera group channels**
+#### Camera Group Channels
 
 Information about the camera.
 
@@ -257,7 +260,7 @@ Information about the camera.
 | video_history_enabled | Switch    | If the video history is currently enabled         |      R     |
 | web_url               | String    | The web URL to see the camera                     |      R     |
 
-**Last event group channels**
+#### Last Event Group Channels
 
 Information about the last camera event (requires Nest Aware subscription).
 
@@ -336,9 +339,9 @@ Information about the last camera event (requires Nest Aware subscription).
 Note that the Nest API rounds Thermostat values so they will differ from what shows up in the Nest App.
 The Nest API applies the following rounding:
 
-*   degrees Celsius to 0.5 degrees
-*   degrees Fahrenheit to whole degrees
-*   humidity to 5%
+- degrees Celsius to 0.5 degrees
+- degrees Fahrenheit to whole degrees
+- humidity to 5%
 
 ## Example
 
@@ -346,7 +349,7 @@ You can use the discovery functionality of the binding to obtain the deviceId an
 
 ### sdm-demo.things
 
-```
+```java
 Bridge nest:sdm_account:demo_sdm_account [ sdmProjectId="585de72e-968c-435c-b16a-31d1d3f76833", sdmClientId="1046297811237-3f5sj4ccfubit0fum027ral82jgffsd1.apps.googleusercontent.com", sdmClientSecret="726kcU-d1W4RXxEJA79oZ0oG", sdmAuthorizationCode="xkkY3qYtfZCzaXCcPxpOELUW8EhgiSMD3n9jmzJ3m0yerkQpVRdj5vqWRjMSIG", pubsubProjectId="openhab-12345", pubsubSubscriptionId="nest-sdm-events", pubsubClientId="1046297811237-lg27h26kln6r1nbg54jpg6nfjg6h4b3n.apps.googleusercontent.com", pubsubClientSecret="1-k78-XcHhp_gdZF-I6JaIHp", pubsubAuthorizationCode="tASfQq7gn6sfbUSbwRufbMI0BYDzh1d7MBG2G7vdZpbhjmZfwDp5MkeaX0iMxn" ] {
     Thing sdm_camera       fish_cam          [ deviceId="AVPHwTQCAhersqmQ3IXwyqSX-XyuVZXoiNSNPeHdIMKgYpYZolNP4S9LS5QDF2LeuM3BQcpBh_fOEZYxkeH6eoQdWEELqi" ] {
         Channels:
@@ -368,7 +371,7 @@ Bridge nest:sdm_account:demo_sdm_account [ sdmProjectId="585de72e-968c-435c-b16a
 
 ### sdm-demo.items
 
-```
+```java
 /* SDM Doorbell */
 Image    Doorbell_Chime_Image      "Chime Image"                                            { channel="nest:sdm_doorbell:demo_sdm_account:front_door:chime_event#image" }
 DateTime Doorbell_Chime_Timestamp  "Chime Timestamp [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]"  { channel="nest:sdm_doorbell:demo_sdm_account:front_door:chime_event#timestamp" }
@@ -400,7 +403,7 @@ Number:Temperature   Thermostat_Temperature_Heat   "Temperature Heat [%.1f %unit
 
 ### wwn-demo.things
 
-```
+```java
 Bridge nest:wwn_account:demo_wwn_account [ productId="8fdf9885-ca07-4252-1aa3-f3d5ca9589e0", productSecret="QITLR3iyUlWaj9dbvCxsCKp4f", accessToken="c.6rse1xtRk2UANErcY0XazaqPHgbvSSB6owOrbZrZ6IXrmqhsr9QTmcfaiLX1l0ULvlI5xLp01xmKeiojHqozLQbNM8yfITj1LSdK28zsUft1aKKH2mDlOeoqZKBdVIsxyZk4orH0AvKEZ5aY" ] {
     Thing wwn_camera         fish_cam           [ deviceId="qw0NNE8ruxA9AGJkTaFH3KeUiJaONWKiH9Gh3RwwhHClonIexTtufQ" ]
     Thing wwn_smoke_detector hallway_smoke      [ deviceId="Tzvibaa3lLKnHpvpi9OQeCI_z5rfkBAV" ]
@@ -411,7 +414,7 @@ Bridge nest:wwn_account:demo_wwn_account [ productId="8fdf9885-ca07-4252-1aa3-f3
 
 ### wwn-demo.items
 
-```
+```java
 /* WWN Camera */
 String   Cam_App_URL               "App URL [%s]"                                                      { channel="nest:wwn_camera:demo_wwn_account:fish_cam:camera#app_url" }
 Switch   Cam_Audio_Input_Enabled   "Audio Input Enabled"                                               { channel="nest:wwn_camera:demo_wwn_account:fish_cam:camera#audio_input_enabled" }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,16 +15,22 @@ package org.openhab.persistence.influxdb.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.NumberItem;
@@ -33,6 +39,8 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
@@ -69,9 +77,14 @@ public class InfluxDBStateConvertUtilsTest {
     @ParameterizedTest
     @ValueSource(strings = { "1.12", "25" })
     public void convertDecimalToState(String number) {
+        UnitProvider unitProviderMock = mock(UnitProvider.class);
+        when(unitProviderMock.getUnit(any())).thenReturn((Unit) SIUnits.CELSIUS);
         BigDecimal val = new BigDecimal(number);
-        NumberItem item = new NumberItem("name");
-        assertThat(InfluxDBStateConvertUtils.objectToState(val, item), equalTo(new DecimalType(val)));
+        NumberItem plainItem = new NumberItem("plain");
+        NumberItem dimensionItem = new NumberItem("Number:Temperature", "dimension", unitProviderMock);
+        assertThat(InfluxDBStateConvertUtils.objectToState(val, plainItem), equalTo(new DecimalType(val)));
+        assertThat(InfluxDBStateConvertUtils.objectToState(val, dimensionItem),
+                equalTo(new QuantityType<>(new BigDecimal(number), SIUnits.CELSIUS)));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,8 @@ import org.osgi.framework.FrameworkUtil;
  * This class provides translations. It is a helper class for i18n / localization efforts.
  *
  * @implNote It is implemented as a static singleton, enforced by the single-element enum pattern.
- * @apiNote @set() must be called to provide tanslation service, otherwise all functions will return untranslated text.
+ * @apiNote {@link #setProvider(LocaleProvider, TranslationProvider)} must be called to provide tanslation service,
+ *          otherwise all functions will return untranslated text.
  *          Thread safety is ensured.
  * @author Holger Friedrich - Initial contribution
  *
@@ -54,7 +55,7 @@ public enum KNXTranslationProvider {
      *         returns original text with substitutions
      */
     public String get(final String text, @Nullable Object @Nullable... arguments) {
-        // ensure thread safety: calls to set(..) should not lead to race condition
+        // ensure thread safety: calls to setProvider(..) should not lead to race condition
         final TranslationProvider translationProvider = this.translationProvider;
         final LocaleProvider localeProvider = this.localeProvider;
         if (translationProvider != null) {
@@ -78,8 +79,8 @@ public enum KNXTranslationProvider {
      * get exception in user readable (and possibly localized) form
      *
      * @param e any exception
-     * @return localized message in form <description (translated)> (<class name>, <e.getLocalizedMessage (not
-     *         translated)>), empty string for null. May possibly change in further releases.
+     * @return localized message in form [description (translated)] [class name], [e.getLocalizedMessage (not
+     *         translated)]), empty string for null. May possibly change in further releases.
      */
     public String getLocalizedException(final Throwable e) {
         StringBuffer res = new StringBuffer();
@@ -115,10 +116,10 @@ public enum KNXTranslationProvider {
     /**
      * Set translation providers. To be called to make any translation work.
      *
-     * @param localeProvider openHAB locale provider, can be generated via \@Activate / \@Reference LocaleProvider in
-     *            handler factory
-     * @param translationProvider openHAB locale provider, can be generated via \@Activate / \@Reference
-     *            TranslationProvider in handler factory
+     * @param localeProvider openHAB locale provider, can be generated via {@literal @}Activate / {@literal @}Reference
+     *            LocaleProvider in handler factory
+     * @param translationProvider openHAB locale provider, can be generated via {@literal @}Activate /
+     *            {@literal @}Reference TranslationProvider in handler factory
      */
     public void setProvider(@Nullable LocaleProvider localeProvider,
             @Nullable TranslationProvider translationProvider) {

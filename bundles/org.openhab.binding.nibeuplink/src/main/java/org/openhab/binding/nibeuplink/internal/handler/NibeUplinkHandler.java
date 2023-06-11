@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.nibeuplink.internal.handler;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.core.thing.Channel;
@@ -38,7 +39,7 @@ public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
      * @param statusDetail Bridge status detail
      * @param description Bridge status description
      */
-    void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
+    void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
 
     /**
      * Provides the web interface object.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.Base._4BSTeachInVariation3Response;
@@ -32,7 +34,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.EventMessage;
 import org.openhab.binding.enocean.internal.messages.EventMessage.EventMessageType;
-import org.openhab.binding.enocean.internal.messages.Responses.SMACKTeachInResponse;
+import org.openhab.binding.enocean.internal.messages.responses.SMACKTeachInResponse;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EEPFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(EEPFactory.class);
@@ -76,7 +79,7 @@ public class EEPFactory {
         }
     }
 
-    private static EEPType getGenericEEPTypeFor(byte rorg) {
+    private static @Nullable EEPType getGenericEEPTypeFor(byte rorg) {
         logger.info("Received unsupported EEP teach in, trying to fallback to generic thing");
         RORG r = RORG.getRORG(rorg);
         if (r == RORG._4BS) {
@@ -91,7 +94,7 @@ public class EEPFactory {
         }
     }
 
-    public static EEP buildEEPFromTeachInERP1(ERP1Message msg) {
+    public static @Nullable EEP buildEEPFromTeachInERP1(ERP1Message msg) {
         if (!msg.getIsTeachIn() && !(msg.getRORG() == RORG.RPS)) {
             return null;
         }
@@ -150,19 +153,19 @@ public class EEPFactory {
             case _1BS:
                 return new D5_00_01(msg);
             case _4BS: {
-                int db_0 = msg.getPayload()[4];
-                if ((db_0 & _4BSMessage.LRN_Type_Mask) == 0) { // Variation 1
+                int db0 = msg.getPayload()[4];
+                if ((db0 & _4BSMessage.LRN_TYPE_MASK) == 0) { // Variation 1
                     logger.info("Received 4BS Teach In variation 1 without EEP, fallback to generic thing");
                     return buildEEP(EEPType.Generic4BS, msg);
                 }
 
-                byte db_3 = msg.getPayload()[1];
-                byte db_2 = msg.getPayload()[2];
-                byte db_1 = msg.getPayload()[3];
+                byte db3 = msg.getPayload()[1];
+                byte db2 = msg.getPayload()[2];
+                byte db1 = msg.getPayload()[3];
 
-                int func = (db_3 & 0xFF) >>> 2;
-                int type = ((db_3 & 0b11) << 5) + ((db_2 & 0xFF) >>> 3);
-                int manufId = ((db_2 & 0b111) << 8) + (db_1 & 0xff);
+                int func = (db3 & 0xFF) >>> 2;
+                int type = ((db3 & 0b11) << 5) + ((db2 & 0xFF) >>> 3);
+                int manufId = ((db2 & 0b111) << 8) + (db1 & 0xff);
 
                 logger.debug("Received 4BS Teach In with EEP A5-{}-{} and manufacturerID {}",
                         HexUtils.bytesToHex(new byte[] { (byte) func }),
@@ -210,7 +213,7 @@ public class EEPFactory {
         return null;
     }
 
-    public static EEP buildEEPFromTeachInSMACKEvent(EventMessage event) {
+    public static @Nullable EEP buildEEPFromTeachInSMACKEvent(EventMessage event) {
         if (event.getEventMessageType() != EventMessageType.SA_CONFIRM_LEARN) {
             return null;
         }
@@ -235,10 +238,10 @@ public class EEPFactory {
             eepType = getGenericEEPTypeFor(rorg);
         }
 
-        return createEEP(eepType).setSenderId(senderId);
+        return (eepType == null) ? null : createEEP(eepType).setSenderId(senderId);
     }
 
-    public static EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId, boolean teachIn) {
+    public static @Nullable EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId, boolean teachIn) {
         switch (msg.getRORG()) {
             case UTE:
                 EEP result = new UTEResponse(msg, teachIn);

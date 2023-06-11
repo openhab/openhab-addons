@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.FanSpeed;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +45,16 @@ public class GetFanspeedCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
+        MadokaValue coolValue = mm.getValues().get(0x20);
+        MadokaValue heatValue = mm.getValues().get(0x21);
+        if (heatValue == null || coolValue == null) {
+            String message = "heating or cooling fan speed is null when handling the response";
+            setState(State.FAILED);
+            throw new MadokaParsingException(message);
+        }
 
-        byte[] valueCoolingFanSpeed = mm.getValues().get(0x20).getRawValue();
-        byte[] valueHeatingFanSpeed = mm.getValues().get(0x21).getRawValue();
+        byte[] valueCoolingFanSpeed = coolValue.getRawValue();
+        byte[] valueHeatingFanSpeed = heatValue.getRawValue();
 
         if (valueCoolingFanSpeed == null || valueHeatingFanSpeed == null) {
             setState(State.FAILED);
@@ -60,7 +68,13 @@ public class GetFanspeedCommand extends BRC1HCommand {
         logger.debug("heatingFanSpeed: {}", heatingFanSpeed);
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
+
+        try {
+            executor.execute(() -> listener.receivedResponse(this));
+        } catch (Exception e) {
+            setState(State.FAILED);
+            throw new MadokaParsingException(e);
+        }
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public void openConnection() throws SVDRPConnectionException, SVDRPParseResponseException;
+    void openConnection() throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Close VDR Socket Connection
@@ -37,7 +37,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public void closeConnection() throws SVDRPConnectionException, SVDRPParseResponseException;
+    void closeConnection() throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Retrieve Disk Status from SVDRP Client
@@ -46,7 +46,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public SVDRPDiskStatus getDiskStatus() throws SVDRPConnectionException, SVDRPParseResponseException;
+    SVDRPDiskStatus getDiskStatus() throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Retrieve EPG Event from SVDRPClient
@@ -56,8 +56,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public SVDRPEpgEvent getEpgEvent(SVDRPEpgEvent.TYPE type)
-            throws SVDRPConnectionException, SVDRPParseResponseException;
+    SVDRPEpgEvent getEpgEvent(SVDRPEpgEvent.TYPE type) throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Retrieve current volume from SVDRP Client
@@ -66,7 +65,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public SVDRPVolume getSVDRPVolume() throws SVDRPConnectionException, SVDRPParseResponseException;
+    SVDRPVolume getSVDRPVolume() throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Set volume on SVDRP Client
@@ -76,7 +75,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public SVDRPVolume setSVDRPVolume(int newVolume) throws SVDRPConnectionException, SVDRPParseResponseException;
+    SVDRPVolume setSVDRPVolume(int newVolume) throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Send Key command to SVDRP Client
@@ -85,7 +84,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public void sendSVDRPKey(String key) throws SVDRPConnectionException, SVDRPParseResponseException;
+    void sendSVDRPKey(String key) throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Send Message to SVDRP Client
@@ -94,7 +93,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public void sendSVDRPMessage(String message) throws SVDRPConnectionException, SVDRPParseResponseException;
+    void sendSVDRPMessage(String message) throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Retrieve current Channel from SVDRP Client
@@ -103,7 +102,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public SVDRPChannel getCurrentSVDRPChannel() throws SVDRPConnectionException, SVDRPParseResponseException;
+    SVDRPChannel getCurrentSVDRPChannel() throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Change current Channel on SVDRP Client
@@ -113,7 +112,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public SVDRPChannel setSVDRPChannel(int number) throws SVDRPConnectionException, SVDRPParseResponseException;
+    SVDRPChannel setSVDRPChannel(int number) throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Retrieve from SVDRP Client if a recording is currently active
@@ -122,7 +121,7 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public boolean isRecordingActive() throws SVDRPConnectionException, SVDRPParseResponseException;
+    boolean isRecordingActive() throws SVDRPConnectionException, SVDRPParseResponseException;
 
     /**
      * Retrieve VDR Version from SVDRP Client
@@ -131,5 +130,5 @@ public interface SVDRPClient {
      * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
      * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
      */
-    public String getSVDRPVersion();
+    String getSVDRPVersion();
 }

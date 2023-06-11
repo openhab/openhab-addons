@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,9 @@ package org.openhab.binding.bluetooth.bluegiga.internal.enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class to implement the BlueGiga Enumeration <b>ScanResponseType</b>.
  * <p>
@@ -24,6 +27,7 @@ import java.util.Map;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public enum ScanResponseType {
     /**
      * Default unknown value
@@ -54,7 +58,7 @@ public enum ScanResponseType {
      * A mapping between the integer code and its corresponding type to
      * facilitate lookup by code.
      */
-    private static Map<Integer, ScanResponseType> codeMapping;
+    private static @Nullable Map<Integer, ScanResponseType> codeMapping;
 
     private int key;
 
@@ -62,30 +66,24 @@ public enum ScanResponseType {
         this.key = key;
     }
 
-    private static void initMapping() {
-        codeMapping = new HashMap<>();
-        for (ScanResponseType s : values()) {
-            codeMapping.put(s.key, s);
-        }
-    }
-
     /**
-     * Lookup function based on the type code. Returns null if the code does not exist.
+     * Lookup function based on the type code. Returns {@link UNKNOWN} if the code does not exist.
      *
      * @param scanResponseType
      *            the code to lookup
      * @return enumeration value.
      */
     public static ScanResponseType getScanResponseType(int scanResponseType) {
-        if (codeMapping == null) {
-            initMapping();
+        Map<Integer, ScanResponseType> localCodeMapping = codeMapping;
+        if (localCodeMapping == null) {
+            localCodeMapping = new HashMap<>();
+            for (ScanResponseType s : values()) {
+                localCodeMapping.put(s.key, s);
+            }
+            codeMapping = localCodeMapping;
         }
 
-        if (codeMapping.get(scanResponseType) == null) {
-            return UNKNOWN;
-        }
-
-        return codeMapping.get(scanResponseType);
+        return localCodeMapping.getOrDefault(scanResponseType, UNKNOWN);
     }
 
     /**

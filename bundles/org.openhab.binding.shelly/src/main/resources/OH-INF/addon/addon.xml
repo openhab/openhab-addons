@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="shelly" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>@text/addon.shelly.name</name>
+	<description>@text/addon.shelly.description</description>
+	<connection>local</connection>
+
+	<config-description>
+		<parameter name="defaultUserId" type="text">
+			<default>admin</default>
+			<label>@text/addon.shelly.config.defaultUserId.label</label>
+			<description>@text/addon.shelly.config.defaultUserId.description</description>
+		</parameter>
+		<parameter name="defaultPassword" type="text">
+			<default>admin</default>
+			<label>@text/addon.shelly.config.defaultPassword.label</label>
+			<description>@text/addon.shelly.config.defaultPassword.description</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="localIP" type="text">
+			<label>@text/addon.shelly.config.localIP.label</label>
+			<description>@text/addon.shelly.config.localIP.description</description>
+			<default></default>
+		</parameter>
+		<parameter name="autoCoIoT" type="boolean">
+			<default>true</default>
+			<label>@text/addon.shelly.config.autoCoIoT.label</label>
+			<description>@text/addon.shelly.config.autoCoIoT.description</description>
+		</parameter>
+	</config-description>
+
+</addon:addon>

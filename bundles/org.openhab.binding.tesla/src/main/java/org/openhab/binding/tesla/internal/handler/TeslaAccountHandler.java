@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,9 +32,11 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.discovery.TeslaVehicleDiscoveryService;
 import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleConfig;
+import org.openhab.binding.tesla.internal.protocol.VehicleData;
 import org.openhab.binding.tesla.internal.protocol.sso.TokenResponse;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -43,6 +45,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeMigrationService;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -66,7 +69,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     public static final int API_MAXIMUM_ERRORS_IN_INTERVAL = 3;
     public static final int API_ERROR_INTERVAL_SECONDS = 15;
     private static final int CONNECT_RETRY_INTERVAL = 15000;
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.systemDefault());
 
     private final Logger logger = LoggerFactory.getLogger(TeslaAccountHandler.class);
@@ -80,6 +83,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     final WebTarget wakeUpTarget;
 
     private final TeslaSSOHandler ssoHandler;
+    private final ThingTypeMigrationService thingTypeMigrationService;
 
     // Threading and Job related variables
     protected ScheduledFuture<?> connectJob;
@@ -96,10 +100,12 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     private TokenResponse logonToken;
     private final Set<VehicleListener> vehicleListeners = new HashSet<>();
 
-    public TeslaAccountHandler(Bridge bridge, Client teslaClient, HttpClientFactory httpClientFactory) {
+    public TeslaAccountHandler(Bridge bridge, Client teslaClient, HttpClientFactory httpClientFactory,
+            ThingTypeMigrationService thingTypeMigrationService) {
         super(bridge);
         this.teslaTarget = teslaClient.target(URI_OWNERS);
         this.ssoHandler = new TeslaSSOHandler(httpClientFactory.getCommonHttpClient());
+        this.thingTypeMigrationService = thingTypeMigrationService;
 
         this.vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
         this.vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
@@ -143,7 +149,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     }
 
     public void scanForVehicles() {
-        scheduler.execute(() -> queryVehicles());
+        scheduler.execute(this::queryVehicles);
     }
 
     public void addVehicleListener(VehicleListener listener) {
@@ -179,7 +185,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             ThingStatusInfo authenticationResult = authenticate();
             updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
                     authenticationResult.getDescription());
-            return false;
         } else {
             apiIntervalErrors++;
             if (immediatelyFail || apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
@@ -188,8 +193,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 } else {
                     logger.warn("Reached the maximum number of errors ({}) for the current interval ({} seconds)",
                             API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
+                    apiIntervalErrors = 0;
                 }
-
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
@@ -221,11 +226,11 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
 
             for (Vehicle vehicle : vehicleArray) {
-                String responseString = invokeAndParse(vehicle.id, VEHICLE_CONFIG, null, dataRequestTarget, 0);
-                if (responseString == null || responseString.isBlank()) {
-                    continue;
+                String responseString = invokeAndParse(vehicle.id, null, null, dataRequestTarget, 0);
+                VehicleConfig vehicleConfig = null;
+                if (responseString != null && !responseString.isBlank()) {
+                    vehicleConfig = gson.fromJson(responseString, VehicleData.class).vehicle_config;
                 }
-                VehicleConfig vehicleConfig = gson.fromJson(responseString, VehicleConfig.class);
                 for (VehicleListener listener : vehicleListeners) {
                     listener.vehicleFound(vehicle, vehicleConfig);
                 }
@@ -233,6 +238,14 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                     if (vehicle.vin.equals(vehicleThing.getConfiguration().get(VIN))) {
                         TeslaVehicleHandler vehicleHandler = (TeslaVehicleHandler) vehicleThing.getHandler();
                         if (vehicleHandler != null) {
+                            if (TeslaBindingConstants.THING_TYPE_VEHICLE.equals(vehicleThing.getThingTypeUID())
+                                    && vehicleConfig != null) {
+                                // Seems the type of this vehicle has not been identified before, so let's switch the
+                                // thing type of it
+                                thingTypeMigrationService.migrateThingType(vehicleThing, vehicleConfig.identifyModel(),
+                                        vehicleThing.getConfiguration());
+                                break;
+                            }
                             logger.debug("Querying the vehicle: VIN {}", vehicle.vin);
                             String vehicleJSON = gson.toJson(vehicle);
                             vehicleHandler.parseAndUpdate("queryVehicle", null, vehicleJSON);
@@ -256,13 +269,13 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         TokenResponse token = logonToken;
 
         boolean hasExpired = true;
-        logger.debug("Current authentication time {}", dateFormatter.format(Instant.now()));
+        logger.debug("Current authentication time {}", DATE_FORMATTER.format(Instant.now()));
 
         if (token != null) {
             Instant tokenCreationInstant = Instant.ofEpochMilli(token.created_at * 1000);
             Instant tokenExpiresInstant = Instant.ofEpochMilli((token.created_at + token.expires_in) * 1000);
-            logger.debug("Found a request token from {}", dateFormatter.format(tokenCreationInstant));
-            logger.debug("Access token expiration time {}", dateFormatter.format(tokenExpiresInstant));
+            logger.debug("Found a request token from {}", DATE_FORMATTER.format(tokenCreationInstant));
+            logger.debug("Access token expiration time {}", DATE_FORMATTER.format(tokenExpiresInstant));
 
             if (tokenExpiresInstant.isBefore(Instant.now())) {
                 logger.debug("The access token has expired");
@@ -308,15 +321,13 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                             .header("Authorization", "Bearer " + logonToken.access_token)
                             .post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
                 }
+            } else if (command != null) {
+                response = target.resolveTemplate("cmd", command).resolveTemplate("vid", vehicleId)
+                        .request(MediaType.APPLICATION_JSON_TYPE)
+                        .header("Authorization", "Bearer " + logonToken.access_token).get();
             } else {
-                if (command != null) {
-                    response = target.resolveTemplate("cmd", command).resolveTemplate("vid", vehicleId)
-                            .request(MediaType.APPLICATION_JSON_TYPE)
-                            .header("Authorization", "Bearer " + logonToken.access_token).get();
-                } else {
-                    response = target.resolveTemplate("vid", vehicleId).request(MediaType.APPLICATION_JSON_TYPE)
-                            .header("Authorization", "Bearer " + logonToken.access_token).get();
-                }
+                response = target.resolveTemplate("vid", vehicleId).request(MediaType.APPLICATION_JSON_TYPE)
+                        .header("Authorization", "Bearer " + logonToken.access_token).get();
             }
 
             if (!checkResponse(response, false)) {
@@ -330,7 +341,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                         logger.debug("Retrying to send the command {}.", command);
                         return invokeAndParse(vehicleId, command, payLoad, target, noOfretries - 1);
                     } catch (InterruptedException e) {
-                        return null;
                     }
                 }
                 return null;
@@ -353,8 +363,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             lock.lock();
 
             ThingStatusInfo status = getThing().getStatusInfo();
-            if (status.getStatus() != ThingStatus.ONLINE
-                    && status.getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+            if ((status.getStatus() != ThingStatus.ONLINE
+                    && status.getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR)
+                    || hasUnidentifiedVehicles()) {
                 logger.debug("Setting up an authenticated connection to the Tesla back-end");
 
                 ThingStatusInfo authenticationResult = authenticate();
@@ -394,19 +405,16 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                                 }
                             }
                         }
-                    } else {
-                        if (response != null) {
-                            logger.error("Error fetching the list of vehicles : {}:{}", response.getStatus(),
-                                    response.getStatusInfo());
-                            updateStatus(ThingStatus.OFFLINE);
-                        }
+                    } else if (response != null) {
+                        logger.error("Error fetching the list of vehicles : {}:{}", response.getStatus(),
+                                response.getStatusInfo());
+                        updateStatus(ThingStatus.OFFLINE);
                     }
                 } else if (authenticationResult.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
                     // make sure to set thing to CONFIGURATION_ERROR in case of failed authentication in order not to
                     // hit request limit on retries on the Tesla SSO endpoints.
                     updateStatus(ThingStatus.OFFLINE, authenticationResult.getStatusDetail());
                 }
-
             }
         } catch (Exception e) {
             logger.error("An exception occurred while connecting to the Tesla back-end: '{}'", e.getMessage(), e);
@@ -414,6 +422,11 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             lock.unlock();
         }
     };
+
+    private boolean hasUnidentifiedVehicles() {
+        return getThing().getThings().stream()
+                .anyMatch(vehicle -> TeslaBindingConstants.THING_TYPE_VEHICLE.equals(vehicle.getThingTypeUID()));
+    }
 
     protected class Request implements Runnable {
 

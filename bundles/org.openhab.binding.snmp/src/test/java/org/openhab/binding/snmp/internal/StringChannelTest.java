@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,10 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.snmp.internal.types.SnmpChannelMode;
+import org.openhab.binding.snmp.internal.types.SnmpDatatype;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingStatus;
@@ -35,6 +38,7 @@ import org.snmp4j.smi.VariableBinding;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class StringChannelTest extends AbstractSnmpTargetHandlerTest {
 
     @Test
@@ -43,6 +47,12 @@ public class StringChannelTest extends AbstractSnmpTargetHandlerTest {
 
         variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, SnmpDatatype.STRING,
                 new StringType(TEST_STRING), true);
+
+        if (variable == null) {
+            fail("'variable' is null");
+            return;
+        }
+
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof OctetString);
         assertEquals(TEST_STRING, ((OctetString) variable.getVariable()).toString());
@@ -57,12 +67,24 @@ public class StringChannelTest extends AbstractSnmpTargetHandlerTest {
 
         variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING,
                 SnmpDatatype.HEXSTRING, new StringType("AA bf 11"), true);
+
+        if (variable == null) {
+            fail("'variable' is null");
+            return;
+        }
+
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof OctetString);
         assertEquals("aa bf 11", ((OctetString) variable.getVariable()).toHexString(' '));
 
         variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING,
                 SnmpDatatype.IPADDRESS, new StringType(TEST_ADDRESS), true);
+
+        if (variable == null) {
+            fail("'variable' is null");
+            return;
+        }
+
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof IpAddress);
         assertEquals(TEST_ADDRESS, ((IpAddress) variable.getVariable()).toString());

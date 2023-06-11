@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import com.google.gson.annotations.SerializedName;
  * The {@link UniFiSite} represents the data model of a UniFi site.
  *
  * @author Matthew Bowman - Initial contribution
+ * @author Mark Herwege - Added guest vouchers
  */
 public class UniFiSite implements HasId {
 
@@ -51,6 +52,14 @@ public class UniFiSite implements HasId {
 
     public UniFiControllerCache getCache() {
         return cache;
+    }
+
+    public String getVoucher() {
+        UniFiVoucher voucher = cache.getVoucher(this);
+        if (voucher == null) {
+            return null;
+        }
+        return voucher.getCode();
     }
 
     public boolean isSite(final UniFiSite site) {

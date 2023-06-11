@@ -5,26 +5,24 @@ This binding integrates [Mikrotik](https://mikrotik.com/) [RouterOS](https://hel
 
 ## Supported Things
 
-* `routeros` - An instance of the RouterOS device connection
-* `interface` - A network interface inside RouterOS device
-* `wifiRegistration` - Any wireless client connected to a RouterOS wireless network (regular or CAPsMAN-managed)
-
+- `routeros` - An instance of the RouterOS device connection
+- `interface` - A network interface inside RouterOS device
+- `wifiRegistration` - Any wireless client connected to a RouterOS wireless network (regular or CAPsMAN-managed)
 
 ## Discovery
 
 Discovery is currently not supported, but may be implemented in future versions.
 
-
 ## Bridge Configuration
 
 To use this binding you need at least one RouterOS-powered device (Bridge) accessible to the host running
 openHAB via network.
-Make sure your RouterOS has the API enabled by visiting [<kbd>IP -> Services</kbd>](https://wiki.mikrotik.com/wiki/Manual:IP/Services) 
-configuration section in 
+Make sure your RouterOS has the API enabled by visiting [<kbd>IP -> Services</kbd>](https://wiki.mikrotik.com/wiki/Manual:IP/Services)
+configuration section in
 [WinBox](https://wiki.mikrotik.com/wiki/Manual:Winbox).
 Take note of the API port number as you'll need it below.
 [SSL API connection](https://wiki.mikrotik.com/wiki/Manual:API-SSL) is not yet supported by this binding.
-To connect to the RouterOS API, you will need to provide user credentials for the bridge thing. 
+To connect to the RouterOS API, you will need to provide user credentials for the bridge thing.
 You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only need to read data from the device.
 To do this, proceed to <kbd>System -> Users</kbd> configuration section and add a user to the `read` group.
 
@@ -42,7 +40,6 @@ The RouterOS Bridge configuration parameters are:
 
 **All things provided by this binding require a working bridge to be set up.**
 
-
 ### Bridge Channels
 
 | Channel | Type | Description | Comment |
@@ -55,8 +52,6 @@ The RouterOS Bridge configuration parameters are:
 | usedMemory | Number:Dimensionless | Percentage of used device memory |  |
 | cpuLoad | Number:Dimensionless | CPU load percentage |  |
 | upSince | DateTime | Time when thing got up |  |
-
-
 
 ## WiFi Client Thing Configuration
 
@@ -101,15 +96,15 @@ The WiFi client thing configuration parameters are:
 Represents a network interface from RouterOS system (ethernet, wifi, vpn, etc.)
 At the moment the binding supports the following RouterOS interface types:
 
-* `ether`
-* `bridge`
-* `wlan`
-* `cap`
-* `pppoe-out`
-* `ppp-out`
-* `lte`
-* `l2tp-in`
-* `l2tp-out`
+- `ether`
+- `bridge`
+- `wlan`
+- `cap`
+- `pppoe-out`
+- `ppp-out`
+- `lte`
+- `l2tp-in`
+- `l2tp-out`
 
 The interface thing configuration parameters are:
 
@@ -161,24 +156,23 @@ Common for all kinds of interfaces:
 
 **Change config options accordingly.**
 
-_things/mikrotik.things_
+### things/mikrotik.things
 
-```
+```java
 Bridge mikrotik:routeros:rb1 "My RouterBoard" [ host="192.168.0.1", port=8728, login="openhab", password="thatsasecret", refresh=10 ] {
-	Thing interface eth1 "Eth1" [ name="ether1" ]
-	Thing interface eth2 "Eth2" [ name="ether2-wan1" ]
-	Thing interface cap1 "Cap1" [ name="cap5" ]
-	Thing interface ppp1 "PPPoE1" [ name="isp-pppoe" ]
-	Thing interface tun1 "L2TPSrv1" [ name="l2tp-parents" ]
-	Thing wifiRegistration wifi1 "Phone1" [ mac="F4:60:E2:C5:47:94", considerContinuous=60 ]
-	Thing wifiRegistration wifi2 "Tablet2" [ mac="18:1D:EA:A5:A2:9E" ]
+ Thing interface eth1 "Eth1" [ name="ether1" ]
+ Thing interface eth2 "Eth2" [ name="ether2-wan1" ]
+ Thing interface cap1 "Cap1" [ name="cap5" ]
+ Thing interface ppp1 "PPPoE1" [ name="isp-pppoe" ]
+ Thing interface tun1 "L2TPSrv1" [ name="l2tp-parents" ]
+ Thing wifiRegistration wifi1 "Phone1" [ mac="F4:60:E2:C5:47:94", considerContinuous=60 ]
+ Thing wifiRegistration wifi2 "Tablet2" [ mac="18:1D:EA:A5:A2:9E" ]
 }
 ```
 
+### items/mikrotik.items
 
-_items/mikrotik.items_
-
-```
+```java
 Group gRB1 "RB3011 System"
 Number:DataAmount   My_RB_3011_Free_Space     "Free space"     (gRB1) {channel="mikrotik:routeros:rb1:freeSpace"}
 Number:DataAmount   My_RB_3011_Total_Space    "Total space"    (gRB1) {channel="mikrotik:routeros:rb1:totalSpace"}
@@ -357,20 +351,20 @@ Number     Tablet_2_Tx_Packets       "Transmitted packets"                  (gRB
 Number     Tablet_2_Rx_Packets       "Received packets"                     (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxPackets"}
 ```
 
-_sitemaps/mikrotik.sitemap_
+### sitemaps/mikrotik.sitemap
 
-```
+```perl
 sitemap mikrotik label="Mikrotik Binding Demo"
 {
-	Frame label="RouterBOARD 1" {
-		Group item=gRB1
-		Group item=gRB1Eth1
-		Group item=gRB1Eth2
-		Group item=gRB1Ppp1
-		Group item=gRB1Tun1
-		Group item=gRB1Cap1
-		Group item=gRB1Wifi1
-		Group item=gRB1Wifi2
-	}
+ Frame label="RouterBOARD 1" {
+  Group item=gRB1
+  Group item=gRB1Eth1
+  Group item=gRB1Eth2
+  Group item=gRB1Ppp1
+  Group item=gRB1Tun1
+  Group item=gRB1Cap1
+  Group item=gRB1Wifi1
+  Group item=gRB1Wifi2
+ }
 }
 ```

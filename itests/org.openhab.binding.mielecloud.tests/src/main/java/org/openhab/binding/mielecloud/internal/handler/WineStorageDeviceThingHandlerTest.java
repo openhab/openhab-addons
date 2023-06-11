@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public class WineStorageDeviceThingHandlerTest extends AbstractMieleThingHandler
     @Override
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_WINE_STORAGE, WINE_STORAGE_DEVICE_THING_UID,
-                WineStorageDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                WineStorageDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "0");
     }
 
     @Test

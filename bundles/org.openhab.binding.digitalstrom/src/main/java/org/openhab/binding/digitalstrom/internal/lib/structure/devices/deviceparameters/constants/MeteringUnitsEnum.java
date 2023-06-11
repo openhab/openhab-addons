@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link MeteringUnitsEnum} lists all available digitalSTROM metering units.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - remove W, because it does not exist any more
  * @author Matthias Siegele - remove W, because it does not exist any more
  */

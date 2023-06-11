@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,6 +59,11 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_ARTIST = "artist";
     public static final String CHANNEL_YEAR = "year";
     public static final String CHANNEL_GENRE = "genre";
+    public static final String CHANNEL_ALBUM_ARTIST = "albumArtist";
+    public static final String CHANNEL_TRACK_ARTIST = "trackArtist";
+    public static final String CHANNEL_BAND = "band";
+    public static final String CHANNEL_COMPOSER = "composer";
+    public static final String CHANNEL_CONDUCTOR = "conductor";
     public static final String CHANNEL_COVERART_DATA = "coverartdata";
     public static final String CHANNEL_IRCODE = "ircode";
     public static final String CHANNEL_IP = "ip";

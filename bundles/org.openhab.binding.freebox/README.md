@@ -34,7 +34,7 @@ The binding has the following configuration options, which can be set for "bindi
 
 ### Server
 
-The *server* bridge thing requires the following configuration parameters:
+The _server_ bridge thing requires the following configuration parameters:
 
 | Parameter Label                    | Parameter ID            | Description                                                                 | Required | Default              |
 |------------------------------------|-------------------------|-----------------------------------------------------------------------------|----------|----------------------|
@@ -47,12 +47,12 @@ The *server* bridge thing requires the following configuration parameters:
 | Enable Network Interface Discovery | discoverNetInterface    | Enable the discovery of network interface things.                           | false    | true                 |
 | Enable AirPlay Receiver Discovery  | discoverAirPlayReceiver | Enable the discovery of AirPlay receiver things.                            | false    | true                 |
 
-If the parameter *fqdn* is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
-The bridge thing will initialize only if a valid application token (parameter *appToken*) is filled.
+If the parameter _fqdn_ is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
+The bridge thing will initialize only if a valid application token (parameter _appToken_) is filled.
 
 ### Phone
 
-The *phone* thing requires the following configuration parameters:
+The _phone_ thing requires the following configuration parameters:
 
 | Parameter Label              | Parameter ID              | Description                                                                                 | Required | Default |
 |------------------------------|---------------------------|---------------------------------------------------------------------------------------------|----------|---------|
@@ -61,7 +61,7 @@ The *phone* thing requires the following configuration parameters:
 
 ### Network device
 
-The *net_device* thing requires the following configuration parameters:
+The _net_device_ thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                            | Required |
 |-----------------|--------------|----------------------------------------|----------|
@@ -69,7 +69,7 @@ The *net_device* thing requires the following configuration parameters:
 
 ### Network interface
 
-The *net_interface* thing requires the following configuration parameters:
+The _net_interface_ thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                                         | Required |
 |-----------------|--------------|-----------------------------------------------------|----------|
@@ -77,7 +77,7 @@ The *net_interface* thing requires the following configuration parameters:
 
 ### AirPlay device
 
-The *airplay* thing requires the following configuration parameters:
+The _airplay_ thing requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                 | Required |
 |-----------------|--------------|-----------------------------|----------|

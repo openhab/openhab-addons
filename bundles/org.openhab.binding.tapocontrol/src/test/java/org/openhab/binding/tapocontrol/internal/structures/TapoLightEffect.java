@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class TapoLightEffect {
      */
     public TapoLightEffect setData(JsonObject jso) {
         /* create empty jsonObject to set efault values if has no lighning effect */
-        if (jsonObject.has(DEVICE_PROPERTY_EFFECT)) {
+        if (jsonObject.has(JSON_KEY_LIGHTNING_EFFECT)) {
             this.jsonObject = jso;
         } else {
             jsonObject = new JsonObject();
@@ -71,11 +71,11 @@ public class TapoLightEffect {
     }
 
     private void setData() {
-        this.enable = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_ENABLE);
-        this.id = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_ID);
-        this.name = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_NAME);
-        this.custom = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_CUSTOM); // jsonObjectToBool
-        this.brightness = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS);
+        this.enable = jsonObjectToInt(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ENABLE);
+        this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ID);
+        this.name = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_NAME);
+        this.custom = jsonObjectToInt(jsonObject, JSON_KEY_LIGHTNING_EFFECT_CUSTOM); // jsonObjectToBool
+        this.brightness = jsonObjectToInt(jsonObject, JSON_KEY_LIGHTNING_EFFECT_BRIGHNTESS);
         // this.color_temp_range = { 9000, 9000 }; PROPERTY_LIGHNTING_ //:[9000,9000]
         // this.displayColors[] PROPERTY_LIGHNTING_;
     }

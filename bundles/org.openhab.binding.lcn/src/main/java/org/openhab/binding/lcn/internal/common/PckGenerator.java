@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -513,13 +513,13 @@ public final class PckGenerator {
                 case UNKNOWN:
                     throw new LcnException("Variable unknown");
                 case VARIABLE:
-                    return String.format("MWT%03d", id + 1);
+                    return "MWT" + (id + 1);
                 case REGULATOR:
-                    return String.format("MWS%03d", id + 1);
+                    return "MWS" + (id + 1);
                 case THRESHOLD:
-                    return String.format("SE%03d", id + 1); // Whole register
+                    return "SE" + (id + 1); // Whole register
                 case S0INPUT:
-                    return String.format("MWC%03d", id + 1);
+                    return "MWC" + (id + 1);
             }
             throw new LcnException("Unsupported variable type: " + variable);
         } else {

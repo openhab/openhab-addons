@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public interface TimetablesV1Api {
      *
      * @return The {@link Timetable} containing the planned arrivals and departues.
      */
-    public abstract Timetable getPlan(String evaNo, Date time) throws IOException;
+    Timetable getPlan(String evaNo, Date time) throws IOException;
 
     /**
      * Requests all known changes in the timetable for the given station.
@@ -75,7 +75,7 @@ public interface TimetablesV1Api {
      *
      * @return The {@link Timetable} containing all known changes for the given station.
      */
-    public abstract Timetable getFullChanges(String evaNo) throws IOException;
+    Timetable getFullChanges(String evaNo) throws IOException;
 
     /**
      * Requests the timetable with the planned data for the given station and time.
@@ -97,5 +97,5 @@ public interface TimetablesV1Api {
      *
      * @return The {@link Timetable} containing recent changes (from last two minutes) for the given station.
      */
-    public abstract Timetable getRecentChanges(String evaNo) throws IOException;
+    Timetable getRecentChanges(String evaNo) throws IOException;
 }

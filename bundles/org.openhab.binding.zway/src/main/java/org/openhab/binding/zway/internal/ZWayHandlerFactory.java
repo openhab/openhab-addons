@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zway.internal.discovery.ZWayDeviceDiscoveryService;
 import org.openhab.binding.zway.internal.handler.ZWayBridgeHandler;
 import org.openhab.binding.zway.internal.handler.ZWayZAutomationDeviceHandler;
@@ -41,6 +43,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Patrick Hecker - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.zway")
 public class ZWayHandlerFactory extends BaseThingHandlerFactory {
 
@@ -56,7 +59,7 @@ public class ZWayHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         if (ZWayBridgeHandler.SUPPORTED_THING_TYPE.equals(thing.getThingTypeUID())) {
             ZWayBridgeHandler handler = new ZWayBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);

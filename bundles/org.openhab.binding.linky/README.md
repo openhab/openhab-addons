@@ -4,7 +4,7 @@ This binding uses the API provided by Enedis to retrieve your energy consumption
 You need to create an Enedis account [here](https://espace-client-connexion.enedis.fr/auth/UI/Login?realm=particuliers) if you don't have one already.
 
 Please ensure that you have accepted their conditions, and check that you can see graphs on the website.
-Especially, check hourly view/graph. Enedis may ask for permission the first time to start collecting hourly data. 
+Especially, check hourly view/graph. Enedis may ask for permission the first time to start collecting hourly data.
 The binding will not provide these informations unless this step is ok.
 
 ## Supported Things
@@ -32,16 +32,16 @@ The thing has the following configuration parameters:
 This version is now compatible with the new API of Enedis (deployed from june 2020).
 To avoid the captcha login, it is necessary to log before on a classical browser (e.g Chrome, Firefox) and to retrieve the user cookies (internalAuthId).
 
-Instructions given for Firefox : 
+Instructions given for Firefox :
 
-1. Go to https://mon-compte-client.enedis.fr/.
-2. Select "Particulier" in the drop down list and click on the "Connexion" button.
-3. You'll be redirected to a page where you'll have to enter you Enedis account email address and check the "Je ne suis pas un robot" checkbox.
-4. Clic on "Suivant".
-5. In the login page, prefilled with your mail address, enter your Enedis account password and click on "Connexion à Espace Client Enedis".
-6. You will be directed to your Enedis account environment. Get back to previous page in you browser.
-7. Disconnect from your Enedis account
-8. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your openHAB configuration.
+1. Go to <https://mon-compte-client.enedis.fr/>.
+1. Select "Particulier" in the drop down list and click on the "Connexion" button.
+1. You'll be redirected to a page where you'll have to enter you Enedis account email address and check the "Je ne suis pas un robot" checkbox.
+1. Clic on "Suivant".
+1. In the login page, prefilled with your mail address, enter your Enedis account password and click on "Connexion à Espace Client Enedis".
+1. You will be directed to your Enedis account environment. Get back to previous page in you browser.
+1. Disconnect from your Enedis account
+1. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your openHAB configuration.
 
 ## Channels
 
@@ -64,8 +64,8 @@ The information that is retrieved is available as these channels:
 The binding provides one specific command you can use in the console.
 Enter the command `openhab:linky` to get the usage.
 
-```
-Usage: openhab:linky <thingUID> report <start day> <end day> [<separator>] - report daily consumptions between two dates
+```shell
+openhab:linky <thingUID> report <start day> <end day> [<separator>] - report daily consumptions between two dates
 ```
 
 The command `report` reports in the console the daily consumptions between two dates.
@@ -82,13 +82,13 @@ In case you are running openHAB inside Docker, the binding will work only if you
 
 ### Thing
 
-```
+```java
 Thing linky:linky:local "Compteur Linky" [ username="example@domaine.fr", password="******" ]
 ```
 
 ### Items
 
-```
+```java
 Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:linky:local:daily#yesterday" }
 Number:Energy ConsoSemaineEnCours "Conso cette semaine [%.0f %unit%]" <energy> { channel="linky:linky:local:weekly#thisWeek" }
 Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:linky:local:weekly#lastWeek" }

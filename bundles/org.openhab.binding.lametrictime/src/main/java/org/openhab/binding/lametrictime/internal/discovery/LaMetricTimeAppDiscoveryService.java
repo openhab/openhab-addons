@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.openhab.binding.lametrictime.api.local.model.Application;
-import org.openhab.binding.lametrictime.api.local.model.Widget;
-import org.openhab.binding.lametrictime.api.model.CoreApps;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
+import org.openhab.binding.lametrictime.internal.api.dto.CoreApps;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Application;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.openhab.binding.lametrictime.internal.handler.LaMetricTimeAppHandler;
 import org.openhab.binding.lametrictime.internal.handler.LaMetricTimeHandler;
@@ -43,6 +44,7 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
 
     private static final Map<String, ThingTypeUID> CORE_APP_THING_TYPE_UIDS = new HashMap<>();

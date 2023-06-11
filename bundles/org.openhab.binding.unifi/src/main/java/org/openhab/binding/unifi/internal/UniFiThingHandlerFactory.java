@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.unifi.internal;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.ALL_THING_TYPE_SUPPORTED;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_CONTROLLER;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_POE_PORT;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_SITE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WIRED_CLIENT;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WLAN;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,9 +50,7 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public UniFiThingHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
-        // [wip] mgb: disabled due to missing common name attributes with certs
-        // this.httpClient = httpClientFactory.getCommonHttpClient();
-        httpClient = new HttpClient(new SslContextFactory.Client(true));
+        httpClient = httpClientFactory.createHttpClient(BINDING_ID, new SslContextFactory.Client(true));
         try {
             httpClient.start();
         } catch (final Exception e) {

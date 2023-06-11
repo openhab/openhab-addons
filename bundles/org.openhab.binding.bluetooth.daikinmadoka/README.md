@@ -7,14 +7,11 @@ The device uses an UART over BLE serial communication protocol over BLE WriteWit
 
 [BRC1H on Daikin website (EN)](https://www.daikin.eu/en_us/product-group/control-systems/BRC1H.html)
 
-
 ## Supported Things
-
 
 | Thing Type ID | Description |
 | ------------- | ----------- |
 | brc1h         | BRC1H BLE Thermostat |
-
 
 ## Discovery
 
@@ -22,18 +19,15 @@ As a pairing of the Thermostat is necessary (Bluetooth), no automatic discovery 
 
 ## Thing Configuration
 
-* address: The Bluetooth MAC Address of the BRC1H controller
+- address: The Bluetooth MAC Address of the BRC1H controller
 
 Example with a DBusBlueZ Bluetooth Bridge:
 
-```
-
+```java
 Bridge bluetooth:dbusbluez:hci0 [ address="00:1A:7D:DA:71:13" ]
 
 Thing bluetooth:brc1h:hci0:salon (bluetooth:dbusbluez:hci0)     [ address="00:CC:3F:B2:80:CA" ]
-
 ```
-
 
 ## Channels
 
@@ -64,8 +58,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ### daikinmadoka.things:
 
-```
-
+```java
 Bridge bluetooth:dbusbluez:hci0 [ address="00:1A:7D:DA:71:13" ]
 
 Thing bluetooth:brc1h:hci0:salon (bluetooth:dbusbluez:hci0)     [ address="00:CC:3F:B2:80:CA" ]
@@ -74,8 +67,7 @@ Thing bluetooth:brc1h:hci0:salon (bluetooth:dbusbluez:hci0)     [ address="00:CC
 
 ### daikinmadoka.items:
 
-```
-
+```java
 Group g_climSalon "Salon" [ "Thermostat" ]
 
 Switch climSalon_onOff "Climatisation Salon"                   (g_climSalon) { channel="bluetooth:brc1h:hci0:salon:onOffStatus" }
@@ -104,12 +96,12 @@ This pairing process can be a bit challenging, as it seems the timing is very im
 We suggest that the Bluetooth adapter is not being used by another component during the pairing phase.
 As such, if you have other Bluetooth Things in your OpenHAB, it is suggested to stop the openHAB service before doing the pairing.
 
-  * Ensure that your BRC1H has Bluetooth enabled in the menu
-  * Open `bluetoothctl` on your openHAB server - preferably as `root`
-  * start scanning by typing `scan on`
-  * After few seconds, stop scanning `scan off`
-  * Start the pairing process by typing `pair <mac address of your brc1h>`
-  * On the BRC1H, confirm the pairing request, and quickly confirm as well on your server by typing `yes`
+- Ensure that your BRC1H has Bluetooth enabled in the menu
+- Open `bluetoothctl` on your openHAB server - preferably as `root`
+- start scanning by typing `scan on`
+- After few seconds, stop scanning `scan off`
+- Start the pairing process by typing `pair <mac address of your brc1h>`
+- On the BRC1H, confirm the pairing request, and quickly confirm as well on your server by typing `yes`
 
 A successful pairing ends with `pairing successful`.
 

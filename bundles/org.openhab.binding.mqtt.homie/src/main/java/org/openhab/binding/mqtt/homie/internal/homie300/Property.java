@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -291,7 +291,7 @@ public class Property implements AttributeChanged {
             f.completeExceptionally(new IllegalStateException("Attributes not yet received!"));
             return f;
         }
-        // Make sure we set the callback again which might have been nulled during an stop
+        // Make sure we set the callback again which might have been nulled during a stop
         channelState.setChannelStateUpdateListener(this.callback);
         return channelState.start(connection, scheduler, timeout);
     }

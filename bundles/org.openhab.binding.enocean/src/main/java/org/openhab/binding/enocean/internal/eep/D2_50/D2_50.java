@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -37,16 +39,17 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class D2_50 extends _VLDMessage {
 
-    protected static final byte mtMask = (byte) 0xf0;
+    protected static final byte MT_MASK = (byte) 0xf0;
     protected static final byte MT_REMOTE_TRANSMISSION_REQUEST = 0x00;
     protected static final byte MT_CONTROL = 0x20;
     protected static final byte MT_BASIC_STATUS = 0x40;
     protected static final byte MT_EXTENDED_STATUS = 0x60; // not yet implemented
     protected static final byte MT_UNKNOWN_STATUS = (byte) 0x80; // Sent by some systems during teach in
 
-    protected static final byte rmtMask = (byte) 0x0f;
+    protected static final byte RMT_MASK = (byte) 0x0f;
     protected static final byte RMT_BASIC_STATUS = 0x00;
     protected static final byte RMT_EXTENDED_STATUS = 0x01; // not yet implemented
 
@@ -65,7 +68,7 @@ public class D2_50 extends _VLDMessage {
     }
 
     protected byte getMessageType(byte b) {
-        return (byte) (b & mtMask);
+        return (byte) (b & MT_MASK);
     }
 
     @Override
@@ -76,8 +79,7 @@ public class D2_50 extends _VLDMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         // we need to send just a single message to refresh all channel states, hence just send refresh for OM
         if (command == RefreshType.REFRESH && CHANNEL_VENTILATIONOPERATIONMODE.equals(channelId)) {
             setData((byte) (MT_REMOTE_TRANSMISSION_REQUEST + RMT_BASIC_STATUS));
@@ -104,7 +106,6 @@ public class D2_50 extends _VLDMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (getMessageType(bytes[0]) != MT_BASIC_STATUS) {
             return UnDefType.UNDEF;
         }

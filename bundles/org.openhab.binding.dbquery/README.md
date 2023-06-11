@@ -8,7 +8,7 @@ The source of the query can be any supported database, and doesn't need to be th
 Some use cases can be:
 
 - Integrate a device that stores its data in a database
-- Query derived data from you openHAB persistence, for example with Influx2 tasks you can process your data to create a new one   
+- Query derived data from you openHAB persistence, for example with Influx2 tasks you can process your data to create a new one
 - Bypass limitations of current openHAB persistence queries
 
 ## Supported Things
@@ -35,7 +35,7 @@ Defines a connection to an Influx2 database and allows creating queries on it.
 
 ### query
 
-The `Query` thing defines a native query that provides several channels that you can bind to items. 
+The `Query` thing defines a native query that provides several channels that you can bind to items.
 
 #### Query parameters
 
@@ -45,7 +45,7 @@ The query items support the following parameters:
 |--------------|----------|----------|-----------------------------------------------------------------------|
 | query        | true     |          | Query string in native syntax                                         |
 | interval     | false    | 0        | Interval in seconds in which the query is automatically executed      |
-| hasParameters| false    | false    | True if the query has parameters, false otherwise                     | 
+| hasParameters| false    | false    | True if the query has parameters, false otherwise                     |
 | timeout      | false    | 0        | Query execution timeout in seconds                                    |
 | scalarResult | false    | true     | If query always returns a single value or not                         |
 | scalarColumn | false    |          | In case of multiple columns, it indicates which to use for scalarResult|
@@ -56,25 +56,25 @@ These are described further in the following subsections.
 
 The query the items represents in the native language of your database:
 
- - Flux for `influxdb2`
- 
+- Flux for `influxdb2`
+
 #### hasParameters
 
 If `hasParameters=true` you can use parameters in the query string that can be dynamically set with the `setQueryParameters` action.
- 
+
  For InfluxDB use the `${paramName}` syntax for each parameter, and keep in mind that the values from that parameters must be from a trusted source as current
  parameter substitution is subject to query injection attacks.
- 
+
 #### timeout
 
 A time-out in seconds to wait for the query result, if it's exceeded, the result will be discarded and the addon will do its best to cancel the query.
 Currently it's ignored and it will be implemented in a future version.
 
-#### scalarResult 
+#### scalarResult
 
 If `true` the query is expected to return a single scalar value that will be available to `result` channels as string, number, boolean,...
 If the query can return several rows and/or several columns per row then it needs to be set to `false` and the result can be retrieved in `resultString`
-channel as JSON or using the `getLastQueryResult` action.   
+channel as JSON or using the `getLastQueryResult` action.
 
 #### scalarColumn
 
@@ -100,18 +100,20 @@ last previous executed query.
 
 The `resultString` channel is the only valid one if `scalarResult=false`, and in that case it contains the query result serialized to JSON in that format:
 
-    {
-        correct : true,
-        data : [
-            { 
-                column1 : value,
-                column2 : value
-            },
-            { ... }, //row2        
-            { ... }  //row3
-        ]
-    }
-    
+```json
+{
+    correct : true,
+    data : [
+        { 
+            column1 : value,
+            column2 : value
+        },
+        { ... }, //row2
+        { ... }  //row3
+    ]
+}
+```
+
 ### Channel Triggers
 
 #### calculateParameters
@@ -119,14 +121,14 @@ The `resultString` channel is the only valid one if `scalarResult=false`, and in
 Triggers when there's a need to calculate parameters before query execution.
 When a query has `hasParameters=true` it fires the `calculateParameters` channel trigger and pauses the execution until `setQueryParameters` action is call in
  that query.
- 
+
 In the case a query has parameters, it's expected that there is a rule that catches the `calculateParameters` trigger, calculate the parameters with the corresponding logic and then calls the `setQueryParameters` action, after that the query will be executed.
- 
+
 ## Actions
 
 ### For DatabaseBridge
 
-#### executeQuery 
+#### executeQuery
 
 It allows executing a query synchronously from a script/rule without defining it in a Thing.
 
@@ -143,16 +145,16 @@ And it returns an `ActionQueryResult` that has the following properties:
 - isScalarResult: It returns if the result is scalar one (only one row with one column)
 - resultAsScalar: It returns the result as a scalar if possible, if not returns null
 
-
 Example (using Jython script):
 
-     from core.log import logging, LOG_PREFIX 
-     log = logging.getLogger("{}.action_example".format(LOG_PREFIX))
-     map = {"time" : "-2h"}
-     influxdb = actions.get("dbquery","dbquery:influxdb2:sampleQuery") //Get bridge thing
-     result = influxdb.executeQuery("from(bucket: \"default\") |> range(start:-2h)  |> filter(fn: (r) => r[\"_measurement\"] == \"go_memstats_frees_total\")  |> filter(fn: (r) => r[\"_field\"] == \"counter\")  |> mean()",{},5)
-     log.info("execute query result is "+str(result.data))
-    
+```python
+from core.log import logging, LOG_PREFIX 
+log = logging.getLogger("{}.action_example".format(LOG_PREFIX))
+map = {"time" : "-2h"}
+influxdb = actions.get("dbquery","dbquery:influxdb2:sampleQuery") //Get bridge thing
+result = influxdb.executeQuery("from(bucket: \"default\") |> range(start:-2h)  |> filter(fn: (r) => r[\"_measurement\"] == \"go_memstats_frees_total\")  |> filter(fn: (r) => r[\"_field\"] == \"counter\")  |> mean()",{},5)
+log.info("execute query result is "+str(result.data))
+```
 
 Use this action with care, because as the query is executed synchronously, it is not good to execute long-running queries that can block script execution.
 
@@ -165,9 +167,11 @@ To execute the action you need to pass the parameters as a Map.
 
 Example (using Jython script):
 
-    params = {"time" : "-2h"}
-    dbquery = actions.get("dbquery","dbquery:query:queryWithParams")  //Get query thing
-    dbquery.setQueryParameters(params)
+```python
+params = {"time" : "-2h"}
+dbquery = actions.get("dbquery","dbquery:query:queryWithParams")  //Get query thing
+dbquery.setQueryParameters(params)
+```
 
 #### getLastQueryResult
 
@@ -176,35 +180,40 @@ It doesn't have any parameters and returns an `ActionQueryResult` as defined in 
 
 Example (using Jython script):
 
-    dbquery = actions.get("dbquery","dbquery:query:queryWithParams")  //Get query thing
-    result = dbquery.getLastQueryResult()
-    
+```python
+dbquery = actions.get("dbquery","dbquery:query:queryWithParams")  //Get query thing
+result = dbquery.getLastQueryResult()
+```
 
 ## Examples
 
-### The Simplest case 
+### The Simplest case
 
-Define a InfluxDB2 database thing and a query with an interval execution.
+Define an InfluxDB2 database thing and a query with an interval execution.
 That executes the query every 15 seconds and punts the result in `myItem`.
 
-    # Bridge Thing definition
-    Bridge dbquery:influxdb2:mydatabase "InfluxDB2 Bridge" [ bucket="default", user="admin", url="http://localhost:8086", organization="openhab", token="*******" ]
-    
-    # Query Thing definition
-    Thing dbquery:query:myquery "My Query" [ interval=15, hasParameters=false, scalarResult=true, timeout=0, query="from(bucket: \"default\") |> range(start:-1h) |> filter(fn: (r) => r[\"_measurement\"] == \"go_memstats_frees_total\")  |> filter(fn: (r) => r[\"_field\"] == \"counter\")  |> mean()", scalarColumn="_value" ]
-    
-    # Item definition
-    Number myItem "QueryResult" {channel="dbquery:query:myquery:resultNumber"}
+```java
+# Bridge Thing definition
+Bridge dbquery:influxdb2:mydatabase "InfluxDB2 Bridge" [ bucket="default", user="admin", url="http://localhost:8086", organization="openhab", token="*******" ]
+
+# Query Thing definition
+Thing dbquery:query:myquery "My Query" [ interval=15, hasParameters=false, scalarResult=true, timeout=0, query="from(bucket: \"default\") |> range(start:-1h) |> filter(fn: (r) => r[\"_measurement\"] == \"go_memstats_frees_total\")  |> filter(fn: (r) => r[\"_field\"] == \"counter\")  |> mean()", scalarColumn="_value" ]
+
+# Item definition
+Number myItem "QueryResult" {channel="dbquery:query:myquery:resultNumber"}
+```
 
 ### A query with parameters
 
 Using the previous example you change the `range(start:-1h)` for `range(start:${time})`
 
-Create a rule that is fired 
+Create a rule that is fired
 
- - **When** `calculateParameters` is triggered in `myquery`
- - **Then** executes the following script action (in that example Jython):
-      
-            map = {"time" : "-2h"}   
-            dbquery = actions.get("dbquery","dbquery:query:myquery")   
-            dbquery.setQueryParameters(map)
+- **When** `calculateParameters` is triggered in `myquery`
+- **Then** executes the following script action (in that example Jython):
+
+```text
+map = {"time" : "-2h"}   
+dbquery = actions.get("dbquery","dbquery:query:myquery")   
+dbquery.setQueryParameters(map)
+```

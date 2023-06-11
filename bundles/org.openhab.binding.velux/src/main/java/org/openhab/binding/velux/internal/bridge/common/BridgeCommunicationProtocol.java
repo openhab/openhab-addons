@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,12 +40,12 @@ public interface BridgeCommunicationProtocol {
      *
      * @return name of the communication pair for human beings.
      */
-    public String name();
+    String name();
 
     /**
      * Returns the communication status included within the response message.
      *
      * @return true if the communication was successful, and false otherwise.
      */
-    public boolean isCommunicationSuccessful();
+    boolean isCommunicationSuccessful();
 }

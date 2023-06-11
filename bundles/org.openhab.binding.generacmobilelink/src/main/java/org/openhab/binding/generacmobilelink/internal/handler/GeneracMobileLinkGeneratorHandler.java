@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.generacmobilelink.internal.handler;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.*;
 
+import java.util.Arrays;
+
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
+import org.openhab.binding.generacmobilelink.internal.dto.Apparatus;
+import org.openhab.binding.generacmobilelink.internal.dto.ApparatusDetail;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -34,6 +36,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +48,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GeneracMobileLinkGeneratorHandler.class);
-    private @Nullable GeneratorStatusDTO status;
+
+    private @Nullable Apparatus apparatus;
+    private @Nullable ApparatusDetail apparatusDetail;
 
     public GeneracMobileLinkGeneratorHandler(Thing thing) {
         super(thing);
@@ -63,37 +68,66 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
     }
 
-    protected void updateGeneratorStatus(GeneratorStatusDTO status) {
-        this.status = status;
+    protected void updateGeneratorStatus(Apparatus apparatus, ApparatusDetail apparatusDetail) {
+        this.apparatus = apparatus;
+        this.apparatusDetail = apparatusDetail;
         updateStatus(ThingStatus.ONLINE);
         updateState();
     }
 
-    protected void updateState() {
-        final GeneratorStatusDTO localStatus = status;
-        if (localStatus != null) {
-            updateState("connected", OnOffType.from(localStatus.connected));
-            updateState("greenLight", OnOffType.from(localStatus.greenLightLit));
-            updateState("yellowLight", OnOffType.from(localStatus.yellowLightLit));
-            updateState("redLight", OnOffType.from(localStatus.redLightLit));
-            updateState("blueLight", OnOffType.from(localStatus.blueLightLit));
-            try {
-                // API returns a format like 12/20/2020
-                updateState("statusDate",
-                        new DateTimeType(LocalDate
-                                .parse(localStatus.generatorStatusDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
-                                .atStartOfDay(ZoneId.systemDefault())));
-            } catch (IllegalArgumentException | DateTimeParseException e) {
-                logger.debug("Could not parse statusDate", e);
-            }
-            updateState("status", new StringType(localStatus.generatorStatus));
-            updateState("currentAlarmDescription", new StringType(localStatus.currentAlarmDescription));
-            updateState("runHours", new QuantityType<Time>(localStatus.runHours, Units.HOUR));
-            updateState("exerciseHours", new QuantityType<Time>(localStatus.exerciseHours, Units.HOUR));
-            updateState("fuelType", new DecimalType(localStatus.fuelType));
-            updateState("fuelLevel", QuantityType.valueOf(localStatus.fuelLevel, Units.PERCENT));
-            updateState("batteryVoltage", new StringType(localStatus.batteryVoltage));
-            updateState("serviceStatus", OnOffType.from(localStatus.generatorServiceStatus));
+    private void updateState() {
+        Apparatus apparatus = this.apparatus;
+        ApparatusDetail apparatusDetail = this.apparatusDetail;
+        if (apparatus == null || apparatusDetail == null) {
+            return;
         }
+        updateState(CHANNEL_HERO_IMAGE_URL, new StringType(apparatusDetail.heroImageUrl));
+        updateState(CHANNEL_STATUS_LABEL, new StringType(apparatusDetail.statusLabel));
+        updateState(CHANNEL_STATUS_TEXT, new StringType(apparatusDetail.statusText));
+        updateState(CHANNEL_ACTIVATION_DATE, new DateTimeType(apparatusDetail.activationDate));
+        updateState(CHANNEL_DEVICE_SSID, new StringType(apparatusDetail.deviceSsid));
+        updateState(CHANNEL_STATUS, new DecimalType(apparatusDetail.apparatusStatus));
+        updateState(CHANNEL_IS_CONNECTED, OnOffType.from(apparatusDetail.isConnected));
+        updateState(CHANNEL_IS_CONNECTING, OnOffType.from(apparatusDetail.isConnecting));
+        updateState(CHANNEL_SHOW_WARNING, OnOffType.from(apparatusDetail.showWarning));
+        updateState(CHANNEL_HAS_MAINTENANCE_ALERT, OnOffType.from(apparatusDetail.hasMaintenanceAlert));
+        updateState(CHANNEL_LAST_SEEN, new DateTimeType(apparatusDetail.lastSeen));
+        updateState(CHANNEL_CONNECTION_TIME, new DateTimeType(apparatusDetail.connectionTimestamp));
+        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 70).findFirst().ifPresent(p -> {
+            try {
+                updateState(CHANNEL_RUN_HOURS, new QuantityType<Time>(Integer.parseInt(p.value), Units.HOUR));
+            } catch (NumberFormatException e) {
+                logger.debug("Could not parse runHours {}", p.value);
+                updateState(CHANNEL_RUN_HOURS, UnDefType.UNDEF);
+            }
+        });
+        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 69).findFirst().ifPresent(p -> {
+            try {
+                updateState(CHANNEL_BATTERY_VOLTAGE,
+                        new QuantityType<ElectricPotential>(Float.parseFloat(p.value), Units.VOLT));
+            } catch (NumberFormatException e) {
+                logger.debug("Could not parse batteryVoltage {}", p.value);
+                updateState(CHANNEL_BATTERY_VOLTAGE, UnDefType.UNDEF);
+            }
+        });
+        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 31).findFirst().ifPresent(p -> {
+            try {
+                updateState(CHANNEL_HOURS_OF_PROTECTION, new QuantityType<Time>(Float.parseFloat(p.value), Units.HOUR));
+            } catch (NumberFormatException e) {
+                logger.debug("Could not parse hoursOfProtection {}", p.value);
+                updateState(CHANNEL_HOURS_OF_PROTECTION, UnDefType.UNDEF);
+            }
+        });
+        apparatus.properties.stream().filter(p -> p.type == 3).findFirst().ifPresent(p -> {
+            try {
+                if (p.value.signalStrength != null) {
+                    updateState(CHANNEL_SIGNAL_STRENGH, new QuantityType<Dimensionless>(
+                            Integer.parseInt(p.value.signalStrength.replaceAll("%", "")), Units.PERCENT));
+                }
+            } catch (NumberFormatException e) {
+                logger.debug("Could not parse signalStrength {}", p.value.signalStrength);
+                updateState(CHANNEL_SIGNAL_STRENGH, UnDefType.UNDEF);
+            }
+        });
     }
 }

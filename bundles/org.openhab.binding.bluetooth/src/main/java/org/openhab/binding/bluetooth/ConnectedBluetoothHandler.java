@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,6 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void initialize() {
-
         // super.initialize adds callbacks that might require the connectionTaskExecutor to be present, so we initialize
         // the connectionTaskExecutor first
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,

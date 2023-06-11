@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.unifi.internal.api.dto;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
 
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
@@ -44,7 +44,7 @@ public class UniFiDevice implements HasId {
 
     private UniFiPortTable[] portTable;
 
-    private JsonElement[] portOverrides;
+    private JsonObject[] portOverrides;
 
     public UniFiDevice(final UniFiControllerCache cache) {
         this.cache = cache;
@@ -75,7 +75,7 @@ public class UniFiDevice implements HasId {
         return portTable;
     }
 
-    public JsonElement[] getPortOverrides() {
+    public JsonObject[] getPortOverrides() {
         return portOverrides;
     }
 

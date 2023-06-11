@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,21 +12,21 @@
  */
 package org.openhab.binding.generacmobilelink.internal.discovery;
 
-import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR;
+import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
-import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
+import org.openhab.binding.generacmobilelink.internal.dto.Apparatus;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 
 /**
- * The {@link GeneracMobileLinkDiscoveryService} is responsible for discovering generator things
+ * The {@link GeneracMobileLinkDiscoveryService} is responsible for discovering device things
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -52,13 +52,13 @@ public class GeneracMobileLinkDiscoveryService extends AbstractDiscoveryService 
         return false;
     }
 
-    public void generatorDiscovered(GeneratorStatusDTO generator, ThingUID bridgeUID) {
+    public void generatorDiscovered(Apparatus apparatus, ThingUID bridgeUID) {
         DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID(GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR, bridgeUID,
-                        String.valueOf(generator.gensetID)))
-                .withLabel("MobileLink Generator " + generator.generatorName)
-                .withProperty("generatorId", String.valueOf(generator.gensetID))
-                .withRepresentationProperty("generatorId").withBridge(bridgeUID).build();
+                .create(new ThingUID(THING_TYPE_GENERATOR, bridgeUID, String.valueOf(apparatus.apparatusId)))
+                .withLabel("MobileLink Generator " + apparatus.name)
+                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, String.valueOf(apparatus.serialNumber))
+                .withProperty(PROPERTY_GENERATOR_ID, String.valueOf(apparatus.apparatusId))
+                .withRepresentationProperty(PROPERTY_GENERATOR_ID).withBridge(bridgeUID).build();
         thingDiscovered(result);
     }
 }

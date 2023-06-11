@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,10 +28,10 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class TapoLightEffect {
-    private Integer enable = 0;
+    private Boolean enable = false;
     private String id = "";
     private String name = "";
-    private Integer custom = 0;
+    private Boolean custom = false;
     private Integer brightness = 0;
     private Integer[] colorTempRange = { 9000, 9000 }; // :[9000,9000]
     private Color displayColors[] = { Color.WHITE };
@@ -42,7 +42,6 @@ public class TapoLightEffect {
      * INIT
      */
     public TapoLightEffect() {
-        setData();
     }
 
     /**
@@ -61,21 +60,33 @@ public class TapoLightEffect {
      */
     public TapoLightEffect setData(JsonObject jso) {
         /* create empty jsonObject to set efault values if has no lighning effect */
-        if (jso.has(DEVICE_PROPERTY_EFFECT)) {
+        if (jso.has(JSON_KEY_LIGHTNING_EFFECT)) {
+            this.jsonObject = jso.getAsJsonObject(JSON_KEY_LIGHTNING_EFFECT);
+            this.enable = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ENABLE);
+            this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ID, JSON_KEY_LIGHTNING_EFFECT_OFF);
+            this.name = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_NAME);
+            this.custom = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_EFFECT_CUSTOM);
+            this.brightness = jsonObjectToInt(jsonObject, JSON_KEY_LIGHTNING_EFFECT_BRIGHNTESS);
+        } else if (jso.has(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE)) {
             this.jsonObject = jso;
+            this.enable = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_DYNAMIC_ENABLE);
+            this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_DYNAMIC_ID, JSON_KEY_LIGHTNING_EFFECT_OFF);
         } else {
-            jsonObject = new JsonObject();
+            setDefaults();
         }
-        setData();
         return this;
     }
 
-    private void setData() {
-        this.enable = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_ENABLE);
-        this.id = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_ID);
-        this.name = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_NAME);
-        this.custom = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_CUSTOM); // jsonObjectToBool
-        this.brightness = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS);
+    /**
+     * Set default values
+     */
+    private void setDefaults() {
+        this.jsonObject = new JsonObject();
+        this.enable = false;
+        this.id = JSON_KEY_LIGHTNING_EFFECT_OFF;
+        this.name = "";
+        this.custom = false;
+        this.brightness = 100;
     }
 
     /***********************************
@@ -85,7 +96,7 @@ public class TapoLightEffect {
      ************************************/
 
     public void setEnable(Boolean enable) {
-        this.enable = enable ? 1 : 0;
+        this.enable = enable;
     }
 
     public void setName(String value) {
@@ -93,7 +104,7 @@ public class TapoLightEffect {
     }
 
     public void setCustom(Boolean enable) {
-        this.custom = enable ? 1 : 0;
+        this.custom = enable;
     }
 
     public void setBrightness(Integer value) {
@@ -106,32 +117,32 @@ public class TapoLightEffect {
      *
      ************************************/
 
-    public Integer getEnable() {
-        return this.enable;
+    public Boolean getEnable() {
+        return enable;
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public Integer getCustom() {
-        return this.custom;
+    public Boolean getCustom() {
+        return custom;
     }
 
     public Integer getBrightness() {
-        return this.brightness;
+        return brightness;
     }
 
     public Integer[] getColorTempRange() {
-        return this.colorTempRange;
+        return colorTempRange;
     }
 
     public Color[] getDisplayColors() {
-        return this.displayColors;
+        return displayColors;
     }
 
     @Override

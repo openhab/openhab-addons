@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ public class IpCameraBindingConstants {
     public static final String AMCREST_HANDLER = "amcrestHandler";
     public static final String COMMON_HANDLER = "commonHandler";
     public static final String INSTAR_HANDLER = "instarHandler";
+    public static final String REOLINK_HANDLER = "reolinkHandler";
 
     public static enum FFmpegFormat {
         HLS,
@@ -66,10 +67,12 @@ public class IpCameraBindingConstants {
     public static final ThingTypeUID THING_TYPE_DAHUA = new ThingTypeUID(BINDING_ID, DAHUA_THING);
     public static final String DOORBIRD_THING = "doorbird";
     public static final ThingTypeUID THING_TYPE_DOORBIRD = new ThingTypeUID(BINDING_ID, DOORBIRD_THING);
+    public static final String REOLINK_THING = "reolink";
+    public static final ThingTypeUID THING_TYPE_REOLINK = new ThingTypeUID(BINDING_ID, REOLINK_THING);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
             Arrays.asList(THING_TYPE_ONVIF, THING_TYPE_GENERIC, THING_TYPE_AMCREST, THING_TYPE_DAHUA, THING_TYPE_INSTAR,
-                    THING_TYPE_FOSCAM, THING_TYPE_DOORBIRD, THING_TYPE_HIKVISION));
+                    THING_TYPE_FOSCAM, THING_TYPE_DOORBIRD, THING_TYPE_HIKVISION, THING_TYPE_REOLINK));
 
     public static final Set<ThingTypeUID> GROUP_SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
             Arrays.asList(THING_TYPE_GROUP));
@@ -138,4 +141,7 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_ENABLE_PRIVACY_MODE = "enablePrivacyMode";
     public static final String CHANNEL_CAR_ALARM = "carAlarm";
     public static final String CHANNEL_HUMAN_ALARM = "humanAlarm";
+    public static final String CHANNEL_ANIMAL_ALARM = "animalAlarm";
+    public static final String CHANNEL_ENABLE_FTP = "enableFTP";
+    public static final String CHANNEL_ENABLE_RECORDINGS = "enableRecordings";
 }

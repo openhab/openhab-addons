@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -29,12 +31,13 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class D2_03_0A extends _VLDMessage {
 
-    protected final byte ShortPress = 0x01;
-    protected final byte DoublePress = 0x02;
-    protected final byte LongPress = 0x03;
-    protected final byte LongRelease = 0x04;
+    protected static final byte SHORT_PRESS = 0x01;
+    protected static final byte DOUBLE_PRESS = 0x02;
+    protected static final byte LONG_PRESS = 0x03;
+    protected static final byte LONG_RELEASE = 0x04;
 
     public D2_03_0A() {
         super();
@@ -45,24 +48,24 @@ public class D2_03_0A extends _VLDMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_PUSHBUTTON:
-                return (bytes[1] == ShortPress) ? CommonTriggerEvents.PRESSED : null;
+                return (bytes[1] == SHORT_PRESS) ? CommonTriggerEvents.PRESSED : null;
             case CHANNEL_DOUBLEPRESS:
-                return (bytes[1] == DoublePress) ? CommonTriggerEvents.PRESSED : null;
+                return (bytes[1] == DOUBLE_PRESS) ? CommonTriggerEvents.PRESSED : null;
             case CHANNEL_LONGPRESS:
-                return (bytes[1] == LongPress) ? CommonTriggerEvents.PRESSED
-                        : ((bytes[1] == LongRelease) ? CommonTriggerEvents.RELEASED : null);
+                return (bytes[1] == LONG_PRESS) ? CommonTriggerEvents.PRESSED
+                        : ((bytes[1] == LONG_RELEASE) ? CommonTriggerEvents.RELEASED : null);
             default:
                 return null;
         }
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         if (CHANNEL_BATTERY_LEVEL.equals(channelId)) {
             return new QuantityType<>(bytes[0] & 0xFF, Units.PERCENT);
         }

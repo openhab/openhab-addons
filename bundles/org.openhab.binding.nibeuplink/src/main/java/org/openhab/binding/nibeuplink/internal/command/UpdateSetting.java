@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,8 +70,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
         ChannelTypeUID typeUID = channel.getChannelTypeUID();
         String channelId = channel.getUID().getIdWithoutGroup();
 
-        if (typeUID == null || typeUID.getId() == null
-                || !typeUID.getId().startsWith(NibeUplinkBindingConstants.RW_CHANNEL_PREFIX)) {
+        if (typeUID == null || !typeUID.getId().startsWith(NibeUplinkBindingConstants.RW_CHANNEL_PREFIX)) {
             logger.info("channel '{}' does not support write access - value to set '{}'", channelId, value);
             throw new UnsupportedOperationException("channel (" + channelId + ") does not support write access");
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -28,6 +30,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class A5_07 extends _4BSMessage {
 
     public A5_07(ERP1Message packet) {
@@ -52,8 +55,7 @@ public abstract class A5_07 extends _4BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_ILLUMINATION)) {
             return getIllumination();
         } else if (channelId.equals(CHANNEL_MOTIONDETECTION)) {

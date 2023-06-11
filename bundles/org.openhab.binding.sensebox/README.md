@@ -28,7 +28,7 @@ The binding has no configuration options itself, all configuration is done at 'T
 The senseBox thing requires the box Id (which can be obtained on the map) and an interval in seconds for the API polling.
 The senseBox support team wrote in an email that polling even every five minutes is still o.k., therefore the minimum is hardcoded to be 300 seconds.
 
-```
+```java
 Thing sensebox:box:home [ senseBoxId = "foothesmurfingbar", refreshInterval = 600 ]
 ```
 
@@ -38,7 +38,7 @@ In the table is shown more detailed information about each Channel type.
 The binding introduces the following channels:
 
 | Channel ID                                      | Channel Description                                         | Supported item type  | Advanced |
-|-------------------------------------------------|-------------------------------------------------------------|----------------------|----------|
+| ----------------------------------------------- | ----------------------------------------------------------- | -------------------- | -------- |
 | descriptors#location                            | Location of the box                                         | Point                | False    |
 | measurements#uvIntensity                        | Intensity of Ultraviolet radiation                          | Number:Intensity     | False    |
 | measurements#illuminance                        | Illuminance                                                 | Number:Illuminance   | False    |
@@ -64,13 +64,13 @@ This is to show an example of using Units of Measurements to display data withou
 
 sensebox.things:
 
-```
+```java
 Thing sensebox:box:davos [ senseBoxId = "5b94a2c97c51910019097f14", refreshInterval = 900 ]
 ```
 
 sensebox.items:
 
-```
+```java
 Location             Davos_Location      "Davos Location"                                       { channel = "sensebox:box:davos:descriptors#location" }
 
 Number:Intensity     Davos_UVIntensity   "Davos UvIntensity [%.2f %unit%]"      <light>         { channel = "sensebox:box:davos:measurements#uvIntensity" }
@@ -84,7 +84,7 @@ Number:Density       Davos_PM10          "Davos PM10 [%.2f %unit%]"             
 
 sensebox.sitemap:
 
-```
+```perl
 sitemap sensebox label="SenseBox Davos" {
     Text item=Davos_Temperature
     Text item=Davos_Pressure
@@ -99,9 +99,9 @@ sitemap sensebox label="SenseBox Davos" {
 
 ## senseBox API
 
-*   <https://docs.opensensemap.org/>
-*   <https://docs.opensensemap.org/#api-Boxes-findBox>
-*   <https://docs.opensensemap.org/#api-Measurements-getMeasurements>
+- <https://docs.opensensemap.org/>
+- <https://docs.opensensemap.org/#api-Boxes-findBox>
+- <https://docs.opensensemap.org/#api-Measurements-getMeasurements>
 
-*   <https://api.opensensemap.org/boxes/:boxId>
-*   <https://api.opensensemap.org/boxes/:senseBoxId/sensors>
+- <https://api.opensensemap.org/boxes/:boxId>
+- <https://api.opensensemap.org/boxes/:senseBoxId/sensors>

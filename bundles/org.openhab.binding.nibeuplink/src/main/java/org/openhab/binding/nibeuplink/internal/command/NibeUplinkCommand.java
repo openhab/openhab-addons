@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.nibeuplink.internal.command;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
@@ -29,7 +28,7 @@ import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 @NonNullByDefault
 public interface NibeUplinkCommand extends SuccessListener, FailureListener, ContentListener, CompleteListener {
 
-    public static int MAX_RETRIES = 5;
+    static int MAX_RETRIES = 5;
 
     /**
      * this method is to be called by the UplinkWebinterface class
@@ -39,12 +38,10 @@ public interface NibeUplinkCommand extends SuccessListener, FailureListener, Con
     void performAction(HttpClient asyncclient);
 
     /**
-     * get the current listener
+     * update the status of the registered listener instance
      *
-     * @return instance of the listener, might be null.
      */
-    @Nullable
-    StatusUpdateListener getListener();
+    void updateListenerStatus();
 
     /**
      * register a listener

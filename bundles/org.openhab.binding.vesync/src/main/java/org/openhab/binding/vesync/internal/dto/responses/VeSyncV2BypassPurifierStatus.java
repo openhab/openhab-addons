@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link VeSyncV2BypassPurifierStatus} is a Java class used as a DTO to hold the Vesync's API's common response
  * data,
- * in regards to a Air Purifier device.
+ * in regards to an Air Purifier device.
  *
  * @author David Goodyear - Initial contribution
  */

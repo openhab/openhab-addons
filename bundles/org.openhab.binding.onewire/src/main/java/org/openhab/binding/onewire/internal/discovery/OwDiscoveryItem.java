@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,35 +44,31 @@ public class OwDiscoveryItem {
     private OwSensorType sensorType = OwSensorType.UNKNOWN;
     private String vendor = "Dallas/Maxim";
 
-    private OwPageBuffer pages = new OwPageBuffer();
-
-    private ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, "");
-
     private final Map<SensorId, OwSensorType> associatedSensors = new HashMap<>();
 
     public OwDiscoveryItem(OwserverBridgeHandler bridgeHandler, SensorId sensorId) throws OwException {
         this.sensorId = sensorId;
         sensorType = bridgeHandler.getType(sensorId);
         switch (sensorType) {
-            case DS2438:
-                pages = bridgeHandler.readPages(sensorId);
+            case DS2438 -> {
+                bridgeHandler.readPages(sensorId);
                 DS2438Configuration config = new DS2438Configuration(bridgeHandler, sensorId);
                 associatedSensors.putAll(config.getAssociatedSensors());
                 logger.trace("found associated sensors: {}", associatedSensors);
                 vendor = config.getVendor();
                 sensorType = config.getSensorSubType();
-                break;
-            case EDS:
+            }
+            case EDS -> {
                 vendor = "Embedded Data Systems";
-                pages = bridgeHandler.readPages(sensorId);
-
+                OwPageBuffer pages = bridgeHandler.readPages(sensorId);
                 try { // determine subsensorType
                     sensorType = OwSensorType.valueOf(new String(pages.getPage(0), 0, 7, StandardCharsets.US_ASCII));
                 } catch (IllegalArgumentException e) {
                     sensorType = OwSensorType.UNKNOWN;
                 }
-                break;
-            default:
+            }
+            default -> {
+            }
         }
     }
 
@@ -142,12 +138,10 @@ public class OwDiscoveryItem {
         logger.debug("checkSensorType: {} with {}", this, associatedSensors);
 
         switch (sensorType) {
-            case MS_TH:
-            case MS_TH_S:
-                sensorType = DS2438Configuration.getMultisensorType(sensorType,
-                        new ArrayList<>(associatedSensors.values()));
-                break;
-            default:
+            case MS_TH, MS_TH_S -> sensorType = DS2438Configuration.getMultisensorType(sensorType,
+                    new ArrayList<>(associatedSensors.values()));
+            default -> {
+            }
         }
     }
 

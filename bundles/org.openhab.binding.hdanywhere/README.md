@@ -14,8 +14,8 @@ but due to the lack of feedback on the actual state of the HDMI matrix when usin
 
 This binding currently supports the following thing types:
 
-- *multiroomplus* : Multiroom+ V3 (**Note:** This product is no longer sold by HDanywhere)
-- *mhub4k431* : MHUB 4K (4X3+1)
+- _multiroomplus_ : Multiroom+ V3 (**Note:** This product is no longer sold by HDanywhere)
+- _mhub4k431_ : MHUB 4K (4X3+1)
 
 ## Discovery
 
@@ -28,7 +28,7 @@ This binding does not require any special configuration.
 ## Thing Configuration
 
 Each thing requires the IP address of the matrix, and the interval in between status updates that are fetched from the matrix.
-Additionally, the *multiroomplus* has an additional required parameter 'ports' to specify the number of physical ports (e.g. 4x4, 8x8,...) of the matrix.
+Additionally, the _multiroomplus_ has an additional required parameter 'ports' to specify the number of physical ports (e.g. 4x4, 8x8,...) of the matrix.
 
 ```java
 Thing hdanywhere:mhub4k431:m1 [ipAddress="192.168.0.89",interval=15]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
     @Override
     protected void beforeNewData() {
         super.beforeNewData();
-        homeCapability.ifPresent(cap -> {
+        getSecurityCapability().ifPresent(cap -> {
             Stream<HomeDataModule> cameras = cap.getModules().values().stream()
                     .filter(module -> module.getType() == ModuleType.WELCOME);
             descriptionProvider.setStateOptions(cameraChannelUID,
@@ -67,7 +67,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
     @Override
     public void handleCommand(String channelName, Command command) {
         if ((command instanceof OnOffType) && CHANNEL_PERSON_AT_HOME.equals(channelName)) {
-            securityCapability.ifPresent(cap -> cap.setPersonAway(handler.getId(), OnOffType.OFF.equals(command)));
+            getSecurityCapability().ifPresent(cap -> cap.setPersonAway(handler.getId(), OnOffType.OFF.equals(command)));
         }
     }
 
@@ -88,7 +88,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
     @Override
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
-        securityCapability.ifPresent(cap -> {
+        getSecurityCapability().ifPresent(cap -> {
             HomeEvent event = cap.getLastPersonEvent(handler.getId());
             if (event != null) {
                 result.add(event);

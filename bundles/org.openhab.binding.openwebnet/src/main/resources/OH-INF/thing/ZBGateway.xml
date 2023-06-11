@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- OpenWebNet ZigBee USB Gateway -->
+	<!-- OpenWebNet Zigbee USB Gateway -->
 	<bridge-type id="zb_gateway">
-		<label>ZigBee USB Gateway</label>
-		<description>This USB gateway (BTicino/Legrand models: BTI-3578/088328) connects to a BTicino/Legrand ZigBee network
+		<label>Zigbee USB Gateway</label>
+		<description>This USB gateway (BTicino/Legrand models: BTI-3578/088328) connects to a BTicino/Legrand Zigbee network
 			and uses the OpenWebNet protocol. For more information see: https://catalogo.bticino.it/BTI-3578-IT and
 			https://www.legrand.com/ecatalogue/088328-openweb-net-zigbee-gateway-radio-interface.html</description>
 
@@ -24,7 +24,7 @@
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
-				<description>Serial port where the OpenWebNet ZigBee USB Gateway is connected. Example: COM3 (Win), /dev/ttyUSB0
+				<description>Serial port where the OpenWebNet Zigbee USB Gateway is connected. Example: COM3 (Win), /dev/ttyUSB0
 					(Linux), etc.</description>
 			</parameter>
 		</config-description>

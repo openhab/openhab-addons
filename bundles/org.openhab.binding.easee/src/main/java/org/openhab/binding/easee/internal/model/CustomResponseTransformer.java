@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,14 +82,23 @@ class CustomResponseTransformer {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
         if (channel != null) {
             int val = Integer.parseInt(value);
-            // state >= 3 will mean charging, ready to charge or charging finished
-            boolean charging = val >= CHARGER_OP_STATE_CHARGING;
+            // state >= 3 && state < 7 will mean charging, ready to charge or charging finished
+            boolean charging = val >= CHARGER_OP_STATE_CHARGING && val < CHARGER_OP_STATE_NOT_AUTHENTICATED;
 
             String rfnc = Utils.getAsString(rawData, CHANNEL_CHARGER_REASON_FOR_NO_CURRENT);
             int reasonForNoCurrent = Integer.valueOf(rfnc == null ? "-1" : rfnc);
-            boolean paused = (val == CHARGER_OP_STATE_WAITING
-                    && reasonForNoCurrent == CHARGER_REASON_FOR_NO_CURRENT_PAUSED);
-
+            boolean paused = false;
+            if (val == CHARGER_OP_STATE_WAITING) {
+                switch (reasonForNoCurrent) {
+                    case CHARGER_REASON_FOR_NO_CURRENT_CHARGER_LIMIT:
+                    case CHARGER_REASON_FOR_NO_CURRENT_CIRCUIT_LIMIT:
+                        paused = true;
+                        break;
+                    default:
+                        paused = false;
+                        break;
+                }
+            }
             result.put(channel, OnOffType.from(charging || paused));
         }
     }

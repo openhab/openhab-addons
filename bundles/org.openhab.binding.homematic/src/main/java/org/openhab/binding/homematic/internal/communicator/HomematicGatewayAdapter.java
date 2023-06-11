@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,50 +26,50 @@ public interface HomematicGatewayAdapter {
     /**
      * Called when a datapoint has been updated.
      */
-    public void onStateUpdated(HmDatapoint dp);
+    void onStateUpdated(HmDatapoint dp);
 
     /**
      * Called when a new device has been detected on the gateway.
      */
-    public void onNewDevice(HmDevice device);
+    void onNewDevice(HmDevice device);
 
     /**
      * Called when a device has been deleted from the gateway.
      */
-    public void onDeviceDeleted(HmDevice device);
+    void onDeviceDeleted(HmDevice device);
 
     /**
      * Called when the devices values should be reloaded from the gateway.
      */
-    public void reloadDeviceValues(HmDevice device);
+    void reloadDeviceValues(HmDevice device);
 
     /**
      * Called when all values for all devices should be reloaded from the gateway.
      */
-    public void reloadAllDeviceValues();
+    void reloadAllDeviceValues();
 
     /**
      * Called when a device has been loaded from the gateway.
      */
-    public void onDeviceLoaded(HmDevice device);
+    void onDeviceLoaded(HmDevice device);
 
     /**
      * Called when the connection is lost to the gateway.
      */
-    public void onConnectionLost();
+    void onConnectionLost();
 
     /**
      * Called when the connection is resumed to the gateway.
      */
-    public void onConnectionResumed();
+    void onConnectionResumed();
 
     /**
      * Returns the configuration of a datapoint.
      */
-    public HmDatapointConfig getDatapointConfig(HmDatapoint dp);
+    HmDatapointConfig getDatapointConfig(HmDatapoint dp);
 
     /**
      * Called when a new value for the duty cycle of the gateway has been received.
      */
-    public void onDutyCycleRatioUpdate(int dutyCycleRatio);
+    void onDutyCycleRatioUpdate(int dutyCycleRatio);
 }

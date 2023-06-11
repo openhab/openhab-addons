@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 
 /**
- * CosemInteger represents an decimal value
+ * CosemInteger represents a decimal value
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Combined Integer and Double because {@link DecimalType} handles both
@@ -44,7 +44,7 @@ class CosemDecimal extends CosemValueDescriptor<DecimalType> {
     }
 
     /**
-     * Parses a String value (that represents an decimal) to an {@link DecimalType} object.
+     * Parses a String value (that represents a decimal) to a {@link DecimalType} object.
      *
      * @param cosemValue the value to parse
      * @return {@link DecimalType} representing the value of the cosem value

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.openhab.core.types.State;
  * @author Björn Lange - Initial contribution
  * @author Benjamin Bolte - Add pre-heat finished, plate step, door state, door alarm and info state channel and map
  *         signal flags from API
- * @author Björn Lange - Add elapsed time channel, dish warmer and robotic vacuum cleaner thing
+ * @author Björn Lange - Add elapsed time channel, dish warmer and robotic vacuum cleaner thing, eco feedback
  */
 @NonNullByDefault
 public final class DeviceChannelState {
@@ -183,6 +183,14 @@ public final class DeviceChannelState {
 
     public State getSpinningSpeedRaw() {
         return ChannelTypeUtil.intToState(device.getSpinningSpeedRaw());
+    }
+
+    public State getCurrentWaterConsumption() {
+        return ChannelTypeUtil.quantityToState(device.getCurrentWaterConsumption());
+    }
+
+    public State getCurrentEnergyConsumption() {
+        return ChannelTypeUtil.quantityToState(device.getCurrentEnergyConsumption());
     }
 
     public State getBatteryLevel() {

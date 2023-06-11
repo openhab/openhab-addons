@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.boschshc.internal.services.temperaturelevel.dto;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -21,7 +22,7 @@ import org.openhab.core.types.State;
 
 /**
  * TemperatureLevel service state.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 public class TemperatureLevelServiceState extends BoschSHCServiceState {
@@ -37,10 +38,10 @@ public class TemperatureLevelServiceState extends BoschSHCServiceState {
 
     /**
      * Current temperature state to set for a thing.
-     * 
+     *
      * @return Current temperature state to use for a thing.
      */
     public State getTemperatureState() {
-        return new QuantityType<Temperature>(this.temperature, SIUnits.CELSIUS);
+        return new QuantityType<@NonNull Temperature>(this.temperature, SIUnits.CELSIUS);
     }
 }

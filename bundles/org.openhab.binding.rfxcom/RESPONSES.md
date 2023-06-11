@@ -6,7 +6,7 @@ Record of responses to some commands for working out how things work.
 
 These messages were received when testing different firmwares.
 
-```
+```text
 Ext    250   0D0100010253FA0400070001031C
 Ext    251   0D0100010253FB0400070001031C
 Ext    1001  140100010253010400070001031C03000000000000
@@ -22,7 +22,8 @@ Type2  1022  140100010253160080270001031C02000000000000
 These messages were sent by RFXMngr when enabling single modes.
 
 On Pro1 firmware 1044 RFXtrx443 at 433.92MHZ
-```
+
+```text
 enableUndecodedPackets        0D 00 00 03 03 53 00 80 00 00 00 00 00 00
 enableImagintronixOpusPackets 0D 00 00 04 03 53 00 40 00 00 00 00 00 00
 enableByronSXPackets          0D 00 00 05 03 53 00 20 00 00 00 00 00 00

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BluetoothAddr
  * connectable advertisement packets Bluetooth from the remote device which matches the
  * Bluetooth address gives as a parameter. Upon receiving the advertisement packet, the
  * module will send a connection request packet to the target device to imitate a Bluetooth
- * connection. A successful connection will bi indicated by a event. Status If the device is
+ * connection. A successful connection will be indicated by an event. Status If the device is
  * configured to support more than one connection, the smallest connection interval which is
  * divisible by maximum_connections * 2.5ms will be selected. Thus, it is important to provide
  * minimum and maximum connection intervals so that such a connection interval is available
@@ -40,8 +40,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BluetoothAddr
  */
 @NonNullByDefault
 public class BlueGigaConnectDirectCommand extends BlueGigaCommand {
-    public static int COMMAND_CLASS = 0x06;
-    public static int COMMAND_METHOD = 0x03;
+    public static final int COMMAND_CLASS = 0x06;
+    public static final int COMMAND_METHOD = 0x03;
 
     private BlueGigaConnectDirectCommand(CommandBuilder builder) {
         this.address = builder.address;

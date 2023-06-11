@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ import com.igormaznitsa.jbbp.model.JBBPFieldUShort;
  * <pre>
  * {@code
  * JsonObject json = new Bin2Json("byte a; byte b; ubyte c;").convert("03FAFF");
- * json.toString() = {"a":3,"b":-6,"c":255}
+ * json.toString() = {"a":3,"b":-6,"c":255}}
  * </pre>
  *
  * @author Pauli Anttila - Initial contribution

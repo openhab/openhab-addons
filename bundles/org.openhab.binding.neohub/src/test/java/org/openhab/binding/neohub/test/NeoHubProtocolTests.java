@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,16 +13,23 @@
 package org.openhab.binding.neohub.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.neohub.internal.NeoHubBindingConstants;
 import org.openhab.binding.neohub.internal.NeoHubConfiguration;
 import org.openhab.binding.neohub.internal.NeoHubException;
 import org.openhab.binding.neohub.internal.NeoHubSocket;
 import org.openhab.binding.neohub.internal.NeoHubWebSocket;
+import org.openhab.core.io.net.http.WebSocketFactory;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * JUnit for testing WSS and TCP socket protocols.
@@ -70,7 +77,15 @@ public class NeoHubProtocolTests {
             config.socketTimeout = SOCKET_TIMEOUT;
             config.apiToken = HUB_API_TOKEN;
 
-            NeoHubWebSocket socket = new NeoHubWebSocket(config);
+            SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+            sslContextFactory.setTrustAll(true);
+            HttpClient httpClient = new HttpClient(sslContextFactory);
+            WebSocketClient webSocketClient = new WebSocketClient(httpClient);
+
+            WebSocketFactory webSocketFactory = mock(WebSocketFactory.class);
+            when(webSocketFactory.createWebSocketClient(anyString(), any())).thenReturn(webSocketClient);
+
+            NeoHubWebSocket socket = new NeoHubWebSocket(config, webSocketFactory, new ThingUID("neohub:account:test"));
             String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
             String responseJson = socket.sendMessage(requestJson);
             assertNotEquals(0, responseJson.length());
@@ -96,7 +111,7 @@ public class NeoHubProtocolTests {
             config.socketTimeout = SOCKET_TIMEOUT;
             config.apiToken = HUB_API_TOKEN;
 
-            NeoHubSocket socket = new NeoHubSocket(config);
+            NeoHubSocket socket = new NeoHubSocket(config, "test");
             String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
             String responseJson = socket.sendMessage(requestJson);
             assertNotEquals(0, responseJson.length());

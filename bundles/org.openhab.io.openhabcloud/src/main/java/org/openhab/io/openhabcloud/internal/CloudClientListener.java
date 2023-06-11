@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,5 +30,5 @@ public interface CloudClientListener {
      * @param item the {@link String} containing item name
      * @param command the {@link String} containing a command
      */
-    public void sendCommand(String item, String command);
+    void sendCommand(String item, String command);
 }

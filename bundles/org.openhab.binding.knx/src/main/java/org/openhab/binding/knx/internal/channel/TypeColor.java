@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static java.util.stream.Collectors.toSet;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
@@ -32,15 +36,12 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorRGB;
  *
  */
 @NonNullByDefault
-class TypeColor extends KNXChannelType {
+class TypeColor extends KNXChannel {
+    public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_COLOR, CHANNEL_COLOR_CONTROL);
 
-    TypeColor() {
-        super(CHANNEL_COLOR, CHANNEL_COLOR_CONTROL);
-    }
-
-    @Override
-    protected Set<String> getAllGAKeys() {
-        return Stream.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA).collect(toSet());
+    TypeColor(Channel channel) {
+        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA),
+                List.of(HSBType.class, PercentType.class, OnOffType.class, IncreaseDecreaseType.class), channel);
     }
 
     @Override

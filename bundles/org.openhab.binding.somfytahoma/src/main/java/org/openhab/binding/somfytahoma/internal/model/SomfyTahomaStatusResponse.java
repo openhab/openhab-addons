@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,9 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyTahomaStatusResponse {
 
+    private String gatewayId = "";
     private SomfyTahomaStatus connectivity = new SomfyTahomaStatus();
 
     public SomfyTahomaStatus getConnectivity() {
         return connectivity;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
     }
 }

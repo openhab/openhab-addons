@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="qolsysiq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="partition"/>
+		</supported-bridge-type-refs>
+		<label>Zone</label>
+		<description>A Qolsys IQ Zone</description>
+		<channels>
+			<channel id="state" typeId="zoneState"/>
+			<channel id="status" typeId="zoneStatus"/>
+			<channel id="contact" typeId="contact"/>
+		</channels>
+		<properties>
+			<property name="type"></property>
+			<property name="name"></property>
+			<property name="group"></property>
+			<property name="zoneId"></property>
+			<property name="zonePhysicalType"></property>
+			<property name="zoneAlarmType"></property>
+			<property name="zoneType"></property>
+			<property name="partitionId"></property>
+		</properties>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>Zone ID</label>
+				<description>The Zone ID.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="zoneStatus">
+		<item-type>String</item-type>
+		<label>Zone Status</label>
+		<description>The zone status.</description>
+		<state readOnly="true">
+			<options>
+				<option value="ACTIVE">Active</option>
+				<option value="CLOSED">Closed</option>
+				<option value="OPEN">Open</option>
+				<option value="FAILURE">Failure</option>
+				<option value="IDlE">Idle</option>
+				<option value="TAMPER">Tamper</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="zoneState" advanced="true">
+		<item-type>Number</item-type>
+		<label>Zone State</label>
+		<description>The zone state.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Zone Contact</label>
+		<description>The zone contact state.</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

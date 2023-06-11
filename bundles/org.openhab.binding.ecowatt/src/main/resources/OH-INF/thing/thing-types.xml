@@ -20,6 +20,18 @@
 					consumption
 					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
 			</channel>
+			<channel id="inTwoDaysSignal" typeId="signal">
+				<label>In Two Days Signal</label>
+				<description>The signal relating to the forecast consumption level in two days. Values are 1 for normal
+					consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
+			<channel id="inThreeDaysSignal" typeId="signal">
+				<label>In Three Days Signal</label>
+				<description>The signal relating to the forecast consumption level in three days. Values are 1 for normal
+					consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
 			<channel id="currentHourSignal" typeId="signal">
 				<label>Current Hour Signal</label>
 				<description>The signal relating to the forecast consumption level for the current hour. Values are 1 for normal

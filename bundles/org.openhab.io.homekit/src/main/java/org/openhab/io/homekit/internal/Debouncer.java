@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ class Debouncer {
                 try {
                     action.run();
                 } catch (Exception e) {
-                    logger.warn("Debouncer {} action resulted in error: {}", name, e.getMessage());
+                    logger.warn("Debouncer {} action resulted in error", name, e);
                 }
             } else {
                 logger.warn("Invalid state in debouncer. Should not have reached here!");

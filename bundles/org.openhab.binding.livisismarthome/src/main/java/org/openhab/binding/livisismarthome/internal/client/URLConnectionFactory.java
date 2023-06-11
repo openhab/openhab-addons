@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,6 @@ public class URLConnectionFactory {
 
     public HttpURLConnection createBaseRequest(String url, HttpMethod httpMethod,
             AccessTokenResponse accessTokenResponse) throws IOException {
-
         HttpURLConnection urlConnection = createRequest(url);
         urlConnection.setRequestMethod(httpMethod.asString());
         urlConnection.setRequestProperty(HttpHeader.ACCEPT.asString(), CONTENT_TYPE);

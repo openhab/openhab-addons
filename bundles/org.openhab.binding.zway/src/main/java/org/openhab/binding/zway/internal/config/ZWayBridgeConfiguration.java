@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,22 +14,24 @@ package org.openhab.binding.zway.internal.config;
 
 import static org.openhab.binding.zway.internal.ZWayBindingConstants.*;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ZWayBridgeConfiguration} class defines the model for a bridge configuration.
  *
  * @author Patrick Hecker - Initial contribution, remove openHAB configuration
  */
+@NonNullByDefault
 public class ZWayBridgeConfiguration {
-    private String zwayServerIpAddress;
-    private Integer zwayServerPort;
-    private String zwayServerProtocol;
+    private String zwayServerIpAddress = "localhost";
+    private Integer zwayServerPort = 8083;
+    private String zwayServerProtocol = "http";
 
-    private String zwayServerUsername;
-    private String zwayServerPassword;
+    private String zwayServerUsername = "admin";
+    private @Nullable String zwayServerPassword;
 
-    private Integer pollingInterval;
+    private Integer pollingInterval = 3600;
 
     public String getZWayIpAddress() {
         return zwayServerIpAddress;
@@ -63,7 +65,7 @@ public class ZWayBridgeConfiguration {
         this.zwayServerUsername = username;
     }
 
-    public String getZWayPassword() {
+    public @Nullable String getZWayPassword() {
         return zwayServerPassword;
     }
 
@@ -81,11 +83,11 @@ public class ZWayBridgeConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS, this.getZWayIpAddress())
-                .append(BRIDGE_CONFIG_ZWAY_SERVER_PORT, this.getZWayPort())
-                .append(BRIDGE_CONFIG_ZWAY_SERVER_PROTOCOL, this.getZWayProtocol())
-                .append(BRIDGE_CONFIG_ZWAY_SERVER_USERNAME, this.getZWayUsername())
-                .append(BRIDGE_CONFIG_ZWAY_SERVER_PASSWORD, this.getZWayPassword())
-                .append(BRIDGE_CONFIG_POLLING_INTERVAL, this.getPollingInterval()).toString();
+        return getClass().getSimpleName() + "{ " + BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS + "=" + getZWayIpAddress()
+                + ", " + BRIDGE_CONFIG_ZWAY_SERVER_PORT + "=" + getZWayPort() + ", "
+                + BRIDGE_CONFIG_ZWAY_SERVER_PROTOCOL + "=" + getZWayProtocol() + ", "
+                + BRIDGE_CONFIG_ZWAY_SERVER_USERNAME + "=" + getZWayUsername() + ", "
+                + BRIDGE_CONFIG_ZWAY_SERVER_PASSWORD + "=" + getZWayPassword() + ", " + BRIDGE_CONFIG_POLLING_INTERVAL
+                + "=" + this.getPollingInterval() + "}";
     }
 }

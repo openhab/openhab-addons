@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class FMIRequestTest {
         ForecastRequest request = new ForecastRequest(new LatLon(new BigDecimal("9"), new BigDecimal("8")), 1552215664L,
                 1552215665L, 61);
         assertThat(request.toUrl(), is(
-                "https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::point::multipointcoverage"
+                "https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage"
                         + "&starttime=2019-03-10T11:01:04Z&endtime=2019-03-10T11:01:05Z&timestep=61&latlon=9,8"
                         + "&parameters=Temperature,Humidity,WindDirection,WindSpeedMS,WindGust,Pressure,Precipitation1h,TotalCloudCover,WeatherSymbol3"));
     }

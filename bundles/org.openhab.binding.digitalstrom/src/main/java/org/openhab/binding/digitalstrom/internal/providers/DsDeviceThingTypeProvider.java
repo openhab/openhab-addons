@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
  * {@link SupportedThingTypes} enum has to be adjusted, if new device types of digitalSTROM should be supported.
  * Provided the new digitalSTROM devices uses the same mechanism like now.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 @Component(service = ThingTypeProvider.class)
 public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypeProvider {
@@ -59,8 +59,8 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
      * used as thing type id, the first field will set the responsible handler and the last enum field will set the
      * supporting of the power sensor refresh configurations (config-description with refresh priority setting or not).
      *
-     * @author Michael Ochel - initial contributer
-     * @author Matthias Siegele - initial contributer
+     * @author Michael Ochel - Initial contribution
+     * @author Matthias Siegele - Initial contribution
      */
     public static enum SupportedThingTypes {
         // ThingType, responsible ThingHanlder, Device config-description with power-sensors
@@ -82,8 +82,8 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
 
     private final Logger logger = LoggerFactory.getLogger(DsDeviceThingTypeProvider.class);
 
-    private final String DEVICE_WITH_POWER_SENSORS = "thing-type:digitalstrom:deviceWithPowerSensors";
-    private final String DEVICE_WITHOUT_POWER_SENSORS = "thing-type:digitalstrom:deviceWithoutPowerSensors";
+    private static final String DEVICE_WITH_POWER_SENSORS = "thing-type:digitalstrom:deviceWithPowerSensors";
+    private static final String DEVICE_WITHOUT_POWER_SENSORS = "thing-type:digitalstrom:deviceWithoutPowerSensors";
 
     @Activate
     @Override
@@ -154,7 +154,7 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
                 thingTypeBuilder.withChannelDefinitions(Arrays.asList(new ChannelDefinitionBuilder(
                         DsChannelTypeProvider.SHADE,
                         new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID, DsChannelTypeProvider.SHADE))
-                                .build()));
+                        .build()));
             }
             if (SupportedThingTypes.circuit.equals(supportedThingType)) {
                 List<ChannelDefinition> channelDefinitions = new ArrayList<>(3);
@@ -162,7 +162,8 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
                     channelDefinitions.add(new ChannelDefinitionBuilder(
                             DsChannelTypeProvider.getMeteringChannelID(meteringType, MeteringUnitsEnum.WH, false),
                             new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID, DsChannelTypeProvider
-                                    .getMeteringChannelID(meteringType, MeteringUnitsEnum.WH, false))).build());
+                                    .getMeteringChannelID(meteringType, MeteringUnitsEnum.WH, false)))
+                            .build());
                 }
                 thingTypeBuilder.withChannelDefinitions(channelDefinitions);
             }

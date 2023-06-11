@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.feican.internal;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * Creates commands to send to Feican devices.
@@ -67,23 +65,11 @@ public class Commands {
      */
     public byte[] color(HSBType color) {
         byte[] command = RGB_COMMAND.clone();
-        PercentType[] rgb = color.toRGB();
-        command[4] = convertColorPercentToByte(rgb[0]);
-        command[5] = convertColorPercentToByte(rgb[1]);
-        command[6] = convertColorPercentToByte(rgb[2]);
+        int[] rgb = ColorUtil.hsbToRgb(color);
+        command[4] = (byte) rgb[0];
+        command[5] = (byte) rgb[1];
+        command[6] = (byte) rgb[2];
         return command;
-    }
-
-    /**
-     * Converts a percentage (0-100) to a color range value (0-255). This is needed because {@link HSBType} returns
-     * color values in the 100-range while a 255 range is needed.
-     *
-     * @param percent value to be converted.
-     * @return converted value as a byte value
-     */
-    private byte convertColorPercentToByte(PercentType percent) {
-        return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).byteValue();
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.nest.internal.wwn.test;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Embedded jetty server used in the tests.
@@ -27,10 +27,9 @@ import org.slf4j.LoggerFactory;
  * @author Velin Yordanov - Initial contribution
  * @author Wouter Born - Increase test coverage
  */
+@NonNullByDefault
 public class WWNTestServer {
-    private final Logger logger = LoggerFactory.getLogger(WWNTestServer.class);
-
-    private Server server;
+    private @Nullable Server server;
     private String host;
     private int port;
     private int timeout;
@@ -43,46 +42,32 @@ public class WWNTestServer {
         this.servletHolder = servletHolder;
     }
 
-    public void startServer() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            @SuppressWarnings("resource")
-            public void run() {
-                server = new Server();
-                ServletHandler handler = new ServletHandler();
-                handler.addServletWithMapping(servletHolder, "/*");
-                server.setHandler(handler);
+    public void startServer() throws Exception {
+        Server server = new Server();
 
-                // HTTP connector
-                ServerConnector http = new ServerConnector(server);
-                http.setHost(host);
-                http.setPort(port);
-                http.setIdleTimeout(timeout);
+        ServletHandler handler = new ServletHandler();
+        handler.addServletWithMapping(servletHolder, "/*");
+        server.setHandler(handler);
 
-                server.addConnector(http);
+        // HTTP connector
+        ServerConnector http = new ServerConnector(server);
+        http.setHost(host);
+        http.setPort(port);
+        http.setIdleTimeout(timeout);
+        server.addConnector(http);
 
-                try {
-                    server.start();
-                    server.join();
-                } catch (InterruptedException ex) {
-                    logger.error("Server got interrupted", ex);
-                    return;
-                } catch (Exception e) {
-                    logger.error("Error in starting the server", e);
-                    return;
-                }
-            }
-        });
+        server.start();
 
-        thread.start();
+        this.server = server;
     }
 
-    public void stopServer() {
-        try {
-            server.stop();
-        } catch (Exception e) {
-            logger.error("Error in stopping the server", e);
+    public void stopServer() throws Exception {
+        Server server = this.server;
+        if (server == null) {
             return;
         }
+
+        server.stop();
+        this.server = null;
     }
 }

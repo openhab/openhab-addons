@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,6 @@ import com.google.gson.GsonBuilder;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.mqttha")
 @NonNullByDefault
 public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
-    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<HaID>> componentsPerThingID = new TreeMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new TreeMap<>();
@@ -260,14 +259,16 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         }
         if (thingIDPerTopic.containsKey(topic)) {
             ThingUID thingUID = thingIDPerTopic.remove(topic);
-            final String thingID = thingUID.getId();
+            if (thingUID != null) {
+                final String thingID = thingUID.getId();
 
-            HaID haID = new HaID(topic);
+                HaID haID = new HaID(topic);
 
-            Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
-            components.remove(haID);
-            if (components.isEmpty()) {
-                thingRemoved(thingUID);
+                Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
+                components.remove(haID);
+                if (components.isEmpty()) {
+                    thingRemoved(thingUID);
+                }
             }
         }
     }

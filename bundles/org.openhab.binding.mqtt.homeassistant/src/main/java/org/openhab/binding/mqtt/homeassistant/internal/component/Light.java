@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,7 +92,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         @SerializedName("color_mode")
         protected boolean colorMode = false; // JSON schema only
         @SerializedName("supported_color_modes")
-        protected @Nullable List<String> supportedColorModes; // JSON schema only
+        protected @Nullable List<LightColorMode> supportedColorModes; // JSON schema only
         // Defines when on the payload_on is sent. Using last (the default) will send
         // any style (brightness, color, etc)
         // topics first and then a payload_on to the command_topic. Using first will
@@ -257,6 +257,8 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         switch (schema) {
             case DEFAULT_SCHEMA:
                 return new DefaultSchemaLight(builder);
+            case JSON_SCHEMA:
+                return new JSONSchemaLight(builder);
             default:
                 throw new UnsupportedComponentException(
                         "Component '" + builder.getHaID() + "' of schema '" + schema + "' is not supported!");

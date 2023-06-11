@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,7 @@ package org.openhab.binding.onewire.internal.handler;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
@@ -45,11 +42,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BasicThingHandler extends OwBaseThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BASIC);
-    public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections
-            .unmodifiableSet(Stream.of(OwSensorType.DS1420, OwSensorType.DS18B20, OwSensorType.DS18S20,
-                    OwSensorType.DS1822, OwSensorType.DS2401, OwSensorType.DS2405, OwSensorType.DS2406,
-                    OwSensorType.DS2408, OwSensorType.DS2413, OwSensorType.DS2423).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BASIC);
+    public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Set.of(OwSensorType.DS1420, OwSensorType.DS18B20,
+            OwSensorType.DS18S20, OwSensorType.DS1822, OwSensorType.DS2401, OwSensorType.DS2405, OwSensorType.DS2406,
+            OwSensorType.DS2408, OwSensorType.DS2413, OwSensorType.DS2423);
 
     private final Logger logger = LoggerFactory.getLogger(BasicThingHandler.class);
 
@@ -65,36 +61,17 @@ public class BasicThingHandler extends OwBaseThingHandler {
 
         // add sensor
         switch (sensorType) {
-            case DS18B20:
-            case DS18S20:
-            case DS1822:
-                sensors.add(new DS18x20(sensorId, this));
-                break;
-            case DS1420:
-            case DS2401:
-                sensors.add(new DS2401(sensorId, this));
-                break;
-            case DS2405:
-                sensors.add(new DS2405(sensorId, this));
-                break;
-            case DS2406:
-            case DS2413:
-                sensors.add(new DS2406_DS2413(sensorId, this));
-                break;
-            case DS2408:
-                sensors.add(new DS2408(sensorId, this));
-                break;
-            case DS2423:
-                sensors.add(new DS2423(sensorId, this));
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        "unsupported sensorType " + sensorType.name() + ", this should have been checked before!");
+            case DS18B20, DS18S20, DS1822 -> sensors.add(new DS18x20(sensorId, this));
+            case DS1420, DS2401 -> sensors.add(new DS2401(sensorId, this));
+            case DS2405 -> sensors.add(new DS2405(sensorId, this));
+            case DS2406, DS2413 -> sensors.add(new DS2406_DS2413(sensorId, this));
+            case DS2408 -> sensors.add(new DS2408(sensorId, this));
+            case DS2423 -> sensors.add(new DS2423(sensorId, this));
+            default -> throw new IllegalArgumentException(
+                    "unsupported sensorType " + sensorType.name() + ", this should have been checked before!");
         }
 
-        scheduler.execute(() -> {
-            configureThingChannels();
-        });
+        scheduler.execute(this::configureThingChannels);
     }
 
     @Override

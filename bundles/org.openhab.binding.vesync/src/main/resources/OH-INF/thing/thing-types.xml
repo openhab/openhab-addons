@@ -46,7 +46,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Air Purifier via VeSync</label>
-		<description>A Air Purifier uplinking to VeSync</description>
+		<description>An Air Purifier uplinking to VeSync</description>
 
 		<channels>
 			<channel id="enabled" typeId="deviceEnabledType"/>
@@ -70,6 +70,7 @@
 			<property name="Device Name"/>
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
+			<property name="Device Family"/>
 		</properties>
 		<representation-property>macId</representation-property>
 
@@ -92,7 +93,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Air Humidifier via VeSync</label>
-		<description>A Air Humidifier uplinking to VeSync</description>
+		<description>An Air Humidifier uplinking to VeSync</description>
 
 		<channels>
 			<channel id="enabled" typeId="deviceEnabledType"/>
@@ -114,6 +115,7 @@
 			<property name="Device Name"/>
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
+			<property name="Device Family"/>
 		</properties>
 		<representation-property>macId</representation-property>
 

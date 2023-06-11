@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Switch</label>
-		<description>A OpenWebNet BUS/SCS switch for the control of 1 light/load. BTicino models: xxx/yyyy/etc.</description>
+		<description>An OpenWebNet BUS/SCS switch for the control of 1 light/load. BTicino models: xxx/yyyy/etc.</description>
 
 		<channels>
 			<channel id="switch" typeId="switch"/>

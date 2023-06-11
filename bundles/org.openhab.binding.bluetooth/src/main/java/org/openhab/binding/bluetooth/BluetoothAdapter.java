@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingUID;
 
 /**
  * The {@link BluetoothAdapter} class defines the standard adapter API that must be implemented by bridge handlers,
- * which are then required to be registered as an BluetoothAdapter OSGi service.
+ * which are then required to be registered as a BluetoothAdapter OSGi service.
  * <p>
  * <b>Scanning</b>
  * The API assumes that the adapter is "always" scanning to enable beacons to be received.

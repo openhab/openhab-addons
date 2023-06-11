@@ -64,9 +64,9 @@ Each attached thing must specify the `houseUnitCode` set in the device (i.e. A1)
 | switch | switchState     | Switch    | An On/Off switch   |
 | dimmer | lightDimmer     | Dimmer    | A dimmable  device |
 
-**Example**
+### Example
 
-### Things
+#### Things
 
 ```perl
 Bridge cm11a:cm11a:MyCm11a  [ serialPort="COM3" ] {
@@ -75,7 +75,7 @@ Bridge cm11a:cm11a:MyCm11a  [ serialPort="COM3" ] {
 }
 ```
 
-### Items
+#### Items
 
 ```java
 SwitchA1  "Kitchen Plug"   <light>  (someGroup)  { channel="cm11a:switch:MyCm11a:SwitchA1:switchstatus" }
@@ -84,11 +84,11 @@ DimmerA2  "Porch lights"   <slider> (someGroup)  { channel="cm11a:dimmer:MyCm11a
 
 ## Known issues
 
-1.  When openHAB starts up it doesn't restore the last state of each module. And, the cm11a does not provide a discovery service. Therefore it assumes everything off.
-2.  The dimmer slider can get out of sync with the actual light because of the way X10 works. On some switches if you turn them on they will go to full bright and some switches will return to the previous dim level.
+1. When openHAB starts up it doesn't restore the last state of each module. And, the cm11a does not provide a discovery service. Therefore it assumes everything off.
+1. The dimmer slider can get out of sync with the actual light because of the way X10 works. On some switches if you turn them on they will go to full bright and some switches will return to the previous dim level.
 
 ## References
 
 1. [CM11A (X10) Protocol Document](https://wanderingsamurai.net/electronics/cm11a-x10-protocol-document)
-2. [Heyu - control software for the cm11a](https://www.heyu.org/)
-3. cm11a Controllers are available for purchase from several sites on the internet
+1. [Heyu - control software for the cm11a](https://www.heyu.org/)
+1. cm11a Controllers are available for purchase from several sites on the internet

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,11 @@ package org.openhab.binding.dmx.internal.handler;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dmx.internal.DmxBindingConstants.ListenerType;
 import org.openhab.binding.dmx.internal.DmxBridgeHandler;
 import org.openhab.binding.dmx.internal.DmxThingHandler;
@@ -46,14 +46,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ColorThingHandler} is responsible for handling commands, which are
+ * The {@link DimmerThingHandler} is responsible for handling commands, which are
  * sent to the dimmer.
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public class ColorThingHandler extends DmxThingHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COLOR);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_COLOR);
 
     private final Logger logger = LoggerFactory.getLogger(ColorThingHandler.class);
 

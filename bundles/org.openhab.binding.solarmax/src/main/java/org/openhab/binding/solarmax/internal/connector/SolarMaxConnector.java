@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,16 +58,17 @@ public class SolarMaxConnector {
     private static int responseTimeout = 10000;
 
     /**
-     * gets all known values from the SolarMax device addressable at host:port
+     * gets all known values from the SolarMax device addressable at host:portNumber
      * 
      * @param host hostname or ip address of the SolarMax device to be contacted
-     * @param port port the SolarMax is listening on (default is 12345)
+     * @param portNumber portNumber the SolarMax is listening on (default is 12345)
      * @param commandList a list of commands to be sent to the SolarMax device
      * @return
      * @throws UnknownHostException if the host is unknown
      * @throws SolarMaxException if some other exception occurs
      */
-    public static SolarMaxData getAllValuesFromSolarMax(final String host, int port) throws SolarMaxException {
+    public static SolarMaxData getAllValuesFromSolarMax(final String host, final int portNumber,
+            final int deviceAddress) throws SolarMaxException {
         List<SolarMaxCommandKey> commandList = new ArrayList<>();
 
         for (SolarMaxCommandKey solarMaxCommandKey : SolarMaxCommandKey.values()) {
@@ -81,7 +82,8 @@ public class SolarMaxConnector {
         // get the data from the SolarMax device. If we didn't get as many values back as we asked for, there were
         // communications problems, so set communicationSuccessful appropriately
 
-        Map<SolarMaxCommandKey, @Nullable String> valuesFromSolarMax = getValuesFromSolarMax(host, port, commandList);
+        Map<SolarMaxCommandKey, @Nullable String> valuesFromSolarMax = getValuesFromSolarMax(host, portNumber,
+                deviceAddress, commandList);
         boolean allCommandsAnswered = true;
         for (SolarMaxCommandKey solarMaxCommandKey : commandList) {
             if (!valuesFromSolarMax.containsKey(solarMaxCommandKey)) {
@@ -97,17 +99,18 @@ public class SolarMaxConnector {
     }
 
     /**
-     * gets values from the SolarMax device addressable at host:port
+     * gets values from the SolarMax device addressable at host:portNumber
      * 
      * @param host hostname or ip address of the SolarMax device to be contacted
-     * @param port port the SolarMax is listening on (default is 12345)
+     * @param portNumber portNumber the SolarMax is listening on (default is 12345)
      * @param commandList a list of commands to be sent to the SolarMax device
      * @return
      * @throws UnknownHostException if the host is unknown
      * @throws SolarMaxException if some other exception occurs
      */
-    private static Map<SolarMaxCommandKey, @Nullable String> getValuesFromSolarMax(final String host, int port,
-            final List<SolarMaxCommandKey> commandList) throws SolarMaxException {
+    private static Map<SolarMaxCommandKey, @Nullable String> getValuesFromSolarMax(final String host,
+            final int portNumber, final int deviceAddress, final List<SolarMaxCommandKey> commandList)
+            throws SolarMaxException {
         Socket socket;
 
         Map<SolarMaxCommandKey, @Nullable String> returnMap = new HashMap<>();
@@ -120,7 +123,8 @@ public class SolarMaxConnector {
             requestsRequired = requestsRequired + 1;
         }
         for (int requestNumber = 0; requestNumber < requestsRequired; requestNumber++) {
-            LOGGER.debug("    Requesting data from {}:{} with timeout of {}ms", host, port, responseTimeout);
+            LOGGER.debug("    Requesting data from {}:{} (Device Address {}) with timeout of {}ms", host, portNumber,
+                    deviceAddress, responseTimeout);
 
             int firstCommandNumber = requestNumber * maxConcurrentCommands;
             int lastCommandNumber = (requestNumber + 1) * maxConcurrentCommands;
@@ -130,11 +134,11 @@ public class SolarMaxConnector {
             List<SolarMaxCommandKey> commandsToSend = commandList.subList(firstCommandNumber, lastCommandNumber);
 
             try {
-                socket = getSocketConnection(host, port);
+                socket = getSocketConnection(host, portNumber);
             } catch (UnknownHostException e) {
                 throw new SolarMaxConnectionException(e);
             }
-            returnMap.putAll(getValuesFromSolarMax(socket, commandsToSend));
+            returnMap.putAll(getValuesFromSolarMax(socket, deviceAddress, commandsToSend));
 
             // SolarMax can't deal with requests too close to one another, so just wait a moment
             try {
@@ -158,14 +162,14 @@ public class SolarMaxConnector {
     }
 
     private static Map<SolarMaxCommandKey, @Nullable String> getValuesFromSolarMax(final Socket socket,
-            final List<SolarMaxCommandKey> commandList) throws SolarMaxException {
+            final int deviceAddress, final List<SolarMaxCommandKey> commandList) throws SolarMaxException {
         OutputStream outputStream = null;
         InputStream inputStream = null;
         try {
             outputStream = socket.getOutputStream();
             inputStream = socket.getInputStream();
 
-            return getValuesFromSolarMax(outputStream, inputStream, commandList);
+            return getValuesFromSolarMax(outputStream, inputStream, deviceAddress, commandList);
         } catch (final SolarMaxException | IOException e) {
             throw new SolarMaxException("Error getting input/output streams from socket", e);
         } finally {
@@ -184,10 +188,11 @@ public class SolarMaxConnector {
     }
 
     private static Map<SolarMaxCommandKey, @Nullable String> getValuesFromSolarMax(final OutputStream outputStream,
-            final InputStream inputStream, final List<SolarMaxCommandKey> commandList) throws SolarMaxException {
+            final InputStream inputStream, final int deviceAddress, final List<SolarMaxCommandKey> commandList)
+            throws SolarMaxException {
         Map<SolarMaxCommandKey, @Nullable String> returnedValues;
         String commandString = getCommandString(commandList);
-        String request = contructRequest(commandString);
+        String request = contructRequest(deviceAddress, commandString);
         try {
             LOGGER.trace("    ==>: {}", request);
 
@@ -273,30 +278,31 @@ public class SolarMaxConnector {
         return responseMap;
     }
 
-    private static Socket getSocketConnection(final String host, int port)
+    private static Socket getSocketConnection(final String host, int portNumber)
             throws SolarMaxConnectionException, UnknownHostException {
-        port = (port == 0) ? DEFAULT_PORT : port;
+        portNumber = (portNumber == 0) ? DEFAULT_PORT : portNumber;
 
         Socket socket;
 
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
+            socket.connect(new InetSocketAddress(host, portNumber), CONNECTION_TIMEOUT);
             socket.setSoTimeout(responseTimeout);
         } catch (final UnknownHostException e) {
             throw e;
         } catch (final IOException e) {
-            throw new SolarMaxConnectionException("Error connecting to port '" + port + "' on host '" + host + "'", e);
+            throw new SolarMaxConnectionException(
+                    "Error connecting to portNumber '" + portNumber + "' on host '" + host + "'", e);
         }
 
         return socket;
     }
 
-    public static boolean connectionTest(final String host, int port) throws UnknownHostException {
+    public static boolean connectionTest(final String host, final int portNumber) throws UnknownHostException {
         Socket socket = null;
 
         try {
-            socket = getSocketConnection(host, port);
+            socket = getSocketConnection(host, portNumber);
         } catch (SolarMaxConnectionException e) {
             return false;
         } finally {
@@ -331,9 +337,9 @@ public class SolarMaxConnector {
      * @param questions appears to be able to handle multiple commands. For now, one at a time is good fishing
      * @return the request to be sent to the SolarMax device
      */
-    static String contructRequest(final String questions) {
+    static String contructRequest(final int deviceAddress, final String questions) {
         String src = "FB";
-        String dstHex = String.format("%02X", 1); // destinationDevice defaults to 1 and is ignored with TCP/IP
+        String dstHex = String.format("%02X", deviceAddress); // destinationDevice defaults to 1
         String len = "00";
         String cs = "0000";
         String msg = "64:" + questions;

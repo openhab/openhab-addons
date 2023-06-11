@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,10 @@ import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstan
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,11 +28,15 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.boschindego.internal.AuthorizationListener;
+import org.openhab.binding.boschindego.internal.AuthorizationProvider;
 import org.openhab.binding.boschindego.internal.BoschIndegoTranslationProvider;
 import org.openhab.binding.boschindego.internal.DeviceStatus;
-import org.openhab.binding.boschindego.internal.IndegoController;
+import org.openhab.binding.boschindego.internal.IndegoDeviceController;
+import org.openhab.binding.boschindego.internal.IndegoTypeDatabase;
 import org.openhab.binding.boschindego.internal.config.BoschIndegoConfiguration;
 import org.openhab.binding.boschindego.internal.dto.DeviceCommand;
+import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoAuthenticationException;
@@ -47,10 +53,12 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -66,11 +74,12 @@ import org.slf4j.LoggerFactory;
  * @author Jacob Laursen - Refactoring, bugfixing and removal of dependency towards abandoned library
  */
 @NonNullByDefault
-public class BoschIndegoHandler extends BaseThingHandler {
+public class BoschIndegoHandler extends BaseThingHandler implements AuthorizationListener {
 
     private static final String MAP_POSITION_STROKE_COLOR = "#8c8b6d";
     private static final String MAP_POSITION_FILL_COLOR = "#fff701";
     private static final int MAP_POSITION_RADIUS = 10;
+    private static final Duration DEVICE_PROPERTIES_VALIDITY_PERIOD = Duration.ofDays(1);
 
     private static final Duration MAP_REFRESH_INTERVAL = Duration.ofDays(1);
     private static final Duration OPERATING_DATA_INACTIVE_REFRESH_INTERVAL = Duration.ofHours(6);
@@ -83,12 +92,13 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final BoschIndegoTranslationProvider translationProvider;
     private final TimeZoneProvider timeZoneProvider;
+    private Instant devicePropertiesUpdated = Instant.MIN;
 
-    private @NonNullByDefault({}) IndegoController controller;
+    private @NonNullByDefault({}) AuthorizationProvider authorizationProvider;
+    private @NonNullByDefault({}) IndegoDeviceController controller;
     private @Nullable ScheduledFuture<?> statePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimePollFuture;
     private @Nullable ScheduledFuture<?> cuttingTimeFuture;
-    private boolean propertiesInitialized;
     private Optional<Integer> previousStateCode = Optional.empty();
     private @Nullable RawType cachedMap;
     private Instant cachedMapTimestamp = Instant.MIN;
@@ -109,41 +119,69 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Indego handler");
         BoschIndegoConfiguration config = getConfigAs(BoschIndegoConfiguration.class);
         stateInactiveRefreshIntervalSeconds = (int) config.refresh;
         stateActiveRefreshIntervalSeconds = (int) config.stateActiveRefresh;
-        String username = config.username;
-        String password = config.password;
 
-        if (username == null || username.isBlank()) {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.missing-username");
-            return;
-        }
-        if (password == null || password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.missing-password");
+                    "@text/offline.conf-error.missing-bridge");
             return;
         }
 
-        controller = new IndegoController(httpClient, username, password);
+        if (bridge.getHandler() instanceof BoschAccountHandler accountHandler) {
+            authorizationProvider = accountHandler.getAuthorizationProvider();
+            accountHandler.registerAuthorizationListener(this);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.missing-bridge");
+            return;
+        }
+
+        devicePropertiesUpdated = Instant.MIN;
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, config.serialNumber);
+
+        controller = new IndegoDeviceController(httpClient, authorizationProvider, config.serialNumber);
 
         updateStatus(ThingStatus.UNKNOWN);
         previousStateCode = Optional.empty();
-        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds);
+        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, false);
         this.cuttingTimePollFuture = scheduler.scheduleWithFixedDelay(this::refreshCuttingTimesWithExceptionHandling, 0,
                 config.cuttingTimeRefresh, TimeUnit.MINUTES);
     }
 
-    private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds) {
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
+                && getThing().getStatusInfo().getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.UNKNOWN);
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    public void onSuccessfulAuthorization() {
+        // Ignore
+    }
+
+    public void onFailedAuthorization(Throwable throwable) {
+        // Ignore
+    }
+
+    public void onAuthorizationFlowCompleted() {
+        // Trigger immediate state refresh upon authorization success.
+        rescheduleStatePoll(0, stateInactiveRefreshIntervalSeconds, true);
+    }
+
+    private boolean rescheduleStatePoll(int delaySeconds, int refreshIntervalSeconds, boolean force) {
         ScheduledFuture<?> statePollFuture = this.statePollFuture;
         if (statePollFuture != null) {
-            if (refreshIntervalSeconds == currentRefreshIntervalSeconds) {
+            if (!force && refreshIntervalSeconds == currentRefreshIntervalSeconds) {
                 // No change.
                 return false;
             }
-            statePollFuture.cancel(false);
+            statePollFuture.cancel(force);
         }
         logger.debug("Scheduling state refresh job with {}s interval and {}s delay", refreshIntervalSeconds,
                 delaySeconds);
@@ -156,7 +194,13 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Indego handler");
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            if (bridge.getHandler() instanceof BoschAccountHandler accountHandler) {
+                accountHandler.unregisterAuthorizationListener(this);
+            }
+        }
+
         ScheduledFuture<?> pollFuture = this.statePollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(true);
@@ -172,14 +216,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
             pollFuture.cancel(true);
         }
         this.cuttingTimeFuture = null;
-
-        scheduler.execute(() -> {
-            try {
-                controller.deauthenticate();
-            } catch (IndegoException e) {
-                logger.debug("Deauthentication failed", e);
-            }
-        });
     }
 
     @Override
@@ -194,8 +230,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 sendCommand(((DecimalType) command).intValue());
             }
         } catch (IndegoAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            // Ignore, will be handled by bridge
         } catch (IndegoTimeoutException e) {
             updateStatus(lastOperatingDataStatus = ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
@@ -280,8 +315,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         try {
             refreshState();
         } catch (IndegoAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            // Ignore, will be handled by bridge
         } catch (IndegoTimeoutException e) {
             updateStatus(lastOperatingDataStatus = ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.unreachable");
@@ -291,14 +325,13 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     private void refreshState() throws IndegoAuthenticationException, IndegoException {
-        if (!propertiesInitialized) {
-            getThing().setProperty(Thing.PROPERTY_SERIAL_NUMBER, controller.getSerialNumber());
-            propertiesInitialized = true;
-        }
-
         DeviceStateResponse state = controller.getState();
         DeviceStatus deviceStatus = DeviceStatus.fromCode(state.state);
         updateState(state);
+
+        if (devicePropertiesUpdated.isBefore(Instant.now().minus(DEVICE_PROPERTIES_VALIDITY_PERIOD))) {
+            refreshDeviceProperties();
+        }
 
         // Update map and start tracking positions if mower is active.
         if (state.mapUpdateAvailable) {
@@ -342,6 +375,26 @@ public class BoschIndegoHandler extends BaseThingHandler {
         rescheduleStatePollAccordingToState(deviceStatus);
     }
 
+    private void refreshDeviceProperties() throws IndegoAuthenticationException, IndegoException {
+        DevicePropertiesResponse deviceProperties = controller.getDeviceProperties();
+        Map<String, String> properties = editProperties();
+        if (deviceProperties.firmwareVersion != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, deviceProperties.firmwareVersion);
+        }
+        if (deviceProperties.bareToolNumber != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID,
+                    IndegoTypeDatabase.nameFromTypeNumber(deviceProperties.bareToolNumber));
+            properties.put(PROPERTY_BARE_TOOL_NUMBER, deviceProperties.bareToolNumber);
+        }
+        properties.put(PROPERTY_SERVICE_COUNTER, String.valueOf(deviceProperties.serviceCounter));
+        properties.put(PROPERTY_NEEDS_SERVICE, String.valueOf(deviceProperties.needsService));
+        properties.put(PROPERTY_RENEW_DATE,
+                LocalDateTime.ofInstant(deviceProperties.renewDate, timeZoneProvider.getTimeZone()).toString());
+
+        updateProperties(properties);
+        devicePropertiesUpdated = Instant.now();
+    }
+
     private void rescheduleStatePollAccordingToState(DeviceStatus deviceStatus) {
         int refreshIntervalSeconds;
         if (deviceStatus.isActive()) {
@@ -351,7 +404,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } else {
             refreshIntervalSeconds = stateInactiveRefreshIntervalSeconds;
         }
-        if (rescheduleStatePoll(refreshIntervalSeconds, refreshIntervalSeconds)) {
+        if (rescheduleStatePoll(refreshIntervalSeconds, refreshIntervalSeconds, false)) {
             // After job has been rescheduled, request operating data one last time on next poll.
             // This is needed to update battery values after a charging cycle has completed.
             operatingDataTimestamp = Instant.MIN;
@@ -383,8 +436,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             refreshLastCuttingTime();
             refreshNextCuttingTime();
         } catch (IndegoAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            // Ignore, will be handled by bridge
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -406,8 +458,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         try {
             refreshNextCuttingTime();
         } catch (IndegoAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            // Ignore, will be handled by bridge
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

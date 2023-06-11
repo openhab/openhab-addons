@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Auxiliary</label>
-		<description>A OpenWebNet BUS/SCS Auxiliary command</description>
+		<description>An OpenWebNet BUS/SCS Auxiliary command</description>
 
 		<channels>
 			<channel id="aux" typeId="aux"/>

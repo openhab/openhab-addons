@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.autelis.internal.config;
 
 /**
- * Configuration properties for connecting to a Autelis Controller
+ * Configuration properties for connecting to an Autelis Controller
  *
  * @author Dan Cunningham - Initial contribution
  *

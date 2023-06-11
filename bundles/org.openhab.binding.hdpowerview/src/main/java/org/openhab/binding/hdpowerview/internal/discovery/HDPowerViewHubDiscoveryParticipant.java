@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstan
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.jmdns.ServiceInfo;
 
@@ -41,10 +40,9 @@ import org.slf4j.LoggerFactory;
 @Component
 public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);
+    private static final String LABEL_KEY = "discovery.hub.label";
 
-    private static final Pattern VALID_IP_V4_ADDRESS = Pattern
-            .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -64,8 +62,8 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, host)
                         .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
-                        .withLabel("PowerView Hub (" + host + ")").build();
-                logger.debug("mDNS discovered hub on host '{}'", host);
+                        .withLabel(String.format("@text/%s [\"%s\"]", LABEL_KEY, host)).build();
+                logger.debug("mDNS discovered Gen 1/2 hub on host '{}'", host);
                 return hub;
             }
         }

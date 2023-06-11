@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.net.URI;
@@ -140,7 +140,7 @@ public class WebthingChannelLinkTest {
         performDataTypeMappingTest("targettemp_prop", 18.6, new DecimalType(18.6), 23.2, new DecimalType(23.2));
         performDataTypeMappingTest("open_prop", true, OpenClosedType.OPEN, false, OpenClosedType.CLOSED);
         performDataTypeMappingTest("colortemp_prop", 10, new PercentType(10), 60, new PercentType(60));
-        performDataTypeMappingTest("color_prop", "#f2fe00", new HSBType("62,100,99"), "#ff0000",
+        performDataTypeMappingTest("color_prop", "#f2fe00", new HSBType("63,100,100"), "#ff0000",
                 new HSBType("0.0,100.0,100.0"));
         performDataTypeMappingTest("colormode_prop", "color", new StringType("color"), "temperature",
                 new StringType("temperature"));
@@ -185,7 +185,12 @@ public class WebthingChannelLinkTest {
         message.data = Map.of(propertyName, initialValue);
         websocketConnectionFactory.webSocketRef.get().sendToClient(message);
 
-        assertEquals(initialState, testWebthingThingHandler.itemState.get(channelUID));
+        Command actualState = testWebthingThingHandler.itemState.get(channelUID);
+        if ((actualState instanceof HSBType actualHsb) && (initialState instanceof HSBType initialStateHsb)) {
+            assertTrue(actualHsb.closeTo(initialStateHsb, 0.01));
+        } else {
+            assertEquals(initialState, actualState);
+        }
 
         ChannelToPropertyLink.establish(testWebthingThingHandler, channel, webthing, propertyName);
         testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, updatedState);

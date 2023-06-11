@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- L930 THING-TYPE (Multicolor LED-Lightstrip) -->
+	<thing-type id="L930">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>L930 LightStrip</label>
+		<description>Tapo Smart Multicolor LED-Lightstrip with ZoneControl</description>
+		<channel-groups>
+			<channel-group id="actuator" typeId="lightStrip"/>
+			<channel-group id="device" typeId="deviceState"/>
+		</channel-groups>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+
+	<!-- Lightning Effect -->
+	<channel-group-type id="lightEffectL920">
+		<label>Lightning Effect</label>
+		<description>Tapo Lightning Effects</description>
+		<channels>
+			<channel id="fxBrightness" typeId="dimmerChannel"/>
+			<channel id="fxName" typeId="l930fxList"/>
+			<channel id="fxColor1" typeId="colorChannel"/>
+			<channel id="fxColor2" typeId="colorChannel"/>
+			<channel id="fxColor3" typeId="colorChannel"/>
+			<channel id="fxColor4" typeId="colorChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- effect name -->
+	<channel-type id="l930fxList">
+		<item-type>String</item-type>
+		<label>Light Effect Theme</label>
+		<description>Name of lightning effect</description>
+		<state readOnly="false">
+			<options>
+				<option value="">None (No FX)</option>
+				<option value="aurora">Aurora</option>
+				<option value="bubbling_calderon">Bubbling Calderon</option>
+				<option value="christmas">Christmas</option>
+				<option value="christmas_light">Christmas Light</option>
+				<option value="candy_cane">Candy</option>
+				<option value="flicker">Flicker</option>
+				<option value="hanukkah">Hanukkah</option>
+				<option value="haunted_mansion">Haunted Mansion</option>
+				<option value="icicle">Icicle</option>
+				<option value="lightning">Lightning</option>
+				<option value="ocean">Ocean</option>
+				<option value="rainbow">Rainbow</option>
+				<option value="raindrop">Raindrop</option>
+				<option value="spring">Spring</option>
+				<option value="sunrise">Sunrise</option>
+				<option value="sunset">Sunset</option>
+				<option value="valentines">Valentines</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

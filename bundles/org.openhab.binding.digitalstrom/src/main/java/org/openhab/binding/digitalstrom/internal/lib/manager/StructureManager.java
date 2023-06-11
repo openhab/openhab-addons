@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -110,7 +110,7 @@ public interface StructureManager {
     Map<Short, List<Device>> getGroupsFromZoneX(int zoneID);
 
     /**
-     * Returns the reference {@link List} of the {@link Device}'s of an zone-group.
+     * Returns the reference {@link List} of the {@link Device}'s of a zone-group.
      *
      * @param zoneID of the zone
      * @param groupID of the group

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <!-- Groovy files produce a lot of warnings and will be ignored -->
+  <Match>
+    <Source name="~.*\.groovy" />
+  </Match>
+  <!-- Excludes all bugs with priority higher than 4 -->
+  <Match>
+    <Rank value="4"/>
+    <Not>
+      <Bug pattern="SLF4J_LOGGER_SHOULD_BE_NON_STATIC"/>
+    </Not>
+  </Match>
+  <!-- This pattern is not wanted as it reports usage of Throwable.getMessage() as argument to SLF4G logger -->
+  <Match>
+    <Bug pattern="SLF4J_MANUALLY_PROVIDED_MESSAGE"/>
+  </Match>
+  <!-- Allow util classes to have static loggers -->
+  <Match>
+    <Class name="~.*Utils"/>
+    <Bug pattern="SLF4J_LOGGER_SHOULD_BE_NON_STATIC"/>
+  </Match>
+  <Match>
+    <Class name="~.*Util"/>
+    <Bug pattern="SLF4J_LOGGER_SHOULD_BE_NON_STATIC"/>
+  </Match>
+  <!-- The format string is parameter, it can't be constant -->
+  <Match>
+    <Class name="org.openhab.core.model.script.actions.Log"/>
+    <Bug pattern="SLF4J_FORMAT_SHOULD_BE_CONST"/>
+  </Match>
+  <Match>
+    <Bug pattern="SLF4J_UNKNOWN_ARRAY"/>
+  </Match>
+  <Match>
+    <Bug pattern="SLF4J_SIGN_ONLY_FORMAT"/>
+  </Match>
+  <Match>
+    <!-- see https://github.com/spotbugs/spotbugs/issues/1992 -->
+    <Bug pattern="SA_LOCAL_SELF_COMPARISON"/>
+  </Match>
+</FindBugsFilter>

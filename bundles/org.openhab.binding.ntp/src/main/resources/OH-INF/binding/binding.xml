@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="ntp" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
-
-	<name>NTP Binding</name>
-	<description>The NTP Binding polls the configured timeserver and post the current date and time.</description>
-
-</binding:binding>

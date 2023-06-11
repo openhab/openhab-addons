@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ public class SolarmaxConnectorFindCommands {
 
     private static final String HOST = "192.168.1.151";
     private static final int PORT = 12345;
+    private static final int DEVICE_ADDRESS = 1;
     private static final int CONNECTION_TIMEOUT = 1000; // ms
 
     @Test
@@ -127,7 +128,7 @@ public class SolarmaxConnectorFindCommands {
 
         Map<String, @Nullable String> responseMap = null;
 
-        responseMap = getValuesFromSolarMax(HOST, PORT, commands);
+        responseMap = getValuesFromSolarMax(HOST, PORT, DEVICE_ADDRESS, commands);
 
         if (responseMap.containsKey(command)) {
             LOGGER.debug("Request: " + command + " Valid Response: " + responseMap.get(command));
@@ -139,8 +140,8 @@ public class SolarmaxConnectorFindCommands {
     /**
      * based on SolarMaxConnector.getValuesFromSolarMax
      */
-    private static Map<String, @Nullable String> getValuesFromSolarMax(final String host, int port,
-            final List<String> commandList) throws SolarMaxException {
+    private static Map<String, @Nullable String> getValuesFromSolarMax(final String host, final int portNumber,
+            final int deviceAddress, final List<String> commandList) throws SolarMaxException {
         Socket socket;
 
         Map<String, @Nullable String> returnMap = new HashMap<>();
@@ -153,7 +154,7 @@ public class SolarmaxConnectorFindCommands {
             requestsRequired = requestsRequired + 1;
         }
         for (int requestNumber = 0; requestNumber < requestsRequired; requestNumber++) {
-            LOGGER.debug("    Requesting data from {}:{} with timeout of {}ms", host, port, CONNECTION_TIMEOUT);
+            LOGGER.debug("    Requesting data from {}:{} with timeout of {}ms", host, portNumber, CONNECTION_TIMEOUT);
 
             int firstCommandNumber = requestNumber * maxConcurrentCommands;
             int lastCommandNumber = (requestNumber + 1) * maxConcurrentCommands;
@@ -163,11 +164,11 @@ public class SolarmaxConnectorFindCommands {
             List<String> commandsToSend = commandList.subList(firstCommandNumber, lastCommandNumber);
 
             try {
-                socket = getSocketConnection(host, port);
+                socket = getSocketConnection(host, portNumber);
             } catch (UnknownHostException e) {
                 throw new SolarMaxConnectionException(e);
             }
-            returnMap.putAll(getValuesFromSolarMax(socket, commandsToSend));
+            returnMap.putAll(getValuesFromSolarMax(socket, deviceAddress, commandsToSend));
 
             // SolarMax can't deal with requests too close to one another, so just wait a moment
             try {
@@ -179,7 +180,7 @@ public class SolarmaxConnectorFindCommands {
         return returnMap;
     }
 
-    private static Map<String, @Nullable String> getValuesFromSolarMax(final Socket socket,
+    private static Map<String, @Nullable String> getValuesFromSolarMax(final Socket socket, final int deviceAddress,
             final List<String> commandList) throws SolarMaxException {
         OutputStream outputStream = null;
         InputStream inputStream = null;
@@ -187,7 +188,7 @@ public class SolarmaxConnectorFindCommands {
             outputStream = socket.getOutputStream();
             inputStream = socket.getInputStream();
 
-            return getValuesFromSolarMax(outputStream, inputStream, commandList);
+            return getValuesFromSolarMax(outputStream, inputStream, deviceAddress, commandList);
         } catch (final SolarMaxException | IOException e) {
             throw new SolarMaxException("Error getting input/output streams from socket", e);
         } finally {
@@ -231,32 +232,34 @@ public class SolarmaxConnectorFindCommands {
         return characters;
     }
 
-    private static Socket getSocketConnection(final String host, int port)
+    private static Socket getSocketConnection(final String host, int portNumber)
             throws SolarMaxConnectionException, UnknownHostException {
-        port = (port == 0) ? SolarmaxConnectorFindCommands.PORT : port;
+        portNumber = (portNumber == 0) ? PORT : portNumber;
 
         Socket socket;
 
         try {
             socket = new Socket();
-            LOGGER.debug("    Connecting to " + host + ":" + port + " with a timeout of " + CONNECTION_TIMEOUT);
-            socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
+            LOGGER.debug("    Connecting to " + host + ":" + portNumber + " with a timeout of " + CONNECTION_TIMEOUT);
+            socket.connect(new InetSocketAddress(host, portNumber), CONNECTION_TIMEOUT);
             LOGGER.debug("    Connected.");
             socket.setSoTimeout(CONNECTION_TIMEOUT);
         } catch (final UnknownHostException e) {
             throw e;
         } catch (final IOException e) {
-            throw new SolarMaxConnectionException("Error connecting to port '" + port + "' on host '" + host + "'", e);
+            throw new SolarMaxConnectionException(
+                    "Error connecting to port '" + portNumber + "' on host '" + host + "'", e);
         }
 
         return socket;
     }
 
     private static Map<String, @Nullable String> getValuesFromSolarMax(final OutputStream outputStream,
-            final InputStream inputStream, final List<String> commandList) throws SolarMaxException {
+            final InputStream inputStream, final int deviceAddress, final List<String> commandList)
+            throws SolarMaxException {
         Map<String, @Nullable String> returnedValues;
         String commandString = getCommandString(commandList);
-        String request = SolarMaxConnector.contructRequest(commandString);
+        String request = SolarMaxConnector.contructRequest(deviceAddress, commandString);
         try {
             LOGGER.trace("    ==>: {}", request);
 

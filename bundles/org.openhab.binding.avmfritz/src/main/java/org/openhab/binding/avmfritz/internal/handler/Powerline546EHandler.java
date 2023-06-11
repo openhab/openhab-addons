@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -188,6 +188,28 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     }
 
     /**
+     * Creates a {@link ChannelTypeUID} from the given channel id.
+     *
+     * @param channelId ID of the channel type UID to be created.
+     * @return the channel type UID
+     */
+    private ChannelTypeUID createChannelTypeUID(String channelId) {
+        final ChannelTypeUID channelTypeUID;
+        switch (channelId) {
+            case CHANNEL_BATTERY:
+                channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID();
+                break;
+            case CHANNEL_VOLTAGE:
+                channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_ELECTRIC_VOLTAGE.getUID();
+                break;
+            default:
+                channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+                break;
+        }
+        return channelTypeUID;
+    }
+
+    /**
      * Creates new channels for the thing.
      *
      * @param channelId ID of the channel to be created.
@@ -195,11 +217,9 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     private void createChannel(String channelId) {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-            ChannelTypeUID channelTypeUID = CHANNEL_BATTERY.equals(channelId)
-                    ? DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID()
-                    : new ChannelTypeUID(BINDING_ID, channelId);
-            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
+            final ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+            final ChannelTypeUID channelTypeUID = createChannelTypeUID(channelId);
+            final Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
         }
     }

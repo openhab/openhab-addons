@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,9 +105,11 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     private void cancelTransactionTimer() {
-        if (transactionTimeoutTimer != null) {
-            transactionTimeoutTimer.cancel(true);
-            transactionTimeoutTimer = null;
+        @Nullable
+        Future<?> transTimer = transactionTimeoutTimer;
+        if (transTimer != null) {
+            transTimer.cancel(true);
+            transTimer = null;
         }
     }
 
@@ -121,17 +123,12 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
         });
     }
 
-    @SuppressWarnings({ "null", "unused" })
     private Optional<BlueGigaUniqueCommand> getNextFrame() {
         while (!sendQueue.isEmpty()) {
+            @Nullable
             BlueGigaUniqueCommand frame = sendQueue.poll();
             if (frame != null) {
-                if (frame.getMessage() != null) {
-                    return Optional.of(frame);
-                } else {
-                    logger.debug("Null message found from queue, skip it");
-                    continue;
-                }
+                return Optional.of(frame);
             } else {
                 logger.debug("Null frame found from queue, skip it");
                 continue;
@@ -184,7 +181,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     /**
-     * Sends an BlueGiga request without waiting for the response.
+     * Sends a BlueGiga request without waiting for the response.
      *
      * @param bleCommand {@link BlueGigaCommand}
      * @return response {@link Future} {@link BlueGigaResponse}

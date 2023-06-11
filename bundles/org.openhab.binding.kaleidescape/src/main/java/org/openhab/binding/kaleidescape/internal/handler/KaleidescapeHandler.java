@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,6 +111,10 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     protected void updateThingProperty(String name, String value) {
         thing.setProperty(name, value);
+    }
+
+    protected boolean isChannelLinked(String channel) {
+        return isLinked(channel);
     }
 
     @Override
@@ -420,7 +424,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     // if the last successful polling update was more than 1.25 intervals ago,
                     // the component is not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL_S * 1.25 * 1000)) {
-                        logger.warn("Component not responding to status requests");
+                        logger.debug("Component not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Component not responding to status requests");
                         closeConnection();

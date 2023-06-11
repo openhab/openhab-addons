@@ -14,7 +14,6 @@ Please refer to PRT3 module manual for instructions how to modify baudrate (defa
 
 Once `PRT3 Module` is added and communication with the alarm system confirmed by its `online` status, please start discovery process to automatically discover (and add as new Things) all zones and areas defined in the alarm system.
 
-
 ## Binding Configuration
 
 There is no binding level configuration required.
@@ -105,6 +104,6 @@ Message format is as follows:
 
 For example, the following sitemap item can be used to send commands to the area and receive response status as modified color of a label:
 
-```
+```java
 Switch item=areaControl label="Actions[]" mappings=[QA="Regular Quick Arm",QS="Stay Quick Arm",D1111="Disarm"] labelcolor=[Ok="green",Fail="red"]
 ```

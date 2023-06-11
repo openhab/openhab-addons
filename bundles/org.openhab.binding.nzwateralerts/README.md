@@ -1,15 +1,15 @@
 # NZ Water Alerts Binding
 
 Get Water Alert Levels for cities in New Zealand.
-Getting this alert level can help you script and automate smarter tasks for water and avoid getting penalized from your distract or local council. 
+Getting this alert level can help you script and automate smarter tasks for water and avoid getting penalized from your distract or local council.
 
 > Example: Disable automated spinklers based on a level 3 or 4 water alert level
 
 This Binding scrapes multiple websites for Water Levels:
 
-* Northland's [BeWaterWise Website](https://bewaterwise.org.nz/)
-* Waikato's [Smart Water Website](https://www.smartwater.org.nz/)
-* Napier's [Council Website](https://www.napier.govt.nz)
+- Northland's [BeWaterWise Website](https://bewaterwise.org.nz/)
+- Waikato's [Smart Water Website](https://www.smartwater.org.nz/)
+- Napier's [Council Website](https://www.napier.govt.nz)
 
 ## Thing Configuration
 
@@ -51,7 +51,7 @@ The binding and thing ID is `nzwateralerts:wateralert`.
 
 ### Example
 
-```
+```java
 Thing nzwateralerts:wateralert "HCC" [ location="smartwater:hamilton:hamilton", refreshInterval="4" ]
 ```
 
@@ -66,7 +66,7 @@ Check with your regional council for further details.
 
 ## Other Cities
 
-At present the supported cities were implemented by scraping the web page on the respective website which contains the restriction information. 
+At present the supported cities were implemented by scraping the web page on the respective website which contains the restriction information.
 
 **No councils have this data in a programmatic format easily accessible to software.**
 Most won't have pages which contain the current alert level and only offer alerts via twitter or text.

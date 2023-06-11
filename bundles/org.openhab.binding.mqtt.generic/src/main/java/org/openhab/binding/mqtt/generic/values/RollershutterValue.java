@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
 
 /**
- * Implements an rollershutter value.
+ * Implements a rollershutter value.
  * <p>
  * The stop, up and down strings have multiple purposes.
  * For one if those strings are received via MQTT they are recognised as corresponding commands
@@ -39,7 +39,6 @@ public class RollershutterValue extends Value {
     private final @Nullable String upString;
     private final @Nullable String downString;
     private final String stopString;
-    private boolean nextIsStop = false; // If set: getMQTTpublishValue will return the stop string
 
     /**
      * Creates a new rollershutter value.
@@ -57,76 +56,75 @@ public class RollershutterValue extends Value {
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
-        nextIsStop = false;
+    public Command parseCommand(Command command) throws IllegalArgumentException {
         if (command instanceof StopMoveType) {
-            nextIsStop = (((StopMoveType) command) == StopMoveType.STOP);
-            return;
-        } else if (command instanceof UpDownType) {
-            state = ((UpDownType) command) == UpDownType.UP ? PercentType.ZERO : PercentType.HUNDRED;
-            return;
-        } else if (command instanceof PercentType) {
-            state = (PercentType) command;
-            return;
-        } else if (command instanceof StringType) {
-            final String updatedValue = command.toString();
-            if (updatedValue.equals(upString)) {
-                state = PercentType.ZERO;
-                return;
-            } else if (updatedValue.equals(downString)) {
-                state = PercentType.HUNDRED;
-                return;
-            } else if (updatedValue.equals(stopString)) {
-                nextIsStop = true;
-                return;
+            if (command == StopMoveType.STOP) {
+                return command;
+            } else {
+                throw new IllegalArgumentException(command.toString() + " is not a valid command for MQTT.");
             }
-        }
-        throw new IllegalStateException("Cannot call update() with " + command.toString());
-    }
-
-    /**
-     * The stop command will not update the internal state and is posted to the framework.
-     * <p>
-     * The Up/Down commands (100%/0%) are not updating the state directly and are also
-     * posted as percent value to the framework. It is up to the user if the posted values
-     * are applied to the item state immediately (autoupdate=true) or not.
-     */
-    @Override
-    public @Nullable Command isPostOnly(Command command) {
-        if (command instanceof UpDownType) {
-            return command;
-        } else if (command instanceof StopMoveType) {
-            return command;
+        } else if (command instanceof UpDownType) {
+            if (command == UpDownType.UP) {
+                if (upString != null) {
+                    return command;
+                } else {
+                    return PercentType.ZERO;
+                }
+            } else {
+                if (downString != null) {
+                    return command;
+                } else {
+                    return PercentType.HUNDRED;
+                }
+            }
+        } else if (command instanceof PercentType) {
+            return (PercentType) command;
         } else if (command instanceof StringType) {
             final String updatedValue = command.toString();
             if (updatedValue.equals(upString)) {
-                return UpDownType.UP.as(PercentType.class);
+                return UpDownType.UP;
             } else if (updatedValue.equals(downString)) {
-                return UpDownType.DOWN.as(PercentType.class);
+                return UpDownType.DOWN;
             } else if (updatedValue.equals(stopString)) {
                 return StopMoveType.STOP;
             }
         }
-        return null;
+        throw new IllegalStateException("Cannot call parseCommand() with " + command.toString());
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         final String upString = this.upString;
         final String downString = this.downString;
-        if (this.nextIsStop) {
-            this.nextIsStop = false;
-            return stopString;
-        } else if (state instanceof PercentType) {
-            if (state.equals(PercentType.HUNDRED) && downString != null) {
-                return downString;
-            } else if (state.equals(PercentType.ZERO) && upString != null) {
+        final String stopString = this.stopString;
+        if (command == UpDownType.UP) {
+            if (upString != null) {
                 return upString;
             } else {
-                return String.valueOf(((PercentType) state).intValue());
+                return ((UpDownType) command).name();
+            }
+        } else if (command == UpDownType.DOWN) {
+            if (downString != null) {
+                return downString;
+            } else {
+                return ((UpDownType) command).name();
+            }
+        } else if (command == StopMoveType.STOP) {
+            if (stopString != null) {
+                return stopString;
+            } else {
+                return ((StopMoveType) command).name();
+            }
+        } else if (command instanceof PercentType) {
+            if (command.equals(PercentType.HUNDRED) && downString != null) {
+                return downString;
+            } else if (command.equals(PercentType.ZERO) && upString != null) {
+                return upString;
+            } else {
+                return String.valueOf(((PercentType) command).intValue());
             }
         } else {
-            return "UNDEF";
+            throw new IllegalArgumentException("Invalid command type for Rollershutter item");
         }
     }
 }

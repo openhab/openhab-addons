@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -39,10 +41,10 @@ import org.openhab.core.types.UnDefType;
  * 
  * @author Thomas Lauterbach - Initial contribution
  */
+@NonNullByDefault
 public class D2_06_01 extends _VLDMessage {
 
     private enum MessageType {
-
         SENSORVALUES(0x00),
         CONFIGURATIONREPORT(0x10),
         LOGDATA01(0x20),
@@ -63,7 +65,6 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     private enum SashState {
-
         // WINDOWSTATEUNDEFINED(0x00, "UNDEFINED"),
         NOTTILTED(0x01, "NOT TILTED"),
         TILTED(0x02, "TILTED");
@@ -86,7 +87,6 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     private enum HandleState {
-
         // HANDLEPOSITIONUNDEFINED(0x00, "UNDEFINED"),
         HANDLEUP(0x01, "UP"),
         HANDLEDOWN(0x02, "DOWN"),
@@ -111,7 +111,6 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     private enum MotionState {
-
         MOTIONNOTTRIGGERED(0x00, "OFF"),
         MOTIONTRIGGERED(0x01, "ON");
 
@@ -199,9 +198,8 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
-
         // Sensor values
         if (bytes[0] == MessageType.SENSORVALUES.getIntValue()) {
             switch (channelId) {
@@ -248,9 +246,8 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
-
+    public State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         // Sensor values
         if (bytes[0] == MessageType.SENSORVALUES.getIntValue()) {
             switch (channelId) {

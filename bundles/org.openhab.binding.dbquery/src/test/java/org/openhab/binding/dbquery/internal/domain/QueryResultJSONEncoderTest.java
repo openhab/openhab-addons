@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ class QueryResultJSONEncoderTest {
     }
 
     private void assertReadGivenValuesDecodedFromJson(Map<?, ?> firstRow) {
-        assertThat(firstRow.get("strValue"), is("an string"));
+        assertThat(firstRow.get("strValue"), is("a string"));
 
         Object doubleValue = firstRow.get("doubleValue");
         assertThat(doubleValue, instanceOf(Number.class));
@@ -124,7 +124,7 @@ class QueryResultJSONEncoderTest {
 
     private Map<String, @Nullable Object> givenRowValues() {
         Map<String, @Nullable Object> values = new HashMap<>();
-        values.put("strValue", "an string");
+        values.put("strValue", "a string");
         values.put("doubleValue", 2.3d);
         values.put("intValue", 3);
         values.put("longValue", Long.MAX_VALUE);

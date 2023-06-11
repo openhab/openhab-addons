@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="smhi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>SMHI Binding</name>
+	<description>Binding for getting weather forecasts from the Swedish Meteorological and Hydrological Institute (SMHI)</description>
+	<connection>cloud</connection>
+	<countries>se,no,dk,fi</countries>
+
+</addon:addon>

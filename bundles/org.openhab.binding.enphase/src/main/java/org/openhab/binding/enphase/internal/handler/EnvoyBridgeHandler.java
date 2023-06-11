@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -398,7 +398,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * @return Returns true if the bridge is online and not has an configuration pending.
+     * @return Returns true if the bridge is online and not has a configuration pending.
      */
     public boolean isOnline() {
         return getThing().getStatus() == ThingStatus.ONLINE;

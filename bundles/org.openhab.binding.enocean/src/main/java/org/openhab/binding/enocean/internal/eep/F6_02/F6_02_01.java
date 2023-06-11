@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.Channel;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchListenerConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
@@ -31,6 +33,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class F6_02_01 extends F6_02 {
 
     public F6_02_01() {
@@ -42,9 +45,8 @@ public class F6_02_01 extends F6_02 {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
-
         if (t21 && nu) {
             if (CHANNEL_ROCKERSWITCH_ACTION.equals(channelTypeId)) {
                 return getRockerSwitchAction(config);
@@ -58,9 +60,9 @@ public class F6_02_01 extends F6_02 {
             if (CHANNEL_ROCKERSWITCH_ACTION.equals(channelTypeId)) {
                 return CommonTriggerEvents.RELEASED;
             } else {
-                if (lastEvent != null && lastEvent.equals(CommonTriggerEvents.DIR1_PRESSED)) {
+                if (lastEvent.equals(CommonTriggerEvents.DIR1_PRESSED)) {
                     return CommonTriggerEvents.DIR1_RELEASED;
-                } else if (lastEvent != null && lastEvent.equals(CommonTriggerEvents.DIR2_PRESSED)) {
+                } else if (lastEvent.equals(CommonTriggerEvents.DIR2_PRESSED)) {
                     return CommonTriggerEvents.DIR2_RELEASED;
                 }
             }
@@ -71,12 +73,12 @@ public class F6_02_01 extends F6_02 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (command instanceof StringType) {
             String s = ((StringType) command).toString();
 
             if (s.equals(CommonTriggerEvents.DIR1_RELEASED) || s.equals(CommonTriggerEvents.DIR2_RELEASED)) {
-                setStatus(_RPSMessage.T21Flag);
+                setStatus(_RPSMessage.T21_FLAG);
                 setData((byte) 0x00);
                 return;
             }
@@ -85,10 +87,10 @@ public class F6_02_01 extends F6_02 {
             byte dir2 = channelTypeId.equalsIgnoreCase(CHANNEL_VIRTUALROCKERSWITCHB) ? BI : AI;
 
             if (s.equals(CommonTriggerEvents.DIR1_PRESSED)) {
-                setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
+                setStatus((byte) (_RPSMessage.T21_FLAG | _RPSMessage.NU_FLAG));
                 setData((byte) ((dir1 << 5) | PRESSED));
             } else if (s.equals(CommonTriggerEvents.DIR2_PRESSED)) {
-                setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
+                setStatus((byte) (_RPSMessage.T21_FLAG | _RPSMessage.NU_FLAG));
                 setData((byte) ((dir2 << 5) | PRESSED));
             }
         }
@@ -96,11 +98,11 @@ public class F6_02_01 extends F6_02 {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         // this method is used by the classic device listener channels to convert a rocker switch message into an
         // appropriate item update
         State currentState = getCurrentStateFunc.apply(channelId);
-        if (t21 && nu) {
+        if (t21 && nu && currentState != null) {
             EnOceanChannelRockerSwitchListenerConfig c = config.as(EnOceanChannelRockerSwitchListenerConfig.class);
             byte dir1 = c.getChannel() == Channel.ChannelA ? A0 : B0;
             byte dir2 = c.getChannel() == Channel.ChannelA ? AI : BI;

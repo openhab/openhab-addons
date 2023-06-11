@@ -5,8 +5,8 @@ Further details on the Hyperion project can be found [here.](https://hyperion-pr
 
 ## Supported Things
 
-* Hyperion Server (may be referred to as V1)
-* Hyperion.ng Server
+- Hyperion Server (may be referred to as V1)
+- Hyperion.ng Server
 
 ## Binding Configuration
 
@@ -28,12 +28,12 @@ In order to use a Hyperion Server it must be properly configured.  You can do th
 | port           | Integer   | Y        | 19444          |
 | priority       | Integer   | Y        | 50             |
 | poll_frequency | Integer   | Y        | 15             |
- 
-To manually configure a Hyperion Server you must specify the following parameters: host, port, priority and polling frequency. 
- 
+
+To manually configure a Hyperion Server you must specify the following parameters: host, port, priority and polling frequency.
+
 In the thing file, this looks for e.g. like
 
-```
+```java
 Thing hyperion:serverV1:myServer [ host="192.168.0.10", port=19444, priority=50, poll_frequency=15]
 ```
 
@@ -48,12 +48,12 @@ In order to use a Hyperion.ng Server it must be properly configured.  You can do
 | priority       | Integer   | Y        | 50             |
 | poll_frequency | Integer   | Y        | 15             |
 | origin         | String    | Y        | "openHAB"      |
- 
+
 To manually configure a Hyperion.ng Server you must specify the following parameters: host, port, priority, polling frequency and origin.
- 
+
 In the .things file, this looks for e.g. like
 
-```
+```java
 Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50, poll_frequency=15, origin="openHAB"]
 ```
 
@@ -91,7 +91,7 @@ Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50,
 
 ### Hyperion Server (V1):
 
-```
+```java
 Dimmer Brightness "Brightness [%s]" {channel="hyperion:serverV1:myServer:brightness"}
 Color MyColor "Color" {channel="hyperion:serverV1:myServer:color"}
 String Effect "Current effect [%s]" {channel="hyperion:serverV1:myServer:effect"}
@@ -100,7 +100,7 @@ String Clear "Clear priority" {channel="hyperion:serverV1:myServer:clear"}
 
 ### Hyperion.ng Server
 
-```
+```java
 Dimmer Brightness "Brightness [%s]" {channel="hyperion:serverNG:myServer:brightness"}
 Color MyColor "Color" {channel="hyperion:serverNG:myServer:color"}
 String Effect "Current effect [%s]" {channel="hyperion:serverNG:myServer:effect"}
@@ -114,15 +114,15 @@ Switch UdpListenerEnabled "UDP Listener" {channel="hyperion:serverNG:myServer:ud
 Switch BoblightEnabled "Boblight" {channel="hyperion:serverNG:myServer:boblightserver"}
 Switch GrabberEnabled "Grabber" {channel="hyperion:serverNG:myServer:grabber"}
 Switch V4lEnabled "V4L" {channel="hyperion:serverNG:myServer:v4l"}
-Switch LedDeviceEnabled	"LED Device" {channel="hyperion:serverNG:myServer:leddevice"}
+Switch LedDeviceEnabled "LED Device" {channel="hyperion:serverNG:myServer:leddevice"}
 ```
 
 ## Example Sitemap
 
-Using the above things channels and items 
+Using the above things channels and items
 Sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu" {
  Frame  {
   // serverV1 & serverNG

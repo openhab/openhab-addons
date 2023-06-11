@@ -11,6 +11,12 @@
 			<description>Mimic 3 URL.</description>
 			<default>http://localhost:59125</default>
 		</parameter>
+		<parameter name="workaroundServletSink" type="boolean" required="false">
+			<label>Workaround For Servlet-Based Audiosink</label>
+			<description>Enable this workaround to store temporarily the file on disk. Needed if you play on audiosink based on
+				the openHAB audio servlet.</description>
+			<default>false</default>
+		</parameter>
 		<parameter name="speakingRate" min="0" max="1" type="decimal" required="false">
 			<label>Speaking Rate</label>
 			<description>Controls how fast the voice speaks the text. A value of 1 is the speed of the training dataset. Less

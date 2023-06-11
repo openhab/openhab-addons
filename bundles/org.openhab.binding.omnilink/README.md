@@ -24,7 +24,6 @@ The OmniPro/Lumina controller acts as a "bridge" for accessing other connected d
 | Output                     | Built-in/Hardwire                                | `output`                          |
 | Access Control Reader Lock | Leviton Access Control Reader                    | `lock`                            |
 
-
 ## Discovery
 
 ### Controller
@@ -37,12 +36,14 @@ Once a connection can be established to a controller, all connected devices will
 
 ## Thing Configuration
 
+<!-- markdownlint-disable MD038 -->
 An Omni or Lumina controller requires the IP address (`ipAddress`), optional port (`port` defaults to 4369), and 2 encryption keys (`key1`, `key2`).
 The hexadecimal pairs in the encryption keys are typically delimited using a colon`:`, but dashes `-`, spaces ` ` or no delimiter may be used.
+<!-- markdownlint-enable MD038 -->
 
 In the thing file, this looks like:
 
-```
+```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {
     // Add your things here
 }
@@ -60,7 +61,7 @@ The devices support some of the following channels:
 | `alarm_burglary`            | Switch               | Indicates if a burglary alarm is active.                                                     | `area`                                              |
 | `alarm_fire`                | Switch               | Indicates if a fire alarm is active.                                                         | `area`                                              |
 | `alarm_gas`                 | Switch               | Indicates if a gas alarm is active.                                                          | `area`                                              |
-| `alarm_auxiliary`           | Switch               | Indicates if a auxiliary alarm is active.                                                    | `area`                                              |
+| `alarm_auxiliary`           | Switch               | Indicates if an auxiliary alarm is active.                                                   | `area`                                              |
 | `alarm_freeze`              | Switch               | Indicates if a freeze alarm is active.                                                       | `area`                                              |
 | `alarm_water`               | Switch               | Indicates if a water alarm is active.                                                        | `area`                                              |
 | `alarm_duress`              | Switch               | Indicates if a duress alarm is active.                                                       | `area`                                              |
@@ -195,7 +196,7 @@ omnilinkActions.synchronizeControllerTime("America/Denver")
 
 ### Example `omnilink.things`
 
-```
+```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {
     Thing area         MainArea         "Main Area"              @   "Home"                    [ number=1 ]
     Thing upb          UpKitTable       "Table Lights"           @   "Upstairs Kitchen"        [ number=4 ]
@@ -221,7 +222,7 @@ Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXX
 
 ### Example `omnilink.items`
 
-```
+```java
 /*
  * Alarms / Areas
  */
@@ -302,7 +303,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-status.map`
 
-```
+```text
 0=Idle
 1=Heating
 2=Cooling
@@ -310,7 +311,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-tempmode.map`
 
-```
+```text
 0=Off
 1=Heat
 2=Cool
@@ -320,7 +321,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-fanmode.map`
 
-```
+```text
 0=Auto
 1=On
 2=Cycle
@@ -328,7 +329,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-holdmode.map`
 
-```
+```text
 0=Off
 1=Hold
 2=Vacation hold
@@ -336,7 +337,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `area-modes.map`
 
-```
+```text
 0=Off
 1=Day
 2=Night

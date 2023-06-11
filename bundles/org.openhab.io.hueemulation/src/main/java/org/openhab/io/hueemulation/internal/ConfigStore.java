@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -271,15 +271,14 @@ public class ConfigStore {
      */
     private String getHueIDPrefixFromUUID(final String uuid) {
         // Hue API example of a unique id is AA:BB:CC:DD:EE:FF:00:11-XX
-        // XX is generated from the item.
+        // 00:11-XX is generated from the item.
         String prefix = uuid;
         try {
             // Generate prefix if uuid is a randomly generated UUID
             if (UUID.fromString(uuid).version() == 4) {
-                final StringBuilder sb = new StringBuilder(23);
+                final StringBuilder sb = new StringBuilder(17);
                 sb.append(uuid, 0, 2).append(":").append(uuid, 2, 4).append(":").append(uuid, 4, 6).append(":")
-                        .append(uuid, 6, 8).append(":").append(uuid, 9, 11).append(":").append(uuid, 11, 13).append(":")
-                        .append(uuid, 14, 16).append(":").append(uuid, 16, 18);
+                        .append(uuid, 6, 8).append(":").append(uuid, 9, 11).append(":").append(uuid, 11, 13);
                 prefix = sb.toString().toUpperCase();
             }
         } catch (final IllegalArgumentException e) {
@@ -352,14 +351,20 @@ public class ConfigStore {
      * @return The unique id
      */
     public String getHueUniqueId(final String hueId) {
-        String unique = hueId;
+        String unique;
+
         try {
-            unique = String.format("%02X", Integer.valueOf(hueId));
+            final String id = String.format("%06X", Integer.valueOf(hueId));
+            final StringBuilder sb = new StringBuilder(26);
+            sb.append(hueIDPrefix).append(":").append(id, 0, 2).append(":").append(id, 2, 4).append("-").append(id, 4,
+                    6);
+            unique = sb.toString();
         } catch (final NumberFormatException | IllegalFormatException e) {
             // Use the hueId as is
+            unique = hueIDPrefix + "-" + hueId;
         }
 
-        return hueIDPrefix + "-" + unique;
+        return unique;
     }
 
     public boolean isReady() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import java.util.Map;
 import org.openhab.binding.digitalstrom.internal.lib.event.constants.EventResponseEnum;
 
 /**
- * The {@link EventItem} represents a event item of an digitalSTROM-Event.
+ * The {@link EventItem} represents an event item of a digitalSTROM-Event.
  *
- * @author Alexander Betker
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - add getSource()
  * @author Matthias Siegele - add getSource()
  */
@@ -34,7 +34,7 @@ public interface EventItem {
 
     /**
      * Returns {@link HashMap} with the properties fiels of this {@link EventItem}.
-     * The key is a {@link EventResponseEnum} and represents the property name
+     * The key is an {@link EventResponseEnum} and represents the property name
      * and the value is the property value.
      *
      * @return the properties of this {@link EventItem}
@@ -43,7 +43,7 @@ public interface EventItem {
 
     /**
      * Returns {@link HashMap} with the source fields of this {@link EventItem}.
-     * The key is a {@link EventResponseEnum} and represents the property name
+     * The key is an {@link EventResponseEnum} and represents the property name
      * and the value is the property value.
      *
      * @return the properties of this {@link EventItem}

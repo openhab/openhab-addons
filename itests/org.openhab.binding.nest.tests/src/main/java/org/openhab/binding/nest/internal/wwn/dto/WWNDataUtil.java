@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nest.internal.wwn.WWNUtils;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -32,6 +33,7 @@ import org.openhab.core.library.unit.SIUnits;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public final class WWNDataUtil {
 
     public static final String COMPLETE_DATA_FILE_NAME = "top-level-streaming-data.json";

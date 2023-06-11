@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,7 +151,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                 "Checking configuration and bridge...");
 
-        // Configuration - thing status update with a error message
+        // Configuration - thing status update with an error message
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,14 +30,14 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public interface Shelly1CoIoTInterface {
-    public int getVersion();
+    int getVersion();
 
-    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap);
+    CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap);
 
-    public void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap);
+    void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap);
 
-    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
+    boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
             Map<String, State> updates, ShellyColorUtils col);
 
-    public String getLastWakeup();
+    String getLastWakeup();
 }

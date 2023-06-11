@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -205,21 +205,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
         fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
 
+        profile.numMeters = 0;
         if (profile.hasRelays) {
             profile.status.relays = new ArrayList<>();
-            profile.status.meters = new ArrayList<>();
-            profile.status.emeters = new ArrayList<>();
             relayStatus.relays = new ArrayList<>();
-            relayStatus.meters = new ArrayList<>();
             profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
             for (int i = 0; i < profile.numRelays; i++) {
                 profile.status.relays.add(new ShellySettingsRelay());
                 relayStatus.relays.add(new ShellyShortStatusRelay());
-            }
-            for (int i = 0; i < profile.numMeters; i++) {
-                profile.status.meters.add(new ShellySettingsMeter());
-                profile.status.emeters.add(new ShellySettingsEMeter());
-                relayStatus.meters.add(new ShellySettingsMeter());
             }
         }
 
@@ -233,6 +226,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 input.eventCount = 0;
                 profile.status.inputs.add(input);
                 relayStatus.inputs.add(input);
+            }
+        }
+
+        if (dc.em0 != null) {
+            profile.numMeters = 3;
+        }
+
+        if (profile.numMeters > 0) {
+            profile.status.meters = new ArrayList<>();
+            profile.status.emeters = new ArrayList<>();
+            relayStatus.meters = new ArrayList<>();
+
+            for (int i = 0; i < profile.numMeters; i++) {
+                profile.status.meters.add(new ShellySettingsMeter());
+                profile.status.emeters.add(new ShellySettingsEMeter());
+                relayStatus.meters.add(new ShellySettingsMeter());
             }
         }
 
@@ -278,7 +287,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private void checkSetWsCallback() throws ShellyApiException {
         Shelly2ConfigParms wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2ConfigParms.class);
         String url = "ws://" + config.localIp + ":" + config.localPort + "/shelly/wsevent";
-        if (!getBool(wsConfig.enable) || !url.equalsIgnoreCase(getString(wsConfig.server))) {
+        if (!config.localIp.isEmpty() && !getBool(wsConfig.enable)
+                || !url.equalsIgnoreCase(getString(wsConfig.server))) {
             logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
             wsConfig.enable = true;
             wsConfig.server = url;
@@ -312,6 +322,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (t == null) {
                 logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={}, discovery={})",
                         thingName, thingName, message.src, message.dst, discovery);
+                return;
+            }
+            if (t.isStopping()) {
+                logger.debug("{}: Thing is shutting down, ignore WebSocket message", thingName);
                 return;
             }
             if (!t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
@@ -625,6 +639,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             req.params.config.autoOffDelay = value;
         }
         apiRequest(req);
+    }
+
+    @Override
+    public void resetMeterTotal(int id) throws ShellyApiException {
+    }
+
+    @Override
+    public void muteSmokeAlarm(int index) throws ShellyApiException {
+        apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SMOKE_MUTE).withId(index));
     }
 
     @Override

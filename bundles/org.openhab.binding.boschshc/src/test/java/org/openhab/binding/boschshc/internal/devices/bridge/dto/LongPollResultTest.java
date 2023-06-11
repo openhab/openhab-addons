@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-
-import com.google.gson.Gson;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 
 /**
  * Unit tests for LongPollResult
@@ -27,16 +25,13 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class LongPollResultTest {
-    private final Gson gson = new Gson();
 
     @Test
-    public void noResultsForErrorResult() {
-        LongPollResult longPollResult = gson.fromJson(
+    void noResultsForErrorResult() {
+        LongPollResult longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(
                 "{\"jsonrpc\":\"2.0\", \"error\": { \"code\":-32001, \"message\":\"No subscription with id: e8fei62b0-0\" } }",
                 LongPollResult.class);
-        assertNotEquals(null, longPollResult);
-        if (longPollResult != null) {
-            assertEquals(null, longPollResult.result);
-        }
+        assertNotNull(longPollResult);
+        assertEquals(null, longPollResult.result);
     }
 }

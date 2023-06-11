@@ -1,4 +1,4 @@
-# Adorne Binding 
+# Adorne Binding
 
 The Adorne Binding integrates [Adorne Wi-Fi ready devices](https://www.legrand.us/adorne/products/wireless-whole-house-lighting-controls.aspx) (switches, dimmers, outlets) from [Legrand](https://legrand.com/).
 
@@ -20,8 +20,8 @@ This binding's implementation of the REST API is motivated by the great work of 
 
 ## Discovery
 
-Auto-discovery is supported as long as the hub can be discovered using the default host and port. 
-If the hub requires custom host and/or port configuration manual setup is required. 
+Auto-discovery is supported as long as the hub can be discovered using the default host and port.
+If the hub requires custom host and/or port configuration manual setup is required.
 
 Background discovery is not supported.
 
@@ -44,7 +44,7 @@ All devices share one required paramenter:
 
 Legrand does not provide an easy way to look up a zone ID for a device.
 However, zone IDs are simply assigned sequentially starting with 0 in the order devices are added to the hub.
-So the first device will have zone ID 0, the next 1 and so on. 
+So the first device will have zone ID 0, the next 1 and so on.
 
 ## Channels
 
@@ -60,10 +60,10 @@ Also, if a dimmer is turned off (via the power channel) and the brightness is up
 Once the dimmer is turned on it will turn on with the updated brightness setting.
 Consequently when a dimmer is turned on it always returns to the most recent brightness setting.
 In other words power and brightness states are controlled independently.
-This matches how power and brightness are managed on the physical dimmer itself. 
+This matches how power and brightness are managed on the physical dimmer itself.
 
 To avoid confusion for the user any UI must ensure that only values from 1 to 100 are passed to the brightness channel.
-A default slider allows a 0 value and should not be used since there will be no response when the user selects 0. 
+A default slider allows a 0 value and should not be used since there will be no response when the user selects 0.
 Common UI choices are Sliders or Setpoints with a minimum value of 1 and a maximum value of 100 (min/max values in Sliders are only supported as of openHAB 2.5).
 
 ## Example
@@ -71,21 +71,21 @@ Common UI choices are Sliders or Setpoints with a minimum value of 1 and a maxim
 This is a simple example that uses an Adorne switch and two dimmers.
 Remember that the host and port parameter are not needed in most cases.
 As discussed above care is taken that the brightness channel only allows values from 1 to 100 by specifying a min and max value in the sitemap for the dimmers.
-For this example to run on an openHAB version older than 2.5 Bedroom 1's Slider must be removed in the sitemap since older versions don't support the min/max setting. 
+For this example to run on an openHAB version older than 2.5 Bedroom 1's Slider must be removed in the sitemap since older versions don't support the min/max setting.
 
 ## demo.things
 
-```
+```java
 Bridge adorne:hub:home "Adorne Hub" [host="192.160.1.111", port=2113] {
-	switch bathroom "Bathroom" [zoneId=0]
-	dimmer bedroom1 "Bedroom1" [zoneId=1]
-	dimmer bedroom2 "Bedroom2" [zoneId=2]
+ switch bathroom "Bathroom" [zoneId=0]
+ dimmer bedroom1 "Bedroom1" [zoneId=1]
+ dimmer bedroom2 "Bedroom2" [zoneId=2]
 }
 ```
 
 ## demo.items
 
-```
+```java
 Switch LightBathroom {channel="adorne:switch:home:bathroom:power"}
 Switch LightBedroomSwitch1 {channel="adorne:dimmer:home:bedroom1:power"}
 Dimmer LightBedroomDimmer1 {channel="adorne:dimmer:home:bedroom1:brightness"}
@@ -95,19 +95,19 @@ Dimmer LightBedroomDimmer2 {channel="adorne:dimmer:home:bedroom2:brightness"}
 
 ## demo.sitemap
 
-```
+```perl
 sitemap demo label="Adorne Binding Demo"
 {
-	Frame label="Adorne Switch" {
-		Switch item=LightBathroom label="Bathroom" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
-	}
-	Frame label="Adorne Dimmer using Slider" {
-		Switch item=LightBedroomSwitch1 label="Bedroom 1" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
-		Slider item=LightBedroomDimmer1 label="Bedroom 1" icon="light-on" minValue=1 maxValue=100 step=1
-	}
-	Frame label="Adorne Dimmer using Setpoint" {
-		Switch item=LightBedroomSwitch2 label="Bedroom 2" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
-		Setpoint item=LightBedroomDimmer2 label="Bedroom 2" icon="light-on" minValue=1 maxValue=100 step=5
-	}
+ Frame label="Adorne Switch" {
+  Switch item=LightBathroom label="Bathroom" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+ }
+ Frame label="Adorne Dimmer using Slider" {
+  Switch item=LightBedroomSwitch1 label="Bedroom 1" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+  Slider item=LightBedroomDimmer1 label="Bedroom 1" icon="light-on" minValue=1 maxValue=100 step=1
+ }
+ Frame label="Adorne Dimmer using Setpoint" {
+  Switch item=LightBedroomSwitch2 label="Bedroom 2" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+  Setpoint item=LightBedroomDimmer2 label="Bedroom 2" icon="light-on" minValue=1 maxValue=100 step=5
+ }
 }
 ```

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses inverter modbus data into an System State Block
+ * Parses inverter modbus data into a System State Block
  *
  * @author Paul Frank - Initial contribution
  *

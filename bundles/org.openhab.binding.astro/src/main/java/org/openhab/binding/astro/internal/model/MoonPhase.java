@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,8 +31,8 @@ public class MoonPhase {
     private Calendar firstQuarter;
     private Calendar full;
     private Calendar thirdQuarter;
-    private Calendar _new;
-    private int age;
+    private Calendar newCalendar;
+    private double age;
     private double illumination;
     private double agePercent;
     private double ageDegree;
@@ -85,14 +85,14 @@ public class MoonPhase {
      * Returns the date of the new moon.
      */
     public Calendar getNew() {
-        return _new;
+        return newCalendar;
     }
 
     /**
      * Sets the date of the new moon.
      */
-    public void setNew(Calendar _new) {
-        this._new = _new;
+    public void setNew(Calendar newCalendar) {
+        this.newCalendar = newCalendar;
     }
 
     /**
@@ -105,7 +105,7 @@ public class MoonPhase {
     /**
      * Sets the age in days.
      */
-    public void setAge(int age) {
+    public void setAge(double age) {
         this.age = age;
     }
 

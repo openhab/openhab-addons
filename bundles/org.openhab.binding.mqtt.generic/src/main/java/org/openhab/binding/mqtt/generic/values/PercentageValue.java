@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,17 +72,17 @@ public class PercentageValue extends Value {
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
+    public PercentType parseCommand(Command command) throws IllegalArgumentException {
         PercentType oldvalue = (state == UnDefType.UNDEF) ? new PercentType() : (PercentType) state;
         // Nothing do to -> We have received a percentage
         if (command instanceof PercentType) {
-            state = (PercentType) command;
+            return (PercentType) command;
         } else //
                // A decimal type need to be converted according to the current min/max values
         if (command instanceof DecimalType) {
             BigDecimal v = ((DecimalType) command).toBigDecimal();
             v = v.subtract(min).multiply(HUNDRED).divide(max.subtract(min), MathContext.DECIMAL128);
-            state = new PercentType(v);
+            return new PercentType(v);
         } else //
                // A quantity type need to be converted according to the current min/max values
         if (command instanceof QuantityType) {
@@ -90,57 +90,55 @@ public class PercentageValue extends Value {
             if (qty != null) {
                 BigDecimal v = qty.toBigDecimal();
                 v = v.subtract(min).multiply(HUNDRED).divide(max.subtract(min), MathContext.DECIMAL128);
-                state = new PercentType(v);
+                return new PercentType(v);
             }
+            return oldvalue;
         } else //
                // Increase or decrease by "step"
         if (command instanceof IncreaseDecreaseType) {
             if (((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE) {
                 final BigDecimal v = oldvalue.toBigDecimal().add(stepPercent);
-                state = v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
+                return v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
             } else {
                 final BigDecimal v = oldvalue.toBigDecimal().subtract(stepPercent);
-                state = v.compareTo(BigDecimal.ZERO) >= 0 ? new PercentType(v) : PercentType.ZERO;
+                return v.compareTo(BigDecimal.ZERO) >= 0 ? new PercentType(v) : PercentType.ZERO;
             }
         } else //
                // On/Off equals 100 or 0 percent
         if (command instanceof OnOffType) {
-            state = ((OnOffType) command) == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
+            return ((OnOffType) command) == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
         } else//
               // Increase or decrease by "step"
         if (command instanceof UpDownType) {
             if (((UpDownType) command) == UpDownType.UP) {
                 final BigDecimal v = oldvalue.toBigDecimal().add(stepPercent);
-                state = v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
+                return v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
             } else {
                 final BigDecimal v = oldvalue.toBigDecimal().subtract(stepPercent);
-                state = v.compareTo(BigDecimal.ZERO) >= 0 ? new PercentType(v) : PercentType.ZERO;
+                return v.compareTo(BigDecimal.ZERO) >= 0 ? new PercentType(v) : PercentType.ZERO;
             }
         } else //
                // Check against custom on/off values
         if (command instanceof StringType) {
             if (onValue != null && command.toString().equals(onValue)) {
-                state = new PercentType(max);
+                return new PercentType(max);
             } else if (offValue != null && command.toString().equals(offValue)) {
-                state = new PercentType(min);
+                return new PercentType(min);
             } else {
-                throw new IllegalStateException("Unknown String!");
+                throw new IllegalStateException("Unable to parse " + command.toString() + " as a percent.");
             }
         } else {
             // We are desperate -> Try to parse the command as number value
-            state = PercentType.valueOf(command.toString());
+            return PercentType.valueOf(command.toString());
         }
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
-        if (state == UnDefType.UNDEF) {
-            return "";
-        }
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         // Formula: From percentage to custom min/max: value*span/100+min
         // Calculation need to happen with big decimals to either return a straight integer or a decimal depending on
         // the value.
-        BigDecimal value = ((PercentType) state).toBigDecimal().multiply(span).divide(HUNDRED, MathContext.DECIMAL128)
+        BigDecimal value = ((PercentType) command).toBigDecimal().multiply(span).divide(HUNDRED, MathContext.DECIMAL128)
                 .add(min).stripTrailingZeros();
 
         String formatPattern = pattern;

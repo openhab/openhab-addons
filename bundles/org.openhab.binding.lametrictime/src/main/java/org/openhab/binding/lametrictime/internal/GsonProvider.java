@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.openhab.binding.lametrictime.api.common.impl.GsonGenerator;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lametrictime.internal.api.common.impl.GsonGenerator;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.Gson;
@@ -54,18 +55,21 @@ public class GsonProvider<T> implements MessageBodyReader<T>, MessageBodyWriter<
     }
 
     @Override
-    public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(T t, @Nullable Class<?> type, @Nullable Type genericType, Annotation @Nullable [] annotations,
+            @Nullable MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(@Nullable Class<?> type, @Nullable Type genericType, Annotation @Nullable [] annotations,
+            @Nullable MediaType mediaType) {
         return true;
     }
 
     @Override
-    public void writeTo(T object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+    public void writeTo(T object, @Nullable Class<?> type, @Nullable Type genericType,
+            Annotation @Nullable [] annotations, @Nullable MediaType mediaType,
+            @Nullable MultivaluedMap<String, Object> httpHeaders, @Nullable OutputStream entityStream)
             throws IOException, WebApplicationException {
         try (OutputStream stream = entityStream) {
             entityStream.write(gson.toJson(object).getBytes(StandardCharsets.UTF_8));
@@ -74,14 +78,15 @@ public class GsonProvider<T> implements MessageBodyReader<T>, MessageBodyWriter<
     }
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(@Nullable Class<?> type, @Nullable Type genericType, Annotation @Nullable [] annotations,
+            @Nullable MediaType mediaType) {
         return true;
     }
 
     @Override
-    public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
+    public T readFrom(@Nullable Class<T> type, @Nullable Type genericType, Annotation @Nullable [] annotations,
+            @Nullable MediaType mediaType, @Nullable MultivaluedMap<String, String> httpHeaders,
+            @Nullable InputStream entityStream) throws IOException, WebApplicationException {
         try (InputStreamReader reader = new InputStreamReader(entityStream, StandardCharsets.UTF_8)) {
             return gson.fromJson(reader, type);
         }

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mynice"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="it4wifi">
+		<label>IT4Wifi</label>
+		<description>This thing connects to your IT4Wifi module</description>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>User defined on the IT4Wifi for openHAB</description>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the IT4Wifi</description>
+			</parameter>
+			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"
+				required="true">
+				<label>MAC Address</label>
+				<description>The MAC address of the IT4Wifi</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Pairing Key</label>
+				<description>Pairing Key needed to access the device, provided by the bridge itself</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="swing">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="it4wifi"/>
+		</supported-bridge-type-refs>
+
+		<label>Swing Gate</label>
+		<description>A dual swing gate</description>
+
+		<channels>
+			<channel id="status" typeId="doorstatus"/>
+			<channel id="obstruct" typeId="obstruct"/>
+			<channel id="moving" typeId="moving"/>
+			<channel id="command" typeId="command"/>
+			<channel id="t4command" typeId="t4command"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>ID</label>
+				<description>ID of the gate on the TP4 bus connected to the bridge</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="sliding">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="it4wifi"/>
+		</supported-bridge-type-refs>
+
+		<label>Sliding Gate</label>
+		<description>A sliding gate</description>
+
+		<channels>
+			<channel id="status" typeId="doorstatus"/>
+			<channel id="obstruct" typeId="obstruct"/>
+			<channel id="moving" typeId="moving"/>
+			<channel id="command" typeId="command"/>
+			<channel id="t4command" typeId="t4command"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>ID</label>
+				<description>ID of the gate on the TP4 bus connected to the bridge.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<channel-type id="doorstatus">
+		<item-type>String</item-type>
+		<label>Gate Status</label>
+		<description>Position of the gate or state if moving</description>
+		<state readOnly="true">
+			<options>
+				<option value="open">Open</option>
+				<option value="closed">Closed</option>
+				<option value="opening">Opening</option>
+				<option value="closing">Closing</option>
+				<option value="stopped">Stopped</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="moving">
+		<item-type>Switch</item-type>
+		<label>Moving</label>
+		<description>Indicates if the device is currently operating a command</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="obstruct">
+		<item-type>Switch</item-type>
+		<label>Obstruction</label>
+		<description>Something prevented normal operation of the gate by crossing the infra-red barrier</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a given command to the gate</description>
+		<state readOnly="false">
+			<options>
+				<option value="stop">Stop</option>
+				<option value="open">Open</option>
+				<option value="close">Close</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="t4command">
+		<item-type>String</item-type>
+		<label>T4 Command</label>
+		<description>Send a T4 Command to the gate</description>
+		<state readOnly="false">
+			<options>
+				<option value="MDAx">Step by Step</option>
+				<option value="MDAy">Stop (as remote control)</option>
+				<option value="MDAz">Open (as remote control)</option>
+				<option value="MDA0">Close (as remote control)</option>
+				<option value="MDA1">Partial opening 1</option>
+				<option value="MDA2">Partial opening 2</option>
+				<option value="MDA3">Partial opening 3</option>
+				<option value="MDBi">Apartment Step by Step</option>
+				<option value="MDBj">Step by Step high priority</option>
+				<option value="MDBk">Open and block</option>
+				<option value="MDBl">Close and block</option>
+				<option value="MDBm">Block</option>
+				<option value="MDEw">Release</option>
+				<option value="MDEx">Courtesy light timer on</option>
+				<option value="MDEy">Courtesy light on-off</option>
+				<option value="MDEz">Step by Step master door</option>
+				<option value="MDE0">Open master door</option>
+				<option value="MDE1">Close master door</option>
+				<option value="MDE2">Step by Step slave door</option>
+				<option value="MDE3">Open slave door</option>
+				<option value="MDE4">Close slave door</option>
+				<option value="MDE5">Release and Open</option>
+				<option value="MDFh">Release and Close</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+</thing:thing-descriptions>

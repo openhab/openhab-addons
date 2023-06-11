@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Thermo Zone</label>
-		<description>A OpenWebNet BUS/SCS configured thermo zone (managed via Central Unit or stand alone).</description>
+		<description>An OpenWebNet BUS/SCS configured thermo zone (managed via Central Unit or stand alone).</description>
 
 		<channels>
 			<!-- read only -->

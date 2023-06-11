@@ -4,7 +4,7 @@ This is the binding for Helios Ventilation Systems KWL EC 200/300/500 Pro.
 It requires a connection to the RS485 bus used by the original remote controls KWL-FB (9417) and does not use the Modbus/TCP interface of the newer EasyControl devices.
 
 For electrical connection it is recommended to use an USB-RS485 interface, but any RS485 interface that shows up as a serial port will do.
-Setup the device as described in https://www.openhab.org/docs/administration/serial.html.
+Setup the device as described in <https://www.openhab.org/docs/administration/serial.html>.
 
 The binding will use the remote control address 15 for communication, so make sure that this is not assigned to a physically present remote control.
 
@@ -17,7 +17,7 @@ The binding was developed and test on a KWL EC 200 Pro device.
 
 ## Binding Configuration
 
-The binding requires access to the serial device connecting to the RS485 bus as described in https://www.openhab.org/docs/administration/serial.html.
+The binding requires access to the serial device connecting to the RS485 bus as described in <https://www.openhab.org/docs/administration/serial.html>.
 Otherwise only thing configuration is needed.
 
 ## Thing Configuration
@@ -67,13 +67,13 @@ Note: the configuration channels are not intended to be written regularly.
 
 Things:
 
-```
+```java
 heliosventilation:ventilation:MyKWL  [ serialPort="/dev/ttyUSB0" ]
 ```
 
 Items:
 
-```
+```java
 Switch KWLOnOff { channel="heliosventilation:ventilation:MyKWL:powerState" }
 Switch KWLWinter { channel="heliosventilation:ventilation:MyKWL:winterMode" }
 
@@ -92,7 +92,7 @@ Number Max_Fan_Speed "Max Fan Speed" <fan> { channel="heliosventilation:ventilat
 
 Sitemap:
 
-```
+```perl
 sitemap helios_kwl label="Helios Ventilation" {
         Frame label="Temperatures" {
               Text item=Outside_Temperature

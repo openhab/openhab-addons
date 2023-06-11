@@ -2,12 +2,14 @@
 
 This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/photovoltaics/products/all-products/system-monitoring/open-interfaces/fronius-solar-api-json-) to obtain data from Fronius devices.
 
-It supports Fronius inverters and Fronius Smart Meter. Supports:
-* Fronius Symo
-* Fronius Symo Gen24
-* Fronius Smart Meter 63A
-* Fronius Smart Meter TS 65A-3
-* Fronius Ohmpilot
+It supports Fronius inverters and Fronius Smart Meter.
+Supports:
+
+- Fronius Symo
+- Fronius Symo Gen24
+- Fronius Smart Meter 63A
+- Fronius Smart Meter TS 65A-3
+- Fronius Ohmpilot
 
 ## Supported Things
 
@@ -108,7 +110,6 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `energyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
 | `energyrealsumproduced` | Number:Energy            | Real Energy produced                                                                                                                                                                                                     |
 
-
 ### Channels for `ohmpilot` Thing
 
 | Channel ID              | Item Type          | Description                                                                                                                                                              |
@@ -118,7 +119,6 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `temperaturechannel1`   | Number:Temperature | Temperature                                                                                                                                                              |
 | `errorcode`             | Number             | Device error code                                                                                                                                                        |
 | `statecode`             | Number             | Device state code<br />`0` up and running <br />`1` keep minimum temperature <br />`2` legionella protection <br />`3` critical fault<br />`4` fault<br />`5` boost mode |
-
 
 ## Properties
 
@@ -140,7 +140,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 demo.things:
 
-```
+```java
 Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
@@ -150,7 +150,7 @@ Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
 
 demo.items:
 
-```
+```java
 Number:Power AC_Power { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelpac" }
 Number:Energy Day_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneldayenergy" }
 Number:Energy Total_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneltotal" }

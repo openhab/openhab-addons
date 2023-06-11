@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -563,7 +563,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     }
 
     /**
-     * Send a ENROLL message
+     * Send an ENROLL message
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */

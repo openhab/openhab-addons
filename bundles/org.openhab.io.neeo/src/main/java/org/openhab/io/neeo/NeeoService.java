@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.binding.BindingInfoRegistry;
+import org.openhab.core.addon.AddonInfoRegistry;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
@@ -87,7 +87,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
     // The following services are set by openHAB via the getter/setters
     private final HttpService httpService;
     private final ItemRegistry itemRegistry;
-    private final BindingInfoRegistry bindingInfoRegistry;
+    private final AddonInfoRegistry bindingInfoRegistry;
     private final ThingRegistry thingRegistry;
     private final ThingTypeRegistry thingTypeRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
@@ -140,13 +140,13 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
     @Activate
     public NeeoService(ComponentContext componentContext, @Reference HttpService httpService,
             @Reference ItemRegistry itemRegistry, @Reference ThingRegistry thingRegistry,
-            @Reference BindingInfoRegistry bindingInfoRegistry, @Reference ChannelTypeRegistry channelTypeRegistry,
+            @Reference AddonInfoRegistry addonInfoRegistry, @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference ThingTypeRegistry thingTypeRegistry, @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
             @Reference MDNSClient mdnsClient, @Reference EventPublisher eventPublisher,
             @Reference NetworkAddressService networkAddressService, @Reference ClientBuilder clientBuilder) {
         this.httpService = httpService;
         this.itemRegistry = itemRegistry;
-        this.bindingInfoRegistry = bindingInfoRegistry;
+        this.bindingInfoRegistry = addonInfoRegistry;
         this.channelTypeRegistry = channelTypeRegistry;
         this.thingRegistry = thingRegistry;
         this.thingTypeRegistry = thingTypeRegistry;
@@ -158,7 +158,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
 
         logger.debug("Neeo Service activated");
         final ServiceContext localContext = new ServiceContext(componentContext, validate(httpService, "httpService"),
-                validate(itemRegistry, "itemRegistry"), validate(bindingInfoRegistry, "bindingInfoRegistry"),
+                validate(itemRegistry, "itemRegistry"), validate(addonInfoRegistry, "addonInfoRegistry"),
                 validate(thingRegistry, "thingRegistry"), validate(thingTypeRegistry, "thingTypeRegistry"),
                 validate(itemChannelLinkRegistry, "itemChannelLinkRegistry"),
                 validate(channelTypeRegistry, "channelTypeRegistry"), validate(mdnsClient, "mdnsClient"),
@@ -282,7 +282,10 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                             sysInfo.getHostname(), ipAddress, clientBuilder);
                     servlets.add(newServlet);
 
-                    localContext.getHttpService().registerServlet(servletUrl, newServlet, new Hashtable<>(),
+                    Hashtable<Object, Object> initParams = new Hashtable<>();
+                    initParams.put("servlet-name", servletUrl);
+
+                    localContext.getHttpService().registerServlet(servletUrl, newServlet, initParams,
                             localContext.getHttpService().createDefaultHttpContext());
                     logger.debug("Started NEEO Listener at {}", servletUrl);
                 } catch (NamespaceException | ServletException | IOException e) {

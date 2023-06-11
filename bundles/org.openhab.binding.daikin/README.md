@@ -15,7 +15,7 @@ You can also manually add a new item if you know the IP address.
 
 Background discovery polls the network every minute for devices.
 Background discovery is **enabled** by default.
-To **disable** background discovery, add the following line to the *conf/services/runtime.cfg* file:
+To **disable** background discovery, add the following line to the _conf/services/runtime.cfg_ file:
 
 ```text
 discovery.daikin:background=false
@@ -27,14 +27,14 @@ A BRP072C42 adapter requires a registered UUID to authenticate. Upon discovery, 
 
 ## Thing Configuration
 
-* `host` - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
-* `refresh` - The frequency with which to refresh information from the Daikin air conditioner specified in seconds. Defaults to 60 seconds.
+- `host` - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
+- `refresh` - The frequency with which to refresh information from the Daikin air conditioner specified in seconds. Defaults to 60 seconds.
 
 ### Additional Thing configurations for BRP072C42 adapter
 
-* `secure` - Must be set to true for BRP072C42 to access it through https.
-* `uuid` - A UUID used to access the BRP072C42 adapter. A handy UUID generator can be found at <https://www.uuidgenerator.net/>.
-* `key` - The 13-digit key from the Daikin adapter.
+- `secure` - Must be set to true for BRP072C42 to access it through https.
+- `uuid` - A UUID used to access the BRP072C42 adapter. A handy UUID generator can be found at <https://www.uuidgenerator.net/>.
+- `key` - The 13-digit key from the Daikin adapter.
 
 ## Channels
 
@@ -110,7 +110,7 @@ For the BRP15B61:
 
 daikin.things:
 
-```
+```java
 // for BRP069B41 or BRP072A42
 daikin:ac_unit:living_room_ac [ host="192.168.0.5" ]
 // for BRP072C42
@@ -121,7 +121,7 @@ daikin:airbase_ac_unit:living_room_ac [ host="192.168.0.5" ]
 
 daikin.items:
 
-```
+```java
 // for BRP069B41, BRP072A42 or BRP072C42
 Switch DaikinACUnit_Power { channel="daikin:ac_unit:living_room_ac:power" }
 Number:Temperature DaikinACUnit_SetPoint { channel="daikin:ac_unit:living_room_ac:settemp" }
@@ -154,7 +154,7 @@ Switch DaikinACUnit_Zone8 { channel="daikin:airbase_ac_unit:living_room_ac:zone8
 
 daikin.sitemap:
 
-```
+```perl
 // for BRP069B41, BRP072A42 or BRP072C42
 Switch item=DaikinACUnit_Power
 Setpoint item=DaikinACUnit_SetPoint visibility=[DaikinACUnit_Power==ON]

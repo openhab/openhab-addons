@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.latestmotion.LatestMotionService;
 import org.openhab.binding.boschshc.internal.services.latestmotion.dto.LatestMotionServiceState;
@@ -32,7 +32,7 @@ import org.openhab.core.thing.Thing;
  * @author Christian Oeing - Use service instead of custom logic
  */
 @NonNullByDefault
-public class MotionDetectorHandler extends BoschSHCDeviceHandler {
+public class MotionDetectorHandler extends AbstractBatteryPoweredDeviceHandler {
 
     public MotionDetectorHandler(Thing thing) {
         super(thing);

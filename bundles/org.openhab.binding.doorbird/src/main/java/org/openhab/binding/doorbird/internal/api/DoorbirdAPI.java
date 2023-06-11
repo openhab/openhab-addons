@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,11 @@
 package org.openhab.binding.doorbird.internal.api;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -24,6 +27,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.DeferredContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -51,6 +57,17 @@ public final class DoorbirdAPI {
 
     private @Nullable Authorization authorization;
     private @Nullable HttpClient httpClient;
+
+    // define a completed listener when sending audio asynchronously :
+    private Response.CompleteListener complete = new Response.CompleteListener() {
+        @Override
+        public void onComplete(@Nullable Result result) {
+            if (result != null) {
+                logger.debug("Doorbird audio sent. Response status {} {} ", result.getResponse().getStatus(),
+                        result.getResponse().getReason());
+            }
+        }
+    };
 
     public static Gson getGson() {
         return (GSON);
@@ -143,6 +160,59 @@ public final class DoorbirdAPI {
 
     public @Nullable DoorbirdImage downloadMotionHistoryImage(String imageNumber) {
         return downloadImage("/bha-api/history.cgi?event=motionsensor&index=" + imageNumber);
+    }
+
+    public void sendAudio(InputStream audioInputStream) {
+        Authorization auth = authorization;
+        HttpClient client = httpClient;
+        if (client == null) {
+            logger.warn("Unable to send audio because httpClient is not set");
+            return;
+        }
+        if (auth == null) {
+            logAuthorizationError("audio-transmit");
+            return;
+        }
+        String url = buildUrl(auth, "/bha-api/audio-transmit.cgi");
+        logger.debug("Executing doorbird API post audio: {}", url);
+        DeferredContentProvider content = new DeferredContentProvider();
+        try {
+            // @formatter:off
+            client.POST(url)
+                    .header("Authorization", "Basic " + auth.getAuthorization())
+                    .header("Content-Type", "audio/basic")
+                    .header("Content-Length", "9999999")
+                    .header("Connection", "Keep-Alive")
+                    .header("Cache-Control", "no-cache")
+                    .content(content)
+                    .send(complete);
+            // @formatter:on
+
+            // It is crucial to send data in small chunks to not overload the doorbird
+            // It means that we have to wait the appropriate amount of time between chunk to send
+            // real time data, as if it were live spoken.
+            int CHUNK_SIZE = 256;
+            int nbByteRead = -1;
+            long nextChunkSendTimeStamp = 0;
+            do {
+                byte[] data = new byte[CHUNK_SIZE];
+                nbByteRead = audioInputStream.read(data);
+                if (nbByteRead > 0) {
+                    if (nbByteRead != CHUNK_SIZE) {
+                        data = Arrays.copyOf(data, nbByteRead);
+                    } // compute exact waiting time needed, by checking previous estimation against current time
+                    long timeToWait = Math.max(0, nextChunkSendTimeStamp - System.currentTimeMillis());
+                    Thread.sleep(timeToWait);
+                    logger.debug("Sending chunk...");
+                    content.offer(ByteBuffer.wrap(data));
+                }
+                nextChunkSendTimeStamp = System.currentTimeMillis() + 30;
+            } while (nbByteRead != -1);
+        } catch (InterruptedException | IOException e) {
+            logger.info("Unable to communicate with Doorbird", e);
+        } finally {
+            content.close();
+        }
     }
 
     public void openDoorController(String controllerId, String doorNumber) {

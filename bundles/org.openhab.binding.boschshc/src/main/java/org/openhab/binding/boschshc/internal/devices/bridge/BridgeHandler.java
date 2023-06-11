@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,11 @@ import static org.eclipse.jetty.http.HttpMethod.*;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,12 +35,14 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
-import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceStatusUpdate;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
+import org.openhab.binding.boschshc.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.binding.boschshc.internal.services.dto.JsonRestExceptionResponse;
 import org.openhab.core.thing.Bridge;
@@ -45,12 +52,14 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -60,16 +69,12 @@ import com.google.gson.reflect.TypeToken;
  * @author Gerd Zanker - added HttpClient with pairing support
  * @author Christian Oeing - refactorings of e.g. server registration
  * @author David Pace - Added support for custom endpoints and HTTP POST requests
+ * @author Gerd Zanker - added thing discovery
  */
 @NonNullByDefault
 public class BridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
-
-    /**
-     * gson instance to convert a class to json string and back.
-     */
-    private final Gson gson = new Gson();
 
     /**
      * Handler to do long polling.
@@ -86,6 +91,13 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> scheduledPairing;
 
+    /**
+     * SHC thing/device discovery service instance.
+     * Registered and unregistered if service is actived/deactived.
+     * Used to scan for things after bridge is paired with SHC.
+     */
+    private @Nullable ThingDiscoveryService thingDiscoveryService;
+
     public BridgeHandler(Bridge bridge) {
         super(bridge);
 
@@ -93,9 +105,16 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(ThingDiscoveryService.class);
+    }
+
+    @Override
     public void initialize() {
-        logger.debug("Initialize {} Version {}", FrameworkUtil.getBundle(getClass()).getSymbolicName(),
-                FrameworkUtil.getBundle(getClass()).getVersion());
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        if (bundle != null) {
+            logger.debug("Initialize {} Version {}", bundle.getSymbolicName(), bundle.getVersion());
+        }
 
         // Read configuration
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
@@ -119,6 +138,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             // prepare SSL key and certificates
             factory = new BoschSslUtil(ipAddress).getSslContextFactory();
         } catch (PairingFailedException e) {
+            logger.debug("Error while obtaining SSL context factory.", e);
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-ssl");
             return;
@@ -163,7 +183,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             try {
                 httpClient.stop();
             } catch (Exception e) {
-                logger.debug("HttpClient failed on bridge disposal: {}", e.getMessage());
+                logger.debug("HttpClient failed on bridge disposal: {}", e.getMessage(), e);
             }
             this.httpClient = null;
         }
@@ -173,6 +193,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // commands are handled by individual device handlers
     }
 
     /**
@@ -189,8 +210,10 @@ public class BridgeHandler extends BaseBridgeHandler {
      * to check if access if possible
      * pairs this Bosch SHC Bridge with the SHC if necessary
      * and starts the first log poll.
+     * <p>
+     * This method is package-protected to enable unit testing.
      */
-    private void initialAccess(BoschHttpClient httpClient) {
+    /* package */ void initialAccess(BoschHttpClient httpClient) {
         logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {}", this, httpClient);
 
         try {
@@ -219,12 +242,8 @@ public class BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            // SHC is online and access is possible
-            // print rooms and devices
-            boolean thingReachable = true;
-            thingReachable &= this.getRooms();
-            thingReachable &= this.getDevices();
-            if (!thingReachable) {
+            // SHC is online and access should possible
+            if (!checkBridgeAccess()) {
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "@text/offline.not-reachable");
                 // restart initial access
@@ -232,17 +251,58 @@ public class BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            // do thing discovery after pairing
+            final ThingDiscoveryService discovery = thingDiscoveryService;
+            if (discovery != null) {
+                discovery.doScan();
+            }
+
             // start long polling loop
             this.updateStatus(ThingStatus.ONLINE);
-            try {
-                this.longPolling.start(httpClient);
-            } catch (LongPollingFailedException e) {
-                this.handleLongPollFailure(e);
-            }
+            startLongPolling(httpClient);
 
         } catch (InterruptedException e) {
             this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.interrupted");
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private void startLongPolling(BoschHttpClient httpClient) {
+        try {
+            this.longPolling.start(httpClient);
+        } catch (LongPollingFailedException e) {
+            this.handleLongPollFailure(e);
+        }
+    }
+
+    /**
+     * Check the bridge access by sending an HTTP request.
+     * Does not throw any exception in case the request fails.
+     */
+    public boolean checkBridgeAccess() throws InterruptedException {
+        @Nullable
+        BoschHttpClient httpClient = this.httpClient;
+
+        if (httpClient == null) {
+            return false;
+        }
+
+        try {
+            logger.debug("Sending http request to BoschSHC to check access: {}", httpClient);
+            String url = httpClient.getBoschSmartHomeUrl("devices");
+            ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
+
+            // check HTTP status code
+            if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
+                logger.debug("Access check failed with status code: {}", contentResponse.getStatus());
+                return false;
+            }
+
+            // Access OK
+            return true;
+        } catch (TimeoutException | ExecutionException e) {
+            logger.warn("Access check failed because of {}!", e.getMessage());
+            return false;
         }
     }
 
@@ -251,100 +311,187 @@ public class BridgeHandler extends BaseBridgeHandler {
      *
      * @throws InterruptedException in case bridge is stopped
      */
-    private boolean getDevices() throws InterruptedException {
+    public List<Device> getDevices() throws InterruptedException {
         @Nullable
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
-            return false;
+            return Collections.emptyList();
         }
 
         try {
-            logger.debug("Sending http request to Bosch to request devices: {}", httpClient);
+            logger.trace("Sending http request to Bosch to request devices: {}", httpClient);
             String url = httpClient.getBoschSmartHomeUrl("devices");
             ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
 
             // check HTTP status code
             if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
                 logger.debug("Request devices failed with status code: {}", contentResponse.getStatus());
-                return false;
+                return Collections.emptyList();
             }
 
             String content = contentResponse.getContentAsString();
-            logger.debug("Request devices completed with success: {} - status code: {}", content,
+            logger.trace("Request devices completed with success: {} - status code: {}", content,
                     contentResponse.getStatus());
 
             Type collectionType = new TypeToken<ArrayList<Device>>() {
             }.getType();
-            ArrayList<Device> devices = gson.fromJson(content, collectionType);
-
-            if (devices != null) {
-                for (Device d : devices) {
-                    // Write found devices into openhab.log until we have implemented auto discovery
-                    logger.info("Found device: name={} id={}", d.name, d.id);
-                    if (d.deviceServiceIds != null) {
-                        for (String s : d.deviceServiceIds) {
-                            logger.info(".... service: {}", s);
-                        }
-                    }
-                }
-            }
+            List<Device> nullableDevices = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, collectionType);
+            return Optional.ofNullable(nullableDevices).orElse(Collections.emptyList());
         } catch (TimeoutException | ExecutionException e) {
-            logger.warn("Request devices failed because of {}!", e.getMessage());
-            return false;
+            logger.debug("Request devices failed because of {}!", e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Get a list of rooms from the Smart-Home controller
+     *
+     * @throws InterruptedException in case bridge is stopped
+     */
+    public List<Room> getRooms() throws InterruptedException {
+        List<Room> emptyRooms = new ArrayList<>();
+        @Nullable
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient != null) {
+            try {
+                logger.trace("Sending http request to Bosch to request rooms");
+                String url = httpClient.getBoschSmartHomeUrl("rooms");
+                ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
+
+                // check HTTP status code
+                if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
+                    logger.debug("Request rooms failed with status code: {}", contentResponse.getStatus());
+                    return emptyRooms;
+                }
+
+                String content = contentResponse.getContentAsString();
+                logger.trace("Request rooms completed with success: {} - status code: {}", content,
+                        contentResponse.getStatus());
+
+                Type collectionType = new TypeToken<ArrayList<Room>>() {
+                }.getType();
+
+                ArrayList<Room> rooms = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, collectionType);
+                return Objects.requireNonNullElse(rooms, emptyRooms);
+            } catch (TimeoutException | ExecutionException e) {
+                logger.debug("Request rooms failed because of {}!", e.getMessage());
+                return emptyRooms;
+            }
+        } else {
+            return emptyRooms;
+        }
+    }
+
+    public boolean registerDiscoveryListener(ThingDiscoveryService listener) {
+        if (thingDiscoveryService == null) {
+            thingDiscoveryService = listener;
+            return true;
         }
 
-        return true;
+        return false;
+    }
+
+    public boolean unregisterDiscoveryListener() {
+        if (thingDiscoveryService != null) {
+            thingDiscoveryService = null;
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * Bridge callback handler for the results of long polls.
      *
-     * It will check the result and
-     * forward the received to the bosch thing handlers.
+     * It will check the results and
+     * forward the received states to the Bosch thing handlers.
      *
      * @param result Results from Long Polling
      */
     private void handleLongPollResult(LongPollResult result) {
-        for (DeviceStatusUpdate update : result.result) {
-            if (update != null && update.state != null) {
-                logger.debug("Got update for service {} of type {}: {}", update.id, update.type, update.state);
+        for (DeviceServiceData deviceServiceData : result.result) {
+            handleDeviceServiceData(deviceServiceData);
+        }
+    }
 
-                var updateDeviceId = update.deviceId;
-                if (updateDeviceId == null) {
-                    continue;
-                }
+    /**
+     * Processes a single long poll result.
+     *
+     * @param deviceServiceData object representing a single long poll result
+     */
+    private void handleDeviceServiceData(@Nullable DeviceServiceData deviceServiceData) {
+        if (deviceServiceData != null) {
+            JsonElement state = obtainState(deviceServiceData);
 
-                logger.debug("Got update for device {}", updateDeviceId);
+            logger.debug("Got update for service {} of type {}: {}", deviceServiceData.id, deviceServiceData.type,
+                    state);
 
-                boolean handled = false;
-
-                Bridge bridge = this.getThing();
-                for (Thing childThing : bridge.getThings()) {
-                    // All children of this should implement BoschSHCHandler
-                    @Nullable
-                    ThingHandler baseHandler = childThing.getHandler();
-                    if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
-                        BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
-                        @Nullable
-                        String deviceId = handler.getBoschID();
-
-                        handled = true;
-                        logger.debug("Registered device: {} - looking for {}", deviceId, updateDeviceId);
-
-                        if (deviceId != null && updateDeviceId.equals(deviceId)) {
-                            logger.debug("Found child: {} - calling processUpdate (id: {}) with {}", handler, update.id,
-                                    update.state);
-                            handler.processUpdate(update.id, update.state);
-                        }
-                    } else {
-                        logger.warn("longPoll: child handler for {} does not implement Bosch SHC handler", baseHandler);
-                    }
-                }
-
-                if (!handled) {
-                    logger.debug("Could not find a thing for device ID: {}", updateDeviceId);
-                }
+            var updateDeviceId = deviceServiceData.deviceId;
+            if (updateDeviceId == null || state == null) {
+                return;
             }
+
+            logger.debug("Got update for device {}", updateDeviceId);
+
+            forwardStateToHandlers(deviceServiceData, state, updateDeviceId);
+        }
+    }
+
+    /**
+     * Extracts the actual state object from the given {@link DeviceServiceData} instance.
+     * <p>
+     * In some special cases like the <code>BatteryLevel</code> service the {@link DeviceServiceData} object itself
+     * contains the state.
+     * In all other cases, the state is contained in a sub-object named <code>state</code>.
+     *
+     * @param deviceServiceData the {@link DeviceServiceData} object from which the state should be obtained
+     * @return the state sub-object or the {@link DeviceServiceData} object itself
+     */
+    @Nullable
+    private JsonElement obtainState(DeviceServiceData deviceServiceData) {
+        // the battery level service receives no individual state object but rather requires the DeviceServiceData
+        // structure
+        if ("BatteryLevel".equals(deviceServiceData.id)) {
+            return GsonUtils.DEFAULT_GSON_INSTANCE.toJsonTree(deviceServiceData);
+        }
+
+        return deviceServiceData.state;
+    }
+
+    /**
+     * Tries to find handlers for the device with the given ID and forwards the received state to the handlers.
+     *
+     * @param deviceServiceData object representing updates received in long poll results
+     * @param state the received state object as JSON element
+     * @param updateDeviceId the ID of the device for which the state update was received
+     */
+    private void forwardStateToHandlers(DeviceServiceData deviceServiceData, JsonElement state, String updateDeviceId) {
+        boolean handled = false;
+
+        Bridge bridge = this.getThing();
+        for (Thing childThing : bridge.getThings()) {
+            // All children of this should implement BoschSHCHandler
+            @Nullable
+            ThingHandler baseHandler = childThing.getHandler();
+            if (baseHandler instanceof BoschSHCHandler handler) {
+                @Nullable
+                String deviceId = handler.getBoschID();
+
+                handled = true;
+                logger.debug("Registered device: {} - looking for {}", deviceId, updateDeviceId);
+
+                if (deviceId != null && updateDeviceId.equals(deviceId)) {
+                    logger.debug("Found child: {} - calling processUpdate (id: {}) with {}", handler,
+                            deviceServiceData.id, state);
+                    handler.processUpdate(deviceServiceData.id, state);
+                }
+            } else {
+                logger.warn("longPoll: child handler for {} does not implement Bosch SHC handler", baseHandler);
+            }
+        }
+
+        if (!handled) {
+            logger.debug("Could not find a thing for device ID: {}", updateDeviceId);
         }
     }
 
@@ -370,51 +517,6 @@ public class BridgeHandler extends BaseBridgeHandler {
         scheduleInitialAccess(httpClient);
     }
 
-    /**
-     * Get a list of rooms from the Smart-Home controller
-     *
-     * @throws InterruptedException in case bridge is stopped
-     */
-    private boolean getRooms() throws InterruptedException {
-        @Nullable
-        BoschHttpClient httpClient = this.httpClient;
-        if (httpClient != null) {
-            try {
-                logger.debug("Sending http request to Bosch to request rooms");
-                String url = httpClient.getBoschSmartHomeUrl("rooms");
-                ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
-
-                // check HTTP status code
-                if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
-                    logger.debug("Request rooms failed with status code: {}", contentResponse.getStatus());
-                    return false;
-                }
-
-                String content = contentResponse.getContentAsString();
-                logger.debug("Request rooms completed with success: {} - status code: {}", content,
-                        contentResponse.getStatus());
-
-                Type collectionType = new TypeToken<ArrayList<Room>>() {
-                }.getType();
-
-                ArrayList<Room> rooms = gson.fromJson(content, collectionType);
-
-                if (rooms != null) {
-                    for (Room r : rooms) {
-                        logger.info("Found room: {}", r.name);
-                    }
-                }
-
-                return true;
-            } catch (TimeoutException | ExecutionException e) {
-                logger.warn("Request rooms failed because of {}!", e.getMessage());
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
     public Device getDeviceInfo(String deviceId)
             throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
         @Nullable
@@ -427,7 +529,8 @@ public class BridgeHandler extends BaseBridgeHandler {
         Request request = httpClient.createRequest(url, GET);
 
         return httpClient.sendRequest(request, Device.class, Device::isValid, (Integer statusCode, String content) -> {
-            JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
+            JsonRestExceptionResponse errorResponse = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content,
+                    JsonRestExceptionResponse.class);
             if (errorResponse != null && JsonRestExceptionResponse.isValid(errorResponse)) {
                 if (errorResponse.errorCode.equals(JsonRestExceptionResponse.ENTITY_NOT_FOUND)) {
                     return new BoschSHCException("@text/offline.conf-error.invalid-device-id");
@@ -437,7 +540,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                                     deviceId, errorResponse.statusCode, errorResponse.errorCode));
                 }
             } else {
-                return new BoschSHCException(String.format("Request for info for device %s failed with status code %d",
+                return new BoschSHCException(String.format("Request for info of device %s failed with status code %d",
                         deviceId, statusCode));
             }
         });
@@ -447,7 +550,7 @@ public class BridgeHandler extends BaseBridgeHandler {
      * Query the Bosch Smart Home Controller for the state of the given device.
      * <p>
      * The URL used for retrieving the state has the following structure:
-     * 
+     *
      * <pre>
      * https://{IP}:8444/smarthome/devices/{deviceId}/services/{serviceName}/state
      * </pre>
@@ -470,14 +573,14 @@ public class BridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        String url = httpClient.getServiceUrl(stateName, deviceId);
+        String url = httpClient.getServiceStateUrl(stateName, deviceId);
         logger.debug("getState(): Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
         return getState(httpClient, url, stateClass);
     }
 
     /**
      * Queries the Bosch Smart Home Controller for the state using an explicit endpoint.
-     * 
+     *
      * @param <T> Type to which the resulting JSON should be deserialized to
      * @param endpoint The destination endpoint part of the URL
      * @param stateClass Class to convert the resulting JSON to
@@ -503,7 +606,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Sends a HTTP GET request in order to retrieve a state from the Bosch Smart Home Controller.
-     * 
+     *
      * @param <T> Type to which the resulting JSON should be deserialized to
      * @param httpClient HTTP client used for sending the request
      * @param url URL at which the state should be retrieved
@@ -525,7 +628,8 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         int statusCode = contentResponse.getStatus();
         if (statusCode != 200) {
-            JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
+            JsonRestExceptionResponse errorResponse = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content,
+                    JsonRestExceptionResponse.class);
             if (errorResponse != null) {
                 throw new BoschSHCException(
                         String.format("State request with URL %s failed with status code %d and error code %s", url,
@@ -566,7 +670,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
 
         // Create request
-        String url = httpClient.getServiceUrl(serviceName, deviceId);
+        String url = httpClient.getServiceStateUrl(serviceName, deviceId);
         Request request = httpClient.createRequest(url, PUT, state);
 
         // Send request
@@ -575,7 +679,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Sends a HTTP POST request without a request body to the given endpoint.
-     * 
+     *
      * @param endpoint The destination endpoint part of the URL
      * @return the HTTP response
      * @throws InterruptedException
@@ -589,7 +693,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Sends a HTTP POST request with a request body to the given endpoint.
-     * 
+     *
      * @param <T> Type of the request
      * @param endpoint The destination endpoint part of the URL
      * @param requestBody object representing the request body to be sent, may be <code>null</code>
@@ -610,5 +714,19 @@ public class BridgeHandler extends BaseBridgeHandler {
         String url = httpClient.getBoschSmartHomeUrl(endpoint);
         Request request = httpClient.createRequest(url, POST, requestBody);
         return request.send();
+    }
+
+    public @Nullable DeviceServiceData getServiceData(String deviceId, String serviceName)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        @Nullable
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            logger.warn("HttpClient not initialized");
+            return null;
+        }
+
+        String url = httpClient.getServiceUrl(serviceName, deviceId);
+        logger.debug("getState(): Requesting \"{}\" from Bosch: {} via {}", serviceName, deviceId, url);
+        return getState(httpClient, url, DeviceServiceData.class);
     }
 }

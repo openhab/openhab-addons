@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  */
 @NonNullByDefault
 public class BlueGigaConnectSelectiveResponse extends BlueGigaResponse {
-    public static int COMMAND_CLASS = 0x06;
-    public static int COMMAND_METHOD = 0x05;
+    public static final int COMMAND_CLASS = 0x06;
+    public static final int COMMAND_METHOD = 0x05;
 
     /**
      * 0 : procedure was successfully started Non-zero: An error occurred

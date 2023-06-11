@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,19 +33,19 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
 
     public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_LEGACY = getBaseSchemaBuilder(
             DynamoDBBigDecimalItem.class, true).newItemSupplier(DynamoDBBigDecimalItem::new)
-                    .addAttribute(NULLABLE_BIGDECIMAL, a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_LEGACY)
-                            .getter(DynamoDBBigDecimalItem::getState).setter(DynamoDBBigDecimalItem::setState))
-                    .build();
+            .addAttribute(NULLABLE_BIGDECIMAL, a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_LEGACY)
+                    .getter(DynamoDBBigDecimalItem::getState).setter(DynamoDBBigDecimalItem::setState))
+            .build();
 
     public static StaticTableSchema<DynamoDBBigDecimalItem> TABLE_SCHEMA_NEW = getBaseSchemaBuilder(
             DynamoDBBigDecimalItem.class, false)
-                    .newItemSupplier(DynamoDBBigDecimalItem::new)
-                    .addAttribute(NULLABLE_BIGDECIMAL,
-                            a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_NUMBER).getter(DynamoDBBigDecimalItem::getState)
-                                    .setter(DynamoDBBigDecimalItem::setState))
-                    .addAttribute(NULLABLE_LONG, a -> a.name(ATTRIBUTE_NAME_EXPIRY)
-                            .getter(AbstractDynamoDBItem::getExpiryDate).setter(AbstractDynamoDBItem::setExpiry))
-                    .build();
+            .newItemSupplier(DynamoDBBigDecimalItem::new)
+            .addAttribute(NULLABLE_BIGDECIMAL,
+                    a -> a.name(ATTRIBUTE_NAME_ITEMSTATE_NUMBER).getter(DynamoDBBigDecimalItem::getState)
+                            .setter(DynamoDBBigDecimalItem::setState))
+            .addAttribute(NULLABLE_LONG, a -> a.name(ATTRIBUTE_NAME_EXPIRY).getter(AbstractDynamoDBItem::getExpiryDate)
+                    .setter(AbstractDynamoDBItem::setExpiry))
+            .build();
 
     /**
      * We get the following error if the BigDecimal has too many digits

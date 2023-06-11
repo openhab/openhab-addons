@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,10 +37,10 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -51,9 +51,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class BoschHttpClient extends HttpClient {
-    private static final Gson GSON = new Gson();
 
-    private final Logger logger = LoggerFactory.getLogger(BoschHttpClient.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String ipAddress;
     private final String systemPassword;
@@ -65,19 +64,28 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
-     * Returns the public information URL for the Bosch SHC clients, using port 8446.
+     * Returns the public information URL for the Bosch SHC client addressed with the given IP address, using port 8446
      * See https://github.com/BoschSmartHome/bosch-shc-api-docs/blob/master/postman/README.md
      *
      * @return URL for public information
      */
+    public static String getPublicInformationUrl(String ipAddress) {
+        return String.format("https://%s:8446/smarthome/public/information", ipAddress);
+    }
+
+    /**
+     * Returns the public information URL for the current Bosch SHC client.
+     *
+     * @return URL for public information
+     */
     public String getPublicInformationUrl() {
-        return String.format("https://%s:8446/smarthome/public/information", this.ipAddress);
+        return getPublicInformationUrl(this.ipAddress);
     }
 
     /**
      * Returns the pairing URL for the Bosch SHC clients, using port 8443.
      * See https://github.com/BoschSmartHome/bosch-shc-api-docs/blob/master/postman/README.md
-     * 
+     *
      * @return URL for pairing
      */
     public String getPairingUrl() {
@@ -86,8 +94,8 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Returns a Bosch SHC URL for the endpoint, using port 8444.
-     * 
-     * @param endpoint a endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
+     *
+     * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return Bosch SHC URL for passed endpoint
      */
     public String getBoschShcUrl(String endpoint) {
@@ -96,8 +104,8 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Returns a SmartHome URL for the endpoint - shortcut of {@link BoschSslUtil::getBoschShcUrl()}
-     * 
-     * @param endpoint a endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
+     *
+     * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return SmartHome URL for passed endpoint
      */
     public String getBoschSmartHomeUrl(String endpoint) {
@@ -105,15 +113,41 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
-     * Returns a device & service URL.
+     * Returns a URL to get or put a service state.
+     * <p>
+     * Example:
+     *
+     * <pre>
+     * https://localhost:8444/smarthome/devices/hdm:ZigBee:000d6f0016d1cdae/services/AirQualityLevel/state
+     * </pre>
+     *
      * see https://apidocs.bosch-smarthome.com/local/index.html
-     * 
+     *
      * @param serviceName the name of the service
      * @param deviceId the device identifier
-     * @return SmartHome URL for passed endpoint
+     * @return a URL to get or put a service state
+     */
+    public String getServiceStateUrl(String serviceName, String deviceId) {
+        return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
+    }
+
+    /**
+     * Returns a URL to get general information about a service.
+     * <p>
+     * Example:
+     *
+     * <pre>
+     * https://localhost:8444/smarthome/devices/hdm:ZigBee:000d6f0016d1cdae/services/BatteryLevel
+     * </pre>
+     *
+     * In some cases this URL has to be used to get the service state, for example for battery levels.
+     *
+     * @param serviceName the name of the service
+     * @param deviceId the device identifier
+     * @return a URL to retrieve general service information
      */
     public String getServiceUrl(String serviceName, String deviceId) {
-        return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
+        return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s", deviceId, serviceName));
     }
 
     /**
@@ -142,8 +176,10 @@ public class BoschHttpClient extends HttpClient {
                 logger.debug("Online check failed with status code: {}", contentResponse.getStatus());
                 return false;
             }
-        } catch (TimeoutException | ExecutionException | NullPointerException e) {
-            logger.debug("Online check failed because of {}!", e.getMessage());
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.debug("Online check failed because of {}!", e.getMessage(), e);
             return false;
         }
     }
@@ -168,8 +204,10 @@ public class BoschHttpClient extends HttpClient {
                 logger.debug("Access check failed with status code: {}", contentResponse.getStatus());
                 return false;
             }
-        } catch (TimeoutException | ExecutionException | NullPointerException e) {
-            logger.debug("Access check failed because of {}!", e.getMessage());
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.debug("Access check failed because of {}!", e.getMessage(), e);
             return false;
         }
     }
@@ -177,7 +215,7 @@ public class BoschHttpClient extends HttpClient {
     /**
      * Pairs this client with the Bosch SHC.
      * Press pairing button on the Bosch Smart Home Controller!
-     * 
+     *
      * @return true if pairing was successful, otherwise false
      * @throws InterruptedException in case of an interrupt
      */
@@ -214,8 +252,8 @@ public class BoschHttpClient extends HttpClient {
                 logger.info("Pairing failed with response status {}.", contentResponse.getStatus());
                 return false;
             }
-        } catch (TimeoutException | CertificateEncodingException | KeyStoreException | NullPointerException e) {
-            logger.warn("Pairing failed with exception {}", e.getMessage());
+        } catch (TimeoutException | CertificateEncodingException | KeyStoreException | RuntimeException e) {
+            logger.warn("Pairing failed with exception {}", e.getMessage(), e);
             return false;
         } catch (ExecutionException e) {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
@@ -228,7 +266,7 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Creates a HTTP request.
-     * 
+     *
      * @param url for the HTTP request
      * @param method for the HTTP request
      * @return created HTTP request instance
@@ -239,22 +277,22 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Creates a HTTP request.
-     * 
+     *
      * @param url for the HTTP request
      * @param method for the HTTP request
      * @param content for the HTTP request
      * @return created HTTP request instance
      */
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
-        logger.trace("Create request for http client {}", this.toString());
+        logger.trace("Create request for http client {}", this);
 
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
                 .header("api-version", "2.1") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/46
                 .timeout(10, TimeUnit.SECONDS); // Set default timeout
 
         if (content != null) {
-            String body = GSON.toJson(content);
-            logger.trace("create request for {} and content {}", url, content.toString());
+            String body = GsonUtils.DEFAULT_GSON_INSTANCE.toJson(content);
+            logger.trace("create request for {} and content {}", url, content);
             request = request.content(new StringContentProvider(body));
         } else {
             logger.trace("create request for {}", url);
@@ -265,7 +303,7 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Sends a request and expects a response of the specified type.
-     * 
+     *
      * @param request Request to send
      * @param responseContentClass Type of expected response
      * @param contentValidator Checks if the parsed response is valid
@@ -279,7 +317,7 @@ public class BoschHttpClient extends HttpClient {
             Predicate<TContent> contentValidator,
             @Nullable BiFunction<Integer, String, BoschSHCException> errorResponseHandler)
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        logger.trace("Send request: {}", request.toString());
+        logger.trace("Send request: {}", request);
 
         ContentResponse contentResponse = request.send();
 
@@ -290,15 +328,16 @@ public class BoschHttpClient extends HttpClient {
             if (errorResponseHandler != null) {
                 throw errorResponseHandler.apply(statusCode, textContent);
             } else {
-                throw new ExecutionException(String.format("Request failed with status code %s", statusCode), null);
+                throw new ExecutionException(String.format("Send request failed with status code %s", statusCode),
+                        null);
             }
         }
 
-        logger.debug("Received response: {} - status: {}", textContent, statusCode);
+        logger.debug("Send request completed with success: {} - status code: {}", textContent, statusCode);
 
         try {
             @Nullable
-            TContent content = GSON.fromJson(textContent, responseContentClass);
+            TContent content = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(textContent, responseContentClass);
             if (content == null) {
                 throw new ExecutionException(String.format("Received no content in response, expected type %s",
                         responseContentClass.getName()), null);

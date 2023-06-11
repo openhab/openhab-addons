@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ public interface AvailabilityTracker {
      * @param payload_available
      * @param payload_not_available
      */
-    public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available);
+    void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available);
 
     /**
      * Adds an availability topic to determine the availability of a device.
@@ -47,18 +47,18 @@ public interface AvailabilityTracker {
      * @param transformationServiceProvider The service provider to obtain the transformation service (required only if
      *            transformation_pattern is not null).
      */
-    public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
+    void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
             @Nullable String transformation_pattern,
             @Nullable TransformationServiceProvider transformationServiceProvider);
 
-    public void removeAvailabilityTopic(String availability_topic);
+    void removeAvailabilityTopic(String availability_topic);
 
-    public void clearAllAvailabilityTopics();
+    void clearAllAvailabilityTopics();
 
     /**
      * resets the indicator, if messages have been received.
      * <p>
      * This is used to time out the availability of the device after some time without receiving a message.
      */
-    public void resetMessageReceived();
+    void resetMessageReceived();
 }

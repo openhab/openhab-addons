@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
-import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
@@ -83,10 +82,7 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
-            StatusUpdateListener listener = getListener();
-            if (listener != null) {
-                listener.update(getCommunicationStatus());
-            }
+            updateListenerStatus();
             handler.getWebInterface().enqueueCommand(this);
         } else {
             String json = getContentAsString(StandardCharsets.UTF_8);

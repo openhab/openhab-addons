@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
@@ -26,10 +28,11 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
- *
+ * @author MArcel Eckert - Initial contribution
  * @author Marcel Eckert - based on D2_01_0F_NodON.java and D2_01_12_NodOn.java
  * 
  */
+@NonNullByDefault
 public class D2_05_00_NodON extends D2_05_00 {
 
     public D2_05_00_NodON() {
@@ -42,10 +45,10 @@ public class D2_05_00_NodON extends D2_05_00 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (channelId.equals(CHANNEL_REPEATERMODE)) {
             if (command == RefreshType.REFRESH) {
-                senderId = null; // make this message invalid as we do not support refresh of repeter status
+                senderId = new byte[0]; // make this message invalid as we do not support refresh of repeter status
             } else if (command instanceof StringType) {
                 switch (((StringType) command).toString()) {
                     case EnOceanBindingConstants.REPEATERMODE_LEVEL_1:

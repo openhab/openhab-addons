@@ -1,7 +1,5 @@
 # VoiceRSS Text-to-Speech
 
-## Overview
-
 VoiceRSS is an Internet based TTS service hosted at <https://api.voicerss.org>.
 You must obtain an API Key to get access to this service.
 The free version allows you to make up to 350 requests per day; for more you may need a commercial subscription.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Added Airthings Wave Mini support
  */
 @NonNullByDefault
-abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
+public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
 
     private static final int CHECK_PERIOD_SEC = 10;
 
@@ -283,5 +283,5 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
      *
      * @param is the content of the bluetooth characteristic
      */
-    abstract protected void updateChannels(int[] is);
+    protected abstract void updateChannels(int[] is);
 }

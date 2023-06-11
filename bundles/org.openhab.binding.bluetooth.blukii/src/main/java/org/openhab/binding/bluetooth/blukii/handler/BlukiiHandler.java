@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.blukii.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
-import org.openhab.binding.bluetooth.BluetoothDeviceListener;
 import org.openhab.binding.bluetooth.blukii.BlukiiBindingConstants;
 import org.openhab.binding.bluetooth.blukii.internal.data.BlukiiData;
 import org.openhab.binding.bluetooth.blukii.internal.data.BlukiiDataDecoder;
@@ -34,7 +33,7 @@ import org.openhab.core.thing.Thing;
  * @author Markus Rathgeb - Split data (decoding and types) and handler
  */
 @NonNullByDefault
-public class BlukiiHandler extends BeaconBluetoothHandler implements BluetoothDeviceListener {
+public class BlukiiHandler extends BeaconBluetoothHandler {
 
     private final BlukiiDataDecoder decoder = new BlukiiDataDecoder();
 

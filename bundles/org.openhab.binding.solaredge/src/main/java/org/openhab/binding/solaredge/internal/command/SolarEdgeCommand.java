@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
 import org.eclipse.jetty.client.api.Response.FailureListener;
 import org.eclipse.jetty.client.api.Response.SuccessListener;
-import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 
 /**
  * public interface for all commands
@@ -36,17 +35,4 @@ public interface SolarEdgeCommand extends SuccessListener, FailureListener, Cont
      * @param asyncclient
      */
     void performAction(HttpClient asyncclient);
-
-    /**
-     * updates the listener's status
-     *
-     */
-    void updateListenerStatus();
-
-    /**
-     * register a listener
-     *
-     * @param listener
-     */
-    void setListener(StatusUpdateListener listener);
 }

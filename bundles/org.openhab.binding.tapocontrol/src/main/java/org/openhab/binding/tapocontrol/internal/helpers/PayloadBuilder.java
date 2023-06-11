@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class PayloadBuilder {
 
     /**
      * Get JSON Payload (STRING)
-     * 
+     *
      * @return String JSON-Payload
      */
     public String getPayload() {
@@ -66,7 +66,7 @@ public class PayloadBuilder {
 
     /**
      * Get JSON Payload (JSON-Object)
-     * 
+     *
      * @return JsonObject JSON-Payload
      */
     public JsonObject getJsonPayload() {
@@ -74,7 +74,9 @@ public class PayloadBuilder {
         long timeMils = System.currentTimeMillis();// * 1000;
 
         payload.addProperty("method", this.method);
-        payload.add("params", this.parameters);
+        if (this.parameters.size() > 0) {
+            payload.add("params", this.parameters);
+        }
         payload.addProperty("requestTimeMils", timeMils);
 
         return payload;
@@ -85,6 +87,6 @@ public class PayloadBuilder {
      * remove all parameters
      */
     public void flushParameters(String command) {
-        this.parameters = new JsonObject();
+        parameters = new JsonObject();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public interface PresenceDetectionListener {
      *            A partial result always means that the device is reachable, but not
      *            all methods have returned a value yet.
      */
-    public void partialDetectionResult(PresenceDetectionValue value);
+    void partialDetectionResult(PresenceDetectionValue value);
 
     /**
      * This method is called by the {@see PresenceDetectionService}
@@ -39,5 +39,5 @@ public interface PresenceDetectionListener {
      *
      * @param value The final result of the presence detection process.
      */
-    public void finalDetectionResult(PresenceDetectionValue value);
+    void finalDetectionResult(PresenceDetectionValue value);
 }

@@ -7,7 +7,7 @@ The binding uses Ambient Weather's real-time API, so updates from weather statio
 
 The binding currently supports weather data from these weather stations.
 
-| Thing                    | ID        | 
+| Thing                    | ID        |
 |--------------------------|-----------|
 | Account                  | bridge    |
 | WS-0900-IP               | ws0900ip  |
@@ -29,8 +29,8 @@ Automatic discovery is currently not supported due to the lack of weather statio
 
 | Parameter        | Parameter ID      | Required/Optional | Description |
 |------------------|-------------------|-------------------|-------------|
-| API Key          | apiKey            | Required          | Obtain the API key on the *My Account* page of your `ambientweather.net` dashboard. |
-| Application Key  | apiKey            | Required          | Obtain the Application key on the *My Account* page of your `ambientweather.net` dashboard. |
+| API Key          | apiKey            | Required          | Obtain the API key on the _My Account_ page of your `ambientweather.net` dashboard. |
+| Application Key  | apiKey            | Required          | Obtain the Application key on the _My Account_ page of your `ambientweather.net` dashboard. |
 
 ### Weather Station
 
@@ -98,7 +98,7 @@ The following channels are supported by the binding. Note that specific weather 
 
 ### Things
 
-```
+```java
 Bridge ambientweather:bridge:account "Ambient Weather Account" [ applicationKey="bd7eb3fe87f74e9.....", apiKey="efe88d6202be43e6a40....." ] {
     Thing ws1400ip 1400 "Ambient Weather WS-1400-IP" [ macAddress="00:ab:cd:00:00:01" ]
     Thing ws8482 8482 "Ambient Weather WS-8482" [ macAddress="00:ab:cd:00:00:02" ]
@@ -107,7 +107,7 @@ Bridge ambientweather:bridge:account "Ambient Weather Account" [ applicationKey=
 
 ### Items
 
-```
+```java
 // WS-1400-IP Weather Station
 String WS1400IP_StationName  "Station Name [%s]" { channel="ambientweather:ws1400ip:account:1400:station#name" }
 String WS1400IP_StationLocation "Station Location [%s]" { channel="ambientweather:ws1400ip:account:1400:station#location" }
@@ -173,7 +173,7 @@ String WS8482_SoilSensorBattery "Remote Battery [MAP(ambient-battery.map):%s]" {
 
 #### File ambient-battery.map
 
-```
+```text
 -=UNKNOWN
 NULL=UNKNOWN
 1=GOOD
@@ -182,7 +182,7 @@ NULL=UNKNOWN
 
 ### Sitemap
 
-```
+```perl
 Text label="Weather Station" icon="sun_clouds" {
     Frame {
         Text item=WS1400IP_ObservationTime label="Observation Time [%1$tm/%1$td %1$tl:%1$tM %1$tp]"
@@ -231,19 +231,19 @@ Text label="Weather Station" icon="sun_clouds" {
 
 Adding support for a new weather station type involves changes to the source code in just a few places.
 
-#### Add a New Thing Type in AmbientWeatherBindingConstants.java
+### Add a New Thing Type in AmbientWeatherBindingConstants.java
 
 Define a new `ThingTypeUID` for the new station and add it to the `SUPPORTED_THING_TYPES_UIDS` Collection.
 
 Add a channel group for the new station.
 
-#### Create OH-INF/thing/\<station-model\>.xml
+### Create OH-INF/thing/\<station-model\>.xml
 
 Add thing type and channel group specific to the data elements supported by this weather station.
 Modeling this after an existing thing type that shares many of the channels is the easiest starting point.
 You can determine the weather data elements returned for the weather station by putting the binding into debug mode and reviewing the JSON object returned by the Ambient Weather API.
 
-#### Create Processor Class <StationModel>Processor
+### Create Processor Class <StationModel>Processor
 
 Add a class in `org.openhab.binding.ambientweather.internal.processor` that defines the channels supported by this station type.
 
@@ -251,14 +251,14 @@ Add the following two methods.
 
 Again, the easiest approach is to model this class after a class for a similar weather station type.
 
-##### Method: processInfoUpdate
+#### Method: processInfoUpdate
 
 Updates the channels for station name and location.
 
-##### Method: processWeatherData
+#### Method: processWeatherData
 
 Updates channels for weather data.
 
-#### Update ProcessorFactory.java
+### Update ProcessorFactory.java
 
 Add new Processor class definition to `ProcessorFactory.java`, and add a new case to the switch statement to return the new processor.

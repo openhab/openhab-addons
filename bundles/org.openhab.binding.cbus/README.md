@@ -15,7 +15,6 @@ Without that they will remain on the last value set and wont match what is shown
 First the CGate Connection bridge needs to be configured with the ip address of the computer running the C-Gate software.
 After this a Bridge is creaed for each network configured on the CBus Network. The CBus Project Name and the network Id for that network
 
-
 ## Supported Things
 
 This binding support 6 different things types
@@ -31,7 +30,7 @@ This binding support 6 different things types
 
 When a discovery scan is started in the UI, Things are discovered for the groups that are found on the CBus network.
 
-##Channels
+## Channels
 
 At startup the binding will scan the network for the values of all the groups and set those on the appropriate channels.
 It is not possible to fetch the value of a Trigger Group so those values will only be updated when a trigger is set on the CBus network.
@@ -40,32 +39,32 @@ It is not possible to fetch the value of a Trigger Group so those values will on
 
 Light things have 2 channels which show the current state of the group on the cbus network and can also set the state of the group:-
 
-* **state** - On/Off state of the light
-* **level** - The level of the channel between 0 and 100
+- **state** - On/Off state of the light
+- **level** - The level of the channel between 0 and 100
 
 ### Temperature
 
 Temperature things have 1 channel which shows the current value. This is read-only and will not set the value on the CBus Network.
 
-* **temp** - Temperature value
+- **temp** - Temperature value
 
 ### Trigger
 
 Trigger things have 1 channel which shows the current trigger value on the cbus network and can be used to set a trigger value on the CBus Network.
 
-* **value** - CBus Trigger value
+- **value** - CBus Trigger value
 
 ### Dali
 
 Dali things have 1 channel which shows the current value on the cbus network and can be used to set a value on the CBus Network.
 
-* **level** - Value from the DALI node
+- **level** - Value from the DALI node
 
 ## Example
 
 ### cbus.things
 
-```
+```java
 
 /* Need a cgate bridge to connect to cgate and then 1 network bridge for each network on that system */
 Bridge cbus:cgate:cgatenetwork "file - cgate" [ ipAddress="127.0.0.1"] {
@@ -84,7 +83,7 @@ Thing cbus:dali:cgatenetwork:cbusnetwork:dali3 "dali 3 value" (cbus:network:cgat
 
 ### cbus.items
 
-```
+```java
 Dimmer light31Dimmer { channel="cbus:light:cgatenetwork:cbusnetwork:light31:level"}
 Switch light31Switch { channel="cbus:light:cgatenetwork:cbusnetwork:light31:state"}
 Number trigger1Value { channel="cbus:trigger:cgatenetwork:cbusnetwork:trigger1:value"}
@@ -94,7 +93,7 @@ Dimmer dali3 { channel="cbus:dali:cgatenetwork:cbusnetwork:dali3:level"}
 
 ### cbusdemo.sitemap
 
-```
+```perl
 sitemap cbusdemo label="CBus Binding Demo"
 {
     Frame label="light" {

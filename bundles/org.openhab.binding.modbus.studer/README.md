@@ -2,9 +2,9 @@
 
 This extension adds support for the Studer protocol.
 
-Studer Innotec, founded in 1987 by Roland Studer, is an ISO certified company that develops and manufactures inverters, inverter/chargers and MPPT solar charge controllers to communicate over the Modbus protocol entirely in Switzerland 
+Studer Innotec, founded in 1987 by Roland Studer, is an ISO certified company that develops and manufactures inverters, inverter/chargers and MPPT solar charge controllers to communicate over the Modbus protocol entirely in Switzerland
 
-For a list of certified products see this page: https://www.studer-innotec.com/
+For a list of certified products see this page: <https://www.studer-innotec.com/>
 
 ## Supported Things
 
@@ -17,7 +17,6 @@ Note, that the things will show up under the Modbus binding.
 | xtender        | For the Xtender models for system capacities from 0.5kVA to 72kVA that allow for the optimal use of available energy | ![Xtender](doc/xtender.png)         |
 | variotrack     | For the VarioTrack models of MPPT solar charge controllers for systems with solar PV capacity from 1 - 75kWp         | ![VarioTrack](doc/variotrack.png)   |
 | variostring    | For the VarioString models of MPPT solar charge controllers for systems with solar PV capacity from 4                | ![VarioString](doc/variostring.png) |
-
 
 ## Thing Configuration
 
@@ -46,7 +45,6 @@ More Details about that can be found in the technical specification and appendix
 
 Multicast writes on any devices of given class, but reads only on the first available device (Not Summary!). As currently there are no writes available, 10/20/40 is useless for now.
 
-
 The following parameters are valid for all thing types:
 
 | Parameter | Type    | Required | Default if omitted      | Description                                                                |
@@ -58,7 +56,7 @@ The following parameters are valid for all thing types:
 
 The following Channels, and their associated channel types are shown below divided by device.
 
-#### BSP 
+### BSP
 
 All channels read for a BSP device
 
@@ -70,7 +68,7 @@ All channels read for a BSP device
 | stateOfCharge      | Number:Dimensionless     | State of Charge       |
 | batteryTemperature | Number:Temperature       | Battery temperature   |
 
-#### Xtender 
+### Xtender
 
 All channels read for a Xtender device
 
@@ -87,7 +85,7 @@ All channels read for a Xtender device
 | operatingState    | String                   | Operating state         |
 | stateInverter     | String                   | State of the inverter   |
 
-#### VarioTrack 
+### VarioTrack
 
 All channels read for a VarioTrack device
 
@@ -102,7 +100,7 @@ All channels read for a VarioTrack device
 | operatingMode        | String                   | Operating mode                            |
 | stateVarioTrack      | String                   | State of the VarioTrack                   |
 
-#### VarioString 
+### VarioString
 
 All channels read for a VarioString device
 
@@ -131,7 +129,7 @@ All channels read for a VarioString device
 
 ### Thing Configuration
 
-```
+```java
 Bridge modbus:serial:bridge [port="/dev/ttyUSB0",baud=9600,dataBits=8,parity="even",stopBits="1.0",encoding="rtu"]
 ..or..
 Bridge modbus:tcp:bridge [host="192.168.178.56", port=502, rtuEncoded=true]
@@ -144,12 +142,11 @@ Thing modbus:variostring:bridge:variostring_right "Xtender" (modbus:serial:modbu
 Thing modbus:bsp:bridge:byd "BydBox" (modbus:serial:modbusbridge) [ slaveAddress=61, refresh=5 ]
 ```
 
-
 Note: Make sure that refresh and slave address are numerical, without quotes.
 
 ### Item Configuration
 
-```
+```java
 Number Studer_Xtender_Phase1_InputVoltage "Input Voltage [%.2f V]"          {channel="modbus:xtender:bridge:xtender_Phase1:inputVoltage"}
 Number Studer_Xtender_Phase1_InputCurrent "Input Current [%.2f A]"          {channel="modbus:xtender:bridge:xtender_Phase1:inputCurrent"}
 String Studer_Xtender_Phase1_StateInverter "State: [%s]"                    {channel="modbus:xtender:bridge:xtender_Phase1:stateInverter"}
@@ -166,7 +163,7 @@ Number Studer_BSP_batteryVoltage     "Battery Voltage: [%s]"                {cha
 
 ### Sitemap Configuration
 
-```
+```perl
 Text item=Studer_Xtender_Phase1_InputVoltage
 Text item=Studer_Xtender_Phase1_InputCurrent
 Text item=Studer_Xtender_Phase1_StateInverter

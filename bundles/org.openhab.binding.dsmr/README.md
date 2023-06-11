@@ -6,10 +6,10 @@ When connecting this port from a serial port the data can be read out.
 
 This binding reads the P1-port of:
 
-* Dutch Smart Meters that comply to NTA8130, DSMR v2.1, DSMR v2.2, DSMR v3.0, DSMR v4.0, DSMR v4.04, and DSMR 5.0.
-* Belgium Smart Meters that comply to e-MUCS v1.0.
-* Luxembourg’s electricity meter "Smarty" that comply to V1.0.
-* Austrian electricity meters.
+- Dutch Smart Meters that comply to NTA8130, DSMR v2.1, DSMR v2.2, DSMR v3.0, DSMR v4.0, DSMR v4.04, and DSMR 5.0.
+- Belgium Smart Meters that comply to e-MUCS v1.0.
+- Luxembourg’s electricity meter "Smarty" that comply to V1.0.
+- Austrian electricity meters.
 
 Although DSMR v4.2 is not an official specification, the binding has support for this version.
 
@@ -75,8 +75,7 @@ The configuration for the `smartyBridge` consists of the following parameters:
 | additionalKey       | Additional key for meters that require a secondary key. Some meters in Austria require this                 |
 | receivedTimeout     | The time out period in which messages are expected to arrive, default is 120 seconds                        |
 
-
-**Note:** *The manual configuration is only needed if the DSMR-device requires non DSMR-standard Serial Port parameters (i.e. something different then `115200 8N1` or `9600 7E1`)*
+**Note:** _The manual configuration is only needed if the DSMR-device requires non DSMR-standard Serial Port parameters (i.e. something different then `115200 8N1` or `9600 7E1`)_
 
 ### Troubleshooting
 
@@ -110,30 +109,30 @@ Supported meters:
 | ACE4000 GTMM Mk3 Gas meter                      | `gas_ace4000`                | 3             | 1 hour       |
 | DSMR V2.1 Gas meter                             | `gas_v2_1`                   | 0             | 24 hours     |
 | DSMR V2.2 Gas meter                             | `gas_v2_2`                   | 0             | 24 hours     |
-| DSMR V3.0 Gas meter                             | `gas_v3_0`                   | *note 1*      | 1 hour       |
-| e-MUCS V1.0 Gas meter                           | `gas_emucs_v1_0`             | *note 1*      | ?            |
+| DSMR V3.0 Gas meter                             | `gas_v3_0`                   | _note 1_      | 1 hour       |
+| e-MUCS V1.0 Gas meter                           | `gas_emucs_v1_0`             | _note 1_      | ?            |
 | ACE4000 GTMM Mk3 Cooling meter                  | `cooling_ace4000`            | 6             | 1 hour       |
 | DSMR V2.2 Cooling meter                         | `cooling_v2_2`               | 0             | 1 hour       |
 | ACE4000 GTMM Mk3 Heating meter                  | `heating_ace4000`            | 4             | 1 hour       |
 | DSMR V2.2 Heating meter                         | `heating_v2_2`               | 0             | 1 hour       |
 | ACE4000 GTMM Mk3 Water meter                    | `water_ace4000`              | 5             | 1 hour       |
 | DSMR V2.2 Water meter                           | `water_v2_2`                 | 0             | 1 hour       |
-| DSMR V3.0 Water meter                           | `water_v3_0`                 | *note 1*      | 1 hour       |
+| DSMR V3.0 Water meter                           | `water_v3_0`                 | _note 1_      | 1 hour       |
 | ACE4000 GTMM Mk3 1st Slave Electricity meter    | `slave_electricity1_ace4000` | 1             | 1 hour       |
 | ACE4000 GTMM Mk3 2nd Slave Electricity meter    | `slave_electricity2_ace4000` | 2             | 1 hour       |
-| DSMR V4.x Slave Electricity meter               | `slave_electricity_v4`       | *note 1*      | 1 hour       |
-| DSMR V5 Slave Electricity meter                 | `slave_electricity_v5`       | *note 1*      | 5 minutes    |
-| DSMR V3.0 Generic meter                         | `generic_v3_0`               | *note 1*      | 1 hour       |
-| DSMR V3.0 Giga Joule meter (heating or cooling) | `gj_v3_0`                    | *note 1*      | 1 hour       |
-| DSMR V4.x Giga Joule meter (heating or cooling) | `gj_v4`                      | *note 1*      | 1 hour       |
-| DSMR V5 Giga Joule meter (heating or cooling)   | `gj_v5_0`                    | *note 1*      | 5 minutes    |
-| DSMR V4.x m3 meter (gas or water)               | `m3_v4`                      | *note 1*      | 1 hour       |
-| DSMR V5 m3 meter (gas or water)                 | `m3_v5_0`                    | *note 1*      | 5 minutes    |
+| DSMR V4.x Slave Electricity meter               | `slave_electricity_v4`       | _note 1_      | 1 hour       |
+| DSMR V5 Slave Electricity meter                 | `slave_electricity_v5`       | _note 1_      | 5 minutes    |
+| DSMR V3.0 Generic meter                         | `generic_v3_0`               | _note 1_      | 1 hour       |
+| DSMR V3.0 Giga Joule meter (heating or cooling) | `gj_v3_0`                    | _note 1_      | 1 hour       |
+| DSMR V4.x Giga Joule meter (heating or cooling) | `gj_v4`                      | _note 1_      | 1 hour       |
+| DSMR V5 Giga Joule meter (heating or cooling)   | `gj_v5_0`                    | _note 1_      | 5 minutes    |
+| DSMR V4.x m3 meter (gas or water)               | `m3_v4`                      | _note 1_      | 1 hour       |
+| DSMR V5 m3 meter (gas or water)                 | `m3_v5_0`                    | _note 1_      | 5 minutes    |
 
-*note 1*. The channel of these meters is dependent on the physical installation and corresponds to the M-Bus channel.
-You can ask your supplier / installer for this information or you can retrieve it from the logfiles (see *Determine M-Bus channel*).
+_note 1_. The channel of these meters is dependent on the physical installation and corresponds to the M-Bus channel.
+You can ask your supplier / installer for this information or you can retrieve it from the logfiles (see _Determine M-Bus channel_).
 
-#### Configuration
+### Configuration
 
 The configuration for the meters consists of the following parameters:
 
@@ -142,10 +141,9 @@ The configuration for the meters consists of the following parameters:
 | refresh             | Time in seconds with which the state of the device is updated. Default is 60 seconds |
 | channel             | M-Bus channel. See the table above                                                   |
 
+#### Examples
 
-**Examples**
-
-```
+```java
 Bridge dsmr:dsmrBridge:myDSMRDevice [serialPort="/dev/ttyUSB0"] {
     Things:
         device_v5 dsmrDeviceV5 [channel=-1]
@@ -165,7 +163,6 @@ The following channels are supported:
 - Y channel is supported
 - \- channel is not supported
 - O channel is supported only if the device has this functionality
-
 
 | Channel Type ID                                  | Item Type                | Description                                                            | Ace4000 | DSMR V2.1 | DSMR V2.2 | DSMR V3.0 | DSMR V4.0 | DSMR V4.0.4 | DSMR V4.2 | DSMR V5 | SMARTY V1.0 | e-MUCS V1.0 | Austian |
 |--------------------------------------------------|--------------------------|------------------------------------------------------------------------|---------|-----------|-----------|-----------|-----------|-------------|-----------|---------|-------------|-------------|---------|
@@ -214,8 +211,8 @@ The following channels are supported:
 | `emeter_power_failures`                          | Number                   | Number of power failures                                               | -       | -         | -         | -         | Y         | Y           | Y         | Y       | Y           | -           | -       |
 | `emeter_long_power_failures`                     | Number                   | Number of long power failures                                          | -       | -         | -         | -         | Y         | Y           | Y         | Y       | -           | -           | -       |
 | `emeter_power_failure_log_entries`               | Number                   | Number of entries in the power failure log                             | -       | -         | -         | -         | Y         | Y           | Y         | Y       | Y           | -           | -       |
-| `emeter_power_failure_log_timestamp[x]` *note 2* | DateTime                 | Timestamp for entry [x] in the power failure log                       | -       | -         | -         | -         | Y         | Y           | Y         | Y       | Y           | -           | -       |
-| `emeter_power_failure_log_duration[x]` *note 2*  | Number:Time              | Duration for entry [x] the power failure log                           | -       | -         | -         | -         | Y         | Y           | Y         | Y       | Y           | -           | -       |
+| `emeter_power_failure_log_timestamp[x]` _note 2_ | DateTime                 | Timestamp for entry [x] in the power failure log                       | -       | -         | -         | -         | Y         | Y           | Y         | Y       | Y           | -           | -       |
+| `emeter_power_failure_log_duration[x]` _note 2_  | Number:Time              | Duration for entry [x] the power failure log                           | -       | -         | -         | -         | Y         | Y           | Y         | Y       | Y           | -           | -       |
 | `emeter_voltage_sags_l1`                         | Number                   | Number of voltage sags L1                                              | -       | -         | -         | -         | Y         | Y           | Y         | Y       | Y           | -           | -       |
 | `emeter_voltage_sags_l2`                         | Number                   | Number of voltage sags L2                                              | -       | -         | -         | -         | O         | O           | O         | O       | O           | -           | -       |
 | `emeter_voltage_sags_l3`                         | Number                   | Number of voltage sags L3                                              | -       | -         | -         | -         | O         | O           | O         | O       | O           | -           | -       |
@@ -301,7 +298,7 @@ The following channels are supported:
 | `wmeter_value_v3`                                | Number:Volume            | Water Delivery past period                                             | -       | -         | -         | Y         | -         | -           | -         | -       | -           | -           | -       |
 | `meter_valve_switch_position`                    | Number                   | Water Meter Valve position                                             | -       | -         | -         | Y         | -         | -           | -         | -       | -           | -           | -       |
 
-*note 2*. The power failure log has a dynamic number of entries starting at `0`.
+_note 2_. The power failure log has a dynamic number of entries starting at `0`.
 So `emeter_power_failure_log_timestamp0`, `emeter_power_failure_log_duration0` refers to the first entry,
 `emeter_power_failure_log_timestamp1`, `emeter_power_failure_log_duration1` refers to the second entry, etc.
 
@@ -314,13 +311,13 @@ Channel identifier: `dsmr:<ThingTypeID>:<bridge id>:<id>:<channel type id>`
 
 The following configuration must to be added to an item configuration file. E.g. `things/dsmr.items`
 
-```
+```java
 ItemType <name> "<description>" (<Group>) {channel="<Channel identifier>"}
 ```
 
-**Examples**
+##### Examples
 
-```
+```java
 Number:Energy MeterDeliveryTariff0 "Delivered Low Tariff [%.3f kWh]" {channel="dsmr:electricity_v5_0:mysmartmeter:electricityV5:emeter_delivery_tariff1}
 ```
 
@@ -328,7 +325,7 @@ Number:Energy MeterDeliveryTariff0 "Delivered Low Tariff [%.3f kWh]" {channel="d
 
 `things/dsmr.things`
 
-```
+```java
 Bridge dsmr:dsmrBridge:mysmartmeter [serialPort="/dev/ttyUSB0"] {
     Things:
         device_v5 dsmrV5Device [channel=-1]
@@ -338,7 +335,7 @@ Bridge dsmr:dsmrBridge:mysmartmeter [serialPort="/dev/ttyUSB0"] {
 
 `things/dsmr.items`
 
-```
+```java
 String P1Version "P1 Version output" {channel="dsmr:device_v5:mysmartmeter:dsmrV5Device:p1_version_output"}
 Number:Energy MeterDeliveryTariff0 "Delivered Low Tariff [%.3f kWh]" {channel="dsmr:electricity_v5_0:mysmartmeter:electricityV5:emeter_delivery_tariff1"}
 Number:Energy MeterDeliveryTariff1 "Delivered High Tariff [%.3f kWh]" {channel="dsmr:electricity_v5_0:mysmartmeter:electricityV5:emeter_delivery_tariff2"}
@@ -351,7 +348,7 @@ By manually trigger the discovery process, you can use the logging to find out a
 
 Here you find the ThingTypeID (it is stated only in capitals) and the M-Bus channel. The above example would lead to the following Thing definition
 
-```
+```java
 Bridge definition {
     Things:
         m3_v5_0 mygasmeter [channel=1]

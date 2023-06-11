@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -27,6 +29,7 @@ import org.openhab.core.types.State;
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public class A5_14_01 extends A5_14 {
 
     public A5_14_01(ERP1Message packet) {
@@ -34,7 +37,7 @@ public class A5_14_01 extends A5_14 {
     }
 
     private State getContact(boolean inverted) {
-        boolean ct = getBit(getDB_0(), 0);
+        boolean ct = getBit(getDB0(), 0);
 
         if (inverted) {
             return ct ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
@@ -45,7 +48,7 @@ public class A5_14_01 extends A5_14 {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_CONTACT:
                 EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);

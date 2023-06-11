@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.groupepsa.internal.bridge;
 
 import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.VendorConstants;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -26,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.VendorConstants;
 import org.openhab.binding.groupepsa.internal.discovery.GroupePSADiscoveryService;
 import org.openhab.binding.groupepsa.internal.rest.api.GroupePSAConnectApi;
 import org.openhab.binding.groupepsa.internal.rest.api.dto.Vehicle;
@@ -94,7 +94,10 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopGroupePSABridgePolling();
-        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+            oAuthService = null;
+        }
     }
 
     @Override
@@ -136,6 +139,12 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
 
             updateStatus(ThingStatus.UNKNOWN);
         }
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     private void startGroupePSABridgePolling(@Nullable Integer pollingIntervalM) {

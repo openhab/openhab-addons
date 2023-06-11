@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.openhab.binding.nibeuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.nibeuplink.internal.command.Login;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
-import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -42,14 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UplinkWebInterface implements AtomicReferenceTrait {
 
-    private static final int NIBE_ID_THRESHOLD = 14;
-
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
-
-    /**
-     * Configuration
-     */
-    private NibeUplinkConfiguration config;
 
     /**
      * handler for updating thing status
@@ -88,7 +80,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      *
      * @author afriese - initial contribution
      */
-    @NonNullByDefault
     private class WebRequestExecutor implements Runnable {
 
         /**
@@ -126,41 +117,91 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
          */
         @Override
         public void run() {
+            logger.debug("run queued commands, queue size is {}", commandQueue.size());
             if (!isAuthenticated()) {
                 authenticate();
-            }
-
-            else if (isAuthenticated() && !commandQueue.isEmpty()) {
-                StatusUpdateListener statusUpdater = new StatusUpdateListener() {
-                    @Override
-                    public void update(CommunicationStatus status) {
-                        switch (status.getHttpCode()) {
-                            case SERVICE_UNAVAILABLE:
-                                uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                        status.getMessage());
-                                setAuthenticated(false);
-                                break;
-                            case FOUND:
-                                uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "most likely your NibeId is wrong. please check your NibeId.");
-                                setAuthenticated(false);
-                                break;
-                            case OK:
-                                // no action needed as the thing is already online.
-                                break;
-                            default:
-                                uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        status.getMessage());
-                                setAuthenticated(false);
-                        }
-                    }
-                };
-
-                NibeUplinkCommand command = commandQueue.poll();
-                if (command != null) {
-                    command.setListener(statusUpdater);
-                    command.performAction(httpClient);
+            } else if (isAuthenticated() && !commandQueue.isEmpty()) {
+                try {
+                    executeCommand();
+                } catch (Exception ex) {
+                    logger.warn("command execution ended with exception:", ex);
                 }
+            }
+        }
+
+        /**
+         * executes the next command in the queue. requires authenticated session.
+         *
+         * @throws ValidationException
+         */
+        private void executeCommand() {
+            NibeUplinkCommand command = commandQueue.poll();
+            if (command != null) {
+                command.setListener(this::processExecutionResult);
+                command.performAction(httpClient);
+            }
+        }
+
+        /**
+         * callback that handles result from command execution.
+         *
+         * @param status status information to be evaluated
+         */
+        private void processExecutionResult(CommunicationStatus status) {
+            switch (status.getHttpCode()) {
+                case SERVICE_UNAVAILABLE:
+                    uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                            status.getMessage());
+                    setAuthenticated(false);
+                    break;
+                case FOUND:
+                    uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            STATUS_INVALID_NIBE_ID);
+                    setAuthenticated(false);
+                    break;
+                case OK:
+                    // no action needed as the thing is already online.
+                    break;
+                default:
+                    uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            status.getMessage());
+                    setAuthenticated(false);
+            }
+        }
+
+        /**
+         * authenticates with the Nibe Uplink WEB interface
+         */
+        private synchronized void authenticate() {
+            setAuthenticated(false);
+            new Login(uplinkHandler, this::processAuthenticationResult).performAction(httpClient);
+        }
+
+        /**
+         * callback that handles result from authentication.
+         *
+         * @param status status information to be evaluated
+         */
+        private void processAuthenticationResult(CommunicationStatus status) {
+            switch (status.getHttpCode()) {
+                case FOUND:
+                    uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                    setAuthenticated(true);
+                    break;
+                case OK:
+                    uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            STATUS_INVALID_CREDENTIALS);
+                    setAuthenticated(false);
+                    break;
+                case SERVICE_UNAVAILABLE:
+                    uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                            status.getMessage());
+                    setAuthenticated(false);
+                    break;
+                default:
+                    uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            status.getMessage());
+                    setAuthenticated(false);
             }
         }
     }
@@ -171,7 +212,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      * @param config the Bridge configuration
      */
     public UplinkWebInterface(ScheduledExecutorService scheduler, NibeUplinkHandler handler, HttpClient httpClient) {
-        this.config = handler.getConfiguration();
         this.uplinkHandler = handler;
         this.scheduler = scheduler;
         this.requestExecutor = new WebRequestExecutor();
@@ -182,7 +222,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      * starts the periodic request executor job which handles all web requests
      */
     public void start() {
-        this.config = uplinkHandler.getConfiguration();
         setAuthenticated(false);
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
                 WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
@@ -195,72 +234,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      */
     public void enqueueCommand(NibeUplinkCommand command) {
         requestExecutor.enqueue(command);
-    }
-
-    /**
-     * authenticates with the Nibe Uplink WEB interface
-     */
-    private synchronized void authenticate() {
-        setAuthenticated(false);
-
-        if (preCheck()) {
-            StatusUpdateListener statusUpdater = new StatusUpdateListener() {
-
-                @Override
-                public void update(CommunicationStatus status) {
-                    switch (status.getHttpCode()) {
-                        case FOUND:
-                            uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
-                            setAuthenticated(true);
-                            break;
-                        case OK:
-                            uplinkHandler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "invalid username or password");
-                            setAuthenticated(false);
-                            break;
-                        case SERVICE_UNAVAILABLE:
-                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                            break;
-                        default:
-                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                    }
-                }
-            };
-
-            new Login(uplinkHandler, statusUpdater).performAction(httpClient);
-        }
-    }
-
-    /**
-     * performs some pre cheks on configuration before attempting to login
-     *
-     * @return true on success, false otherwise
-     */
-    private boolean preCheck() {
-        String preCheckStatusMessage = "";
-        String localPassword = config.getPassword();
-        String localUser = config.getUser();
-        String localNibeId = config.getNibeId();
-
-        if (localPassword == null || localPassword.isEmpty()) {
-            preCheckStatusMessage = "please configure password first";
-        } else if (localUser == null || localUser.isEmpty()) {
-            preCheckStatusMessage = "please configure user first";
-        } else if (localNibeId == null || localNibeId.isEmpty()) {
-            preCheckStatusMessage = "please configure nibeId first";
-        } else if (localNibeId.length() > NIBE_ID_THRESHOLD) {
-            preCheckStatusMessage = "your NibeId is too long. Please refer to the documentation on how to set this value.";
-        } else {
-            return true;
-        }
-
-        this.uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                preCheckStatusMessage);
-        return false;
     }
 
     /**

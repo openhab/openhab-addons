@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,20 +21,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Type of a group as reported by the REST API for usage in {@link org.openhab.binding.deconz.internal.dto.LightMessage}
+ * Type of a group as reported by the REST API for usage in
+ * {@link org.openhab.binding.deconz.internal.dto.LightMessage}
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
 public enum GroupType {
     LIGHT_GROUP("LightGroup"),
+    LUMINAIRE("Luminaire"),
+    ROOM("Room"),
+    LIGHT_SOURCE("Lightsource"),
     UNKNOWN("");
 
     private static final Map<String, GroupType> MAPPING = Arrays.stream(GroupType.values())
             .collect(Collectors.toMap(v -> v.type, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupType.class);
 
-    private String type;
+    private final String type;
 
     GroupType(String type) {
         this.type = type;

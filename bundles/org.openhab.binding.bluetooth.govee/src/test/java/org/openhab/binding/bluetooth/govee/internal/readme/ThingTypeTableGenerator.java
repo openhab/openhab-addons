@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.govee.internal.GoveeModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -36,10 +38,10 @@ import org.w3c.dom.NodeList;
  * @author Connor Petty - Initial contribution
  *
  */
+@NonNullByDefault
 public class ThingTypeTableGenerator {
 
     public static void main(String[] args) throws Exception {
-
         FileInputStream fileIS = new FileInputStream("src/main/resources/OH-INF/thing/thing-types.xml");
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -111,9 +113,9 @@ public class ThingTypeTableGenerator {
     }
 
     private static class ThingTypeData {
-        private String id;
-        private String label;
-        private String description;
+        private @Nullable String id;
+        private @Nullable String label;
+        private @Nullable String description;
     }
 
     private static String[] toRow(ThingTypeData data) {
@@ -122,7 +124,7 @@ public class ThingTypeTableGenerator {
                 modelsForType(data.id).stream().map(model -> model.name()).collect(Collectors.joining(",")) };
     }
 
-    private static List<GoveeModel> modelsForType(String typeUID) {
+    private static List<GoveeModel> modelsForType(@Nullable String typeUID) {
         return Arrays.stream(GoveeModel.values()).filter(model -> model.getThingTypeUID().getId().equals(typeUID))
                 .collect(Collectors.toList());
     }

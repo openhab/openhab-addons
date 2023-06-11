@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="homewizard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>HomeWizard Binding</name>
+	<description>This binding provides access to the data provided by the HomeWizard Wi-Fi P1 meter on it's local HTTP
+		interface.</description>
+	<connection>local</connection>
+
+</addon:addon>

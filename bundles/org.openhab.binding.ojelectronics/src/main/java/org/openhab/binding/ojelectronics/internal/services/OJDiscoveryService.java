@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,14 +15,13 @@ package org.openhab.binding.ojelectronics.internal.services;
 import static org.openhab.binding.ojelectronics.internal.BindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ojelectronics.internal.OJCloudHandler;
-import org.openhab.binding.ojelectronics.internal.models.groups.GroupContent;
+import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentModel;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -39,12 +38,11 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ojelectronics")
-public final class OJDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public final class OJDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OJCLOUD);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OJCLOUD);
     private @Nullable OJCloudHandler bridgeHandler;
-    private @Nullable Collection<GroupContent> groupContents;
+    private @Nullable Collection<GroupContentModel> groupContents;
 
     /**
      * Creates a new instance of {@link OJDiscoveryService}
@@ -59,14 +57,14 @@ public final class OJDiscoveryService extends AbstractDiscoveryService
      *
      * @param groupContents Content from API
      */
-    public void setScanResultForDiscovery(List<GroupContent> groupContents) {
+    public void setScanResultForDiscovery(List<GroupContentModel> groupContents) {
         this.groupContents = groupContents;
     }
 
     @Override
     protected void startScan() {
         final OJCloudHandler bridgeHandler = this.bridgeHandler;
-        final Collection<GroupContent> groupContents = this.groupContents;
+        final Collection<GroupContentModel> groupContents = this.groupContents;
         if (groupContents != null && bridgeHandler != null) {
             groupContents.stream().flatMap(content -> content.thermostats.stream())
                     .forEach(thermostat -> thingDiscovered(bridgeHandler.getThing().getUID(), thermostat.serialNumber));

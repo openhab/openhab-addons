@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.solaredge.internal.handler.GenericSolarEdgeHandler;
+import org.openhab.binding.solaredge.internal.handler.SolarEdgeGenericHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -62,7 +62,7 @@ public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_GENERIC)) {
-            return new GenericSolarEdgeHandler(thing, httpClient);
+            return new SolarEdgeGenericHandler(thing, httpClient);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }

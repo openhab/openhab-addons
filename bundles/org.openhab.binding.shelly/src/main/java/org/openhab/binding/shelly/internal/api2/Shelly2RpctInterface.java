@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,15 +24,15 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
 @NonNullByDefault
 public interface Shelly2RpctInterface {
 
-    public void onConnect(String deviceIp, boolean connected);
+    void onConnect(String deviceIp, boolean connected);
 
-    public void onMessage(String decodedmessage);
+    void onMessage(String decodedmessage);
 
-    public void onNotifyStatus(Shelly2RpcNotifyStatus message);
+    void onNotifyStatus(Shelly2RpcNotifyStatus message);
 
-    public void onNotifyEvent(Shelly2RpcNotifyEvent message);
+    void onNotifyEvent(Shelly2RpcNotifyEvent message);
 
-    public void onClose(int statusCode, String reason);
+    void onClose(int statusCode, String reason);
 
-    public void onError(Throwable cause);
+    void onError(Throwable cause);
 }

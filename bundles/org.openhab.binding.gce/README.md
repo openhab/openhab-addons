@@ -3,29 +3,28 @@
 This binding aims to handle various GCE Electronics equipments.
 IPX800 is a 8 relay webserver from gce-electronics with a lot of possibilities:
 
-* 8 Digital Input
-* 8 Relay (250V / 10A / channel)
-* 4 Analog Input
-* 8 Counters
-* Ability to cascade up to 3 extensions for a total of 32 inputs / 32 relay
+- 8 Digital Input
+- 8 Relay (250V / 10A / channel)
+- 4 Analog Input
+- 8 Counters
+- Ability to cascade up to 3 extensions for a total of 32 inputs / 32 relay
 
 Each IPX800 connected to openHAB must be configured with the setting 'Send data on status changed' on the website in M2M > TCP client.
 
-To make it simple, IPX800 is a simple device that drives output and retrieves input. 
+To make it simple, IPX800 is a simple device that drives output and retrieves input.
 On input we generally connect push buttons (for instance house switchs), on ouputs we can connect light bulbs for instance.
 
 Features of the binding:
 
- * Multi ipx support
- * Direct TCP connection
- * Auto reconnect
- * Simple clic/Long press
- * Pulse mode support
+- Multi ipx support
+- Direct TCP connection
+- Auto reconnect
+- Simple clic/Long press
+- Pulse mode support
 
 ## Binding Configuration
 
 There is no configuration at binding level.
-
 
 ## Thing Configuration
 
@@ -44,7 +43,7 @@ The thing provides four groups of channels.
 
 ### Digital Inputs
 
-This represents the inputs of the PLC. Each can be open or closed. 
+This represents the inputs of the PLC. Each can be open or closed.
 They are usually commuted by physical devices like pushbuttons, magnets...
 
 #### Digital Input Channels (contacts)
@@ -76,8 +75,7 @@ Associated events:
 | pulsePeriod     |    0(*) | ms   | Period of pulse event triggering while the entry is closed. Ignored if '0'.     |
 | pulseTimeout    |    0(*) | ms   | Period of time after pulsing will be stopped. None if '0'.                      |
 
-* Values below 100ms should be avoided as the JVM could skip them and proceed in the same time slice.
-
+- Values below 100ms should be avoided as the JVM could skip them and proceed in the same time slice.
 
 ### Digital Outputs Channels (relays)
 
@@ -123,14 +121,13 @@ Each analog port will have these associated channels:
 |------------|---------|-------------------------------------------------------------------------------------|
 | hysteresis |    0    | If set, the channel will ignore status if change (+ or -) is less than hysteresis/2 |
 
-
 ## Rule Actions
 
 Multiple actions are supported by this binding. In classic rules these are accessible as shown in the example below:
 
 Getting ipxActions variable in scripts
 
-```
+```java
  val ipxActions = getActions("gce","gce:ipx800v3:43cc8d07")
  if(null === ipxActions) {
         logInfo("actions", "ipxActions not found, check thing ID")
@@ -144,14 +141,13 @@ Getting ipxActions variable in scripts
 
 Resets the value of the given counter to 0.
 
-* `counterId` (Integer) - id of the counter.
-
+- `counterId` (Integer) - id of the counter.
 
 ### reset(placeholder)
 
 Restarts the PLC.
 
-* `placeholder` (Integer) - This parameter is not used (can be null).
+- `placeholder` (Integer) - This parameter is not used (can be null).
 
 ## Example
 

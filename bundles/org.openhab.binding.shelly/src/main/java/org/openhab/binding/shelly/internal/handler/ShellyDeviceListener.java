@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,6 @@ public interface ShellyDeviceListener {
     /**
      * This method is called when new device information is received.
      */
-    public boolean onEvent(String ipAddress, String deviceName, String deviceIndex, String eventType,
+    boolean onEvent(String ipAddress, String deviceName, String deviceIndex, String eventType,
             Map<String, String> parameters);
 }

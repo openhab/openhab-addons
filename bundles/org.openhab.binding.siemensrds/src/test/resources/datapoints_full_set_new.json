@@ -470,7 +470,7 @@
 				-50,
 				80
 			],
-			"descr": "�C",
+			"descr": "°C",
 			"descriptionName": "Outside air temperature",
 			"objectName": "R(1)'TOa",
 			"memberName": "PresentValue",
@@ -497,7 +497,7 @@
 				0,
 				50
 			],
-			"descr": "�C",
+			"descr": "°C",
 			"descriptionName": "Comfort heating setpoint",
 			"objectName": "R(1)'RHvacCoo'TCtlH'SpHCmf",
 			"memberName": "PresentValue",
@@ -523,7 +523,7 @@
 				0,
 				50
 			],
-			"descr": "�C",
+			"descr": "°C",
 			"descriptionName": "Economy heating setpoint",
 			"objectName": "R(1)'RHvacCoo'TCtlH'SpHPcf",
 			"memberName": "PresentValue",
@@ -549,7 +549,7 @@
 				0,
 				50
 			],
-			"descr": "�C",
+			"descr": "°C",
 			"descriptionName": "Unoccupied heating setpoint",
 			"objectName": "R(1)'RHvacCoo'TCtlH'SpHEco",
 			"memberName": "PresentValue",
@@ -575,7 +575,7 @@
 				0,
 				50
 			],
-			"descr": "�C",
+			"descr": "°C",
 			"descriptionName": "Protection heating setpoint",
 			"objectName": "R(1)'RHvacCoo'TCtlH'SpHPrt",
 			"memberName": "PresentValue",
@@ -602,7 +602,7 @@
 				6,
 				35
 			],
-			"descr": "�C",
+			"descr": "°C",
 			"descriptionName": "Room temperature setpoint",
 			"objectName": "R(1)'RHvacCoo'SpTRDtr'SpTR",
 			"memberName": "PresentValue",
@@ -681,7 +681,7 @@
 				0,
 				50
 			],
-			"descr": "�C",
+			"descr": "°C",
 			"descriptionName": "Room temperature",
 			"objectName": "R(1)'RHvacCoo'RTemp",
 			"memberName": "PresentValue",
@@ -707,7 +707,7 @@
 				0,
 				50
 			],
-			"descr": "�C",
+			"descr": "°C",
 			"descriptionName": "Max. heating setpoint",
 			"objectName": "R(1)'SpTRMaxHCmf",
 			"memberName": "PresentValue",

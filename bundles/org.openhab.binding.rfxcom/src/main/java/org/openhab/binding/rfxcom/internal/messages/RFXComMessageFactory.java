@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,8 +27,8 @@ import org.openhab.core.types.Command;
  * @author James Hewitt-Thomas - Switch to making messages for a specific command
  */
 public interface RFXComMessageFactory {
-    public RFXComMessage createMessage(PacketType packetType, RFXComDeviceConfiguration config, ChannelUID channelUID,
+    RFXComMessage createMessage(PacketType packetType, RFXComDeviceConfiguration config, ChannelUID channelUID,
             Command command) throws RFXComException;
 
-    public RFXComMessage createMessage(byte[] packet) throws RFXComException;
+    RFXComMessage createMessage(byte[] packet) throws RFXComException;
 }

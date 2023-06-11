@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,7 +69,7 @@ public class PilightConnector implements Runnable, Closeable {
 
     private final ObjectMapper outputMapper = new ObjectMapper(
             new MappingJsonFactory().configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false))
-                    .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
+            .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
 
     private @Nullable Socket socket;
     private @Nullable PrintStream printStream;

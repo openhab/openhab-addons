@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,30 +157,32 @@ public class ChromecastStatusUpdater {
             return;
         }
 
-        switch (mediaStatus.playerState) {
-            case IDLE:
-                break;
-            case PAUSED:
-                callback.updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
-                callback.updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
-            case BUFFERING:
-            case LOADING:
-            case PLAYING:
-                callback.updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
-                callback.updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
-            default:
-                logger.debug("Unknown media status: {}", mediaStatus.playerState);
-                break;
+        if (mediaStatus.playerState != null) {
+            switch (mediaStatus.playerState) {
+                case IDLE:
+                    break;
+                case PAUSED:
+                    callback.updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                    callback.updateState(CHANNEL_STOP, OnOffType.OFF);
+                    break;
+                case BUFFERING:
+                case LOADING:
+                case PLAYING:
+                    callback.updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
+                    callback.updateState(CHANNEL_STOP, OnOffType.OFF);
+                    break;
+                default:
+                    logger.debug("Unknown media status: {}", mediaStatus.playerState);
+                    break;
+            }
         }
 
         callback.updateState(CHANNEL_CURRENT_TIME, new QuantityType<>(mediaStatus.currentTime, Units.SECOND));
 
         // If we're playing, paused or buffering but don't have any MEDIA information don't null everything out.
         Media media = mediaStatus.media;
-        if (media == null && (mediaStatus.playerState == PLAYING || mediaStatus.playerState == PAUSED
-                || mediaStatus.playerState == BUFFERING)) {
+        if (media == null && (mediaStatus.playerState == null || mediaStatus.playerState == PLAYING
+                || mediaStatus.playerState == PAUSED || mediaStatus.playerState == BUFFERING)) {
             return;
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,13 +13,12 @@
 package org.openhab.binding.upnpcontrol.internal.audiosink;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.handler.UpnpRendererHandler;
 
 /**
- * Interface class to be implemented in {@link UpnpControlHandlerFactory}, allows a {UpnpRendererHandler} to register
- * itself as an audio sink when it supports audio. If it supports audio is only known after the communication with the
- * renderer is established.
+ * Interface class to be implemented in {@link org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory
+ * UpnpControlHandlerFactory}, allows a {@link UpnpRendererHandler} to register itself as an audio sink when it supports
+ * audio. If it supports audio is only known after the communication with the renderer is established.
  *
  * @author Mark Herwege - Initial contribution
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -28,10 +30,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Holger Englert - Initial contribution
  */
+@NonNullByDefault
 public class F6_10_00_EltakoFPE extends _RPSMessage {
 
-    final byte OPEN = 0x00;
-    final byte CLOSED = 0x10;
+    protected static final byte OPEN = 0x00;
+    protected static final byte CLOSED = 0x10;
 
     public F6_10_00_EltakoFPE() {
         super();
@@ -43,7 +46,7 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_CONTACT)) {
             EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
             if (c.inverted) {

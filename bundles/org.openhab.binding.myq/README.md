@@ -40,7 +40,7 @@ Once an account has been added, garage doors and lamps will automatically be dis
 
 ### Thing Configuration
 
-```xtend
+```java
 Bridge myq:account:home "MyQ Account" [ username="foo@bar.com", password="secret", refreshInterval=60 ] {
     Thing garagedoor abcd12345 "MyQ Garage Door" [ serialNumber="abcd12345" ]
     Thing lamp efgh6789 "MyQ Lamp" [ serialNumber="efgh6789" ]
@@ -49,7 +49,7 @@ Bridge myq:account:home "MyQ Account" [ username="foo@bar.com", password="secret
 
 ### Items
 
-```xtend
+```java
 String MyQGarageDoor1Status "Door Status [%s]" {channel = "myq:garagedoor:home:abcd12345:status"}
 Switch MyQGarageDoor1Switch "Door Switch [%s]" {channel = "myq:garagedoor:home:abcd12345:switch"}
 Switch MyQGarageDoor1CloseError "Door Close Error [%s]" {channel = "myq:garagedoor:home:abcd12345:closeError"}
@@ -61,7 +61,7 @@ Switch MyQGarageDoorLamp "Lamp [%s]" {channel = "myq:lamp:home:efgh6789:switch"}
 
 ### Sitemaps
 
-```xtend
+```perl
 sitemap MyQ label="MyQ Demo Sitemap" {
   Frame label="Garage Door" {
     String item=MyQGarageDoor1Status

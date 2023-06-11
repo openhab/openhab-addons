@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dmx.internal.DmxBridgeHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -32,17 +34,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(DmxOverEthernetHandler.class);
 
-    protected DmxOverEthernetPacket packetTemplate;
+    protected @Nullable DmxOverEthernetPacket packetTemplate;
     protected IpNode senderNode = new IpNode();
     protected List<IpNode> receiverNodes = new ArrayList<>();
 
     protected boolean refreshAlways = false;
 
-    DatagramSocket socket = null;
+    protected @Nullable DatagramSocket socket = null;
     private long lastSend = 0;
     private int repeatCounter = 0;
     private int sequenceNo = 0;
@@ -52,6 +54,7 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             try {
                 if (senderNode.getAddress() == null) {
+                    DatagramSocket socket;
                     if (senderNode.getPort() == 0) {
                         socket = new DatagramSocket();
                         senderNode.setInetAddress(socket.getLocalAddress());
@@ -60,6 +63,7 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
                         socket = new DatagramSocket(senderNode.getPort());
                         senderNode.setInetAddress(socket.getLocalAddress());
                     }
+                    this.socket = socket;
                 } else {
                     socket = new DatagramSocket(senderNode.getPort(), senderNode.getAddress());
                 }
@@ -75,10 +79,11 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
 
     @Override
     protected void closeConnection() {
+        DatagramSocket socket = this.socket;
         if (socket != null) {
             logger.debug("closing socket {} in bridge {}", senderNode, this.thing.getUID());
             socket.close();
-            socket = null;
+            this.socket = null;
         } else {
             logger.debug("socket was already closed when calling closeConnection in bridge {}", this.thing.getUID());
         }
@@ -101,6 +106,12 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
                 repeatCounter++;
             }
             if (needsSending) {
+                DmxOverEthernetPacket packetTemplate = this.packetTemplate;
+                if (packetTemplate == null) {
+                    logger.warn("Packet template missing when trying to send data for '{}'. This is a bug.",
+                            thing.getUID());
+                    return;
+                }
                 packetTemplate.setPayload(universe.getBuffer(), universe.getBufferSize());
                 packetTemplate.setSequence(sequenceNo);
                 DatagramPacket sendPacket = new DatagramPacket(packetTemplate.getRawPacket(),
@@ -111,7 +122,12 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
                     logger.trace("sending packet with length {} to {}", packetTemplate.getPacketLength(),
                             receiverNode.toString());
                     try {
-                        socket.send(sendPacket);
+                        DatagramSocket socket = this.socket;
+                        if (socket != null) {
+                            socket.send(sendPacket);
+                        } else {
+                            throw new IOException("Socket for sending not set.");
+                        }
                     } catch (IOException e) {
                         logger.debug("Could not send to {} in {}: {}", receiverNode, this.thing.getUID(),
                                 e.getMessage());

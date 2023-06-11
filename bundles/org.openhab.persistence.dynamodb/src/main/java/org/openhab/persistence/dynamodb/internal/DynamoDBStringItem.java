@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,22 +30,20 @@ public class DynamoDBStringItem extends AbstractDynamoDBItem<String> {
     private static Class<@Nullable String> NULLABLE_STRING = (Class<@Nullable String>) String.class;
 
     public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_LEGACY = getBaseSchemaBuilder(
-            DynamoDBStringItem.class, true)
-                    .newItemSupplier(
-                            DynamoDBStringItem::new)
-                    .addAttribute(NULLABLE_STRING, a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY)
-                            .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
-                    .build();
+            DynamoDBStringItem.class, true).newItemSupplier(DynamoDBStringItem::new)
+            .addAttribute(NULLABLE_STRING, a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_LEGACY)
+                    .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
+            .build();
 
     public static final StaticTableSchema<DynamoDBStringItem> TABLE_SCHEMA_NEW = getBaseSchemaBuilder(
             DynamoDBStringItem.class, false)
-                    .newItemSupplier(DynamoDBStringItem::new)
-                    .addAttribute(NULLABLE_STRING,
-                            a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING)
-                                    .getter(DynamoDBStringItem::getState).setter(DynamoDBStringItem::setState))
-                    .addAttribute(NULLABLE_LONG, a -> a.name(ATTRIBUTE_NAME_EXPIRY)
-                            .getter(AbstractDynamoDBItem::getExpiryDate).setter(AbstractDynamoDBItem::setExpiry))
-                    .build();
+            .newItemSupplier(DynamoDBStringItem::new)
+            .addAttribute(NULLABLE_STRING,
+                    a -> a.name(DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE_STRING).getter(DynamoDBStringItem::getState)
+                            .setter(DynamoDBStringItem::setState))
+            .addAttribute(NULLABLE_LONG, a -> a.name(ATTRIBUTE_NAME_EXPIRY).getter(AbstractDynamoDBItem::getExpiryDate)
+                    .setter(AbstractDynamoDBItem::setExpiry))
+            .build();
 
     public DynamoDBStringItem() {
         this("", null, ZonedDateTime.now(), null);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public abstract class XiaomiSocket {
     private final Thread socketReceiveThread = new Thread(this::receiveData);
 
     /**
-     * Sets up an {@link XiaomiSocket} with the MiHome multicast address and a random port
+     * Sets up a {@link XiaomiSocket} with the MiHome multicast address and a random port
      *
      * @param owner identifies the socket owner
      */
@@ -64,7 +64,7 @@ public abstract class XiaomiSocket {
     }
 
     /**
-     * Sets up an {@link XiaomiSocket} with the MiHome multicast address and a specific port
+     * Sets up a {@link XiaomiSocket} with the MiHome multicast address and a specific port
      *
      * @param port the socket will be bound to this port
      * @param owner identifies the socket owner

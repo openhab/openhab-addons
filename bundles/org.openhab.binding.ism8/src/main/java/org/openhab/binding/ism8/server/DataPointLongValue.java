@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public class DataPointLongValue extends DataPointBase<@Nullable Double> {
     public DataPointLongValue(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
 
-        if (knxDataType.equals("13.002")) {
+        if ("13.002".equals(knxDataType)) {
             this.setUnit("m³/h");
             this.factor = 0.0001f;
             this.outputFormat = "%.1f";

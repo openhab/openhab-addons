@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,26 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class GeneracMobileLinkBindingConstants {
-    private static final String BINDING_ID = "generacmobilelink";
+    public static final String BINDING_ID = "generacmobilelink";
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_GENERATOR = new ThingTypeUID(BINDING_ID, "generator");
+
+    public static final String PROPERTY_GENERATOR_ID = "generatorId";
+
+    public static final String CHANNEL_HERO_IMAGE_URL = "heroImageUrl";
+    public static final String CHANNEL_STATUS_LABEL = "statusLabel";
+    public static final String CHANNEL_STATUS_TEXT = "statusText";
+    public static final String CHANNEL_ACTIVATION_DATE = "activationDate";
+    public static final String CHANNEL_DEVICE_SSID = "deviceSsid";
+    public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_IS_CONNECTED = "isConnected";
+    public static final String CHANNEL_IS_CONNECTING = "isConnecting";
+    public static final String CHANNEL_SHOW_WARNING = "showWarning";
+    public static final String CHANNEL_HAS_MAINTENANCE_ALERT = "hasMaintenanceAlert";
+    public static final String CHANNEL_LAST_SEEN = "lastSeen";
+    public static final String CHANNEL_CONNECTION_TIME = "connectionTime";
+    public static final String CHANNEL_RUN_HOURS = "runHours";
+    public static final String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
+    public static final String CHANNEL_HOURS_OF_PROTECTION = "hoursOfProtection";
+    public static final String CHANNEL_SIGNAL_STRENGH = "signalStrength";
 }

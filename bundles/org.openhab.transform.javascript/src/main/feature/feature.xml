@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<features name="org.openhab.transform.javascript-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
-	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
-
-	<feature name="openhab-transformation-javascript" description="Javascript Transformation" version="${project.version}">
-		<feature>openhab-runtime-base</feature>
-		<bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.javascript/${project.version}</bundle>
-	</feature>
-</features>

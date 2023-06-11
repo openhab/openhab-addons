@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.pixometer.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Annotation} class is the representing java model for the json result for a annotation from the pixometer
+ * The {@link Annotation} class is the representing java model for the json result for an annotation from the pixometer
  * api
  *
  * @author Jerome Luckenbach - Initial Contribution

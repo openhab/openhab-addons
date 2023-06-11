@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,19 +14,19 @@ package org.openhab.binding.unifi.internal.api;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonElement;
+import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonObject;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
-import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
 import org.openhab.binding.unifi.internal.api.dto.UniFiUnknownClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiVoucher;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
@@ -35,6 +35,7 @@ import org.openhab.binding.unifi.internal.api.util.UniFiClientDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiDeviceInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiSiteInstanceCreator;
+import org.openhab.binding.unifi.internal.api.util.UniFiVoucherInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiWlanInstanceCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link UniFiController} is the main communication point with an external instance of the Ubiquiti Networks
@@ -51,6 +53,7 @@ import com.google.gson.GsonBuilder;
  * @author Patrik Wimnell - Blocking / Unblocking client support
  * @author Jacob Laursen - Fix online/blocked channels (broken by UniFi Controller 5.12.35)
  * @author Hilbrand Bouwkamp - Added POEPort support, moved generic cache related code to cache object
+ * @author Mark Herwege - Added guest vouchers
  */
 @NonNullByDefault
 public class UniFiController {
@@ -85,6 +88,7 @@ public class UniFiController {
         final UniFiWlanInstanceCreator wlanInstanceCreator = new UniFiWlanInstanceCreator(cache);
         final UniFiDeviceInstanceCreator deviceInstanceCreator = new UniFiDeviceInstanceCreator(cache);
         final UniFiClientInstanceCreator clientInstanceCreator = new UniFiClientInstanceCreator(cache);
+        final UniFiVoucherInstanceCreator voucherInstanceCreator = new UniFiVoucherInstanceCreator(cache);
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(UniFiSite.class, siteInstanceCreator)
                 .registerTypeAdapter(UniFiWlan.class, wlanInstanceCreator)
@@ -92,9 +96,10 @@ public class UniFiController {
                 .registerTypeAdapter(UniFiClient.class, new UniFiClientDeserializer())
                 .registerTypeAdapter(UniFiUnknownClient.class, clientInstanceCreator)
                 .registerTypeAdapter(UniFiWiredClient.class, clientInstanceCreator)
-                .registerTypeAdapter(UniFiWirelessClient.class, clientInstanceCreator).create();
+                .registerTypeAdapter(UniFiWirelessClient.class, clientInstanceCreator)
+                .registerTypeAdapter(UniFiVoucher.class, voucherInstanceCreator).create();
         this.poeGson = new GsonBuilder()
-                .registerTypeAdapter(UnfiPortOverrideJsonElement.class, new UnfiPortOverrideJsonElementDeserializer())
+                .registerTypeAdapter(UnfiPortOverrideJsonObject.class, new UnfiPortOverrideJsonElementDeserializer())
                 .create();
     }
 
@@ -133,7 +138,7 @@ public class UniFiController {
 
     public void logout() throws UniFiException {
         csrfToken = "";
-        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.GET, gson);
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
         req.setPath(unifios ? "/api/auth/logout" : "/logout");
         executeRequest(req);
     }
@@ -146,6 +151,7 @@ public class UniFiController {
             refreshDevices(sites);
             refreshClients(sites);
             refreshInsights(sites);
+            refreshVouchers(sites);
         }
     }
 
@@ -153,7 +159,7 @@ public class UniFiController {
         return cache;
     }
 
-    public @Nullable Map<Integer, UniFiPortTuple> getSwitchPorts(@Nullable final String deviceId) {
+    public @Nullable UniFiSwitchPorts getSwitchPorts(@Nullable final String deviceId) {
         return cache.getSwitchPorts(deviceId);
     }
 
@@ -175,11 +181,10 @@ public class UniFiController {
         refresh();
     }
 
-    public boolean poeMode(final UniFiDevice device, final List<UnfiPortOverrideJsonElement> data)
-            throws UniFiException {
+    public boolean poeMode(final UniFiDevice device, final List<JsonObject> data) throws UniFiException {
         // Safety check to make sure no empty data is send to avoid corrupting override data on the device.
-        if (data.isEmpty() || data.stream().anyMatch(p -> p.getJsonObject().entrySet().isEmpty())) {
-            logger.info("Not overriding port for '{}', because port data contains empty json: {}", device.getName(),
+        if (data.isEmpty() || data.stream().anyMatch(p -> p.entrySet().isEmpty())) {
+            logger.info("Not overriding port for '{}', because port data contains empty JSON: {}", device.getName(),
                     poeGson.toJson(data));
             return false;
         } else {
@@ -210,6 +215,38 @@ public class UniFiController {
         refresh();
     }
 
+    public void generateVouchers(final UniFiSite site, final int count, final int expiration, final int users,
+            @Nullable Integer upLimit, @Nullable Integer downLimit, @Nullable Integer dataQuota) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
+        req.setAPIPath(String.format("/api/s/%s/cmd/hotspot", site.getName()));
+        req.setBodyParameter("cmd", "create-voucher");
+        req.setBodyParameter("expire", expiration);
+        req.setBodyParameter("n", count);
+        req.setBodyParameter("quota", users);
+        if (upLimit != null) {
+            req.setBodyParameter("up", upLimit);
+        }
+        if (downLimit != null) {
+            req.setBodyParameter("down", downLimit);
+        }
+        if (dataQuota != null) {
+            req.setBodyParameter("bytes", dataQuota);
+        }
+        executeRequest(req);
+        refresh();
+    }
+
+    public void revokeVouchers(final UniFiSite site, final List<UniFiVoucher> vouchers) throws UniFiException {
+        for (UniFiVoucher voucher : vouchers) {
+            final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
+            req.setAPIPath(String.format("/api/s/%s/cmd/hotspot", site.getName()));
+            req.setBodyParameter("cmd", "delete-voucher");
+            req.setBodyParameter("_id", voucher.getId());
+            executeRequest(req);
+        }
+        refresh();
+    }
+
     // Internal API
 
     private <T> UniFiControllerRequest<T> newRequest(final Class<T> responseType, final HttpMethod method,
@@ -225,7 +262,7 @@ public class UniFiController {
             throws UniFiException {
         T result;
         try {
-            result = request.execute();
+            result = (T) request.execute();
             csrfToken = request.getCsrfToken();
         } catch (final UniFiExpiredSessionException e) {
             if (fromLogin) {
@@ -234,11 +271,11 @@ public class UniFiController {
                 throw new UniFiCommunicationException(e);
             } else {
                 login();
-                result = executeRequest(request);
+                result = (T) executeRequest(request);
             }
         } catch (final UniFiNotAuthorizedException e) {
             logger.warn("Not Authorized! Please make sure your controller credentials have administrator rights");
-            result = null;
+            result = (T) null;
         }
         return result;
     }
@@ -282,6 +319,18 @@ public class UniFiController {
     private UniFiClient @Nullable [] getClients(final UniFiSite site) throws UniFiException {
         final UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class, HttpMethod.GET, gson);
         req.setAPIPath(String.format("/api/s/%s/stat/sta", site.getName()));
+        return executeRequest(req);
+    }
+
+    private void refreshVouchers(final Collection<UniFiSite> sites) throws UniFiException {
+        for (final UniFiSite site : sites) {
+            cache.putVouchers(getVouchers(site));
+        }
+    }
+
+    private UniFiVoucher @Nullable [] getVouchers(final UniFiSite site) throws UniFiException {
+        final UniFiControllerRequest<UniFiVoucher[]> req = newRequest(UniFiVoucher[].class, HttpMethod.GET, gson);
+        req.setAPIPath(String.format("/api/s/%s/stat/voucher", site.getName()));
         return executeRequest(req);
     }
 

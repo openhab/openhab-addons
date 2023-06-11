@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,26 +69,24 @@ public class MeasureCapability extends RestCapability<WeatherApi> {
         handler.getActiveChannels().filter(channel -> !channel.getConfiguration().getProperties().isEmpty())
                 .forEach(channel -> {
                     ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-                    if (channelTypeUID != null) {
-                        MeasureConfiguration measureDef = channel.getConfiguration().as(MeasureConfiguration.class);
-                        String descriptor = channelTypeUID.getId().split("-")[0];
-                        try {
-                            Object result = measureDef.limit.isBlank()
-                                    ? api.getMeasures(deviceId, moduleId, measureDef.period, descriptor)
-                                    : api.getMeasures(deviceId, moduleId, measureDef.period, descriptor,
-                                            measureDef.limit);
-                            MeasureClass.AS_SET.stream().filter(mc -> mc.apiDescriptor.equals(descriptor)).findFirst()
-                                    .ifPresent(mc -> {
-                                        State state = result instanceof ZonedDateTime
-                                                ? toDateTimeType((ZonedDateTime) result)
+                    if (channelTypeUID == null) {
+                        return;
+                    }
+
+                    MeasureConfiguration measureDef = channel.getConfiguration().as(MeasureConfiguration.class);
+                    String descriptor = channelTypeUID.getId().split("-")[0];
+                    try {
+                        Object result = measureDef.limit.isBlank()
+                                ? api.getMeasures(deviceId, moduleId, measureDef.period, descriptor)
+                                : api.getMeasures(deviceId, moduleId, measureDef.period, descriptor, measureDef.limit);
+                        MeasureClass.AS_SET.stream().filter(mc -> mc.apiDescriptor.equals(descriptor))
+                                .reduce((first, second) -> second)
+                                .ifPresent(mc -> measures.put(channel.getUID().getIdWithoutGroup(),
+                                        result instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) result)
                                                 : result instanceof Double ? toQuantityType((Double) result, mc)
-                                                        : UnDefType.UNDEF;
-                                        measures.put(channel.getUID().getIdWithoutGroup(), state);
-                                    });
-                        } catch (NetatmoException e) {
-                            logger.warn("Error getting measures for channel {}, check configuration",
-                                    channel.getLabel());
-                        }
+                                                        : UnDefType.UNDEF));
+                    } catch (NetatmoException e) {
+                        logger.warn("Error getting measures for channel {}, check configuration", channel.getLabel());
                     }
                 });
     }

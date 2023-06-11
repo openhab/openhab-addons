@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class TapoSmartPlug extends TapoDevice {
 
     /**
      * Constructor
-     * 
+     *
      * @param thing Thing object representing device
      */
     public TapoSmartPlug(Thing thing) {
@@ -46,26 +46,30 @@ public class TapoSmartPlug extends TapoDevice {
 
     /**
      * handle command sent to device
-     * 
+     *
      * @param channelUID channelUID command is sent to
      * @param command command to be sent
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        Boolean refreshInfo = false;
+        boolean refreshInfo = false;
+        String id = channelUID.getIdWithoutGroup();
 
         /* perform actions */
         if (command instanceof RefreshType) {
             refreshInfo = true;
-        } else if (command == OnOffType.ON) {
-            connector.sendDeviceCommand(DEVICE_PROPERTY_ON, true);
-            refreshInfo = true;
-        } else if (command == OnOffType.OFF) {
-            connector.sendDeviceCommand(DEVICE_PROPERTY_ON, false);
-            refreshInfo = true;
+        } else if (command instanceof OnOffType) {
+            Boolean targetState = command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE;
+            if (CHANNEL_OUTPUT.equals(id)) { // Command is sent to the device output
+                connector.sendDeviceCommand(JSON_KEY_ON, targetState);
+                refreshInfo = true;
+            } else if (id.startsWith(CHANNEL_OUTPUT)) { // Command is sent to a child's device output
+                Integer index = Integer.valueOf(id.replace(CHANNEL_OUTPUT, ""));
+                connector.sendChildCommand(index, JSON_KEY_ON, targetState);
+                refreshInfo = true;
+            }
         } else {
-            logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command.toString(),
-                    channelUID.getId());
+            logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channelUID.getId());
         }
 
         /* refreshInfo */
@@ -76,7 +80,7 @@ public class TapoSmartPlug extends TapoDevice {
 
     /**
      * UPDATE PROPERTIES
-     * 
+     *
      * @param TapoDeviceInfo
      */
     @Override

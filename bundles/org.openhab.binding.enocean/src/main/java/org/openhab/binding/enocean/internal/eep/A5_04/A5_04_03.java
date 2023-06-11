@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_04;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_04_03 extends A5_04 {
 
     public A5_04_03(ERP1Message packet) {
@@ -41,7 +43,7 @@ public class A5_04_03 extends A5_04 {
 
     @Override
     protected int getUnscaledTemperatureValue() {
-        return getDB_1Value() + ((getDB_2Value() & 0b11) << 8);
+        return getDB1Value() + ((getDB2Value() & 0b11) << 8);
     }
 
     @Override
@@ -51,6 +53,6 @@ public class A5_04_03 extends A5_04 {
 
     @Override
     protected int getUnscaledHumidityValue() {
-        return getDB_3Value();
+        return getDB3Value();
     }
 }

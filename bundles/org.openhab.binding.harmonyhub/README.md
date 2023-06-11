@@ -73,10 +73,9 @@ String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { 
 ```
 
 Hubs can also send a button press to a device associated with the current activity.
-A String item can be used to send any button name/label or a Player item can be used to send Play/Pause/FastForward/Rewind/SkipForward/SkipBackward. 
+A String item can be used to send any button name/label or a Player item can be used to send Play/Pause/FastForward/Rewind/SkipForward/SkipBackward.
 This mimics the physical remote where buttons are mapped differently depending on which activity is running.
-For example the play button may be sent to a DVD player when running a "Watch DVD" activity, or it may be sent to an Apple TV when running a "Watch Movie" activity. 
-
+For example the play button may be sent to a DVD player when running a "Watch DVD" activity, or it may be sent to an Apple TV when running a "Watch Movie" activity.
 
 ```java
 String HarmonyHubGreatButton            { channel="harmonyhub:hub:GreatRoom:buttonPress" }
@@ -142,50 +141,52 @@ sitemap demo label="Main Menu" {
 
 ## ButtonPress values
 
-Example subset of values for the current activity "buttonPress" channels 
+Example subset of values for the current activity "buttonPress" channels
 
-```
+```text
 Mute,VolumeDown,VolumeUp,DirectionDown,DirectionLeft,DirectionRight,DirectionUp,Select,Stop,Play,Rewind,Pause,FastForward,SkipBackward,SkipForward,Menu,Back,Home,SelectGame,PageDown,PageUp,Aspect,Display,Search,Cross,Circle,Square,Triangle,PS,Info,NumberEnter,Hyphen,Number0,Number1,Number2,Number3,Number4,Number5,Number6,Number7,Number8,Number9,PrevChannel,ChannelDown,ChannelUp,Record,FrameAdvance,C,B,D,A,Live,ThumbsDown,ThumbsUp,TiVo,WiiA,WiiB,Guide,Clear,Green,Red,Blue,Yellow,Dot,Return,Favorite,Exit,Sleep
 ```
 
 A complete list of names for device buttons values can be determined via the REST API for channel-types. The easiest way to do this is through the API explorer:
 
 1. Go to the main UI page for your installation
-    * This is usually at <http://your-openhab-ip:8080> or, in the case of openhabian, <http://openhabian:8080>
-2. Login if you are not already logged in
-3. Using the left panel (or three bars on the upper left corner) go to Developer Tools -> API Explorer -> channel-types
-4. Click `GET` next to `/channel-types`
-5. Click `Try it out`
-6. Click `Execute`
-7. Search the `Response Body` "harmonyhub:device" and find your device in the JSON output
+    - This is usually at <http://your-openhab-ip:8080> or, in the case of openhabian, <http://openhabian:8080>
+1. Login if you are not already logged in
+1. Using the left panel (or three bars on the upper left corner) go to Developer Tools -> API Explorer -> channel-types
+1. Click `GET` next to `/channel-types`
+1. Click `Try it out`
+1. Click `Execute`
+1. Search the `Response Body` "harmonyhub:device" and find your device in the JSON output
 
 The valid commands (read: values) will be listed with the device. For example, the response body might show that for `harmonyhub:device:HarmonyHub:lasko_fan` the valid commands are `PowerToggle, Speed, Timer`
 
-     {
-        "parameters": [],
-        "parameterGroups": [],
-        "description": "Send a button press to device Harmony Device",
-        "label": "Send Button Press",
-        "itemType": "String",
-        "kind": "STATE",
-        "stateDescription": {
-          "readOnly": false,
-          "options": [
-            {
-              "value": "PowerToggle",
-              "label": "Power Toggle"
-            },
-            {
-              "value": "Speed",
-              "label": "Speed"
-            },
-            {
-              "value": "Timer",
-              "label": "Timer"
-            }
-          ]
-        },
-        "tags": [],
-        "UID": "harmonyhub:device:GreatRoom:lasko_fan:buttonPress",
-        "advanced": false
+```json
+{
+  "parameters": [],
+  "parameterGroups": [],
+  "description": "Send a button press to device Harmony Device",
+  "label": "Send Button Press",
+  "itemType": "String",
+  "kind": "STATE",
+  "stateDescription": {
+    "readOnly": false,
+    "options": [
+      {
+        "value": "PowerToggle",
+        "label": "Power Toggle"
+      },
+      {
+        "value": "Speed",
+        "label": "Speed"
+      },
+      {
+        "value": "Timer",
+        "label": "Timer"
       }
+    ]
+  },
+  "tags": [],
+  "UID": "harmonyhub:device:GreatRoom:lasko_fan:buttonPress",
+  "advanced": false
+}
+```

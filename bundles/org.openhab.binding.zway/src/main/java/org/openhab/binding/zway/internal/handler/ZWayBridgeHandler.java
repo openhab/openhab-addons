@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,7 +99,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             // suppressed. Otherwise, the task will only terminate via cancellation or
             // termination of the executor.
             try {
-                // Authenticate - thing status update with a error message
+                // Authenticate - thing status update with an error message
                 if (mZWayApi.getLogin() != null) {
                     // Thing status set to online in login callback
                     logger.info("Z-Way bridge successfully authenticated");
@@ -241,7 +241,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         // Set thing status to a valid status
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
-        // Configuration - thing status update with a error message
+        // Configuration - thing status update with an error message
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
@@ -387,18 +387,13 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
         // Z-Way IP address
         String zWayIpAddress = config.getZWayIpAddress();
-        if (zWayIpAddress == null || zWayIpAddress.isBlank()) {
+        if (zWayIpAddress.isBlank()) {
             config.setZWayIpAddress("localhost"); // default value
-        }
-
-        // Z-Way Port
-        if (config.getZWayPort() == null) {
-            config.setZWayPort(8083);
         }
 
         // Z-Way Protocol
         String zWayProtocol = config.getZWayProtocol();
-        if (zWayProtocol == null || zWayProtocol.isBlank()) {
+        if (zWayProtocol.isBlank()) {
             config.setZWayProtocol("http");
         }
 
@@ -412,17 +407,8 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
         // Z-Way Username
         String zWayUsername = config.getZWayUsername();
-        if (zWayUsername == null || zWayUsername.isBlank()) {
+        if (zWayUsername.isBlank()) {
             config.setZWayUsername("admin"); // default value
-        }
-
-        /***********************************
-         ****** General configuration ******
-         **********************************/
-
-        // Polling interval
-        if (config.getPollingInterval() == null) {
-            config.setPollingInterval(3600);
         }
 
         return config;

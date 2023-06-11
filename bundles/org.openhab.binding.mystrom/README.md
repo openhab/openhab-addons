@@ -19,7 +19,6 @@ According to the myStrom API documentation all request specific to the myStrom B
 
 This extension does not support autodiscovery. The things need to be added manually.
 
-
 ## Thing Configuration
 
 The following parameters are valid for all thing types:
@@ -68,14 +67,14 @@ Disabling/enabling the thing can be used to update the properties.
 
 ### Thing Configuration
 
-```
+```java
 Thing mystrom:mystromplug:d6217a31 "Plug" [hostname="hostname|ip"]
 ```
 
 ### Item Configuration
 
-```
-Switch PlugSwitch		"Plug" 	                		 		{channel="mystrom:mystromplug:d6217a31:switch"}
+```java
+Switch PlugSwitch  "Plug"                       {channel="mystrom:mystromplug:d6217a31:switch"}
 Number:Temperature PlugTemperature "Temperature: [%.1f °C]"     {channel="mystrom:mystromplug:d6217a31:temperature"}  
 Number:Power PlugPower "Power: [%.1f W]"                        {channel="mystrom:mystromplug:d6217a31:power"} 
 
@@ -83,7 +82,7 @@ Number:Power PlugPower "Power: [%.1f W]"                        {channel="mystro
 
 ### Sitemap Configuration
 
-```
+```perl
 Frame label="myStrom Plug" { 
     Switch item=PlugSwitch
     Text item=PlugTemperature

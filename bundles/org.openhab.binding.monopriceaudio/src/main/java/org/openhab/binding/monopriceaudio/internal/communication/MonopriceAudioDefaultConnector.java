@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class MonopriceAudioDefaultConnector extends MonopriceAudioConnector {
     }
 
     @Override
-    public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value) {
+    public void sendCommand(@Nullable String zone, String cmd, @Nullable Integer value) {
         logger.warn(
                 "MonopriceAudio binding incorrectly configured. Please configure for Serial or IP over serial connection");
         setConnected(false);

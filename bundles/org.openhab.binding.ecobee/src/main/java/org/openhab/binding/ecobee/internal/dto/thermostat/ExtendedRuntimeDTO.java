@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,6 +80,26 @@ public class ExtendedRuntimeDTO {
      * The last three 5 minute desired de-humidification readings.
      */
     public List<Integer> desiredDehumidity;
+
+    /*
+     * The last three 5 minute actual air quality accuracy readings
+     */
+    public List<Integer> actualAQAccuracy;
+
+    /*
+     * The last three 5 minute actual air quality score readings
+     */
+    public List<Integer> actualAQScore;
+
+    /*
+     * The last three 5 minute actual CO2 readings
+     */
+    public List<Integer> actualCO2;
+
+    /*
+     * The last three 5 minute actual VOC readings
+     */
+    public List<Integer> actualVOC;
 
     /*
      * The last three 5 minute desired Demand Management temeprature offsets.

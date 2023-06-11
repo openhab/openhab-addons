@@ -12,7 +12,6 @@ This binding support 2 different things types
 | meteostick_bridge    | Bridge | This is the Meteostick USB stick  |
 | meteostick_davis_iss | Thing  | This is the Davis Vue ISS         |
 
-
 ## Binding Configuration
 
 The Meteostick things need to be manually added - there is no discovery in the Meteostick binding.
@@ -90,11 +89,11 @@ Steps:
 1. [Register](https://www.wunderground.com/personal-weather-station/signup.asp) your personal weather station with Weather Underground and make note of the station ID and password issued.
 1. Add the following files to your openHAB configuration:
 
-### things/meteostick.things 
+### things/meteostick.things
 
 Things can be defined in the .things file as follows:
 
-```
+```java
 meteostick:meteostick_bridge:receiver [ port="/dev/tty.usbserial-AI02XA60", mode=1 ]
 meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1, spoon=0.2 ]
 ```
@@ -103,7 +102,7 @@ Note the configuration options for `port`, `mode`, `channel` and `spoon` above a
 
 ### items/meteostick.items
 
-```
+```java
 Number:Pressure MeteoStickPressure "Meteostick Pressure [%.1f hPa]"{ channel="meteostick:meteostick_bridge:receiver:pressure" }
 Number:Temperature DavisVantageVueOutdoorTemperature "ISS Outdoor Temp [%.1f °C]" { channel="meteostick:meteostick_davis_iss:iss:outdoor-temperature" }
 Number DavisVantageVueHumidity "ISS Humidity [%.0f %%]" { channel="meteostick:meteostick_davis_iss:iss:humidity" }
@@ -119,7 +118,7 @@ Number:Length DavisVantageVueRainCurrentHour "ISS Rain Current Hour [%.1f mm]" {
 
 Replace `YOUR_ID` and `your_password` below with the values from the the Weather Underground registration process.
 
-```
+```java
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -133,46 +132,46 @@ import java.util.TimeZone
 
 rule PWS
 when
-	Item DavisVantageVueWindDirectionAverage received update
+ Item DavisVantageVueWindDirectionAverage received update
 then
-	val id = 'YOUR_ID'
-	val pw = 'your_password'
-	val sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
-	sdf.setTimeZone(TimeZone.getTimeZone('UTC'))
-	val double rh = DavisVantageVueHumidity.getStateAs(DecimalType).doubleValue
-	val double tempc = DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('°C').doubleValue
-	val double dewptc = 243.04 * (Math.log(rh/100) + ((17.625 * tempc) / (243.04 + tempc))) / (17.625 - Math.log(rh/100) - ((17.625 * tempc) / (243.04 + tempc)))
-	val double dewptf = new QuantityType(dewptc, CELSIUS).toUnit('°F').doubleValue
-	val Map<String, Object> params = newLinkedHashMap(
-		'action' ->           'updateraw',
-		'ID' ->               id,
-		'PASSWORD' ->         pw,
-		'dateutc' ->          sdf.format(new Date()),
-		'winddir' ->          DavisVantageVueWindDirection.getStateAs(QuantityType).toUnit('°').intValue,
-		'windspeedmph' ->     DavisVantageVueWindSpeed.getStateAs(QuantityType).toUnit('mph').doubleValue,
-		'windgustmph' ->      DavisVantageVueWindSpeedMaximum.getStateAs(QuantityType).toUnit('mph').doubleValue,
-		'windgustdir' ->      DavisVantageVueWindDirectionAverage.getStateAs(QuantityType).toUnit('°').intValue,
-		'windspdmph_avg2m' -> DavisVantageVueWindSpeedAverage.getStateAs(QuantityType).toUnit('mph').doubleValue,
-		'winddir_avg2m' ->    DavisVantageVueWindDirectionAverage.getStateAs(QuantityType).toUnit('°').intValue,
-		'humidity' ->         DavisVantageVueHumidity.state,
-		'dewptf' ->           dewptf,
-		'tempf' ->            DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('°F').doubleValue,
-		'rainin' ->           DavisVantageVueRainCurrentHour.getStateAs(QuantityType).toUnit('in').doubleValue,
-		'baromin' ->          MeteoStickPressure.getStateAs(QuantityType).toUnit('inHg').doubleValue,
-		'softwaretype' ->     'openHAB 2.4')
+ val id = 'YOUR_ID'
+ val pw = 'your_password'
+ val sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+ sdf.setTimeZone(TimeZone.getTimeZone('UTC'))
+ val double rh = DavisVantageVueHumidity.getStateAs(DecimalType).doubleValue
+ val double tempc = DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('°C').doubleValue
+ val double dewptc = 243.04 * (Math.log(rh/100) + ((17.625 * tempc) / (243.04 + tempc))) / (17.625 - Math.log(rh/100) - ((17.625 * tempc) / (243.04 + tempc)))
+ val double dewptf = new QuantityType(dewptc, CELSIUS).toUnit('°F').doubleValue
+ val Map<String, Object> params = newLinkedHashMap(
+  'action' ->           'updateraw',
+  'ID' ->               id,
+  'PASSWORD' ->         pw,
+  'dateutc' ->          sdf.format(new Date()),
+  'winddir' ->          DavisVantageVueWindDirection.getStateAs(QuantityType).toUnit('°').intValue,
+  'windspeedmph' ->     DavisVantageVueWindSpeed.getStateAs(QuantityType).toUnit('mph').doubleValue,
+  'windgustmph' ->      DavisVantageVueWindSpeedMaximum.getStateAs(QuantityType).toUnit('mph').doubleValue,
+  'windgustdir' ->      DavisVantageVueWindDirectionAverage.getStateAs(QuantityType).toUnit('°').intValue,
+  'windspdmph_avg2m' -> DavisVantageVueWindSpeedAverage.getStateAs(QuantityType).toUnit('mph').doubleValue,
+  'winddir_avg2m' ->    DavisVantageVueWindDirectionAverage.getStateAs(QuantityType).toUnit('°').intValue,
+  'humidity' ->         DavisVantageVueHumidity.state,
+  'dewptf' ->           dewptf,
+  'tempf' ->            DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('°F').doubleValue,
+  'rainin' ->           DavisVantageVueRainCurrentHour.getStateAs(QuantityType).toUnit('in').doubleValue,
+  'baromin' ->          MeteoStickPressure.getStateAs(QuantityType).toUnit('inHg').doubleValue,
+  'softwaretype' ->     'openHAB 2.4')
 
-	var url = 'https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?'
-	var first = true
-	for (key : params.keySet()) {
-		if (!first) {
-			url += '&'
-		}
-		url += key + '=' + URLEncoder::encode(params.get(key).toString, 'UTF-8')
-		first = false
-	}
+ var url = 'https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?'
+ var first = true
+ for (key : params.keySet()) {
+  if (!first) {
+   url += '&'
+  }
+  url += key + '=' + URLEncoder::encode(params.get(key).toString, 'UTF-8')
+  first = false
+ }
 
-	logDebug('PWS', 'url is {}', url)
-	sendHttpGetRequest(url)
+ logDebug('PWS', 'url is {}', url)
+ sendHttpGetRequest(url)
 end
 ```
 

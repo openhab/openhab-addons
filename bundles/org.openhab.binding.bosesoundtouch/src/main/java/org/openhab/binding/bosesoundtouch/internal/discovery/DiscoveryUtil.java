@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.bosesoundtouch.internal.discovery;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.net.http.HttpUtil;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.core.io.net.http.HttpUtil;
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class DiscoveryUtil {
 
     /**
@@ -29,9 +31,6 @@ public class DiscoveryUtil {
      * This is a quick and dirty method, it always delivers the first appearance of content in an element
      */
     public static String getContentOfFirstElement(String content, String element) {
-        if (content == null) {
-            return "";
-        }
         String beginTag = "<" + element + ">";
         String endTag = "</" + element + ">";
 
@@ -39,7 +38,8 @@ public class DiscoveryUtil {
         int endIndex = content.indexOf(endTag);
 
         if (startIndex != -1 && endIndex != -1) {
-            return content.substring(startIndex, endIndex);
+            String result = content.substring(startIndex, endIndex);
+            return result != null ? result : "";
         } else {
             return "";
         }

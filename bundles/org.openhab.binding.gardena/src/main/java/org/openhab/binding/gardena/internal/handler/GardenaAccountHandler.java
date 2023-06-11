@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,8 +173,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             GardenaConfig gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
             logger.debug("{}", gardenaConfig);
 
-            String id = getThing().getUID().getId();
-            gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, this, scheduler, httpClientFactory,
+            gardenaSmart = new GardenaSmartImpl(getThing().getUID(), gardenaConfig, this, scheduler, httpClientFactory,
                     webSocketFactory);
             final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {

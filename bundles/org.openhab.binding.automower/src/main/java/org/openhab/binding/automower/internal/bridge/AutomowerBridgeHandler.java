@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     private final OAuthFactory oAuthFactory;
 
-    private @NonNullByDefault({}) OAuthClientService oAuthService;
+    private @Nullable OAuthClientService oAuthService;
     private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
     private @Nullable AutomowerBridge bridge;
     private final HttpClient httpClient;
@@ -85,7 +85,11 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             stopAutomowerBridgePolling(currentBridge);
             bridge = null;
         }
-        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+            this.oAuthService = null;
+        }
     }
 
     @Override
@@ -104,8 +108,9 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-invalid-polling-interval");
         } else {
-            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), HUSQVARNA_API_TOKEN_URL,
-                    null, appKey, appSecret, null, null);
+            OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
+                    HUSQVARNA_API_TOKEN_URL, null, appKey, appSecret, null, null);
+            this.oAuthService = oAuthService;
 
             if (bridge == null) {
                 AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
@@ -114,6 +119,12 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             }
             updateStatus(ThingStatus.UNKNOWN);
         }
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     private void startAutomowerBridgePolling(AutomowerBridge bridge, @Nullable Integer pollingIntervalS) {

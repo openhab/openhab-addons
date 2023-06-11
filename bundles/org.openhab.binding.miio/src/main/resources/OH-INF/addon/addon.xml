@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="miio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+	<type>binding</type>
+	<name>Xiaomi Wifi devices (Mi IO) Binding</name>
+	<description>Binding for Xiaomi wifi devices (Mi IO protocol) which are normally controlled by the mihome app like Mi
+		Robot Vacuums, Yeelights, Humidifiers, Fans etc.</description>
+	<connection>hybrid</connection>
+
+	<config-description>
+		<parameter name="username" type="text" required="false">
+			<label>Xiaomi cloud username</label>
+			<description>Xiaomi cloud username. Typically your email</description>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>Xiaomi cloud password</label>
+		</parameter>
+		<parameter name="country" type="text" required="false">
+			<label>Xiaomi server country</label>
+			<description>Xiaomi server country(s) (e.g. sg,de). Separate multiple servers with comma. Leave empty for all. See
+				binding readme for country to server mapping</description>
+		</parameter>
+		<parameter name="cloudDiscoveryMode" type="text" required="false">
+			<default>disabled</default>
+			<label>Cloud Discovery Mode</label>
+			<description>Allow for discovery via the cloud. This may be used for devices that are not on the same network as
+				OpenHAB server</description>
+			<options>
+				<option value="disabled">Local discovery only (Default)</option>
+				<option value="supportedOnly">Discover online supported devices from Xiaomi cloud</option>
+				<option value="all">Discover all on &amp; offline devices from Xiaomi cloud (advanced, see readme for usage)</option>
+			</options>
+		</parameter>
+	</config-description>
+
+</addon:addon>

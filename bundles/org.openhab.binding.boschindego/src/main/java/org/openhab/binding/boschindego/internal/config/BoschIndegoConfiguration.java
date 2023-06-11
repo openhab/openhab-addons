@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.boschindego.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Configuration for the Bosch Indego thing.
@@ -22,8 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class BoschIndegoConfiguration {
-    public @Nullable String username;
-    public @Nullable String password;
+    public String serialNumber = "";
     public long refresh = 180;
     public long stateActiveRefresh = 30;
     public long cuttingTimeRefresh = 60;

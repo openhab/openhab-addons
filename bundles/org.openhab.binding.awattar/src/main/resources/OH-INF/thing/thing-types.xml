@@ -4,6 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<bridge-type id="bridge">
+		<label>aWATTar Bridge</label>
+		<description>Provides price data from the aWATTar API.</description>
+		<config-description-ref uri="bridge-type:awattar:bridge"/>
+	</bridge-type>
+
 	<thing-type id="prices">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>

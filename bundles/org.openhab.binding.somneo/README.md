@@ -13,59 +13,59 @@ This binding does only support one Thing:
 The Philips Somneo thing requires the `hostname` it can connect to.
 Its API only allows HTTPS access, but unfortunately the SSL certificate is not trusted and must be ignored by the parameter.
 
-| Parameter           | Values                                    | Default |
-|---------------------|-------------------------------------------|---------|
-| hostname            | Hostname or IP address of the device      | -       |
-| port                | Port number                               | 443     |
-| refreshInterval     | Interval the device is polled in sec      | 30      |
-| ignoreSSLErrors     | Ignore SSL Errors                         | true    |
+| Parameter       | Values                               | Default |
+| --------------- | ------------------------------------ | ------- |
+| hostname        | Hostname or IP address of the device | -       |
+| port            | Port number                          | 443     |
+| refreshInterval | Interval the device is polled in sec | 30      |
+| ignoreSSLErrors | Ignore SSL Errors                    | true    |
 
 ## Channels
 
-| Channel               | Type                 | Read/Write | Description                                                 |
-|-----------------------|----------------------|------------|-------------------------------------------------------------|
-| _Sensor_              |                      |            |                                                             |
-| sensor#illuminance    | Number:Illuminance   | R          | The current illuminance in lux                              |
-| sensor#temperature    | Number:Temperature   | R          | The current temperature                                     |
-| sensor#humidity       | Number:Dimensionless | R          | The current humidity in %                                   |
-| sensor#noise          | Number:Dimensionless | R          | The current noise in dB                                     |
-| _Light_               |                      |            |                                                             |
-| light#main            | Switch               | RW         | Turn the light on, off and set the brightness               |
-| light#night           | Switch               | RW         | Turn the night light on or off                              |
-| _Sunset_              |                      |            |                                                             |
-| sunset#switch         | Switch               | RW         | Turn the sunset program on or off                           |
-| sunset#remainingTime  | Number:Time          | R          | Remaining time from an activated program                    |
-| sunset#lightIntensity | Dimmer               | RW         | Set the brightness during the sunset programme              |
-| sunset#duration       | Number:Time          | RW         | The duration of sunset program in minutes                   |
-| sunset#colorSchema    | Number               | RW         | Choose a personal sunset                                    |
-| sunset#ambientNoise   | String               | RW         | Ambient noise played during the sunset                      |
-| sunset#volume         | Dimmer               | RW         | Set the volume during the sunset programme                  |
-| _Relax_               |                      |            |                                                             |
-| relax#switch          | Switch               | RW         | Turn the relax breathe program on or off                    |
-| relax#remainingTime   | Number:Time          | R          | Remaining time from an activated program                    |
-| relax#breathingRate   | Number               | RW         | Breathing rate per minute during the relax program          |
-| relax#duration        | Number:Time          | RW         | The duration of breathe program in minutes                  |
-| relax#guidanceType    | Number               | RW         | Select a breath guidance type during the relax program      |
-| relax#lightIntensity  | Dimmer               | RW         | Set the brightness during the breathe programme             |
-| relax#volume          | Dimmer               | RW         | Set the volume during the breathe programme                 |
-| _Audio_               |                      |            |                                                             |
-| audio#radio           | Player               | RW         | Controlling the radio and seeking for a frequency           |
-| audio#aux             | Switch               | RW         | Turn the AUX input on or off                                |
-| audio#volume          | Dimmer               | RW         | Change the sound volume of the device                       |
-| audio#preset          | String               | RW         | The Device has 5 presets to store radio frequencies         |
-| audio#frequency       | String               | R          | The currently selected radio frequency                      |
+| Channel               | Type                 | Read/Write | Description                                            |
+| --------------------- | -------------------- | ---------- | ------------------------------------------------------ |
+| _Sensor_              |                      |            |                                                        |
+| sensor#illuminance    | Number:Illuminance   | R          | The current illuminance in lux                         |
+| sensor#temperature    | Number:Temperature   | R          | The current temperature                                |
+| sensor#humidity       | Number:Dimensionless | R          | The current humidity in %                              |
+| sensor#noise          | Number:Dimensionless | R          | The current noise in dB                                |
+| _Light_               |                      |            |                                                        |
+| light#main            | Switch               | RW         | Turn the light on, off and set the brightness          |
+| light#night           | Switch               | RW         | Turn the night light on or off                         |
+| _Sunset_              |                      |            |                                                        |
+| sunset#switch         | Switch               | RW         | Turn the sunset program on or off                      |
+| sunset#remainingTime  | Number:Time          | R          | Remaining time from an activated program               |
+| sunset#lightIntensity | Dimmer               | RW         | Set the brightness during the sunset programme         |
+| sunset#duration       | Number:Time          | RW         | The duration of sunset program in minutes              |
+| sunset#colorSchema    | Number               | RW         | Choose a personal sunset                               |
+| sunset#ambientNoise   | String               | RW         | Ambient noise played during the sunset                 |
+| sunset#volume         | Dimmer               | RW         | Set the volume during the sunset programme             |
+| _Relax_               |                      |            |                                                        |
+| relax#switch          | Switch               | RW         | Turn the relax breathe program on or off               |
+| relax#remainingTime   | Number:Time          | R          | Remaining time from an activated program               |
+| relax#breathingRate   | Number               | RW         | Breathing rate per minute during the relax program     |
+| relax#duration        | Number:Time          | RW         | The duration of breathe program in minutes             |
+| relax#guidanceType    | Number               | RW         | Select a breath guidance type during the relax program |
+| relax#lightIntensity  | Dimmer               | RW         | Set the brightness during the breathe programme        |
+| relax#volume          | Dimmer               | RW         | Set the volume during the breathe programme            |
+| _Audio_               |                      |            |                                                        |
+| audio#radio           | Player               | RW         | Controlling the radio and seeking for a frequency      |
+| audio#aux             | Switch               | RW         | Turn the AUX input on or off                           |
+| audio#volume          | Dimmer               | RW         | Change the sound volume of the device                  |
+| audio#preset          | String               | RW         | The Device has 5 presets to store radio frequencies    |
+| audio#frequency       | String               | R          | The currently selected radio frequency                 |
 
 ## Full Example
 
 somneo.things:
 
-```
+```java
 Thing somneo:hf367x:1 "Philips Somneo" @ "Bedroom" [ hostname="192.168.0.110", ignoreSSLErrors=true ]
 ```
 
 somneo.items:
 
-```
+```java
 // Sensors
 Number:Illuminance   PhilipsSomneo_Illuminance "Illuminance" <Sun>         ["Measurement", "Light"]       { channel="somneo:hf367x:1:sensor#illuminance" }
 Number:Temperature   PhilipsSomneo_Temperature "Temperature" <Temperature> ["Measurement", "Temperature"] { channel="somneo:hf367x:1:sensor#temperature" }
@@ -100,7 +100,7 @@ String PhilipsSomneo_AudioFrequency "FM Frequency"                 ["Status"]   
 
 somneo.sitemap:
 
-```
+```perl
 sitemap somneo label="Philips Somneo" {
     Frame label="Sensors" {
         Default item=PhilipsSomneo_Illuminance
@@ -147,6 +147,6 @@ sitemap somneo label="Philips Somneo" {
 
 Thanks to:
 
-* [homebridge-somneo](https://github.com/zackwag/homebridge-somneo) - For creating a similar plugin in another platform and exposing endpoints for control.
-* [somneo-client](https://github.com/DonkerNet/somneo-client) - For creating a similar plugin in another platform and exposing endpoints for control.
-* HTTP Binding and other OpenHAB addons - Which was used as examples.
+- [homebridge-somneo](https://github.com/zackwag/homebridge-somneo) - For creating a similar plugin in another platform and exposing endpoints for control.
+- [somneo-client](https://github.com/DonkerNet/somneo-client) - For creating a similar plugin in another platform and exposing endpoints for control.
+- HTTP Binding and other OpenHAB addons - Which was used as examples.

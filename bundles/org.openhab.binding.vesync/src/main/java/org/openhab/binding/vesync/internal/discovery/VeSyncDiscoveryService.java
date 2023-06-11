@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.vesync.internal.handlers.VeSyncBaseDeviceHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -117,6 +120,10 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
             properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
+            properties.put(DEVICE_PROP_DEVICE_FAMILY,
+                    VeSyncBaseDeviceHandler.getDeviceFamilyMetadata(apMeta.getDeviceType(),
+                            VeSyncDeviceAirHumidifierHandler.DEV_TYPE_FAMILY_AIR_HUMIDIFIER,
+                            VeSyncDeviceAirHumidifierHandler.SUPPORTED_MODEL_FAMILIES));
             properties.put(DEVICE_PROP_DEVICE_MAC_ID, apMeta.getMacId());
             properties.put(DEVICE_PROP_DEVICE_UUID, deviceUUID);
             properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());
@@ -131,6 +138,10 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
             properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
+            properties.put(DEVICE_PROP_DEVICE_FAMILY,
+                    VeSyncBaseDeviceHandler.getDeviceFamilyMetadata(apMeta.getDeviceType(),
+                            VeSyncDeviceAirPurifierHandler.DEV_TYPE_FAMILY_AIR_PURIFIER,
+                            VeSyncDeviceAirPurifierHandler.SUPPORTED_MODEL_FAMILIES));
             properties.put(DEVICE_PROP_DEVICE_MAC_ID, apMeta.getMacId());
             properties.put(DEVICE_PROP_DEVICE_UUID, deviceUUID);
             properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());

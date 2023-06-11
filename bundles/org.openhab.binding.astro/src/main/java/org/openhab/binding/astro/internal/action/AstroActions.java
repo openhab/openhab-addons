@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.AstroBindingConstants;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.handler.SunHandler;
+import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.library.dimension.Intensity;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -86,6 +88,24 @@ public class AstroActions implements ThingActions {
         return null;
     }
 
+    @RuleAction(label = "get the total sun radiation", description = "Get the total sun radiation for a given time.")
+    public @Nullable @ActionOutput(name = "getTotalRadiation", label = "Total Radiation", type = "org.openhab.core.library.types.QuantityType<org.openhab.core.library.dimension.Intensity>") QuantityType<Intensity> getTotalRadiation(
+            @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
+        logger.debug("Astro action 'getTotalRadiation' called");
+        AstroThingHandler theHandler = this.handler;
+        if (theHandler != null) {
+            if (theHandler instanceof SunHandler sunHandler) {
+                Radiation radiation = sunHandler.getRadiationAt(date != null ? date : ZonedDateTime.now());
+                return radiation.getTotal();
+            } else {
+                logger.info("Astro Action service ThingHandler is not a SunHandler!");
+            }
+        } else {
+            logger.info("Astro Action service ThingHandler is null!");
+        }
+        return null;
+    }
+
     @RuleAction(label = "get the date time of a sun event", description = "Get the date time of a sun event.")
     public @Nullable @ActionOutput(name = "getEventTime", type = "java.time.ZonedDateTime") ZonedDateTime getEventTime(
             @ActionInput(name = "phaseName", label = "Phase", required = true, description = "Requested phase") String phaseName,
@@ -118,6 +138,11 @@ public class AstroActions implements ThingActions {
 
     public static @Nullable QuantityType<Angle> getAzimuth(ThingActions actions, @Nullable ZonedDateTime date) {
         return ((AstroActions) actions).getAzimuth(date);
+    }
+
+    public static @Nullable QuantityType<Intensity> getTotalRadiation(ThingActions actions,
+            @Nullable ZonedDateTime date) {
+        return ((AstroActions) actions).getTotalRadiation(date);
     }
 
     public static @Nullable ZonedDateTime getEventTime(ThingActions actions, @Nullable String phaseName,

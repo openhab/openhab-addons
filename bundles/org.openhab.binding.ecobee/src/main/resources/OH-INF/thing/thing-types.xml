@@ -202,6 +202,10 @@
 			<channel id="desiredHeatRangeHigh" typeId="desiredHeatRangeHigh"/>
 			<channel id="desiredCoolRangeLow" typeId="desiredCoolRangeLow"/>
 			<channel id="desiredCoolRangeHigh" typeId="desiredCoolRangeHigh"/>
+			<channel id="actualAQAccuracy" typeId="actualAQAccuracy"/>
+			<channel id="actualAQScore" typeId="actualAQScore"/>
+			<channel id="actualCO2" typeId="actualCO2"/>
+			<channel id="actualVOC" typeId="actualVOC"/>
 		</channels>
 	</channel-group-type>
 
@@ -227,7 +231,7 @@
 	</channel-type>
 	<channel-type id="disconnectDateTime" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Disconnected Date Timee</label>
+		<label>Disconnected Date Time</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastModified" advanced="true">
@@ -295,25 +299,45 @@
 		<label>Desired Fan Mode</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="desiredHeatRangeLow">
+	<channel-type id="desiredHeatRangeLow" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Heat Range Low</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="desiredHeatRangeHigh">
+	<channel-type id="desiredHeatRangeHigh" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Heat Range High</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="desiredCoolRangeLow">
+	<channel-type id="desiredCoolRangeLow" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Cool Range Low</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="desiredCoolRangeHigh">
+	<channel-type id="desiredCoolRangeHigh" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Cool Range High</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="actualAQAccuracy" advanced="true">
+		<item-type>Number</item-type>
+		<label>Actual Air Quality Accuracy</label>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="actualAQScore" advanced="true">
+		<item-type>Number</item-type>
+		<label>Actual Air Quality Score</label>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="actualCO2" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Actual CO2</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="actualVOC" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Actual VOC</label>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-group-type id="settings">
@@ -530,32 +554,32 @@
 		<label>Quick Save Set Forward</label>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
-	<channel-type id="hasHeatPump">
+	<channel-type id="hasHeatPump" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Heat Pump</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="hasForcedAir">
+	<channel-type id="hasForcedAir" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Forced Air</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="hasBoiler">
+	<channel-type id="hasBoiler" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Boiler</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="hasHumidifier">
+	<channel-type id="hasHumidifier" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Humidifier</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="hasElectric">
+	<channel-type id="hasElectric" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Electric</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="hasDehumidifier">
+	<channel-type id="hasDehumidifier" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Has Dehumidifier</label>
 		<state readOnly="true" pattern="%s"/>
@@ -720,22 +744,22 @@
 		<label>WiFi Offline Alert</label>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
-	<channel-type id="heatMinTemp">
+	<channel-type id="heatMinTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Min Temp</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="heatMaxTemp">
+	<channel-type id="heatMaxTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Max Temp</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="coolMinTemp">
+	<channel-type id="coolMinTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Min Temp</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="coolMaxTemp">
+	<channel-type id="coolMaxTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Max Temp</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -925,12 +949,12 @@
 		<label>Ventilator Min On Time Away</label>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
-	<channel-type id="backlightOffDuringSleep">
+	<channel-type id="backlightOffDuringSleep" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Backlight Off During Sleep</label>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
-	<channel-type id="autoAway">
+	<channel-type id="autoAway" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Auto Away</label>
 		<state readOnly="false" pattern="%s"/>
@@ -1023,7 +1047,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="alertAcknowledgeRef">
+	<channel-type id="alertAcknowledgeRef" advanced="true">
 		<item-type>String</item-type>
 		<label>Acknowledge Ref</label>
 		<state readOnly="true" pattern="%s"/>
@@ -1048,12 +1072,12 @@
 		<label>Text</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="alertNumber">
+	<channel-type id="alertNumber" advanced="true">
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
-	<channel-type id="alertType">
+	<channel-type id="alertType" advanced="true">
 		<item-type>String</item-type>
 		<label>Type</label>
 		<state readOnly="true" pattern="%s"/>
@@ -1063,7 +1087,7 @@
 		<label>Is Operator Alert</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="alertReminder">
+	<channel-type id="alertReminder" advanced="true">
 		<item-type>String</item-type>
 		<label>Reminder</label>
 		<state readOnly="true" pattern="%s"/>
@@ -1083,7 +1107,7 @@
 		<label>Send Email</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="alertAcknowledgement">
+	<channel-type id="alertAcknowledgement" advanced="true">
 		<item-type>String</item-type>
 		<label>Acknowledgement</label>
 		<state readOnly="true" pattern="%s"/>
@@ -1203,12 +1227,12 @@
 		<label>Heat Hold Temp</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
-	<channel-type id="eventFan">
+	<channel-type id="eventFan" advanced="true">
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="eventVent">
+	<channel-type id="eventVent" advanced="true">
 		<item-type>String</item-type>
 		<label>Vent</label>
 		<state readOnly="true" pattern="%s"/>
@@ -1339,7 +1363,7 @@
 		<label>Symbol</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
-	<channel-type id="weatherWeatherSymbolText">
+	<channel-type id="weatherWeatherSymbolText" advanced="true">
 		<item-type>String</item-type>
 		<label>Symbol Text</label>
 		<state readOnly="true" pattern="%s"/>
@@ -1369,12 +1393,12 @@
 		<label>Relative Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="weatherDewpoint">
+	<channel-type id="weatherDewpoint" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="weatherVisibility">
+	<channel-type id="weatherVisibility" advanced="true">
 		<item-type>Number</item-type>
 		<label>Visibility</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -1399,7 +1423,7 @@
 		<label>Wind Bearing</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="weatherPop">
+	<channel-type id="weatherPop" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Probability of Precipitation</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -1419,7 +1443,7 @@
 		<label>Sky</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
-	<channel-type id="weatherSkyText">
+	<channel-type id="weatherSkyText" advanced="true">
 		<item-type>String</item-type>
 		<label>Sky Text</label>
 		<state readOnly="true" pattern="%s"/>
@@ -1466,22 +1490,22 @@
 		<label>City</label>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
-	<channel-type id="locationProvinceState">
+	<channel-type id="locationProvinceState" advanced="true">
 		<item-type>String</item-type>
 		<label>Province/State</label>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
-	<channel-type id="locationCountry">
+	<channel-type id="locationCountry" advanced="true">
 		<item-type>String</item-type>
 		<label>Country</label>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
-	<channel-type id="locationPostalCode">
+	<channel-type id="locationPostalCode" advanced="true">
 		<item-type>String</item-type>
 		<label>Postal Code</label>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
-	<channel-type id="locationPhoneNumber">
+	<channel-type id="locationPhoneNumber" advanced="true">
 		<item-type>String</item-type>
 		<label>Phone Number</label>
 		<state readOnly="false" pattern="%s"/>
@@ -1627,12 +1651,12 @@
 		<label>Phone</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="technicianStreetAddress">
+	<channel-type id="technicianStreetAddress" advanced="true">
 		<item-type>String</item-type>
 		<label>Street Address</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="technicianCity">
+	<channel-type id="technicianCity" advanced="true">
 		<item-type>String</item-type>
 		<label>City</label>
 		<state readOnly="true" pattern="%s"/>

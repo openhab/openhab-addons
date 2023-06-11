@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,12 +26,12 @@ public interface MessageHandler<T extends GattMessage, R extends GattMessage> {
      * @param payload
      * @return true if this handler should be removed from the handler list
      */
-    public boolean handleReceivedMessage(R message);
+    boolean handleReceivedMessage(R message);
 
     /**
      *
      * @param payload
      * @return true if this handler should be removed from the handler list
      */
-    public boolean handleFailedMessage(T message, Throwable th);
+    boolean handleFailedMessage(T message, Throwable th);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,14 @@ package org.openhab.binding.dmx.internal.handler;
 
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.THING_TYPE_ARTNET_BRIDGE;
 
-import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dmx.internal.config.ArtnetBridgeHandlerConfiguration;
 import org.openhab.binding.dmx.internal.dmxoverethernet.ArtnetNode;
 import org.openhab.binding.dmx.internal.dmxoverethernet.ArtnetPacket;
 import org.openhab.binding.dmx.internal.dmxoverethernet.DmxOverEthernetHandler;
+import org.openhab.binding.dmx.internal.dmxoverethernet.DmxOverEthernetPacket;
 import org.openhab.binding.dmx.internal.dmxoverethernet.IpNode;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -35,8 +36,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class ArtnetBridgeHandler extends DmxOverEthernetHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ARTNET_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ARTNET_BRIDGE);
     public static final int MIN_UNIVERSE_ID = 0;
     public static final int MAX_UNIVERSE_ID = 32767;
 
@@ -51,6 +53,11 @@ public class ArtnetBridgeHandler extends DmxOverEthernetHandler {
         ArtnetBridgeHandlerConfiguration configuration = getConfig().as(ArtnetBridgeHandlerConfiguration.class);
 
         setUniverse(configuration.universe, MIN_UNIVERSE_ID, MAX_UNIVERSE_ID);
+        DmxOverEthernetPacket packetTemplate = this.packetTemplate;
+        if (packetTemplate == null) {
+            packetTemplate = new ArtnetPacket();
+            this.packetTemplate = packetTemplate;
+        }
         packetTemplate.setUniverse(universe.getUniverseId());
 
         receiverNodes.clear();

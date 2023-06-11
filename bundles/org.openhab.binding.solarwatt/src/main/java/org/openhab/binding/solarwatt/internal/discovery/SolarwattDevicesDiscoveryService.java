@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,15 @@
  */
 package org.openhab.binding.solarwatt.internal.discovery;
 
-import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.*;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_PROPERTIES_GUID;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_TYPE_BATTERYCONVERTER;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_TYPE_EVSTATION;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_TYPE_GRIDFLOW;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_TYPE_INVERTER;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_TYPE_LOCATION;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_TYPE_POWERMETER;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_TYPE_PVPLANT;
+import static org.openhab.binding.solarwatt.internal.SolarwattBindingConstants.THING_TYPE_SMARTHEATER;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +37,7 @@ import org.openhab.binding.solarwatt.internal.domain.model.Inverter;
 import org.openhab.binding.solarwatt.internal.domain.model.Location;
 import org.openhab.binding.solarwatt.internal.domain.model.PVPlant;
 import org.openhab.binding.solarwatt.internal.domain.model.PowerMeter;
+import org.openhab.binding.solarwatt.internal.domain.model.SmartHeater;
 import org.openhab.binding.solarwatt.internal.handler.EnergyManagerHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -137,6 +146,7 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
                 this.logger.warn("No device data for solarwatt devices in discovery for energy manager {}.", bridgeUID);
             } else {
                 devices.forEach((key, entry) -> {
+                    this.logger.debug("scanForDeviceThings: {}-{}", entry.getClass(), entry.getGuid());
                     if (entry instanceof BatteryConverter) {
                         this.discover(bridgeUID, entry, THING_TYPE_BATTERYCONVERTER);
                     } else if (entry instanceof Inverter) {
@@ -151,6 +161,10 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
                         this.discover(bridgeUID, entry, THING_TYPE_PVPLANT);
                     } else if (entry instanceof GridFlow) {
                         this.discover(bridgeUID, entry, THING_TYPE_GRIDFLOW);
+                    } else if (entry instanceof SmartHeater) {
+                        this.discover(bridgeUID, entry, THING_TYPE_SMARTHEATER);
+                    } else {
+                        this.logger.debug("Found unhandled device");
                     }
                 });
             }

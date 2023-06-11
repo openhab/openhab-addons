@@ -53,12 +53,12 @@ Standard mode doesn't depend on the pricing options, but it adds some useful inf
 
 ## Discovery
 
-Before the binding can be used, a serial controller must be added. This needs to be done manually. Select __Teleinfo Serial Controller__ and enter the serial port.
+Before the binding can be used, a serial controller must be added. This needs to be done manually. Select **Teleinfo Serial Controller** and enter the serial port.
 
 If you want to place the Teleinfo modem apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
 In this case you have to define the serial port of your Teleinfo modem like this `rfc2217://ip:port`. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _ser2net_ config file.
 
-Once the serial controller added, electricity meters will automatically appear after starting discovery, with default label __Teleinfo ADCO #adco__ where __#adco__ is  your electricity meter identifier.
+Once the serial controller added, electricity meters will automatically appear after starting discovery, with default label **Teleinfo ADCO #adco** where **#adco** is  your electricity meter identifier.
 
 ## Thing Configuration
 
@@ -119,11 +119,11 @@ The following channels are available on all Linky telemeters in standard TIC mod
 | commonLSMGroup#ngtf             | `String`                  | Provider schedule name                                                      |
 | commonLSMGroup#ltarf            | `String`                  | Current pricing label                                                       |
 | commonLSMGroup#east             | `Number:Energy`           | Total active energy withdrawn                                               |
-| commonLSMGroup#easf*XX*         | `Number:Energy`           | Active energy withdrawn from provider on index *XX*, *XX* in {01,...,10}    |
-| commonLSMGroup#easd*XX*         | `Number:Energy`           | Active energy withdrawn from distributor on index *XX*, *XX* in {01,...,04} |
+| commonLSMGroup#easf_XX_         | `Number:Energy`           | Active energy withdrawn from provider on index _XX, XX_ in {01,...,10}      |
+| commonLSMGroup#easd_XX_         | `Number:Energy`           | Active energy withdrawn from distributor on index _XX, XX_ in {01,...,04}   |
 | commonLSMGroup#irms1            | `Number:ElectricCurrent`  | RMS Current on phase 1                                                      |
 | commonLSMGroup#urms1            | `Number:Potential`        | RMS Voltage on phase 1                                                      |
-| commonLSMGroup#pref             | `Number:Power`            | Reference apparent power                                                    | 
+| commonLSMGroup#pref             | `Number:Power`            | Reference apparent power                                                    |
 | commonLSMGroup#pcoup            | `Number:Power`            | Apparent power rupture capacity                                             |
 | commonLSMGroup#sinsts           | `Number:Power`            | Instantaneous withdrawn apparent power                                      |
 | commonLSMGroup#smaxsn           | `Number:Power`            | Maximum withdrawn apparent power of the day                                 |
@@ -131,8 +131,8 @@ The following channels are available on all Linky telemeters in standard TIC mod
 | commonLSMGroup#ccasn            | `Number:Power`            | Active charge point N                                                       |
 | commonLSMGroup#ccasnMinus1      | `Number:Power`            | Active charge point N-1                                                     |
 | commonLSMGroup#umoy1            | `Number:Potential`        | Mean Voltage on phase 1                                                     |
-| commonLSMGroup#dpm*X*           | `String`                  | Start of mobile peak period *X*, *X* in {1,2,3}                             |
-| commonLSMGroup#fpm*X*           | `String`                  | End of mobile peak period *X*, *X* in {1,2,3}                               |
+| commonLSMGroup#dpm_X_           | `String`                  | Start of mobile peak period _X, X_ in {1,2,3}                               |
+| commonLSMGroup#fpm_X_           | `String`                  | End of mobile peak period _X, X_ in {1,2,3}                                 |
 | commonLSMGroup#msg1             | `String`                  | Short message                                                               |
 | commonLSMGroup#msg2             | `String`                  | Very short message                                                          |
 | commonLSMGroup#ntarf            | `String`                  | Index of current pricing                                                    |
@@ -146,38 +146,40 @@ The following channels are available on all Linky telemeters in standard TIC mod
 | commonLSMGroup#ccasnDate        | `DateTime`                | Timestamp of CCASN value                                                    |
 | commonLSMGroup#ccasnMinus1Date  | `DateTime`                | Timestamp of CCASN-1 value                                                  |
 | commonLSMGroup#umoy1Date        | `DateTime`                | Timestamp of UMOY1 value                                                    |
-| commonLSMGroup#dpm*X*Date       | `DateTime`                | Date of DPM*X*, *X* in {1,2,3}                                              |
-| commonLSMGroup#fpm*X*Date       | `DateTime`                | Date of FPM*X*, *X* in {1,2,3}                                              |
-| commonLSMGroup#relais*X*        | `Switch`                  | state of relais *X*, *X* in {1,...,8}                                       |
+| commonLSMGroup#dpm_X_Date       | `DateTime`                | Date of DPM_X_, _X_ in {1,2,3}                                              |
+| commonLSMGroup#fpm_X_Date       | `DateTime`                | Date of FPM_X_, _X_ in {1,2,3}                                              |
+| commonLSMGroup#relais_X_        | `Switch`                  | state of relais _X, X_ in {1,...,8}                                         |
 
 #### Three phase only channels
 
 These channels are available on the following telemeters:
-* lstm_electricitymeter
-* lsmt_prod_electricitymeter
+
+- lstm_electricitymeter
+- lsmt_prod_electricitymeter
 
 | Channel                                 | Type                      | Description                                                                       |
 |-----------------------------------------|---------------------------|-----------------------------------------------------------------------------------|
-| threePhasedLSMGroup#irms*X*             | `Number:ElectricCurrent`  | RMS Current on phase *X*, *X* in {2,3}                                            |
-| threePhasedLSMGroup#urms*X*             | `Number:Potential`        | RMS Voltage on phase *X*, *X* in {2,3}                                            |
-| threePhasedLSMGroup#umoy*X*             | `Number:Potential`        | Mean Voltage on phase *X*, *X* in {2,3}                                           |
-| threePhasedLSMGroup#sinsts*X*           | `Number:Power`            | Instantaneous withdrawn apparent power on phase *X*, *X* in {1,2,3}               |
-| threePhasedLSMGroup#smaxsn*X*           | `Number:Power`            | Maximum withdrawn apparent power of the day on phase *X*, *X* in {1,2,3}          |
-| commonLSMGroup#umoy*X*Date              | `DateTime`                | Timestamp of UMOY*X* value, *X* in {2,3}                                          |
-| threePhasedLSMGroup#smaxsn*X*Minus1     | `Number:Power`            | Maximum withdrawn apparent power on the previous day on phase *X*, *X* in {1,2,3} |
-| threePhasedLSMGroup#smaxs*X*nDate       | `DateTime`                | Timestamp of SMAXSN*X* value, *X* in {1,2,3}                                      |
-| threePhasedLSMGroup#smaxsn*X*Minus1Date | `DateTime`                | Timestamp of SMAXSN*X*-1 value, *X* in {1,2,3}                                    |
+| threePhasedLSMGroup#irms_X_             | `Number:ElectricCurrent`  | RMS Current on phase _X, X_ in {2,3}                                              |
+| threePhasedLSMGroup#urms_X_             | `Number:Potential`        | RMS Voltage on phase _X, X_ in {2,3}                                              |
+| threePhasedLSMGroup#umoy_X_             | `Number:Potential`        | Mean Voltage on phase _X, X_ in {2,3}                                             |
+| threePhasedLSMGroup#sinsts_X_           | `Number:Power`            | Instantaneous withdrawn apparent power on phase _X, X_ in {1,2,3}                 |
+| threePhasedLSMGroup#smaxsn_X_           | `Number:Power`            | Maximum withdrawn apparent power of the day on phase _X, X_ in {1,2,3}            |
+| commonLSMGroup#umoy_X_Date              | `DateTime`                | Timestamp of UMOY_X_ value, _X_ in {2,3}                                          |
+| threePhasedLSMGroup#smaxsn_X_Minus1     | `Number:Power`            | Maximum withdrawn apparent power on the previous day on phase _X, X_ in {1,2,3}   |
+| threePhasedLSMGroup#smaxs_X_nDate       | `DateTime`                | Timestamp of SMAXSN_X_ value, _X_ in {1,2,3}                                      |
+| threePhasedLSMGroup#smaxsn_X_Minus1Date | `DateTime`                | Timestamp of SMAXSN_X_-1 value, _X_ in {1,2,3}                                    |
 
 #### Producer only channels
 
 These channels are available on the following telemeters:
-* lsmm_prod_electricitymeter
-* lsmt_prod_electricitymeter
+
+- lsmm_prod_electricitymeter
+- lsmt_prod_electricitymeter
 
 | Channel                           | Type            | Description                                              |
 |-----------------------------------|-----------------|----------------------------------------------------------|
 | producerLSMGroup#eait             | `Number:Energy` | Total active energy injected                             |
-| producerLSMGroup#erq*X*           | `Number:Energy` | Total reactive energy on index *X*, *X* in {1,...,4}     |
+| producerLSMGroup#erq_X_           | `Number:Energy` | Total reactive energy on index _X, X_ in {1,...,4}       |
 | producerLSMGroup#sinsti           | `Number:Energy` | Instantaneous injected apparent power                    |
 | producerLSMGroup#smaxin           | `Number:Power`  | Maximum injected apparent power of the day               |
 | producerLSMGroup#smaxinMinus1     | `Number:Power`  | Maximum injected apparent power of the previous day      |
@@ -194,7 +196,7 @@ These channels are available on the following telemeters:
 
 The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC and adco `031528042289` :
 
-```
+```java
 Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
     Thing cbemm_evolution_icc_hc_electricitymeter myElectricityMeter [ adco="031528042289"]
 }
@@ -204,7 +206,7 @@ Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
 
 This `items` file links some supported channels to items:
 
-```
+```java
 Number:Power TLInfoEDF_PAPP "PAPP" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:papp"}
 Number:ElectricCurrent TLInfoEDF_ISOUSC "ISOUSC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:isousc"}
 String TLInfoEDF_PTEC "PTEC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:ptec"}
@@ -220,7 +222,7 @@ String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_h
 
 The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289` :
 
-```
+```java
 Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0", ticMode="STANDARD" ]{
     Thing lsmm_electricitymeter myElectricityMeter [ adco="031528042289"]
 }
@@ -228,7 +230,7 @@ Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0", ticMod
 
 This `items` file links some supported channels to items:
 
-```
+```java
 Number:Power TLInfoEDF_SINSTS "SINSTS" <energy> ["Measurement","Power"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#sinsts"}
 Number:ElectricCurrent TLInfoEDF_PREF "PREF" <energy> ["Measurement","Power"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#pref"}
 String TLInfoEDF_LTARF "LTARF" <energy> ["Status"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#ltarf"}
@@ -251,5 +253,5 @@ The Teleinfo binding has been successfully validated with below hardware configu
 | GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Linky | Single-phase HCHP | Standard |
 | Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Linky | Three-phase TEMPO | Standard |
 
-On Linky telemeters, only *historical* TIC mode is currently supported.
+On Linky telemeters, only _historical_ TIC mode is currently supported.
 The method for changing the TIC mode of a Linky telemeter is explained [here](https://forum.gce-electronics.com/t/comment-passer-un-cpt-linky-en-mode-standard/8206/7).

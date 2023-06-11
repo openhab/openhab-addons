@@ -213,10 +213,10 @@
 				]
 			},
 			{
-				"property": "moto-speed-rpm",
+				"property": "motor-speed-rpm",
 				"siid": 9,
 				"piid": 1,
-				"friendlyName": "Custom Service - Moto Speed Rpm",
+				"friendlyName": "Custom Service - Motor Speed Rpm",
 				"channel": "moto_speed_rpm",
 				"type": "Number",
 				"stateDescription": {

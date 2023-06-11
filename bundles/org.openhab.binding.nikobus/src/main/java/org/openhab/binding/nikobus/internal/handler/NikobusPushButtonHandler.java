@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -299,9 +299,9 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             processNext(currentTimeMillis);
         }
 
-        abstract protected void reset(long currentTimeMillis);
+        protected abstract void reset(long currentTimeMillis);
 
-        abstract protected void processNext(long currentTimeMillis);
+        protected abstract void processNext(long currentTimeMillis);
     }
 
     public static class TriggerButtonConfig {

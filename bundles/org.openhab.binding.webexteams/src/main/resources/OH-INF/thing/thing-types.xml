@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="webexteams"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Account Thing Type -->
+	<thing-type id="account">
+		<label>WebexTeams Account</label>
+		<description>WebexTeams account used to send messages.</description>
+
+		<channels>
+			<channel id="status" typeId="status"/>
+			<channel id="lastactivity" typeId="lastactivity"/>
+		</channels>
+
+		<properties>
+			<property name="type"></property>
+			<property name="name"></property>
+		</properties>
+
+		<config-description>
+			<parameter name="token" type="text" required="false">
+				<context>password</context>
+				<label>Authorization Token</label>
+				<description>Authorization token. Only use with a bot account.</description>
+			</parameter>
+			<parameter name="clientId" type="text" required="false">
+				<label>Client Id</label>
+				<description>Client Id. Only use with a person integration.</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="false">
+				<context>password</context>
+				<label>Client Secret</label>
+				<description>Client Secret. Only use with a person integration.</description>
+			</parameter>
+			<parameter name="refreshPeriod" type="integer" required="false">
+				<label>Refresh Period (seconds)</label>
+				<default>300</default>
+				<description>Refresh period for channels. Low numbers increase accuracy, but could hit API rate limits. Defaults to
+					300 secs.</description>
+			</parameter>
+			<parameter name="roomId" type="text" required="false">
+				<label>Default Room Id</label>
+				<description>Id of the default room to send messages</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Botname Channel Type -->
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>The current presence status of the person</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="lastactivity">
+		<item-type>DateTime</item-type>
+		<label>Last Activity</label>
+		<description>The date and time of the person's last activity within Webex</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

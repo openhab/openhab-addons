@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link AtlonaBinding} class defines common constants, which are used across the whole binding.
  *
  * @author Tim Roberts - Initial contribution
- * @author Michael Lobstein - Add support for AT-PRO3HD66M
+ * @author Michael Lobstein - Add support for AT-PRO3HD 44/66 M
  */
 @NonNullByDefault
 public class AtlonaBindingConstants {
@@ -48,6 +48,11 @@ public class AtlonaBindingConstants {
      * Thing ID for the AT-UHD-PRO3-1616m (16x16 hdbaset matrix)
      */
     public static final ThingTypeUID THING_TYPE_PRO3_1616M = new ThingTypeUID(BINDING_ID, "pro3-1616m");
+
+    /**
+     * Thing ID for the AT-PRO3HD44M (HD 4x4 hdbaset matrix)
+     */
+    public static final ThingTypeUID THING_TYPE_PRO3HD_44M = new ThingTypeUID(BINDING_ID, "pro3-hd44m");
 
     /**
      * Thing ID for the AT-PRO3HD66M (HD 6x6 hdbaset matrix)

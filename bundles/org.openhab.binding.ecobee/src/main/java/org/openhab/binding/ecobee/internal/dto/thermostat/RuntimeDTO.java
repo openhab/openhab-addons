@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ecobee.internal.dto.thermostat;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -48,29 +48,29 @@ public class RuntimeDTO {
      * The UTC date/time stamp of when the thermostat first connected
      * to the ecobee server.
      */
-    public Date firstConnected;
+    public Instant firstConnected;
 
     /*
      * The last recorded connection date and time.
      */
-    public Date connectDateTime;
+    public Instant connectDateTime;
 
     /*
      * The last recorded disconnection date and time.
      */
-    public Date disconnectDateTime;
+    public Instant disconnectDateTime;
 
     /*
      * The UTC date/time stamp of when the thermostat was updated.
      * Format: YYYY-MM-DD HH:MM:SS
      */
-    public Date lastModified;
+    public Instant lastModified;
 
     /*
      * The UTC date/time stamp of when the thermostat last posted its
      * runtime information. Format: YYYY-MM-DD HH:MM:SS
      */
-    public Date lastStatusModified;
+    public Instant lastStatusModified;
 
     /*
      * The UTC date of the last runtime reading. Format: YYYY-MM-DD
@@ -152,4 +152,24 @@ public class RuntimeDTO {
      * minimum and maximim, e.g. [650,920].
      */
     public List<Integer> desiredCoolRange;
+
+    /*
+     * The current air quality accuracy
+     */
+    public Integer actualAQAccuracy;
+
+    /*
+     * The current air quality score
+     */
+    public Integer actualAQScore;
+
+    /*
+     * The current CO2 in ppm
+     */
+    public Integer actualCO2;
+
+    /*
+     * The current VOC in ppb
+     */
+    public Integer actualVOC;
 }

@@ -76,10 +76,10 @@ The configuration of your amazon account must be done in the 'Amazon Account' de
 
 ## First Steps
 
-1) Create an 'Amazon Account' thing
-2) open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
-3) You should see now a message that the login was successful
-4) If you encounter redirect/page refresh issues, enable two-factor authentication (2FA) on your Amazon account.
+1. Create an 'Amazon Account' thing
+1. open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. `http://openhab:8080/amazonechocontrol/`), click the link for your account thing and login.
+1. You should see now a message that the login was successful
+1. If you encounter redirect/page refresh issues, enable two-factor authentication (2FA) on your Amazon account.
 
 ## Discovery
 
@@ -92,7 +92,7 @@ You will find the required serial number in settings of the device in the Alexa 
 
 If you want to discover your smart home devices you need to activate it in the 'Amazon Account' thing.
 Devices from other skills can be discovered too.
-See section *Smart Home Devices* below for more information.
+See section _Smart Home Devices_ below for more information.
 
 ## Account
 
@@ -139,7 +139,7 @@ The configuration of your Amazon account must be done in the 'Amazon Account' de
 |--------------------------|----------------------------------------------------|
 | serialNumber             | Serial number of the Amazon Echo in the Alexa app  |
 
-You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. http://openhab:8080/amazonechocontrol/account1).
+You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. `http://openhab:8080/amazonechocontrol/account1`).
 
 ### Flash Briefing Profile
 
@@ -201,13 +201,13 @@ This can be used to call Alexa API from rules.
 
 E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
-http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+`http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1`
 
 ### Example
 
 #### echo.things
 
-```
+```java
 Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2, pollingIntervalSmartHomeAlexa=30, pollingIntervalSmartSkills=120]
 {
     Thing echo                 echo1          "Alexa" @ "Living Room" [serialNumber="SERIAL_NUMBER"]
@@ -222,7 +222,7 @@ Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discove
 Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
 Take a look in the channel description above to know, which channels are supported by your thing type.
 
-```
+```java
 // Account
 String Echo_Living_Room_SendMessage            "SendMessage"                           {channel="amazonechocontrol:account:account1:sendMessage"}
 
@@ -296,7 +296,7 @@ String FlashBriefing_LifeStyle_Play            "Play (Write only)"              
 
 #### echo.sitemap:
 
-```
+```perl
 sitemap amazonechocontrol label="Echo Devices"
 {
         Frame label="Alexa" {
@@ -349,13 +349,13 @@ sitemap amazonechocontrol label="Echo Devices"
 
 ## Flash Briefing
 
-#### Supported Things
+### Supported Things
 
 | Thing type id        | Name                                  |
 |----------------------|---------------------------------------|
 | flashbriefingprofile | Flash briefing profile                |
 
-#### Channels
+### Channels
 
 The flashbriefingprofile thing has no configuration parameters.
 It will be configured at runtime by using the save channel to store the current flash briefing configuration which is set in the alexa app in the thing. Create a flashbriefingprofile Thing for each set you need.
@@ -367,11 +367,11 @@ E.g. One Flashbriefing profile with technical news and wheater, one for playing 
 | active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
 | playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing.
 
-#### Example
+### Example
 
 #### flashbriefings.things
 
-```
+```java
 Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2]
 {
     Thing flashbriefingprofile flashbriefing1 "Flash Briefing Technical" @ "Flash Briefings"
@@ -384,7 +384,7 @@ Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discove
 Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
 Take a look in the channel description above to know, which channels are supported by your thing type.
 
-```
+```java
 // Flashbriefings
 Switch FlashBriefing_Technical_Save   "Save (Write only)" {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"}
 Switch FlashBriefing_Technical_Active "Active"            {channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
@@ -397,7 +397,7 @@ String FlashBriefing_LifeStyle_Play   "Play (Write only)" {channel="amazonechoco
 
 #### flashbriefings.sitemap:
 
-```
+```perl
 sitemap flashbriefings label="Flash Briefings"
 {
         Frame label="Flash Briefing Technical" {
@@ -419,15 +419,14 @@ sitemap flashbriefings label="Flash Briefings"
 Note: the channels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time.
 The polling interval configured in the Account Thing to get the state is specified in minutes and has a minimum of 10. This means it takes up to 10 minutes to see the state of a channel. The reason for this low interval is, that the polling causes a big server load for the Smart Home Skills.
 
-#### Supported Things
+### Supported Things
 
 | Thing type id        | Name                                  |
 |----------------------|---------------------------------------|
 | smartHomeDevice      | Smart Home Device                     |
 | smartHomeDeviceGroup | Smart Home Device group               |
 
-
-#### Thing configuration of smartHomeDevice, smartHomeDeviceGroup
+### Thing configuration of smartHomeDevice, smartHomeDeviceGroup
 
 | Configuration name       | Description                                                               |
 |--------------------------|---------------------------------------------------------------------------|
@@ -435,7 +434,7 @@ The polling interval configured in the Account Thing to get the state is specifi
 
 The only possibility to find out the id is by using the discover function in the UI. You can use then the id, if you want define the Thing in a file.
 
-#### Channels
+### Channels
 
 The channels of the smarthome devices will be generated at runtime. Check in the UI thing configurations, which channels are created.
 
@@ -464,7 +463,7 @@ The channels of the smarthome devices will be generated at runtime. Check in the
 
 #### smarthome.things
 
-```
+```java
 Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2, pollingIntervalSmartHomeAlexa=30, pollingIntervalSmartSkills=120]
 {
     Thing smartHomeDevice      smartHomeDevice1 "Smart Home Device 1" @ "Living Room" [id="ID"]
@@ -479,7 +478,7 @@ Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discove
 Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
 Take a look in the channel description above to know which channels are supported by your thing type.
 
-```
+```java
 // Lights and lightgroups
 Switch Light_State "On/Off"            {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:powerState"}
 Dimmer Light_Brightness "Brightness"   {channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:brightness"}
@@ -501,7 +500,7 @@ The only possibility to find out the id for the smartHomeDevice and smartHomeDev
 
 #### smarthome.sitemap:
 
-```
+```perl
 sitemap smarthome label="Smart Home Devices"
 {
         Frame label="Lights and light groups" {
@@ -519,18 +518,18 @@ sitemap smarthome label="Smart Home Devices"
 
 ## How To Get IDs
 
-1) Open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/)
-2) Click on the name of the account thing
-3) Click on the name of the echo thing
-4) Scroll to the channel and copy the required ID
+1. Open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. `http://openhab:8080/amazonechocontrol/`)
+1. Click on the name of the account thing
+1. Click on the name of the echo thing
+1. Scroll to the channel and copy the required ID
 
-## Advanced Feature Technically Experienced Users
+### Advanced Feature Technically Experienced Users
 
 The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the amazon alexa server. This can be used to call alexa api from rules.
 
-E.g. to read out the history call from an installation on openhab:8080 with a account named account1:
+E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
-http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+`http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1`
 
 ## Tutorials
 
@@ -589,8 +588,7 @@ No specification uses the volume from the `textToSpeechVolume` channel.
 
 Note: If you turn off the sound and Alexa is playing music, it will anyway turn down the volume for a moment. This behavior can not be changed.
 
-
-```php
+```java
 rule "Say welcome if the door opens"
 when
     Item Door_Contact changed to OPEN
@@ -599,13 +597,13 @@ then
 end
 ```
 
-## Playing an alarm sound for 15 seconds with an openHAB rule if an door contact was opened:
+## Playing an alarm sound for 15 seconds with an openHAB rule if a door contact was opened:
 
-1) Do get the ID of your sound, follow the steps in "How To Get IDs"
-2) Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound
-3) Create a rule for start playing the sound:
+1. Do get the ID of your sound, follow the steps in "How To Get IDs"
+1. Write down the text in the square brackets. e.g. ECHO:system_alerts_repetitive01 for the nightstand sound
+1. Create a rule for start playing the sound:
 
-```php
+```java
 var Timer stopAlarmTimer = null
 
 rule "Turn on alarm sound for 15 seconds if door opens"
@@ -631,11 +629,11 @@ Note 2: The rule have no effect for your default alarm sound used in the Alexa a
 
 ### Play a spotify playlist if a switch was changed to on:
 
-1) Do get the ID of your sound, follow the steps in "How To Get IDs"
-2) Write down the text in the square brackets. e.g. SPOTIFY for the spotify music provider
-3) Create a rule for start playing a song or playlist:
+1. Do get the ID of your sound, follow the steps in "How To Get IDs"
+1. Write down the text in the square brackets. e.g. SPOTIFY for the spotify music provider
+1. Create a rule for start playing a song or playlist:
 
-```php
+```java
 rule "Play a playlist on spotify if a switch was changed"
 when
     Item Spotify_Playlist_Switch changed to ON
@@ -649,10 +647,10 @@ Note: It is recommended to test the command send to play music command first wit
 
 ### Start playing weather/traffic/etc:
 
-1) Pick up one of the available commands: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing
-2) Create a rule for start playing the information where you provide the command as string:
+1. Pick up one of the available commands: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing
+1. Create a rule for start playing the information where you provide the command as string:
 
-```php
+```java
 rule "Start wheater info"
 when
     Item Spotify_Start_Wheater_Switch changed to ON
@@ -663,11 +661,11 @@ end
 
 ### Start playing a custom flashbriefing on a device:
 
-1) Do get the ID of your sound, follow the steps in "How To Get IDs"
-2) Write down the text in the square brackets. e.g. flashbriefing.flashbriefing1
-2) Create a rule for start playing the information where you provide the command as string:
+1. Do get the ID of your sound, follow the steps in "How To Get IDs"
+1. Write down the text in the square brackets. e.g. flashbriefing.flashbriefing1
+1. Create a rule for start playing the information where you provide the command as string:
 
-```php
+```java
 rule "Start wheater info"
 when
     Item Spotify_Start_Wheater_Switch changed to ON
@@ -676,14 +674,14 @@ then
 end
 ```
 
-## Advanced Feature Technically Experienced Users
+### Advanced Feature Technically Experienced Users
 
 The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the Amazon Alexa server.
 This can be used to call Alexa API from rules.
 
 E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
-http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+`http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1`
 
 To resolve login problems the connection settings of an `account` thing can be reset via the karaf console.
 The command `amazonechocontrol listAccounts` shows a list of all available `account` things.
@@ -700,9 +698,9 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 
 ## Credits
 
-The idea for writing this binding came from this blog: https://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German).
+The idea for writing this binding came from this blog: [https://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html](https://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html) (German).
 Thank you Alex!
-The technical information for the web socket connection to get live Alexa state updates cames from Ingo. He has done the Alexa ioBroker implementation https://github.com/Apollon77
+The technical information for the web socket connection to get live Alexa state updates cames from Ingo. He has done the Alexa ioBroker implementation [https://github.com/Apollon77](https://github.com/Apollon77)
 Thank you Ingo!
 
 ## Trademark Disclaimer

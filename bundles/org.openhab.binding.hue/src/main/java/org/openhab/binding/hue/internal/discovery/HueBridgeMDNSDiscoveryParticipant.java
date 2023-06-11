@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,8 +54,6 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
     private static final String MDNS_PROPERTY_BRIDGE_ID = "bridgeid";
     private static final String MDNS_PROPERTY_MODEL_ID = "modelid";
 
-    private static final String CONFIG_PROPERTY_REMOVAL_GRACE_PERIOD = "removalGracePeriod";
-
     private final Logger logger = LoggerFactory.getLogger(HueBridgeMDNSDiscoveryParticipant.class);
 
     private long removalGracePeriod = 0L;
@@ -79,12 +77,12 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
         if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
             isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
         }
-        String removalGracePeriodPropertyValue = (String) properties.get(CONFIG_PROPERTY_REMOVAL_GRACE_PERIOD);
+        String removalGracePeriodPropertyValue = (String) properties.get(REMOVAL_GRACE_PERIOD);
         if (removalGracePeriodPropertyValue != null && !removalGracePeriodPropertyValue.isBlank()) {
             try {
                 removalGracePeriod = Long.parseLong(removalGracePeriodPropertyValue);
             } catch (NumberFormatException e) {
-                logger.warn("Configuration property '{}' has invalid value: {}", CONFIG_PROPERTY_REMOVAL_GRACE_PERIOD,
+                logger.warn("Configuration property '{}' has invalid value: {}", REMOVAL_GRACE_PERIOD,
                         removalGracePeriodPropertyValue);
             }
         }
@@ -107,7 +105,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             if (uid != null) {
                 String host = service.getHostAddresses()[0];
                 String id = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
-                String friendlyName = String.format("%s (%s)", service.getName(), host);
+                String friendlyName = String.format(DISCOVERY_LABEL_PATTERN, host);
                 return DiscoveryResultBuilder.create(uid) //
                         .withProperties(Map.of( //
                                 HOST, host, //

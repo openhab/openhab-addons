@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class TimeStabilizer {
 
-    private final static int SLIDING_SECONDS = 300;
-    private final static int MAX_FLUCTUATION_SECONDS = 180;
+    private static final int SLIDING_SECONDS = 300;
+    private static final int MAX_FLUCTUATION_SECONDS = 180;
 
     private final Deque<Item> cache = new ConcurrentLinkedDeque<Item>();
 

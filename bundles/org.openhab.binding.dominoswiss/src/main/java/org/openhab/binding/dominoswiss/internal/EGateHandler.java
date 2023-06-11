@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class EGateHandler extends BaseBridgeHandler {
 
     private int port;
     private @Nullable String host;
-    private static final int SOCKET_TIMEOUT_SEC = 250;
+    private static final int SOCKET_TIMEOUT_MILLISEC = 1000;
     private final Object lock = new Object();
     private @Nullable BufferedWriter writer;
     private @Nullable BufferedReader reader;
@@ -84,9 +84,15 @@ public class EGateHandler extends BaseBridgeHandler {
 
         if (host != null && port > 0) {
             // Create a socket to eGate
-            try (Socket localEgateSocket = new Socket(host, port)) {
+
+            InetSocketAddress socketAddress = new InetSocketAddress(host, port);
+            Socket localEgateSocket = new Socket();
+            try {
+                localEgateSocket.connect(socketAddress, SOCKET_TIMEOUT_MILLISEC);
                 writer = new BufferedWriter(new OutputStreamWriter(localEgateSocket.getOutputStream()));
                 egateSocket = localEgateSocket;
+                updateStatus(ThingStatus.ONLINE);
+                logger.debug("Egate successfully connected {}", egateSocket.toString());
             } catch (IOException e) {
                 logger.debug("IOException in initialize: {} host {} port {}", e.toString(), host, port);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
@@ -133,12 +139,16 @@ public class EGateHandler extends BaseBridgeHandler {
     public synchronized boolean isConnected() {
         Socket localEGateSocket = egateSocket;
         if (localEGateSocket == null) {
+            logger.debug("EGate is not connected, Socket is null");
             return false;
         }
 
         // NOTE: isConnected() returns true once a connection is made and will
         // always return true even after the socket is closed
         // http://stackoverflow.com/questions/10163358/
+        logger.debug("EGate isconnected() {}, isClosed() {}", localEGateSocket.isConnected(),
+                localEGateSocket.isClosed());
+
         return localEGateSocket.isConnected() && !localEGateSocket.isClosed();
     }
 
@@ -196,7 +206,7 @@ public class EGateHandler extends BaseBridgeHandler {
      */
 
     private void sendCommand(String command) {
-        sendCommand(command, SOCKET_TIMEOUT_SEC);
+        sendCommand(command, SOCKET_TIMEOUT_MILLISEC);
     }
 
     private synchronized void sendCommand(String command, int timeout) {
@@ -204,6 +214,7 @@ public class EGateHandler extends BaseBridgeHandler {
         Socket localEGateSocket = egateSocket;
         BufferedWriter localWriter = writer;
         if (localEGateSocket == null || localWriter == null) {
+            logger.debug("Error eGateSocket null, writer null, returning...");
             return;
         }
         if (!isConnected()) {
@@ -213,7 +224,7 @@ public class EGateHandler extends BaseBridgeHandler {
 
         // Send plain string to eGate Server,
         try {
-            localEGateSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
+            localEGateSocket.setSoTimeout(timeout);
             localWriter.write(command);
             localWriter.flush();
         } catch (IOException e) {
@@ -223,15 +234,18 @@ public class EGateHandler extends BaseBridgeHandler {
 
     private void pollingConfig() {
         if (!isConnected()) {
+            logger.debug("PollingConfig Run, is not connected so let's connect");
             Socket localEGateSocket = egateSocket;
             BufferedWriter localWriter = writer;
             if (localEGateSocket == null || localWriter == null) {
+                logger.debug("Error eGateSocket null, writer null in pollingConfig(), returning...");
                 return;
             }
+
             synchronized (lock) {
                 try {
-                    localEGateSocket.connect(new InetSocketAddress(host, port));
-                    localEGateSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
+                    localEGateSocket.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MILLISEC);
+                    logger.debug("pollingConfig() successsully connected {}", localEGateSocket.isClosed());
                     localWriter.write("SilenceModeSet;Value=0;" + CR);
                     localWriter.flush();
                 } catch (IOException e) {
@@ -239,7 +253,7 @@ public class EGateHandler extends BaseBridgeHandler {
                     try {
                         localEGateSocket.close();
                         egateSocket = null;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+                        logger.debug("EGate closed");
                     } catch (IOException e1) {
                         logger.debug("EGate Socket not closed {}", e1.toString());
                     }

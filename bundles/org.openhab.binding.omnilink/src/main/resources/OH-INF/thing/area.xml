@@ -46,7 +46,7 @@
 			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
 		<label>Lumina Area</label>
-		<description>An Lumina area configured in the controller.</description>
+		<description>A Lumina area configured in the controller.</description>
 		<channels>
 			<channel id="mode" typeId="lumina_area_mode"/>
 			<channel id="home" typeId="area_command"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,6 +104,94 @@ public class WebInterface implements AtomicReferenceTrait {
             this.commandQueue = new BlockingArrayQueue<>(WEB_REQUEST_QUEUE_MAX_SIZE);
         }
 
+        private void processAuthenticationResult(CommunicationStatus status) {
+            String errorMessageCodeFound;
+            String errorMessgaeCodeForbidden = STATUS_INVALID_SOLAR_ID;
+            if (config.isUsePrivateApi()) {
+                errorMessageCodeFound = STATUS_INVALID_TOKEN;
+            } else {
+                errorMessageCodeFound = STATUS_UNKNOWN_ERROR;
+            }
+
+            switch (status.getHttpCode()) {
+                case OK:
+                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                    setAuthenticated(true);
+                    break;
+                case FOUND:
+                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            errorMessageCodeFound);
+                    setAuthenticated(false);
+                    break;
+                case FORBIDDEN:
+                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            errorMessgaeCodeForbidden);
+                    setAuthenticated(false);
+                    break;
+                case SERVICE_UNAVAILABLE:
+                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, status.getMessage());
+                    setAuthenticated(false);
+                    break;
+                default:
+                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            status.getMessage());
+                    setAuthenticated(false);
+            }
+        }
+
+        /**
+         * authenticates with the Solaredge WEB interface
+         */
+        private synchronized void authenticate() {
+            setAuthenticated(false);
+
+            if (preCheck()) {
+                SolarEdgeCommand tokenCheckCommand;
+
+                if (config.isUsePrivateApi()) {
+                    tokenCheckCommand = new PrivateApiTokenCheck(handler, this::processAuthenticationResult);
+                } else {
+                    tokenCheckCommand = new PublicApiKeyCheck(handler, this::processAuthenticationResult);
+                }
+                tokenCheckCommand.performAction(httpClient);
+            }
+        }
+
+        /**
+         * performs some pre cheks on configuration before attempting to login
+         *
+         * @return true on success, false otherwise
+         */
+        private boolean preCheck() {
+            String preCheckStatusMessage = "";
+            String localTokenOrApiKey = config.getTokenOrApiKey();
+
+            if (config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
+                preCheckStatusMessage = STATUS_INVALID_TOKEN_LENGTH;
+            } else if (!config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
+                preCheckStatusMessage = STATUS_INVALID_API_KEY_LENGTH;
+            } else if (!config.isUsePrivateApi() && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
+                preCheckStatusMessage = STATUS_REQUEST_LIMIT_EXCEEDED;
+            } else if (config.isUsePrivateApi() && !config.isMeterInstalled()) {
+                preCheckStatusMessage = STATUS_NO_METER_CONFIGURED;
+            } else {
+                return true;
+            }
+
+            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, preCheckStatusMessage);
+            return false;
+        }
+
+        /**
+         * calculates requests per day. just an internal helper
+         *
+         * @return
+         */
+        private long calcRequestsPerDay() {
+            return MINUTES_PER_DAY / config.getLiveDataPollingInterval()
+                    + 4 * MINUTES_PER_DAY / config.getAggregateDataPollingInterval();
+        }
+
         /**
          * puts a command into the queue
          *
@@ -131,30 +219,23 @@ public class WebInterface implements AtomicReferenceTrait {
                 authenticate();
             }
 
-            else if (isAuthenticated() && !commandQueue.isEmpty()) {
-                StatusUpdateListener statusUpdater = new StatusUpdateListener() {
-                    @Override
-                    public void update(CommunicationStatus status) {
-                        switch (status.getHttpCode()) {
-                            case SERVICE_UNAVAILABLE:
-                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                        status.getMessage());
-                                setAuthenticated(false);
-                                break;
-                            case OK:
-                                // no action needed as the thing is already online.
-                                break;
-                            default:
-                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        status.getMessage());
-                                setAuthenticated(false);
+            if (isAuthenticated() && !commandQueue.isEmpty()) {
+                try {
+                    executeCommand();
+                } catch (Exception ex) {
+                    logger.warn("command execution ended with exception:", ex);
+                }
+            }
+        }
 
-                        }
-                    }
-                };
-
-                SolarEdgeCommand command = commandQueue.poll();
-                command.setListener(statusUpdater);
+        /**
+         * executes the next command in the queue. requires authenticated session.
+         *
+         * @throws ValidationException
+         */
+        private void executeCommand() {
+            SolarEdgeCommand command = commandQueue.poll();
+            if (command != null) {
                 command.performAction(httpClient);
             }
         }
@@ -188,107 +269,6 @@ public class WebInterface implements AtomicReferenceTrait {
      */
     public void enqueueCommand(SolarEdgeCommand command) {
         requestExecutor.enqueue(command);
-    }
-
-    /**
-     * authenticates with the Solaredge WEB interface
-     */
-    private synchronized void authenticate() {
-        setAuthenticated(false);
-
-        if (preCheck()) {
-            SolarEdgeCommand tokenCheckCommand;
-
-            StatusUpdateListener tokenCheckListener = new StatusUpdateListener() {
-
-                @Override
-                public void update(CommunicationStatus status) {
-                    String errorMessageCodeFound;
-                    String errorMessgaeCodeForbidden;
-                    if (config.isUsePrivateApi()) {
-                        errorMessageCodeFound = "login error with private API: invalid token";
-                        errorMessgaeCodeForbidden = "login error with private API: invalid solarId";
-                    } else {
-                        errorMessageCodeFound = "login error with public API: unknown error";
-                        errorMessgaeCodeForbidden = "login error with public API: invalid api key or solarId is not valid for this api key";
-                    }
-
-                    switch (status.getHttpCode()) {
-                        case OK:
-                            handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
-                            setAuthenticated(true);
-                            break;
-                        case FOUND:
-                            handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    errorMessageCodeFound);
-                            setAuthenticated(false);
-                            break;
-                        case FORBIDDEN:
-                            handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    errorMessgaeCodeForbidden);
-                            setAuthenticated(false);
-                            break;
-                        case SERVICE_UNAVAILABLE:
-                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                            break;
-                        default:
-                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                    }
-                }
-            };
-
-            if (config.isUsePrivateApi()) {
-                tokenCheckCommand = new PrivateApiTokenCheck(handler, tokenCheckListener);
-            } else {
-                tokenCheckCommand = new PublicApiKeyCheck(handler, tokenCheckListener);
-            }
-            tokenCheckCommand.performAction(httpClient);
-        }
-    }
-
-    /**
-     * performs some pre cheks on configuration before attempting to login
-     *
-     * @return true on success, false otherwise
-     */
-    private boolean preCheck() {
-        String preCheckStatusMessage = "";
-        String localTokenOrApiKey = config.getTokenOrApiKey();
-        String localSolarId = config.getSolarId();
-
-        if (localTokenOrApiKey == null || localTokenOrApiKey.isEmpty()) {
-            preCheckStatusMessage = "please configure token/api_key first";
-        } else if (localSolarId == null || localSolarId.isEmpty()) {
-            preCheckStatusMessage = "please configure solarId first";
-        } else if (config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
-            preCheckStatusMessage = "you will have to use a 'token' and not an 'api key' when using private API";
-        } else if (!config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
-            preCheckStatusMessage = "you will have to use an 'api key' and not a 'token' when using public API";
-        } else if (!config.isUsePrivateApi() && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
-            preCheckStatusMessage = "daily request limit (" + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + ") exceeded: "
-                    + calcRequestsPerDay();
-        } else if (config.isUsePrivateApi() && !config.isMeterInstalled()) {
-            preCheckStatusMessage = "a meter must be present in order to use the private API";
-        } else {
-            return true;
-        }
-
-        this.handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, preCheckStatusMessage);
-        return false;
-    }
-
-    /**
-     * calculates requests per day. just an internal helper
-     *
-     * @return
-     */
-    private long calcRequestsPerDay() {
-        return MINUTES_PER_DAY / this.config.getLiveDataPollingInterval()
-                + 4 * MINUTES_PER_DAY / this.config.getAggregateDataPollingInterval();
     }
 
     /**

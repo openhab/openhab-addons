@@ -1,12 +1,12 @@
 # iRobot Binding
 
-This binding provides integration of products by iRobot company (https://www.irobot.com/). It is currently developed
+This binding provides integration of products by iRobot company (<https://www.irobot.com/>). It is currently developed
 to support Roomba vacuum cleaner/mopping robots with built-in Wi-Fi module. The binding interfaces to the robot directly
 without any need for a dedicated MQTT server.
 
 ## Supported Things
 
-- iRobot Roomba robotic vacuum cleaner (https://www.irobot.com/roomba).
+- iRobot Roomba robotic vacuum cleaner (<https://www.irobot.com/roomba>).
 - iRobot Braava has also been reported to (partially) work.
 - In general, the channel list is far from complete. There is a lot to do now.
 
@@ -22,7 +22,7 @@ receive the password and go ONLINE.
 After you've done this procedure you can write the password somewhere in case if you need to reconfigure your binding. It's
 not known, however, whether the password is eternal or can change during factory reset.
 If you have issues getting the password make sure there are no other devices like your smartphone communicating with the robot.
-You can also try using [these python scripts](https://github.com/NickWaterton/Roomba980-Python) to get the password. 
+You can also try using [these python scripts](https://github.com/NickWaterton/Roomba980-Python) to get the password.
 
 ## Thing Configuration
 
@@ -149,8 +149,8 @@ Error codes. Data type is string in order to be able to utilize mapping to human
 
 You can clean one or many specific regions of a given map by sending the following String to the command channel:
 
-```
- cleanRegions:<pmapId>;[r=]<region_id1>,[r=]<region_id2>,z=<zone_id1>,...;[<user_pmapv_id>]
+```text
+cleanRegions:<pmapId>;[r=]<region_id1>,[r=]<region_id2>,z=<zone_id1>,...;[<user_pmapv_id>]
 ```
 
 Some devices support cleaning rooms (aka regions). Additionally, support for cleaning rectangle areas previously defined in the iRobot-App (aka zones) may be available.
@@ -161,22 +161,21 @@ The easiest way to determine the pmapId, region_ids/zoneids and userPmapvId is t
 ## Known Problems / Caveats
 
 1. Sending "pause" command during missions other than "clean" is equivalent to sending "stop"
-2. Switching to "spot" mission is possible only in "stop" state. Attempt to do it otherwise causes error: the command is rejected and error tones are played.
-3. Roomba's built-in MQTT server, used for communication, supports only a single local connection at a time. Bear this in mind when you want to do something that requires local connection from your phone, like reconfiguring the network. Disable openHAB Thing before doing this.
-4. Sometimes during intensive testing Roomba just stopped communicating over the local connection. If this happens, try rebooting it. On my robot it's done by holding "Clean" button for about 10 seconds until all the LEDs come on. Release the button and the reboot tone will be played. It looks like there are some bugs in the firmware.
-
+1. Switching to "spot" mission is possible only in "stop" state. Attempt to do it otherwise causes error: the command is rejected and error tones are played.
+1. Roomba's built-in MQTT server, used for communication, supports only a single local connection at a time. Bear this in mind when you want to do something that requires local connection from your phone, like reconfiguring the network. Disable openHAB Thing before doing this.
+1. Sometimes during intensive testing Roomba just stopped communicating over the local connection. If this happens, try rebooting it. On my robot it's done by holding "Clean" button for about 10 seconds until all the LEDs come on. Release the button and the reboot tone will be played. It looks like there are some bugs in the firmware.
 
 ## Example
 
 irobot.things:
 
-```
+```java
 Thing irobot:roomba:my_roomba [ ipaddress="192.168.0.5", password="xxxxxxxx" ]
 ```
 
 irobot.items:
 
-```
+```java
 String Roomba_Command { channel="irobot:roomba:my_roomba:command" }
 String Roomba_Cycle { channel="irobot:roomba:my_roomba:cycle" }
 String Roomba_Phase { channel="irobot:roomba:my_roomba:phase" }
@@ -187,7 +186,7 @@ String Roomba_Error { channel="irobot:roomba:my_roomba:error" }
 
 irobot.sitemap:
 
-```
+```perl
 Selection item=Roomba_Command mappings=["clean"="Clean", "spot"="Spot", dock="Dock", pause="Pause", stop="Stop"]
 Text item=Roomba_Cycle label="Current cycle"
 Text item=Roomba_Phase label="Current phase"
@@ -198,8 +197,8 @@ Text item=Roomba_Error label="Error"
 
 ## Credits
 
-This code is a result of development of an abandoned draft by hkunh42 (https://github.com/hkuhn42/openhab2.roomba)
+This code is a result of development of an abandoned draft by hkunh42 (<https://github.com/hkuhn42/openhab2.roomba>)
 and heavily uses the following projects as a reference:
 
-- Roomba980-Python by Nick Waterton (https://github.com/NickWaterton/Roomba980-Python)
-- Dorita980 by Facu ZAK (https://github.com/koalazak/dorita980)
+- Roomba980-Python by Nick Waterton (<https://github.com/NickWaterton/Roomba980-Python>)
+- Dorita980 by Facu ZAK (<https://github.com/koalazak/dorita980>)

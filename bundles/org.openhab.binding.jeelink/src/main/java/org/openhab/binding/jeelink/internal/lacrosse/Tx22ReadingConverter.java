@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,7 @@ public class Tx22ReadingConverter implements JeeLinkReadingConverter<Tx22Reading
                 Integer humidity = "255".equals(matcher.group(5)) ? null : Integer.parseInt(matcher.group(5));
 
                 Integer rain = "255".equals(matcher.group(6)) ? null
-                        : (Integer.parseInt(matcher.group(6)) * 256 + Integer.parseInt(matcher.group(7))) * 2;
+                        : (int) ((Integer.parseInt(matcher.group(6)) * 256 + Integer.parseInt(matcher.group(7))) * 0.5);
 
                 Float windDirection = "255".equals(matcher.group(8)) ? null
                         : (Integer.parseInt(matcher.group(8)) * 256 + Integer.parseInt(matcher.group(9))) / 10f;

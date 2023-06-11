@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,12 +32,12 @@ public interface ModbusThingHandlerDiscoveryService extends ThingHandlerService 
      * @param service the discovery service that should be called when the discovery is finished
      * @return returns true if discovery is enabled, false otherwise
      */
-    public boolean startScan(ModbusDiscoveryService service);
+    boolean startScan(ModbusDiscoveryService service);
 
     /**
      * This method should return true, if an async scan is in progress
      *
      * @return true if a scan is in progress false otherwise
      */
-    public boolean scanInProgress();
+    boolean scanInProgress();
 }

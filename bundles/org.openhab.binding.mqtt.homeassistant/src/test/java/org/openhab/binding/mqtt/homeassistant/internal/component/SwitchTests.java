@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,11 +27,11 @@ import org.openhab.core.library.types.OnOffType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
 @NonNullByDefault
 public class SwitchTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt";
 
+    @SuppressWarnings("null")
     @Test
     public void testSwitchWithStateAndCommand() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
@@ -92,6 +92,7 @@ public class SwitchTests extends AbstractComponentTests {
         assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.ON);
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testSwitchWithCommand() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),

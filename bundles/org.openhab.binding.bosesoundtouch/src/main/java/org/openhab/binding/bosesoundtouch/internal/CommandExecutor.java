@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Session;
 import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
@@ -36,16 +39,17 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Traunbauer - Initial contribution
  * @author Kai Kreuzer - code clean up
  */
+@NonNullByDefault
 public class CommandExecutor implements AvailableSources {
     private final Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
 
     private final BoseSoundTouchHandler handler;
 
     private boolean currentMuted;
-    private ContentItem currentContentItem;
-    private OperationModeType currentOperationMode;
+    private @Nullable ContentItem currentContentItem = null;
+    private @Nullable OperationModeType currentOperationMode;
 
-    private Map<String, Boolean> mapOfAvailableFunctions;
+    private final Map<String, Boolean> mapOfAvailableFunctions = new HashMap<>();
 
     /**
      * Creates a new instance of this class
@@ -54,7 +58,8 @@ public class CommandExecutor implements AvailableSources {
      */
     public CommandExecutor(BoseSoundTouchHandler handler) {
         this.handler = handler;
-        init();
+        getInformations(APIRequest.INFO);
+        currentOperationMode = OperationModeType.OFFLINE;
     }
 
     /**
@@ -66,11 +71,7 @@ public class CommandExecutor implements AvailableSources {
     public void updatePresetContainerFromPlayer(Map<Integer, ContentItem> playerPresets) {
         playerPresets.forEach((k, v) -> {
             try {
-                if (v != null) {
-                    handler.getPresetContainer().put(k, v);
-                } else {
-                    handler.getPresetContainer().remove(k);
-                }
+                handler.getPresetContainer().put(k, v);
             } catch (ContentItemNotPresetableException e) {
                 logger.debug("{}: ContentItem is not presetable", handler.getDeviceName());
             }
@@ -83,7 +84,7 @@ public class CommandExecutor implements AvailableSources {
      * Adds a ContentItem to the PresetContainer
      *
      * @param id the id the ContentItem should be reached
-     * @param contentItem the contentItem that should be saved as PRESET. Note that a eventually set presetID of the
+     * @param contentItem the contentItem that should be saved as PRESET. Note that an eventually set presetID of the
      *            ContentItem will be overwritten with id
      */
     public void addContentItemToPresetContainer(int id, ContentItem contentItem) {
@@ -104,22 +105,28 @@ public class CommandExecutor implements AvailableSources {
      */
     public void addCurrentContentItemToPresetContainer(DecimalType command) {
         if (command.intValue() > 6) {
-            addContentItemToPresetContainer(command.intValue(), currentContentItem);
+            ContentItem localContentItem = currentContentItem;
+            if (localContentItem != null) {
+                addContentItemToPresetContainer(command.intValue(), localContentItem);
+            }
         } else {
             logger.warn("{}: Only PresetID >6 is allowed", handler.getDeviceName());
         }
     }
 
     /**
-     * Initializes a API Request on this device
+     * Initializes an API Request on this device
      *
      * @param apiRequest the apiRequest thats informations should be collected
      */
     public void getInformations(APIRequest apiRequest) {
         String msg = "<msg><header " + "deviceID=\"" + handler.getMacAddress() + "\"" + " url=\"" + apiRequest
                 + "\" method=\"GET\"><request requestID=\"0\"><info type=\"new\"/></request></header></msg>";
-        handler.getSession().getRemote().sendStringByFuture(msg);
-        logger.debug("{}: sending request: {}", handler.getDeviceName(), msg);
+        Session localSession = handler.getSession();
+        if (localSession != null) {
+            localSession.getRemote().sendStringByFuture(msg);
+            logger.debug("{}: sending request: {}", handler.getDeviceName(), msg);
+        }
     }
 
     /**
@@ -128,25 +135,26 @@ public class CommandExecutor implements AvailableSources {
      * @param contentItem
      */
     public void setCurrentContentItem(ContentItem contentItem) {
-        if ((contentItem != null) && (contentItem.isValid())) {
+        if (contentItem.isValid()) {
             ContentItem psFound = null;
-            if (handler.getPresetContainer() != null) {
-                Collection<ContentItem> listOfPresets = handler.getPresetContainer().getAllPresets();
-                for (ContentItem ps : listOfPresets) {
-                    if (ps.isPresetable()) {
-                        if (ps.getLocation().equals(contentItem.getLocation())) {
+            Collection<ContentItem> listOfPresets = handler.getPresetContainer().getAllPresets();
+            for (ContentItem ps : listOfPresets) {
+                if (ps.isPresetable()) {
+                    String localLocation = ps.getLocation();
+                    if (localLocation != null) {
+                        if (localLocation.equals(contentItem.getLocation())) {
                             psFound = ps;
                         }
                     }
                 }
-                int presetID = 0;
-                if (psFound != null) {
-                    presetID = psFound.getPresetID();
-                }
-                contentItem.setPresetID(presetID);
-
-                currentContentItem = contentItem;
             }
+            int presetID = 0;
+            if (psFound != null) {
+                presetID = psFound.getPresetID();
+            }
+            contentItem.setPresetID(presetID);
+
+            currentContentItem = contentItem;
         }
         updateOperatingValues();
     }
@@ -350,19 +358,9 @@ public class CommandExecutor implements AvailableSources {
         handler.updateState(CHANNEL_PRESET, state);
     }
 
-    private void init() {
-        getInformations(APIRequest.INFO);
-        currentOperationMode = OperationModeType.OFFLINE;
-        currentContentItem = null;
-
-        mapOfAvailableFunctions = new HashMap<>();
-    }
-
     private void postContentItem(ContentItem contentItem) {
-        if (contentItem != null) {
-            setCurrentContentItem(contentItem);
-            sendPostRequestInWebSocket("select", "", contentItem.generateXML());
-        }
+        setCurrentContentItem(contentItem);
+        sendPostRequestInWebSocket("select", "", contentItem.generateXML());
     }
 
     private void sendPostRequestInWebSocket(String url, String postData) {
@@ -374,19 +372,21 @@ public class CommandExecutor implements AvailableSources {
         String msg = "<msg><header " + "deviceID=\"" + handler.getMacAddress() + "\"" + " url=\"" + url
                 + "\" method=\"POST\"><request requestID=\"" + id + "\"><info " + infoAddon
                 + " type=\"new\"/></request></header><body>" + postData + "</body></msg>";
-        try {
-            handler.getSession().getRemote().sendStringByFuture(msg);
+        Session localSession = handler.getSession();
+        if (localSession != null) {
+            localSession.getRemote().sendStringByFuture(msg);
             logger.debug("{}: sending request: {}", handler.getDeviceName(), msg);
-        } catch (NullPointerException e) {
-            handler.onWebSocketError(e);
+        } else {
+            handler.onWebSocketError(new NullPointerException("NPE: Session is unexpected null"));
         }
     }
 
     private void updateOperatingValues() {
         OperationModeType operationMode;
-        if (currentContentItem != null) {
-            updatePresetGUIState(new DecimalType(currentContentItem.getPresetID()));
-            operationMode = currentContentItem.getOperationMode();
+        ContentItem localContentItem = currentContentItem;
+        if (localContentItem != null) {
+            updatePresetGUIState(new DecimalType(localContentItem.getPresetID()));
+            operationMode = localContentItem.getOperationMode();
         } else {
             operationMode = OperationModeType.STANDBY;
         }

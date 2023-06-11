@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="deconz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>deCONZ Binding</name>
+	<description>Allows to use the real-time channel of the deCONZ software for Zigbee sensors and switches. deCONZ is the
+		accompanying software for the Raspbee and ConBee Zigbee dongles from Dresden Elektronik. Is meant to be used together
+		with the HUE binding which makes the lights and plugs available.</description>
+	<connection>local</connection>
+
+</addon:addon>

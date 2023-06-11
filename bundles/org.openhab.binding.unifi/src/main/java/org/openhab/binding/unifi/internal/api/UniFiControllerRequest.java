@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -58,6 +59,8 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 class UniFiControllerRequest<T> {
+
+    private static final String CONTROLLER_PARSE_ERROR = "@text/error.controller.parse_error";
 
     private static final String CONTENT_TYPE_APPLICATION_JSON_UTF_8 = MimeTypes.Type.APPLICATION_JSON_UTF_8.asString();
 
@@ -124,14 +127,24 @@ class UniFiControllerRequest<T> {
     }
 
     public @Nullable T execute() throws UniFiException {
-        T result = null;
+        T result = (T) null;
         final String json = getContent();
         // mgb: only try and unmarshall non-void result types
         if (!Void.class.equals(resultType)) {
-            final JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+            try {
+                final JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
-            if (jsonObject.has(PROPERTY_DATA) && jsonObject.get(PROPERTY_DATA).isJsonArray()) {
-                result = gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
+                if (jsonObject.has(PROPERTY_DATA) && jsonObject.get(PROPERTY_DATA).isJsonArray()) {
+                    result = (T) gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
+                }
+            } catch (final JsonParseException e) {
+                logger.debug(
+                        "Could not parse content retrieved from the server. Is the configuration pointing to the right server/port?, {}",
+                        e.getMessage());
+                if (logger.isTraceEnabled()) {
+                    prettyPrintJson(json);
+                }
+                throw new UniFiCommunicationException(CONTROLLER_PARSE_ERROR);
             }
         }
         return result;
@@ -182,7 +195,9 @@ class UniFiControllerRequest<T> {
         } catch (final ExecutionException e) {
             // mgb: unwrap the cause and try to cleanly handle it
             final Throwable cause = e.getCause();
-            if (cause instanceof UnknownHostException) {
+            if (cause instanceof TimeoutException) {
+                throw new UniFiCommunicationException(e);
+            } else if (cause instanceof UnknownHostException) {
                 // invalid hostname
                 throw new UniFiInvalidHostException(cause);
             } else if (cause instanceof ConnectException) {
@@ -242,14 +257,15 @@ class UniFiControllerRequest<T> {
         return request;
     }
 
-    private static String prettyPrintJson(final String content) {
+    private String prettyPrintJson(final String content) {
         try {
             final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
             final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 
             return prettyGson.toJson(json);
         } catch (final RuntimeException e) {
-            // If could not parse the string as json, just return the string
+            logger.debug("RuntimeException pretty printing JSON. Returning the raw content.", e);
+            // If could not parse the string as JSON, just return the string
             return content;
         }
     }

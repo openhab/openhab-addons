@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,29 +72,29 @@ public class OnOffValue extends Value {
     }
 
     @Override
-    public void update(Command command) throws IllegalArgumentException {
+    public OnOffType parseCommand(Command command) throws IllegalArgumentException {
         if (command instanceof OnOffType) {
-            state = (OnOffType) command;
+            return (OnOffType) command;
         } else {
             final String updatedValue = command.toString();
             if (onState.equals(updatedValue)) {
-                state = OnOffType.ON;
+                return OnOffType.ON;
             } else if (offState.equals(updatedValue)) {
-                state = OnOffType.OFF;
+                return OnOffType.OFF;
             } else {
-                state = OnOffType.valueOf(updatedValue);
+                return OnOffType.valueOf(updatedValue);
             }
         }
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String formatPattern = pattern;
         if (formatPattern == null) {
             formatPattern = "%s";
         }
 
-        return String.format(formatPattern, state == OnOffType.ON ? onCommand : offCommand);
+        return String.format(formatPattern, command == OnOffType.ON ? onCommand : offCommand);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonParser;
+
 /**
- * Handles the ASCII based communication via TCP socket between openHAB and NeoHub
+ * Handles the text based communication via TCP socket between openHAB and NeoHub
  *
  * @author Sebastian Prehn - Initial contribution
  * @author Andrew Fiddian-Green - Refactoring for openHAB v2.x
@@ -36,8 +38,8 @@ public class NeoHubSocket extends NeoHubSocketBase {
 
     private final Logger logger = LoggerFactory.getLogger(NeoHubSocket.class);
 
-    public NeoHubSocket(NeoHubConfiguration config) {
-        super(config);
+    public NeoHubSocket(NeoHubConfiguration config, String hubId) {
+        super(config, hubId);
     }
 
     @Override
@@ -52,19 +54,13 @@ public class NeoHubSocket extends NeoHubSocketBase {
 
             try (InputStreamReader reader = new InputStreamReader(socket.getInputStream(), US_ASCII);
                     OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("sending {} characters..", requestJson.length());
-                    logger.debug(">> {}", requestJson);
-                }
-
+                //
+                logger.debug("hub '{}' sending characters:{}", hubId, requestJson.length());
                 writer.write(requestJson);
                 writer.write(0); // NULL terminate the command string
                 writer.flush();
                 socket.shutdownOutput();
-
-                if (logger.isTraceEnabled()) {
-                    logger.trace("sent {} characters..", requestJson.length());
-                }
+                logger.trace("hub '{}' sent:{}", hubId, requestJson);
 
                 int inChar;
                 boolean done = false;
@@ -81,28 +77,21 @@ public class NeoHubSocket extends NeoHubSocketBase {
             caughtException = e;
         }
 
-        String responseJson = builder.toString();
+        String responseJson = builder.toString().strip();
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("received {} characters..", responseJson.length());
-            logger.trace("<< {}", responseJson);
-        } else
+        logger.debug("hub '{}' received characters:{}", hubId, responseJson.length());
+        logger.trace("hub '{}' received:{}", hubId, responseJson);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("received {} characters (set log level to TRACE to see full string)..", responseJson.length());
-            logger.debug("<< {} ...", responseJson.substring(0, Math.min(responseJson.length(), 30)));
-        }
-
-        // if any type of Exception was caught above, re-throw it again to the caller
+        // if an IOException was caught above, re-throw it again
         if (caughtException != null) {
             throw caughtException;
         }
 
-        if (responseJson.isEmpty()) {
-            throw new NeoHubException("empty response string");
+        if (JsonParser.parseString(responseJson).isJsonObject()) {
+            return responseJson;
         }
-
-        return responseJson;
+        logger.debug("hub '{}' Response is not a JSON object; response:{}", hubId, responseJson);
+        throw new NeoHubException("Invalid response");
     }
 
     @Override

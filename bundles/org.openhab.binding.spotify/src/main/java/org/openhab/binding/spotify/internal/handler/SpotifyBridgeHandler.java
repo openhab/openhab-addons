@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,50 +12,7 @@
  */
 package org.openhab.binding.spotify.internal.handler;
 
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_ACCESSTOKEN;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_CONFIG_IMAGE_INDEX;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_DEVICEACTIVE;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_DEVICEID;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_DEVICENAME;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_DEVICES;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_DEVICESHUFFLE;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_DEVICETYPE;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_DEVICEVOLUME;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ALBUMHREF;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ALBUMID;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ALBUMIMAGE;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ALBUMIMAGEURL;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ALBUMNAME;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ALBUMTYPE;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ALBUMURI;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ARTISTHREF;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ARTISTID;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ARTISTNAME;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ARTISTTYPE;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_ARTISTURI;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKDISCNUMBER;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKDURATION_FMT;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKDURATION_MS;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKEXPLICIT;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKHREF;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKID;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKNAME;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKNUMBER;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKPOPULARITY;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKPROGRESS_FMT;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKPROGRESS_MS;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKTYPE;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYED_TRACKURI;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYLISTNAME;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYLISTS;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYLISTS_LIMIT;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_PLAYLISTS_OFFSET;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_TRACKPLAYER;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.CHANNEL_TRACKREPEAT;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.PROPERTY_SPOTIFY_USER;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_TOKEN_URL;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_AUTHORIZE_URL;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_SCOPES;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -163,7 +120,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     // Field members assigned in initialize method
     private @NonNullByDefault({}) Future<?> pollingFuture;
-    private @NonNullByDefault({}) OAuthClientService oAuthService;
+    private @Nullable OAuthClientService oAuthService;
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
     private @NonNullByDefault({}) SpotifyBridgeConfiguration configuration;
     private @NonNullByDefault({}) SpotifyHandleCommands handleCommand;
@@ -229,11 +186,19 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         active = false;
+        cancelSchedulers();
+        OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
             oAuthService.removeAccessTokenRefreshListener(this);
+            oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
+            this.oAuthService = null;
         }
-        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
-        cancelSchedulers();
+    }
+
+    @Override
+    public void handleRemoval() {
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     @Override
@@ -256,6 +221,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     private @Nullable AccessTokenResponse getAccessTokenResponse() {
         try {
+            OAuthClientService oAuthService = this.oAuthService;
             return oAuthService == null ? null : oAuthService.getAccessTokenResponse();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
@@ -286,6 +252,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     @Override
     public String formatAuthorizationUrl(String redirectUri) {
         try {
+            OAuthClientService oAuthService = this.oAuthService;
+            if (oAuthService == null) {
+                throw new OAuthException("OAuth service is not initialized");
+            }
             return oAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
         } catch (final OAuthException e) {
             logger.debug("Error constructing AuthorizationUrl: ", e);
@@ -296,6 +266,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     @Override
     public String authorize(String redirectUri, String reqCode) {
         try {
+            OAuthClientService oAuthService = this.oAuthService;
+            if (oAuthService == null) {
+                throw new OAuthException("OAuth service is not initialized");
+            }
             logger.debug("Make call to Spotify to get access token.");
             final AccessTokenResponse credentials = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
                     redirectUri);
@@ -329,8 +303,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         updateStatus(ThingStatus.UNKNOWN);
         active = true;
         configuration = getConfigAs(SpotifyBridgeConfiguration.class);
-        oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), SPOTIFY_API_TOKEN_URL,
-                SPOTIFY_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret, SPOTIFY_SCOPES, true);
+        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
+                SPOTIFY_API_TOKEN_URL, SPOTIFY_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret,
+                SPOTIFY_SCOPES, true);
+        this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(SpotifyBridgeHandler.this);
         spotifyApi = new SpotifyApi(oAuthService, scheduler, httpClient);
         handleCommand = new SpotifyHandleCommands(spotifyApi);

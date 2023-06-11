@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="omnikinverter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>OmnikInverter Binding</name>
+	<description>This is the binding for the Omnik solar grid inverters. The integration is based on the undocumented API,
+		which is reverse engineered at https://github.com/Woutrrr/Omnik-Data-Logger. As such, the known supported inverters
+		are known to work with inverters with wifi bridge which start with the serial number '602' and '606'.</description>
+	<connection>local</connection>
+</addon:addon>

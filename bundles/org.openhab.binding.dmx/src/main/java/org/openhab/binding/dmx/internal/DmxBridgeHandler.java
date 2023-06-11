@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dmx.internal.action.DmxActions;
 import org.openhab.binding.dmx.internal.action.FadeAction;
 import org.openhab.binding.dmx.internal.action.ResumeAction;
@@ -47,15 +49,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public abstract class DmxBridgeHandler extends BaseBridgeHandler {
     public static final int DEFAULT_REFRESH_RATE = 20;
 
     private final Logger logger = LoggerFactory.getLogger(DmxBridgeHandler.class);
 
-    protected Universe universe;
+    protected Universe universe = new Universe(0); // default universe
 
-    private ScheduledFuture<?> senderJob;
+    private @Nullable ScheduledFuture<?> senderJob;
     private boolean isMuted = false;
     private int refreshTime = 1000 / DEFAULT_REFRESH_RATE;
 
@@ -68,7 +70,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
         switch (channelUID.getId()) {
             case CHANNEL_MUTE:
                 if (command instanceof OnOffType) {
-                    isMuted = ((OnOffType) command).equals(OnOffType.ON);
+                    isMuted = command.equals(OnOffType.ON);
                 } else {
                     logger.debug("command {} not supported in channel {}:mute", command.getClass(),
                             this.thing.getUID());
@@ -106,15 +108,6 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
      */
     public int getUniverseId() {
         return universe.getUniverseId();
-    }
-
-    /**
-     * rename the universe associated with this bridge
-     *
-     * @param universeId the new DMX universe id
-     */
-    protected void renameUniverse(int universeId) {
-        universe.rename(universeId);
     }
 
     @Override
@@ -228,9 +221,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
         int universeId = minUniverseId;
         universeId = Util.coerceToRange(universeConfig, minUniverseId, maxUniverseId, logger, "universeId");
 
-        if (universe == null) {
-            universe = new Universe(universeId);
-        } else if (universe.getUniverseId() != universeId) {
+        if (universe.getUniverseId() != universeId) {
             universe.rename(universeId);
         }
     }
@@ -264,7 +255,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
         }
 
         // do action
-        Integer channelCounter = 0;
+        int channelCounter = 0;
         for (DmxChannel channel : channels) {
             if (resumeAfter) {
                 channel.suspendAction();

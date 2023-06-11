@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.setPrivate;
 
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,7 +32,6 @@ import org.openhab.binding.mielecloud.internal.handler.MieleHandlerFactory;
 import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.util.Website;
-import org.openhab.binding.mielecloud.internal.util.WebsiteCrawler;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceFactory;
 import org.openhab.core.thing.Thing;
@@ -72,6 +75,22 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
         setPrivate(Objects.requireNonNull(handlerFactory), "webserviceFactory", webserviceFactory);
     }
 
+    private Map<String, String> extractUrlParameters(String query) throws Exception {
+        var parameters = new HashMap<String, String>();
+        for (String param : query.split("&")) {
+            String[] pair = param.split("=");
+            String key = URLDecoder.decode(pair[0], "UTF-8");
+            String value = "";
+            if (pair.length > 1) {
+                value = URLDecoder.decode(pair[1], "UTF-8");
+            }
+
+            assertFalse(parameters.containsKey(key));
+            parameters.put(key, value);
+        }
+        return parameters;
+    }
+
     private Website configureBridgeWithConfigFlow() throws Exception {
         Website accountOverviewSite = getCrawler().doGetRelative("/mielecloud");
         String pairAccountUrl = accountOverviewSite.getTargetOfLink("Pair Account");
@@ -79,7 +98,7 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
         Website pairAccountSite = getCrawler().doGetRelative(pairAccountUrl);
         String forwardToLoginUrl = pairAccountSite.getFormAction();
 
-        Website mieleLoginSite = getCrawler().doGetRelative(forwardToLoginUrl + "?"
+        String mieleLoginSiteUrl = getCrawler().doGetRedirectUrlRelative(forwardToLoginUrl + "?"
                 + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
                 + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
                 + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
@@ -87,11 +106,17 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
                 + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
                 + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID + "&" + ForwardToLoginServlet.EMAIL_PARAMETER_NAME
                 + "=" + MieleCloudBindingIntegrationTestConstants.EMAIL);
-        String redirectionUrl = mieleLoginSite.getValueOfInput("redirect_uri")
-                .replace("http://127.0.0.1:" + WebsiteCrawler.getServerPort(), "");
-        String state = mieleLoginSite.getValueOfInput("state");
 
-        Website resultSite = getCrawler().doGetRelative(redirectionUrl + "?code="
+        var loginSiteUrl = new URL(mieleLoginSiteUrl);
+        assertEquals(loginSiteUrl.getHost(), "api.mcs3.miele.com");
+        assertEquals(loginSiteUrl.getPath(), "/thirdparty/login");
+
+        Map<String, String> parameters = extractUrlParameters(loginSiteUrl.getQuery());
+
+        String redirectionUrl = parameters.get("redirect_uri");
+        String state = parameters.get("state");
+
+        Website resultSite = getCrawler().doGet(redirectionUrl + "?code="
                 + MieleCloudBindingIntegrationTestConstants.AUTHORIZATION_CODE + "&state=" + state);
         String createBridgeUrl = resultSite.getFormAction();
 

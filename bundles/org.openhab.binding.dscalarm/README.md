@@ -45,14 +45,14 @@ DSC Alarm things can be configured either through the online configuration utili
 The following table shows the available configuration parameters for each thing.
 
 <table>
-	<tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>
-	<tr><td>envisalink</td><td><table><tr><td><b>ipAddress</b> - IP address for the Envisalink adapter - Required.</td></tr><tr><td><b>port</b> - TCP port for the Envisalink adapter - Not Required - default = 4025.</td></tr><tr><td><b>password</b> - Password to login to the Envisalink bridge - Not Required.</td></tr><tr><td><b>connectionTimeout</b> - TCP socket connection timeout in milliseconds - Not Required - default=5000.<br/></td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the Envisalink bridge - Not Required - default=1.</td></tr></table></td></tr>
-	<tr><td>it100</td><td><table><tr><td><b>serialPort</b> - Serial port for the IT-100s bridge - Required.</td></tr><tr><td><b>baud</b> - Baud rate of the IT-100 bridge - Not Required - default = 9600.</td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1.</td></tr></table></td></tr>
+ <tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>
+ <tr><td>envisalink</td><td><table><tr><td><b>ipAddress</b> - IP address for the Envisalink adapter - Required.</td></tr><tr><td><b>port</b> - TCP port for the Envisalink adapter - Not Required - default = 4025.</td></tr><tr><td><b>password</b> - Password to login to the Envisalink bridge - Not Required.</td></tr><tr><td><b>connectionTimeout</b> - TCP socket connection timeout in milliseconds - Not Required - default=5000.<br/></td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the Envisalink bridge - Not Required - default=1.</td></tr></table></td></tr>
+ <tr><td>it100</td><td><table><tr><td><b>serialPort</b> - Serial port for the IT-100s bridge - Required.</td></tr><tr><td><b>baud</b> - Baud rate of the IT-100 bridge - Not Required - default = 9600.</td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1.</td></tr></table></td></tr>
     <tr><td>tcpserver</td><td><table><tr><td><b>ipAddress</b> - IP address for the TCP Server - Required.</td></tr><tr><td><b>port</b> - TCP port for the TCP Server - Required.</td></tr><tr><td><b>connectionTimeout</b> - TCP socket connection timeout in milliseconds - Not Required - default=5000.<br/></td></tr><tr><td><b>pollPeriod</b> - Period of time in minutes between the poll command being sent to the TCP Server bridge - Not Required - default=1.</td></tr><tr><td><b>protocol</b> - The protocol used to interact with the DSC Alarm. Valid values are 1 for IT100 API or 2 for Envisalink TPI. The default is 1. - Not Required.</td></tr></table></td></tr>
     <tr><td>panel</td><td><table><tr><td><b>userCode</b> - User code for the DSC alarm panel - Not Required.</td></tr><tr><td><b>suppressAcknowledgementMsgs</b> - Suppress the display of acknowledgement messages when received - Not Required - default = false.</td></tr></table></td></tr>
-	<tr><td>partition</td><td><b>partitionNumber</b> - Partition number (1-8) - Required.</td></tr>
-	<tr><td>zone</td><td><table><tr><td><b>partitionNumber</b> - Partition number (1-8) - Not Required - default=1.</td></tr><tr><td><b>zoneNumber</b> - Zone number (1-64) - Required.</td></tr></table></td></tr>
-	<tr><td>keypad</td><td>No parameters</td></tr>
+ <tr><td>partition</td><td><b>partitionNumber</b> - Partition number (1-8) - Required.</td></tr>
+ <tr><td>zone</td><td><table><tr><td><b>partitionNumber</b> - Partition number (1-8) - Not Required - default=1.</td></tr><tr><td><b>zoneNumber</b> - Zone number (1-64) - Required.</td></tr></table></td></tr>
+ <tr><td>keypad</td><td>No parameters</td></tr>
 </table>
 
 The binding can be configured manually if discovery is not used.
@@ -87,7 +87,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 <table>
     <tr><td><b>Channel</b></td><td><b>Item Type</b></td><td><b>Description</b></td></tr>
     <tr><td>bridge_reset</td><td>Switch</td><td>(Writable) Reset the bridge connection.</td></tr>
-    <tr><td>send_command</td><td>Switch</td><td>(Writable) Send a DSC Alarm command. See <a href="http://forum.eyez-on.com/FORUM/download/file.php?id=223&sid=e146abb17dbccca14f19d6b50cbe8379">here</a> for a list of commands.</td></tr>
+    <tr><td>send_command</td><td>Switch</td><td>(Writable) Send a DSC Alarm command. See <a href="https://forum.eyezon.com/download/file.php?id=223&sid=e146abb17dbccca14f19d6b50cbe8379">here</a> for a list of commands.</td></tr>
     <tr><td>panel_message</td><td>String</td><td>Event messages received from the DSC Alarm system.</td></tr>
     <tr><td>panel_system_error</td><td>String</td><td>DSC Alarm system error.</td></tr>
     <tr><td>panel_trouble_message</td><td>String</td><td>Displays any trouble messages the panel might send.</td></tr>
@@ -178,7 +178,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
     <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>
 </table>
 
-##Example
+## Example
 
 The following is an example of an item file (dscalarm.items):
 

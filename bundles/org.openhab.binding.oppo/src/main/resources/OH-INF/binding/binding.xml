@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="oppo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
-
-	<name>Oppo Blu-ray Player Binding</name>
-	<description>Controls the Oppo UDP-203/205 and BDP-83/93/95/103/105 Blu-ray Players</description>
-
-</binding:binding>

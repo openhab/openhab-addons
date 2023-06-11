@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,19 +29,19 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 @NonNullByDefault
 public interface LeapMessageParserCallbacks {
 
-    public void validMessageReceived(String communiqueType);
+    void validMessageReceived(String communiqueType);
 
-    public void handleEmptyButtonGroupDefinition();
+    void handleEmptyButtonGroupDefinition();
 
-    public void handleZoneUpdate(ZoneStatus zoneStatus);
+    void handleZoneUpdate(ZoneStatus zoneStatus);
 
-    public void handleGroupUpdate(int groupNumber, String occupancyStatus);
+    void handleGroupUpdate(int groupNumber, String occupancyStatus);
 
-    public void handleMultipleButtonGroupDefinition(List<ButtonGroup> buttonGroupList);
+    void handleMultipleButtonGroupDefinition(List<ButtonGroup> buttonGroupList);
 
-    public void handleMultipleDeviceDefintion(List<Device> deviceList);
+    void handleMultipleDeviceDefintion(List<Device> deviceList);
 
-    public void handleMultipleAreaDefinition(List<Area> areaList);
+    void handleMultipleAreaDefinition(List<Area> areaList);
 
-    public void handleMultipleOccupancyGroupDefinition(List<OccupancyGroup> oGroupList);
+    void handleMultipleOccupancyGroupDefinition(List<OccupancyGroup> oGroupList);
 }

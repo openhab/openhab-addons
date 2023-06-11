@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.Device;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceIdentLabel;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DryingStep;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.EcoFeedback;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Ident;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Light;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.PlateStep;
@@ -43,7 +44,7 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.VentilationSt
  * @author Björn Lange - Introduced null handling
  * @author Benjamin Bolte - Add pre-heat finished, plate step, door state, door alarm, info state channel and map signal
  *         flags from API
- * @author Björn Lange - Add elapsed time channel, dish warmer and robotic vacuum cleaner things
+ * @author Björn Lange - Add elapsed time channel, dish warmer and robotic vacuum cleaner things, eco feedback
  */
 @NonNullByDefault
 public class DeviceState {
@@ -456,6 +457,36 @@ public class DeviceState {
         }
 
         return Optional.of(doorState.get() && failure.get());
+    }
+
+    /**
+     * Gets the amount of water consumed since the currently running program started.
+     *
+     * @return The amount of water consumed since the currently running program started.
+     */
+    public Optional<Quantity> getCurrentWaterConsumption() {
+        if (deviceIsInOffState()) {
+            return Optional.empty();
+        }
+
+        return device.flatMap(Device::getState).flatMap(State::getEcoFeedback)
+                .flatMap(EcoFeedback::getCurrentWaterConsumption).flatMap(consumption -> consumption.getValue()
+                        .map(value -> new Quantity(value, consumption.getUnit().orElse(null))));
+    }
+
+    /**
+     * Gets the amount of energy consumed since the currently running program started.
+     *
+     * @return The amount of energy consumed since the currently running program started.
+     */
+    public Optional<Quantity> getCurrentEnergyConsumption() {
+        if (deviceIsInOffState()) {
+            return Optional.empty();
+        }
+
+        return device.flatMap(Device::getState).flatMap(State::getEcoFeedback)
+                .flatMap(EcoFeedback::getCurrentEnergyConsumption).flatMap(consumption -> consumption.getValue()
+                        .map(value -> new Quantity(value, consumption.getUnit().orElse(null))));
     }
 
     /**

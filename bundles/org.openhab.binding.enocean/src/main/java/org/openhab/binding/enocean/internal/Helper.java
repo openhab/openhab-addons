@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,14 +14,17 @@ package org.openhab.binding.enocean.internal;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class Helper {
 
     public static byte[] concatAll(byte[] a, byte[]... rest) {
-        if (rest == null) {
+        if (rest.length == 0) {
             return a;
         }
 
@@ -40,7 +43,7 @@ public class Helper {
                 offset += array.length;
             }
         }
-        return result;
+        return result != null ? result : new byte[0];
     }
 
     public static int tryParseInt(String value, int defaultValue) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,9 +21,9 @@ import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.nest.internal.wwn.config.WWNDeviceConfiguration;
 import org.openhab.core.config.core.Configuration;
@@ -42,6 +42,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class WWNThermostatHandlerTest extends WWNThingHandlerOSGiTest {
 
     private static final ThingUID THERMOSTAT_UID = new ThingUID(THING_TYPE_THERMOSTAT, "thermostat1");
@@ -53,8 +54,7 @@ public class WWNThermostatHandlerTest extends WWNThingHandlerOSGiTest {
 
     @Override
     protected Thing buildThing(Bridge bridge) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(WWNDeviceConfiguration.DEVICE_ID, THERMOSTAT1_DEVICE_ID);
+        Map<String, Object> properties = Map.of(WWNDeviceConfiguration.DEVICE_ID, THERMOSTAT1_DEVICE_ID);
 
         return ThingBuilder.create(THING_TYPE_THERMOSTAT, THERMOSTAT_UID).withLabel("Test Thermostat")
                 .withBridge(bridge.getUID()).withChannels(buildChannels(THING_TYPE_THERMOSTAT, THERMOSTAT_UID))

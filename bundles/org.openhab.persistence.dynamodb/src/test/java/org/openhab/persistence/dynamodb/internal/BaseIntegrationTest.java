@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.mockito.Mockito;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.internal.i18n.I18nProviderImpl;
-import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -93,7 +92,7 @@ public class BaseIntegrationTest extends JavaTest {
     protected static final Unit<Dimensionless> DIMENSIONLESS_ITEM_UNIT = Units.ONE;
     private static @Nullable URI endpointOverride;
 
-    protected static UnitProvider UNIT_PROVIDER;
+    protected static final UnitProvider UNIT_PROVIDER;
     static {
         ComponentContext context = Mockito.mock(ComponentContext.class);
         BundleContext bundleContext = Mockito.mock(BundleContext.class);
@@ -147,12 +146,12 @@ public class BaseIntegrationTest extends JavaTest {
         ITEMS.put("dimmer", new DimmerItem("dimmer"));
         ITEMS.put("number", new NumberItem("number"));
 
-        NumberItem temperatureItem = new NumberItem("Number:Temperature", "numberTemperature");
+        NumberItem temperatureItem = new NumberItem("Number:Temperature", "numberTemperature", UNIT_PROVIDER);
         ITEMS.put("numberTemperature", temperatureItem);
         GroupItem groupTemperature = new GroupItem("groupNumberTemperature", temperatureItem);
         ITEMS.put("groupNumberTemperature", groupTemperature);
 
-        NumberItem dimensionlessItem = new NumberItem("Number:Dimensionless", "numberDimensionless");
+        NumberItem dimensionlessItem = new NumberItem("Number:Dimensionless", "numberDimensionless", UNIT_PROVIDER);
         ITEMS.put("numberDimensionless", dimensionlessItem);
         GroupItem groupDimensionless = new GroupItem("groupNumberDimensionless", dimensionlessItem);
         ITEMS.put("groupNumberDimensionless", groupDimensionless);
@@ -170,8 +169,6 @@ public class BaseIntegrationTest extends JavaTest {
         ITEMS.put("location", new LocationItem("location"));
         ITEMS.put("player_playpause", new PlayerItem("player_playpause"));
         ITEMS.put("player_rewindfastforward", new PlayerItem("player_rewindfastforward"));
-
-        injectItemServices();
     }
 
     @BeforeAll
@@ -192,7 +189,7 @@ public class BaseIntegrationTest extends JavaTest {
      * @param tablePrefix
      * @return new persistence service
      */
-    protected synchronized static DynamoDBPersistenceService newService(@Nullable Boolean legacy, boolean cleanLocal,
+    protected static synchronized DynamoDBPersistenceService newService(@Nullable Boolean legacy, boolean cleanLocal,
             @Nullable URI overrideLocalURI, @Nullable String table, @Nullable String tablePrefix) {
         final DynamoDBPersistenceService service;
         Map<String, Object> config = getConfig(legacy, table, tablePrefix);
@@ -248,7 +245,6 @@ public class BaseIntegrationTest extends JavaTest {
                 if (item == null) {
                     throw new ItemNotFoundException(name);
                 }
-                injectItemServices(item);
                 return item;
             }
 
@@ -326,21 +322,10 @@ public class BaseIntegrationTest extends JavaTest {
             public void removeRegistryHook(RegistryHook<Item> hook) {
                 throw new UnsupportedOperationException();
             }
-        }, localEndpointOverride);
+        }, UNIT_PROVIDER, localEndpointOverride);
 
         service.activate(null, config);
         return service;
-    }
-
-    protected static void injectItemServices() {
-        ITEMS.values().forEach(BaseIntegrationTest::injectItemServices);
-    }
-
-    protected static void injectItemServices(Item item) {
-        if (item instanceof GenericItem) {
-            GenericItem genericItem = (GenericItem) item;
-            genericItem.setUnitProvider(UNIT_PROVIDER);
-        }
     }
 
     private static Map<String, Object> getConfig(@Nullable Boolean legacy, @Nullable String table,

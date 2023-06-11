@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vizio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Vizio TV Thing -->
+	<thing-type id="vizio_tv">
+		<label>Vizio TV</label>
+		<description>
+			A Vizio SmartCast TV
+		</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="source" typeId="source"/>
+			<channel id="activeApp" typeId="activeApp"/>
+			<channel id="control" typeId="control"/>
+			<channel id="button" typeId="buttonTv"/>
+		</channels>
+
+		<properties>
+			<property name="modelId">unknown</property>
+		</properties>
+
+		<representation-property>uuid</representation-property>
+
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
+				<label>Host Name/IP Address</label>
+				<description>Host Name or IP Address of the Vizio TV</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
+				<label>Port</label>
+				<description>Port for the Vizio TV</description>
+				<default>7345</default>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="7345">7345 (Newer Models)</option>
+					<option value="9000">9000 (Older Models)</option>
+				</options>
+			</parameter>
+			<parameter name="authToken" type="text" required="false">
+				<label>Auth Token</label>
+				<description>Auth Token that is obtained via the pairing process; See documentation for details</description>
+			</parameter>
+			<parameter name="appListJson" type="text" required="false">
+				<context>script</context>
+				<label>App List Configuration</label>
+				<description>The JSON configuration string for the list of apps available in the activeApp channel drop down</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="source">
+		<item-type>String</item-type>
+		<label>Source Input</label>
+		<description>Select the Source Input for the TV</description>
+	</channel-type>
+
+	<channel-type id="activeApp">
+		<item-type>String</item-type>
+		<label>Active App</label>
+		<description>The currently running App on the TV</description>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Transport Controls e.g. Play/Pause/Next/Previous/FForward/Rewind</description>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="buttonTv">
+		<item-type>String</item-type>
+		<label>Remote Button</label>
+		<description>A Remote Button press to send to the TV</description>
+		<state>
+			<options>
+				<option value="PowerOn">Power On</option>
+				<option value="PowerOff">Power Off</option>
+				<option value="PowerToggle">Power Toggle</option>
+				<option value="VolumeUp">Volume Up</option>
+				<option value="VolumeDown">Volume Down</option>
+				<option value="MuteOn">Mute On</option>
+				<option value="MuteOff">Mute Off</option>
+				<option value="MuteToggle">Mute Toggle</option>
+				<option value="ChannelUp">Channel Up</option>
+				<option value="ChannelDown">Channel Down</option>
+				<option value="PreviousCh">Previous Channel</option>
+				<option value="InputToggle">Input Toggle</option>
+				<option value="SeekFwd">Seek Fwd</option>
+				<option value="SeekBack">Seek Back</option>
+				<option value="Play">Play</option>
+				<option value="Pause">Pause</option>
+				<option value="Up">Up</option>
+				<option value="Down">Down</option>
+				<option value="Left">Left</option>
+				<option value="Right">Right</option>
+				<option value="Ok">Ok</option>
+				<option value="Back">Back</option>
+				<option value="Info">Info</option>
+				<option value="Menu">Menu</option>
+				<option value="Home">Home</option>
+				<option value="Exit">Exit</option>
+				<option value="Smartcast">Smartcast</option>
+				<option value="ccToggle">CC Toggle</option>
+				<option value="PictureMode">Picture Mode</option>
+				<option value="WideMode">Wide Mode</option>
+				<option value="WideToggle">Wide Toggle</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService impleme
     private @Nullable AirQualityBridgeHandler bridgeHandler;
 
     /**
-     * Creates a AirQualityDiscoveryService with enabled autostart.
+     * Creates an AirQualityDiscoveryService with enabled autostart.
      */
     public AirQualityDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
@@ -84,14 +84,14 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService impleme
             PointType location = provider.getLocation();
             AirQualityBridgeHandler bridge = this.bridgeHandler;
             if (location == null || bridge == null) {
-                logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
+                logger.info("openHAB server location is not defined, will not provide any discovery results");
                 return;
             }
             createResults(location, bridge.getThing().getUID());
         }
     }
 
-    public void createResults(PointType location, ThingUID bridgeUID) {
+    private void createResults(PointType location, ThingUID bridgeUID) {
         ThingUID localAirQualityThing = new ThingUID(THING_TYPE_STATION, bridgeUID, LOCAL);
         thingDiscovered(DiscoveryResultBuilder.create(localAirQualityThing).withLabel("Local Air Quality")
                 .withProperty(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()))

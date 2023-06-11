@@ -8,7 +8,7 @@ Whilst Ambient Weather has it own cloud based binding, the other brands will not
 This binding works fully offline and can work via one of two methods:
 
 1. Local scraping of the weather station's `livedata` webpage at 12 second resolution (non WiFi models only).
-2. Both WiFi and RJ45 models can be setup to push the data directly to the openHAB (default 8080) server directly and the binding can parse the data from the weather underground data.
+1. Both WiFi and RJ45 models can be setup to push the data directly to the openHAB (default 8080) server directly and the binding can parse the data from the weather underground data.
 
 The other binding worth mentioning is the weather underground binding that allows the data to be intercepted on its way to WU, however many of the weather stations do not allow the redirection of the WU data and require you to know how to do redirections with a custom DNS server on your network.
 This binding with method 1 and a RJ45 model is by far the easiest method and works for all the brands and will not stop the data still being sent to WU if you wish to do both at the same time.

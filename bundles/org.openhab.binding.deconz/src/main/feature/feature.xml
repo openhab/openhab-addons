@@ -2,7 +2,7 @@
 <features name="org.openhab.binding.deconz-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
-	<feature name="openhab-binding-deconz" description="Dresden Elektronik deCONZ Binding" version="${project.version}">
+	<feature name="openhab-binding-deconz" description="deCONZ Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-http</feature>
 		<feature>openhab-transport-upnp</feature>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,5 +22,5 @@ import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
  */
 @NonNullByDefault
 public interface ResponseCallback {
-    public void onError(NetworkError error);
+    void onError(NetworkError error);
 }

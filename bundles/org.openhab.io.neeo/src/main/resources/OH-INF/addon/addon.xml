@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="neeo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>misc</type>
+	<name>Neeo</name>
+	<description>The openHAB NEEO integration allows mapping of openHAB things/item to a NEEO device/capabilities.</description>
+	<connection>local</connection>
+
+	<service-id>org.openhab.io.neeo.NeeoService</service-id>
+
+	<config-description-ref uri="io:neeo"/>
+
+</addon:addon>

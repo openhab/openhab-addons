@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WIFI_NAME;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -34,6 +33,7 @@ import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -127,8 +127,9 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
         for (final UniFiWlan wlan : cache.getWlans()) {
             final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_WLAN, bridgeUID,
                     stripIdShort(wlan.getId()));
-            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId(), PARAMETER_SITE,
-                    wlan.getSite().getName(), PARAMETER_WIFI_NAME, wlan.getName());
+            final String siteName = wlan.getSite() == null ? "" : wlan.getSite().getName();
+            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId(), PARAMETER_SITE, siteName,
+                    PARAMETER_WIFI_NAME, wlan.getName());
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_WLAN)
                     .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_WID).withTTL(TTL_SECONDS)
@@ -146,7 +147,7 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withBridge(bridgeUID)
                     .withRepresentationProperty(PARAMETER_CID).withTTL(TTL_SECONDS).withProperties(properties)
-                    .withLabel(uc.getAlias()).build());
+                    .withLabel(uc.getName()).build());
         }
     }
 
@@ -157,13 +158,12 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
      * @return shortened id or if to short the original id
      */
     private static String stripIdShort(final String id) {
-        return id.length() > THING_ID_LENGTH ? id.substring(id.length() - THING_ID_LENGTH) : id;
+        return id != null && id.length() > THING_ID_LENGTH ? id.substring(id.length() - THING_ID_LENGTH) : id;
     }
 
     private void discoverPoePorts(final UniFiControllerCache cache, final ThingUID bridgeUID) {
-        for (final Map<Integer, UniFiPortTuple> uc : cache.getSwitchPorts()) {
-            for (final Entry<Integer, UniFiPortTuple> sp : uc.entrySet()) {
-                final UniFiPortTuple pt = sp.getValue();
+        for (final UniFiSwitchPorts uc : cache.getSwitchPorts()) {
+            for (final UniFiPortTuple pt : uc.getPoePorts()) {
                 final String deviceMac = pt.getDevice().getMac();
                 final String id = deviceMac.replace(":", "") + "_" + pt.getPortIdx();
                 final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_POE_PORT, bridgeUID, id);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link OneWireBinding} class defines common constants, which are
+ * The {@link OwBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Jan N. Klug - Initial contribution
@@ -143,19 +143,17 @@ public class OwBindingConstants {
     public static final Map<OwSensorType, String> THING_LABEL_MAP;
     public static final Map<OwSensorType, Set<OwChannelConfig>> SENSOR_TYPE_CHANNEL_MAP;
 
-    public static final Map<String, String> ACCEPTED_ITEM_TYPES_MAP = Util
-            .readPropertiesFile("accepted_itemtypes.properties");
-
     static {
         Map<String, String> properties = Util.readPropertiesFile("sensor.properties");
         THING_TYPE_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".thingtype"))
                 .collect(Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
                         e -> new ThingTypeUID(BINDING_ID, e.getValue())));
         SENSOR_TYPE_CHANNEL_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".channels"))
-                .collect(Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
-                        e -> !e.getValue().isEmpty() ? Stream.of(e.getValue().split(","))
-                                .map(c -> OwChannelConfig.fromString(c)).collect(Collectors.toSet())
-                                : new HashSet<>()));
+                .collect(
+                        Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
+                                e -> !e.getValue().isEmpty() ? Stream.of(e.getValue().split(","))
+                                        .map(OwChannelConfig::fromString).collect(Collectors.toSet())
+                                        : new HashSet<>()));
         THING_LABEL_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".label")).collect(
                 Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]), e -> e.getValue()));
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link GroupState} is send by the websocket connection as well as the Rest API.
  * It is part of a {@link GroupMessage}.
@@ -22,11 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class GroupState {
-    public boolean all_on;
-    public boolean any_on;
+    @SerializedName(value = "all_on")
+    public boolean allOn;
+    @SerializedName(value = "any_on")
+    public boolean anyOn;
 
     @Override
     public String toString() {
-        return "GroupState{" + "all_on=" + all_on + ", any_on=" + any_on + '}';
+        return "GroupState{" + "all_on=" + allOn + ", any_on=" + anyOn + '}';
     }
 }

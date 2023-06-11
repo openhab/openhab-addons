@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public interface StateType {
      * @param states list of states
      * @return built bit set
      */
-    public static BitSet getStatesBitSet(StateType... states) {
+    static BitSet getStatesBitSet(StateType... states) {
         BitSet stateBits = new BitSet();
         for (StateType state : states) {
             stateBits.set(state.getRefreshCommand());
@@ -78,7 +78,7 @@ public interface StateType {
     /**
      * Marker instance for lack of state type.
      */
-    public static final StateType NONE = new StateType() {
+    static final StateType NONE = new StateType() {
 
         @Override
         public byte getRefreshCommand() {

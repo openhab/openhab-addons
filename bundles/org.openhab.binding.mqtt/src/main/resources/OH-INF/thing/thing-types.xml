@@ -157,7 +157,7 @@
 			<parameter name="shutdownRetain" type="boolean">
 				<label>Shutdown Message Retain</label>
 				<description>True if the shutdown message should be retained (defaults to true)</description>
-				<default>false</default>
+				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public class VeluxKLFAPI {
     // Constants
 
     /**
-     * System table index parameter - an be a number from 0 to 203.
+     * System table index parameter - a number from 0 to 203.
      *
      * See <a href=
      * "https://velcdn.azureedge.net/~/media/com/api/klf200/technical%20specification%20for%20klf%20200%20api.pdf#page=25">KLF200
@@ -318,7 +318,7 @@ public class VeluxKLFAPI {
         private CommandNumber command;
         private String description;
 
-        // Reverse-lookup map for getting a Command from an TypeId
+        // Reverse-lookup map for getting a Command from a TypeId
         private static final Map<Short, Command> LOOKUPTYPEID2ENUM = Stream.of(Command.values())
                 .collect(Collectors.toMap(Command::getShort, Function.identity()));
 

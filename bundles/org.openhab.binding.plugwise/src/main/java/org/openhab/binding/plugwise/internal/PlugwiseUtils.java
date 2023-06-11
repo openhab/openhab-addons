@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwise.internal.protocol.InformationResponseMessage;
@@ -102,8 +100,19 @@ public final class PlugwiseUtils {
     }
 
     public static String upperUnderscoreToLowerCamel(String text) {
-        String upperCamel = StringUtils.remove(WordUtils.capitalizeFully(text, new char[] { '_' }), "_");
-        return upperCamel.substring(0, 1).toLowerCase() + upperCamel.substring(1);
+        final String delimiter = "_";
+        StringBuilder upperCamelBuilder = new StringBuilder(text.length());
+        for (String str : text.split(delimiter)) {
+            if (upperCamelBuilder.isEmpty() && str.length() > 0) {
+                upperCamelBuilder.append(str.substring(0, 1).toLowerCase());
+            } else if (str.length() > 0) {
+                upperCamelBuilder.append(str.substring(0, 1).toUpperCase());
+            }
+            if (str.length() > 1) {
+                upperCamelBuilder.append(str.substring(1).toLowerCase());
+            }
+        }
+        return upperCamelBuilder.toString();
     }
 
     public static boolean updateProperties(Map<String, String> properties, InformationResponseMessage message) {

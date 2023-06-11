@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecobee.internal.action.EcobeeActions;
@@ -50,6 +49,7 @@ import org.openhab.binding.ecobee.internal.dto.thermostat.WeatherDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.WeatherForecastDTO;
 import org.openhab.binding.ecobee.internal.function.AbstractFunction;
 import org.openhab.binding.ecobee.internal.function.FunctionRequest;
+import org.openhab.binding.ecobee.internal.util.StringUtils;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -179,7 +179,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             for (Channel channel : thing.getChannelsOfGroup(group)) {
                 if (isLinked(channel.getUID())) {
                     try {
-                        Field field = selection.getClass().getField("include" + WordUtils.capitalize(group));
+                        Field field = selection.getClass().getField("include" + StringUtils.capitalizeWords(group));
                         logger.trace("ThermostatBridge: Thermostat thing '{}' including object '{}' in selection",
                                 thing.getUID(), field.getName());
                         field.set(selection, Boolean.TRUE);
@@ -417,6 +417,10 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             updateChannel(grp + CH_DESIRED_COOL_RANGE_HIGH,
                     EcobeeUtils.undefOrTemperature(runtime.desiredCoolRange.get(1)));
         }
+        updateChannel(grp + CH_ACTUAL_AQ_ACCURACY, EcobeeUtils.undefOrLong(runtime.actualAQAccuracy));
+        updateChannel(grp + CH_ACTUAL_AQ_SCORE, EcobeeUtils.undefOrLong(runtime.actualAQScore));
+        updateChannel(grp + CH_ACTUAL_CO2, EcobeeUtils.undefOrQuantity(runtime.actualCO2, Units.PARTS_PER_MILLION));
+        updateChannel(grp + CH_ACTUAL_VOC, EcobeeUtils.undefOrQuantity(runtime.actualVOC, Units.PARTS_PER_BILLION));
     }
 
     private void updateSettings(@Nullable SettingsDTO settings) {
@@ -658,6 +662,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             return;
         }
         final String weatherGrp = CHGRP_WEATHER + "#";
+
         updateChannel(weatherGrp + CH_WEATHER_TIMESTAMP, EcobeeUtils.undefOrDate(weather.timestamp, timeZoneProvider));
         updateChannel(weatherGrp + CH_WEATHER_WEATHER_STATION, EcobeeUtils.undefOrString(weather.weatherStation));
 

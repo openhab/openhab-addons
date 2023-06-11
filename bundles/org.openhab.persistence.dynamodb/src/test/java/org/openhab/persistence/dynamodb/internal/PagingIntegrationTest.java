@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,7 +71,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         waitForAssert(() -> {
             FilterCriteria criteria = new FilterCriteria();
             criteria.setItemName(NAME);
-            criteria.setBeginDate(storeStart);
+            criteria.setBeginDate(Objects.requireNonNull(storeStart));
             criteria.setOrdering(Ordering.ASCENDING);
             criteria.setPageNumber(0);
             criteria.setPageSize(3);
@@ -84,7 +85,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         waitForAssert(() -> {
             FilterCriteria criteria = new FilterCriteria();
             criteria.setItemName(NAME);
-            criteria.setBeginDate(storeStart);
+            criteria.setBeginDate(Objects.requireNonNull(storeStart));
             criteria.setOrdering(Ordering.ASCENDING);
             criteria.setPageNumber(1);
             criteria.setPageSize(3);
@@ -98,7 +99,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         waitForAssert(() -> {
             FilterCriteria criteria = new FilterCriteria();
             criteria.setItemName(NAME);
-            criteria.setBeginDate(storeStart);
+            criteria.setBeginDate(Objects.requireNonNull(storeStart));
             criteria.setOrdering(Ordering.ASCENDING);
             criteria.setPageNumber(3);
             criteria.setPageSize(3);
@@ -112,7 +113,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         waitForAssert(() -> {
             FilterCriteria criteria = new FilterCriteria();
             criteria.setItemName(NAME);
-            criteria.setBeginDate(storeStart);
+            criteria.setBeginDate(Objects.requireNonNull(storeStart));
             criteria.setOrdering(Ordering.ASCENDING);
             criteria.setPageNumber(4);
             criteria.setPageSize(3);
@@ -126,7 +127,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         waitForAssert(() -> {
             FilterCriteria criteria = new FilterCriteria();
             criteria.setItemName(NAME);
-            criteria.setBeginDate(storeStart);
+            criteria.setBeginDate(Objects.requireNonNull(storeStart));
             criteria.setOrdering(Ordering.DESCENDING);
             criteria.setPageNumber(0);
             criteria.setPageSize(3);
@@ -140,7 +141,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         waitForAssert(() -> {
             FilterCriteria criteria = new FilterCriteria();
             criteria.setItemName(NAME);
-            criteria.setBeginDate(storeStart);
+            criteria.setBeginDate(Objects.requireNonNull(storeStart));
             criteria.setOrdering(Ordering.ASCENDING);
             criteria.setPageNumber(0);
             criteria.setPageSize(900);
@@ -154,7 +155,7 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
         waitForAssert(() -> {
             FilterCriteria criteria = new FilterCriteria();
             criteria.setItemName(NAME);
-            criteria.setBeginDate(storeStart);
+            criteria.setBeginDate(Objects.requireNonNull(storeStart));
             criteria.setOrdering(Ordering.ASCENDING);
             criteria.setPageNumber(0);
             criteria.setPageSize(3);

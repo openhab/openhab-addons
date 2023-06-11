@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -187,7 +187,7 @@ public class PS4PacketHandler {
      * Tries to start an application on the PS4.
      *
      * @param applicationId The ID of the application.
-     * @return A appStart-packet
+     * @return An appStart-packet
      */
     static ByteBuffer makeApplicationPacket(String applicationId) {
         ByteBuffer packet = newPacketForEncryption(8 + 16, PS4Command.APP_START_REQ);
@@ -234,7 +234,7 @@ public class PS4PacketHandler {
     /**
      * Tell the PS4 that we want to get info about the OnScreenKeyboard.
      *
-     * @return A OSKStartPacket.
+     * @return An OSKStartPacket.
      */
     static ByteBuffer makeOSKStartPacket() {
         return newPacketForEncryption(8, PS4Command.OSK_START_REQ);
@@ -244,7 +244,7 @@ public class PS4PacketHandler {
      * Send text to the OSK on the PS4. Replaces all the text as it is now.
      *
      * @param text
-     * @return A OSKStringChangePacket.
+     * @return An OSKStringChangePacket.
      */
     static ByteBuffer makeOSKStringChangePacket(String text) {
         byte[] chars = text.getBytes(StandardCharsets.UTF_16LE);
@@ -259,7 +259,7 @@ public class PS4PacketHandler {
     }
 
     /**
-     * Parses out the text from a OSKStringChange-packet.
+     * Parses out the text from an OSKStringChange-packet.
      *
      * @param buffer The received packet from the PS4.
      * @return The text in the packet.

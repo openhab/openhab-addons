@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
 /**
  * Class to implement the BlueGiga command <b>procedureCompletedEvent</b>.
  * <p>
- * This event is produced at the GATT client when an attribute protocol event is completed a and
+ * This event is produced at the GATT client when an attribute protocol event is completed and a
  * new operation can be issued
  * <p>
  * This class provides methods for processing BlueGiga API commands.
@@ -30,8 +30,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  */
 @NonNullByDefault
 public class BlueGigaProcedureCompletedEvent extends BlueGigaDeviceResponse {
-    public static int COMMAND_CLASS = 0x04;
-    public static int COMMAND_METHOD = 0x01;
+    public static final int COMMAND_CLASS = 0x04;
+    public static final int COMMAND_METHOD = 0x01;
 
     /**
      * 0: The operation was successful. Otherwise: attribute protocol error code returned by

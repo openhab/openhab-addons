@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -28,6 +30,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_30_03 extends _4BSMessage {
 
     protected static final byte ALL_DIGITALPINS_HIGH = 0x0F;
@@ -47,10 +50,10 @@ public class A5_30_03 extends _4BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                double temp = (getDB_2Value() - 255) / -6.375;
+                double temp = (getDB2Value() - 255) / -6.375;
                 return new QuantityType<>(temp, SIUnits.CELSIUS);
         }
 

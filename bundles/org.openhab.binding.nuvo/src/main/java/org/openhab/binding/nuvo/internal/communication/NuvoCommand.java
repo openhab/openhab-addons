@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ public enum NuvoCommand {
     PAGE_OFF("PAGE0"),
     CFGTIME("CFGTIME"),
     STATUS("STATUS"),
+    STATUS_QUERY("STATUS?"),
     EQ_QUERY("EQ?"),
     DISPINFO("DISPINFO"),
     DISPLINE("DISPLINE"),

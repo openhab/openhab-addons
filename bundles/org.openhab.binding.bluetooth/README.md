@@ -10,7 +10,7 @@ It has the following extensions:
 
 In order to function, this binding requires a Bluetooth adapter to be present, which handles the wireless communication.
 As there is no standard in Bluetooth for such dongles resp. chips, different adapters require a different implementation.
-This is why the Bluetooth binding itself does not come with any bridge handlers for such adapters itself, but instead is extensible by additional bundles which can implement support for a specific adapter. 
+This is why the Bluetooth binding itself does not come with any bridge handlers for such adapters itself, but instead is extensible by additional bundles which can implement support for a specific adapter.
 
 For Linux, there exists a special bundle which provides a Bluetooth bridge that talks to BlueZ.
 This should be the best choice for any Linux-based single board computers like e.g. the Raspberry Pi.
@@ -24,7 +24,6 @@ Additional thing types are available through bluetooth extensions.
 |---------------|---------------------------------------------------------------------------------------------------------|
 | beacon        | A Bluetooth device that is not connected, but only broadcasts announcements.                            |
 
-
 ## Discovery
 
 Discovery is performed through the Bluetooth bridge.
@@ -35,7 +34,6 @@ As this might lead to a huge list of devices, bridges usually disable this behav
 
 All bluetooth thing types require a configuration parameter `address`, which corresponds to the Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX").
 Other configuration parameters may be required depending on the bluetooth thing type, look at the documentation for that thing type for details.
-
 
 ## Channels
 
@@ -49,19 +47,19 @@ Every Bluetooth thing has the following channel:
 
 demo.things (assuming you have a Bluetooth bridge with the ID `bluetooth:bluez:hci0`):
 
-```
+```java
 bluetooth:beacon:hci0:b1  "BLE Beacon" (bluetooth:bluez:hci0) [ address="68:64:4C:14:FC:C4" ]
 ```
 
 demo.items:
 
-```
+```java
 Number Beacon_RSSI "My Beacon [%.0f]" { channel="bluetooth:beacon:hci0:b1:rssi" }
 ```
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame {

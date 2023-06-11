@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 /**
  * Class to implement the BlueGiga command <b>getStatus</b>.
  * <p>
- * This command returns the status of the given connection. Status is returned in a event.
+ * This command returns the status of the given connection. Status is returned in an event.
  * <p>
  * This class provides methods for processing BlueGiga API commands.
  * <p>
@@ -28,8 +28,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
  */
 @NonNullByDefault
 public class BlueGigaGetStatusResponse extends BlueGigaDeviceResponse {
-    public static int COMMAND_CLASS = 0x03;
-    public static int COMMAND_METHOD = 0x07;
+    public static final int COMMAND_CLASS = 0x03;
+    public static final int COMMAND_METHOD = 0x07;
 
     /**
      * Response constructor

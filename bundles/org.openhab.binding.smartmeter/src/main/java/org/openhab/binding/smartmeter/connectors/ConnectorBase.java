@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -140,7 +140,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
     }
 
     /**
-     * Emitting of values shall happen here. If there is a event based emitting, this can be overriden.
+     * Emitting of values shall happen here. If there is an event based emitting, this can be overriden.
      *
      * @param initMessage The message which shall be written before reading the values.
      * @param emitter The {@link FlowableEmitter} to emit the values to.

@@ -66,9 +66,9 @@ This API token can be created on your remote server using Main UI.
 
 Setting the `buildTriggerChannels` parameter to false is for the main following advanced usages:
 
-* you don't care about the trigger channels of this remote thing and you don't want the binding to create them locally,
-* you want to define the trigger channels in your configuration file, and only the channels that you will finally need,
-* you want to set a specific channel ID rather than using the channel ID created by the binding.
+- you don't care about the trigger channels of this remote thing and you don't want the binding to create them locally,
+- you want to define the trigger channels in your configuration file, and only the channels that you will finally need,
+- you want to set a specific channel ID rather than using the channel ID created by the binding.
 
 ## Thing Status
 
@@ -93,7 +93,7 @@ For example, if your remote thing provides a trigger channel with this UID `astr
 
 ## Limitations
 
-* The binding will not try to communicate with an openHAB v1 server.
+- The binding will not try to communicate with an openHAB v1 server.
 
 ## Example
 
@@ -101,7 +101,7 @@ For example, if your remote thing provides a trigger channel with this UID `astr
 
 Example of connection to a remote server in the local network:
 
-```
+```java
 Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8443, useHttps=true, trustedCertificate=true ] {
     Thing thing tv "TV living room" [ thingUID="lgwebos:WebOSTV:tv" ]
     Thing thing astroSun "Astro sun" [ thingUID="astro:sun:local", buildTriggerChannels=false ] {
@@ -114,12 +114,12 @@ Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8443, 
 
 Example of connection to a remote server outside the local network through a myopenhab cloud instance:
 
-```
+```java
 Bridge remoteopenhab:server:oh3 "OH3 server" [ host="myopenhab.org", useHttps=true, port=443, username="myUsername", password="myPassword" ]
 ```
 
 ### demo.items:
 
-```
+```java
 DateTime MyDate "Date [%1$tA %1$td %1$tR]" <calendar> { channel="remoteopenhab:server:oh2:MyDate" }
 ```

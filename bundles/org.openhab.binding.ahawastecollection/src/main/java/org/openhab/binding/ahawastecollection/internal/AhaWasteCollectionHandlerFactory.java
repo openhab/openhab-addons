@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,16 +59,8 @@ public class AhaWasteCollectionHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SCHEDULE.equals(thingTypeUID)) {
-            final AhaCollectionScheduleFactory factory = new AhaCollectionScheduleFactory() {
-
-                @Override
-                public AhaCollectionScheduleImpl create(final String commune, final String street,
-                        final String houseNumber, final String houseNumberAddon, final String collectionPlace) {
-                    return new AhaCollectionScheduleImpl(commune, street, houseNumber, houseNumberAddon,
-                            collectionPlace);
-                }
-            };
-            return new AhaWasteCollectionHandler(thing, this.scheduler, this.timeZoneProvider, factory);
+            return new AhaWasteCollectionHandler(thing, this.scheduler, this.timeZoneProvider,
+                    AhaCollectionScheduleImpl::new, null);
         }
         return null;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_SIGNAL = "signal";
     public static final String GROUP_BATTERY = "battery";
     public static final String GROUP_SECURITY = "security";
+    public static final String GROUP_SECURITY_EVENT = "security-event";
     public static final String GROUP_CAM_STATUS = "status";
     public static final String GROUP_CAM_LIVE = "live";
     public static final String GROUP_PRESENCE = "presence";
@@ -68,9 +69,9 @@ public class NetatmoBindingConstants {
     public static final String OPTION_PERSON = "-person";
     public static final String OPTION_ROOM = "-room";
     public static final String OPTION_THERMOSTAT = "-thermostat";
-    public static final String OPTION_SMOKE = "-smoke";
+    public static final String OPTION_ALARM = "-alarm";
     public static final Set<String> GROUP_VARIATIONS = Set.of(OPTION_EXTENDED, OPTION_OUTSIDE, OPTION_DOORBELL,
-            OPTION_PERSON, OPTION_ROOM, OPTION_THERMOSTAT, OPTION_SMOKE);
+            OPTION_PERSON, OPTION_ROOM, OPTION_THERMOSTAT, OPTION_ALARM);
 
     public static final String GROUP_TYPE_TIMESTAMP_EXTENDED = GROUP_TIMESTAMP + OPTION_EXTENDED;
     public static final String GROUP_TYPE_BATTERY_EXTENDED = GROUP_BATTERY + OPTION_EXTENDED;
@@ -83,7 +84,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_DOORBELL_LAST_EVENT = GROUP_LAST_EVENT + OPTION_DOORBELL;
     public static final String GROUP_DOORBELL_SUB_EVENT = GROUP_SUB_EVENT + OPTION_DOORBELL;
     public static final String GROUP_PERSON_LAST_EVENT = GROUP_LAST_EVENT + OPTION_PERSON;
-    public static final String GROUP_SMOKE_LAST_EVENT = GROUP_LAST_EVENT + OPTION_SMOKE;
+    public static final String GROUP_ALARM_LAST_EVENT = GROUP_LAST_EVENT + OPTION_ALARM;
     public static final String GROUP_TYPE_ROOM_TEMPERATURE = GROUP_TEMPERATURE + OPTION_ROOM;
     public static final String GROUP_TYPE_ROOM_PROPERTIES = GROUP_PROPERTIES + OPTION_ROOM;
     public static final String GROUP_TYPE_TH_PROPERTIES = GROUP_PROPERTIES + OPTION_THERMOSTAT;

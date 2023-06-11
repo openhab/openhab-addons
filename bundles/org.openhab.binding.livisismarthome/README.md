@@ -105,7 +105,6 @@ It is `false` by default.
 This means `100` on LIVISI is `UP` and `0` is `DOWN`.
 When `invert` is `true` than `0` on LIVISI is `UP` and `100` is `DOWN`.
 
-
 ## Triggers
 
 | Trigger Type  | Description                                   | Available on thing                  |
@@ -113,7 +112,6 @@ When `invert` is `true` than `0` on LIVISI is `UP` and `100` is `DOWN`.
 | SHORT_PRESSED | Fired when you press a button short           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
 | LONG_PRESSED  | Fired when you press a button longer          | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
 | PRESSED       | Fired when you press a button (short or long) | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
-
 
 ## Thing configuration
 
@@ -135,17 +133,17 @@ Now you can add all devices from your Inbox as things.
 As an alternative to the automatic discovery process and graphical configuration using the UI, LIVISI things can be configured manually.
 The LIVISI SmartHome Controller (SHC) can be configured using the following syntax:
 
-```
+```java
 Bridge livisismarthome:bridge:<bridge-id> "Livisi: SmartHome Controller (SHC)" [ host="192.168.0.99", password="SomethingSecret", webSocketIdleTimeout=900]
 ```
 
-** *Security warning!**
+** _Security warning!_*
 The communication between the binding and the SHC is not encrypted and can be traced.
 So be careful and secure your local network from unauthorized access.
 
 All other LIVISI devices can be added using the following syntax:
 
-```
+```java
 Thing WDS <thing-id> "<thing-name>" @ "<room-name>" [ id="<the-device-id>" ]
 ```
 
@@ -153,7 +151,7 @@ The device ID (e.g. e9a74941a3807b57332214f346fb1129) can be found in the UI inb
 
 However, a full example .things configuration look like this:
 
-```
+```java
 Bridge livisismarthome:bridge:mybride "LIVISI SmartHome Controller" {
     Thing ISD2 myDimmer "Dimmer Kitchen" @ "Kitchen" [ id="<device-id>" ]
     Thing ISS2 myLightSwitch "Light Livingroom" @ "Livingroom" [ id="<device-id>" ]
@@ -173,7 +171,7 @@ Bridge livisismarthome:bridge:mybride "LIVISI SmartHome Controller" {
 
 You can then configure your items in your *.items config files as usual, for example:
 
-```
+```java
 Contact myWindowContact        "Kitchen"                <window>      {channel="livisismarthome:WDS:mybridge:myWindowContact:contact"}
 Switch myWindowContactBattery  "Battery low"            <battery>     {channel="livisismarthome:WDS:mybridge:myWindowContact:batteryLow"}
 Number myHeatingTemp           "Bath [%.1f °C]"         <temperature> {channel="livisismarthome:RST:mybridge:myHeating:currentTemperature"}
@@ -187,7 +185,7 @@ Number myHeatingHumidity       "Bath [%.1f %%]"         <humidity>    {channel="
 
 Example:
 
-```
+```perl
 sitemap default label="Home" {
     Frame {
         Text item=myHeatingTemp label="Temperature"
@@ -203,7 +201,7 @@ sitemap default label="Home" {
 Push-buttons provide trigger channels, that can only be used in rules.
 Here is an example rule:
 
-```
+```java
 rule "Button triggered rule"
 when
     Channel 'livisismarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED

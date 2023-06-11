@@ -364,7 +364,7 @@
 	<channel-type id="zigbeeConnected-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Device Connected</label>
-		<description>Is the device still connected to the ZigBee network</description>
+		<description>Is the device still connected to the Zigbee network</description>
 		<state readOnly="true"/>
 	</channel-type>
 

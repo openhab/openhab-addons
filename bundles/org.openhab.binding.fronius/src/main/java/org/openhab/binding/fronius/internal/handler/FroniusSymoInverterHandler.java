@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -163,7 +163,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * get flow data for a specific inverter.
      *
      * @param number The inverter object of the given index
-     * @return an PowerFlowRealtimeInverter object.
+     * @return a PowerFlowRealtimeInverter object.
      */
     private PowerFlowRealtimeInverter getInverter(final String number) {
         return powerFlowResponse.getBody().getData().getInverters().get(number);

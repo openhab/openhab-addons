@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetAutomationHandler} is responsible for handling commands/messages for an Automation OpenWebNet
+ * The {@link OpenWebNetAutomationHandler} is responsible for handling
+ * commands/messages for an Automation OpenWebNet
  * device. It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
@@ -247,18 +248,21 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                     positionRequested = percent;
                 } else if (shutterRun >= 1000 && positionEstimation != POSITION_UNKNOWN) {
                     // these two must be known to calculate moveTime.
-                    // Calculate how much time we have to move and set a deadline to stop after that time
+                    // Calculate how much time we have to move and set a deadline to stop after that
+                    // time
                     int moveTime = Math
                             .round(((float) Math.abs(percent - positionEstimation) / POSITION_MAX_STEPS * shutterRun));
                     logger.debug("# {} # target moveTime={}", deviceWhere, moveTime);
                     if (moveTime > MIN_STEP_TIME_MSEC) {
                         ScheduledFuture<?> mSch = moveSchedule;
                         if (mSch != null && !mSch.isDone()) {
-                            // a moveSchedule was already scheduled and is not done... let's cancel the schedule
+                            // a moveSchedule was already scheduled and is not done... let's cancel the
+                            // schedule
                             mSch.cancel(false);
                             logger.debug("# {} # new XX% requested, old moveSchedule cancelled", deviceWhere);
                         }
-                        // send a requestFirmwareVersion message to BUS gateways to wake up the CMD connection before
+                        // send a requestFirmwareVersion message to BUS gateways to wake up the CMD
+                        // connection before
                         // sending further cmds
                         OpenWebNetBridgeHandler h = bridgeHandler;
                         if (h != null && h.isBusGateway()) {
@@ -270,7 +274,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                                 }
                             }
                         }
-                        // REMINDER: start the schedule BEFORE sending the command, because the synch command waits for
+                        // REMINDER: start the schedule BEFORE sending the command, because the synch
+                        // command waits for
                         // ACK and can take some 300ms
                         logger.debug("# {} # Starting schedule...", deviceWhere);
                         moveSchedule = scheduler.schedule(() -> {
@@ -294,7 +299,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                     }
                 } else {
                     logger.info(
-                            "Command {} cannot be executed: unknown position or shutterRun configuration params not/wrongly set (thing={})",
+                            "Command {} cannot be executed: UNDEF position or shutterRun configuration parameter not/wrongly set (thing={})",
                             command, thing.getUID());
                 }
             }
@@ -312,12 +317,14 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         updateAutomationState((Automation) msg);
-        // REMINDER: update automation state, and only after update thing status using the super method, to avoid delays
+        // REMINDER: update automation state, and only after update thing status using
+        // the super method, to avoid delays
         super.handleMessage(msg);
     }
 
     /**
-     * Updates automation device state based on the Automation message received from OWN network
+     * Updates automation device state based on the Automation message received from
+     * OWN network
      *
      * @param msg the Automation message
      */
@@ -345,10 +352,12 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 logger.debug("& {} & CALIBRATION - started going ALL DOWN...", deviceWhere);
             }
         } else if (msg.isStop()) {
-            long stoppedAt = System.currentTimeMillis();
+            long measuredRuntime = System.currentTimeMillis() - startedMovingAtTS;
             if (calibrating == CALIBRATION_GOING_DOWN && shutterRun == SHUTTER_RUN_UNDEFINED) {
-                shutterRun = (int) (stoppedAt - startedMovingAtTS);
-                logger.debug("& {} & CALIBRATION - reached DOWN ---> shutterRun={}", deviceWhere, shutterRun);
+                // since there are transmission delays we set shutterRun slightly less (-500ms
+                // and -2%) than measuredRuntime
+                shutterRun = (int) ((measuredRuntime - 500) * 0.98);
+                logger.debug("& {} & CALIBRATION - reached DOWN : measuredRuntime={}", deviceWhere, measuredRuntime);
                 updateMovingState(MOVING_STATE_STOPPED);
                 logger.debug("& {} & CALIBRATION - COMPLETED, now going to {}%", deviceWhere, positionRequested);
                 handleShutterCommand(new PercentType(positionRequested));
@@ -416,7 +425,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates positionEstimation and then channel state based on movedTime and current movingState
+     * Updates positionEstimation and then channel state based on movedTime and
+     * current movingState
      */
     private void updatePosition() {
         int newPos = POSITION_UNKNOWN;

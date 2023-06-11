@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,14 +33,14 @@ public interface OAuthTokenRefresher {
      * @throws OAuthException if the listener needs to be registered at an underlying service which is not available
      *             because the account has not yet been authorized
      */
-    public void setRefreshListener(OAuthTokenRefreshListener listener, String serviceHandle);
+    void setRefreshListener(OAuthTokenRefreshListener listener, String serviceHandle);
 
     /**
      * Unsets a listener.
      *
      * @param serviceHandle The service handle identifying the internal OAuth configuration.
      */
-    public void unsetRefreshListener(String serviceHandle);
+    void unsetRefreshListener(String serviceHandle);
 
     /**
      * Refreshes the access and refresh tokens for the given service handle. If an {@link OAuthTokenRefreshListener} is
@@ -52,7 +52,7 @@ public interface OAuthTokenRefresher {
      * @param serviceHandle The service handle identifying the internal OAuth configuration.
      * @throws OAuthException if the token cannot be obtained or refreshed
      */
-    public void refreshToken(String serviceHandle);
+    void refreshToken(String serviceHandle);
 
     /**
      * Gets the currently stored access token from persistent storage.
@@ -60,7 +60,7 @@ public interface OAuthTokenRefresher {
      * @param serviceHandle The service handle identifying the internal OAuth configuration.
      * @return The currently stored access token or an empty {@link Optional} if there is no stored token.
      */
-    public Optional<String> getAccessTokenFromStorage(String serviceHandle);
+    Optional<String> getAccessTokenFromStorage(String serviceHandle);
 
     /**
      * Removes the tokens from persistent storage.
@@ -70,5 +70,5 @@ public interface OAuthTokenRefresher {
      *
      * @param serviceHandle The service handle identifying the internal OAuth configuration.
      */
-    public void removeTokensFromStorage(String serviceHandle);
+    void removeTokensFromStorage(String serviceHandle);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,7 @@ public class SolarwattBindingConstants {
     public static final ThingTypeUID THING_TYPE_EVSTATION = new ThingTypeUID(BINDING_ID, "evstation");
     public static final ThingTypeUID THING_TYPE_PVPLANT = new ThingTypeUID(BINDING_ID, "pvplant");
     public static final ThingTypeUID THING_TYPE_GRIDFLOW = new ThingTypeUID(BINDING_ID, "gridflow");
+    public static final ThingTypeUID THING_TYPE_SMARTHEATER = new ThingTypeUID(BINDING_ID, "smartheater");
 
     public static final String PROPERTY_ID_NAME = "IdName";
     public static final String PROPERTY_ID_FIRMWARE = "IdFirmware";
@@ -116,6 +117,11 @@ public class SolarwattBindingConstants {
     public static final SolarwattTag CHANNEL_VOLTAGE_BATTERY_CELL_MAX = new SolarwattTag("VoltageBatteryCellMax");
     public static final SolarwattTag CHANNEL_VOLTAGE_BATTERY_CELL_MIN = new SolarwattTag("VoltageBatteryCellMin");
     public static final SolarwattTag CHANNEL_VOLTAGE_BATTERY_CELL_MEAN = new SolarwattTag("VoltageBatteryCellMean");
+    public static final SolarwattTag CHANNEL_TEMPERATURE = new SolarwattTag("Temperature");
+    public static final SolarwattTag CHANNEL_TEMPERATURE_SET_MAX = new SolarwattTag("TemperatureSetMax");
+    public static final SolarwattTag CHANNEL_TEMPERATURE_BOILER = new SolarwattTag("TemperatureBoiler");
+    public static final SolarwattTag CHANNEL_TEMPERATURE_SET_MIN = new SolarwattTag("TemperatureSetMin");
+    public static final SolarwattTag CHANNEL_TEMPERATURE_SET = new SolarwattTag("TemperatureSet");
 
     // thing configuration and properties keys
     public static final String THING_PROPERTIES_GUID = "guid";

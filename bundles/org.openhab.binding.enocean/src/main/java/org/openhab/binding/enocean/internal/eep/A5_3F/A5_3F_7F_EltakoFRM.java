@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -28,15 +30,16 @@ import org.openhab.core.types.UnDefType;
 
 /**
  *
- * @author Andreas Hofinger
+ * @author Andreas Hofinger - Initial contribution
  */
+@NonNullByDefault
 public class A5_3F_7F_EltakoFRM extends _4BSMessage {
 
-    static final byte Stop = 0x00;
-    static final byte Move = 0x03;
+    static final byte STOP = 0x00;
+    static final byte MOVE = 0x03;
 
-    static final int Top = 0xC8;
-    static final int Bottom = 0x00;
+    static final int TOP = 0xC8;
+    static final int BOTTOM = 0x00;
 
     public A5_3F_7F_EltakoFRM() {
         super();
@@ -48,36 +51,34 @@ public class A5_3F_7F_EltakoFRM extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (command instanceof PercentType) {
             PercentType target = (PercentType) command;
             int rawPosition = Math.round(
-                    (PercentType.HUNDRED.floatValue() - target.floatValue()) * Top / PercentType.HUNDRED.floatValue());
-            int position = Math.min(Top, Math.max(Bottom, rawPosition));
-            setData((byte) position, ZERO, Move, TeachInBit);
+                    (PercentType.HUNDRED.floatValue() - target.floatValue()) * TOP / PercentType.HUNDRED.floatValue());
+            int position = Math.min(TOP, Math.max(BOTTOM, rawPosition));
+            setData((byte) position, ZERO, MOVE, TEACHIN_BIT);
         } else if (command instanceof UpDownType) {
             if ((UpDownType) command == UpDownType.UP) {
-                setData((byte) Top, ZERO, Move, TeachInBit); // => 0 percent
+                setData((byte) TOP, ZERO, MOVE, TEACHIN_BIT); // => 0 percent
             } else if ((UpDownType) command == UpDownType.DOWN) {
-                setData((byte) Bottom, ZERO, Move, TeachInBit); // => 100 percent
+                setData((byte) BOTTOM, ZERO, MOVE, TEACHIN_BIT); // => 100 percent
             }
         } else if (command instanceof StopMoveType) {
             if ((StopMoveType) command == StopMoveType.STOP) {
-                setData(ZERO, ZERO, Stop, TeachInBit);
+                setData(ZERO, ZERO, STOP, TEACHIN_BIT);
             }
         }
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         // 0x0A.. Move was locked for switch
         // 0x0E.. Move was not locked
-        if (getDB_2() == ZERO && getDB_1() == Move && (getDB_0() == 0x0A || getDB_0() == 0x0E)) {
-            int position = getDB_3Value();
-            float percentage = 100.0f * (Top - position) / (float) (Top - Bottom);
+        if (getDB2() == ZERO && getDB1() == MOVE && (getDB0() == 0x0A || getDB0() == 0x0E)) {
+            int position = getDB3Value();
+            float percentage = 100.0f * (TOP - position) / (float) (TOP - BOTTOM);
             return new PercentType(Math.round(Math.min(100, (Math.max(0, percentage)))));
         }
         return UnDefType.UNDEF;

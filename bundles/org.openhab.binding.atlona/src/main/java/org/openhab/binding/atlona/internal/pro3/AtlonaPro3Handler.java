@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,7 +156,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                         final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
                         atlonaHandler.setIrOn(makeOn);
                     } else {
-                        logger.debug("Received a IRLOCK channel command with a non OnOffType: {}", command);
+                        logger.debug("Received an IRLOCK channel command with a non OnOffType: {}", command);
                     }
 
                     break;

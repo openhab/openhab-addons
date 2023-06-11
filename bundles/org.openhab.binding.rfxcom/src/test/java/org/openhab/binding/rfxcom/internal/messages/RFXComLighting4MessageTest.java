@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,9 +46,9 @@ import org.openhab.core.util.HexUtils;
  */
 @NonNullByDefault
 public class RFXComLighting4MessageTest {
-    static public final ChannelUID contactChannelUID = new ChannelUID(thingUID, CHANNEL_CONTACT);
+    public static final ChannelUID contactChannelUID = new ChannelUID(thingUID, CHANNEL_CONTACT);
 
-    static public void checkDiscoveryResult(RFXComDeviceMessage<RFXComLighting4Message.SubType> msg, String deviceId,
+    public static void checkDiscoveryResult(RFXComDeviceMessage<RFXComLighting4Message.SubType> msg, String deviceId,
             @Nullable Integer pulse, String subType) throws RFXComException {
         String thingUID = "homeduino:rfxcom:fssfsd:thing";
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(new ThingUID(thingUID));

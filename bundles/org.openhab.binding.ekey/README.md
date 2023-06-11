@@ -6,20 +6,21 @@ This binding connects to [ekey](https://ekey.net/) converter UDP (CV-LAN) using 
 
 This binding only supports one thing type:
 
-| Thing       | Thing Type | Description                                 |
-|-------------|------------|---------------------------------------------|
+| Thing | Thing Type | Description                            |
+|-------|------------|----------------------------------------|
 | cvlan | Thing      | Represents a single ekey converter UDP |
 
 ## Thing Configuration
 
 The binding uses the following configuration parameters.
 
-| Parameter | Description                                                    |
-|-----------|----------------------------------------------------------------|
-| ipAddress | IPv4 address of the eKey udp converter.  A static IP address is recommended.|
-| port      | The port as configured during the UDP Converter configuration.  e.g. 56000 (Binding default)     |
-| protocol  | Can be RARE, MULTI or HOME depending on what the system supports. Binding defaults to RARE  |
-| delimiter | The delimiter is also defined on the ekey UDP converter - use the ekey configuration software to determine which delimiter is used or to change it.  Binding default is `_` (underscore)  |
+| Parameter | Description                                                                                                                                                                              |
+|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ipAddress | IPv4 address of the eKey udp converter.  A static IP address is recommended.                                                                                                             |
+| port      | The port as configured during the UDP Converter configuration.  e.g. 56000 (Binding default)                                                                                             |
+| protocol  | Can be RARE, MULTI or HOME depending on what the system supports. Binding defaults to RARE                                                                                               |
+| delimiter | The delimiter is also defined on the ekey UDP converter - use the ekey configuration software to determine which delimiter is used or to change it.  Binding default is `_` (underscore) |
+| natIp     | [Optional] IPv4 address of a received eKey udp packet. Can be different from the ipAddress when using NAT. (e.g. in Kubernetes)                                                          |
 
 ## Channels
 
@@ -28,7 +29,7 @@ The binding uses the following configuration parameters.
 | action     | Number    | R/M/H    | This indicates whether access was granted (value=0) or denied (value=-1).                                                                                                                                                                             | 0,-1 (136 and 137 with RARE protocol |
 | fingerId   | Number    | R/M/H    | This indicates the finger that was used by a person.                                                                                                                                                                                                  | 0-9,-1                               |
 | fsName     | String    | M        | This returns the 4-character-long name that was specified on the controller for the specific terminals.                                                                                                                                               |                                      |
-| fsSerial     | Number    | R/M/H        | This returns the serial number for the specific terminal.                                     |
+| fsSerial   | Number    | R/M/H    | This returns the serial number for the specific terminal.                                                                                                                                                                                             |                                      |
 | inputId    | Number    | M        | This indicates which of the four digital inputs was triggered. Value is number of Input. "-1" indicates that no input was triggered.                                                                                                                  | 0-4,-1                               |
 | keyId      | Number    | M        | This indicates which of the four keys was used. See ekey documentation on "keys".                                                                                                                                                                     | 0-4,-1                               |
 | relayId    | Number    | R/H      | This indicates which relay has been switched.                                                                                                                                                                                                         | 0-3,-1                               |
@@ -41,13 +42,13 @@ The binding uses the following configuration parameters.
 
 example.things
 
-```
+```java
 Thing ekey:cvlan:de3b8db06e "Ekey Udp Converter" @ "Control Panel" [ ipAddress="xxx.xxx.xxx.xxx", port="56000", protocol="RARE", delimiter="_" ]
 ```
 
 rare.items
 
-```
+```java
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerId" }
 Number RelayID "Last relay that has been swiched [%d]"                         { channel="ekey:cvlan:de3b8db06e:relayId" }
@@ -58,7 +59,7 @@ Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" {
 
 multi.items
 
-```
+```java
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerId" }
 String FsName "Name of Scanner [%s]                                            { channel="ekey:cvlan:de3b8db06e:fsName" }
@@ -72,7 +73,7 @@ Number UserStatus "Last user that accessed the house was [MAP(ekey_names.map):%d
 
 home.items
 
-```
+```java
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerId" }
 Number RelayID "Last relay that has been swiched [%d]"                         { channel="ekey:cvlan:de3b8db06e:relayId" }
@@ -82,7 +83,7 @@ Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" {
 
 transform/ekey_finger.map [This is just an example, as there is no strict rule what finger belongs to what number]
 
-```javascript
+```text
 0=leftlittle
 1=leftring
 2=leftmiddle
@@ -98,7 +99,7 @@ transform/ekey_finger.map [This is just an example, as there is no strict rule w
 
 transform/ekey_names.map [NO spaces allowed]
 
-```javascript
+```text
 -1=Unspecified
 1=JohnDoe
 2=JaneDoe
@@ -106,14 +107,14 @@ transform/ekey_names.map [NO spaces allowed]
 
 transform/ekey_terminal.map
 
-```javascript
+```text
 80156839130911=Front
 80156839130914=Back
 ```
 
 transform/ekey_multi_action.map
 
-```javascript
+```text
 0=granted
 -1=rejected
 1=timeoutA
@@ -126,10 +127,7 @@ transform/ekey_multi_action.map
 
 transform/ekey_rare_action.map
 
-```javascript
+```text
 136=granted
 137=rejected
 ```
-
-
-

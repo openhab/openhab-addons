@@ -145,7 +145,7 @@
 	</thing-type>
 
 	<channel-type id="weektime">
-		<item-type>DateTime</item-type>
+		<item-type>String</item-type>
 		<label>Time</label>
 		<description>Time and day of week.</description>
 		<category>Time</category>

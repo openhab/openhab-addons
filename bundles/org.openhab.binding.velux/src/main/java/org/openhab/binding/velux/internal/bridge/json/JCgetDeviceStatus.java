@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ class JCgetDeviceStatus extends GetDeviceStatus implements JsonBridgeCommunicati
      * </pre>
      *
      * NOTE: the gateway software is extremely sensitive to this exact JSON structure.
-     * Any modifications (like omitting empty params) will lead to an gateway error.
+     * Any modifications (like omitting empty params) will lead to a gateway error.
      */
     private static class Request {
 

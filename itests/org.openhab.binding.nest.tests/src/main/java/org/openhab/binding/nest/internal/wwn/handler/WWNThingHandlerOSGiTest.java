@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.nest.internal.wwn.handler;
 
+import static java.util.Map.entry;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.nest.internal.wwn.rest.WWNStreamingRestClient.PUT;
 
@@ -23,19 +25,23 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.function.Function;
 
 import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentMatchers;
 import org.openhab.binding.nest.internal.wwn.config.WWNAccountConfiguration;
 import org.openhab.binding.nest.internal.wwn.test.WWNTestAccountHandler;
 import org.openhab.binding.nest.internal.wwn.test.WWNTestApiServlet;
@@ -61,6 +67,7 @@ import org.openhab.core.thing.ThingProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
@@ -87,6 +94,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public abstract class WWNThingHandlerOSGiTest extends JavaOSGiTest {
 
     private static final String SERVER_HOST = "127.0.0.1";
@@ -96,26 +104,26 @@ public abstract class WWNThingHandlerOSGiTest extends JavaOSGiTest {
 
     private final Logger logger = LoggerFactory.getLogger(WWNThingHandlerOSGiTest.class);
 
-    private static WWNTestServer server;
+    private static @Nullable WWNTestServer server;
     private static WWNTestApiServlet servlet = new WWNTestApiServlet();
 
-    private ChannelTypeRegistry channelTypeRegistry;
-    private ChannelGroupTypeRegistry channelGroupTypeRegistry;
-    private ItemFactory itemFactory;
-    private ItemRegistry itemRegistry;
-    private EventPublisher eventPublisher;
-    private ManagedThingProvider managedThingProvider;
-    private ThingTypeRegistry thingTypeRegistry;
-    private ManagedItemChannelLinkProvider managedItemChannelLinkProvider;
-    private VolatileStorageService volatileStorageService = new VolatileStorageService();
+    private @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistry;
+    private @NonNullByDefault({}) ChannelGroupTypeRegistry channelGroupTypeRegistry;
+    private @NonNullByDefault({}) ItemFactory itemFactory;
+    private @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private @NonNullByDefault({}) EventPublisher eventPublisher;
+    private @NonNullByDefault({}) ManagedThingProvider managedThingProvider;
+    private @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;
+    private @NonNullByDefault({}) ManagedItemChannelLinkProvider managedItemChannelLinkProvider;
+    private @NonNullByDefault({}) VolatileStorageService volatileStorageService = new VolatileStorageService();
 
-    protected Bridge bridge;
-    protected WWNTestAccountHandler bridgeHandler;
-    protected Thing thing;
-    protected WWNBaseHandler<?> thingHandler;
+    protected @NonNullByDefault({}) Bridge bridge;
+    protected @NonNullByDefault({}) WWNTestAccountHandler bridgeHandler;
+    protected @NonNullByDefault({}) Thing thing;
+    protected @NonNullByDefault({}) WWNBaseHandler<?> thingHandler;
     private Class<? extends WWNBaseHandler<?>> thingClass;
 
-    private WWNTestHandlerFactory nestTestHandlerFactory;
+    private @NonNullByDefault({}) WWNTestHandlerFactory nestTestHandlerFactory;
     private @NonNullByDefault({}) ClientBuilder clientBuilder;
     private @NonNullByDefault({}) SseEventSourceFactory eventSourceFactory;
 
@@ -130,39 +138,34 @@ public abstract class WWNThingHandlerOSGiTest extends JavaOSGiTest {
         server.startServer();
     }
 
+    @AfterAll
+    public static void tearDownClass() throws Exception {
+        WWNTestServer testServer = server;
+        if (testServer != null) {
+            testServer.stopServer();
+        }
+    }
+
     @BeforeEach
     public void setUp() throws ItemNotFoundException {
         registerService(volatileStorageService);
 
-        managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
-        assertThat("Could not get ManagedThingProvider", managedThingProvider, is(notNullValue()));
-
-        thingTypeRegistry = getService(ThingTypeRegistry.class);
-        assertThat("Could not get ThingTypeRegistry", thingTypeRegistry, is(notNullValue()));
-
-        channelTypeRegistry = getService(ChannelTypeRegistry.class);
-        assertThat("Could not get ChannelTypeRegistry", channelTypeRegistry, is(notNullValue()));
-
-        channelGroupTypeRegistry = getService(ChannelGroupTypeRegistry.class);
-        assertThat("Could not get ChannelGroupTypeRegistry", channelGroupTypeRegistry, is(notNullValue()));
-
-        eventPublisher = getService(EventPublisher.class);
-        assertThat("Could not get EventPublisher", eventPublisher, is(notNullValue()));
-
-        itemFactory = getService(ItemFactory.class);
-        assertThat("Could not get ItemFactory", itemFactory, is(notNullValue()));
-
-        itemRegistry = getService(ItemRegistry.class);
-        assertThat("Could not get ItemRegistry", itemRegistry, is(notNullValue()));
-
-        managedItemChannelLinkProvider = getService(ManagedItemChannelLinkProvider.class);
-        assertThat("Could not get ManagedItemChannelLinkProvider", managedItemChannelLinkProvider, is(notNullValue()));
-
-        clientBuilder = getService(ClientBuilder.class);
-        assertThat("Could not get ClientBuilder", clientBuilder, is(notNullValue()));
-
-        eventSourceFactory = getService(SseEventSourceFactory.class);
-        assertThat("Could not get SseEventSourceFactory", eventSourceFactory, is(notNullValue()));
+        managedThingProvider = Objects.requireNonNull(getService(ThingProvider.class, ManagedThingProvider.class),
+                "Could not get ManagedThingProvider");
+        thingTypeRegistry = Objects.requireNonNull(getService(ThingTypeRegistry.class),
+                "Could not get ThingTypeRegistry");
+        channelTypeRegistry = Objects.requireNonNull(getService(ChannelTypeRegistry.class),
+                "Could not get ChannelTypeRegistry");
+        channelGroupTypeRegistry = Objects.requireNonNull(getService(ChannelGroupTypeRegistry.class),
+                "Could not get ChannelGroupTypeRegistry");
+        eventPublisher = Objects.requireNonNull(getService(EventPublisher.class), "Could not get EventPublisher");
+        itemFactory = Objects.requireNonNull(getService(ItemFactory.class), "Could not get ItemFactory");
+        itemRegistry = Objects.requireNonNull(getService(ItemRegistry.class), "Could not get ItemRegistry");
+        managedItemChannelLinkProvider = Objects.requireNonNull(getService(ManagedItemChannelLinkProvider.class),
+                "Could not get ManagedItemChannelLinkProvider");
+        clientBuilder = Objects.requireNonNull(getService(ClientBuilder.class), "Could not get ClientBuilder");
+        eventSourceFactory = Objects.requireNonNull(getService(SseEventSourceFactory.class),
+                "Could not get SseEventSourceFactory");
 
         ComponentContext componentContext = mock(ComponentContext.class);
         when(componentContext.getBundleContext()).thenReturn(bundleContext);
@@ -172,8 +175,14 @@ public abstract class WWNThingHandlerOSGiTest extends JavaOSGiTest {
                 Map.of(WWNTestHandlerFactory.REDIRECT_URL_CONFIG_PROPERTY, REDIRECT_URL));
         registerService(nestTestHandlerFactory);
 
-        nestTestHandlerFactory = getService(ThingHandlerFactory.class, WWNTestHandlerFactory.class);
-        assertThat("Could not get NestTestHandlerFactory", nestTestHandlerFactory, is(notNullValue()));
+        ThingTypeProvider thingTypeProvider = mock(ThingTypeProvider.class);
+        when(thingTypeProvider.getThingType(ArgumentMatchers.any(ThingTypeUID.class), nullable(Locale.class)))
+                .thenReturn(mock(ThingType.class));
+        registerService(thingTypeProvider);
+
+        nestTestHandlerFactory = Objects.requireNonNull(
+                getService(ThingHandlerFactory.class, WWNTestHandlerFactory.class),
+                "Could not get NestTestHandlerFactory");
 
         bridge = buildBridge();
         thing = buildThing(bridge);
@@ -201,12 +210,12 @@ public abstract class WWNThingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     protected Bridge buildBridge() {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(WWNAccountConfiguration.ACCESS_TOKEN,
-                "c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc");
-        properties.put(WWNAccountConfiguration.PINCODE, "64P2XRYT");
-        properties.put(WWNAccountConfiguration.PRODUCT_ID, "8fdf9885-ca07-4252-1aa3-f3d5ca9589e0");
-        properties.put(WWNAccountConfiguration.PRODUCT_SECRET, "QITLR3iyUlWaj9dbvCxsCKp4f");
+        Map<String, Object> properties = Map.ofEntries( //
+                entry(WWNAccountConfiguration.ACCESS_TOKEN,
+                        "c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc"),
+                entry(WWNAccountConfiguration.PINCODE, "64P2XRYT"),
+                entry(WWNAccountConfiguration.PRODUCT_ID, "8fdf9885-ca07-4252-1aa3-f3d5ca9589e0"),
+                entry(WWNAccountConfiguration.PRODUCT_SECRET, "QITLR3iyUlWaj9dbvCxsCKp4f"));
 
         return BridgeBuilder.create(WWNTestAccountHandler.THING_TYPE_TEST_BRIDGE, "test_account")
                 .withLabel("Test Account").withConfiguration(new Configuration(properties)).build();
@@ -219,16 +228,14 @@ public abstract class WWNThingHandlerOSGiTest extends JavaOSGiTest {
 
         ThingType thingType = thingTypeRegistry.getThingType(thingTypeUID);
 
-        List<Channel> channels = new ArrayList<>();
-        channels.addAll(buildChannels(thingUID, thingType.getChannelDefinitions(), (id) -> id));
-
+        List<Channel> channels = new ArrayList<>(buildChannels(thingUID, thingType.getChannelDefinitions(), id -> id));
         for (ChannelGroupDefinition channelGroupDefinition : thingType.getChannelGroupDefinitions()) {
             ChannelGroupType channelGroupType = channelGroupTypeRegistry
                     .getChannelGroupType(channelGroupDefinition.getTypeUID());
             String groupId = channelGroupDefinition.getId();
             if (channelGroupType != null) {
                 channels.addAll(
-                        buildChannels(thingUID, channelGroupType.getChannelDefinitions(), (id) -> groupId + "#" + id));
+                        buildChannels(thingUID, channelGroupType.getChannelDefinitions(), id -> groupId + "#" + id));
             }
         }
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="mongodb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>persistence</type>
+	<name>MongoDB persistence</name>
+	<description>This is the persistence add-on for MongoDB.</description>
+	<connection>local</connection>
+
+	<service-id>org.openhab.mongodb</service-id>
+
+	<config-description>
+		<parameter name="url" type="text" required="true">
+			<label>MongoDB connection URL</label>
+		</parameter>
+
+		<parameter name="database" type="text" required="true">
+			<label>Database Name</label>
+		</parameter>
+
+		<parameter name="collection" type="text" required="true">
+			<label>Collection</label>
+		</parameter>
+	</config-description>
+
+</addon:addon>

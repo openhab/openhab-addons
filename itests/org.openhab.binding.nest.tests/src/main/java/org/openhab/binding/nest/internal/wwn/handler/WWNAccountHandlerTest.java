@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,16 +42,16 @@ import org.osgi.service.jaxrs.client.SseEventSourceFactory;
  * @author David Bennett - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class WWNAccountHandlerTest {
 
-    private ThingHandler handler;
+    private @NonNullByDefault({}) ThingHandler handler;
 
-    private @Mock Bridge bridge;
-    private @Mock ThingHandlerCallback callback;
-    private @Mock ClientBuilder clientBuilder;
-    private @Mock Configuration configuration;
-    private @Mock SseEventSourceFactory eventSourceFactory;
-    private @Mock WWNRedirectUrlSupplier redirectUrlSupplier;
+    private @Mock @NonNullByDefault({}) Bridge bridge;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
+    private @Mock @NonNullByDefault({}) ClientBuilder clientBuilder;
+    private @Mock @NonNullByDefault({}) Configuration configuration;
+    private @Mock @NonNullByDefault({}) SseEventSourceFactory eventSourceFactory;
 
     @BeforeEach
     public void beforeEach() {
@@ -58,7 +59,6 @@ public class WWNAccountHandlerTest {
         handler.setCallback(callback);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void initializeShouldCallTheCallback() {
         when(bridge.getConfiguration()).thenReturn(configuration);

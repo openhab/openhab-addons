@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
 		<label>Thermo Sensor</label>
-		<description>A OpenWebNet BUS/SCS thermo sensor (probe) for measuring temperature in a zone. BTicino models:
+		<description>An OpenWebNet BUS/SCS thermo sensor (probe) for measuring temperature in a zone. BTicino models:
 			L/N/NT4577 etc.</description>
 
 		<channels>

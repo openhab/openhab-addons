@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,26 +14,28 @@ package org.openhab.binding.zway.internal.config;
 
 import static org.openhab.binding.zway.internal.ZWayBindingConstants.DEVICE_CONFIG_NODE_ID;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ZWayZWaveDeviceConfiguration} class defines the model for a Z-Wave device configuration.
  *
  * @author Patrick Hecker - Initial contribution
  */
+@NonNullByDefault
 public class ZWayZWaveDeviceConfiguration {
-    private Integer nodeId;
+    private @Nullable Integer nodeId;
 
-    public Integer getNodeId() {
+    public @Nullable Integer getNodeId() {
         return nodeId;
     }
 
-    public void setNodeId(Integer nodeId) {
+    public void setNodeId(@Nullable Integer nodeId) {
         this.nodeId = nodeId;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(DEVICE_CONFIG_NODE_ID, this.getNodeId()).toString();
+        return getClass().getSimpleName() + "{ " + DEVICE_CONFIG_NODE_ID + "=" + getNodeId() + "}";
     }
 }

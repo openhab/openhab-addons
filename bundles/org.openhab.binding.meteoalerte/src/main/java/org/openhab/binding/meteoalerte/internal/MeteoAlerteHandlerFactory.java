@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,18 +34,20 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 
 /**
- * The {@link MeteoAlerteHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link MeteoAlerteHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.meteoalerte")
+@Component(service = ThingHandlerFactory.class)
 @NonNullByDefault
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson;
+    private final MeteoAlertIconProvider iconProvider;
 
     @Activate
-    public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
+    public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
+            @Reference MeteoAlertIconProvider iconProvider) {
+        this.iconProvider = iconProvider;
         this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
                 (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
                         .parse(json.getAsJsonPrimitive().getAsString())
@@ -62,6 +64,6 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return supportsThingType(thingTypeUID) ? new MeteoAlerteHandler(thing, gson) : null;
+        return supportsThingType(thingTypeUID) ? new MeteoAlerteHandler(thing, gson, iconProvider) : null;
     }
 }

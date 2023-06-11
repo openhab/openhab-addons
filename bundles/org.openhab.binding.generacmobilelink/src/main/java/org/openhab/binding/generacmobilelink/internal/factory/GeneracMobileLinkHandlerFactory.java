@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.generacmobilelink.internal.discovery.GeneracMobileLinkDiscoveryService;
 import org.openhab.binding.generacmobilelink.internal.handler.GeneracMobileLinkAccountHandler;
 import org.openhab.binding.generacmobilelink.internal.handler.GeneracMobileLinkGeneratorHandler;
@@ -51,11 +50,11 @@ public class GeneracMobileLinkHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT,
             THING_TYPE_GENERATOR);
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new ConcurrentHashMap<>();
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public GeneracMobileLinkHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -74,7 +73,7 @@ public class GeneracMobileLinkHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             GeneracMobileLinkDiscoveryService discoveryService = new GeneracMobileLinkDiscoveryService();
             GeneracMobileLinkAccountHandler accountHandler = new GeneracMobileLinkAccountHandler((Bridge) thing,
-                    httpClient, discoveryService);
+                    httpClientFactory, discoveryService);
             discoveryServiceRegs.put(accountHandler.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
             return accountHandler;

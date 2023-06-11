@@ -6,7 +6,7 @@ SunSpec is a format for inverters and smart meters to communicate over the Modbu
 It defines how common parameters like AC/DC voltage and current, lifetime produced energy, device temperature etc can be read from the device.
 
 SunSpec is supported by several manufacturers like ABB, Fronius, LG, SMA, SolarEdge, Schneider Electric.
-For a list of certified products see this page: https://sunspec.org/sunspec-certified-products/
+For a list of certified products see this page: <https://sunspec.org/sunspec-certified-products/>
 
 ## Supported Things
 
@@ -34,7 +34,7 @@ You can set the `enableDiscovery=true` parameter in your bridge.
 
 A typical bridge configuration would look like this:
 
-```
+```java
 Bridge modbus:tcp:modbusBridgeName [ host="10.0.0.2", port=502, id=1, enableDiscovery=true ]
 ```
 
@@ -189,7 +189,7 @@ Supported by: all inverter things
 
 ### Thing Configuration
 
-```
+```java
 Bridge modbus:tcp:modbusBridgeName [ host="hostname|ip", port=502, id=1, enableDiscovery=true ]
 Thing modbus:inverter-single-phase:bridge:myInverter "SE4000h" (modbus:tcp:modbusBridgeName) [ address=40069, length=52, refresh=15 ]
 ```
@@ -198,7 +198,7 @@ Note: Make sure that refresh, port and id values are numerical, without quotes.
 
 ### Item Configuration
 
-```
+```java
 Number Inverter_Temperature "Temperature [%.1f C]"  {channel="modbus:inverter-single-phase:bridge:se4000h:deviceInformation#heatsink-temperature"}
 
 Number Inverter_AC_Power "AC Power [%d W]" {channel="modbus:inverter-single-phase:bridge:se4000h:acGeneral#ac-power"}
@@ -209,12 +209,12 @@ Number Inverter_AC1_A "AC Current Phase 1 [%0.2f A]" {channel="modbus:inverter-s
 
 ### Sitemap Configuration
 
-```
-                        Text item=Inverter_Temperature
-                        Text item=Inverter_AC_Current
-                        Text item=Inverter_AC_Power
-                        Chart item=Inverter_Temperature period=D refresh=600000
-                        Chart item=Inverter_AC_Power period=D refresh=30000
+```perl
+Text item=Inverter_Temperature
+Text item=Inverter_AC_Current
+Text item=Inverter_AC_Power
+Chart item=Inverter_Temperature period=D refresh=600000
+Chart item=Inverter_AC_Power period=D refresh=30000
 
 ```
 
@@ -223,6 +223,6 @@ Number Inverter_AC1_A "AC Current Phase 1 [%0.2f A]" {channel="modbus:inverter-s
 ### SolarEdge
 
 Newer models of SolarEdge inverters can be monitored over TCP, but you need to enable support in the inverter first.
-Refer to the "Modbus over TCP Configuration" chapter in this documentation: https://www.solaredge.com/sites/default/files/sunspec-implementation-technical-note.pdf
+Refer to the "Modbus over TCP Configuration" chapter in this documentation: <https://www.solaredge.com/sites/default/files/sunspec-implementation-technical-note.pdf>
 
 Modbus connection is limited to a single client at a time, so make sure no other clients are using the port.

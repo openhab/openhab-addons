@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Alarm System -->
+	<thing-type id="bus_alarm_system">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Alarm System</label>
+		<description>A OpenWebNet BUS/SCS alarm system.</description>
+
+		<channels>
+			<!-- read only -->
+			<channel id="state" typeId="alarmSystemState"/>
+			<channel id="armed" typeId="armedState"/>
+			<channel id="network" typeId="alarmNetwork"/>
+			<channel id="battery" typeId="alarmBattery"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTicino Burglar-alarm Unit 3486</property>
+			<property name="ownDeviceType">5100</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" readOnly="true">
+				<label>OpenWebNet Address (where)</label>
+				<description>The alarm system has no where address (set where to 0 as default).</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

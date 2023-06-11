@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.A5_3F;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTransformationConfig;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -27,6 +29,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_3F_7F_Universal extends _4BSMessage {
 
     // This class is currently not used => instead use Generic4BS
@@ -41,21 +44,22 @@ public class A5_3F_7F_Universal extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (config != null) {
-            try {
-                EnOceanChannelTransformationConfig transformationInfo = config
-                        .as(EnOceanChannelTransformationConfig.class);
-                String c = Transformation.transform(transformationInfo.transformationType,
-                        transformationInfo.transformationFunction, command.toString());
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+        if (config == null) {
+            logger.error("Command {} could not transformed without proper configuration", command.toString());
+            return;
+        }
+        try {
+            EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
+            String c = Transformation.transform(transformationInfo.transformationType,
+                    transformationInfo.transformationFunction, command.toString());
 
-                if (c != null && !c.equals(command.toString())) {
-                    setData(HexUtils.hexToBytes(c));
-                }
-
-            } catch (Exception e) {
-                logger.debug("Command {} could not transformed", command.toString());
+            if (c != null && !c.equals(command.toString())) {
+                setData(HexUtils.hexToBytes(c));
             }
+        } catch (IllegalArgumentException e) {
+            logger.debug("Command {} could not transformed", command.toString());
+            throw e;
         }
     }
 }

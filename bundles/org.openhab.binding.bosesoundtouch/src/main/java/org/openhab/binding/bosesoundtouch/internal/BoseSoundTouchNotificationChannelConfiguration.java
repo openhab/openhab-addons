@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration class for soundtouch notification channel
  *
  * @author Ivaylo Ivanov - Initial contribution
  */
+@NonNullByDefault
 public class BoseSoundTouchNotificationChannelConfiguration {
 
     public static final String MIN_FIRMWARE = "14";
@@ -27,13 +31,13 @@ public class BoseSoundTouchNotificationChannelConfiguration {
     public static final String NOTIFICATION_REASON = "notificationReason";
     public static final String NOTIFICATION_MESSAGE = "notificationMessage";
 
-    public Integer notificationVolume;
-    public String notificationService;
-    public String notificationReason;
-    public String notificationMessage;
+    public @Nullable Integer notificationVolume;
+    public @Nullable String notificationService;
+    public @Nullable String notificationReason;
+    public @Nullable String notificationMessage;
 
     public static boolean isSupportedFirmware(String firmware) {
-        return firmware != null && firmware.compareTo(MIN_FIRMWARE) > 0;
+        return firmware.compareTo(MIN_FIRMWARE) > 0;
     }
 
     public static boolean isSupportedHardware(String hardware) {

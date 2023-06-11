@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.ItemUtil;
-import org.openhab.persistence.jdbc.dto.ItemVO;
+import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

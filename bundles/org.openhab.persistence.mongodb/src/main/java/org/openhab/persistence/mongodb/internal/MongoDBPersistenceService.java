@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -331,6 +331,11 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         String realItemName = filter.getItemName();
+        if (realItemName == null) {
+            logger.warn("Item name is missing in filter {}", filter);
+            return List.of();
+        }
+
         String collectionName = collectionPerItem ? realItemName : this.collection;
         @Nullable
         DBCollection collection = connectToCollection(collectionName);
@@ -354,7 +359,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         if (filter.getItemName() != null) {
             query.put(FIELD_ITEM, filter.getItemName());
         }
-        if (filter.getState() != null && filter.getOperator() != null) {
+        State filterState = filter.getState();
+        if (filterState != null && filter.getOperator() != null) {
             @Nullable
             String op = convertOperator(filter.getOperator());
 
@@ -363,7 +369,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
                 return Collections.emptyList();
             }
 
-            Object value = convertValue(filter.getState());
+            Object value = convertValue(filterState);
             query.put(FIELD_VALUE, new BasicDBObject(op, value));
         }
 

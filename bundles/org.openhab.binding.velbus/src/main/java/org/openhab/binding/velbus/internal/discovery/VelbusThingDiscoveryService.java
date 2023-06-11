@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -310,6 +310,18 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             case MODULE_TYPE_VMBVP1:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBVP1, 8);
+                break;
+            case MODULE_TYPE_VMBKP:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBKP, 8);
+                break;
+            case MODULE_TYPE_VMBIN:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBIN, 8);
+                break;
+            case MODULE_TYPE_VMB4PB:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB4PB, 8);
                 break;
         }
 

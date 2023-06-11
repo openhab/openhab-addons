@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -159,13 +159,19 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     }
 
     public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirPurifiersMetadata() {
-        return api.getMacLookupMap().values().stream()
-                .filter(x -> VeSyncDeviceAirPurifierHandler.SUPPORTED_DEVICE_TYPES.contains(x.deviceType));
+        return api.getMacLookupMap().values().stream().filter(x -> !VeSyncBaseDeviceHandler
+                .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceAirPurifierHandler.DEV_TYPE_FAMILY_AIR_PURIFIER,
+                        VeSyncDeviceAirPurifierHandler.SUPPORTED_MODEL_FAMILIES)
+                .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
     public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirHumidifiersMetadata() {
         return api.getMacLookupMap().values().stream()
-                .filter(x -> VeSyncDeviceAirHumidifierHandler.SUPPORTED_DEVICE_TYPES.contains(x.deviceType));
+                .filter(x -> !VeSyncBaseDeviceHandler
+                        .getDeviceFamilyMetadata(x.getDeviceType(),
+                                VeSyncDeviceAirHumidifierHandler.DEV_TYPE_FAMILY_AIR_HUMIDIFIER,
+                                VeSyncDeviceAirHumidifierHandler.SUPPORTED_MODEL_FAMILIES)
+                        .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
     protected void updateThings() {

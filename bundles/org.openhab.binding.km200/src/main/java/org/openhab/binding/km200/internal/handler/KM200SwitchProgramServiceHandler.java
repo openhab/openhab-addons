@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,13 +49,13 @@ public class KM200SwitchProgramServiceHandler {
 
     protected final Integer MIN_TIME = 0;
     protected final Integer MAX_TIME = 1430;
-    protected final static String TYPE_MONDAY = "Mo";
-    protected final static String TYPE_TUESDAY = "Tu";
-    protected final static String TYPE_WEDNESDAY = "We";
-    protected final static String TYPE_THURSDAY = "Th";
-    protected final static String TYPE_FRIDAY = "Fr";
-    protected final static String TYPE_SATURDAY = "Sa";
-    protected final static String TYPE_SUNDAY = "Su";
+    protected static final String TYPE_MONDAY = "Mo";
+    protected static final String TYPE_TUESDAY = "Tu";
+    protected static final String TYPE_WEDNESDAY = "We";
+    protected static final String TYPE_THURSDAY = "Th";
+    protected static final String TYPE_FRIDAY = "Fr";
+    protected static final String TYPE_SATURDAY = "Sa";
+    protected static final String TYPE_SUNDAY = "Su";
 
     private String activeDay = TYPE_MONDAY;
     private Integer activeCycle = 1;

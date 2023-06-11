@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.climatecontrol;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
 
@@ -29,20 +28,24 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A virtual device which controls up to six Bosch Smart Home radiator thermostats in a room.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
 public final class ClimateControlHandler extends BoschSHCDeviceHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private RoomClimateControlService roomClimateControlService;
 
     /**
      * Constructor.
-     * 
+     *
      * @param thing The Bosch Smart Home device that should be handled.
      */
     public ClimateControlHandler(Thing thing) {
@@ -71,7 +74,7 @@ public final class ClimateControlHandler extends BoschSHCDeviceHandler {
 
     /**
      * Updates the channels which are linked to the {@link TemperatureLevelService} of the device.
-     * 
+     *
      * @param state Current state of {@link TemperatureLevelService}.
      */
     private void updateChannels(TemperatureLevelServiceState state) {
@@ -80,7 +83,7 @@ public final class ClimateControlHandler extends BoschSHCDeviceHandler {
 
     /**
      * Updates the channels which are linked to the {@link RoomClimateControlService} of the device.
-     * 
+     *
      * @param state Current state of {@link RoomClimateControlService}.
      */
     private void updateChannels(RoomClimateControlServiceState state) {
@@ -89,7 +92,7 @@ public final class ClimateControlHandler extends BoschSHCDeviceHandler {
 
     /**
      * Sets the desired temperature for the device.
-     * 
+     *
      * @param quantityType Command which contains the new desired temperature.
      */
     private void updateSetpointTemperature(QuantityType<?> quantityType) {

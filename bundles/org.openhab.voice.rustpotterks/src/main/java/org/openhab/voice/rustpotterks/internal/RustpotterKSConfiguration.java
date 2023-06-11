@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.voice.rustpotterks.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link RustpotterKSConfiguration} class contains fields mapping thing configuration parameters.
@@ -36,31 +37,13 @@ public class RustpotterKSConfiguration {
      */
     public float averagedThreshold = 0.2f;
     /**
-     * Terminate the detection as son as one result is above the score,
-     * instead of wait to see if the next frame has a higher score.
+     * Indicates how to calculate the final score.
      */
-    public boolean eagerMode = true;
+    public String scoreMode = "max";
     /**
-     * Use build-in noise detection to reduce computation on absence of noise.
-     * Configures the difficulty to consider a frame as noise (the required noise level).
+     * Minimum number of positive scores to consider a partial detection as a detection.
      */
-    public String noiseDetectionMode = "disabled";
-    /**
-     * Noise/silence ratio in the last second to consider noise is detected. Defaults to 0.5.
-     */
-    public float noiseSensitivity = 0.5f;
-    /**
-     * Seconds to disable the vad detector after voice is detected. Defaults to 3.
-     */
-    public int vadDelay = 3;
-    /**
-     * Voice/silence ratio in the last second to consider voice is detected.
-     */
-    public float vadSensitivity = 0.5f;
-    /**
-     * Use a voice activity detector to reduce computation in the absence of vocal sound.
-     */
-    public String vadMode = "disabled";
+    public int minScores = 5;
     /**
      * Configures the reference for the comparator used to match the samples.
      */
@@ -68,5 +51,35 @@ public class RustpotterKSConfiguration {
     /**
      * Configures the band-size for the comparator used to match the samples.
      */
-    public int comparatorBandSize = 6;
+    public int comparatorBandSize = 5;
+    /**
+     * Enables an audio filter that intent to approximate the volume of the stream to a reference level (RMS of the
+     * samples is used as volume measure).
+     */
+    public boolean gainNormalizer = false;
+    /**
+     * Min gain applied by the gain normalizer filter.
+     */
+    public float minGain = 0.5f;
+    /**
+     * Max gain applied by the gain normalizer filter.
+     */
+    public float maxGain = 1f;
+    /**
+     * Set the RMS reference used by the gain-normalizer to calculate the gain applied. If unset an estimation of the
+     * wakeword level is used.
+     */
+    public @Nullable Float gainRef = null;
+    /**
+     * Enables an audio filter that attenuates frequencies outside the low cutoff and high cutoff range.
+     */
+    public boolean bandPass = false;
+    /**
+     * Low cutoff for the band-pass filter.
+     */
+    public float lowCutoff = 80f;
+    /**
+     * High cutoff for the band-pass filter.
+     */
+    public float highCutoff = 400f;
 }
