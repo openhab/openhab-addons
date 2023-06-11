@@ -75,6 +75,7 @@ public class KM200Device {
     public KM200Device(HttpClient httpClient) {
         serviceTreeMap = new HashMap<>();
         getBlacklistMap().add("/gateway/firmware");
+        getBlacklistMap().add("/gateway/registrations");
         virtualList = new ArrayList<>();
         comCryption = new KM200Cryption(this);
         deviceCommunicator = new KM200Comm<>(this, httpClient);
@@ -330,6 +331,7 @@ public class KM200Device {
     public @Nullable JsonObject getServiceNode(String service) {
         String decodedData = null;
         JsonObject nodeRoot = null;
+        logger.debug("{}: trying to query information.", service);
         byte[] recData = deviceCommunicator.getDataFromService(service.toString());
         try {
             if (recData == null) {
@@ -347,6 +349,7 @@ public class KM200Device {
                 decodedData = "";
                 return nodeRoot;
             } else {
+                logger.debug("{}: trying to decode: {}.", service, recData.toString());
                 decodedData = comCryption.decodeMessage(recData);
                 if (decodedData == null) {
                     logger.warn("Decoding of the KM200 message is not possible!");
@@ -355,9 +358,10 @@ public class KM200Device {
             }
             if (decodedData.length() > 0) {
                 if ("SERVICE NOT AVAILABLE".equals(decodedData)) {
-                    logger.debug("{}: SERVICE NOT AVAILABLE", service);
+                    logger.warn("{}: SERVICE NOT AVAILABLE", service);
                     return null;
                 } else {
+                    logger.debug("{}: trying to parse {}", service, decodedData.toString());
                     nodeRoot = (JsonObject) JsonParser.parseString(decodedData);
                 }
             } else {
