@@ -91,14 +91,14 @@ public class GoogleTVUtils {
                 digest = instance.digest();
                 processMag(digest);
             } catch (NoSuchAlgorithmException e) {
-                LOGGER.debug("NoSuchAlgorithmException Exception", e);
+                LOGGER.warn("NoSuchAlgorithmException Exception", e);
             }
         }
         return digest;
     }
 
     public static String byteArrayToString(byte[] array) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; i++) {
             sb.append((char) (array[i] & 0xFF));
         }

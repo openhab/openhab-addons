@@ -26,18 +26,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GoogleTVRequest {
 
     public static String encodeMessage(String message) {
-        String reply = new String();
+        StringBuilder reply = new StringBuilder();
         char[] charArray = message.toCharArray();
         for (int i = 0; i < charArray.length; i = i + 2) {
             String st = "" + charArray[i] + "" + charArray[i + 1];
             char ch = (char) Integer.parseInt(st, 16);
-            reply = reply + ch;
+            reply.append(ch);
         }
-        return reply;
+        return reply.toString();
     }
 
     public static String decodeMessage(String message) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         char ch[] = message.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             String hexString = Integer.toHexString(ch[i]);
@@ -119,7 +119,7 @@ public class GoogleTVRequest {
         // 4a 03 08 8001
 
         char[] charArray = request.toCharArray();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(request);
         sb.setLength(sb.toString().length() - 6);
         String st = "";
@@ -132,7 +132,7 @@ public class GoogleTVRequest {
         } while (!DELIMITER_10.equals(st));
         sb.setLength(sb.toString().length() - 2);
 
-        StringBuffer sbReply = new StringBuffer();
+        StringBuilder sbReply = new StringBuilder();
         for (int i = 4; i < sb.toString().length(); i++) {
             sbReply.append(charArray[i]);
         }

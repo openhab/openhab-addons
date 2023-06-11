@@ -89,12 +89,12 @@ public class GoogleTVMessageParser {
 
                 String st = "";
                 int length = 0;
-                StringBuffer preambleSb = new StringBuffer();
-                StringBuffer manufacturerSb = new StringBuffer();
-                StringBuffer modelSb = new StringBuffer();
-                StringBuffer androidVersionSb = new StringBuffer();
-                StringBuffer remoteServerSb = new StringBuffer();
-                StringBuffer remoteServerVersionSb = new StringBuffer();
+                StringBuilder preambleSb = new StringBuilder();
+                StringBuilder manufacturerSb = new StringBuilder();
+                StringBuilder modelSb = new StringBuilder();
+                StringBuilder androidVersionSb = new StringBuilder();
+                StringBuilder remoteServerSb = new StringBuilder();
+                StringBuilder remoteServerVersionSb = new StringBuilder();
 
                 int i = 0;
                 int current = 0;
@@ -202,8 +202,8 @@ public class GoogleTVMessageParser {
                 String st = "";
                 int length = 0;
 
-                StringBuffer preambleSb = new StringBuffer();
-                StringBuffer modelSb = new StringBuffer();
+                StringBuilder preambleSb = new StringBuilder();
+                StringBuilder modelSb = new StringBuilder();
                 String volMax = "";
                 String volCurr = "";
                 String volMute = "";
@@ -298,8 +298,8 @@ public class GoogleTVMessageParser {
                 // a201 15 0a 13 62 11 636f6d2e6e6574666c69782e6e696e6a61
                 // -----------------LEN-com.netflix.ninja
 
-                StringBuffer preambleSb = new StringBuffer();
-                StringBuffer appNameSb = new StringBuffer();
+                StringBuilder preambleSb = new StringBuilder();
+                StringBuilder appNameSb = new StringBuilder();
                 int i = 0;
                 int current = 0;
 

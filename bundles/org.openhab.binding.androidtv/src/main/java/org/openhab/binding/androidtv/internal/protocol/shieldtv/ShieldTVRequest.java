@@ -25,18 +25,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ShieldTVRequest {
 
     public static String encodeMessage(String message) {
-        String reply = new String();
+        StringBuilder reply = new StringBuilder();
         char[] charArray = message.toCharArray();
         for (int i = 0; i < charArray.length; i = i + 2) {
             String st = "" + charArray[i] + "" + charArray[i + 1];
             char ch = (char) Integer.parseInt(st, 16);
-            reply = reply + ch;
+            reply.append(ch);
         }
-        return reply;
+        return reply.toString();
     }
 
     public static String decodeMessage(String message) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         char ch[] = message.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             String hexString = Integer.toHexString(ch[i]);
