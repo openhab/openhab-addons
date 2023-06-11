@@ -141,7 +141,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                             + configuration.get().dampAM + "," + configuration.get().dampPM;
                 }
                 if (!SolarForecastBindingConstants.EMPTY.equals(configuration.get().horizon)) {
-                    url += "?horizon=" + configuration.get().horizon;
+                    url += "&horizon=" + configuration.get().horizon;
                 }
                 try {
                     ContentResponse cr = httpClient.GET(url);
