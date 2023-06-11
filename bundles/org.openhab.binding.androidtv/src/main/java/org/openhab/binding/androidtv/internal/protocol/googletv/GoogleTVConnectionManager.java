@@ -1324,7 +1324,9 @@ public class GoogleTVConnectionManager {
                 if (command.toString().startsWith("RAW", 9)) {
                     String newCommand = command.toString().substring(13);
                     String message = GoogleTVRequest.encodeMessage(newCommand);
-                    logger.trace("Raw Message Decodes as: {}", GoogleTVRequest.decodeMessage(message));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Raw Message Decodes as: {}", GoogleTVRequest.decodeMessage(message));
+                    }
                     sendCommand(new GoogleTVCommand(message));
                 } else if (command.toString().startsWith("MSG", 9)) {
                     String newCommand = command.toString().substring(13);

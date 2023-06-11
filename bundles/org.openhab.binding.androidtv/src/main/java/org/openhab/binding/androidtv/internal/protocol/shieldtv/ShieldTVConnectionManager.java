@@ -1175,7 +1175,9 @@ public class ShieldTVConnectionManager {
                 if (command.toString().startsWith("RAW", 9)) {
                     String newCommand = command.toString().substring(13);
                     String message = ShieldTVRequest.encodeMessage(newCommand);
-                    logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(message));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(message));
+                    }
                     sendCommand(new ShieldTVCommand(message));
                 } else if (command.toString().startsWith("MSG", 9)) {
                     String newCommand = command.toString().substring(13);
