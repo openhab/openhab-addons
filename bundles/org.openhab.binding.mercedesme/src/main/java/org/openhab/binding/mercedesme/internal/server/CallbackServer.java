@@ -111,7 +111,13 @@ public class CallbackServer {
         }
     }
 
-    public String getToken() {
+    /**
+     * Get Token to access vehicle data
+     * Synchronized to avoid potential concurrent access of 2 vehicles attached to one account
+     *
+     * @return
+     */
+    public synchronized String getToken() {
         AccessTokenResponse atr = null;
         try {
             /*
