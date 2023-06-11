@@ -14,10 +14,7 @@ package org.openhab.binding.androidtv.internal;
 
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,8 +37,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.androidtv", service = ThingHandlerFactory.class)
 public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_GOOGLETV, THING_TYPE_SHIELDTV).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GOOGLETV,
+            THING_TYPE_SHIELDTV);
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
 

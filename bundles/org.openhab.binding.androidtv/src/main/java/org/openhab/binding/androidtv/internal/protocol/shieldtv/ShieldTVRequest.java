@@ -45,8 +45,7 @@ public class ShieldTVRequest {
             }
             sb.append(hexString);
         }
-        String reply = sb.toString();
-        return reply;
+        return sb.toString();
     }
 
     public static String pinRequest(String pin) {

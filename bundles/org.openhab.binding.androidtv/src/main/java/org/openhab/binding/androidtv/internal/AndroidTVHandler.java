@@ -92,7 +92,7 @@ public class AndroidTVHandler extends BaseThingHandler {
         logger.trace("{} - Updating CDP for {}", this.thingID, channelName);
         List<CommandOption> commandOptions = new ArrayList<CommandOption>();
         cdpMap.forEach((key, value) -> commandOptions.add(new CommandOption(key, value)));
-        logger.trace("{} - CDP List: {}", this.thingID, commandOptions.toString());
+        logger.trace("{} - CDP List: {}", this.thingID, commandOptions);
         commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), channelName), commandOptions);
     }
 
@@ -172,8 +172,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId().toString(),
-                command.toString());
+        logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId().toString(), command);
 
         if (command.toString().equals("REFRESH")) {
             // REFRESH causes issues on some channels. Block for now until implemented.
@@ -236,7 +235,7 @@ public class AndroidTVHandler extends BaseThingHandler {
         }
 
         logger.warn("{} - Commands All Failed.  Please report this as a bug. {} {}", thingID, channelUID.getId(),
-                command.toString());
+                command);
     }
 
     @Override

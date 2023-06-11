@@ -193,7 +193,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getManufacturer() {
-        return this.manufacturer;
+        return manufacturer;
     }
 
     public void setModel(String model) {
@@ -202,7 +202,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getModel() {
-        return this.model;
+        return model;
     }
 
     public void setAndroidVersion(String androidVersion) {
@@ -211,7 +211,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getAndroidVersion() {
-        return this.androidVersion;
+        return androidVersion;
     }
 
     public void setRemoteServer(String remoteServer) {
@@ -220,7 +220,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getRemoteServer() {
-        return this.remoteServer;
+        return remoteServer;
     }
 
     public void setRemoteServerVersion(String remoteServerVersion) {
@@ -229,7 +229,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getRemoteServerVersion() {
-        return this.remoteServerVersion;
+        return remoteServerVersion;
     }
 
     public void setPower(boolean power) {
@@ -243,7 +243,7 @@ public class GoogleTVConnectionManager {
     }
 
     public boolean getPower() {
-        return this.power;
+        return power;
     }
 
     public void setVolCurr(String volCurr) {
@@ -254,7 +254,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getVolCurr() {
-        return this.volCurr;
+        return volCurr;
     }
 
     public void setVolMax(String volMax) {
@@ -262,7 +262,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getVolMax() {
-        return this.volMax;
+        return volMax;
     }
 
     public void setVolMute(String volMute) {
@@ -276,7 +276,7 @@ public class GoogleTVConnectionManager {
     }
 
     public boolean getVolMute() {
-        return this.volMute;
+        return volMute;
     }
 
     public void setAudioMode(String audioMode) {
@@ -284,7 +284,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getAudioMode() {
-        return this.audioMode;
+        return audioMode;
     }
 
     public void setCurrentApp(String currentApp) {
@@ -293,7 +293,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getStatusMessage() {
-        return this.statusMessage;
+        return statusMessage;
     }
 
     private void setStatus(boolean isLoggedIn) {
@@ -313,7 +313,7 @@ public class GoogleTVConnectionManager {
     }
 
     public String getCurrentApp() {
-        return this.currentApp;
+        return currentApp;
     }
 
     public void setLoggedIn(boolean isLoggedIn) {
@@ -323,7 +323,7 @@ public class GoogleTVConnectionManager {
     }
 
     public boolean getLoggedIn() {
-        return this.isLoggedIn;
+        return isLoggedIn;
     }
 
     private boolean servicePing() {
@@ -363,7 +363,7 @@ public class GoogleTVConnectionManager {
     private void setShimX509ClientChain(X509Certificate @Nullable [] shimX509ClientChain) {
         try {
             this.shimX509ClientChain = shimX509ClientChain;
-            logger.trace("Setting shimX509ClientChain {}", this.config.port);
+            logger.trace("Setting shimX509ClientChain {}", config.port);
             if (shimX509ClientChain != null && logger.isTraceEnabled()) {
                 for (int cert = 0; cert < shimX509ClientChain.length; cert++) {
                     logger.trace("Subject DN: {}", shimX509ClientChain[cert].getSubjectX500Principal());
@@ -405,7 +405,7 @@ public class GoogleTVConnectionManager {
                     for (int cert = 0; cert < chain.length; cert++) {
                         logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal());
                         logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal());
-                        logger.trace("Serial number {}:", chain[cert].getSerialNumber());
+                        logger.trace("Serial number: {}", chain[cert].getSerialNumber());
                     }
                 }
             }
@@ -1127,7 +1127,7 @@ public class GoogleTVConnectionManager {
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("{} - Command received: {}", handler.getThingID(), channelUID.getId().toString());
+        logger.debug("{} - Command received: {}", handler.getThingID(), channelUID.getId());
 
         if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
             if (command instanceof StringType) {
@@ -1214,7 +1214,7 @@ public class GoogleTVConnectionManager {
                         message = "5204085b" + suffix;
                         break;
                     default:
-                        logger.debug("Unknown Key {}", command.toString());
+                        logger.debug("Unknown Key {}", command);
                         return;
                 }
                 sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(message)));
@@ -1266,7 +1266,7 @@ public class GoogleTVConnectionManager {
                             setStatus(false, "User Forced PIN Process");
                             logger.debug("{} - User Forced PIN Process", handler.getThingID());
                             disconnect(true);
-                            startChildConnectionManager(this.config.port + 1, PIN_MODE);
+                            startChildConnectionManager(config.port + 1, PIN_MODE);
                             try {
                                 Thread.sleep(PIN_DELAY);
                             } catch (InterruptedException e) {

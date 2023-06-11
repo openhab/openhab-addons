@@ -159,7 +159,7 @@ public class ShieldTVConnectionManager {
     }
 
     public String getHostName() {
-        return this.hostName;
+        return hostName;
     }
 
     public String getThingID() {
@@ -172,7 +172,7 @@ public class ShieldTVConnectionManager {
     }
 
     public String getDeviceID() {
-        return this.deviceId;
+        return deviceId;
     }
 
     public void setArch(String arch) {
@@ -181,7 +181,7 @@ public class ShieldTVConnectionManager {
     }
 
     public String getArch() {
-        return this.arch;
+        return arch;
     }
 
     public void setCurrentApp(String currentApp) {
@@ -210,7 +210,7 @@ public class ShieldTVConnectionManager {
     }
 
     public String getStatusMessage() {
-        return this.statusMessage;
+        return statusMessage;
     }
 
     private void setStatus(boolean isLoggedIn) {
@@ -230,7 +230,7 @@ public class ShieldTVConnectionManager {
     }
 
     public String getCurrentApp() {
-        return this.currentApp;
+        return currentApp;
     }
 
     private void sendPeriodicUpdate() {
@@ -251,7 +251,7 @@ public class ShieldTVConnectionManager {
     }
 
     public boolean getLoggedIn() {
-        return this.isLoggedIn;
+        return isLoggedIn;
     }
 
     private boolean servicePing() {
@@ -319,7 +319,7 @@ public class ShieldTVConnectionManager {
                     for (int cert = 0; cert < chain.length; cert++) {
                         logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal());
                         logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal());
-                        logger.trace("Serial number {}:", chain[cert].getSerialNumber());
+                        logger.trace("Serial number: {}", chain[cert].getSerialNumber());
                     }
                 }
             }

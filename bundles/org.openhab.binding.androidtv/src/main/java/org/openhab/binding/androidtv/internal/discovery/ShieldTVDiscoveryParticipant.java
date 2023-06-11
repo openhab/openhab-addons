@@ -15,7 +15,6 @@ package org.openhab.binding.androidtv.internal.discovery;
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -81,9 +80,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
             if (uid != null) {
                 final String id = uid.getId();
                 final String label = service.getName() + " (" + id + ")";
-                final Map<String, Object> properties = new HashMap<>(2);
-
-                properties.put(PROPERTY_IP_ADDRESS, ipAddress);
+                final Map<String, Object> properties = Map.of(PROPERTY_IP_ADDRESS, ipAddress);
 
                 return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
             } else {

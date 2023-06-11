@@ -46,8 +46,7 @@ public class GoogleTVRequest {
             }
             sb.append(hexString);
         }
-        String reply = sb.toString();
-        return reply;
+        return sb.toString();
     }
 
     public static String pinRequest(String pin) {
@@ -62,8 +61,7 @@ public class GoogleTVRequest {
             int length = pin.length() / 2;
             String len1 = GoogleTVRequest.fixMessage(Integer.toHexString(length + 2));
             String len2 = GoogleTVRequest.fixMessage(Integer.toHexString(length));
-            String reply = "080210c801c202" + len1 + "0a" + len2 + pin;
-            return reply;
+            return "080210c801c202" + len1 + "0a" + len2 + pin;
         }
     }
 
@@ -138,8 +136,7 @@ public class GoogleTVRequest {
         for (int i = 4; i < sb.toString().length(); i++) {
             sbReply.append(charArray[i]);
         }
-        String reply = "4a" + fixMessage(Integer.toHexString(sbReply.toString().length() / 2)) + sbReply.toString();
-        return reply;
+        return "4a" + fixMessage(Integer.toHexString(sbReply.toString().length() / 2)) + sbReply.toString();
     }
 
     public static String fixMessage(String tempMsg) {
