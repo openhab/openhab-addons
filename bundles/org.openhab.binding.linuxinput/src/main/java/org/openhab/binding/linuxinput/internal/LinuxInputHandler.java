@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,7 +149,7 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
             @Nullable
             EvdevDevice currentDevice = device;
             if (currentDevice == null) {
-                throw new IOException("trying to handle events without a device");
+                throw new IOException("trying to handle events without an device");
             }
             SelectionKey evdevReady = currentDevice.register(selector);
 

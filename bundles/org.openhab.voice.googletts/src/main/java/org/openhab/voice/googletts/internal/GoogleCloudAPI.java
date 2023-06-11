@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,6 +113,11 @@ class GoogleCloudAPI {
      */
     private @Nullable GoogleTTSConfig config;
 
+    /**
+     * Status flag
+     */
+    private boolean initialized;
+
     private final Gson gson = new GsonBuilder().create();
     private final ConfigurationAdmin configAdmin;
     private final OAuthFactory oAuthFactory;
@@ -138,27 +143,26 @@ class GoogleCloudAPI {
     void setConfig(GoogleTTSConfig config) {
         this.config = config;
 
-        if (oAuthService != null) {
-            oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
-            oAuthService = null;
-        }
-
         String clientId = config.clientId;
         String clientSecret = config.clientSecret;
         if (clientId != null && !clientId.isEmpty() && clientSecret != null && !clientSecret.isEmpty()) {
-            final OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(GoogleTTSService.SERVICE_PID,
-                    GCP_TOKEN_URI, GCP_AUTH_URI, clientId, clientSecret, GCP_SCOPE, false);
-            this.oAuthService = oAuthService;
             try {
+                final OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(
+                        GoogleTTSService.SERVICE_PID, GCP_TOKEN_URI, GCP_AUTH_URI, clientId, clientSecret, GCP_SCOPE,
+                        false);
+                this.oAuthService = oAuthService;
                 getAccessToken();
+                initialized = true;
                 initVoices();
             } catch (AuthenticationException | CommunicationException e) {
                 logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
-                oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
-                this.oAuthService = null;
+                oAuthService = null;
+                initialized = false;
                 voices.clear();
             }
         } else {
+            oAuthService = null;
+            initialized = false;
             voices.clear();
         }
 
@@ -170,14 +174,6 @@ class GoogleCloudAPI {
             }
             logger.debug("Cache purged.");
         }
-    }
-
-    public void dispose() {
-        if (oAuthService != null) {
-            oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
-            oAuthService = null;
-        }
-        voices.clear();
     }
 
     /**
@@ -371,10 +367,8 @@ class GoogleCloudAPI {
             return audio;
         } catch (AuthenticationException | CommunicationException e) {
             logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
-            if (oAuthService != null) {
-                oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
-                oAuthService = null;
-            }
+            oAuthService = null;
+            initialized = false;
             voices.clear();
         } catch (FileNotFoundException e) {
             logger.warn("Could not write file {} to cache: {}", audioFileInCache, e.getMessage());
@@ -496,6 +490,6 @@ class GoogleCloudAPI {
     }
 
     boolean isInitialized() {
-        return oAuthService != null;
+        return initialized;
     }
 }

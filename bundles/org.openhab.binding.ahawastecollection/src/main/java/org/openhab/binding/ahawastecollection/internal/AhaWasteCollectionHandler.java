@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -60,23 +59,20 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final Logger logger = LoggerFactory.getLogger(AhaWasteCollectionHandler.class);
 
+    private @Nullable AhaWasteCollectionConfiguration config;
     private @Nullable AhaCollectionSchedule collectionSchedule;
 
     private @Nullable ScheduledCompletableFuture<?> dailyJob;
 
     private final AhaCollectionScheduleFactory scheduleFactory;
 
-    private final ScheduledExecutorService executorService;
-
     public AhaWasteCollectionHandler(final Thing thing, final CronScheduler scheduler,
-            final TimeZoneProvider timeZoneProvider, final AhaCollectionScheduleFactory scheduleFactory,
-            @Nullable final ScheduledExecutorService executorService) {
+            final TimeZoneProvider timeZoneProvider, final AhaCollectionScheduleFactory scheduleFactory) {
         super(thing);
         this.cronScheduler = scheduler;
         this.timeZoneProvider = timeZoneProvider;
         this.scheduleFactory = scheduleFactory;
         this.cache = new ExpiringCache<>(Duration.ofMinutes(5), this::loadCollectionDates);
-        this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
     private Map<WasteType, CollectionDate> loadCollectionDates() {
@@ -93,7 +89,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
-            this.executorService.execute(this::updateCollectionDates);
+            this.scheduler.execute(this::updateCollectionDates);
         } else {
             this.logger.warn("The AHA Abfuhrkalender is a read-only binding and can not handle commands");
         }
@@ -101,13 +97,13 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        final AhaWasteCollectionConfiguration config = this.getConfigAs(AhaWasteCollectionConfiguration.class);
+        this.config = this.getConfigAs(AhaWasteCollectionConfiguration.class);
 
-        final String commune = config.commune;
-        final String street = config.street;
-        final String houseNumber = config.houseNumber;
-        final String houseNumberAddon = config.houseNumberAddon;
-        final String collectionPlace = config.collectionPlace;
+        final String commune = this.config.commune;
+        final String street = this.config.street;
+        final String houseNumber = this.config.houseNumber;
+        final String houseNumberAddon = this.config.houseNumberAddon;
+        final String collectionPlace = this.config.collectionPlace;
 
         if (commune.isBlank() || street.isBlank() || houseNumber.isBlank() || collectionPlace.isBlank()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -120,7 +116,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
 
         this.updateStatus(ThingStatus.UNKNOWN);
 
-        this.executorService.execute(() -> {
+        this.scheduler.execute(() -> {
             final boolean online = this.updateCollectionDates();
             if (online) {
                 this.restartJob();
@@ -129,7 +125,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
     }
 
     /**
-     * Schedules a job that updates the collection dates at midnight.
+     * Schedules an job that updates the collection dates at midnight.
      */
     private void restartJob() {
         this.logger.debug("Restarting jobs for thing {}", this.getThing().getUID());

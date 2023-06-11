@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,29 +19,23 @@ import org.openhab.core.thing.ThingStatusDetail;
 /**
  * Callback interface which enables the KNXClient implementations to update the thing status.
  *
- * @author Simon Kaufmann - Initial contribution
+ * @author Simon Kaufmann - initial contribution and API.
  *
  */
 @NonNullByDefault
 public interface StatusUpdateCallback {
 
     /**
-     * Updates the status of the thing.
+     * see BaseThingHandler
      *
-     * see {@link org.openhab.core.thing.binding.BaseThingHandler}
-     *
-     * @param status the status
+     * @param status
      */
     void updateStatus(ThingStatus status);
 
     /**
-     * Updates the status of the thing.
+     * see BaseThingHandler
      *
-     * see {@link org.openhab.core.thing.binding.BaseThingHandler}
-     * 
-     * @param status the status
-     * @param statusDetail the detail of the status
-     * @param description the description of the status
+     * @param status
      */
-    void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description);
+    void updateStatus(ThingStatus status, ThingStatusDetail thingStatusDetail, String message);
 }

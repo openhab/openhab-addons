@@ -84,9 +84,9 @@ things from them.
 
 ## Full Example
 
-### pilight.things
+things/pilight.things
 
-```java
+```
 Bridge pilight:bridge:raspi "Pilight Daemon raspi" [ ipAddress="192.168.1.1", port=5000 ] {
         Thing switch office "Office" [ name="office" ]
         Thing dimmer piano "Piano"  [ name="piano" ]
@@ -98,9 +98,9 @@ Bridge pilight:bridge:raspi "Pilight Daemon raspi" [ ipAddress="192.168.1.1", po
 }
 ```
 
-### pilight.items
+items/pilight.items
 
-```java
+```
 Switch office_switch "Büro" { channel="pilight:switch:raspi:office:state" }
 Dimmer piano_light "Klavier [%.0f %%]" { channel="pilight:dimmer:raspi:piano:dimlevel" }
 Number weather_temperature  "Aussentemperatur [%.1f °C]" <temperature>  { channel="pilight:generic:raspi:weather:temperature" }
@@ -108,11 +108,12 @@ Number weather_humidity "Feuchtigkeit [%.0f %%]" <humidity> { channel="pilight:g
 
 ```
 
-### fragment.sitemap
+sitemaps/fragment.sitemap
 
-```perl
+```
 Switch item=office_switch
 Slider item=piano_light
 Text item=weather_temperature
 Text item=weather_humidity
 ```
+

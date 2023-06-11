@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,27 +31,26 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EvccAPI} is responsible for API calls to evcc.
- * API requests were written for evcc version 0.117.0
- *
+ * 
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
 public class EvccAPI {
     private final Logger logger = LoggerFactory.getLogger(EvccAPI.class);
     private final Gson gson = new Gson();
-    private String host;
+    private String host = "";
 
     public EvccAPI(String host) {
-        this.host = (host.endsWith("/") ? host.substring(0, host.length() - 1) : host);
+        this.host = host;
     }
 
     /**
      * Make a HTTP request.
-     *
+     * 
      * @param url full request URL
-     * @param method request method, e.g. GET, POST
+     * @param method reguest method, e.g. GET, POST
      * @return the response body
-     * @throws EvccApiException if HTTP request failed
+     * @throws {@link EvccApiException} if HTTP request failed
      */
     private String httpRequest(String url, String method) throws EvccApiException {
         try {
@@ -68,9 +67,10 @@ public class EvccAPI {
     // API calls to evcc
     /**
      * Get the status from evcc.
-     *
+     * 
+     * @param host hostname of IP address of the evcc instance
      * @return {@link Result} result object from API
-     * @throws EvccApiException if status request failed
+     * @throws {@link EvccApiException} if status request failed
      */
     public Result getResult() throws EvccApiException {
         final String response = httpRequest(this.host + EVCC_REST_API + "state", "GET");
@@ -85,11 +85,6 @@ public class EvccAPI {
         }
     }
 
-    // Site API calls.
-    public String setBatteryPrioritySoC(int prioritySoc) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "prioritysoc/" + prioritySoc, "POST");
-    }
-
     // Loadpoint specific API calls.
     public String setMode(int loadpoint, String mode) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
@@ -99,13 +94,8 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/minsoc/" + minSoC, "POST");
     }
 
-    public String setTargetEnergy(int loadpoint, float targetEnergy) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/energy/" + targetEnergy,
-                "POST");
-    }
-
     public String setTargetSoC(int loadpoint, int targetSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/soc/" + targetSoC, "POST");
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetsoc/" + targetSoC, "POST");
     }
 
     public String setPhases(int loadpoint, int phases) throws EvccApiException {
@@ -120,12 +110,13 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
     }
 
-    public String setTargetTime(int loadpoint, ZonedDateTime targetTime) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/time/"
-                + targetTime.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "Z", "POST");
+    public String setTargetCharge(int loadpoint, int targetSoC, ZonedDateTime targetTime) throws EvccApiException {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge/" + targetSoC + "/"
+                + targetTime.toLocalDateTime().format(formatter), "POST");
     }
 
-    public String removeTargetTime(int loadpoint) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/target/time", "DELETE");
+    public String unsetTargetCharge(int loadpoint) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge", "DELETE");
     }
 }

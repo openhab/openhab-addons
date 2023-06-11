@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,19 +17,18 @@ import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.api.VocHttpApi;
 import org.openhab.binding.volvooncall.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.discovery.VolvoVehicleDiscoveryService;
 import org.openhab.binding.volvooncall.internal.dto.CustomerAccounts;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +46,14 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallBridgeHandler.class);
     private final Gson gson;
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
 
     private @Nullable VocHttpApi api;
 
-    public VolvoOnCallBridgeHandler(Bridge bridge, Gson gson, HttpClientFactory httpClientFactory) {
+    public VolvoOnCallBridgeHandler(Bridge bridge, Gson gson, HttpClient httpClient) {
         super(bridge);
         this.gson = gson;
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -63,8 +62,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         ApiBridgeConfiguration configuration = getConfigAs(ApiBridgeConfiguration.class);
 
         try {
-            String clientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
-            VocHttpApi vocApi = new VocHttpApi(clientName, configuration, gson, httpClientFactory);
+            VocHttpApi vocApi = new VocHttpApi(configuration, gson, httpClient);
             CustomerAccounts account = vocApi.getURL("customeraccounts/", CustomerAccounts.class);
             if (account.username != null) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, account.username);

@@ -342,7 +342,6 @@
 			<channel id="allmute" typeId="system.mute"/>
 			<channel id="page" typeId="page"/>
 			<channel id="sendcmd" typeId="sendcmd"/>
-			<channel id="buttonpress" typeId="button_press"/>
 		</channels>
 	</channel-group-type>
 
@@ -519,7 +518,7 @@
 	<channel-type id="button_press">
 		<item-type>String</item-type>
 		<label>Button Pressed</label>
-		<description>Indicates the Last Button Pressed On the Keypad</description>
+		<description>Indicates the Last Button Pressed On the Keypad for a Non NuvoNet Source</description>
 		<state readOnly="true"/>
 	</channel-type>
 

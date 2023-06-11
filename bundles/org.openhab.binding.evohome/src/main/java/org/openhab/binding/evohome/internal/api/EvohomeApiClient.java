@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,20 +19,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.request.HeatSetPoint;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.request.HeatSetPointBuilder;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.request.Mode;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.request.ModeBuilder;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Authentication;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Location;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.response.LocationStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Locations;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.response.LocationsStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.response.UserAccount;
+import org.openhab.binding.evohome.internal.api.models.v2.request.HeatSetPoint;
+import org.openhab.binding.evohome.internal.api.models.v2.request.HeatSetPointBuilder;
+import org.openhab.binding.evohome.internal.api.models.v2.request.Mode;
+import org.openhab.binding.evohome.internal.api.models.v2.request.ModeBuilder;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
+import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.response.UserAccount;
 import org.openhab.binding.evohome.internal.configuration.EvohomeAccountConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +41,6 @@ import org.slf4j.LoggerFactory;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-@NonNullByDefault
 public class EvohomeApiClient {
 
     private static final String APPLICATION_ID = "b013aa26-9724-4dbd-8897-048b9aada249";
@@ -55,8 +52,8 @@ public class EvohomeApiClient {
     private final ApiAccess apiAccess;
 
     private Locations locations = new Locations();
-    private @Nullable UserAccount useraccount;
-    private @Nullable LocationsStatus locationsStatus;
+    private UserAccount useraccount;
+    private LocationsStatus locationsStatus;
 
     /**
      * Creates a new API client based on the V2 API interface
@@ -75,7 +72,7 @@ public class EvohomeApiClient {
     public void close() {
         apiAccess.setAuthentication(null);
         useraccount = null;
-        locations = new Locations();
+        locations = null;
         locationsStatus = null;
     }
 
@@ -116,7 +113,7 @@ public class EvohomeApiClient {
         return locations;
     }
 
-    public @Nullable LocationsStatus getInstallationStatus() {
+    public LocationsStatus getInstallationStatus() {
         return locationsStatus;
     }
 
@@ -142,33 +139,33 @@ public class EvohomeApiClient {
         apiAccess.doAuthenticatedPut(url, heatSetPoint);
     }
 
-    private @Nullable UserAccount requestUserAccount() throws TimeoutException {
+    private UserAccount requestUserAccount() throws TimeoutException {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
         return apiAccess.doAuthenticatedGet(url, UserAccount.class);
     }
 
     private Locations requestLocations() throws TimeoutException {
-        Locations locations = null;
-        UserAccount localAccount = useraccount;
-        if (localAccount != null) {
+        Locations locations = new Locations();
+        if (useraccount != null) {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_INSTALLATION_INFO;
-            url = String.format(url, localAccount.getUserId());
+            url = String.format(url, useraccount.getUserId());
 
             locations = apiAccess.doAuthenticatedGet(url, Locations.class);
         }
-        return locations != null ? locations : new Locations();
+        return locations;
     }
 
     private LocationsStatus requestLocationsStatus() throws TimeoutException {
         LocationsStatus locationsStatus = new LocationsStatus();
 
-        for (Location location : locations) {
-            String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
-            url = String.format(url, location.getLocationInfo().getLocationId());
-            LocationStatus status = apiAccess.doAuthenticatedGet(url, LocationStatus.class);
-            locationsStatus.add(status);
+        if (locations != null) {
+            for (Location location : locations) {
+                String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATION_STATUS;
+                url = String.format(url, location.getLocationInfo().getLocationId());
+                LocationStatus status = apiAccess.doAuthenticatedGet(url, LocationStatus.class);
+                locationsStatus.add(status);
+            }
         }
-
         return locationsStatus;
     }
 

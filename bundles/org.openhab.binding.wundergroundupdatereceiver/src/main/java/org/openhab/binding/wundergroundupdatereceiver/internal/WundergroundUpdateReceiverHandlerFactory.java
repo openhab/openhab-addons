@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,21 +42,24 @@ public class WundergroundUpdateReceiverHandlerFactory extends BaseThingHandlerFa
     private final WundergroundUpdateReceiverDiscoveryService discoveryService;
     private final ChannelTypeRegistry channelTypeRegistry;
     private final WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider;
-    private final ManagedThingProvider managedThingProvider;
     private final WundergroundUpdateReceiverServlet wunderGroundUpdateReceiverServlet;
+    private final ManagedThingProvider managedThingProvider;
 
     @Activate
     public WundergroundUpdateReceiverHandlerFactory(@Reference HttpService httpService,
             @Reference WundergroundUpdateReceiverDiscoveryService discoveryService,
             @Reference WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider,
-            @Reference ChannelTypeRegistry channelTypeRegistry, @Reference ManagedThingProvider managedThingProvider,
-            @Reference WundergroundUpdateReceiverServlet wunderGroundUpdateReceiverServlet) {
+            @Reference ChannelTypeRegistry channelTypeRegistry, @Reference ManagedThingProvider managedThingProvider) {
         this.discoveryService = discoveryService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelTypeProvider = channelTypeProvider;
         this.managedThingProvider = managedThingProvider;
-        this.wunderGroundUpdateReceiverServlet = wunderGroundUpdateReceiverServlet;
-        this.discoveryService.servletControls = wunderGroundUpdateReceiverServlet;
+        this.wunderGroundUpdateReceiverServlet = new WundergroundUpdateReceiverServlet(httpService,
+                this.discoveryService);
+        this.discoveryService.servletControls = this.wunderGroundUpdateReceiverServlet;
+        if (this.discoveryService.isBackgroundDiscoveryEnabled()) {
+            this.wunderGroundUpdateReceiverServlet.activate();
+        }
     }
 
     @Override
@@ -79,7 +82,8 @@ public class WundergroundUpdateReceiverHandlerFactory extends BaseThingHandlerFa
 
     @Override
     protected void deactivate(ComponentContext componentContext) {
-        this.wunderGroundUpdateReceiverServlet.disable();
+        this.wunderGroundUpdateReceiverServlet.deactivate();
+        this.wunderGroundUpdateReceiverServlet.dispose();
         super.deactivate(componentContext);
     }
 }

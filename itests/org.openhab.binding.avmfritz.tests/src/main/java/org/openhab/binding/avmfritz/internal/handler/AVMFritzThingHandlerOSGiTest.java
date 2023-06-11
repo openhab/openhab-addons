@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,6 @@ import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.ThingProvider;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 
@@ -75,10 +74,7 @@ public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
 
         bridgeHandler.setCallback(callback);
 
-        ThingHandler oldHandler = bridge.getHandler();
-        if (oldHandler != null) {
-            oldHandler.dispose();
-        }
+        assertNull(bridge.getHandler());
         bridge.setHandler(bridgeHandler);
         assertNotNull(bridge.getHandler());
 

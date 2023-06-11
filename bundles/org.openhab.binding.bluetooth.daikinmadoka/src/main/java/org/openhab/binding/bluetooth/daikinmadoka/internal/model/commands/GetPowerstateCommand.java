@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +42,8 @@ public class GetPowerstateCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        MadokaValue mValue = mm.getValues().get(0x20);
-        if (mValue == null) {
-            String message = "powerstate is null when handling the response";
-            setState(State.FAILED);
-            throw new MadokaParsingException(message);
-        }
+        byte[] powerStateValue = mm.getValues().get(0x20).getRawValue();
 
-        byte[] powerStateValue = mValue.getRawValue();
         if (powerStateValue == null || powerStateValue.length != 1) {
             setState(State.FAILED);
             throw new MadokaParsingException("Incorrect value for PowerState");
@@ -61,12 +54,7 @@ public class GetPowerstateCommand extends BRC1HCommand {
         logger.debug("PowerState: {}", powerState);
 
         setState(State.SUCCEEDED);
-        try {
-            executor.execute(() -> listener.receivedResponse(this));
-        } catch (Exception e) {
-            setState(State.FAILED);
-            throw new MadokaParsingException(e);
-        }
+        executor.execute(() -> listener.receivedResponse(this));
     }
 
     @Override

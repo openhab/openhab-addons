@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@
 package org.openhab.automation.jsscripting.internal.scriptengine;
 
 import java.io.Reader;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import javax.script.Bindings;
 import javax.script.Invocable;
@@ -39,23 +38,17 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     protected void beforeInvocation() {
     }
 
-    protected Object afterInvocation(Object obj) {
-        return obj;
-    }
-
-    protected Exception afterThrowsInvocation(Exception e) {
-        return e;
+    protected ScriptException afterThrowsInvocation(ScriptException se) {
+        return se;
     }
 
     @Override
     public Object eval(String s, ScriptContext scriptContext) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s, scriptContext));
+            return super.eval(s, scriptContext);
         } catch (ScriptException se) {
-            throw (ScriptException) afterThrowsInvocation(se);
-        } catch (Exception e) {
-            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+            throw afterThrowsInvocation(se);
         }
     }
 
@@ -63,11 +56,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(reader, scriptContext));
+            return super.eval(reader, scriptContext);
         } catch (ScriptException se) {
-            throw (ScriptException) afterThrowsInvocation(se);
-        } catch (Exception e) {
-            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+            throw afterThrowsInvocation(se);
         }
     }
 
@@ -75,11 +66,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(String s) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s));
+            return super.eval(s);
         } catch (ScriptException se) {
-            throw (ScriptException) afterThrowsInvocation(se);
-        } catch (Exception e) {
-            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+            throw afterThrowsInvocation(se);
         }
     }
 
@@ -87,11 +76,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(Reader reader) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(reader));
+            return super.eval(reader);
         } catch (ScriptException se) {
-            throw (ScriptException) afterThrowsInvocation(se);
-        } catch (Exception e) {
-            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+            throw afterThrowsInvocation(se);
         }
     }
 
@@ -99,11 +86,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(String s, Bindings bindings) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(s, bindings));
+            return super.eval(s, bindings);
         } catch (ScriptException se) {
-            throw (ScriptException) afterThrowsInvocation(se);
-        } catch (Exception e) {
-            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+            throw afterThrowsInvocation(se);
         }
     }
 
@@ -111,49 +96,29 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(Reader reader, Bindings bindings) throws ScriptException {
         try {
             beforeInvocation();
-            return afterInvocation(super.eval(reader, bindings));
+            return super.eval(reader, bindings);
         } catch (ScriptException se) {
-            throw (ScriptException) afterThrowsInvocation(se);
-        } catch (Exception e) {
-            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+            throw afterThrowsInvocation(se);
         }
     }
 
     @Override
-    public Object invokeMethod(Object o, String s, Object... objects)
-            throws ScriptException, NoSuchMethodException, NullPointerException, IllegalArgumentException {
+    public Object invokeMethod(Object o, String s, Object... objects) throws ScriptException, NoSuchMethodException {
         try {
             beforeInvocation();
-            return afterInvocation(super.invokeMethod(o, s, objects));
+            return super.invokeMethod(o, s, objects);
         } catch (ScriptException se) {
-            throw (ScriptException) afterThrowsInvocation(se);
-        } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeMethod to avoid
-                                            // deadlocks
-            throw (NoSuchMethodException) afterThrowsInvocation(e);
-        } catch (NullPointerException e) {
-            throw (NullPointerException) afterThrowsInvocation(e);
-        } catch (IllegalArgumentException e) {
-            throw (IllegalArgumentException) afterThrowsInvocation(e);
-        } catch (Exception e) {
-            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+            throw afterThrowsInvocation(se);
         }
     }
 
     @Override
-    public Object invokeFunction(String s, Object... objects)
-            throws ScriptException, NoSuchMethodException, NullPointerException {
+    public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
         try {
             beforeInvocation();
-            return afterInvocation(super.invokeFunction(s, objects));
+            return super.invokeFunction(s, objects);
         } catch (ScriptException se) {
-            throw (ScriptException) afterThrowsInvocation(se);
-        } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeFunction to avoid
-                                            // deadlocks
-            throw (NoSuchMethodException) afterThrowsInvocation(e);
-        } catch (NullPointerException e) {
-            throw (NullPointerException) afterThrowsInvocation(e);
-        } catch (Exception e) {
-            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+            throw afterThrowsInvocation(se);
         }
     }
 }

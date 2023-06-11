@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +49,6 @@ import org.openhab.binding.hue.internal.dto.State;
 import org.openhab.binding.hue.internal.dto.StateUpdate;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.DeviceOffException;
-import org.openhab.binding.hue.internal.exceptions.EmptyResponseException;
 import org.openhab.binding.hue.internal.exceptions.EntityNotAvailableException;
 import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
@@ -121,9 +118,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private final Map<String, SensorStatusListener> sensorStatusListeners = new ConcurrentHashMap<>();
     private final Map<String, GroupStatusListener> groupStatusListeners = new ConcurrentHashMap<>();
 
-    private List<Scene> lastScenes = new CopyOnWriteArrayList<>();
-    private Instant lastScenesRetrieval = Instant.MIN;
-
     final ReentrantLock pollingLock = new ReentrantLock();
 
     abstract class PollingRunnable implements Runnable {
@@ -156,9 +150,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     lastBridgeConnectionState = false;
                     onConnectionLost();
                 }
-            } catch (EmptyResponseException e) {
-                // Unexpected empty response is ignored
-                logger.debug("{}", e.getMessage());
             } catch (ApiException | CommunicationException | IOException e) {
                 if (hueBridge != null && lastBridgeConnectionState) {
                     logger.debug("Connection to Hue Bridge {} lost: {}", hueBridge.getIPAddress(), e.getMessage(), e);
@@ -247,10 +238,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         protected void doConnectedRun() throws IOException, ApiException {
             updateLights();
             updateGroups();
-            if (lastScenesRetrieval.isBefore(Instant.now().minusSeconds(SCENE_POLLING_INTERVAL))) {
-                updateScenes();
-                lastScenesRetrieval = Instant.now();
-            }
         }
 
         private void updateLights() throws IOException, ApiException {
@@ -390,13 +377,16 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 }
             });
         }
+    };
 
-        private void updateScenes() throws IOException, ApiException {
-            lastScenes = hueBridge.getScenes();
-            logger.trace("Scenes detected: {}", lastScenes);
+    private final Runnable scenePollingRunnable = new PollingRunnable() {
+        @Override
+        protected void doConnectedRun() throws IOException, ApiException {
+            List<Scene> scenes = hueBridge.getScenes();
+            logger.trace("Scenes detected: {}", scenes);
 
-            setBridgeSceneChannelStateOptions(lastScenes, lastGroupStates);
-            notifyGroupSceneUpdate(lastScenes);
+            setBridgeSceneChannelStateOptions(scenes, lastGroupStates);
+            notifyGroupSceneUpdate(scenes);
         }
 
         private void setBridgeSceneChannelStateOptions(List<Scene> scenes, Map<String, FullGroup> groups) {
@@ -418,6 +408,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private @Nullable Future<?> initJob;
     private @Nullable ScheduledFuture<?> lightPollingJob;
     private @Nullable ScheduledFuture<?> sensorPollingJob;
+    private @Nullable ScheduledFuture<?> scenePollingJob;
 
     private @NonNullByDefault({}) HueBridge hueBridge = null;
     private @NonNullByDefault({}) HueBridgeConfig hueBridgeConfig = null;
@@ -665,6 +656,23 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         sensorPollingJob = null;
     }
 
+    private void startScenePolling() {
+        ScheduledFuture<?> job = scenePollingJob;
+        if (job == null || job.isCancelled()) {
+            // Delay the first execution to give a chance to have all group things registered
+            scenePollingJob = scheduler.scheduleWithFixedDelay(scenePollingRunnable, 5, SCENE_POLLING_INTERVAL,
+                    TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopScenePolling() {
+        ScheduledFuture<?> job = scenePollingJob;
+        if (job != null) {
+            job.cancel(true);
+        }
+        scenePollingJob = null;
+    }
+
     @Override
     public void dispose() {
         logger.debug("Disposing Hue Bridge handler ...");
@@ -674,6 +682,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
         stopLightPolling();
         stopSensorPolling();
+        stopScenePolling();
         if (hueBridge != null) {
             hueBridge = null;
         }
@@ -736,6 +745,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private synchronized void onUpdate() {
         startLightPolling();
         startSensorPolling();
+        startScenePolling();
     }
 
     /**
@@ -953,9 +963,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             final FullGroup lastGroupState = lastGroupStates.get(groupId);
             if (lastGroupState != null) {
                 groupStatusListener.onGroupAdded(lastGroupState);
-                if (!lastScenes.isEmpty()) {
-                    groupStatusListener.onScenesUpdated(lastScenes);
-                }
             }
             return true;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.POSITION_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_POSITION;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,8 +31,6 @@ import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.StopMoveType;
-import org.openhab.core.library.types.UpDownType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -53,21 +52,19 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     protected int closedPosition;
     protected int openPosition;
     private final Map<PositionStateEnum, String> positionStateMapping;
-    protected boolean emulateState;
-    protected boolean emulateStopSameDirection;
-    protected PositionStateEnum emulatedState = PositionStateEnum.STOPPED;
 
     public AbstractHomekitPositionAccessoryImpl(HomekitTaggedItem taggedItem,
             List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater,
             HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         final boolean inverted = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.INVERTED, true);
-        emulateState = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_STATE, false);
-        emulateStopSameDirection = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_SAME_DIRECTION,
-                false);
         closedPosition = inverted ? 0 : 100;
         openPosition = inverted ? 100 : 0;
-        positionStateMapping = createMapping(POSITION_STATE, PositionStateEnum.class);
+        positionStateMapping = new EnumMap<>(PositionStateEnum.class);
+        positionStateMapping.put(PositionStateEnum.DECREASING, "DECREASING");
+        positionStateMapping.put(PositionStateEnum.INCREASING, "INCREASING");
+        positionStateMapping.put(PositionStateEnum.STOPPED, "STOPPED");
+        updateMapping(POSITION_STATE, positionStateMapping);
     }
 
     public CompletableFuture<Integer> getCurrentPosition() {
@@ -75,8 +72,8 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     }
 
     public CompletableFuture<PositionStateEnum> getPositionState() {
-        return CompletableFuture.completedFuture(emulateState ? emulatedState
-                : getKeyFromMapping(POSITION_STATE, positionStateMapping, PositionStateEnum.STOPPED));
+        return CompletableFuture
+                .completedFuture(getKeyFromMapping(POSITION_STATE, positionStateMapping, PositionStateEnum.STOPPED));
     }
 
     public CompletableFuture<Integer> getTargetPosition() {
@@ -87,29 +84,9 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         getCharacteristic(TARGET_POSITION).ifPresentOrElse(taggedItem -> {
             final Item item = taggedItem.getItem();
             final int targetPosition = convertPosition(value, openPosition);
+
             if (item instanceof RollershutterItem) {
-                // HomeKit home app never sends STOP. we emulate stop if we receive 100% or 0% while the blind is moving
-                if (emulateState && (targetPosition == 100 && emulatedState == PositionStateEnum.DECREASING)
-                        || ((targetPosition == 0 && emulatedState == PositionStateEnum.INCREASING))) {
-                    if (emulateStopSameDirection) {
-                        // some blinds devices do not support "STOP" but would stop if receive UP/DOWN while moving
-                        ((RollershutterItem) item)
-                                .send(emulatedState == PositionStateEnum.INCREASING ? UpDownType.UP : UpDownType.DOWN);
-                    } else {
-                        ((RollershutterItem) item).send(StopMoveType.STOP);
-                    }
-                    emulatedState = PositionStateEnum.STOPPED;
-                } else {
-                    ((RollershutterItem) item).send(new PercentType(targetPosition));
-                    if (emulateState) {
-                        @Nullable
-                        PercentType currentPosition = item.getStateAs(PercentType.class);
-                        emulatedState = currentPosition == null || currentPosition.intValue() == targetPosition
-                                ? PositionStateEnum.STOPPED
-                                : currentPosition.intValue() < targetPosition ? PositionStateEnum.INCREASING
-                                        : PositionStateEnum.DECREASING;
-                    }
-                }
+                ((RollershutterItem) item).send(new PercentType(targetPosition));
             } else if (item instanceof DimmerItem) {
                 ((DimmerItem) item).send(new PercentType(targetPosition));
             } else if (item instanceof NumberItem) {

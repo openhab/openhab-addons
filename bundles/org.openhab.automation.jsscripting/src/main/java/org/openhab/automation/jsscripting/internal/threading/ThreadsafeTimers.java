@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,17 +13,14 @@
 package org.openhab.automation.jsscripting.internal.threading;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.automation.module.script.action.ScriptExecution;
-import org.openhab.core.automation.module.script.action.Timer;
+import org.openhab.core.model.script.ScriptServiceUtil;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
@@ -32,22 +29,20 @@ import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
  * A polyfill implementation of NodeJS timer functionality (<code>setTimeout()</code>, <code>setInterval()</code> and
  * the cancel methods) which controls multithreaded execution access to the single-threaded GraalJS contexts.
  *
- * @author Florian Hotze - Initial contribution; Reimplementation to conform standard JS setTimeout and setInterval;
- *         Threadsafe reimplementation of the timer creation methods of {@link ScriptExecution}
+ * @author Florian Hotze - Initial contribution
+ * @author Florian Hotze - Reimplementation to conform standard JS setTimeout and setInterval
  */
 public class ThreadsafeTimers {
-    private final Lock lock;
+    private final Object lock;
     private final Scheduler scheduler;
-    private final ScriptExecution scriptExecution;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
     private final Map<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new ConcurrentHashMap<>();
     private AtomicLong lastId = new AtomicLong();
     private String identifier = "noIdentifier";
 
-    public ThreadsafeTimers(Lock lock, ScriptExecution scriptExecution, Scheduler scheduler) {
+    public ThreadsafeTimers(Object lock) {
         this.lock = lock;
-        this.scheduler = scheduler;
-        this.scriptExecution = scriptExecution;
+        this.scheduler = ScriptServiceUtil.getScheduler();
     }
 
     /**
@@ -60,34 +55,19 @@ public class ThreadsafeTimers {
     }
 
     /**
-     * Schedules a block of code for later execution.
+     * Schedules a callback to run at a given time.
      *
-     * @param instant the point in time when the code should be executed
-     * @param closure the code block to execute
-     * @return a handle to the created timer, so that it can be canceled or rescheduled
+     * @param id timerId to append to the identifier base for naming the scheduled job
+     * @param zdt time to schedule the job
+     * @param callback function to run at the given time
+     * @return a {@link ScheduledCompletableFuture}
      */
-    public Timer createTimer(ZonedDateTime instant, Runnable closure) {
-        return createTimer(identifier, instant, closure);
-    }
-
-    /**
-     * Schedules a block of code for later execution.
-     *
-     * @param identifier an optional identifier
-     * @param instant the point in time when the code should be executed
-     * @param closure the code block to execute
-     * @return a handle to the created timer, so that it can be canceled or rescheduled
-     */
-    public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable closure) {
-        return scriptExecution.createTimer(identifier, instant, () -> {
-            lock.lock();
-            try {
-                closure.run();
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
-                        // deadlocks
-                lock.unlock();
+    private ScheduledCompletableFuture<Object> createFuture(long id, ZonedDateTime zdt, Runnable callback) {
+        return scheduler.schedule(() -> {
+            synchronized (lock) {
+                callback.run();
             }
-        });
+        }, identifier + ".timeout." + id, zdt.toInstant());
     }
 
     /**
@@ -113,18 +93,10 @@ public class ThreadsafeTimers {
      * @return Positive integer value which identifies the timer created; this value can be passed to
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
-    public long setTimeout(Runnable callback, Long delay, @Nullable Object... args) {
+    public long setTimeout(Runnable callback, Long delay, Object... args) {
         long id = lastId.incrementAndGet();
-        ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
-            lock.lock();
-            try {
-                callback.run();
-                idSchedulerMapping.remove(id);
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
-                        // deadlocks
-                lock.unlock();
-            }
-        }, identifier + ".timeout." + id, Instant.now().plusMillis(delay));
+        ScheduledCompletableFuture<Object> future = createFuture(id, ZonedDateTime.now().plusNanos(delay * 1000000),
+                callback);
         idSchedulerMapping.put(id, future);
         return id;
     }
@@ -141,6 +113,22 @@ public class ThreadsafeTimers {
         if (scheduled != null) {
             scheduled.cancel(true);
         }
+    }
+
+    /**
+     * Schedules a callback to run in a loop with a given delay between the executions.
+     *
+     * @param id timerId to append to the identifier base for naming the scheduled job
+     * @param delay time in milliseconds that the timer should delay in between executions of the callback
+     * @param callback function to run
+     */
+    private void createLoopingFuture(long id, Long delay, Runnable callback) {
+        ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
+            synchronized (lock) {
+                callback.run();
+            }
+        }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
+        idSchedulerMapping.put(id, future);
     }
 
     /**
@@ -166,18 +154,9 @@ public class ThreadsafeTimers {
      * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
      *         <code>clearInterval()</code> to cancel the interval.
      */
-    public long setInterval(Runnable callback, Long delay, @Nullable Object... args) {
+    public long setInterval(Runnable callback, Long delay, Object... args) {
         long id = lastId.incrementAndGet();
-        ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
-            lock.lock();
-            try {
-                callback.run();
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
-                        // deadlocks
-                lock.unlock();
-            }
-        }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
-        idSchedulerMapping.put(id, future);
+        createLoopingFuture(id, delay, callback);
         return id;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ public interface AvrCommand {
     /**
      * Represent a CommandType of command requests
      */
-    interface CommandType {
+    public interface CommandType {
         /**
          * Return the command of this command type.
          *
@@ -52,19 +52,19 @@ public interface AvrCommand {
      *
      * @return
      */
-    String getCommand();
+    public String getCommand();
 
     /**
      * Return the number of the zone this command will be sent to.
      *
      * @return
      */
-    int getZone();
+    public int getZone();
 
     /**
      * Return the the command type of this command.
      *
      * @return
      */
-    CommandType getCommandType();
+    public CommandType getCommandType();
 }

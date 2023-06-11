@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.Helper;
@@ -52,29 +50,26 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
     public static final int ENOCEAN_MAX_DATA = 65790;
 
     // Thread management
-    protected @Nullable Future<?> readingTask = null;
-    private @Nullable Future<?> timeOut = null;
+    protected Future<?> readingTask = null;
+    private Future<?> timeOut = null;
 
     protected Logger logger = LoggerFactory.getLogger(EnOceanTransceiver.class);
 
-    private @Nullable SerialPortManager serialPortManager;
+    private SerialPortManager serialPortManager;
     private static final int ENOCEAN_DEFAULT_BAUD = 57600;
     protected String path;
-    private @Nullable SerialPort serialPort;
+    SerialPort serialPort;
 
     class Request {
-        @Nullable
-        BasePacket requestPacket;
-        @Nullable
-        Response responsePacket;
-        @Nullable
-        ResponseListener<? extends @Nullable Response> responseListener;
+        BasePacket RequestPacket;
+
+        Response ResponsePacket;
+        ResponseListener<? extends Response> ResponseListener;
     }
 
     private class RequestQueue {
@@ -106,41 +101,32 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
             if (!queue.isEmpty()) {
                 currentRequest = queue.peek();
                 try {
-                    Request localCurrentRequest = currentRequest;
-                    if (localCurrentRequest != null && localCurrentRequest.requestPacket != null) {
-                        synchronized (localCurrentRequest) {
-                            BasePacket rqPacket = localCurrentRequest.requestPacket;
-                            if (currentRequest != null && rqPacket != null) {
-                                logger.debug("Sending data, type {}, payload {}{}", rqPacket.getPacketType().name(),
-                                        HexUtils.bytesToHex(rqPacket.getPayload()),
-                                        HexUtils.bytesToHex(rqPacket.getOptionalPayload()));
-                                byte[] b = serializePacket(rqPacket);
-                                logger.trace("Sending raw data: {}", HexUtils.bytesToHex(b));
-                                OutputStream localOutPutStream = outputStream;
-                                if (localOutPutStream != null) {
-                                    localOutPutStream.write(b);
-                                    localOutPutStream.flush();
-                                }
-                                Future<?> localTimeOut = timeOut;
-                                if (localTimeOut != null) {
-                                    localTimeOut.cancel(true);
-                                }
+                    if (currentRequest != null && currentRequest.RequestPacket != null) {
+                        synchronized (currentRequest) {
+                            logger.debug("Sending data, type {}, payload {}{}",
+                                    currentRequest.RequestPacket.getPacketType().name(),
+                                    HexUtils.bytesToHex(currentRequest.RequestPacket.getPayload()),
+                                    HexUtils.bytesToHex(currentRequest.RequestPacket.getOptionalPayload()));
 
-                                // slowdown sending of message to avoid hickups at receivers
-                                // Todo tweak sending intervall (250 ist just a first try)
-                                timeOut = scheduler.schedule(() -> {
-                                    try {
-                                        sendNext();
-                                    } catch (IOException e) {
-                                        logger.trace("Unable to process message", e);
-                                        TransceiverErrorListener localListener = errorListener;
-                                        if (localListener != null) {
-                                            localListener.errorOccured(e);
-                                        }
-                                        return;
-                                    }
-                                }, 250, TimeUnit.MILLISECONDS);
+                            byte[] b = serializePacket(currentRequest.RequestPacket);
+                            logger.trace("Sending raw data: {}", HexUtils.bytesToHex(b));
+                            outputStream.write(b);
+                            outputStream.flush();
+
+                            if (timeOut != null) {
+                                timeOut.cancel(true);
                             }
+
+                            // slowdown sending of message to avoid hickups at receivers
+                            // Todo tweak sending intervall (250 ist just a first try)
+                            timeOut = scheduler.schedule(() -> {
+                                try {
+                                    sendNext();
+                                } catch (IOException e) {
+                                    errorListener.ErrorOccured(e);
+                                    return;
+                                }
+                            }, 250, TimeUnit.MILLISECONDS);
                         }
                     } else {
                         sendNext();
@@ -153,22 +139,20 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     }
 
     RequestQueue requestQueue;
-    @Nullable
     Request currentRequest = null;
 
     protected Map<Long, HashSet<PacketListener>> listeners;
     protected HashSet<EventListener> eventListeners;
-    protected @Nullable TeachInListener teachInListener;
+    protected TeachInListener teachInListener;
 
-    protected @Nullable InputStream inputStream;
-    protected @Nullable OutputStream outputStream;
+    protected InputStream inputStream;
+    protected OutputStream outputStream;
 
-    private byte[] filteredDeviceId = new byte[0];
-    @Nullable
+    private byte[] filteredDeviceId;
     TransceiverErrorListener errorListener;
 
     public EnOceanTransceiver(String path, TransceiverErrorListener errorListener, ScheduledExecutorService scheduler,
-            @Nullable SerialPortManager serialPortManager) {
+            SerialPortManager serialPortManager) {
         requestQueue = new RequestQueue(scheduler);
 
         listeners = new HashMap<>();
@@ -180,51 +164,34 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         this.path = path;
     }
 
-    public void initilize()
+    public void Initialize()
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
-        SerialPortManager localSerialPortManager = serialPortManager;
-        if (localSerialPortManager == null) {
-            throw new IOException("Could access the SerialPortManager, it was null");
-        }
-        SerialPortIdentifier id = localSerialPortManager.getIdentifier(path);
+        SerialPortIdentifier id = serialPortManager.getIdentifier(path);
         if (id == null) {
             throw new IOException("Could not find a gateway on given path '" + path + "', "
-                    + localSerialPortManager.getIdentifiers().count() + " ports available.");
+                    + serialPortManager.getIdentifiers().count() + " ports available.");
         }
 
-        try {
-            serialPort = id.open(EnOceanBindingConstants.BINDING_ID, 1000);
-        } catch (PortInUseException e) {
-            logger.warn("EnOceanSerialTransceiver not initialized, port allready in use", e);
-            return;
-        }
-        SerialPort localSerialPort = serialPort;
-        if (localSerialPort == null) {
-            logger.debug("EnOceanSerialTransceiver not initialized, serialPort was null");
-            return;
-        }
-        localSerialPort.setSerialPortParams(ENOCEAN_DEFAULT_BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+        serialPort = id.open(EnOceanBindingConstants.BINDING_ID, 1000);
+        serialPort.setSerialPortParams(ENOCEAN_DEFAULT_BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                 SerialPort.PARITY_NONE);
 
         try {
-            localSerialPort.enableReceiveThreshold(1);
-            localSerialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
+            serialPort.enableReceiveThreshold(1);
+            serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
         } catch (UnsupportedCommOperationException e) {
             // rfc connections do not allow a ReceiveThreshold
-            logger.debug("EnOceanSerialTransceiver encountered an UnsupportedCommOperationException while initilizing",
-                    e);
         }
 
-        inputStream = localSerialPort.getInputStream();
-        outputStream = localSerialPort.getOutputStream();
+        inputStream = serialPort.getInputStream();
+        outputStream = serialPort.getOutputStream();
+
         logger.info("EnOceanSerialTransceiver initialized");
     }
 
-    public void startReceiving(ScheduledExecutorService scheduler) {
-        @Nullable
-        Future<?> localReadingTask = readingTask;
-        if (localReadingTask == null || localReadingTask.isCancelled()) {
-            localReadingTask = scheduler.submit(new Runnable() {
+    public void StartReceiving(ScheduledExecutorService scheduler) {
+        if (readingTask == null || readingTask.isCancelled()) {
+            readingTask = scheduler.submit(new Runnable() {
                 @Override
                 public void run() {
                     receivePackets();
@@ -234,26 +201,19 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.info("EnOceanSerialTransceiver RX thread started");
     }
 
-    public void shutDown() {
+    public void ShutDown() {
         logger.debug("shutting down transceiver");
         logger.debug("Interrupt rx Thread");
 
-        Future<?> localTimeOut = timeOut;
-        if (localTimeOut != null) {
-            localTimeOut.cancel(true);
+        if (timeOut != null) {
+            timeOut.cancel(true);
         }
 
-        Future<?> localReadingTask = readingTask;
-        if (localReadingTask != null) {
-            localReadingTask.cancel(true);
-
-            InputStream localInputStream = inputStream;
-            if (localInputStream != null) {
-                try {
-                    localInputStream.close();
-                } catch (IOException e) {
-                    logger.debug("IOException occured while closing the stream", e);
-                }
+        if (readingTask != null) {
+            readingTask.cancel(true);
+            try {
+                inputStream.close();
+            } catch (Exception e) {
             }
         }
 
@@ -264,28 +224,26 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         teachInListener = null;
         errorListener = null;
 
-        OutputStream localOutputStream = outputStream;
-        if (localOutputStream != null) {
+        if (outputStream != null) {
+            logger.debug("Closing serial output stream");
             try {
-                localOutputStream.close();
+                outputStream.close();
             } catch (IOException e) {
-                logger.debug("IOException occured while closing the output stream", e);
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
+            }
+        }
+        if (inputStream != null) {
+            logger.debug("Closeing serial input stream");
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
             }
         }
 
-        InputStream localInputStream = inputStream;
-        if (localInputStream != null) {
-            try {
-                localInputStream.close();
-            } catch (IOException e) {
-                logger.debug("IOException occured while closing the input stream", e);
-            }
-        }
-
-        SerialPort localSerialPort = serialPort;
-        if (localSerialPort != null) {
-            logger.debug("Closing the serial port");
-            localSerialPort.close();
+        if (serialPort != null) {
+            logger.debug("Closing serial port");
+            serialPort.close();
         }
 
         serialPort = null;
@@ -298,8 +256,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     private void receivePackets() {
         byte[] buffer = new byte[1];
 
-        Future<?> localReadingTask = readingTask;
-        while (localReadingTask != null && !localReadingTask.isCancelled()) {
+        while (readingTask != null && !readingTask.isCancelled()) {
             int bytesRead = read(buffer, 1);
             if (bytesRead > 0) {
                 processMessage(buffer[0]);
@@ -310,16 +267,11 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     protected abstract void processMessage(byte firstByte);
 
     protected int read(byte[] buffer, int length) {
-        InputStream localInputStream = inputStream;
-        if (localInputStream != null) {
-            try {
-                localInputStream.read(buffer, 0, length);
-            } catch (IOException e) {
-                logger.debug("IOException occured while reading the input stream", e);
-                return 0;
-            }
+        try {
+            return this.inputStream.read(buffer, 0, length);
+        } catch (IOException e) {
+            return 0;
         }
-        return 0;
     }
 
     protected void informListeners(BasePacket packet) {
@@ -333,8 +285,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                         msg.getRORG().name(), HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
 
                 if (msg.getRORG() != RORG.Unknown) {
-                    if (senderId.length > 0) {
-                        if (senderId.length > 2 && filteredDeviceId.length > 2 && senderId[0] == filteredDeviceId[0]
+                    if (senderId != null) {
+                        if (filteredDeviceId != null && senderId[0] == filteredDeviceId[0]
                                 && senderId[1] == filteredDeviceId[1] && senderId[2] == filteredDeviceId[2]) {
                             // filter away own messages which are received through a repeater
                             return;
@@ -342,11 +294,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
                         if (teachInListener != null && (msg.getIsTeachIn() || msg.getRORG() == RORG.RPS)) {
                             logger.info("Received teach in message from {}", HexUtils.bytesToHex(msg.getSenderId()));
-
-                            TeachInListener localListener = teachInListener;
-                            if (localListener != null) {
-                                localListener.packetReceived(msg);
-                            }
+                            teachInListener.packetReceived(msg);
                             return;
                         } else if (teachInListener == null && msg.getIsTeachIn()) {
                             logger.info("Discard message because this is a teach-in telegram from {}!",
@@ -377,10 +325,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
                     if (teachInListener != null) {
                         logger.info("Received smart teach in from {}", HexUtils.bytesToHex(senderId));
-                        TeachInListener localListener = teachInListener;
-                        if (localListener != null) {
-                            localListener.eventReceived(event);
-                        }
+                        teachInListener.eventReceived(event);
                         return;
                     } else {
                         logger.info("Discard message because this is a smart teach-in telegram from {}!",
@@ -399,13 +344,11 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     }
 
     protected void handleResponse(Response response) throws IOException {
-        Request localCurrentRequest = currentRequest;
-        if (localCurrentRequest != null) {
-            ResponseListener<? extends @Nullable Response> listener = localCurrentRequest.responseListener;
-            if (listener != null) {
-                localCurrentRequest.responsePacket = response;
+        if (currentRequest != null) {
+            if (currentRequest.ResponseListener != null) {
+                currentRequest.ResponsePacket = response;
                 try {
-                    listener.handleResponse(response);
+                    currentRequest.ResponseListener.handleResponse(response);
                 } catch (Exception e) {
                     logger.debug("Exception during response handling");
                 } finally {
@@ -419,8 +362,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         }
     }
 
-    public void sendBasePacket(@Nullable BasePacket packet,
-            @Nullable ResponseListener<? extends @Nullable Response> responseCallback) throws IOException {
+    public void sendBasePacket(BasePacket packet, ResponseListener<? extends Response> responseCallback)
+            throws IOException {
         if (packet == null) {
             return;
         }
@@ -428,8 +371,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.debug("Enqueue new send request with ESP3 type {} {} callback", packet.getPacketType().name(),
                 responseCallback == null ? "without" : "with");
         Request r = new Request();
-        r.requestPacket = packet;
-        r.responseListener = responseCallback;
+        r.RequestPacket = packet;
+        r.ResponseListener = responseCallback;
 
         requestQueue.enqueRequest(r);
     }
@@ -469,7 +412,9 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     }
 
     public void setFilteredDeviceId(byte[] filteredDeviceId) {
-        System.arraycopy(filteredDeviceId, 0, filteredDeviceId, 0, filteredDeviceId.length);
+        if (filteredDeviceId != null) {
+            System.arraycopy(filteredDeviceId, 0, filteredDeviceId, 0, filteredDeviceId.length);
+        }
     }
 
     @Override

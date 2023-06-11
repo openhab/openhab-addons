@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,13 +35,11 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airvisualnode.internal.config.AirVisualNodeConfig;
-import org.openhab.binding.airvisualnode.internal.dto.MeasurementsInterface;
-import org.openhab.binding.airvisualnode.internal.dto.NodeDataInterface;
-import org.openhab.binding.airvisualnode.internal.dto.airvisual.NodeData;
-import org.openhab.binding.airvisualnode.internal.dto.airvisualpro.ProNodeData;
+import org.openhab.binding.airvisualnode.internal.json.MeasurementsInterface;
+import org.openhab.binding.airvisualnode.internal.json.NodeDataInterface;
+import org.openhab.binding.airvisualnode.internal.json.airvisual.NodeData;
+import org.openhab.binding.airvisualnode.internal.json.airvisualpro.ProNodeData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -73,23 +71,29 @@ import jcifs.smb.SmbFileInputStream;
  *
  * @author Victor Antonovich - Initial contribution
  */
-@NonNullByDefault
 public class AirVisualNodeHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AirVisualNodeHandler.class);
 
     public static final String NODE_JSON_FILE = "latest_config_measurements.json";
-    private static final long DELAY_IN_MS = 500;
 
     private final Gson gson;
-    private @Nullable ScheduledFuture<?> pollFuture;
+
+    private ScheduledFuture<?> pollFuture;
+
     private long refreshInterval;
-    private String nodeAddress = "";
-    private String nodeUsername = "";
-    private String nodePassword = "";
-    private String nodeShareName = "";
-    private @Nullable NodeDataInterface nodeData;
-    private boolean isProVersion = false;
+
+    private String nodeAddress;
+
+    private String nodeUsername;
+
+    private String nodePassword;
+
+    private String nodeShareName;
+
+    private NodeDataInterface nodeData;
+
+    private boolean isProVersion;
 
     public AirVisualNodeHandler(Thing thing) {
         super(thing);
@@ -102,19 +106,22 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
         AirVisualNodeConfig config = getConfigAs(AirVisualNodeConfig.class);
 
-        if (config.address.isBlank()) {
+        if (config.address == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Node address must be set");
             return;
         }
-        if (config.password.isBlank()) {
+        this.nodeAddress = config.address;
+
+        this.nodeUsername = config.username;
+
+        if (config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Node password must be set");
             return;
         }
-
-        this.nodeAddress = config.address;
-        this.nodeUsername = config.username;
         this.nodePassword = config.password;
+
         this.nodeShareName = config.share;
+
         this.refreshInterval = config.refresh * 1000L;
 
         try {
@@ -134,15 +141,8 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
     private void removeProChannels() {
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        channels.removeIf(channel -> isProChannel(channel.getLabel()));
+        channels.removeIf(channel -> channel.getLabel().equals("PM0.1") || channel.getLabel().equals("PM10"));
         replaceChannels(channels);
-    }
-
-    private boolean isProChannel(@Nullable String channelLabel) {
-        if (channelLabel == null || channelLabel.isBlank()) {
-            return false;
-        }
-        return "PM0.1".equals(channelLabel) || "PM10".equals(channelLabel);
     }
 
     private void replaceChannels(List<Channel> channels) {
@@ -173,15 +173,14 @@ public class AirVisualNodeHandler extends BaseThingHandler {
     }
 
     private synchronized void stopPoll() {
-        ScheduledFuture<?> localFuture = pollFuture;
-        if (localFuture != null) {
-            localFuture.cancel(false);
+        if (pollFuture != null && !pollFuture.isCancelled()) {
+            pollFuture.cancel(false);
         }
     }
 
     private synchronized void schedulePoll() {
-        logger.debug("Scheduling poll for {}}ms out, then every {} ms", DELAY_IN_MS, refreshInterval);
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, DELAY_IN_MS, refreshInterval, TimeUnit.MILLISECONDS);
+        logger.debug("Scheduling poll for 500ms out, then every {} ms", refreshInterval);
+        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 500, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     private void poll() {
@@ -204,9 +203,8 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         } else {
             currentNodeData = gson.fromJson(jsonData, NodeData.class);
         }
-        NodeDataInterface localNodeDate = nodeData;
-        if (localNodeDate == null
-                || currentNodeData.getStatus().getDatetime() > localNodeDate.getStatus().getDatetime()) {
+
+        if (nodeData == null || currentNodeData.getStatus().getDatetime() > nodeData.getStatus().getDatetime()) {
             nodeData = currentNodeData;
             // Update all channels from the updated Node data
             for (Channel channel : getThing().getChannels()) {
@@ -224,9 +222,8 @@ public class AirVisualNodeHandler extends BaseThingHandler {
     }
 
     private void updateChannel(String channelId, boolean force) {
-        NodeDataInterface localnodeData = nodeData;
-        if (localnodeData != null && (force || isLinked(channelId))) {
-            State state = getChannelState(channelId, localnodeData);
+        if (nodeData != null && (force || isLinked(channelId))) {
+            State state = getChannelState(channelId, nodeData);
             logger.debug("Update channel {} with state {}", channelId, state);
             updateState(channelId, state);
         }

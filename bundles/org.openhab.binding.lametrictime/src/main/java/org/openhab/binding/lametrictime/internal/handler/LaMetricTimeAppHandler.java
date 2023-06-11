@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.lametrictime.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
+import org.openhab.binding.lametrictime.api.local.model.Widget;
 
 /**
  * The {@link LaMetricTimeAppHandler} provides a common contract for all app handlers available for the device.
  *
  * @author Gregory Moyer - Initial contribution
  */
-@NonNullByDefault
 public interface LaMetricTimeAppHandler {
 
     /**
@@ -29,6 +26,5 @@ public interface LaMetricTimeAppHandler {
      *
      * @return the {@link Widget}
      */
-    @Nullable
-    Widget getWidget();
+    public Widget getWidget();
 }

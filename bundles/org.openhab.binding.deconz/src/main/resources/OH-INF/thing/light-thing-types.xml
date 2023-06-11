@@ -9,9 +9,10 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Warning Device</label>
+		<description>A warning device</description>
 		<category>Siren</category>
 		<channels>
-			<channel typeId="alert" id="alert"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -39,18 +40,12 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
-
 		<label>On/Off Light</label>
 		<description>A light that can be turned on or off.</description>
-
 		<channels>
 			<channel typeId="system.power" id="switch"/>
 			<channel typeId="ontime" id="ontime"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>uid</representation-property>
 
@@ -62,16 +57,13 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Dimmable Light</label>
+		<description>A dimmable light.</description>
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="system.brightness" id="brightness"/>
 			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>uid</representation-property>
 
@@ -89,12 +81,8 @@
 			<channel typeId="system.brightness" id="brightness"/>
 			<channel typeId="ct" id="color_temperature"/>
 			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>uid</representation-property>
 
@@ -111,12 +99,8 @@
 		<channels>
 			<channel typeId="system.color" id="color"/>
 			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>uid</representation-property>
 
@@ -134,12 +118,8 @@
 			<channel typeId="system.color" id="color"/>
 			<channel typeId="ct" id="color_temperature"/>
 			<channel typeId="ontime" id="ontime"/>
-			<channel typeId="alert" id="alert"/>
+			<channel id="alert" typeId="alert"></channel>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>uid</representation-property>
 
@@ -181,23 +161,16 @@
 		<item-type>Number:Time</item-type>
 		<label>On Time</label>
 		<description>Time that the light stays on before switched off automatically (0=forever)</description>
-		<state pattern="%.1f %unit%" min="0"/>
 	</channel-type>
 
 	<channel-type id="effect">
 		<item-type>String</item-type>
 		<label>Effect Channel</label>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="effectSpeed">
 		<item-type>Number</item-type>
 		<label>Effect Speed Channel</label>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 		<state min="0" max="10" step="1"/>
 	</channel-type>
 

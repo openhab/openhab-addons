@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,8 @@ public class RdsDataPoints {
      * execute an HTTP GET command on the remote cloud server to retrieve the JSON
      * response from the given urlString
      */
-    protected static String httpGenericGetJson(String apiKey, String token, String urlString) throws IOException {
+    protected static String httpGenericGetJson(String apiKey, String token, String urlString)
+            throws RdsCloudException, IOException {
         /*
          * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
          * preferred JETTY library; the reason is that JETTY does not allow sending the
@@ -195,7 +196,7 @@ public class RdsDataPoints {
         }
         @Nullable
         String pointId = indexClassToId.get(pointClass);
-        if (pointId != null && !pointId.isEmpty()) {
+        if (pointId != null) {
             return pointId;
         }
         throw new RdsCloudException(String.format("no pointId to match pointClass \"%s\"", pointClass));
@@ -249,12 +250,10 @@ public class RdsDataPoints {
                 Set<String> set = new HashSet<>();
                 String pointId;
 
-                for (ChannelMap channel : CHAN_MAP) {
-                    try {
-                        pointId = pointClassToId(channel.clazz);
+                for (ChannelMap chan : CHAN_MAP) {
+                    pointId = pointClassToId(chan.clazz);
+                    if (!pointId.isEmpty()) {
                         set.add(String.format("\"%s\"", pointId));
-                    } catch (RdsCloudException e) {
-                        logger.debug("{} \"{}\" not implemented; don't include in request", channel.id, channel.clazz);
                     }
                 }
 

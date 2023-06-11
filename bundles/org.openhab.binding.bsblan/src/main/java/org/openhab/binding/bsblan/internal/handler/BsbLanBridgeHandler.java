@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,17 +78,21 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
 
         // validate 'host' configuration
         String host = bridgeConfig.host;
-        if (host.isBlank()) {
+        if (host == null || host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'host' is mandatory and must be configured");
             return;
         }
 
         // validate 'refreshInterval' configuration
-        if (bridgeConfig.refreshInterval < MIN_REFRESH_INTERVAL) {
+        if (bridgeConfig.refreshInterval != null && bridgeConfig.refreshInterval < MIN_REFRESH_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("Parameter 'refreshInterval' must be at least %d seconds", MIN_REFRESH_INTERVAL));
             return;
+        }
+
+        if (bridgeConfig.port == null) {
+            bridgeConfig.port = DEFAULT_API_PORT;
         }
 
         // all checks succeeded, start refreshing
@@ -156,7 +160,9 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         // use a local variable to avoid the build warning "Potential null pointer access"
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
-            refreshJob = scheduler.scheduleWithFixedDelay(this::doRefresh, 0, config.refreshInterval, TimeUnit.SECONDS);
+            int interval = (config.refreshInterval != null) ? config.refreshInterval.intValue()
+                    : DEFAULT_REFRESH_INTERVAL;
+            refreshJob = scheduler.scheduleWithFixedDelay(this::doRefresh, 0, interval, TimeUnit.SECONDS);
         }
     }
 }

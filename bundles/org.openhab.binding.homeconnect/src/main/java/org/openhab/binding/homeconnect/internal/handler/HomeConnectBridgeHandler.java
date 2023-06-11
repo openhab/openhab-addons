@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     private @Nullable List<Event> eventHistory;
 
     private @NonNullByDefault({}) OAuthClientService oAuthClientService;
-    private @Nullable String oAuthServiceHandleId;
+    private @NonNullByDefault({}) String oAuthServiceHandleId;
     private @NonNullByDefault({}) HomeConnectApiClient apiClient;
     private @NonNullByDefault({}) HomeConnectEventSourceClient eventSourceClient;
 
@@ -222,15 +222,6 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        String handleId = this.oAuthServiceHandleId;
-        if (handleId != null) {
-            oAuthFactory.deleteServiceAndAccessToken(handleId);
-        }
-        super.handleRemoval();
-    }
-
-    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(HomeConnectDiscoveryService.class);
     }
@@ -294,10 +285,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
         eventSourceClient.getLatestEvents().clear();
         eventSourceClient.dispose(immediate);
 
-        String handleId = this.oAuthServiceHandleId;
-        if (handleId != null) {
-            oAuthFactory.ungetOAuthService(handleId);
-        }
+        oAuthFactory.ungetOAuthService(oAuthServiceHandleId);
         homeConnectServlet.removeBridgeHandler(this);
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -37,10 +36,12 @@ import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
  */
 @NonNullByDefault
 public abstract class RestManager {
-    private static final UriBuilder API_URI_BUILDER = getApiBaseBuilder(PATH_API);
+    private static final UriBuilder API_BASE_BUILDER = UriBuilder.fromUri(URL_API);
+    private static final UriBuilder APP_URI_BUILDER = UriBuilder.fromUri(URL_APP).path(PATH_API);
+    private static final UriBuilder API_URI_BUILDER = getApiBaseBuilder().path(PATH_API);
 
     private final Set<Scope> requiredScopes;
-    protected final ApiBridgeHandler apiBridge;
+    private final ApiBridgeHandler apiBridge;
 
     public RestManager(ApiBridgeHandler apiBridge, FeatureArea features) {
         this.requiredScopes = features.scopes;
@@ -75,11 +76,11 @@ public abstract class RestManager {
             throw new IllegalArgumentException("appendParams : params count must be even");
         }
         for (int i = 0; i < params.length; i += 2) {
-            Object param1 = params[i];
-            Object param2 = params[i + 1];
-            if (param1 instanceof String query) {
-                if (param2 != null) { // or else just ignore this query element
-                    builder.queryParam(query, param2);
+            Object query = params[i];
+            if (query instanceof String) {
+                Object param = params[i + 1];
+                if (param != null) {
+                    builder.queryParam((String) query, param);
                 }
             } else {
                 throw new IllegalArgumentException("appendParams : even parameters must be Strings");
@@ -88,14 +89,16 @@ public abstract class RestManager {
         return builder;
     }
 
-    protected static UriBuilder getApiBaseBuilder(String... paths) {
-        UriBuilder builder = UriBuilder.fromUri(URL_API);
-        Stream.of(paths).forEach(path -> builder.path(path));
-        return builder;
+    protected static UriBuilder getApiBaseBuilder() {
+        return API_BASE_BUILDER.clone();
     }
 
     public static UriBuilder getApiUriBuilder(String path, @Nullable Object... params) {
         return appendParams(API_URI_BUILDER.clone().path(path), params);
+    }
+
+    protected static UriBuilder getAppUriBuilder(String path, @Nullable Object... params) {
+        return appendParams(APP_URI_BUILDER.clone().path(path), params);
     }
 
     private String toRequest(Map<String, String> entries) {

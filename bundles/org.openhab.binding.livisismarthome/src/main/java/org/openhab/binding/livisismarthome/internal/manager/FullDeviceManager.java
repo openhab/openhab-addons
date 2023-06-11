@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,7 @@ public class FullDeviceManager {
      * states. Calling this may take a while...
      */
     public List<DeviceDTO> getFullDevices() throws IOException {
+
         final Map<String, LocationDTO> locationMap = createLocationMap(client);
         final Map<String, CapabilityDTO> capabilityMap = createCapabilityMap(client);
         final Map<String, DeviceStateDTO> deviceStateMap = createDeviceStateMap(client);
@@ -94,6 +95,7 @@ public class FullDeviceManager {
     private void initializeDevice(DeviceDTO device, @Nullable DeviceStateDTO deviceState,
             Map<String, LocationDTO> locationMap, Map<String, CapabilityDTO> capabilityMap,
             List<MessageDTO> messageList) {
+
         device.setDeviceState(deviceState);
 
         if (isBatteryPowered(device)) {
@@ -134,6 +136,7 @@ public class FullDeviceManager {
     }
 
     private static Map<String, CapabilityDTO> createCapabilityMap(LivisiClient client) throws IOException {
+
         final Map<String, CapabilityStateDTO> capabilityStateMap = createCapabilityStateMap(client);
         final List<CapabilityDTO> capabilityList = client.getCapabilities();
 
@@ -142,6 +145,7 @@ public class FullDeviceManager {
 
     private static Map<String, CapabilityDTO> createCapabilityMap(String deviceId, LivisiClient client)
             throws IOException {
+
         final Map<String, CapabilityStateDTO> capabilityStateMap = createCapabilityStateMap(client);
         final List<CapabilityDTO> capabilityList = client.getCapabilitiesForDevice(deviceId);
 
@@ -164,6 +168,7 @@ public class FullDeviceManager {
 
     private static Map<String, CapabilityDTO> createDeviceCapabilityMap(DeviceDTO device,
             Map<String, CapabilityDTO> capabilityMap) {
+
         final HashMap<String, CapabilityDTO> deviceCapabilityMap = new HashMap<>();
         for (final String capabilityValue : device.getCapabilities()) {
             final CapabilityDTO capability = capabilityMap.get(LinkDTO.getId(capabilityValue));

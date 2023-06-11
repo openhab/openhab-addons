@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public class ShellyDeviceProfile {
     public boolean isLight = false; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb = false; // true only if it is a Bulb
     public boolean isDuo = false; // true only if it is a Duo
-    public boolean isRGBW2 = false; // true only if it a RGBW2
+    public boolean isRGBW2 = false; // true only if it a a RGBW2
     public boolean inColor = false; // true if bulb/rgbw2 is in color mode
 
     public boolean isSensor = false; // true for HT & Smoke
@@ -99,7 +99,6 @@ public class ShellyDeviceProfile {
     public boolean isButton = false; // true for a Shelly Button 1
     public boolean isIX = false; // true for a Shelly IX
     public boolean isTRV = false; // true for a Shelly TRV
-    public boolean isSmoke = false; // true for Shelly Smoke
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -197,7 +196,7 @@ public class ShellyDeviceProfile {
         }
 
         boolean isFlood = thingType.equals(THING_TYPE_SHELLYFLOOD_STR);
-        isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR) || thingType.equals(THING_TYPE_SHELLYPLUSSMOKE_STR);
+        boolean isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
         isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);
@@ -338,14 +337,9 @@ public class ShellyDeviceProfile {
     }
 
     public String[] getValveProfileList(int valveId) {
-        if (isTRV && settings.thermostats != null) {
-            int sz = settings.thermostats.size();
-            if (valveId <= sz) {
-                if (settings.thermostats != null) {
-                    ShellyThermnostat t = settings.thermostats.get(valveId);
-                    return t.profileNames;
-                }
-            }
+        if (isTRV && settings.thermostats != null && valveId <= settings.thermostats.size()) {
+            ShellyThermnostat t = settings.thermostats.get(valveId);
+            return t.profileNames;
         }
         return new String[0];
     }

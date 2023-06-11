@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,15 +33,15 @@ public class DataPointValue extends DataPointBase<@Nullable Double> {
     public DataPointValue(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
         this.factor = 0.0f;
-        if ("9.001".equals(knxDataType)) {
+        if (knxDataType.equals("9.001")) {
             this.setUnit("°C");
             this.factor = 0.01f;
             this.outputFormat = "%.1f";
-        } else if ("9.002".equals(knxDataType)) {
+        } else if (knxDataType.equals("9.002")) {
             this.setUnit("°K");
             this.factor = 0.01f;
             this.outputFormat = "%.1f";
-        } else if ("9.006".equals(knxDataType)) {
+        } else if (knxDataType.equals("9.006")) {
             this.setUnit("Bar");
             this.factor = 0.0000001f;
             this.outputFormat = "%.2f";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,25 +27,25 @@ public interface FilterTokenVisitor<R> {
     /**
      * Handles {@link ChannelNameEquals}.
      */
-    R handle(ChannelNameEquals equals) throws FilterParserException;
+    public abstract R handle(ChannelNameEquals equals) throws FilterParserException;
 
     /**
      * Handles {@link OrOperator}.
      */
-    R handle(OrOperator operator) throws FilterParserException;
+    public abstract R handle(OrOperator operator) throws FilterParserException;
 
     /**
      * Handles {@link AndOperator}.
      */
-    R handle(AndOperator operator) throws FilterParserException;
+    public abstract R handle(AndOperator operator) throws FilterParserException;
 
     /**
      * Handles {@link BracketOpenToken}.
      */
-    R handle(BracketOpenToken token) throws FilterParserException;
+    public abstract R handle(BracketOpenToken token) throws FilterParserException;
 
     /**
      * Handles {@link BracketCloseToken}.
      */
-    R handle(BracketCloseToken token) throws FilterParserException;
+    public abstract R handle(BracketCloseToken token) throws FilterParserException;
 }

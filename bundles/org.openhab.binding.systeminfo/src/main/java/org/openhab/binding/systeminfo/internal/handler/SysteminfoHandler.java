@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,12 +157,6 @@ public class SysteminfoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "@text/offline.cannot-initialize");
         }
-    }
-
-    @Override
-    public void handleRemoval() {
-        thingTypeProvider.removeThingType(thing.getThingTypeUID());
-        super.handleRemoval();
     }
 
     private boolean instantiateSysteminfoLibrary() {
@@ -468,7 +462,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getBatteryName(deviceIndex);
                     break;
                 case CHANNEL_BATTERY_REMAINING_CAPACITY:
-                    state = new QuantityType<>(systeminfo.getBatteryRemainingCapacity(deviceIndex), Units.PERCENT);
+                    state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
                     break;
                 case CHANNEL_BATTERY_REMAINING_TIME:
                     state = systeminfo.getBatteryRemainingTime(deviceIndex);
@@ -517,13 +511,10 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getMemoryTotal();
                     break;
                 case CHANNEL_MEMORY_AVAILABLE_PERCENT:
-                    PercentType memoryAvailablePercent = systeminfo.getMemoryAvailablePercent();
-                    state = (memoryAvailablePercent != null) ? new QuantityType<>(memoryAvailablePercent, Units.PERCENT)
-                            : null;
+                    state = systeminfo.getMemoryAvailablePercent();
                     break;
                 case CHANNEL_MEMORY_USED_PERCENT:
-                    PercentType memoryUsedPercent = systeminfo.getMemoryUsedPercent();
-                    state = (memoryUsedPercent != null) ? new QuantityType<>(memoryUsedPercent, Units.PERCENT) : null;
+                    state = systeminfo.getMemoryUsedPercent();
                     break;
                 case CHANNEL_SWAP_AVAILABLE:
                     state = systeminfo.getSwapAvailable();
@@ -535,13 +526,10 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getSwapTotal();
                     break;
                 case CHANNEL_SWAP_AVAILABLE_PERCENT:
-                    PercentType swapAvailablePercent = systeminfo.getSwapAvailablePercent();
-                    state = (swapAvailablePercent != null) ? new QuantityType<>(swapAvailablePercent, Units.PERCENT)
-                            : null;
+                    state = systeminfo.getSwapAvailablePercent();
                     break;
                 case CHANNEL_SWAP_USED_PERCENT:
-                    PercentType swapUsedPercent = systeminfo.getSwapUsedPercent();
-                    state = (swapUsedPercent != null) ? new QuantityType<>(swapUsedPercent, Units.PERCENT) : null;
+                    state = systeminfo.getSwapUsedPercent();
                     break;
                 case CHANNEL_DRIVE_MODEL:
                     state = systeminfo.getDriveModel(deviceIndex);
@@ -571,14 +559,10 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getStorageType(deviceIndex);
                     break;
                 case CHANNEL_STORAGE_AVAILABLE_PERCENT:
-                    PercentType storageAvailablePercent = systeminfo.getStorageAvailablePercent(deviceIndex);
-                    state = (storageAvailablePercent != null)
-                            ? new QuantityType<>(storageAvailablePercent, Units.PERCENT)
-                            : null;
+                    state = systeminfo.getStorageAvailablePercent(deviceIndex);
                     break;
                 case CHANNEL_STORAGE_USED_PERCENT:
-                    PercentType storageUsedPercent = systeminfo.getStorageUsedPercent(deviceIndex);
-                    state = (storageUsedPercent != null) ? new QuantityType<>(storageUsedPercent, Units.PERCENT) : null;
+                    state = systeminfo.getStorageUsedPercent(deviceIndex);
                     break;
                 case CHANNEL_NETWORK_IP:
                     state = systeminfo.getNetworkIp(deviceIndex);

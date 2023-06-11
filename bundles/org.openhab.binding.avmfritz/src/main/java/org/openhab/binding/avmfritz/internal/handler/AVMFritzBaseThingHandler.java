@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,50 +12,8 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.BINDING_ID;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ACTUALTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BATTERY;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BATTERY_LOW;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BRIGHTNESS;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLOR;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLORTEMPERATURE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLORTEMPERATURE_ABS;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COMFORTTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_CONTACT_STATE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_DEVICE_LOCKED;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ECOTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ENERGY;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_LAST_CHANGE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_LOCKED;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_NEXTTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_NEXT_CHANGE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_OBSTRUCTION_ALARM;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ON_OFF;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_OUTLET;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_RADIATOR_MODE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_ROLLERSHUTTER;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_SETTEMP;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_TEMPERATURE_ALARM;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_VOLTAGE;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CONFIG_CHANNEL_TEMP_OFFSET;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_BOOST;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_COMFORT;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_ECO;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_OFF;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_ON;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_UNKNOWN;
-import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.MODE_WINDOW_OPEN;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_MAX;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_OFF;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_ON;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.TEMP_FRITZ_UNDEFINED;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.fromCelsius;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.normalizeCelsius;
-import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.toCelsius;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.dto.HeatingModel.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -124,8 +82,6 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
- * @author Christoph Sommer - Added support for color temperature
- * @author Tobias Lange - Added abs color temperature and fixed on/off behavior of light blub
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
@@ -196,17 +152,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateHumiditySensor(deviceModel.getHumidity());
                 }
                 if (deviceModel.isHANFUNAlarmSensor()) {
-                    if (deviceModel.isHANFUNBlinds()) {
-                        updateHANFUNBlindsAlarmSensor(deviceModel.getAlert());
-                    } else {
-                        updateHANFUNAlarmSensor(deviceModel.getAlert());
-                    }
+                    updateHANFUNAlarmSensor(deviceModel.getAlert());
                 }
                 if (deviceModel.isHANFUNBlinds()) {
                     updateLevelControl(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isColorLight()) {
-                    updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(),
-                            deviceModel.getSimpleOnOffUnit());
+                    updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
                     updateDimmableLight(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
@@ -220,17 +171,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         if (alertModel != null) {
             updateThingChannelState(CHANNEL_CONTACT_STATE,
                     AlertModel.ON.equals(alertModel.getState()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        }
-    }
-
-    private void updateHANFUNBlindsAlarmSensor(@Nullable AlertModel alertModel) {
-        if (alertModel != null) {
-            updateThingChannelState(CHANNEL_OBSTRUCTION_ALARM,
-                    OnOffType.from(alertModel.hasObstructionAlarmOccurred()));
-            updateThingChannelState(CHANNEL_TEMPERATURE_ALARM, OnOffType.from(alertModel.hasTemperaturAlarmOccurred()));
-            if (alertModel.hasUnknownAlarmOccurred()) {
-                logger.warn("Unknown blinds alarm {}", alertModel.getState());
-            }
         }
     }
 
@@ -263,28 +203,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     }
 
     private void updateColorLight(@Nullable ColorControlModel colorControlModel,
-            @Nullable LevelControlModel levelControlModel, @Nullable SimpleOnOffModel simpleOnOff) {
-        if (colorControlModel != null && levelControlModel != null && simpleOnOff != null) {
+            @Nullable LevelControlModel levelControlModel) {
+        if (colorControlModel != null && levelControlModel != null) {
             DecimalType hue = new DecimalType(colorControlModel.hue);
             PercentType saturation = ColorControlModel.toPercent(colorControlModel.saturation);
-            PercentType brightness;
-            if (simpleOnOff.state) {
-                brightness = new PercentType(levelControlModel.getLevelPercentage());
-            } else {
-                brightness = PercentType.ZERO;
-            }
+            PercentType brightness = new PercentType(levelControlModel.getLevelPercentage());
             updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
-
-            if (colorControlModel.currentMode == 4) {
-                int temperature = colorControlModel.temperature;
-                int tempMired = 1000000 / temperature;
-                int tempMinMired = 1000000 / 2700;
-                int tempMaxMired = 1000000 / 6500;
-                int pct = (tempMired - tempMinMired) * 100 / (tempMaxMired - tempMinMired);
-                updateThingChannelState(CHANNEL_COLORTEMPERATURE, new PercentType(pct));
-                updateThingChannelState(CHANNEL_COLORTEMPERATURE_ABS,
-                        new QuantityType<>(BigDecimal.valueOf(temperature), Units.KELVIN));
-            }
         }
     }
 
@@ -396,19 +320,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     private ChannelTypeUID createChannelTypeUID(String channelId) {
         int pos = channelId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR);
         String id = pos > -1 ? channelId.substring(pos + 1) : channelId;
-        final ChannelTypeUID channelTypeUID;
-        switch (id) {
-            case CHANNEL_BATTERY:
-                channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID();
-                break;
-            case CHANNEL_VOLTAGE:
-                channelTypeUID = DefaultSystemChannelTypeProvider.SYSTEM_ELECTRIC_VOLTAGE.getUID();
-                break;
-            default:
-                channelTypeUID = new ChannelTypeUID(BINDING_ID, id);
-                break;
-        }
-        return channelTypeUID;
+        return CHANNEL_BATTERY.equals(id) ? DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID()
+                : new ChannelTypeUID(BINDING_ID, id);
     }
 
     /**
@@ -419,9 +332,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     private void createChannel(String channelId) {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
-            final ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-            final ChannelTypeUID channelTypeUID = createChannelTypeUID(channelId);
-            final Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+            ChannelTypeUID channelTypeUID = createChannelTypeUID(channelId);
+            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
         }
     }
@@ -484,8 +397,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             case CHANNEL_BATTERY_LOW:
             case CHANNEL_CONTACT_STATE:
             case CHANNEL_LAST_CHANGE:
-            case CHANNEL_OBSTRUCTION_ALARM:
-            case CHANNEL_TEMPERATURE_ALARM:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_OUTLET:
@@ -515,41 +426,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     }
                 }
                 if (brightness != null) {
-                    if (brightness.equals(BigDecimal.ZERO)) {
-                        fritzBox.setSwitch(ain, false);
-                    } else {
-                        fritzBox.setSwitch(ain, true);
-                        fritzBox.setLevelPercentage(ain, brightness);
-                    }
-                }
-                break;
-            case CHANNEL_COLORTEMPERATURE:
-                BigDecimal colorTemperaturePct = null;
-                if (command instanceof PercentType) {
-                    colorTemperaturePct = ((PercentType) command).toBigDecimal();
-                }
-                if (colorTemperaturePct != null) {
-                    int pct = colorTemperaturePct.intValue();
-                    // AHA-HTTP-Inteface docu say that the values typically between 2700K and 6500K
-                    int tempMinMired = 1000000 / 2700;
-                    int tempMaxMired = 1000000 / 6500;
-                    int tempScaledMired = tempMinMired + ((tempMaxMired - tempMinMired) * pct / 100);
-                    int tempKelvin = 1000000 / tempScaledMired;
-                    fritzBox.setColorTemperature(ain, tempKelvin, 0);
-                }
-                break;
-            case CHANNEL_COLORTEMPERATURE_ABS:
-                BigDecimal colorTemperature = null;
-                if (command instanceof QuantityType) {
-                    QuantityType<?> convertedCommand = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
-                    if (convertedCommand != null) {
-                        colorTemperature = convertedCommand.toBigDecimal();
-                    }
-                } else if (command instanceof DecimalType) {
-                    colorTemperature = ((DecimalType) command).toBigDecimal();
-                }
-                if (colorTemperature != null) {
-                    fritzBox.setColorTemperature(ain, colorTemperature.intValue(), 0);
+                    fritzBox.setLevelPercentage(ain, brightness);
                 }
                 break;
             case CHANNEL_SETTEMP:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -268,7 +268,7 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "logLevel":
                     String ll = command.toString();
-                    if ("Error".equals(ll) || "Warning".equals(ll) || "Info".equals(ll)) {
+                    if (ll.equals("Error") || ll.equals("Warning") || ll.equals("Info")) {
                         newobj.addProperty("logging", ll);
                         changeSettings(newobj);
                     } else {
@@ -288,7 +288,7 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "powerFreqSuppression":
                     String newFreq = command.toString();
-                    if ("50Hz".equals(newFreq) || "60Hz".equals(newFreq) || "50Hz+60Hz".equals(newFreq)) {
+                    if (newFreq.equals("50Hz") || newFreq.equals("60Hz") || newFreq.equals("50Hz+60Hz")) {
                         newobj.addProperty("Rejection", newFreq);
                         changeSettings(newobj);
                     } else {
@@ -710,12 +710,7 @@ public class AirqHandler extends BaseThingHandler {
                         for (JsonElement el : arr) {
                             str.append(el.getAsString() + ", ");
                         }
-                        if (str.length() >= 2) {
-                            updateState(channelName, new StringType(str.substring(0, str.length() - 2)));
-                        } else {
-                            logger.trace("air-Q - airqHandler - processType(): cannot handle this as an array: {}",
-                                    jsonarr);
-                        }
+                        updateState(channelName, new StringType(str.substring(0, str.length() - 2)));
                     } else {
                         logger.warn("air-Q - airqHandler - processType(): cannot handle this as an array: {}", jsonarr);
                     }
@@ -735,13 +730,7 @@ public class AirqHandler extends BaseThingHandler {
                             str = str + attributeName + ": offset=" + attributeValue.get("offset").getAsString() + " ["
                                     + timecalibString + "]";
                         }
-                        if (!str.isEmpty()) {
-                            updateState(channelName, new StringType(str.substring(0, str.length() - 1)));
-                        } else {
-                            logger.trace(
-                                    "air-Q - airqHandler - processType(): Cannot extract calibration data from this string: {}",
-                                    dec.get(airqName).toString());
-                        }
+                        updateState(channelName, new StringType(str.substring(0, str.length() - 1)));
                     } else {
                         logger.warn(
                                 "air-Q - airqHandler - processType(): Cannot extract calibration data from this string: {}",
@@ -760,14 +749,9 @@ public class AirqHandler extends BaseThingHandler {
                         for (JsonElement el : arr) {
                             arrstr = arrstr + el.getAsString() + ", ";
                         }
-                        if (arrstr.length() >= 2) {
-                            logger.trace("air-Q - airqHandler - processType(): property array {} set to {}",
-                                    channelName, arrstr.substring(0, arrstr.length() - 2));
-                            getThing().setProperty(channelName, arrstr.substring(0, arrstr.length() - 2));
-                        } else {
-                            logger.trace("air-Q - airqHandler - processType(): cannot handle this as an array: {}",
-                                    proparr);
-                        }
+                        logger.trace("air-Q - airqHandler - processType(): property array {} set to {}", channelName,
+                                arrstr.substring(0, arrstr.length() - 2));
+                        getThing().setProperty(channelName, arrstr.substring(0, arrstr.length() - 2));
                     } else {
                         logger.warn("air-Q - airqHandler - processType(): cannot handle this as an array: {}", proparr);
                     }

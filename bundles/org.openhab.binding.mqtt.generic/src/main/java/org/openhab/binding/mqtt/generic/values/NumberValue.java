@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,17 +75,21 @@ public class NumberValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
+    public String getMQTTpublishValue(@Nullable String pattern) {
+        if (state == UnDefType.UNDEF) {
+            return "";
+        }
+
         String formatPattern = pattern;
         if (formatPattern == null) {
             formatPattern = "%s";
         }
 
-        return command.format(formatPattern);
+        return state.format(formatPattern);
     }
 
     @Override
-    public Command parseCommand(Command command) throws IllegalArgumentException {
+    public void update(Command command) throws IllegalArgumentException {
         BigDecimal newValue = null;
         if (command instanceof DecimalType) {
             newValue = ((DecimalType) command).toBigDecimal();
@@ -101,14 +106,14 @@ public class NumberValue extends Value {
             newValue = new BigDecimal(command.toString());
         }
         if (!checkConditions(newValue)) {
-            throw new IllegalArgumentException(newValue + " is out of range");
+            return;
         }
         // items with units specified in the label in the UI but no unit on mqtt are stored as
         // DecimalType to avoid conversions (e.g. % expects 0-1 rather than 0-100)
         if (!Units.ONE.equals(unit)) {
-            return new QuantityType<>(newValue, unit);
+            state = new QuantityType<>(newValue, unit);
         } else {
-            return new DecimalType(newValue);
+            state = new DecimalType(newValue);
         }
     }
 

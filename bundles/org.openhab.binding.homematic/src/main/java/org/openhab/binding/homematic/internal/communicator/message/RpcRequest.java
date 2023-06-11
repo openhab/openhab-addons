@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,15 +22,15 @@ public interface RpcRequest<T> {
     /**
      * Adds arguments to the RPC method.
      */
-    void addArg(Object arg);
+    public void addArg(Object arg);
 
     /**
      * Generates the RPC data.
      */
-    T createMessage();
+    public T createMessage();
 
     /**
      * Returns the name of the rpc method.
      */
-    String getMethodName();
+    public String getMethodName();
 }

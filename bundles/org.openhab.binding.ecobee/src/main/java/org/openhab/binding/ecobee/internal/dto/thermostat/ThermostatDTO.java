@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.ecobee.internal.dto.thermostat;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,12 +64,12 @@ public class ThermostatDTO {
     /*
      * The last modified date time for the thermostat configuration.
      */
-    public Instant lastModified;
+    public Date lastModified;
 
     /*
      * The current time in the thermostat's time zone.
      */
-    public LocalDateTime thermostatTime;
+    public Date thermostatTime;
 
     /*
      * The current time in UTC.

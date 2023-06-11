@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TemperatureControlManager} is responsible for handling the zone temperature control of the digitalSTROM
- * zones. For that it implements an {@link EventHandler} to get informed by control changes, like the target
- * temperature.
+ * zones. For that it implements a {@link EventHandler} to get informed by control changes, like the target temperature.
  * It also implement the {@link TemperatureControlSensorTransmitter}, so the zone temperature can be set through this
  * class. <br>
  * <br>
@@ -55,12 +54,12 @@ import org.slf4j.LoggerFactory;
  * {@link #GET_HEATING_WATER_SYSTEM_STATE_PATH} to get the current heating water system state through
  * {@link DsAPI#propertyTreeGetString(String, String)}.
  *
- * @author Michael Ochel - Initial contribution
- * @author Matthias Siegele - Initial contribution
+ * @author Michael Ochel - initial contributer
+ * @author Matthias Siegele - initial contributer
  */
 public class TemperatureControlManager implements EventHandler, TemperatureControlSensorTransmitter {
 
-    private static final List<String> SUPPORTED_EVENTS = Arrays.asList(EventNames.HEATING_CONTROL_OPERATION_MODE);
+    private final List<String> SUPPORTED_EVENTS = Arrays.asList(EventNames.HEATING_CONTROL_OPERATION_MODE);
 
     private final Logger logger = LoggerFactory.getLogger(TemperatureControlManager.class);
 
@@ -294,6 +293,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
                         Integer zoneID = Integer
                                 .parseInt(eventItem.getSource().getOrDefault(EventResponseEnum.ZONEID, ""));
                         if (zoneTemperationControlListenerMap.get(zoneID) != null) {
+
                             Float newValue = Float.parseFloat(
                                     eventItem.getProperties().getOrDefault(EventResponseEnum.SENSOR_VALUE_FLOAT, ""));
                             if (!isEcho(zoneID, SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE, newValue)) {

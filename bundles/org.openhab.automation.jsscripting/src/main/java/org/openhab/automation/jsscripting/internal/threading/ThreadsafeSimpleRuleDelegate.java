@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.automation.jsscripting.internal.threading;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,7 +38,7 @@ import org.openhab.core.config.core.Configuration;
 @NonNullByDefault
 class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
 
-    private final Lock lock;
+    private final Object lock;
     private final SimpleRule delegate;
 
     /**
@@ -48,7 +47,7 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
      * @param lock rule executions will synchronize on this object
      * @param delegate the delegate to forward invocations to
      */
-    ThreadsafeSimpleRuleDelegate(Lock lock, SimpleRule delegate) {
+    ThreadsafeSimpleRuleDelegate(Object lock, SimpleRule delegate) {
         this.lock = lock;
         this.delegate = delegate;
     }
@@ -56,11 +55,8 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
     @Override
     @NonNullByDefault({})
     public Object execute(Action module, Map<String, ?> inputs) {
-        lock.lock();
-        try {
+        synchronized (lock) {
             return delegate.execute(module, inputs);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            lock.unlock();
         }
     }
 

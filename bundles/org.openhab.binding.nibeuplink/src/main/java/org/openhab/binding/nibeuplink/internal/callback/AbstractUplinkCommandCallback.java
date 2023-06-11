@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,11 +167,8 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     protected abstract String getURL();
 
     @Override
-    public final void updateListenerStatus() {
-        StatusUpdateListener listener = this.listener;
-        if (listener != null) {
-            listener.update(communicationStatus);
-        }
+    public final @Nullable StatusUpdateListener getListener() {
+        return listener;
     }
 
     @Override

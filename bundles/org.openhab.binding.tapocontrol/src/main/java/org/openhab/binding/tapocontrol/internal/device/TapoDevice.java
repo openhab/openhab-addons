@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.device;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
@@ -25,9 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
-import org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
-import org.openhab.binding.tapocontrol.internal.structures.TapoChildData;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceConfiguration;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
 import org.openhab.binding.tapocontrol.internal.structures.TapoEnergyData;
@@ -55,7 +53,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TapoDevice.class);
     protected final TapoErrorHandler deviceError = new TapoErrorHandler();
     protected final String uid;
-    protected TapoDeviceConfiguration config = new TapoDeviceConfiguration();
+    protected TapoDeviceConfiguration config;
     protected TapoDeviceInfo deviceInfo;
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
@@ -69,6 +67,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     protected TapoDevice(Thing thing) {
         super(thing);
+        this.config = new TapoDeviceConfiguration(thing);
         this.deviceInfo = new TapoDeviceInfo();
         this.uid = getThing().getUID().getAsString();
     }
@@ -85,7 +84,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            this.config = getConfigAs(TapoDeviceConfiguration.class);
+            this.config.loadSettings();
             Bridge bridgeThing = getBridge();
             if (bridgeThing != null) {
                 BridgeHandler bridgeHandler = bridgeThing.getHandler();
@@ -129,11 +128,12 @@ public abstract class TapoDevice extends BaseThingHandler {
 
         // background initialization (delay it a little bit):
         this.startupJob = scheduler.schedule(this::delayedStartUp, 2000, TimeUnit.MILLISECONDS);
+        startScheduler();
     }
 
     /**
      * CHECK SETTINGS
-     *
+     * 
      * @return TapoErrorHandler with configuration-errors
      */
     protected TapoErrorHandler checkSettings() {
@@ -141,17 +141,17 @@ public abstract class TapoDevice extends BaseThingHandler {
 
         /* check bridge */
         if (bridge == null || !(bridge instanceof TapoBridgeHandler)) {
-            configErr.raiseError(ERR_CONFIG_NO_BRIDGE);
+            configErr.raiseError(ERR_NO_BRIDGE);
             return configErr;
         }
         /* check ip-address */
         if (!config.ipAddress.matches(IPV4_REGEX)) {
-            configErr.raiseError(ERR_CONFIG_IP);
+            configErr.raiseError(ERR_CONF_IP);
             return configErr;
         }
         /* check credentials */
         if (!bridge.getCredentials().areSet()) {
-            configErr.raiseError(ERR_CONFIG_CREDENTIALS);
+            configErr.raiseError(ERR_CONF_CREDENTIALS);
             return configErr;
         }
         return configErr;
@@ -180,32 +180,29 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     private void delayedStartUp() {
         connect();
-        startPollingScheduler();
     }
 
     /**
      * Start scheduler
      */
-    protected void startPollingScheduler() {
-        int pollingInterval = this.config.pollingInterval;
-        TimeUnit timeUnit = TimeUnit.SECONDS;
+    protected void startScheduler() {
+        Integer pollingInterval = this.config.pollingInterval;
 
         if (pollingInterval > 0) {
             if (pollingInterval < POLLING_MIN_INTERVAL_S) {
                 pollingInterval = POLLING_MIN_INTERVAL_S;
             }
-            logger.debug("({}) startScheduler: create job with interval : {} {}", uid, pollingInterval, timeUnit);
-            this.pollingJob = scheduler.scheduleWithFixedDelay(this::pollingSchedulerAction, pollingInterval,
-                    pollingInterval, timeUnit);
+            logger.trace("({}) starScheduler: create job with interval : {}", uid, pollingInterval);
+            this.pollingJob = scheduler.scheduleWithFixedDelay(this::schedulerAction, pollingInterval, pollingInterval,
+                    TimeUnit.SECONDS);
         } else {
-            logger.debug("({}) scheduler disabled with config '0'", uid);
             stopScheduler(this.pollingJob);
         }
     }
 
     /**
      * Stop scheduler
-     *
+     * 
      * @param scheduler ScheduledFeature<?> which schould be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
@@ -218,7 +215,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * Scheduler Action
      */
-    protected void pollingSchedulerAction() {
+    protected void schedulerAction() {
         logger.trace("({}) schedulerAction", uid);
         queryDeviceInfo();
     }
@@ -230,20 +227,16 @@ public abstract class TapoDevice extends BaseThingHandler {
      ************************************/
     /**
      * return device Error
-     *
+     * 
      * @return
      */
-    public TapoErrorHandler getErrorHandler() {
+    public TapoErrorHandler getError() {
         return this.deviceError;
-    }
-
-    public TapoErrorCode getError() {
-        return this.deviceError.getError();
     }
 
     /**
      * set device error
-     *
+     * 
      * @param tapoError TapoErrorHandler-Object
      */
     public void setError(TapoErrorHandler tapoError) {
@@ -259,7 +252,7 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /***
      * Check if ThingType is model
-     *
+     * 
      * @param model
      * @return
      */
@@ -277,13 +270,13 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * CHECK IF RECEIVED DATA ARE FROM THE EXPECTED DEVICE
      * Compare MAC-Adress
-     *
+     * 
      * @param deviceInfo
      * @return true if is the expected device
      */
     protected Boolean isExpectedThing(TapoDeviceInfo deviceInfo) {
         try {
-            String expectedThingUID = getThing().getProperties().get(DEVICE_REPRESENTATION_PROPERTY);
+            String expectedThingUID = getThing().getProperties().get(DEVICE_REPRASENTATION_PROPERTY);
             String foundThingUID = deviceInfo.getRepresentationProperty();
             String foundModel = deviceInfo.getModel();
             if (expectedThingUID == null || expectedThingUID.isBlank()) {
@@ -321,7 +314,7 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * query device Properties
-     *
+     * 
      * @param ignoreGap ignore gap to last query. query anyway (force)
      */
     public void queryDeviceInfo(boolean ignoreGap) {
@@ -332,10 +325,6 @@ public abstract class TapoDevice extends BaseThingHandler {
             if (SUPPORTED_ENERGY_DATA_UIDS.contains(getThing().getThingTypeUID())) {
                 connector.getEnergyUsage();
             }
-            // query childs data
-            if (SUPPORTED_CHILDS_DATA_UIDS.contains(getThing().getThingTypeUID())) {
-                connector.queryChildDevices();
-            }
         } else {
             logger.debug("({}) tried to query DeviceInfo but not loggedIn", uid);
             connect();
@@ -344,7 +333,7 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * SET DEVICE INFOs to device
-     *
+     * 
      * @param deviceInfo
      */
     public void setDeviceInfo(TapoDeviceInfo deviceInfo) {
@@ -361,7 +350,7 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * Set Device EnergyData to device
-     *
+     * 
      * @param energyData
      */
     public void setEnergyData(TapoEnergyData energyData) {
@@ -374,20 +363,8 @@ public abstract class TapoDevice extends BaseThingHandler {
     }
 
     /**
-     * Set Device Child data to device
-     *
-     * @param energyData
-     */
-    public void setChildData(TapoChildData hostData) {
-        hostData.getChildDeviceList().forEach(child -> {
-            publishState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT + Integer.toString(child.getPosition())),
-                    getOnOffType(child.getDeviceOn()));
-        });
-    }
-
-    /**
      * Handle full responsebody received from connector
-     *
+     * 
      * @param responseBody
      */
     public void responsePasstrough(String responseBody) {
@@ -395,10 +372,10 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * UPDATE PROPERTIES
-     *
+     * 
      * If only one property must be changed, there is also a convenient method
      * updateProperty(String name, String value).
-     *
+     * 
      * @param TapoDeviceInfo
      */
     protected void devicePropertiesChanged(TapoDeviceInfo deviceInfo) {
@@ -414,7 +391,7 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * update channel state
-     *
+     * 
      * @param channelID
      * @param value
      */
@@ -430,7 +407,7 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * Connect (login) to device
-     *
+     * 
      */
     public Boolean connect() {
         deviceError.reset();
@@ -439,7 +416,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         try {
             loginSuccess = connector.login();
             if (loginSuccess) {
-                queryDeviceInfo(true);
+                connector.queryInfo();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
             }
@@ -461,27 +438,21 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     public void handleConnectionState() {
         ThingStatus deviceState = getThing().getStatus();
-        TapoErrorCode errorCode = deviceError.getError();
+        Integer errorCode = deviceError.getCode();
 
-        if (errorCode == TapoErrorCode.NO_ERROR) {
+        if (errorCode == 0) {
             if (deviceState != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
+        } else if (LIST_REAUTH_ERRORS.contains(errorCode)) {
+            connect();
+        } else if (LIST_COMMUNICATION_ERRORS.contains(errorCode)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
+            disconnect();
+        } else if (LIST_CONFIGURATION_ERRORS.contains(errorCode)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
         } else {
-            switch (errorCode.getType()) {
-                case COMMUNICATION_RETRY:
-                    connect();
-                    break;
-                case COMMUNICATION_ERROR:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
-                    disconnect();
-                    break;
-                case CONFIGURATION_ERROR:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
-                    break;
-                default:
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, deviceError.getMessage());
-            }
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, deviceError.getMessage());
         }
     }
 
@@ -499,7 +470,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      ************************************/
     /**
      * Get ChannelID including group
-     *
+     * 
      * @param group String channel-group
      * @param channel String channel-name
      * @return String channelID
@@ -514,7 +485,7 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * Get Channel from ChannelID
-     *
+     * 
      * @param channelID String channelID
      * @return String channel-name
      */

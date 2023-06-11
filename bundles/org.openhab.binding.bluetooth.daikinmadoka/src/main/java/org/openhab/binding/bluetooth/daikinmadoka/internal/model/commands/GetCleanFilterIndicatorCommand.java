@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Command used to get the Clean Filter Indicator status
@@ -29,19 +30,15 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 @NonNullByDefault
 public class GetCleanFilterIndicatorCommand extends BRC1HCommand {
 
+    private final Logger logger = LoggerFactory.getLogger(GetCleanFilterIndicatorCommand.class);
+
     private @Nullable Boolean cleanFilterIndicator;
 
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        MadokaValue mValue = mm.getValues().get(0x62);
-        if (mValue == null) {
-            String message = "clean filter indicator is null when handling the response";
-            setState(State.FAILED);
-            throw new MadokaParsingException(message);
-        }
 
-        byte[] valueCleanFilterIndicator = mValue.getRawValue();
+        byte[] valueCleanFilterIndicator = mm.getValues().get(0x62).getRawValue();
         if (valueCleanFilterIndicator == null || valueCleanFilterIndicator.length != 1) {
             setState(State.FAILED);
             throw new MadokaParsingException("Incorrect clean filter indicator value");
@@ -54,12 +51,7 @@ public class GetCleanFilterIndicatorCommand extends BRC1HCommand {
         }
 
         setState(State.SUCCEEDED);
-        try {
-            executor.execute(() -> listener.receivedResponse(this));
-        } catch (Exception e) {
-            setState(State.FAILED);
-            throw new MadokaParsingException(e);
-        }
+        executor.execute(() -> listener.receivedResponse(this));
     }
 
     public @Nullable Boolean getCleanFilterIndicator() {

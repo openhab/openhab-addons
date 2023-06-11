@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.automation.jsscripting.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.jsscripting.internal.threading.ThreadsafeTimers;
@@ -32,9 +31,8 @@ public class JSRuntimeFeatures {
     private final Map<String, Object> features = new HashMap<>();
     public final ThreadsafeTimers threadsafeTimers;
 
-    JSRuntimeFeatures(Lock lock, JSScriptServiceUtil jsScriptServiceUtil) {
-        this.threadsafeTimers = new ThreadsafeTimers(lock, jsScriptServiceUtil.getScriptExecution(),
-                jsScriptServiceUtil.getScheduler());
+    JSRuntimeFeatures(Object lock) {
+        this.threadsafeTimers = new ThreadsafeTimers(lock);
 
         features.put("ThreadsafeTimers", threadsafeTimers);
     }

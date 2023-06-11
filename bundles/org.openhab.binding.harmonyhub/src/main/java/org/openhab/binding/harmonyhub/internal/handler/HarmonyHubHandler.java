@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,14 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.harmonyhub.internal.HarmonyHubDynamicTypeProvider;
+import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
 import org.openhab.binding.harmonyhub.internal.config.HarmonyHubConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -76,7 +75,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
     private final Logger logger = LoggerFactory.getLogger(HarmonyHubHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(HARMONY_HUB_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
 
     private static final Comparator<Activity> ACTIVITY_COMPERATOR = Comparator.comparing(Activity::getActivityOrder,
             Comparator.nullsFirst(Integer::compareTo));
@@ -85,8 +84,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     private static final int HEARTBEAT_INTERVAL = 30;
     // Websocket will timeout after 60 seconds, pick a sensible max under this,
     private static final int HEARTBEAT_INTERVAL_MAX = 50;
-    private Set<HubStatusListener> listeners = ConcurrentHashMap.newKeySet();
-    private final HarmonyHubDynamicTypeProvider typeProvider;
+    private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
+    private final HarmonyHubHandlerFactory factory;
     private @NonNullByDefault({}) HarmonyHubConfig config;
     private final HarmonyClient client;
     private @Nullable ScheduledFuture<?> retryJob;
@@ -95,10 +94,10 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
     private int heartBeatInterval;
 
-    public HarmonyHubHandler(Bridge bridge, HarmonyHubDynamicTypeProvider typeProvider, HttpClient httpClient) {
+    public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
         super(bridge);
-        this.typeProvider = typeProvider;
-        client = new HarmonyClient(httpClient);
+        this.factory = factory;
+        client = new HarmonyClient(factory.getHttpClient());
         client.addListener(this);
     }
 
@@ -185,6 +184,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     @Override
     public void initialize() {
         config = getConfigAs(HarmonyHubConfig.class);
+        cancelRetry();
         updateStatus(ThingStatus.UNKNOWN);
         scheduleRetry(0);
     }
@@ -194,12 +194,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         listeners.clear();
         cancelRetry();
         disconnectFromHub();
-    }
-
-    @Override
-    public void handleRemoval() {
-        typeProvider.removeChannelTypesForThing(getThing().getUID());
-        super.handleRemoval();
+        factory.removeChannelTypesForThing(getThing().getUID());
     }
 
     @Override
@@ -299,31 +294,29 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     }
 
     private void disconnectFromHub() {
-        ScheduledFuture<?> heartBeatJob = this.heartBeatJob;
-        if (heartBeatJob != null) {
-            heartBeatJob.cancel(true);
-            this.heartBeatJob = null;
+        ScheduledFuture<?> localHeartBeatJob = heartBeatJob;
+        if (localHeartBeatJob != null && !localHeartBeatJob.isDone()) {
+            localHeartBeatJob.cancel(false);
         }
         client.disconnect();
     }
 
     private void setOfflineAndReconnect(String error) {
         disconnectFromHub();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
         scheduleRetry(RETRY_TIME);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
     }
 
     private void cancelRetry() {
-        ScheduledFuture<?> retryJob = this.retryJob;
-        if (retryJob != null) {
-            retryJob.cancel(true);
-            this.retryJob = null;
+        ScheduledFuture<?> localRetryJob = retryJob;
+        if (localRetryJob != null && !localRetryJob.isDone()) {
+            localRetryJob.cancel(false);
         }
     }
 
-    private synchronized void scheduleRetry(int delaySeconds) {
+    private synchronized void scheduleRetry(int retrySeconds) {
         cancelRetry();
-        retryJob = scheduler.schedule(this::connect, delaySeconds, TimeUnit.SECONDS);
+        retryJob = scheduler.schedule(this::connect, retrySeconds, TimeUnit.SECONDS);
     }
 
     private void updateState(@Nullable Activity activity) {
@@ -406,7 +399,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
                         .withReadOnly(false).withOptions(states).build())
                 .build();
 
-        typeProvider.putChannelType(channelType);
+        factory.addChannelType(channelType);
 
         Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), CHANNEL_CURRENT_ACTIVITY), "String")
                 .withType(channelTypeUID).build();

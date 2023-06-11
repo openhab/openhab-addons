@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public interface BluetoothDiscoveryParticipant {
      *
      * @return a set of thing type UIDs for which results can be created
      */
-    Set<ThingTypeUID> getSupportedThingTypeUIDs();
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs();
 
     /**
      * Creates a discovery result for a Bluetooth device
@@ -46,8 +46,7 @@ public interface BluetoothDiscoveryParticipant {
      * @return the according discovery result or <code>null</code>, if device is not
      *         supported by this participant
      */
-    @Nullable
-    DiscoveryResult createResult(BluetoothDiscoveryDevice device);
+    public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device);
 
     /**
      * Returns the thing UID for a Bluetooth device
@@ -55,8 +54,7 @@ public interface BluetoothDiscoveryParticipant {
      * @param device the Bluetooth device
      * @return a thing UID or <code>null</code>, if the device is not supported by this participant
      */
-    @Nullable
-    ThingUID getThingUID(BluetoothDiscoveryDevice device);
+    public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device);
 
     /**
      * Returns true if this participant requires the device to be connected before it can produce a
@@ -72,7 +70,7 @@ public interface BluetoothDiscoveryParticipant {
      * @param device the Bluetooth device
      * @return true if a connection is required before calling {@link createResult(BluetoothDevice)}
      */
-    default boolean requiresConnection(BluetoothDiscoveryDevice device) {
+    public default boolean requiresConnection(BluetoothDiscoveryDevice device) {
         return false;
     }
 
@@ -89,7 +87,7 @@ public interface BluetoothDiscoveryParticipant {
      * @param result the DiscoveryResult to post-process
      * @param publisher the consumer to publish additional results to.
      */
-    default void publishAdditionalResults(DiscoveryResult result,
+    public default void publishAdditionalResults(DiscoveryResult result,
             BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
         // do nothing by default
     }
@@ -100,7 +98,7 @@ public interface BluetoothDiscoveryParticipant {
      *
      * @return the order of this participant, default 0
      */
-    default int order() {
+    public default int order() {
         return 0;
     }
 }

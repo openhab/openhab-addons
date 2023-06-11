@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,26 +20,24 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
+import org.openhab.core.io.http.servlet.BaseOpenHABServlet;
+import org.osgi.service.http.HttpContext;
+import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,15 +48,11 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Demus - Initial contribution
  */
 @NonNullByDefault
-@HttpWhiteboardServletName(WundergroundUpdateReceiverServlet.SERVLET_URL)
-@HttpWhiteboardServletPattern(WundergroundUpdateReceiverServlet.SERVLET_URL)
-@Component(immediate = true, service = { Servlet.class, WundergroundUpdateReceiverServlet.class })
-public class WundergroundUpdateReceiverServlet extends HttpServlet
+public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet
         implements WundergroundUpdateReceiverServletControls {
 
     public static final String SERVLET_URL = "/weatherstation/updateweatherstation.php";
     private static final long serialVersionUID = -5296703727081438023L;
-    private static final Pattern CLEANER = Pattern.compile("[^\\w-]");
 
     private final Logger logger = LoggerFactory.getLogger(WundergroundUpdateReceiverServlet.class);
     private final Map<String, WundergroundUpdateReceiverHandler> handlers = new HashMap<>();
@@ -69,12 +63,10 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
     private boolean active = false;
     private String errorDetail = "";
 
-    @Activate
-    public WundergroundUpdateReceiverServlet(
-            final @Reference WundergroundUpdateReceiverDiscoveryService discoveryService) {
+    public WundergroundUpdateReceiverServlet(HttpService httpService,
+            WundergroundUpdateReceiverDiscoveryService discoveryService) {
+        super(httpService);
         this.discoveryService = discoveryService;
-        errorDetail = "";
-        active = discoveryService.isBackgroundDiscoveryEnabled();
     }
 
     public boolean isActive() {
@@ -93,6 +85,10 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
         return this.handlers.keySet();
     }
 
+    public void activate() {
+        activate(SERVLET_URL, httpService.createDefaultHttpContext());
+    }
+
     public void addHandler(WundergroundUpdateReceiverHandler handler) {
         synchronized (this.handlers) {
             if (this.handlers.containsKey(handler.getStationId())) {
@@ -104,7 +100,7 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
             this.handlers.put(handler.getStationId(), handler);
             errorDetail = "";
             if (!isActive()) {
-                enable();
+                activate();
             }
         }
     }
@@ -116,20 +112,22 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
                 this.handlers.remove(stationId);
             }
             if (this.handlers.isEmpty() && !this.discoveryService.isBackgroundDiscoveryEnabled()) {
-                disable();
+                deactivate();
             }
         }
     }
 
-    @Override
-    public void enable() {
-        active = true;
-    }
-
-    @Deactivate
-    public void disable() {
-        errorDetail = "";
-        active = false;
+    public void deactivate() {
+        synchronized (LOCK) {
+            logger.debug("Stopping servlet {} at {}", getClass().getSimpleName(), SERVLET_URL);
+            try {
+                super.deactivate(SERVLET_URL);
+            } catch (IllegalArgumentException ignored) {
+                // SERVLET_URL is already unregistered
+            }
+            errorDetail = "";
+            active = false;
+        }
     }
 
     public void handlerConfigUpdated(WundergroundUpdateReceiverHandler handler) {
@@ -150,13 +148,29 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
         synchronized (this.handlers) {
             Set<String> stationIds = new HashSet<>(getStationIds());
             stationIds.forEach(this::removeHandler);
-            disable();
+            deactivate();
         }
     }
 
-    protected Map<String, String> normalizeParameterMap(Map<String, String[]> parameterMap) {
-        return parameterMap.entrySet().stream()
-                .collect(toMap(e -> makeUidSafeString(e.getKey()), e -> String.join("", e.getValue())));
+    @Override
+    protected void activate(String alias, HttpContext httpContext) {
+        synchronized (LOCK) {
+            try {
+                logger.debug("Starting servlet {} at {}", getClass().getSimpleName(), alias);
+                Dictionary<String, String> props = new Hashtable<>(1, 10);
+                httpService.registerServlet(alias, this, props, httpContext);
+                errorDetail = "";
+                active = true;
+            } catch (NamespaceException e) {
+                active = false;
+                errorDetail = "Servlet couldn't be registered - alias " + alias + " already in use";
+                logger.warn("Error during servlet registration - alias {} already in use", alias, e);
+            } catch (ServletException e) {
+                active = false;
+                errorDetail = "Servlet couldn't be registered - " + e.getMessage();
+                logger.warn("Error during servlet registration", e);
+            }
+        }
     }
 
     @Override
@@ -176,15 +190,16 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
         logger.trace("doGet {}", req.getQueryString());
 
         String stationId = req.getParameter(STATION_ID_PARAMETER);
-        Map<String, String> states = normalizeParameterMap(req.getParameterMap());
         Optional.ofNullable(this.handlers.get(stationId)).ifPresentOrElse(handler -> {
+            Map<String, String> states = req.getParameterMap().entrySet().stream()
+                    .collect(toMap(Map.Entry::getKey, e -> String.join("", e.getValue())));
             String queryString = req.getQueryString();
             if (queryString != null && queryString.length() > 0) {
                 states.put(LAST_QUERY, queryString);
             }
             handler.updateChannelStates(states);
         }, () -> {
-            this.discoveryService.addUnhandledStationId(stationId, states);
+            this.discoveryService.addUnhandledStationId(stationId, req.getParameterMap());
         });
 
         resp.setStatus(HttpServletResponse.SC_OK);
@@ -200,9 +215,5 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
 
     protected Map<String, WundergroundUpdateReceiverHandler> getHandlers() {
         return Collections.unmodifiableMap(this.handlers);
-    }
-
-    private String makeUidSafeString(String key) {
-        return CLEANER.matcher(key).replaceAll("-");
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,10 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.persistence.FilterCriteria;
 
 /**
  * Manages InfluxDB server interaction maintaining client connection
@@ -36,7 +34,7 @@ public interface InfluxDBRepository {
     /**
      * Connect to InfluxDB server
      *
-     * @return <code>true</code> if successful, otherwise <code>false</code>
+     * @return True if successful, otherwise false
      */
     boolean connect();
 
@@ -48,12 +46,12 @@ public interface InfluxDBRepository {
     /**
      * Check if connection is currently ready
      *
-     * @return True if it's ready, otherwise false
+     * @return True if its ready, otherwise false
      */
     boolean checkConnectionStatus();
 
     /**
-     * Return all stored item names with its count of stored points
+     * Return all stored item names with it's count of stored points
      *
      * @return Map with <ItemName,ItemCount> entries
      */
@@ -62,28 +60,15 @@ public interface InfluxDBRepository {
     /**
      * Executes Flux query
      *
-     * @param filter the query filter
+     * @param query Query
      * @return Query results
-     * 
      */
-    List<InfluxRow> query(FilterCriteria filter, String retentionPolicy);
+    List<InfluxRow> query(String query);
 
     /**
-     * Write points to database
+     * Write point to database
      *
-     * @param influxPoints {@link List<InfluxPoint>} to write
-     * @returns <code>true</code> if points have been written, <code>false</code> otherwise
+     * @param influxPoint Point to write
      */
-    boolean write(List<InfluxPoint> influxPoints);
-
-    /**
-     * Execute delete query
-     *
-     * @param filter the query filter
-     * @return <code>true</code> if query executed successfully, <code>false</code> otherwise
-     */
-    boolean remove(FilterCriteria filter);
-
-    record InfluxRow(Instant time, String itemName, Object value) {
-    }
+    void write(InfluxPoint influxPoint);
 }

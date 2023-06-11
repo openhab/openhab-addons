@@ -1,6 +1,6 @@
 # The Weather Company Binding
 
-Provides 5-day weather forecast and _Personal Weather Station_ (PWS) current
+Provides 5-day weather forecast and *Personal Weather Station* (PWS) current
 observations from **The Weather Company**.
 This service is available only for PWS users who upload their PWS
 weather data to WeatherUnderground.
@@ -17,8 +17,8 @@ The following thing types are supported:
 
 ## Discovery
 
-Once an Account thing is configured with a valid API key, the binding will auto-discover
-a _Local Weather Forecast_ thing if the location (i.e. latitude and longitude)
+Once an Account thing is configured with a valid API key, the binding will auto-discover 
+a *Local Weather Forecast* thing if the location (i.e. latitude and longitude)
 and locale are set in the openHAB configuration.
 
 ## Thing Configuration
@@ -55,7 +55,7 @@ The following configuration parameters are available on the Weather Observations
 
 ## Channels
 
-### Channels for Personal Weather Station (PWS) Current Observations
+#### Channels for Personal Weather Station (PWS) Current Observations
 
 | Channel ID                      | Item Type               | Description                              |
 |---------------------------------|-------------------------|------------------------------------------|
@@ -81,7 +81,7 @@ The following configuration parameters are available on the Weather Observations
 | qcStatus                        | Number                  | QC status                                |
 | softwareType                    | String                  | Software type                            |
 
-### Channels for Daily Forecast (Today, Tomorrow, Day 2, Day 3, Day 4, Day 5)
+#### Channels for Daily Forecast (Today, Tomorrow, Day 2, Day 3, Day 4, Day 5)
 
 | Channel Group ID             | Channel ID                      | Item Type               | Description                                        |
 |------------------------------|---------------------------------|-------------------------|----------------------------------------------------|
@@ -94,7 +94,7 @@ The following configuration parameters are available on the Weather Observations
 | forecastDay(0-5)             | validTimeLocal                  | DateTime                | Time the forecast is valid in local apparent time  |
 | forecastDay(0-5)             | expirationTimeLocal             | DateTime                | Time the forecast expires                          |
 
-### Channels for Daypart Forecast (Today, Tonight, Tomorrow, Tomorrow Night, etc.)
+#### Channels for Daypart Forecast (Today, Tonight, Tomorrow, Tomorrow Night, etc.)
 
 | Channel Group ID             | Channel ID                      | Item Type               | Description                                                    |
 |------------------------------|---------------------------------|-------------------------|----------------------------------------------------------------|
@@ -140,11 +140,12 @@ The following channels will be translated to local language based on the languag
 - windPhrase
 - wxPhraseLong
 
+ 
 ## Full Example
 
 ### Thing Example
 
-```java
+```
 Bridge weathercompany:account:myaccount [ apiKey="0123456789" ] {
     Thing weather-forecast myweather "My Forecast" @ "Home" [locationType="postalCode",postalCode="10001:US",language="en-US",refreshInterval=30]
     Thing weather-observations myobservations "My Observations" @ "Home" [pwsStationId="KFLMIAMI208",refreshInterval=30]
@@ -157,7 +158,7 @@ Bridge weathercompany:account:myaccount [ apiKey="0123456789" ] {
 
 ### Items Example
 
-```java
+```
 // PWS Current Observations
 Number:Temperature WC_PWS_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:myaccount:myobservations:currentTemperature" }
 Number:Temperature WC_PWS_TemperatureDewPoint "Dew Point Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:myaccount:myobservations:currentTemperatureDewPoint" }
@@ -257,7 +258,7 @@ Image WC_Day0_Night_IconImage "Icon Image [%s]" { channel="weathercompany:weathe
 
 ### Sitemap Example
 
-```perl
+```
 Frame {
     Text label="The Weather Company Forecast" {
         Frame label="PWS Current Conditions" {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,14 +29,11 @@ public class StateMachine {
     private State state;
     private long periodMs;
     private double dutycycle;
-    private String ruleUID;
 
-    public StateMachine(ScheduledExecutorService scheduler, Consumer<Boolean> controlOutput, long periodMs,
-            String ruleUID) {
+    public StateMachine(ScheduledExecutorService scheduler, Consumer<Boolean> controlOutput, long periodMs) {
         this.scheduler = scheduler;
         this.controlOutput = controlOutput;
         this.periodMs = periodMs;
-        this.ruleUID = ruleUID;
         this.state = new AlwaysOffState(this);
     }
 
@@ -67,10 +64,6 @@ public class StateMachine {
 
     public void setState(State current) {
         this.state = current;
-    }
-
-    public String getRuleUID() {
-        return ruleUID;
     }
 
     public void controlOutput(boolean on) {

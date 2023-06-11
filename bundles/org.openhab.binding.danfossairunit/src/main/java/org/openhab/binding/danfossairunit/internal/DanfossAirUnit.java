@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -145,12 +144,12 @@ public class DanfossAirUnit {
         return new PercentType(BigDecimal.valueOf(value * 10));
     }
 
-    public QuantityType<Frequency> getSupplyFanSpeed() throws IOException {
-        return new QuantityType<>(BigDecimal.valueOf(getWord(REGISTER_4_READ, SUPPLY_FAN_SPEED)), Units.RPM);
+    public DecimalType getSupplyFanSpeed() throws IOException {
+        return new DecimalType(BigDecimal.valueOf(getWord(REGISTER_4_READ, SUPPLY_FAN_SPEED)));
     }
 
-    public QuantityType<Frequency> getExtractFanSpeed() throws IOException {
-        return new QuantityType<>(BigDecimal.valueOf(getWord(REGISTER_4_READ, EXTRACT_FAN_SPEED)), Units.RPM);
+    public DecimalType getExtractFanSpeed() throws IOException {
+        return new DecimalType(BigDecimal.valueOf(getWord(REGISTER_4_READ, EXTRACT_FAN_SPEED)));
     }
 
     public PercentType getSupplyFanStep() throws IOException {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -174,7 +174,8 @@ public class OwserverConnection {
                 returnValue = OnOffType.ON;
             }
 
-        } catch (OwException ignored) {
+        } catch (OwException e) {
+            returnValue = OnOffType.OFF;
         }
         logger.trace("presence {} : {}", path, returnValue);
         return returnValue;
@@ -185,7 +186,7 @@ public class OwserverConnection {
      *
      * @param path full owfs path to sensor
      * @return DecimalType if successful
-     * @throws OwException in case an error occurs
+     * @throws OwException
      */
     public State readDecimalType(String path) throws OwException {
         State returnState = UnDefType.UNDEF;
@@ -210,7 +211,7 @@ public class OwserverConnection {
      *
      * @param path full owfs path to sensor
      * @return a List of DecimalType values if successful
-     * @throws OwException in case an error occurs
+     * @throws OwException
      */
     public List<State> readDecimalTypeArray(String path) throws OwException {
         List<State> returnList = new ArrayList<>();
@@ -231,7 +232,7 @@ public class OwserverConnection {
      *
      * @param path full owfs path to sensor
      * @return requested String
-     * @throws OwException in case an error occurs
+     * @throws OwException
      */
     public String readString(String path) throws OwException {
         OwserverPacket requestPacket = new OwserverPacket(OwserverMessageType.READ, path);
@@ -249,7 +250,7 @@ public class OwserverConnection {
      *
      * @param path full owfs path to sensor
      * @return page buffer
-     * @throws OwException in case an error occurs
+     * @throws OwException
      */
     public OwPageBuffer readPages(String path) throws OwException {
         OwserverPacket requestPacket = new OwserverPacket(OwserverMessageType.READ, path + "/pages/page.ALL");
@@ -266,7 +267,7 @@ public class OwserverConnection {
      *
      * @param path full owfs path to the sensor
      * @param value the value to write
-     * @throws OwException in case an error occurs
+     * @throws OwException
      */
     public void writeDecimalType(String path, DecimalType value) throws OwException {
         OwserverPacket requestPacket = new OwserverPacket(OwserverMessageType.WRITE, path);
@@ -283,7 +284,7 @@ public class OwserverConnection {
      *
      * @param requestPacket the request to be send
      * @return the raw owserver answer
-     * @throws OwException in case an error occurs
+     * @throws OwException
      */
     private OwserverPacket request(OwserverPacket requestPacket) throws OwException {
         OwserverPacket returnPacket = new OwserverPacket(OwserverPacketType.RETURN);
@@ -440,7 +441,7 @@ public class OwserverConnection {
      * {@link OwException} is thrown.
      *
      * @param requestPacket data to write
-     * @throws OwException in case an error occurs
+     * @throws OwException
      */
     private void write(OwserverPacket requestPacket) throws OwException {
         try {
@@ -474,7 +475,7 @@ public class OwserverConnection {
      *
      * @param noTimeoutException retry in case of read time outs instead of exiting with an {@link OwException}.
      * @return the read packet
-     * @throws OwException in case an error occurs
+     * @throws OwException
      */
     private OwserverPacket read(boolean noTimeoutException) throws OwException {
         OwserverPacket returnPacket = new OwserverPacket(OwserverPacketType.RETURN);
@@ -494,7 +495,7 @@ public class OwserverConnection {
                 throw e;
             } catch (IOException e) {
                 // Read time out
-                if ("Read timed out".equals(e.getMessage()) && noTimeoutException) {
+                if (e.getMessage().equals("Read timed out") && noTimeoutException) {
                     logger.trace("timeout - setting error code to -1");
                     // will lead to re-try reading in request method!!!
                     returnPacket.setPayload("timeout");

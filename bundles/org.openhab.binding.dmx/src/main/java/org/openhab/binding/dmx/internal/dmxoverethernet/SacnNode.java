@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dmx.internal.dmxoverethernet;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link ArtnetNode} represents a sending or receiving node with address and port
  * default address is set to 5568 for sACN/E1.31
@@ -21,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Jan N. Klug - Initial contribution
  *
  */
-@NonNullByDefault
+
 public class SacnNode extends IpNode {
     public static final int DEFAULT_PORT = 5568;
 

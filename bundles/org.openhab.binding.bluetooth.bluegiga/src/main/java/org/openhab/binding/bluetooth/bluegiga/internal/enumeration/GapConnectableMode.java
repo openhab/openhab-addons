@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,9 +15,6 @@ package org.openhab.binding.bluetooth.bluegiga.internal.enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * Class to implement the BlueGiga Enumeration <b>GapConnectableMode</b>.
  * <p>
@@ -27,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-@NonNullByDefault
 public enum GapConnectableMode {
     /**
      * Default unknown value
@@ -59,7 +55,7 @@ public enum GapConnectableMode {
      * A mapping between the integer code and its corresponding type to
      * facilitate lookup by code.
      */
-    private static @Nullable Map<Integer, GapConnectableMode> codeMapping;
+    private static Map<Integer, GapConnectableMode> codeMapping;
 
     private int key;
 
@@ -67,24 +63,30 @@ public enum GapConnectableMode {
         this.key = key;
     }
 
+    private static void initMapping() {
+        codeMapping = new HashMap<>();
+        for (GapConnectableMode s : values()) {
+            codeMapping.put(s.key, s);
+        }
+    }
+
     /**
-     * Lookup function based on the type code. Returns {@link UNKNOWN} if the code does not exist.
+     * Lookup function based on the type code. Returns null if the code does not exist.
      *
      * @param gapConnectableMode
      *            the code to lookup
      * @return enumeration value.
      */
     public static GapConnectableMode getGapConnectableMode(int gapConnectableMode) {
-        Map<Integer, GapConnectableMode> localCodeMapping = codeMapping;
-        if (localCodeMapping == null) {
-            localCodeMapping = new HashMap<>();
-            for (GapConnectableMode s : values()) {
-                localCodeMapping.put(s.key, s);
-            }
-            codeMapping = localCodeMapping;
+        if (codeMapping == null) {
+            initMapping();
         }
 
-        return localCodeMapping.getOrDefault(gapConnectableMode, UNKNOWN);
+        if (codeMapping.get(gapConnectableMode) == null) {
+            return UNKNOWN;
+        }
+
+        return codeMapping.get(gapConnectableMode);
     }
 
     /**

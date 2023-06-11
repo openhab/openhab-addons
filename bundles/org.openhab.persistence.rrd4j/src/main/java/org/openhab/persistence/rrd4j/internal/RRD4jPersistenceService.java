@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -145,63 +145,20 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     @Override
-    public void store(final Item item, @Nullable final String alias) {
+    public synchronized void store(final Item item, @Nullable final String alias) {
         if (!isSupportedItemType(item)) {
             logger.trace("Ignoring item '{}' since its type {} is not supported", item.getName(), item.getType());
             return;
         }
         final String name = alias == null ? item.getName() : alias;
 
-        Double value;
-
-        if (item instanceof NumberItem && item.getState() instanceof QuantityType) {
-            NumberItem nItem = (NumberItem) item;
-            QuantityType<?> qState = (QuantityType<?>) item.getState();
-            Unit<? extends Quantity<?>> unit = nItem.getUnit();
-            if (unit != null) {
-                QuantityType<?> convertedState = qState.toUnit(unit);
-                if (convertedState != null) {
-                    value = convertedState.doubleValue();
-                } else {
-                    value = null;
-                    logger.warn(
-                            "Failed to convert state '{}' to unit '{}'. Please check your item definition for correctness.",
-                            qState, unit);
-                }
-            } else {
-                value = qState.doubleValue();
-            }
-        } else {
-            DecimalType state = item.getStateAs(DecimalType.class);
-            if (state != null) {
-                value = state.toBigDecimal().doubleValue();
-            } else {
-                value = null;
-            }
-        }
-
-        if (value == null) {
-            // we could not convert the value
-            return;
-        }
-
-        long now = System.currentTimeMillis() / 1000;
-
-        scheduler.schedule(() -> internalStore(name, value, now, true), 0, TimeUnit.SECONDS);
-    }
-
-    private synchronized void internalStore(String name, double value, long now, boolean retry) {
-        RrdDb db = null;
-        try {
-            db = getDB(name, true);
-        } catch (Exception e) {
-            logger.warn("Failed to open rrd4j database '{}' to store data ({})", name, e.toString());
-        }
+        RrdDb db = getDB(name);
         if (db == null) {
             return;
         }
 
         ConsolFun function = getConsolidationFunction(db);
+        long now = System.currentTimeMillis() / 1000;
         if (function != ConsolFun.AVERAGE) {
             try {
                 // we store the last value again, so that the value change
@@ -215,8 +172,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         sample.setTime(now - 1);
                         sample.setValue(DATASOURCE_STATE, lastValue);
                         sample.update();
-                        logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database (again)", name,
-                                lastValue, now - 1);
+                        logger.debug("Stored '{}' as value '{}' in rrd4j database (again)", name, lastValue);
                     }
                 }
             } catch (IOException e) {
@@ -226,24 +182,50 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         try {
             Sample sample = db.createSample();
             sample.setTime(now);
-            double storeValue = value;
-            if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) { // counter values must be
-                                                                                  // adjusted by stepsize
-                storeValue = value * db.getRrdDef().getStep();
+
+            Double value = null;
+
+            if (item instanceof NumberItem && item.getState() instanceof QuantityType) {
+                NumberItem nItem = (NumberItem) item;
+                QuantityType<?> qState = (QuantityType<?>) item.getState();
+                Unit<? extends Quantity<?>> unit = nItem.getUnit();
+                if (unit != null) {
+                    QuantityType<?> convertedState = qState.toUnit(unit);
+                    if (convertedState != null) {
+                        value = convertedState.doubleValue();
+                    } else {
+                        logger.warn(
+                                "Failed to convert state '{}' to unit '{}'. Please check your item definition for correctness.",
+                                qState, unit);
+                    }
+                } else {
+                    value = qState.doubleValue();
+                }
+            } else {
+                DecimalType state = item.getStateAs(DecimalType.class);
+                if (state != null) {
+                    value = state.toBigDecimal().doubleValue();
+                }
             }
-            sample.setValue(DATASOURCE_STATE, storeValue);
-            sample.update();
-            logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database", name, storeValue, now);
+            if (value != null) {
+                if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) { // counter values must be
+                                                                                      // adjusted by stepsize
+                    value = value * db.getRrdDef().getStep();
+                }
+                sample.setValue(DATASOURCE_STATE, value);
+                sample.update();
+                logger.debug("Stored '{}' as value '{}' in rrd4j database", name, value);
+            }
         } catch (IllegalArgumentException e) {
             String message = e.getMessage();
-            if (message != null && message.contains("at least one second step is required") && retry) {
+            if (message != null && message.contains("at least one second step is required")) {
                 // we try to store the value one second later
                 ScheduledFuture<?> job = scheduledJobs.get(name);
                 if (job != null) {
                     job.cancel(true);
                     scheduledJobs.remove(name);
                 }
-                job = scheduler.schedule(() -> internalStore(name, value, now + 1, false), 1, TimeUnit.SECONDS);
+                job = scheduler.schedule(() -> store(item, name), 1, TimeUnit.SECONDS);
                 scheduledJobs.put(name, job);
             } else {
                 logger.warn("Could not persist '{}' to rrd4j database: {}", name, e.getMessage());
@@ -265,26 +247,9 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
-        ZonedDateTime filterBeginDate = filter.getBeginDate();
-        ZonedDateTime filterEndDate = filter.getEndDate();
-        if (filterBeginDate != null && filterEndDate != null && filterBeginDate.isAfter(filterEndDate)) {
-            throw new IllegalArgumentException("begin (" + filterBeginDate + ") before end (" + filterEndDate + ")");
-        }
-
         String itemName = filter.getItemName();
-        if (itemName == null) {
-            logger.warn("Item name is missing in filter {}", filter);
-            return List.of();
-        }
-        logger.trace("Querying rrd4j database for item '{}'", itemName);
 
-        RrdDb db = null;
-        try {
-            db = getDB(itemName, false);
-        } catch (Exception e) {
-            logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
-            return List.of();
-        }
+        RrdDb db = getDB(itemName);
         if (db == null) {
             logger.debug("Could not find item '{}' in rrd4j database", itemName);
             return List.of();
@@ -304,11 +269,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         long start = 0L;
-        long end = filterEndDate == null ? System.currentTimeMillis() / 1000
-                : filterEndDate.toInstant().getEpochSecond();
+        long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
+                : filter.getEndDate().toInstant().getEpochSecond();
 
         try {
-            if (filterBeginDate == null) {
+            if (filter.getBeginDate() == null) {
                 // as rrd goes back for years and gets more and more
                 // inaccurate, we only support descending order
                 // and a single return value
@@ -317,7 +282,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 // query, which we want to support
                 if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
                         && filter.getPageNumber() == 0) {
-                    if (filterEndDate == null) {
+                    if (filter.getEndDate() == null) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
@@ -332,19 +297,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         start = end;
                     }
                 } else {
-                    throw new UnsupportedOperationException(
-                            "rrd4j does not allow querys without a begin date, unless order is descending and a single value is requested");
+                    throw new UnsupportedOperationException("rrd4j does not allow querys without a begin date, "
+                            + "unless order is descending and a single value is requested");
                 }
             } else {
-                start = filterBeginDate.toInstant().getEpochSecond();
-            }
-
-            // do not call method {@link RrdDb#createFetchRequest(ConsolFun, long, long, long)} if start > end to avoid
-            // an IAE to be thrown
-            if (start > end) {
-                logger.debug("Could not query rrd4j database for item '{}': start ({}) > end ({})", itemName, start,
-                        end);
-                return List.of();
+                start = filter.getBeginDate().toInstant().getEpochSecond();
             }
 
             FetchRequest request = db.createFetchRequest(getConsolidationFunction(db), start, end, 1);
@@ -379,7 +336,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         return Set.of();
     }
 
-    protected synchronized @Nullable RrdDb getDB(String alias, boolean createFileIfAbsent) {
+    protected synchronized @Nullable RrdDb getDB(String alias) {
         RrdDb db = null;
         Path path = getDatabasePath(alias);
         try {
@@ -390,7 +347,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 // recreate the RrdDb instance from the file
                 builder.setPath(path.toString());
                 db = builder.build();
-            } else if (createFileIfAbsent) {
+            } else {
                 if (!Files.exists(DB_FOLDER)) {
                     Files.createDirectories(DB_FOLDER);
                 }

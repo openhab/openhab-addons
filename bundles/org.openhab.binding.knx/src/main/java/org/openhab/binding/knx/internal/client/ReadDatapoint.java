@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import tuwien.auto.calimero.datapoint.Datapoint;
 
 /**
@@ -22,7 +19,6 @@ import tuwien.auto.calimero.datapoint.Datapoint;
  *
  * @author Karel Goderis - Initial contribution
  */
-@NonNullByDefault
 public class ReadDatapoint {
 
     private final Datapoint datapoint;
@@ -60,7 +56,7 @@ public class ReadDatapoint {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -70,8 +66,14 @@ public class ReadDatapoint {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        @Nullable
         ReadDatapoint other = (ReadDatapoint) obj;
-        return datapoint.getMainAddress().equals(other.datapoint.getMainAddress());
+        if (datapoint == null) {
+            if (other.datapoint != null) {
+                return false;
+            }
+        } else if (!datapoint.getMainAddress().equals(other.datapoint.getMainAddress())) {
+            return false;
+        }
+        return true;
     }
 }

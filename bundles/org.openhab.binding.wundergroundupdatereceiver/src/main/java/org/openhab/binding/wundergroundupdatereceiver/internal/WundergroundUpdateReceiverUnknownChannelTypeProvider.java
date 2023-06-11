@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.wundergroundupdatereceiver.internal;
 
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER;
-import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.UNCATEGORIZED;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,8 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.CoreItemFactory;
-import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -40,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements ChannelTypeProvider {
 
-    private static final List<String> BOOLEAN_STRINGS = List.of("1", "0", "true", "false", "yes", "no", "on", "off");
+    private static final List<String> BOOLEAN_STRINGS = List.of("1", "0", "true", "false");
     private final Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WundergroundUpdateReceiverUnknownChannelTypeProvider.class);
 
@@ -60,8 +57,7 @@ public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements Cha
         ChannelType type = getChannelType(typeUid, null);
         if (type == null) {
             String itemType = guessItemType(value);
-            type = ChannelTypeBuilder.state(typeUid, parameterName + " channel type", itemType).isAdvanced(true)
-                    .withCategory(UNCATEGORIZED).withAutoUpdatePolicy(AutoUpdatePolicy.DEFAULT).build();
+            type = ChannelTypeBuilder.state(typeUid, parameterName + " channel type", itemType).build();
             return addChannelType(typeUid, type);
         }
         return type;
@@ -69,18 +65,18 @@ public class WundergroundUpdateReceiverUnknownChannelTypeProvider implements Cha
 
     private static String guessItemType(String value) {
         if (BOOLEAN_STRINGS.contains(value.toLowerCase())) {
-            return CoreItemFactory.SWITCH;
+            return "Switch";
         }
         try {
             Float.valueOf(value);
-            return CoreItemFactory.NUMBER;
+            return "Number";
         } catch (NumberFormatException ignored) {
         }
-        return CoreItemFactory.STRING;
+        return "String";
     }
 
     private ChannelType addChannelType(ChannelTypeUID channelTypeUID, ChannelType channelType) {
-        logger.warn("Adding new synthetic channelType {} for unrecognised parameter", channelTypeUID.getAsString());
+        logger.warn("Adding channelType {} for unknown parameter", channelTypeUID.getAsString());
         this.channelTypes.put(channelTypeUID, channelType);
         return channelType;
     }

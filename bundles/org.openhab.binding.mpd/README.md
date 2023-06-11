@@ -4,6 +4,7 @@
 
 With the openHAB MPD binding you can control Music Player Daemons.
 
+
 ## Supported Things
 
 This binding supports one ThingType: mpd
@@ -11,6 +12,7 @@ This binding supports one ThingType: mpd
 ## Discovery
 
 If zeroconf is enabled in the Music Player Daemon, it is discovered. Each Music Player daemon requires a unique zeroconf_name for correct discovery.
+
 
 ## Thing Configuration
 
@@ -21,6 +23,7 @@ The ThingType mpd requires the following configuration parameters:
 | IP Address      | ipAddress    | Host name or IP address of the Music Player Daemon                       | yes      |
 | Port            | port         | Port number on which the Music Player Daemon is listening. Default: 6600 | yes      |
 | Password        | password     | Password to access the Music Player Daemon                               | no       |
+
 
 ## Channels
 
@@ -39,17 +42,18 @@ The following channels are currently available:
 | currenttitle    | String    | Current title             |
 | currenttrack    | Number    | Current track             |
 
+
 ## Full Example
 
-### Thing
+#### Thing
 
-```java
+```
 mpd:mpd:music  [ ipAddress="192.168.1.2", port=6600 ]
 ```
 
-### Items
+#### Items
 
-```java
+```
 Switch morning_music "Morning music"
 
 Player mpd_music_player "Player" { channel = "mpd:mpd:music:control" }
@@ -64,9 +68,9 @@ String mpd_music_title "Title [%s]" { channel = "mpd:mpd:music:currenttitle" }
 Number mpd_music_track "Track [%d]" { channel = "mpd:mpd:music:currenttrack" }
 ```
 
-### Sitemap
+#### Sitemap
 
-```perl
+```
 Frame label="Music" {
     Default item=mpd_music_player
     Slider item=mpd_music_volume
@@ -81,9 +85,9 @@ Frame label="Music" {
 }
 ```
 
-### Rule
+#### Rule
 
-```java
+```
 rule "turn on morning music"
 when
         Item morning_music changed to ON

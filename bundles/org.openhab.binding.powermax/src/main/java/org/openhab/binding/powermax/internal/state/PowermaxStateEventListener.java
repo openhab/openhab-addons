@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,10 +30,10 @@ public interface PowermaxStateEventListener extends EventListener {
      *
      * @param event the event object
      */
-    void onNewStateEvent(EventObject event);
+    public void onNewStateEvent(EventObject event);
 
     /**
      * Event handler method to indicate that communication has been lost
      */
-    void onCommunicationFailure(String message);
+    public void onCommunicationFailure(String message);
 }

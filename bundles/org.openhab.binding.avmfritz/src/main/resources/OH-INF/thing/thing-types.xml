@@ -15,13 +15,7 @@
 
 		<channels>
 			<channel id="color" typeId="system.color"/>
-			<channel id="color_temperature" typeId="system.color-temperature"/>
-			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -97,10 +91,7 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature">
-				<label>Current Temperature</label>
-				<description>Current measured temperature.</description>
-			</channel>
+			<channel id="actual_temp" typeId="actual_temp"/>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -109,10 +100,6 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -133,10 +120,7 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature">
-				<label>Current Temperature</label>
-				<description>Current measured temperature.</description>
-			</channel>
+			<channel id="actual_temp" typeId="actual_temp"/>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -145,10 +129,6 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -169,10 +149,7 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature">
-				<label>Current Temperature</label>
-				<description>Current measured temperature.</description>
-			</channel>
+			<channel id="actual_temp" typeId="actual_temp"/>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -181,10 +158,6 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -205,10 +178,7 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature">
-				<label>Current Temperature</label>
-				<description>Current measured temperature.</description>
-			</channel>
+			<channel id="actual_temp" typeId="actual_temp"/>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -217,10 +187,6 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -241,20 +207,10 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="system.electrical-energy">
-				<label>Energy Consumption</label>
-				<description>Accumulated energy consumption.</description>
-			</channel>
-			<channel id="power" typeId="system.electric-power">
-				<label>Power</label>
-				<description>Current power consumption.</description>
-			</channel>
+			<channel id="energy" typeId="energy"/>
+			<channel id="power" typeId="power"/>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -275,20 +231,10 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="system.electrical-energy">
-				<label>Energy Consumption</label>
-				<description>Accumulated energy consumption.</description>
-			</channel>
-			<channel id="power" typeId="system.electric-power">
-				<label>Power</label>
-				<description>Current power consumption.</description>
-			</channel>
+			<channel id="energy" typeId="energy"/>
+			<channel id="power" typeId="power"/>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -309,20 +255,10 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="energy" typeId="system.electrical-energy">
-				<label>Energy Consumption</label>
-				<description>Accumulated energy consumption.</description>
-			</channel>
-			<channel id="power" typeId="system.electric-power">
-				<label>Power</label>
-				<description>Current power consumption.</description>
-			</channel>
+			<channel id="energy" typeId="energy"/>
+			<channel id="power" typeId="power"/>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -398,8 +334,6 @@
 
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
-			<channel id="obstruction_alarm" typeId="obstruction_alarm"/>
-			<channel id="temperature_alarm" typeId="temperature_alarm"/>
 		</channels>
 
 		<representation-property>ain</representation-property>
@@ -417,13 +351,7 @@
 
 		<channels>
 			<channel id="color" typeId="system.color"/>
-			<channel id="color_temperature" typeId="system.color-temperature"/>
-			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -480,10 +408,7 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature">
-				<label>Current Temperature</label>
-				<description>Current measured temperature.</description>
-			</channel>
+			<channel id="actual_temp" typeId="actual_temp"/>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -492,10 +417,6 @@
 			<channel id="next_temp" typeId="next_temp"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 
@@ -515,20 +436,10 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="energy" typeId="system.electrical-energy">
-				<label>Energy Consumption</label>
-				<description>Accumulated energy consumption.</description>
-			</channel>
-			<channel id="power" typeId="system.electric-power">
-				<label>Power</label>
-				<description>Current power consumption.</description>
-			</channel>
+			<channel id="energy" typeId="energy"/>
+			<channel id="power" typeId="power"/>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>ain</representation-property>
 

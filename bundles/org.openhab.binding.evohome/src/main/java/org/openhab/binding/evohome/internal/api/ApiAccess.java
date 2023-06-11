@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,15 +18,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Authentication;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,17 +37,17 @@ import com.google.gson.GsonBuilder;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-@NonNullByDefault
 public class ApiAccess {
     private static final int REQUEST_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private final HttpClient httpClient;
-    private final Gson gson = new GsonBuilder().create();
+    private final Gson gson;
 
-    private @Nullable Authentication authenticationData;
-    private @Nullable String applicationId;
+    private Authentication authenticationData;
+    private String applicationId;
 
     public ApiAccess(HttpClient httpClient) {
+        this.gson = new GsonBuilder().create();
         this.httpClient = httpClient;
     }
 
@@ -58,7 +56,7 @@ public class ApiAccess {
      *
      * @param authentication The authentication details to apply
      */
-    public void setAuthentication(@Nullable Authentication authentication) {
+    public void setAuthentication(Authentication authentication) {
         authenticationData = authentication;
     }
 
@@ -67,7 +65,7 @@ public class ApiAccess {
      *
      * @return The current authentication details
      */
-    public @Nullable Authentication getAuthentication() {
+    public Authentication getAuthentication() {
         return authenticationData;
     }
 
@@ -76,7 +74,7 @@ public class ApiAccess {
      *
      * @param applicationId The application id to apply
      */
-    public void setApplicationId(@Nullable String applicationId) {
+    public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
     }
 
@@ -91,16 +89,18 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    public @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
-            @Nullable String requestData, String contentType, @Nullable Class<TOut> outClass) throws TimeoutException {
-        logger.debug("Requesting: [{}]", url);
-        @Nullable
+    public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
+            String contentType, Class<TOut> outClass) throws TimeoutException {
         TOut retVal = null;
+        logger.debug("Requesting: [{}]", url);
+
         try {
             Request request = httpClient.newRequest(url).method(method);
 
-            for (Map.Entry<String, String> header : headers.entrySet()) {
-                request.header(header.getKey(), header.getValue());
+            if (headers != null) {
+                for (Map.Entry<String, String> header : headers.entrySet()) {
+                    request.header(header.getKey(), header.getValue());
+                }
             }
 
             if (requestData != null) {
@@ -109,8 +109,8 @@ public class ApiAccess {
 
             ContentResponse response = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
 
-            logger.trace("Response: {}", response);
-            logger.trace("\n{}\n{}", response.getHeaders(), response.getContentAsString());
+            logger.debug("Response: {}", response);
+            logger.debug("\n{}\n{}", response.getHeaders(), response.getContentAsString());
 
             if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
                 String reply = response.getContentAsString();
@@ -118,10 +118,6 @@ public class ApiAccess {
                 if (outClass != null) {
                     retVal = new Gson().fromJson(reply, outClass);
                 }
-            } else if ((response.getStatus() == HttpStatus.CREATED_201)) {
-                // success nothing to return ignore
-            } else {
-                logger.debug("Request failed with unexpected response code {}", response.getStatus());
             }
         } catch (ExecutionException e) {
             logger.debug("Error in handling request: ", e);
@@ -129,6 +125,7 @@ public class ApiAccess {
             logger.debug("Handling request interrupted: ", e);
             Thread.currentThread().interrupt();
         }
+
         return retVal;
     }
 
@@ -141,7 +138,7 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    public @Nullable <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass) throws TimeoutException {
+    public <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass) throws TimeoutException {
         return doAuthenticatedRequest(HttpMethod.GET, url, null, outClass);
     }
 
@@ -164,16 +161,16 @@ public class ApiAccess {
      * @param method The HTTP method to use (POST, GET, ...)
      * @param url The URL to query
      * @param headers The optional additional headers to apply, can be null
-     * @param requestContainer The object to use as JSON data for the request, can be null
-     * @param outClass The type of the requested result, can be null
+     * @param requestContainer The object to use as JSON data for the request
+     * @param outClass The type of the requested result
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    private @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
-            @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
+    private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, Object requestContainer,
+            Class<TOut> outClass) throws TimeoutException {
         String json = null;
         if (requestContainer != null) {
-            json = gson.toJson(requestContainer);
+            json = this.gson.toJson(requestContainer);
         }
 
         return doRequest(method, url, headers, json, "application/json", outClass);
@@ -191,19 +188,17 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    private @Nullable <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url,
-            @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
-        Map<String, String> headers = new HashMap<>();
-        Authentication localAuthenticationData = authenticationData;
-        String localApplicationId = applicationId;
+    private <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Object requestContainer,
+            Class<TOut> outClass) throws TimeoutException {
+        Map<String, String> headers = null;
+        if (authenticationData != null) {
+            headers = new HashMap<>();
 
-        if (localAuthenticationData != null) {
-            headers.put("Authorization", "Bearer " + localAuthenticationData.getAccessToken());
+            headers.put("Authorization", "Bearer " + authenticationData.getAccessToken());
+            headers.put("applicationId", applicationId);
+            headers.put("Accept",
+                    "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
         }
-        if (localApplicationId != null) {
-            headers.put("applicationId", localApplicationId);
-        }
-        headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
         return doRequest(method, url, headers, requestContainer, outClass);
     }

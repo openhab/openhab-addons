@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.snmp.internal.types.SnmpAuthProtocol;
-import org.openhab.binding.snmp.internal.types.SnmpPrivProtocol;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.PDU;
 import org.snmp4j.Target;
@@ -33,12 +31,9 @@ import org.snmp4j.event.ResponseListener;
 @NonNullByDefault
 public interface SnmpService {
 
-    void addCommandResponder(CommandResponder listener);
+    public void addCommandResponder(CommandResponder listener);
 
-    void removeCommandResponder(CommandResponder listener);
+    public void removeCommandResponder(CommandResponder listener);
 
-    void send(PDU pdu, Target target, @Nullable Object userHandle, ResponseListener listener) throws IOException;
-
-    void addUser(String userName, SnmpAuthProtocol snmpAuthProtocol, @Nullable String authPassphrase,
-            SnmpPrivProtocol snmpPrivProtocol, @Nullable String privPassphrase, byte[] engineId);
+    public void send(PDU pdu, Target target, @Nullable Object userHandle, ResponseListener listener) throws IOException;
 }

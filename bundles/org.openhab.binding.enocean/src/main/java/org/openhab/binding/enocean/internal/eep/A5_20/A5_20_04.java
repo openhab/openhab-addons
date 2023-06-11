@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,6 @@ import java.util.function.Function;
 
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -37,7 +35,6 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Dominik Vorreiter - Initial contribution
  */
-@NonNullByDefault
 public class A5_20_04 extends A5_20 {
 
     public A5_20_04() {
@@ -49,7 +46,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     @Override
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_STATUS_REQUEST_EVENT:
@@ -60,14 +57,14 @@ public class A5_20_04 extends A5_20 {
     }
 
     private String getStatusRequestEvent() {
-        return Boolean.valueOf(getBit(getDB0Value(), 6)).toString();
+        return Boolean.valueOf(getBit(getDB_0Value(), 6)).toString();
         // return getBit(getDB_0Value(), 6) ? "triggered" : null;
     }
 
     private byte getPos(Function<String, State> getCurrentStateFunc) {
         State current = getCurrentStateFunc.apply(CHANNEL_VALVE_POSITION);
 
-        if (current instanceof DecimalType) {
+        if ((current != null) && (current instanceof DecimalType)) {
             DecimalType state = current.as(DecimalType.class);
 
             if (state != null) {
@@ -83,7 +80,7 @@ public class A5_20_04 extends A5_20 {
 
         double value = 20.0; // 20 °C
 
-        if (current instanceof QuantityType) {
+        if ((current != null) && (current instanceof QuantityType)) {
             @SuppressWarnings("unchecked")
             QuantityType<Temperature> raw = current.as(QuantityType.class);
 
@@ -102,7 +99,7 @@ public class A5_20_04 extends A5_20 {
     private byte getMc(Function<String, State> getCurrentStateFunc) {
         State current = getCurrentStateFunc.apply(CHANNEL_MEASUREMENT_CONTROL);
 
-        if (current instanceof OnOffType) {
+        if ((current != null) && (current instanceof OnOffType)) {
             OnOffType state = current.as(OnOffType.class);
 
             if (state != null) {
@@ -116,7 +113,7 @@ public class A5_20_04 extends A5_20 {
     private byte getWuc(Function<String, State> getCurrentStateFunc) {
         State current = getCurrentStateFunc.apply(CHANNEL_WAKEUPCYCLE);
 
-        if (current instanceof DecimalType) {
+        if ((current != null) && (current instanceof DecimalType)) {
             DecimalType state = current.as(DecimalType.class);
 
             if (state != null) {
@@ -130,7 +127,7 @@ public class A5_20_04 extends A5_20 {
     private byte getDso(Function<String, State> getCurrentStateFunc) {
         State current = getCurrentStateFunc.apply(CHANNEL_DISPLAY_ORIENTATION);
 
-        if (current instanceof DecimalType) {
+        if ((current != null) && (current instanceof DecimalType)) {
             DecimalType state = current.as(DecimalType.class);
 
             if (state != null) {
@@ -144,7 +141,7 @@ public class A5_20_04 extends A5_20 {
     private byte getBlc(Function<String, State> getCurrentStateFunc) {
         State current = getCurrentStateFunc.apply(CHANNEL_BUTTON_LOCK);
 
-        if (current instanceof OnOffType) {
+        if ((current != null) && (current instanceof OnOffType)) {
             OnOffType state = current.as(OnOffType.class);
 
             if (state != null) {
@@ -158,7 +155,7 @@ public class A5_20_04 extends A5_20 {
     private byte getSer(Function<String, State> getCurrentStateFunc) {
         State current = getCurrentStateFunc.apply(CHANNEL_SERVICECOMMAND);
 
-        if (current instanceof DecimalType) {
+        if ((current != null) && (current instanceof DecimalType)) {
             DecimalType state = current.as(DecimalType.class);
 
             if (state != null) {
@@ -171,12 +168,12 @@ public class A5_20_04 extends A5_20 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)) {
             byte db3 = getPos(getCurrentStateFunc);
             byte db2 = getTsp(getCurrentStateFunc);
             byte db1 = (byte) (0x00 | getMc(getCurrentStateFunc) | getWuc(getCurrentStateFunc));
-            byte db0 = (byte) (0x00 | getDso(getCurrentStateFunc) | TEACHIN_BIT | getBlc(getCurrentStateFunc)
+            byte db0 = (byte) (0x00 | getDso(getCurrentStateFunc) | TeachInBit | getBlc(getCurrentStateFunc)
                     | getSer(getCurrentStateFunc));
 
             setData(db3, db2, db1, db0);
@@ -187,7 +184,7 @@ public class A5_20_04 extends A5_20 {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_VALVE_POSITION:
                 return getValvePosition();
@@ -209,62 +206,62 @@ public class A5_20_04 extends A5_20 {
     }
 
     private State getTemperature() {
-        boolean fl = getBit(getDB0Value(), 0);
-        boolean mst = getBit(getDB0Value(), 7);
+        boolean fl = getBit(getDB_0Value(), 0);
+        boolean mst = getBit(getDB_0Value(), 7);
 
         if (fl || mst) {
             return UnDefType.UNDEF;
         }
 
-        double value = getDB1Value() * (20.0 / 255.0) + 10.0;
+        double value = getDB_1Value() * (20.0 / 255.0) + 10.0;
 
         return new QuantityType<>(value, SIUnits.CELSIUS);
     }
 
     private State getFailureCode() {
-        boolean fl = getBit(getDB0Value(), 0);
+        boolean fl = getBit(getDB_0Value(), 0);
 
         if (!fl) {
             return new QuantityType<>(-1, Units.ONE);
         }
 
-        return new QuantityType<>(getDB1Value(), Units.ONE);
+        return new QuantityType<>(getDB_1Value(), Units.ONE);
     }
 
     private State getMeasurementControl() {
-        return getBit(getDB0Value(), 7) ? OnOffType.OFF : OnOffType.ON;
+        return getBit(getDB_0Value(), 7) ? OnOffType.OFF : OnOffType.ON;
     }
 
     private State getFeedTemperature() {
-        boolean ts = getBit(getDB0Value(), 1);
-        boolean mst = getBit(getDB0Value(), 7);
+        boolean ts = getBit(getDB_0Value(), 1);
+        boolean mst = getBit(getDB_0Value(), 7);
 
         if (ts || mst) {
             return UnDefType.UNDEF;
         }
 
-        double value = getDB2Value() * (60.0 / 255.0) + 20.0;
+        double value = getDB_2Value() * (60.0 / 255.0) + 20.0;
 
         return new QuantityType<>(value, SIUnits.CELSIUS);
     }
 
     private State getTemperatureSetpoint() {
-        boolean ts = getBit(getDB0Value(), 1);
+        boolean ts = getBit(getDB_0Value(), 1);
 
         if (!ts) {
             return UnDefType.UNDEF;
         }
 
-        double value = getDB2Value() * (20.0 / 255.0) + 10.0;
+        double value = getDB_2Value() * (20.0 / 255.0) + 10.0;
 
         return new QuantityType<>(value, SIUnits.CELSIUS);
     }
 
     private State getButtonLock() {
-        return getBit(getDB0Value(), 2) ? OnOffType.ON : OnOffType.OFF;
+        return getBit(getDB_0Value(), 2) ? OnOffType.ON : OnOffType.OFF;
     }
 
     private State getValvePosition() {
-        return new QuantityType<>(getDB3Value(), Units.PERCENT);
+        return new QuantityType<>(getDB_3Value(), Units.PERCENT);
     }
 }

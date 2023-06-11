@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.deutschebahn.internal.filter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A token representing a part of a filter expression.
+ * A token representing a part of an filter expression.
  * 
  * @author Sönke Küper - Initial contribution.
  */
@@ -25,7 +25,7 @@ public abstract class FilterToken {
     private final int position;
 
     /**
-     * Creates a new {@link FilterToken}.
+     * Creates an new {@link FilterToken}.
      */
     public FilterToken(int position) {
         this.position = position;

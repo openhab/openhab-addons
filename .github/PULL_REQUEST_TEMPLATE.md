@@ -5,12 +5,9 @@ Pay attention to the below notes and to *the guidelines* for this repository.
 Feel free to delete any comment sections in the template (starting with "<!--").
 
 ATTENTION: Don't use "git merge" when working with your pull request branch!
-This can clutter your Git history and make your PR unusable.
+This can clutter your Git history and make your PR unuseable.
 Use "git rebase" instead. See this forum post for further details:
 https://community.openhab.org/t/rebase-your-code-or-how-to-fix-your-git-history-before-requesting-a-pull/129358
-
-All PRs should be created using the "main" branch as base.
-Important bugfixes are cherry-picked by maintainers to the patch release branch after a PR has been merged.
 
 Add one or more appropriate labels to make your PR show up in the release notes.
 E.g. enhancement, bug, documentation, new binding

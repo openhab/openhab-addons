@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,8 +118,8 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBridgeHandler.class);
 
-    private static final int COMMAND_TIMEOUT_MS = 5000;
-    private static final int INITIALIZATION_INTERVAL_SEC = 60;
+    private final int COMMAND_TIMEOUT_MS = 5000;
+    private final int INITIALIZATION_INTERVAL_SEC = 60;
 
     private final SerialPortManager serialPortManager;
 
@@ -314,11 +314,9 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     @Override
     public void dispose() {
-        @Nullable
-        ScheduledFuture<?> task = initTask;
-        if (task != null) {
-            task.cancel(true);
-            task = null;
+        if (initTask != null) {
+            initTask.cancel(true);
+            initTask = null;
         }
         stop();
         super.dispose();
@@ -357,10 +355,8 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     }
 
     private void cancelScheduledPassiveScan() {
-        @Nullable
-        Future<?> scanTimer = passiveScanIdleTimer;
-        if (scanTimer != null) {
-            scanTimer.cancel(true);
+        if (passiveScanIdleTimer != null) {
+            passiveScanIdleTimer.cancel(true);
         }
     }
 
@@ -371,17 +367,13 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     private void stopScheduledTasks() {
         cancelScheduledPassiveScan();
-        @Nullable
-        ScheduledFuture<?> removeTask = removeInactiveDevicesTask;
-        if (removeTask != null) {
-            removeTask.cancel(true);
-            removeTask = null;
+        if (removeInactiveDevicesTask != null) {
+            removeInactiveDevicesTask.cancel(true);
+            removeInactiveDevicesTask = null;
         }
-        @Nullable
-        ScheduledFuture<?> discoverTask = discoveryTask;
-        if (discoverTask != null) {
-            discoverTask.cancel(true);
-            discoverTask = null;
+        if (discoveryTask != null) {
+            discoveryTask.cancel(true);
+            discoveryTask = null;
         }
     }
 
@@ -444,7 +436,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         cancelScheduledPassiveScan();
         bgEndProcedure();
 
-        // Start an active scan
+        // Start a active scan
         bgStartScanning(true, configuration.activeScanInterval, configuration.activeScanWindow);
     }
 
@@ -710,7 +702,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                         .withMode(GapDiscoverMode.GAP_DISCOVER_OBSERVATION).build();
                 if (sendCommand(discoverCommand, BlueGigaDiscoverResponse.class, false)
                         .getResult() == BgApiResponse.SUCCESS) {
-                    logger.debug("{} scanning successfully started.", active ? "Active" : "Passive");
+                    logger.debug("{} scanning succesfully started.", active ? "Active" : "Passive");
                     return true;
                 }
             }

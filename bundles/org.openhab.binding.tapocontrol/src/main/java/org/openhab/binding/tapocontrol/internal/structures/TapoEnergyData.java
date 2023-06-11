@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,22 +60,22 @@ public class TapoEnergyData {
      */
     public TapoEnergyData setData(JsonObject jso) {
         /* create empty jsonObject to set efault values if has no energydata */
-        if (jso.has(JSON_KEY_ENERGY_POWER)) {
+        if (jso.has(ENERGY_PROPERTY_POWER)) {
             this.jsonObject = jso;
         } else {
-            this.jsonObject = new JsonObject();
+            jsonObject = new JsonObject();
         }
         setData();
         return this;
     }
 
     private void setData() {
-        this.currentPower = (float) jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_POWER) / 1000;
+        this.currentPower = (float) jsonObjectToInt(jsonObject, ENERGY_PROPERTY_POWER) / 1000;
 
-        this.todayEnergy = jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_ENERGY_TODAY);
-        this.monthEnergy = jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_ENERGY_MONTH);
-        this.todayRuntime = jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_RUNTIME_TODAY);
-        this.monthRuntime = jsonObjectToInt(jsonObject, JSON_KEY_ENERGY_RUNTIME_MONTH);
+        this.todayEnergy = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_ENERGY_TODAY);
+        this.monthEnergy = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_ENERGY_MONTH);
+        this.todayRuntime = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_RUNTIME_TODAY);
+        this.monthRuntime = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_RUNTIME_MONTH);
         this.past24h = new Number[24];
         this.past30d = new Number[30];
         this.past1y = new Number[12];
@@ -88,42 +88,42 @@ public class TapoEnergyData {
      ************************************/
 
     public Number getCurrentPower() {
-        return currentPower;
+        return this.currentPower;
     }
 
     public Number getTodayEnergy() {
-        return todayEnergy;
+        return this.todayEnergy;
     }
 
     public Number getMonthEnergy() {
-        return monthEnergy;
+        return this.monthEnergy;
     }
 
     public Number getYearEnergy() {
         int sum = 0;
-        for (int i = 0; i < past1y.length; i++) {
-            sum += past1y[i].intValue();
+        for (int i = 0; i < this.past1y.length; i++) {
+            sum += this.past1y[i].intValue();
         }
         return sum;
     }
 
     public Number getTodayRuntime() {
-        return todayRuntime;
+        return this.todayRuntime;
     }
 
     public Number getMonthRuntime() {
-        return monthRuntime;
+        return this.monthRuntime;
     }
 
     public Number[] getPast24hUsage() {
-        return past24h;
+        return this.past24h;
     }
 
     public Number[] getPast30dUsage() {
-        return past30d;
+        return this.past30d;
     }
 
     public Number[] getPast1yUsage() {
-        return past1y;
+        return this.past1y;
     }
 }

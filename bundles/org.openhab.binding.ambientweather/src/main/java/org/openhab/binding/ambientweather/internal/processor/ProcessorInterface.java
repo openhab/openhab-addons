@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,20 +25,20 @@ public interface ProcessorInterface {
     /*
      * Set the channel group Id for the station
      */
-    void setChannelGroupId();
+    public void setChannelGroupId();
 
     /*
      * Set the number of remote sensors supported by the station
      */
-    void setNumberOfSensors();
+    public void setNumberOfSensors();
 
     /*
      * Updates the info channels (i.e. name and location) for a station
      */
-    void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location);
+    public void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location);
 
     /*
      * Updates the weather data channels for a station
      */
-    void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData);
+    public void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData);
 }

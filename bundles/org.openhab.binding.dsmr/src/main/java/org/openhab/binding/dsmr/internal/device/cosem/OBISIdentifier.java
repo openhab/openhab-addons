@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,11 +37,6 @@ public class OBISIdentifier {
      * OBIS ID pattern
      */
     private static final Pattern OBIS_ID_PATTERN = Pattern.compile(OBISID_REGEX);
-
-    /**
-     * Value to return when an invalid int was read.
-     */
-    private static final int INVALID_INT_READ = -1;
 
     /* the six individual group values of the OBIS ID */
     private final int groupA;
@@ -96,38 +91,22 @@ public class OBISIdentifier {
 
         if (m.matches()) {
             // Optional value A
-            this.groupA = safeInt(m.group(2));
+            this.groupA = m.group(2) == null ? null : Integer.parseInt(m.group(2));
 
             // Optional value B
-            this.channel = safeInteger(m.group(4));
+            this.channel = m.group(4) == null ? null : Integer.valueOf(m.group(4));
 
             // Required value C & D
-            this.groupC = safeInt(m.group(6));
-            this.groupD = safeInt(m.group(7));
+            this.groupC = Integer.parseInt(m.group(6));
+            this.groupD = Integer.parseInt(m.group(7));
 
             // Optional value E
-            this.groupE = safeInteger(m.group(9));
+            this.groupE = m.group(9) == null ? null : Integer.valueOf(m.group(9));
 
             // Optional value F
-            this.groupF = safeInteger(m.group(11));
+            this.groupF = m.group(11) == null ? null : Integer.valueOf(m.group(11));
         } else {
             throw new ParseException("Invalid OBIS identifier:" + obisIDString, 0);
-        }
-    }
-
-    private static int safeInt(final @Nullable String value) {
-        try {
-            return value == null ? INVALID_INT_READ : Integer.parseInt(value);
-        } catch (final NumberFormatException e) {
-            return INVALID_INT_READ;
-        }
-    }
-
-    private static @Nullable Integer safeInteger(final @Nullable String value) {
-        try {
-            return value == null ? null : Integer.valueOf(value);
-        } catch (final NumberFormatException e) {
-            return null;
         }
     }
 
@@ -256,7 +235,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Returns a reduced OBIS Identifier.
+     * Returns an reduced OBIS Identifier.
      *
      * @return reduced OBIS Identifier
      */
@@ -265,7 +244,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Returns a reduced OBIS Identifier with group E set to null (.i.e. not applicable)
+     * Returns an reduced OBIS Identifier with group E set to null (.i.e. not applicable)
      *
      * @return reduced OBIS Identifier
      */

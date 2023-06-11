@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.bluetooth.notification;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link BluetoothScanNotification} provides a notification of a received scan packet
@@ -23,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Chris Jackson - Initial contribution
  * @author Peter Rosenberg - Add support for ServiceData
  */
-@NonNullByDefault
 public class BluetoothScanNotification extends BluetoothNotification {
     /**
      * The receive signal strength for this beacon packet
@@ -33,19 +29,19 @@ public class BluetoothScanNotification extends BluetoothNotification {
     /**
      * The raw data
      */
-    private byte[] data = new byte[0];
+    private byte[] data = null;
 
     /**
      * The manufacturer specific data
      */
-    private byte[] manufacturerData = new byte[0];
+    private byte[] manufacturerData = null;
 
     /**
      * The service data.
      * Key: UUID of the service
      * Value: Data of the characteristic
      */
-    private Map<String, byte[]> serviceData = new HashMap<String, byte[]>();
+    private Map<String, byte[]> serviceData = null;
 
     /**
      * The beacon type

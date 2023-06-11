@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.ojelectronics.internal.services;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +26,7 @@ import org.openhab.binding.ojelectronics.internal.ThermostatHandler;
 import org.openhab.binding.ojelectronics.internal.common.OJGSonBuilder;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
 import org.openhab.binding.ojelectronics.internal.models.SimpleResponseModel;
-import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModel;
+import org.openhab.binding.ojelectronics.internal.models.Thermostat;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.UpdateThermostatRequestModel;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
@@ -47,17 +45,14 @@ public final class UpdateService {
     private final Gson gson = OJGSonBuilder.getGSon();
     private final Logger logger = LoggerFactory.getLogger(UpdateService.class);
 
+    private final String sessionId;
     private final HttpClient httpClient;
     private final OJElectronicsBridgeConfiguration configuration;
-    private final Runnable unauthorized;
-    private final Consumer<@Nullable String> connectionLost;
 
-    public UpdateService(OJElectronicsBridgeConfiguration configuration, HttpClient httpClient,
-            Consumer<@Nullable String> connectionLost, Runnable unauthorized) {
+    public UpdateService(OJElectronicsBridgeConfiguration configuration, HttpClient httpClient, String sessionId) {
         this.configuration = configuration;
         this.httpClient = httpClient;
-        this.unauthorized = unauthorized;
-        this.connectionLost = connectionLost;
+        this.sessionId = sessionId;
     }
 
     /**
@@ -66,42 +61,34 @@ public final class UpdateService {
      * @param things
      */
     public void updateAllThermostats(List<Thing> things) {
-        new SignInService(configuration, httpClient).signIn((sessionId) -> updateAllThermostats(things, sessionId),
-                connectionLost, unauthorized);
-    }
-
-    private void updateAllThermostats(List<Thing> things, String sessionId) {
         things.stream().filter(thing -> thing.getHandler() instanceof ThermostatHandler)
                 .map(thing -> (ThermostatHandler) thing.getHandler())
-                .map(handler -> handler.tryHandleAndGetUpdatedThermostat())
-                .forEach((thermostat) -> updateThermostat(thermostat, sessionId));
+                .map(handler -> handler.tryHandleAndGetUpdatedThermostat()).forEach(this::updateThermostat);
     }
 
-    private void updateThermostat(@Nullable ThermostatModel thermostat, String sessionId) {
+    private void updateThermostat(@Nullable Thermostat thermostat) {
         if (thermostat == null) {
             return;
         }
-        String jsonPayload = gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey));
-        Request request = httpClient.POST(configuration.getRestApiUrl() + "/Thermostat/UpdateThermostat")
+        Request request = httpClient.POST(configuration.apiUrl + "/Thermostat/UpdateThermostat")
                 .param("sessionid", sessionId).header(HttpHeader.CONTENT_TYPE, "application/json")
-                .content(new StringContentProvider(jsonPayload));
-        logger.trace("updateThermostat payload for themostat with serial {} is {}", thermostat.serialNumber,
-                jsonPayload);
+                .content(new StringContentProvider(
+                        gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey))));
 
         request.send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
                 if (result != null) {
-                    logger.trace("onComplete Http Status {} {}", result.getResponse().getStatus(), result);
+                    logger.trace("onComplete {}", result);
                     if (result.isFailed()) {
-                        logger.warn("updateThermostat failed for themostat with serial {}", thermostat.serialNumber);
-                        return;
+                        logger.warn("updateThermostat failed {}", thermostat);
                     }
-                    SimpleResponseModel responseModel = Objects
-                            .requireNonNull(gson.fromJson(getContentAsString(), SimpleResponseModel.class));
-                    if (responseModel.errorCode != 0) {
-                        logger.warn("updateThermostat failed with errorCode {} for thermostat with serial {}",
-                                responseModel.errorCode, thermostat.serialNumber);
+                    SimpleResponseModel responseModel = gson.fromJson(getContentAsString(), SimpleResponseModel.class);
+                    if (responseModel == null) {
+                        logger.warn("updateThermostat failed with empty result {}", thermostat);
+                    } else if (responseModel.errorCode != 0) {
+                        logger.warn("updateThermostat failed with errorCode {} {}", responseModel.errorCode,
+                                thermostat);
                     }
                 }
             }

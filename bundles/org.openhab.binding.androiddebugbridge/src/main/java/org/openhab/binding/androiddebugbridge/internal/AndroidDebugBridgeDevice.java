@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,34 +97,22 @@ public class AndroidDebugBridgeDevice {
     private int port = 5555;
     private int timeoutSec = 5;
     private int recordDuration;
-    private @Nullable Integer maxVolumeLevel = null;
     private @Nullable Socket socket;
     private @Nullable AdbConnection connection;
     private @Nullable Future<String> commandFuture;
     private int majorVersionNumber = 0;
     private int minorVersionNumber = 0;
     private int patchVersionNumber = 0;
-    /**
-     * Assumed max volume for android versions that do not expose this value.
-     */
-    private int deviceMaxVolume = 25;
-    private String volumeSettingKey = "volume_music_hdmi";
 
     public AndroidDebugBridgeDevice(ScheduledExecutorService scheduler) {
         this.scheduler = scheduler;
     }
 
-    public void configure(AndroidDebugBridgeConfiguration config) {
-        configureConnection(config.ip, config.port, config.timeout);
-        this.recordDuration = config.recordDuration;
-        this.volumeSettingKey = config.volumeSettingKey;
-        this.deviceMaxVolume = config.deviceMaxVolume;
-    }
-
-    public void configureConnection(String ip, int port, int timeout) {
+    public void configure(String ip, int port, int timeout, int recordDuration) {
         this.ip = ip;
         this.port = port;
         this.timeoutSec = timeout;
+        this.recordDuration = recordDuration;
     }
 
     public void sendKeyEvent(String eventCode)
@@ -244,10 +232,6 @@ public class AndroidDebugBridgeDevice {
 
     public boolean isScreenOn() throws InterruptedException, AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        if (isAtLeastVersion(12)) {
-            String devicesResp = runAdbShell("getprop", "debug.tracing.screen_state");
-            return devicesResp.replace("\n", "").equals("2");
-        }
         String devicesResp = runAdbShell("dumpsys", "power", "|", "grep", "'Display Power'");
         if (devicesResp.contains("=")) {
             try {
@@ -307,16 +291,7 @@ public class AndroidDebugBridgeDevice {
 
     private void setVolume(int stream, int volume)
             throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
-        if (isAtLeastVersion(12)) {
-            runAdbShell("service", "call", "audio", "11", "i32", String.valueOf(stream), "i32", String.valueOf(volume),
-                    "i32", "1");
-        } else if (isAtLeastVersion(11)) {
-            runAdbShell("service", "call", "audio", "10", "i32", String.valueOf(stream), "i32", String.valueOf(volume),
-                    "i32", "1");
-        } else {
-            runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--set",
-                    String.valueOf(volume));
-        }
+        runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--set", String.valueOf(volume));
     }
 
     public String getModel() throws AndroidDebugBridgeDeviceException, InterruptedException,
@@ -378,32 +353,17 @@ public class AndroidDebugBridgeDevice {
 
     private VolumeInfo getVolume(int stream) throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        if (isAtLeastVersion(11)) {
-            String volumeResp = runAdbShell("settings", "get", "system", volumeSettingKey);
-            var maxVolumeLevel = this.maxVolumeLevel;
-            if (maxVolumeLevel == null) {
-                try {
-                    maxVolumeLevel = Integer.parseInt(getDeviceProp("ro.config.media_vol_steps"));
-                    this.maxVolumeLevel = maxVolumeLevel;
-                } catch (NumberFormatException ignored) {
-                    logger.debug("Max volume level not available, using 'deviceMaxVolume' config");
-                    maxVolumeLevel = deviceMaxVolume;
-                }
-            }
-            return new VolumeInfo(Integer.parseInt(volumeResp.replace("\n", "")), 0, maxVolumeLevel);
-        } else {
-            String volumeResp = runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--get",
-                    "|", "grep", "volume");
-            Matcher matcher = VOLUME_PATTERN.matcher(volumeResp);
-            if (!matcher.find()) {
-                throw new AndroidDebugBridgeDeviceReadException("Unable to get volume info");
-            }
-            var volumeInfo = new VolumeInfo(Integer.parseInt(matcher.group("current")),
-                    Integer.parseInt(matcher.group("min")), Integer.parseInt(matcher.group("max")));
-            logger.debug("Device {}:{} VolumeInfo: current {}, min {}, max {}", this.ip, this.port, volumeInfo.current,
-                    volumeInfo.min, volumeInfo.max);
-            return volumeInfo;
+        String volumeResp = runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--get", "|",
+                "grep", "volume");
+        Matcher matcher = VOLUME_PATTERN.matcher(volumeResp);
+        if (!matcher.find()) {
+            throw new AndroidDebugBridgeDeviceReadException("Unable to get volume info");
         }
+        var volumeInfo = new VolumeInfo(Integer.parseInt(matcher.group("current")),
+                Integer.parseInt(matcher.group("min")), Integer.parseInt(matcher.group("max")));
+        logger.debug("Device {}:{} VolumeInfo: current {}, min {}, max {}", this.ip, this.port, volumeInfo.current,
+                volumeInfo.min, volumeInfo.max);
+        return volumeInfo;
     }
 
     public String recordInputEvents()

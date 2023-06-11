@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_W
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WPAENC;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WPAMODE;
 
-import java.util.function.Predicate;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,7 +48,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link UniFiWlanThingHandler} is responsible for handling commands and status updates for a wireless network.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
@@ -128,17 +127,10 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
         return state;
     }
 
-    private static State countClients(final UniFiWlan wlan, final Predicate<UniFiClient> filter) {
+    private static State countClients(final UniFiWlan wlan, final Function<UniFiClient, Boolean> filter) {
         final UniFiSite site = wlan.getSite();
-
-        if (site == null) {
-            return UnDefType.UNDEF;
-        } else {
-            return new DecimalType(site.getCache().countClients(site,
-                    c -> c instanceof UniFiWirelessClient
-                            && (wlan.getName() != null && wlan.getName().equals(((UniFiWirelessClient) c).getEssid()))
-                            && filter.test(c)));
-        }
+        return new DecimalType(site.getCache().countClients(site, c -> c instanceof UniFiWirelessClient
+                && wlan.getName().equals(((UniFiWirelessClient) c).getEssid()) && filter.apply(c)));
     }
 
     /**
@@ -169,7 +161,7 @@ public class UniFiWlanThingHandler extends UniFiBaseThingHandler<UniFiWlan, UniF
             final ChannelUID channelUID, final Command command) throws UniFiException {
         final String channelID = channelUID.getId();
 
-        if (CHANNEL_ENABLE.equals(channelID) && command instanceof OnOffType && entity.getSite() != null) {
+        if (CHANNEL_ENABLE.equals(channelID) && command instanceof OnOffType) {
             controller.enableWifi(entity, OnOffType.ON == command);
             return true;
         }

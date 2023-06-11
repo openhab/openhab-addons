@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.core.io.net.http.HttpClientFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,32 +39,37 @@ public class DaikinHttpClientFactoryImpl implements DaikinHttpClientFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DaikinHttpClientFactoryImpl.class);
 
-    private HttpClient httpClient;
-
-    @Activate
-    public DaikinHttpClientFactoryImpl(@Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient(DaikinBindingConstants.BINDING_ID,
-                new SslContextFactory.Client(true));
-        try {
-            httpClient.start();
-            logger.debug("Daikin http client started");
-        } catch (Exception e) {
-            logger.warn("Could not start Daikin http client", e);
-        }
-    }
+    private @Nullable HttpClient httpClient;
 
     @Deactivate
     protected void deactivate() {
-        try {
-            httpClient.stop();
-            logger.debug("Daikin http client stopped");
-        } catch (Exception e) {
-            logger.debug("error while stopping Daikin http client", e);
+        if (httpClient != null) {
+            try {
+                httpClient.stop();
+                logger.debug("Daikin http client stopped");
+            } catch (Exception e) {
+                logger.debug("error while stopping Daikin http client", e);
+            }
+            httpClient = null;
         }
     }
 
     @Override
     public @Nullable HttpClient getHttpClient() {
+        initialize();
         return httpClient;
+    }
+
+    private synchronized void initialize() {
+        if (httpClient == null) {
+            httpClient = new HttpClient(new SslContextFactory.Client(true));
+            try {
+                httpClient.start();
+                logger.debug("Daikin http client started");
+            } catch (Exception e) {
+                logger.warn("Could not start Daikin http client", e);
+                httpClient = null;
+            }
+        }
     }
 }

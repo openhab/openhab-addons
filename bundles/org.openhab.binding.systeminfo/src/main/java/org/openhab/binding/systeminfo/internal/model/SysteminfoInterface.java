@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,10 @@
  */
 package org.openhab.binding.systeminfo.internal.model;
 
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Time;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.dimension.DataAmount;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 
 /**
@@ -30,7 +24,6 @@ import org.openhab.core.library.types.StringType;
  * @author Svilen Valkanov - Initial contribution
  * @author Wouter Born - Add null annotations
  * @author Mark Herwege - Add dynamic creation of extra channels
- * @author Mark Herwege - Use units of measure
  */
 @NonNullByDefault
 public interface SysteminfoInterface {
@@ -38,197 +31,189 @@ public interface SysteminfoInterface {
     /**
      * Initialize logic for the Systeminfo implementation
      */
-    void initializeSysteminfo();
+    public void initializeSysteminfo();
 
     // Operating system info
     /**
-     * Get the Family of the operating system /e.g. Windows, Unix,.../
+     * Get the Family of the operating system /e.g. Windows,Unix,.../
      */
-    StringType getOsFamily();
+    public StringType getOsFamily();
 
     /**
      * Get the manufacturer of the operating system
      */
-    StringType getOsManufacturer();
+    public StringType getOsManufacturer();
 
     /**
      * Get the version of the operating system
      *
      * @return
      */
-    StringType getOsVersion();
+    public StringType getOsVersion();
 
     // CPU info
     /**
      * Get the name of the CPU
      */
-    StringType getCpuName();
+    public StringType getCpuName();
 
     /**
      * Get description about the CPU e.g (model, family, vendor, serial number, identifier, architecture(32bit or
      * 64bit))
      */
-    StringType getCpuDescription();
+    public StringType getCpuDescription();
 
     /**
      * Get the number of logical CPUs/cores available for processing.
      */
-    DecimalType getCpuLogicalCores();
+    public DecimalType getCpuLogicalCores();
 
     /**
      * Get the number of physical CPUs/cores available for processing.
      */
-    DecimalType getCpuPhysicalCores();
+    public DecimalType getCpuPhysicalCores();
 
     /**
      * Returns the system cpu load.
      *
-     * @return the system cpu load between 0 and 100% or null, if no information is available
+     * @return the system cpu load between 0 and 1 or null, if no information is available
      */
-    @Nullable
-    PercentType getSystemCpuLoad();
+    public @Nullable PercentType getSystemCpuLoad();
 
     /**
      * Returns the system load average for the last minute.
      *
      * @return the load as a number of processes or null, if no information is available
      */
-    @Nullable
-    DecimalType getCpuLoad1();
+    public @Nullable DecimalType getCpuLoad1();
 
     /**
      * Returns the system load average for the last 5 minutes.
      *
      * @return the load as number of processes or null, if no information is available
      */
-    @Nullable
-    DecimalType getCpuLoad5();
+    public @Nullable DecimalType getCpuLoad5();
 
     /**
      * Returns the system load average for the last 15 minutes.
      *
      * @return the load as number of processes or null, if no information is available
      */
-    @Nullable
-    DecimalType getCpuLoad15();
+    public @Nullable DecimalType getCpuLoad15();
 
     /**
      * Get the System uptime (time since boot).
      *
-     * @return time since boot
+     * @return time in minutes since boot
      */
-    QuantityType<Time> getCpuUptime();
+    public DecimalType getCpuUptime();
 
     /**
      * Get the number of threads currently running
      *
      * @return number of threads
      */
-    DecimalType getCpuThreads();
+    public DecimalType getCpuThreads();
 
     // Memory info
     /**
      * Returns total size of memory
      *
-     * @return memory size
+     * @return memory size in MB
      */
-    QuantityType<DataAmount> getMemoryTotal();
+    public DecimalType getMemoryTotal();
 
     /**
      * Returns available size of memory
      *
-     * @return memory size
+     * @return memory size in MB
      */
-    QuantityType<DataAmount> getMemoryAvailable();
+    public DecimalType getMemoryAvailable();
 
     /**
      * Returns used size of memory
      *
-     * @return memory size
+     * @return memory size in MB
      */
-    QuantityType<DataAmount> getMemoryUsed();
+    public DecimalType getMemoryUsed();
 
     /**
      * Percents of available memory on the machine
      *
      * @return percent of available memory or null, if no information is available
      */
-    @Nullable
-    PercentType getMemoryAvailablePercent();
+    public @Nullable DecimalType getMemoryAvailablePercent();
 
     /**
      * Percents of used memory on the machine
      *
      * @return percent of used memory or null, if no information is available
      */
-    @Nullable
-    PercentType getMemoryUsedPercent();
+    public @Nullable DecimalType getMemoryUsedPercent();
 
     // Swap memory info
     /**
      * Returns total size of swap memory
      *
-     * @return memory size or 0, if there is no swap memory
+     * @return memory size in MB or 0, if no there is no swap memory
      */
-    QuantityType<DataAmount> getSwapTotal();
+    public @Nullable DecimalType getSwapTotal();
 
     /**
      * Returns available size swap of memory
      *
-     * @return memory size or 0, if no there is no swap memory
+     * @return memory size in MB or 0, if no there is no swap memory
      */
-    QuantityType<DataAmount> getSwapAvailable();
+    public @Nullable DecimalType getSwapAvailable();
 
     /**
      * Returns used size of swap memory
      *
-     * @return memory size or 0, if no there is no swap memory
+     * @return memory size in MB or 0, if no there is no swap memory
      */
-    QuantityType<DataAmount> getSwapUsed();
+    public @Nullable DecimalType getSwapUsed();
 
     /**
      * Percents of available swap memory on the machine
      *
      * @return percent of available memory or null, if no there is no swap memory
      */
-    @Nullable
-    PercentType getSwapAvailablePercent();
+    public @Nullable DecimalType getSwapAvailablePercent();
 
     /**
      * Percents of used swap memory on the machine
      *
      * @return percent of used memory or null, if no there is no swap memory
      */
-    @Nullable
-    PercentType getSwapUsedPercent();
+    public @Nullable DecimalType getSwapUsedPercent();
 
     // Storage info
     /**
      * Returns the total space of the logical storage volume.
      *
      * @param deviceIndex - the index of the logical volume
-     * @return storage size
+     * @return storage size in MB
      * @throws DeviceNotFoundException
      */
-    QuantityType<DataAmount> getStorageTotal(int deviceIndex) throws DeviceNotFoundException;
+    public DecimalType getStorageTotal(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Returns the available storage space on the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
-     * @return storage size
+     * @return storage size in MB
      * @throws DeviceNotFoundException
      */
-    QuantityType<DataAmount> getStorageAvailable(int deviceIndex) throws DeviceNotFoundException;
+    public DecimalType getStorageAvailable(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the used storage space on the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
-     * @return storage size
+     * @return storage size in MB
      * @throws DeviceNotFoundException
      */
-    QuantityType<DataAmount> getStorageUsed(int deviceIndex) throws DeviceNotFoundException;
+    public DecimalType getStorageUsed(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the percent of available storage on the logical volume
@@ -237,8 +222,7 @@ public interface SysteminfoInterface {
      * @return percent of available storage or null
      * @throws DeviceNotFoundException
      */
-    @Nullable
-    PercentType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the percent of used storage on the logical volume
@@ -247,29 +231,28 @@ public interface SysteminfoInterface {
      * @return percent of used storage or null
      * @throws DeviceNotFoundException
      */
-    @Nullable
-    PercentType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the name of the logical storage volume
      *
      * @throws DeviceNotFoundException
      */
-    StringType getStorageName(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getStorageName(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the type of the logical storage volume (e.g. NTFS, FAT32)
      *
      * @throws DeviceNotFoundException
      */
-    StringType getStorageType(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getStorageType(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the description of the logical storage volume
      *
      * @throws DeviceNotFoundException
      */
-    StringType getStorageDescription(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getStorageDescription(int deviceIndex) throws DeviceNotFoundException;
 
     // Hardware drive info
     /**
@@ -278,7 +261,7 @@ public interface SysteminfoInterface {
      * @param deviceIndex - index of the storage drive
      * @throws DeviceNotFoundException
      */
-    StringType getDriveName(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getDriveName(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the model of the physical storage drive
@@ -286,7 +269,7 @@ public interface SysteminfoInterface {
      * @param deviceIndex - index of the storage drive
      * @throws DeviceNotFoundException
      */
-    StringType getDriveModel(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getDriveModel(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the serial number of the physical storage drive
@@ -294,7 +277,7 @@ public interface SysteminfoInterface {
      * @param deviceIndex - index of the storage drive
      * @throws DeviceNotFoundException
      */
-    StringType getDriveSerialNumber(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getDriveSerialNumber(int deviceIndex) throws DeviceNotFoundException;
 
     // Network info
     /**
@@ -304,7 +287,7 @@ public interface SysteminfoInterface {
      * @return 32-bit IPv4 address
      * @throws DeviceNotFoundException
      */
-    StringType getNetworkIp(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkIp(int networkIndex) throws DeviceNotFoundException;
 
     /**
      * Get the name of this network.
@@ -312,7 +295,7 @@ public interface SysteminfoInterface {
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    StringType getNetworkName(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkName(int networkIndex) throws DeviceNotFoundException;
 
     /**
      * The description of the network. On some platforms, this is identical to the name.
@@ -320,7 +303,7 @@ public interface SysteminfoInterface {
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    StringType getNetworkDisplayName(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkDisplayName(int networkIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the MAC Address of the network.
@@ -328,7 +311,7 @@ public interface SysteminfoInterface {
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException;
 
     /**
      * Get number of packets received
@@ -336,7 +319,7 @@ public interface SysteminfoInterface {
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException;
 
     /**
      * Get number of packets sent
@@ -344,23 +327,23 @@ public interface SysteminfoInterface {
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException;
 
     /**
-     * Get data sent for this network
+     * Get data sent in MB for this network
      *
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    QuantityType<DataAmount> getNetworkDataSent(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException;
 
     /**
-     * Get data received for this network
+     * Get data received in MB for this network
      *
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    QuantityType<DataAmount> getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException;
 
     // Display info
     /**
@@ -369,24 +352,22 @@ public interface SysteminfoInterface {
      * @param deviceIndex - the index of the display device
      * @throws DeviceNotFoundException
      */
-    StringType getDisplayInformation(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getDisplayInformation(int deviceIndex) throws DeviceNotFoundException;
 
     // Sensors info
     /**
      * Get the information from the CPU temperature sensors.
      *
-     * @return Temperature if available, null otherwise.
+     * @return Temperature in degrees Celsius if available, null otherwise.
      */
-    @Nullable
-    QuantityType<Temperature> getSensorsCpuTemperature();
+    public @Nullable DecimalType getSensorsCpuTemperature();
 
     /**
      * Get the information for the CPU voltage.
      *
-     * @return Voltage if available, null otherwise.
+     * @return Voltage in Volts if available, null otherwise.
      */
-    @Nullable
-    QuantityType<ElectricPotential> getSensorsCpuVoltage();
+    public @Nullable DecimalType getSensorsCpuVoltage();
 
     /**
      * Get fan speed
@@ -395,28 +376,26 @@ public interface SysteminfoInterface {
      * @return Speed in rpm or null if unable to measure fan speed
      * @throws DeviceNotFoundException
      */
-    @Nullable
-    DecimalType getSensorsFanSpeed(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getSensorsFanSpeed(int deviceIndex) throws DeviceNotFoundException;
 
     // Battery info
     /**
      * Get estimated time remaining for the power source.
      *
      * @param deviceIndex
-     * @return duration remaining charge or null, if the time is estimated as unlimited
+     * @return minutes remaining charge or null, if the time is estimated as unlimited
      * @throws DeviceNotFoundException
      */
-    @Nullable
-    QuantityType<Time> getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Battery remaining capacity.
      *
      * @param deviceIndex
-     * @return percentage value
+     * @return percentage value /0-100/
      * @throws DeviceNotFoundException
      */
-    PercentType getBatteryRemainingCapacity(int deviceIndex) throws DeviceNotFoundException;
+    public DecimalType getBatteryRemainingCapacity(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Get battery name
@@ -424,7 +403,7 @@ public interface SysteminfoInterface {
      * @param deviceIndex
      * @throws DeviceNotFoundException
      */
-    StringType getBatteryName(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getBatteryName(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Get PID of process executing this code
@@ -439,8 +418,7 @@ public interface SysteminfoInterface {
      * @param pid - the PID of the process
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    @Nullable
-    StringType getProcessName(int pid) throws DeviceNotFoundException;
+    public @Nullable StringType getProcessName(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the CPU usage of the process
@@ -449,18 +427,16 @@ public interface SysteminfoInterface {
      * @return - percentage value, can be above 100% if process uses multiple cores
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    @Nullable
-    DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the size of RAM memory only usage of the process
      *
      * @param pid - the PID of the process
-     * @return memory size
+     * @return memory size in MB
      * @throws DeviceNotFoundException- thrown if process with this PID can not be found
      */
-    @Nullable
-    QuantityType<DataAmount> getProcessMemoryUsage(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the full path of the executing process.
@@ -468,8 +444,7 @@ public interface SysteminfoInterface {
      * @param pid - the PID of the process
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    @Nullable
-    StringType getProcessPath(int pid) throws DeviceNotFoundException;
+    public @Nullable StringType getProcessPath(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the number of threads in this process.
@@ -477,43 +452,42 @@ public interface SysteminfoInterface {
      * @param pid - the PID of the process
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    @Nullable
-    DecimalType getProcessThreads(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessThreads(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the number of network interfaces.
      *
      * @return network interface count
      */
-    int getNetworkIFCount();
+    public int getNetworkIFCount();
 
     /**
      * Returns the number of displays.
      *
      * @return display count
      */
-    int getDisplayCount();
+    public int getDisplayCount();
 
     /**
      * Returns the number of storages.
      *
      * @return storage count
      */
-    int getFileOSStoreCount();
+    public int getFileOSStoreCount();
 
     /**
      * Returns the number of power sources/batteries.
      *
      * @return power source count
      */
-    int getPowerSourceCount();
+    public int getPowerSourceCount();
 
     /**
      * Returns the number of drives.
      *
      * @return drive count
      */
-    int getDriveCount();
+    public int getDriveCount();
 
     /**
      * Returns the number of fans.

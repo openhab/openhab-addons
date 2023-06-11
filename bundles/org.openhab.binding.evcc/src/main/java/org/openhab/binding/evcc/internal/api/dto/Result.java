@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.117.0
+ * This DTO was written for evcc version 0.91.
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -24,50 +24,42 @@ public class Result {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
     // and from https://docs.evcc.io/docs/reference/configuration/messaging/#msg
 
-    // "auth" is left out because it does not provide any useful information
-
-    @SerializedName("batteryCapacity")
-    private float batteryCapacity;
+    // TO DO LATER
+    // @SerializedName("auth")
+    // private Auth auth;
 
     @SerializedName("batteryConfigured")
     private boolean batteryConfigured;
 
     @SerializedName("batteryPower")
-    private float batteryPower;
+    private double batteryPower;
 
-    @SerializedName("batterySoc")
-    private float batterySoC;
+    @SerializedName("batterySoC")
+    private int batterySoC;
 
     @SerializedName("gridConfigured")
     private boolean gridConfigured;
 
     @SerializedName("gridPower")
-    private float gridPower;
+    private double gridPower;
 
     @SerializedName("homePower")
-    private float homePower;
+    private double homePower;
 
     @SerializedName("loadpoints")
     private Loadpoint[] loadpoints;
 
-    @SerializedName("prioritySoc")
-    private float batteryPrioritySoC;
+    @SerializedName("prioritySoC")
+    private double batteryPrioritySoC;
 
     @SerializedName("pvConfigured")
     private boolean pvConfigured;
 
     @SerializedName("pvPower")
-    private float pvPower;
+    private double pvPower;
 
     @SerializedName("siteTitle")
     private String siteTitle;
-
-    /**
-     * @return battery's capacity
-     */
-    public float getBatteryCapacity() {
-        return batteryCapacity;
-    }
 
     /**
      * @return whether battery is configured
@@ -79,21 +71,21 @@ public class Result {
     /**
      * @return battery's power
      */
-    public float getBatteryPower() {
+    public double getBatteryPower() {
         return batteryPower;
     }
 
     /**
      * @return battery's priority state of charge
      */
-    public float getBatteryPrioritySoC() {
+    public double getBatteryPrioritySoC() {
         return batteryPrioritySoC;
     }
 
     /**
      * @return battery's state of charge
      */
-    public float getBatterySoC() {
+    public int getBatterySoC() {
         return batterySoC;
     }
 
@@ -107,14 +99,14 @@ public class Result {
     /**
      * @return grid's power
      */
-    public float getGridPower() {
+    public double getGridPower() {
         return gridPower;
     }
 
     /**
      * @return home's power
      */
-    public float getHomePower() {
+    public double getHomePower() {
         return homePower;
     }
 
@@ -135,7 +127,7 @@ public class Result {
     /**
      * @return pv's power
      */
-    public float getPvPower() {
+    public double getPvPower() {
         return pvPower;
     }
 

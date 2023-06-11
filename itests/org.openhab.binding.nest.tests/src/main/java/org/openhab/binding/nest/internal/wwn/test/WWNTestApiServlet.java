@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,8 +31,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +43,6 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Wouter Born - Initial contribution
  */
-@NonNullByDefault
 public class WWNTestApiServlet extends HttpServlet {
 
     private static final long serialVersionUID = -5414910055159062745L;
@@ -57,9 +54,9 @@ public class WWNTestApiServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(WWNTestApiServlet.class);
 
-    private static class SseEvent {
+    private class SseEvent {
         private String name;
-        private @Nullable String data;
+        private String data;
 
         public SseEvent(String name) {
             this.name = name;
@@ -70,12 +67,16 @@ public class WWNTestApiServlet extends HttpServlet {
             this.data = data;
         }
 
-        public @Nullable String getData() {
+        public String getData() {
             return data;
         }
 
         public String getName() {
             return name;
+        }
+
+        public boolean hasData() {
+            return data != null && !data.isEmpty();
         }
     }
 
@@ -90,7 +91,7 @@ public class WWNTestApiServlet extends HttpServlet {
     public void closeConnections() {
         Set<Thread> threads = listenerQueues.keySet();
         listenerQueues.clear();
-        threads.forEach(Thread::interrupt);
+        threads.forEach(thread -> thread.interrupt());
     }
 
     public void reset() {
@@ -117,9 +118,8 @@ public class WWNTestApiServlet extends HttpServlet {
         writer.write(event.getName());
         writer.write(NEW_LINE);
 
-        String eventData = event.getData();
-        if (eventData != null) {
-            for (String dataLine : eventData.split(NEW_LINE)) {
+        if (event.hasData()) {
+            for (String dataLine : event.getData().split(NEW_LINE)) {
                 writer.write("data: ");
                 writer.write(dataLine);
                 writer.write(NEW_LINE);
@@ -195,10 +195,7 @@ public class WWNTestApiServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    private @Nullable String getNestIdFromURI(@Nullable String uri) {
-        if (uri == null) {
-            return null;
-        }
+    private String getNestIdFromURI(String uri) {
         for (String updatePath : UPDATE_PATHS) {
             if (uri.startsWith(updatePath)) {
                 return uri.replaceAll(updatePath, "");
@@ -216,7 +213,7 @@ public class WWNTestApiServlet extends HttpServlet {
         return properties;
     }
 
-    public @Nullable String getNestIdPropertyState(String nestId, String propertyName) {
+    public String getNestIdPropertyState(String nestId, String propertyName) {
         Map<String, String> properties = nestIdPropertiesMap.get(nestId);
         return properties == null ? null : properties.get(propertyName);
     }

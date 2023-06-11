@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,14 +28,13 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  *
  */
-@NonNullByDefault
 public class IpNode {
     protected static final Pattern ADDR_PATTERN = Pattern.compile("([\\w.-]+):?(\\d*)");
 
     private final Logger logger = LoggerFactory.getLogger(IpNode.class);
 
     protected int port = 0;
-    protected @Nullable InetAddress address = null;
+    protected InetAddress address = null;
 
     /**
      * default constructor
@@ -55,7 +52,7 @@ public class IpNode {
         if (addrMatcher.matches()) {
             setInetAddress(addrMatcher.group(1));
             if (!addrMatcher.group(2).isEmpty()) {
-                setPort(Integer.parseInt(addrMatcher.group(2)));
+                setPort(Integer.valueOf(addrMatcher.group(2)));
             }
         } else {
             logger.warn("invalid format {}, returning empty UdpNode", addrString);
@@ -119,13 +116,13 @@ public class IpNode {
      *
      * @return address as InetAddress
      */
-    public @Nullable InetAddress getAddress() {
+    public InetAddress getAddress() {
         return address;
     }
 
-    public @Nullable String getAddressString() {
-        InetAddress address = this.address;
-        return address != null ? address.getHostAddress() : null;
+    public String getAddressString() {
+        String addrString = address.getHostAddress();
+        return addrString;
     }
 
     /**
@@ -135,8 +132,10 @@ public class IpNode {
      */
     @Override
     public String toString() {
-        InetAddress address = this.address;
-        return address != null ? address.toString() + ":" + this.port : "(null):" + this.port;
+        if (this.address == null) {
+            return "(null):" + String.valueOf(this.port);
+        }
+        return this.address.toString() + ":" + String.valueOf(this.port);
     }
 
     /**

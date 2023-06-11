@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,12 +116,6 @@ public class EcowattHandler extends BaseThingHandler {
         }
     }
 
-    @Override
-    public void handleRemoval() {
-        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
-        super.handleRemoval();
-    }
-
     /**
      * Schedule the next update of channels.
      *
@@ -217,14 +211,6 @@ public class EcowattHandler extends BaseThingHandler {
         }
         if ((channelId == null || CHANNEL_TOMORROW_SIGNAL.equals(channelId)) && isLinked(CHANNEL_TOMORROW_SIGNAL)) {
             updateState(CHANNEL_TOMORROW_SIGNAL, getDaySignalState(response, now.plusDays(1)));
-        }
-        if ((channelId == null || CHANNEL_IN_TWO_DAYS_SIGNAL.equals(channelId))
-                && isLinked(CHANNEL_IN_TWO_DAYS_SIGNAL)) {
-            updateState(CHANNEL_IN_TWO_DAYS_SIGNAL, getDaySignalState(response, now.plusDays(2)));
-        }
-        if ((channelId == null || CHANNEL_IN_THREE_DAYS_SIGNAL.equals(channelId))
-                && isLinked(CHANNEL_IN_THREE_DAYS_SIGNAL)) {
-            updateState(CHANNEL_IN_THREE_DAYS_SIGNAL, getDaySignalState(response, now.plusDays(3)));
         }
         if ((channelId == null || CHANNEL_CURRENT_HOUR_SIGNAL.equals(channelId))
                 && isLinked(CHANNEL_CURRENT_HOUR_SIGNAL)) {

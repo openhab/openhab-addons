@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -55,11 +56,11 @@ public class KM200Device {
     protected String charSet = "";
 
     /* Needed keys for the communication */
-    protected byte[] cryptKeyInit = new byte[0];
-    protected byte[] cryptKeyPriv = new byte[0];
+    protected byte[] cryptKeyInit = ArrayUtils.EMPTY_BYTE_ARRAY;
+    protected byte[] cryptKeyPriv = ArrayUtils.EMPTY_BYTE_ARRAY;
 
     /* Buderus_MD5Salt */
-    protected byte[] md5Salt = new byte[0];
+    protected byte[] md5Salt = ArrayUtils.EMPTY_BYTE_ARRAY;
 
     /* Device services */
     public Map<String, KM200ServiceObject> serviceTreeMap;

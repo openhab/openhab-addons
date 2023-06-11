@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
-    private static final SimpleDateFormat WEEK_FORMAT = new SimpleDateFormat("EEE,HH:mm");
+    private static final SimpleDateFormat WEEK_FORMAT = new SimpleDateFormat("E, HH:mm");
 
     static {
         synchronized (DATE_FORMAT) {
@@ -158,13 +158,13 @@ public class ResolThingHandler extends ResolBaseThingHandler {
 
             Thing thing = getThing();
             switch (pfv.getPacketFieldSpec().getType()) {
+                case WeekTime:
                 case DateTime:
                     acceptedItemType = "DateTime";
                     break;
                 case Number:
                     acceptedItemType = ResolChannelTypeProvider.itemTypeForUnit(pfv.getPacketFieldSpec().getUnit());
                     break;
-                case WeekTime:
                 case Time:
                 default:
                     acceptedItemType = "String";
@@ -249,12 +249,11 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                                     this.updateState(channelId, q);
                                 } else {
                                     try {
-                                        QuantityType<?> q = new QuantityType<>(str, Locale
-                                                .getDefault()); /* vbus library returns the value in default locale */
+                                        QuantityType<?> q = new QuantityType<>(str);
                                         this.updateState(channelId, q);
                                     } catch (IllegalArgumentException e) {
                                         logger.debug("unit of '{}' unknown in openHAB", str);
-                                        QuantityType<?> q = new QuantityType<>(dd, Units.ONE);
+                                        QuantityType<?> q = new QuantityType<>(dd.toString());
                                         this.updateState(channelId, q);
                                     }
                                 }
@@ -273,7 +272,8 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                         break;
                     case WeekTime:
                         synchronized (WEEK_FORMAT) {
-                            this.updateState(channelId, new StringType(WEEK_FORMAT.format(pfv.getRawValueDate())));
+                            DateTimeType d = new DateTimeType(WEEK_FORMAT.format(pfv.getRawValueDate()));
+                            this.updateState(channelId, d);
                         }
                         break;
                     case DateTime:
@@ -287,15 +287,13 @@ public class ResolThingHandler extends ResolBaseThingHandler {
                         if (b != null) {
                             ResolBridgeHandler handler = (ResolBridgeHandler) b.getHandler();
                             String value;
-                            Locale loc;
                             if (handler != null) {
-                                loc = handler.getLocale();
+                                value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), handler.getLocale());
                             } else {
-                                loc = Locale.getDefault();
+                                value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), Locale.getDefault());
                             }
-                            value = pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), loc);
                             try {
-                                QuantityType<?> q = new QuantityType<>(value, loc);
+                                QuantityType<?> q = new QuantityType<>(value);
                                 this.updateState(channelId, q);
                             } catch (IllegalArgumentException e) {
                                 this.updateState(channelId, new StringType(value));
@@ -308,7 +306,6 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     }
 
     /* check if the given value is a special one like 888.8 or 999.9 for shortcut or open load on a sensor wire */
-    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     private boolean isSpecialValue(Double dd) {
         if ((Math.abs(dd - 888.8) < 0.1) || (Math.abs(dd - (-888.8)) < 0.1)) {
             /* value out of range */

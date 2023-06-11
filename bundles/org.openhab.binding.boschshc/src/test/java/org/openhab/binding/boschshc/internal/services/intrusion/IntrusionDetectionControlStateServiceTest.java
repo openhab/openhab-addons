@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,17 @@
  */
 package org.openhab.binding.boschshc.internal.services.intrusion;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,21 +38,23 @@ import com.google.gson.JsonParser;
 
 /**
  * Unit tests for {@link IntrusionDetectionControlStateService}.
- *
+ * 
  * @author David Pace - Initial contribution
  *
  */
-@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 class IntrusionDetectionControlStateServiceTest {
 
-    private @NonNullByDefault({}) IntrusionDetectionControlStateService fixture;
+    private IntrusionDetectionControlStateService fixture;
 
-    private @Mock @NonNullByDefault({}) BridgeHandler bridgeHandler;
+    @Mock
+    private BridgeHandler bridgeHandler;
 
-    private @Mock @NonNullByDefault({}) Consumer<IntrusionDetectionControlState> consumer;
+    @Mock
+    private Consumer<IntrusionDetectionControlState> consumer;
 
-    private @Mock @NonNullByDefault({}) IntrusionDetectionControlState testState;
+    @Mock
+    private IntrusionDetectionControlState testState;
 
     @BeforeEach
     void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {

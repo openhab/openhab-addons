@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.EnergyApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
@@ -28,7 +27,6 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeDataRoom;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.Room;
-import org.openhab.binding.netatmo.internal.config.HomeConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -50,7 +48,6 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
 
     private int setPointDefaultDuration = -1;
     private final NetatmoDescriptionProvider descriptionProvider;
-    private String energyId = "";
 
     EnergyCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler, EnergyApi.class);
@@ -58,24 +55,24 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        energyId = handler.getConfiguration().as(HomeConfiguration.class).getIdForArea(FeatureArea.ENERGY);
-    }
-
-    @Override
     protected void updateHomeData(HomeData homeData) {
         NAObjectMap<HomeDataRoom> rooms = homeData.getRooms();
         NAObjectMap<HomeDataModule> modules = homeData.getModules();
-        handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
+        handler.getActiveChildren().forEach(childHandler -> {
             String childId = childHandler.getId();
-            rooms.getOpt(childId)
-                    .ifPresentOrElse(roomData -> childHandler.setNewData(roomData.ignoringForThingUpdate()), () -> {
-                        modules.getOpt(childId)
-                                .ifPresent(childData -> childHandler.setNewData(childData.ignoringForThingUpdate()));
-                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
-                    });
+            rooms.getOpt(childId).ifPresentOrElse(roomData -> {
+                roomData.setIgnoredForThingUpdate(true);
+                childHandler.setNewData(roomData);
+            }, () -> {
+                modules.getOpt(childId).ifPresent(childData -> {
+                    childData.setIgnoredForThingUpdate(true);
+                    childHandler.setNewData(childData);
+                });
+                modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                        .forEach(bridgedModule -> {
+                            childHandler.setNewData(bridgedModule);
+                        });
+            });
         });
         descriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), GROUP_ENERGY, CHANNEL_PLANNING),
                 homeData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName()))
@@ -87,22 +84,46 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     protected void updateHomeStatus(HomeStatus homeStatus) {
         NAObjectMap<Room> rooms = homeStatus.getRooms();
         NAObjectMap<HomeStatusModule> modules = homeStatus.getModules();
-        handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
+        handler.getActiveChildren().forEach(childHandler -> {
             String childId = childHandler.getId();
             rooms.getOpt(childId).ifPresentOrElse(roomData -> childHandler.setNewData(roomData), () -> {
-                modules.getOpt(childId).ifPresent(moduleData -> {
-                    childHandler.setNewData(moduleData);
+                modules.getOpt(childId).ifPresentOrElse(childData -> {
+                    childHandler.setNewData(childData);
                     modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                            .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+                            .forEach(bridgedModule -> {
+                                childHandler.setNewData(bridgedModule);
+                            });
+
+                }, () -> {
+                    // This module is not present in the homestatus data, so it is considered as unreachable
+                    HomeStatusModule module = new HomeStatusModule();
+                    module.setReachable(false);
+                    childHandler.setNewData(module);
                 });
             });
         });
     }
 
-    public void setThermPoint(String roomId, SetpointMode mode, long endtime, double temp) {
+    public int getSetpointDefaultDuration() {
+        return setPointDefaultDuration;
+    }
+
+    public void setRoomThermMode(String roomId, SetpointMode targetMode) {
         getApi().ifPresent(api -> {
             try {
-                api.setThermpoint(energyId, roomId, mode, endtime, temp);
+                api.setThermpoint(handler.getId(), roomId, targetMode,
+                        targetMode == SetpointMode.MAX ? setpointEndTimeFromNow(setPointDefaultDuration) : 0, 0);
+                handler.expireData();
+            } catch (NetatmoException e) {
+                logger.warn("Error setting room thermostat mode '{}' : {}", targetMode, e.getMessage());
+            }
+        });
+    }
+
+    public void setRoomThermTemp(String roomId, double temperature, long endtime, SetpointMode mode) {
+        getApi().ifPresent(api -> {
+            try {
+                api.setThermpoint(handler.getId(), roomId, mode, endtime, temperature);
                 handler.expireData();
             } catch (NetatmoException e) {
                 logger.warn("Error setting room thermostat mode '{}' : {}", mode, e.getMessage());
@@ -110,16 +131,8 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
         });
     }
 
-    public void setRoomThermTemp(String roomId, SetpointMode mode, long endtime, double temp) {
-        setThermPoint(roomId, mode, endtime, temp);
-    }
-
-    public void setRoomThermMode(String roomId, SetpointMode targetMode) {
-        setThermPoint(roomId, targetMode, targetMode == SetpointMode.MAX ? setpointEndTimeFromNow() : 0, 0);
-    }
-
-    public void setRoomThermTemp(String roomId, double temp) {
-        setThermPoint(roomId, SetpointMode.MANUAL, setpointEndTimeFromNow(), temp);
+    public void setRoomThermTemp(String roomId, double temperature) {
+        setRoomThermTemp(roomId, temperature, setpointEndTimeFromNow(setPointDefaultDuration), SetpointMode.MANUAL);
     }
 
     @Override
@@ -128,7 +141,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
             try {
                 switch (channelName) {
                     case CHANNEL_PLANNING:
-                        api.switchSchedule(energyId, command.toString());
+                        api.switchSchedule(handler.getId(), command.toString());
                         break;
                     case CHANNEL_SETPOINT_MODE:
                         SetpointMode targetMode = SetpointMode.valueOf(command.toString());
@@ -136,7 +149,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                             logger.info("Switch to 'Manual' is done by setting a setpoint temp, command ignored");
                             return;
                         }
-                        api.setThermMode(energyId, targetMode.apiDescriptor);
+                        api.setThermMode(handler.getId(), targetMode.apiDescriptor);
                         break;
                 }
                 handler.expireData();
@@ -148,7 +161,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
         });
     }
 
-    private long setpointEndTimeFromNow() {
-        return ZonedDateTime.now().plusMinutes(setPointDefaultDuration).toEpochSecond();
+    private static long setpointEndTimeFromNow(int duration_min) {
+        return ZonedDateTime.now().plusMinutes(duration_min).toEpochSecond();
     }
 }

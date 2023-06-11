@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,27 +24,27 @@ public interface CommandInterface {
      *
      * @return module number as String
      */
-    String getModule();
+    public String getModule();
 
     /**
      * Get the connector number to which the command will be sent
      *
      * @return connector number as String
      */
-    String getConnector();
+    public String getConnector();
 
     /**
      * Used by command implementations to parse the device's response
      */
-    void parseSuccessfulReply();
+    abstract void parseSuccessfulReply();
 
     /*
      * Used by command implementations to report a successful command execution
      */
-    void logSuccess();
+    abstract void logSuccess();
 
     /*
      * Used by command implementations to report a failed command execution
      */
-    void logFailure();
+    abstract void logFailure();
 }

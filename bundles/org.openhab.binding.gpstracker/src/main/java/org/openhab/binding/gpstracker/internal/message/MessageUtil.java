@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,6 @@ package org.openhab.binding.gpstracker.internal.message;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.gpstracker.internal.message.dto.LocationMessage;
-import org.openhab.binding.gpstracker.internal.message.dto.TransitionMessage;
-
 import com.google.gson.Gson;
 
 /**
@@ -27,7 +22,6 @@ import com.google.gson.Gson;
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@NonNullByDefault
 public class MessageUtil {
     /**
      * Patterns to identify incoming JSON payload.
@@ -54,7 +48,7 @@ public class MessageUtil {
      * @param json JSON string.
      * @return Parsed message POJO or null without pattern match
      */
-    public @Nullable LocationMessage fromJson(String json) {
+    public LocationMessage fromJson(String json) {
         for (String pattern : PATTERNS) {
             Class<? extends LocationMessage> c = MESSAGE_TYPES.get(pattern);
             if (c != null && json.matches(pattern)) {

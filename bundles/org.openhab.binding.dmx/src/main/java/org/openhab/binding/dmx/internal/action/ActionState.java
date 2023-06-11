@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dmx.internal.action;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link ActionState} gives the state of an action
  *
@@ -24,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Jan N. Klug - Initial contribution
  */
-@NonNullByDefault
 public enum ActionState {
     WAITING,
     RUNNING,

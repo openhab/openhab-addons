@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,11 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface RadioRAConnection {
 
-    void open(String portName, int baud) throws RadioRAConnectionException;
+    public void open(String portName, int baud) throws RadioRAConnectionException;
 
-    void disconnect();
+    public void disconnect();
 
-    void write(String command);
+    public void write(String command);
 
-    void setListener(RadioRAFeedbackListener listener);
+    public void setListener(RadioRAFeedbackListener listener);
 }

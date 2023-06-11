@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,12 +29,12 @@ public interface AdorneHubChangeNotify {
      * @param onOff new on/off state
      * @param brightness new brightness
      */
-    void stateChangeNotify(int zoneId, boolean onOff, int brightness);
+    public void stateChangeNotify(int zoneId, boolean onOff, int brightness);
 
     /**
      * Notify listener about hub connection change
      *
      * @param connected new connection state
      */
-    void connectionChangeNotify(boolean connected);
+    public void connectionChangeNotify(boolean connected);
 }

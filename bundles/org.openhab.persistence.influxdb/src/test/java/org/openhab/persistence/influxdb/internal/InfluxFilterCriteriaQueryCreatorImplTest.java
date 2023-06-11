@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,8 @@ import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
-import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1FilterCriteriaQueryCreatorImpl;
-import org.openhab.persistence.influxdb.internal.influx2.InfluxDB2FilterCriteriaQueryCreatorImpl;
+import org.openhab.persistence.influxdb.internal.influx1.Influx1FilterCriteriaQueryCreatorImpl;
+import org.openhab.persistence.influxdb.internal.influx2.Influx2FilterCriteriaQueryCreatorImpl;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
@@ -54,14 +54,13 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     private @Mock InfluxDBConfiguration influxDBConfiguration;
     private @Mock MetadataRegistry metadataRegistry;
 
-    private InfluxDB1FilterCriteriaQueryCreatorImpl instanceV1;
-    private InfluxDB2FilterCriteriaQueryCreatorImpl instanceV2;
+    private Influx1FilterCriteriaQueryCreatorImpl instanceV1;
+    private Influx2FilterCriteriaQueryCreatorImpl instanceV2;
 
     @BeforeEach
     public void before() {
-        InfluxDBMetadataService influxDBMetadataService = new InfluxDBMetadataService(metadataRegistry);
-        instanceV1 = new InfluxDB1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, influxDBMetadataService);
-        instanceV2 = new InfluxDB2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, influxDBMetadataService);
+        instanceV1 = new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
+        instanceV2 = new Influx2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
     }
 
     @AfterEach
@@ -77,16 +76,25 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         FilterCriteria criteria = createBaseCriteria();
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1,
-                equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" ORDER BY time DESC;"));
+        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\";"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("""
-                from(bucket:"origin")
-                \t|> range(start:-100y, stop:100y)
-                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:true, columns:["_time"])"""));
+        assertThat(queryV2,
+                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
+                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])"));
+    }
+
+    @Test
+    public void testSimpleUnboundedItemWithoutParams() {
+        FilterCriteria criteria = new FilterCriteria();
+        criteria.setOrdering(null);
+
+        String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
+        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\"./.*/;"));
+
+        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
+        assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)"));
     }
 
     @Test
@@ -99,18 +107,16 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
         String expectedQueryV1 = String.format(
-                "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" WHERE time >= '%s' AND time <= '%s' ORDER BY time DESC;",
+                "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" WHERE time >= '%s' AND time <= '%s';",
                 now.toInstant(), tomorrow.toInstant());
         assertThat(queryV1, equalTo(expectedQueryV1));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        String expectedQueryV2 = String.format("""
-                from(bucket:"origin")
-                \t|> range(start:%s, stop:%s)
-                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:true, columns:["_time"])""", INFLUX2_DATE_FORMATTER.format(now.toInstant()),
-                INFLUX2_DATE_FORMATTER.format(tomorrow.toInstant()));
+        String expectedQueryV2 = String.format(
+                "from(bucket:\"origin\")\n\t" + "|> range(start:%s, stop:%s)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
+                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])",
+                INFLUX2_DATE_FORMATTER.format(now.toInstant()), INFLUX2_DATE_FORMATTER.format(tomorrow.toInstant()));
         assertThat(queryV2, equalTo(expectedQueryV2));
     }
 
@@ -121,17 +127,15 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setState(new PercentType(90));
 
         String query = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(query, equalTo(
-                "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" WHERE value <= 90 ORDER BY time DESC;"));
+        assertThat(query,
+                equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" WHERE value <= 90;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("""
-                from(bucket:"origin")
-                \t|> range(start:-100y, stop:100y)
-                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> filter(fn: (r) => (r["_field"] == "value" and r["_value"] <= 90))
-                \t|> sort(desc:true, columns:["_time"])"""));
+        assertThat(queryV2,
+                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
+                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t"
+                        + "|> filter(fn: (r) => (r[\"_field\"] == \"value\" and r[\"_value\"] <= 90))"));
     }
 
     @Test
@@ -141,17 +145,13 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setPageSize(10);
 
         String query = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(query, equalTo(
-                "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" ORDER BY time DESC LIMIT 10 OFFSET 20;"));
+        assertThat(query,
+                equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" LIMIT 10 OFFSET 20;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("""
-                from(bucket:"origin")
-                \t|> range(start:-100y, stop:100y)
-                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:true, columns:["_time"])
-                \t|> limit(n:10, offset:20)"""));
+        assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
+                + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t" + "|> limit(n:10, offset:20)"));
     }
 
     @Test
@@ -164,12 +164,11 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" ORDER BY time ASC;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("""
-                from(bucket:"origin")
-                \t|> range(start:-100y, stop:100y)
-                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:false, columns:["_time"])"""));
+        assertThat(queryV2,
+                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
+                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t"
+                        + "|> sort(desc:false, columns:[\"_time\"])"));
     }
 
     @Test
@@ -178,17 +177,20 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("""
-                from(bucket:"origin")
-                \t|> range(start:-100y, stop:100y)
-                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> last()"""));
+        assertThat(queryV2,
+                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
+                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t" + "|> last()"));
     }
 
     private FilterCriteria createBaseCriteria() {
+        return createBaseCriteria(ITEM_NAME);
+    }
+
+    private FilterCriteria createBaseCriteria(String sampleItem) {
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName(ITEM_NAME);
+        criteria.setItemName(sampleItem);
+        criteria.setOrdering(null);
         return criteria;
     }
 
@@ -202,29 +204,25 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV1, equalTo(
-                "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"measurementName\" WHERE item = 'sampleItem' ORDER BY time DESC;"));
+                "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"measurementName\" WHERE item = 'sampleItem';"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("""
-                from(bucket:"origin")
-                \t|> range(start:-100y, stop:100y)
-                \t|> filter(fn: (r) => r["_measurement"] == "measurementName")
-                \t|> filter(fn: (r) => r["item"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value", "item"])
-                \t|> sort(desc:true, columns:["_time"])"""));
+        assertThat(queryV2,
+                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"measurementName\")\n\t"
+                        + "|> filter(fn: (r) => r[\"item\"] == \"sampleItem\")\n\t"
+                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\", \"item\"])"));
+
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
         queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1,
-                equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" ORDER BY time DESC;"));
+        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\";"));
 
         queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("""
-                from(bucket:"origin")
-                \t|> range(start:-100y, stop:100y)
-                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:true, columns:["_time"])"""));
+        assertThat(queryV2,
+                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
+                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])"));
     }
 }

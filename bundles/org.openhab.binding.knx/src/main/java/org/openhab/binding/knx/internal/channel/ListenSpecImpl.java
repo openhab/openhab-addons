@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import java.util.Objects;
-import java.util.Set;
+import static java.util.stream.Collectors.toList;
+
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.InboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
@@ -27,22 +30,21 @@ import tuwien.auto.calimero.GroupAddress;
  *
  */
 @NonNullByDefault
-public class ListenSpecImpl implements InboundSpec {
-    private final String dpt;
-    private final Set<GroupAddress> listenAddresses;
+public class ListenSpecImpl extends AbstractSpec implements InboundSpec {
 
-    public ListenSpecImpl(GroupAddressConfiguration groupAddressConfiguration, String defaultDPT) {
-        this.dpt = Objects.requireNonNullElse(groupAddressConfiguration.getDPT(), defaultDPT);
-        this.listenAddresses = groupAddressConfiguration.getListenGAs();
+    private final List<GroupAddress> listenAddresses;
+
+    public ListenSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT) {
+        super(channelConfiguration, defaultDPT);
+        if (channelConfiguration != null) {
+            this.listenAddresses = channelConfiguration.getListenGAs().stream().map(this::toGroupAddress)
+                    .collect(toList());
+        } else {
+            this.listenAddresses = Collections.emptyList();
+        }
     }
 
-    @Override
-    public String getDPT() {
-        return dpt;
-    }
-
-    @Override
-    public Set<GroupAddress> getGroupAddresses() {
+    public List<GroupAddress> getGroupAddresses() {
         return listenAddresses;
     }
 }

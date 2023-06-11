@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,8 +56,6 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CLOUDSET = "Cloud.SetConfig";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
-    public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
-    public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
 
     public static final String SHELLYRPC_METHOD_NOTIFYSTATUS = "NotifyStatus"; // inbound status
     public static final String SHELLYRPC_METHOD_NOTIFYFULLSTATUS = "NotifyFullStatus"; // inbound status from bat device
@@ -76,7 +74,6 @@ public class Shelly2ApiJsonDTO {
     // Input types
     public static final String SHELLY2_INPUTT_SWITCH = "switch";
     public static final String SHELLY2_INPUTT_BUTTON = "button";
-    public static final String SHELLY2_INPUTT_ANALOG = "analog"; // Shelly Addon: analogous input
 
     // Switcm modes
     public static final String SHELLY2_API_MODE_DETACHED = "detached";
@@ -256,8 +253,6 @@ public class Shelly2ApiJsonDTO {
             public Boolean invert;
             @SerializedName("factory_reset")
             public Boolean factoryReset;
-            @SerializedName("report_thr")
-            public Double reportTreshold; // only for type analog
         }
 
         public class Shelly2DevConfigSwitch {
@@ -283,17 +278,6 @@ public class Shelly2ApiJsonDTO {
             public Integer voltageLimit;
             @SerializedName("current_limit")
             public Double currentLimit;
-        }
-
-        public static class Shelly2DevConfigEm {
-            public Integer id;
-            public String name;
-            @SerializedName("blink_mode_selector")
-            public String blinkModeSelector;
-            @SerializedName("phase_selector")
-            public String phase_selector;
-            @SerializedName("monitor_phase_sequence")
-            public Boolean monitorPhaseSequence;
         }
 
         public class Shelly2DevConfigCover {
@@ -346,12 +330,6 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceConfigCoverObstructionDetection obstructionDetection;
         }
 
-        public static class Shelly2ConfigSmoke {
-            public Integer id;
-            public Boolean alarm;
-            public Boolean mute;
-        }
-
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -396,14 +374,8 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("switch:3")
             public Shelly2DevConfigSwitch switch3;
 
-            @SerializedName("em:0")
-            public Shelly2DevConfigEm em0;
-
             @SerializedName("cover:0")
             public Shelly2DevConfigCover cover0;
-
-            @SerializedName("smoke:0")
-            public Shelly2ConfigSmoke smoke0;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -441,8 +413,6 @@ public class Shelly2ApiJsonDTO {
         public class Shelly2InputStatus {
             public Integer id;
             public Boolean state;
-            public Double percent; // analog input only
-            public ArrayList<String> errors;// shown only if at least one error is present.
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -486,11 +456,6 @@ public class Shelly2ApiJsonDTO {
                 public Double rh;
             }
 
-            public class Shelly2DeviceStatusVoltage {
-                public Integer id;
-                public Double voltage;
-            }
-
             public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
                 public Integer id;
             }
@@ -511,57 +476,6 @@ public class Shelly2ApiJsonDTO {
                 public Shelly2DeviceStatusCharger external;
             }
 
-            public static class Shelly2DeviceStatusEm {
-                public Integer id;
-
-                @SerializedName("a_current")
-                public Double aCurrent;
-                @SerializedName("a_voltage")
-                public Double aVoltage;
-                @SerializedName("a_act_power")
-                public Double aActPower;
-                @SerializedName("a_aprt_power")
-                public Double aAprtPower;
-                @SerializedName("a_pf")
-                public Double aPF;
-
-                @SerializedName("b_current")
-                public Double bCurrent;
-                @SerializedName("b_voltage")
-                public Double bVoltage;
-                @SerializedName("b_act_power")
-                public Double bActPower;
-                @SerializedName("b_aprt_power")
-                public Double bAprtPower;
-                @SerializedName("b_pf")
-                public Double bPF;
-
-                @SerializedName("c_current")
-                public Double cCurrent;
-                @SerializedName("c_voltage")
-                public Double cVoltage;
-                @SerializedName("c_act_power")
-                public Double cActPower;
-                @SerializedName("c_aprt_power")
-                public Double cAprtPower;
-                @SerializedName("c_pf")
-                public Double cPF;
-
-                @SerializedName("n_current")
-                public Double nCurrent;
-            }
-
-            public static class Shelly2DeviceStatusEmData {
-                public Integer id;
-                public String[] errors;
-            }
-
-            public class Shelly2DeviceStatusSmoke {
-                public Integer id;
-                public Boolean alarm;
-                public Boolean mute;
-            }
-
             public Shelly2DeviceStatusBle ble;
             public Shelly2DeviceStatusCloud cloud;
             public Shelly2DeviceStatusMqqt mqtt;
@@ -576,8 +490,6 @@ public class Shelly2ApiJsonDTO {
             public Shelly2InputStatus input2;
             @SerializedName("input:3")
             public Shelly2InputStatus input3;
-            @SerializedName("input:100")
-            public Shelly2InputStatus input100; // Digital Input from Add-On
 
             @SerializedName("switch:0")
             public Shelly2RelayStatus switch0;
@@ -588,37 +500,13 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("switch:3")
             public Shelly2RelayStatus switch3;
 
-            @SerializedName("em:0")
-            Shelly2DeviceStatusEm em0;
-            @SerializedName("emdata:0")
-            Shelly2DeviceStatusEmData emdata0;
-
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
 
-            @SerializedName("temperature:0")
-            public Shelly2DeviceStatusTempId temperature0;
-            @SerializedName("temperature:100")
-            public Shelly2DeviceStatusTempId temperature100;
-            @SerializedName("temperature:101")
-            public Shelly2DeviceStatusTempId temperature101;
-            @SerializedName("temperature:102")
-            public Shelly2DeviceStatusTempId temperature102;
-            @SerializedName("temperature:103")
-            public Shelly2DeviceStatusTempId temperature103;
-            @SerializedName("temperature:104")
-            public Shelly2DeviceStatusTempId temperature104;
-
             @SerializedName("humidity:0")
             public Shelly2DeviceStatusHumidity humidity0;
-            @SerializedName("humidity:100")
-            public Shelly2DeviceStatusHumidity humidity100;
-            @SerializedName("smoke:0")
-            public Shelly2DeviceStatusSmoke smoke0;
-
-            @SerializedName("voltmeter:100")
-            public Shelly2DeviceStatusVoltage voltmeter100;
-
+            @SerializedName("temperature:0")
+            public Shelly2DeviceStatusTempId temperature0;
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
         }

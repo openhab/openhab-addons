@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,20 +128,6 @@ public class WifiConnection implements ConnectionBase {
     @Override
     public boolean disconnect() {
         mDevice.setAutoConnect(false);
-        mCmdRun = false;
-        try {
-            if (mConnectThread != null) {
-                mConnectThread.interrupt();
-            }
-            if (mSocket != null) {
-                mSocket.close();
-            }
-        } catch (Exception e) {
-            logger.debug("Exception while terminating connection", e);
-        } finally {
-            mSocket = null;
-            mDevice.setConnectionState(ConnectState.DISCONNECTED);
-        }
-        return true;
+        return false;
     }
 }

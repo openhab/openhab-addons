@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.ojelectronics.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The configuration for {@link org.openhab.binding.ojelectronics.internal.OJElectronicsCloudHandler}
@@ -41,7 +40,7 @@ public class OJElectronicsBridgeConfiguration {
     /**
      * Url for API
      */
-    private String apiUrl = "https://OWD5-OJ001-App.ojelectronics.com";
+    public String apiUrl = "https://OWD5-OJ001-App.ojelectronics.com/api";
 
     /**
      * API-Key
@@ -53,29 +52,8 @@ public class OJElectronicsBridgeConfiguration {
      */
     public int softwareVersion = 1060;
 
-    private @Nullable String restApiUrl;
-
-    /*
-     * Gets the Api-URL
+    /**
+     * Refresh-Delay
      */
-    public String getRestApiUrl() {
-        String localRestApiUrl = restApiUrl;
-        if (localRestApiUrl == null) {
-            localRestApiUrl = restApiUrl = apiUrl.replace("/api", "") + "/api";
-        }
-        return localRestApiUrl;
-    }
-
-    private @Nullable String signalRApiUrl;
-
-    /*
-     * Gets the SignalR Notification URL
-     */
-    public String getSignalRUrl() {
-        String localSignalRApiUrl = signalRApiUrl;
-        if (localSignalRApiUrl == null) {
-            localSignalRApiUrl = signalRApiUrl = apiUrl.replace("/api", "") + "/ocd5notification";
-        }
-        return localSignalRApiUrl;
-    }
+    public long refreshDelayInSeconds = 30;
 }

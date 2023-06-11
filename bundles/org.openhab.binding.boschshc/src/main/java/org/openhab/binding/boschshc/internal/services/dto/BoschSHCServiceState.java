@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,21 +13,26 @@
 package org.openhab.binding.boschshc.internal.services.dto;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Base Bosch Smart Home Controller service state.
- *
+ * 
  * @author Christian Oeing - Initial contribution
  */
 public class BoschSHCServiceState {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    /**
+     * gson instance to convert a class to json string and back.
+     */
+    private static final Gson gson = new Gson();
+
+    private static final Logger logger = LoggerFactory.getLogger(BoschSHCServiceState.class);
 
     /**
      * State type. Initialized when instance is created.
@@ -35,7 +40,7 @@ public class BoschSHCServiceState {
     private @Nullable String stateType = null;
 
     @SerializedName("@type")
-    public final String type;
+    private final String type;
 
     protected BoschSHCServiceState(String type) {
         this.type = type;
@@ -62,7 +67,7 @@ public class BoschSHCServiceState {
 
     public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(String json,
             Class<TState> stateClass) {
-        var state = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(json, stateClass);
+        var state = gson.fromJson(json, stateClass);
         if (state == null || !state.isValid()) {
             return null;
         }
@@ -72,7 +77,7 @@ public class BoschSHCServiceState {
 
     public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(JsonElement json,
             Class<TState> stateClass) {
-        var state = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(json, stateClass);
+        var state = gson.fromJson(json, stateClass);
         if (state == null || !state.isValid()) {
             return null;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private int skipUpdate = 0;
     private boolean refreshSettings = false;
     private @Nullable ScheduledFuture<?> statusJob;
-    private @Nullable ScheduledFuture<?> initJob;
 
     /**
      * Constructor
@@ -172,7 +171,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void initialize() {
         // start background initialization:
-        initJob = scheduler.schedule(() -> {
+        scheduler.schedule(() -> {
             boolean start = true;
             try {
                 initializeThingConfig();
@@ -188,18 +187,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 start = initializeThing();
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
-                String mid = "";
-                if (e.isJsonError()) { // invalid JSON format
-                    mid = "offline.status-error-unexpected-error";
-                    start = false;
-                } else if (isAuthorizationFailed(res)) {
-                    mid = "offline.conf-error-access-denied";
-                    start = false;
-                } else if (profile.alwaysOn && e.isConnectionError()) {
-                    mid = "offline.status-error-connect";
+                if (profile.alwaysOn && e.isConnectionError()) {
+                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-connect",
+                            e.toString());
                 }
-                if (!mid.isEmpty()) {
-                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, mid, e.toString());
+                if (isAuthorizationFailed(res)) {
+                    start = false;
                 }
                 logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
             } catch (IllegalArgumentException e) {
@@ -235,8 +228,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (coap != null) {
             coap.stop();
         }
-        stopping = false;
-        reinitializeThing();// force re-initialization
+        requestUpdates(1, true);// force re-initialization
     }
 
     /**
@@ -250,6 +242,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     public boolean initializeThing() throws ShellyApiException {
         // Init from thing type to have a basic profile, gets updated when device info is received from API
+        stopping = false;
         refreshSettings = false;
         lastWakeupReason = "";
         cache.setThingName(thingName);
@@ -263,8 +256,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
-        profile.initFromThingType(thingType); // do some basic initialization
-
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
@@ -274,6 +265,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Initialize API access, exceptions will be catched by initialize()
         api.initialize();
+        profile.initFromThingType(thingType);
         ShellySettingsDevice devInfo = api.getDeviceInfo();
         if (getBool(devInfo.auth) && config.password.isEmpty()) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -358,7 +350,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 return;
             }
 
-            if (!profile.isInitialized() || (isThingOffline() && profile.alwaysOn)) {
+            if (!profile.isInitialized()) {
                 logger.debug("{}: {}", thingName, messages.get("command.init", command));
                 initializeThing();
             } else {
@@ -441,13 +433,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Set boost timer to {}", thingName, command);
                     api.setValveBoostTime(0, (int) getNumber(command));
                     break;
-                case CHANNEL_SENSOR_MUTE:
-                    if (profile.isSmoke && ((OnOffType) command) == OnOffType.ON) {
-                        logger.debug("{}: Mute Smoke Alarm", thingName);
-                        api.muteSmokeAlarm(0);
-                        updateChannel(getString(channelUID.getGroupId()), CHANNEL_SENSOR_MUTE, OnOffType.OFF);
-                    }
-                    break;
+
                 default:
                     update = handleDeviceCommand(channelUID, command);
                     break;
@@ -507,7 +493,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
+                // Get profile, if refreshSettings == true reload settings from device
                 ShellySettingsStatus status = api.getStatus();
+                if (status.uptime != null && status.uptime == 0 && profile.alwaysOn) {
+                    status = api.getStatus();
+                }
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
@@ -544,7 +534,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 status = "offline.conf-error-access-denied";
             } else if (isWatchdogStarted()) {
                 if (!isWatchdogExpired()) {
-                    logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
+                    logger.debug("{}: Ignore API Timeout, retry later", thingName);
                 } else {
                     if (isThingOnline()) {
                         status = "offline.status-error-watchdog";
@@ -586,18 +576,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 profile.fwDate);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
         logger.debug("{}: Device "
-                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{}), ext. Switch Add-On: {}"
+                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
                 + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
                 + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
-                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
-                profile.settings.extSwitch != null ? "installed" : "n/a", profile.isSensor, profile.isDW,
-                profile.hasBattery, profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
-                profile.isSense, profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2,
-                profile.inColor, profile.alwaysOn, profile.updatePeriod);
-        if (profile.status.extTemperature != null || profile.status.extHumidity != null
-                || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
-            logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
-        }
+                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
+                profile.isDW, profile.hasBattery,
+                profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
+                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
+                profile.alwaysOn, profile.updatePeriod);
     }
 
     private void addStateOptions(ShellyDeviceProfile prf) {
@@ -695,18 +681,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void reinitializeThing() {
         logger.debug("{}: Re-Initialize Thing", thingName);
-        if (isStopping()) {
+        if (stopping) {
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                 messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
-    }
-
-    @Override
-    public boolean isStopping() {
-        return stopping;
     }
 
     @Override
@@ -1482,12 +1463,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     public void stop() {
         logger.debug("{}: Shutting down", thingName);
-        ScheduledFuture<?> job = this.initJob;
-        if (job != null) {
-            job.cancel(true);
-            initJob = null;
-        }
-        job = this.statusJob;
+        ScheduledFuture<?> job = this.statusJob;
         if (job != null) {
             job.cancel(true);
             statusJob = null;

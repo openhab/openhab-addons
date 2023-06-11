@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,9 +62,7 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
     private static void removeDirRecursive(final String dir) throws IOException {
         final Path path = Paths.get(dir);
         if (Files.exists(path)) {
-            try (Stream<Path> stream = Files.walk(path)) {
-                stream.map(Path::toFile).sorted().forEach(File::delete);
-            }
+            Files.walk(path).map(Path::toFile).sorted().forEach(File::delete);
         }
     }
 
@@ -82,12 +79,12 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
 
         persistenceService.store(item);
 
-        waitForAssert(() -> assertThat(persistenceService.getItemInfo(), hasItem(hasProperty("name", equalTo(name)))));
+        assertThat(persistenceService.getItemInfo(), hasItem(hasProperty("name", equalTo(name))));
 
         persistenceService.store(item, alias);
 
-        waitForAssert(() -> assertThat(persistenceService.getItemInfo(),
-                hasItems(hasProperty("name", equalTo(name)), hasProperty("name", equalTo(alias)))));
+        assertThat(persistenceService.getItemInfo(),
+                hasItems(hasProperty("name", equalTo(name)), hasProperty("name", equalTo(alias))));
     }
 
     @Test
@@ -105,8 +102,8 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
 
         persistenceService.store(item);
 
-        waitForAssert(() -> assertThat(persistenceService.query(filter),
-                contains(allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state))))));
+        assertThat(persistenceService.query(filter),
+                contains(allOf(hasProperty("name", equalTo(name)), hasProperty("state", equalTo(state)))));
     }
 
     @Test
@@ -130,7 +127,7 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
         persistenceService.store(item, alias);
 
         assertThat(persistenceService.query(filterByName), is(emptyIterable()));
-        waitForAssert(() -> assertThat(persistenceService.query(filterByAlias),
-                contains(allOf(hasProperty("name", equalTo(alias)), hasProperty("state", equalTo(state))))));
+        assertThat(persistenceService.query(filterByAlias),
+                contains(allOf(hasProperty("name", equalTo(alias)), hasProperty("state", equalTo(state)))));
     }
 }

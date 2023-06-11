@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public interface NhcControllerEvent {
      *
      * @return the addr
      */
-    default @Nullable InetAddress getAddr() {
+    public default @Nullable InetAddress getAddr() {
         return null;
     }
 
@@ -43,7 +43,7 @@ public interface NhcControllerEvent {
      *
      * @return the port
      */
-    default int getPort() {
+    public default int getPort() {
         return 0;
     }
 
@@ -52,7 +52,7 @@ public interface NhcControllerEvent {
      *
      * @return the profile
      */
-    default String getProfile() {
+    public default String getProfile() {
         return "";
     }
 
@@ -61,7 +61,7 @@ public interface NhcControllerEvent {
      *
      * @return the token
      */
-    default String getToken() {
+    public default String getToken() {
         return "";
     }
 
@@ -70,37 +70,37 @@ public interface NhcControllerEvent {
      *
      * @return the zone ID
      */
-    ZoneId getTimeZone();
+    public ZoneId getTimeZone();
 
     /**
      * Called to indicate the connection with the Niko Home Control Controller is offline.
      *
      * @param message
      */
-    void controllerOffline(String message);
+    public void controllerOffline(String message);
 
     /**
      * Called to indicate the connection with the Niko Home Control Controller is online.
      *
      */
-    void controllerOnline();
+    public void controllerOnline();
 
     /**
      * This method is called when an alarm event is received from the Niko Home Control controller.
      *
      * @param alarmText
      */
-    void alarmEvent(String alarmText);
+    public void alarmEvent(String alarmText);
 
     /**
      * This method is called when a notice event is received from the Niko Home Control controller.
      *
      * @param alarmText
      */
-    void noticeEvent(String noticeText);
+    public void noticeEvent(String noticeText);
 
     /**
      * This method is called when properties are updated from the Niko Home Control controller.
      */
-    void updatePropertiesEvent();
+    public void updatePropertiesEvent();
 }

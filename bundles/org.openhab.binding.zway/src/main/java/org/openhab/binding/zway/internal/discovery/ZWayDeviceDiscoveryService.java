@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zway.internal.ZWayBindingConstants;
 import org.openhab.binding.zway.internal.handler.ZWayBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -43,7 +41,6 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  *
  * @author Patrick Hecker - Initial contribution
  */
-@NonNullByDefault
 public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -54,7 +51,7 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private ZWayBridgeHandler mBridgeHandler;
     private ZWayDeviceScan mZWayDeviceScanningRunnable;
-    private @Nullable ScheduledFuture<?> mZWayDeviceScanningJob;
+    private ScheduledFuture<?> mZWayDeviceScanningJob;
 
     public ZWayDeviceDiscoveryService(ZWayBridgeHandler bridgeHandler) {
         super(ZWayBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
@@ -68,7 +65,7 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Starting scan on Z-Way Server {}", mBridgeHandler.getThing().getUID());
 
         // Z-Way bridge have to be ONLINE because configuration is needed
-        if (!mBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+        if (mBridgeHandler == null || !mBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             logger.debug("Z-Way bridge handler not found or not ONLINE.");
             return;
         }
@@ -216,8 +213,7 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        ScheduledFuture<?> mZWayDeviceScanningJobLocal = mZWayDeviceScanningJob;
-        if (mZWayDeviceScanningJobLocal == null || mZWayDeviceScanningJobLocal.isCancelled()) {
+        if (mZWayDeviceScanningJob == null || mZWayDeviceScanningJob.isCancelled()) {
             logger.debug("Starting background scanning job");
             mZWayDeviceScanningJob = scheduler.scheduleWithFixedDelay(mZWayDeviceScanningRunnable, INITIAL_DELAY,
                     SCAN_INTERVAL, TimeUnit.SECONDS);
@@ -228,9 +224,8 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> mZWayDeviceScanningJobLocal = mZWayDeviceScanningJob;
-        if (mZWayDeviceScanningJobLocal != null && !mZWayDeviceScanningJobLocal.isCancelled()) {
-            mZWayDeviceScanningJobLocal.cancel(false);
+        if (mZWayDeviceScanningJob != null && !mZWayDeviceScanningJob.isCancelled()) {
+            mZWayDeviceScanningJob.cancel(false);
             mZWayDeviceScanningJob = null;
         }
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetCleanFilterIndicatorCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetEyeBrightnessCommand;
@@ -34,10 +34,9 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetSet
 
 /**
  *
- * @author blafois - Initial contribution
+ * @author blafois
  *
  */
-@NonNullByDefault
 public class UartProcessorTest implements ResponseListener {
 
     private boolean completed = false;
@@ -71,63 +70,63 @@ public class UartProcessorTest implements ResponseListener {
     }
 
     @Override
-    public void receivedResponse(byte[] bytes) {
+    public void receivedResponse(byte @NonNull [] bytes) {
         this.completed = true;
     }
 
     @Override
-    public void receivedResponse(GetVersionCommand command) {
+    public void receivedResponse(@NonNull GetVersionCommand command) {
     }
 
     @Override
-    public void receivedResponse(GetFanspeedCommand command) {
+    public void receivedResponse(@NonNull GetFanspeedCommand command) {
     }
 
     @Override
-    public void receivedResponse(GetOperationmodeCommand command) {
+    public void receivedResponse(@NonNull GetOperationmodeCommand command) {
     }
 
     @Override
-    public void receivedResponse(GetPowerstateCommand command) {
+    public void receivedResponse(@NonNull GetPowerstateCommand command) {
     }
 
     @Override
-    public void receivedResponse(GetSetpointCommand command) {
+    public void receivedResponse(@NonNull GetSetpointCommand command) {
     }
 
     @Override
-    public void receivedResponse(GetIndoorOutoorTemperatures command) {
+    public void receivedResponse(@NonNull GetIndoorOutoorTemperatures command) {
     }
 
     @Override
-    public void receivedResponse(SetPowerstateCommand command) {
+    public void receivedResponse(@NonNull SetPowerstateCommand command) {
     }
 
     @Override
-    public void receivedResponse(SetSetpointCommand command) {
+    public void receivedResponse(@NonNull SetSetpointCommand command) {
     }
 
     @Override
-    public void receivedResponse(SetOperationmodeCommand command) {
+    public void receivedResponse(@NonNull SetOperationmodeCommand command) {
     }
 
     @Override
-    public void receivedResponse(SetFanspeedCommand command) {
+    public void receivedResponse(@NonNull SetFanspeedCommand command) {
     }
 
     @Override
-    public void receivedResponse(GetOperationHoursCommand command) {
+    public void receivedResponse(@NonNull GetOperationHoursCommand command) {
     }
 
     @Override
-    public void receivedResponse(GetEyeBrightnessCommand command) {
+    public void receivedResponse(@NonNull GetEyeBrightnessCommand command) {
     }
 
     @Override
-    public void receivedResponse(GetCleanFilterIndicatorCommand command) {
+    public void receivedResponse(@NonNull GetCleanFilterIndicatorCommand command) {
     }
 
     @Override
-    public void receivedResponse(SetEyeBrightnessCommand command) {
+    public void receivedResponse(@NonNull SetEyeBrightnessCommand command) {
     }
 }

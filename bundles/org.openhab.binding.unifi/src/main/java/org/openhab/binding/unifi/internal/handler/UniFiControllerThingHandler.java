@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.Command;
@@ -59,7 +58,6 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     private static final String STATUS_DESCRIPTION_SSL_ERROR = "@text/error.bridge.offline.ssl_error";
     private static final String STATUS_DESCRIPTION_INVALID_CREDENTIALS = "@text/error.bridge.offline.invalid_credentials";
     private static final String STATUS_DESCRIPTION_INVALID_HOSTNAME = "@text/error.bridge.offline.invalid_hostname";
-    private static final String I18N_STATUS_WITH_ARGUMENTS = "%s [\"%s\"]";
 
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerThingHandler.class);
 
@@ -109,15 +107,13 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         cancelRefreshJob();
-        final UniFiController controller = this.controller;
-
         if (controller != null) {
             try {
                 controller.stop();
             } catch (final UniFiException e) {
                 // mgb: nop as we're in dispose
             }
-            this.controller = null;
+            controller = null;
         }
     }
 
@@ -139,14 +135,14 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             uc.start();
             startRefresh = true;
         } catch (final UniFiCommunicationException e) {
-            updateStatusOffline(COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
             startRefresh = true;
         } catch (final UniFiInvalidHostException e) {
-            updateStatusOffline(CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME, e.getMessage());
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME);
         } catch (final UniFiSSLException e) {
-            updateStatusOffline(CONFIGURATION_ERROR, STATUS_DESCRIPTION_SSL_ERROR, e.getMessage());
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_SSL_ERROR);
         } catch (final UniFiInvalidCredentialsException e) {
-            updateStatusOffline(CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS, e.getMessage());
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS);
         } catch (final UniFiException e) {
             logger.debug("Unknown error while configuring the UniFi Controller", e);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, e.getMessage());
@@ -175,18 +171,13 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             refresh();
             updateStatus(ONLINE);
         } catch (final UniFiCommunicationException e) {
-            updateStatusOffline(COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
         } catch (final UniFiInvalidCredentialsException e) {
-            updateStatusOffline(CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS, e.getMessage());
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS);
         } catch (final RuntimeException | UniFiException e) {
             logger.debug("Unhandled exception while refreshing the UniFi Controller {}", getThing().getUID(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }
-    }
-
-    private void updateStatusOffline(final ThingStatusDetail thingStatusDetail, final String i18nKey,
-            final @Nullable String argument) {
-        updateStatus(OFFLINE, thingStatusDetail, String.format(I18N_STATUS_WITH_ARGUMENTS, i18nKey, argument));
     }
 
     private void refresh() throws UniFiException {
@@ -197,10 +188,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             uc.refresh();
             // mgb: then refresh all the client things
             getThing().getThings().forEach((thing) -> {
-                final ThingHandler handler = thing.getHandler();
-
-                if (handler instanceof UniFiBaseThingHandler) {
-                    ((UniFiBaseThingHandler<?, ?>) handler).refresh();
+                if (thing.getHandler() instanceof UniFiBaseThingHandler) {
+                    ((UniFiBaseThingHandler) thing.getHandler()).refresh();
                 }
             });
         }

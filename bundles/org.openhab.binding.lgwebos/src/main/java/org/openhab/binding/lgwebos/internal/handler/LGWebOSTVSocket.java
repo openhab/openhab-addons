@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,7 +116,6 @@ public class LGWebOSTVSocket {
     private final URI destUri;
     private final LGWebOSTVKeyboardInput keyboardInput;
     private final ScheduledExecutorService scheduler;
-    private final Protocol protocol;
 
     public enum State {
         DISCONNECTING,
@@ -124,19 +123,6 @@ public class LGWebOSTVSocket {
         CONNECTING,
         REGISTERING,
         REGISTERED
-    }
-
-    private enum Protocol {
-        WEB_SOCKET("ws", DEFAULT_WS_PORT),
-        WEB_SOCKET_SECURE("wss", DEFAULT_WSS_PORT);
-
-        private Protocol(String name, int port) {
-            this.name = name;
-            this.port = port;
-        }
-
-        public String name;
-        public int port;
     }
 
     private State state = State.DISCONNECTED;
@@ -154,15 +140,14 @@ public class LGWebOSTVSocket {
 
     private @Nullable ScheduledFuture<?> disconnectingJob;
 
-    public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, boolean useTLS,
+    public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, int port,
             ScheduledExecutorService scheduler) {
         this.config = config;
         this.client = client;
         this.keyboardInput = new LGWebOSTVKeyboardInput(this);
-        this.protocol = useTLS ? Protocol.WEB_SOCKET_SECURE : Protocol.WEB_SOCKET;
 
         try {
-            this.destUri = new URI(protocol.name + "://" + host + ":" + protocol.port);
+            this.destUri = new URI("ws://" + host + ":" + port);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("IP address or hostname provided is invalid: " + host);
         }
@@ -931,13 +916,8 @@ public class LGWebOSTVSocket {
             @Override
             public void onSuccess(@Nullable JsonObject jsonObj) {
                 if (jsonObj != null) {
-                    String socketPath = jsonObj.get("socketPath").getAsString();
-                    if (protocol == Protocol.WEB_SOCKET) {
-                        socketPath = socketPath
-                                .replace(Protocol.WEB_SOCKET_SECURE.name + ":", Protocol.WEB_SOCKET.name + ":")
-                                .replace(":" + Protocol.WEB_SOCKET_SECURE.port + "/",
-                                        ":" + Protocol.WEB_SOCKET.port + "/");
-                    }
+                    String socketPath = jsonObj.get("socketPath").getAsString().replace("wss:", "ws:").replace(":3001/",
+                            ":3000/");
                     try {
                         mouseSocket.connect(new URI(socketPath));
                     } catch (URISyntaxException e) {

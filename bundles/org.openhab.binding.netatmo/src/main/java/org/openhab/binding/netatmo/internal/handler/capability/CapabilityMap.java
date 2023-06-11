@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,10 +28,9 @@ public class CapabilityMap extends ConcurrentHashMap<Class<?>, Capability> {
     private static final long serialVersionUID = -3043492242108419801L;
 
     public void put(Capability capability) {
-        Class<?> clazz = capability.getClass();
+        Class<? extends Capability> clazz = capability.getClass();
         if (super.get(clazz) == null) {
             super.put(clazz, capability);
-            capability.initialize();
         }
     }
 

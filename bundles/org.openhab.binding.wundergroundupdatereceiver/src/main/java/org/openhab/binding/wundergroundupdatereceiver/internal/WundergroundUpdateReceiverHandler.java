@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
@@ -111,15 +110,16 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         this.config = getConfigAs(WundergroundUpdateReceiverConfiguration.class);
         wundergroundUpdateReceiverServlet.addHandler(this);
         @Nullable
-        Map<String, String> requestParameters = discoveryService.getUnhandledStationRequest(config.stationId);
+        Map<String, String[]> requestParameters = discoveryService.getUnhandledStationRequest(config.stationId);
         if (requestParameters != null && thing.getChannels().isEmpty()) {
+            final String[] noValues = new String[0];
             ThingBuilder thingBuilder = editThing();
             List.of(LAST_RECEIVED, LAST_QUERY_TRIGGER, DATEUTC_DATETIME, LAST_QUERY_STATE)
-                    .forEach((String channelId) -> buildChannel(thingBuilder, channelId, ""));
-            requestParameters.forEach((String parameter, String query) -> buildChannel(thingBuilder, parameter, query));
+                    .forEach((String channelId) -> buildChannel(thingBuilder, channelId, noValues));
+            requestParameters
+                    .forEach((String parameter, String[] query) -> buildChannel(thingBuilder, parameter, query));
             updateThing(thingBuilder.build());
         }
-        migrateChannels();
         discoveryService.removeUnhandledStationId(config.stationId);
         if (wundergroundUpdateReceiverServlet.isActive()) {
             updateStatus(ThingStatus.ONLINE);
@@ -128,17 +128,6 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                 wundergroundUpdateReceiverServlet.getErrorDetail());
-    }
-
-    private void migrateChannels() {
-        Optional.ofNullable(getThing().getChannel(queryTriggerChannel)).ifPresent(c -> {
-            if (c.getKind() != ChannelKind.TRIGGER) {
-                ThingBuilder builder = editThing();
-                builder.withoutChannel(c.getUID());
-                buildChannel(builder, LAST_QUERY_TRIGGER, "");
-                updateThing(builder.build());
-            }
-        });
     }
 
     @Override
@@ -160,10 +149,10 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         triggerChannel(queryTriggerChannel, lastQuery);
     }
 
-    private void buildChannel(ThingBuilder thingBuilder, String parameter, String value) {
+    private void buildChannel(ThingBuilder thingBuilder, String parameter, String... query) {
         @Nullable
         WundergroundUpdateReceiverParameterMapping channelTypeMapping = WundergroundUpdateReceiverParameterMapping
-                .getOrCreateMapping(parameter, value, channelTypeProvider);
+                .getOrCreateMapping(parameter, String.join("", query), channelTypeProvider);
         if (channelTypeMapping == null) {
             return;
         }
@@ -173,10 +162,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         }
         ChannelBuilder channelBuilder = ChannelBuilder
                 .create(new ChannelUID(thing.getUID(), channelTypeMapping.channelGroup, parameter))
-                .withKind(channelType.getKind()).withAutoUpdatePolicy(channelType.getAutoUpdatePolicy())
-                .withDefaultTags(channelType.getTags()).withType(channelTypeMapping.channelTypeId)
-                .withAcceptedItemType(channelType.getItemType()).withLabel(channelType.getLabel());
-        Optional.ofNullable(channelType.getDescription()).ifPresent(channelBuilder::withDescription);
+                .withType(channelTypeMapping.channelTypeId).withAcceptedItemType(channelType.getItemType());
         thingBuilder.withChannel(channelBuilder.build());
     }
 

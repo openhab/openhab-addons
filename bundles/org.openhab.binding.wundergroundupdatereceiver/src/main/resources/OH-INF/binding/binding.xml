@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="wundergroundupdatereceiver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>Wunderground Update Receiver Binding</name>
+	<description>
+		This binding enables acting as a receiver of updates from devices that post measurements to
+		https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php.
+	</description>
+</binding:binding>

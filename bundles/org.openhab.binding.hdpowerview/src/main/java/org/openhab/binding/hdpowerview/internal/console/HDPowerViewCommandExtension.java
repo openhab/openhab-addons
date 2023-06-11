@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,14 +17,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.GatewayWebTargets;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
-import org.openhab.binding.hdpowerview.internal.dto.gen3.Shade;
 import org.openhab.binding.hdpowerview.internal.dto.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
-import org.openhab.binding.hdpowerview.internal.handler.GatewayBridgeHandler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
@@ -68,7 +65,7 @@ public class HDPowerViewCommandExtension extends AbstractConsoleCommandExtension
         for (Thing thing : thingRegistry.getAll()) {
             ThingHandler thingHandler = thing.getHandler();
             if (thingHandler instanceof HDPowerViewHubHandler) {
-                console.println("Generation 1/2 API hub: " + thing.getLabel());
+                console.println("API bridge: " + thing.getLabel());
                 HDPowerViewWebTargets webTargets = ((HDPowerViewHubHandler) thingHandler).getWebTargets();
 
                 try {
@@ -85,21 +82,6 @@ public class HDPowerViewCommandExtension extends AbstractConsoleCommandExtension
                         console.println(" - Repeaters:");
                         for (RepeaterData repeater : repeaters) {
                             console.println("    - ID: " + repeater.id + " (" + repeater.getName() + ")");
-                        }
-                    }
-                } catch (HubException e) {
-                    console.println("Error retrieving ID's: " + e.getMessage());
-                }
-            } else if (thingHandler instanceof GatewayBridgeHandler) {
-                console.println("Generation 3 API gateway: " + thing.getLabel());
-                GatewayWebTargets webTargets = ((GatewayBridgeHandler) thingHandler).getWebTargets();
-
-                try {
-                    List<Shade> shades = webTargets.getShades();
-                    if (!shades.isEmpty()) {
-                        console.println(" - Shades:");
-                        for (Shade shade : shades) {
-                            console.println("    - ID: " + shade.getId() + " (" + shade.getName() + ")");
                         }
                     }
                 } catch (HubException e) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ abstract class AbstractDataResponseTransformer {
     /**
      * logger
      */
-    private final Logger logger = LoggerFactory.getLogger(AbstractDataResponseTransformer.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractDataResponseTransformer.class);
 
     /**
      * determines the unit, also handles wrong spelling of kWh (which is spelled with capital K by API)
@@ -178,9 +178,8 @@ abstract class AbstractDataResponseTransformer {
             MeterTelemetry... values) {
         double sum = 0.0;
         for (MeterTelemetry value : values) {
-            Double innerValue = value.value;
-            if (innerValue != null) {
-                sum += innerValue;
+            if (value.value != null) {
+                sum += value.value;
             }
         }
         putEnergyType(targetMap, channel, sum, unit);

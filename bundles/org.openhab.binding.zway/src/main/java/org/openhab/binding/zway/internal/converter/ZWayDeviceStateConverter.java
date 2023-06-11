@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.zway.internal.converter;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -43,7 +41,6 @@ import de.fh_zwickau.informatik.sensor.model.devices.types.ToggleButton;
  *
  * @author Patrick Hecker - Initial contribution
  */
-@NonNullByDefault
 public class ZWayDeviceStateConverter {
     public static State toState(Device device, Channel channel) {
         // Store level locally
@@ -55,7 +52,7 @@ public class ZWayDeviceStateConverter {
         } else if (device instanceof Doorlock) {
             return getBinaryState(level.toLowerCase());
         } else if (device instanceof SensorBinary) {
-            if ("Contact".equals(channel.getAcceptedItemType())) {
+            if (channel.getAcceptedItemType().equals("Contact")) {
                 return getDoorlockState(level.toLowerCase());
             } else {
                 return getBinaryState(level.toLowerCase());
@@ -65,8 +62,8 @@ public class ZWayDeviceStateConverter {
         } else if (device instanceof SwitchBinary) {
             return getBinaryState(level.toLowerCase());
         } else if (device instanceof SwitchMultilevel) {
-            if ("Rollershutter".equals(channel.getAcceptedItemType())
-                    || "Dimmer".equals(channel.getAcceptedItemType())) {
+            if (channel.getAcceptedItemType().equals("Rollershutter")
+                    || channel.getAcceptedItemType().equals("Dimmer")) {
                 return getPercentState(level);
             } else {
                 return getMultilevelState(level);
@@ -87,19 +84,19 @@ public class ZWayDeviceStateConverter {
     }
 
     /**
-     * Transforms a value in an openHAB type.
+     * Transforms an value in an openHAB type.
      *
      * @param multilevel sensor value
      * @return transformed openHAB state
      */
-    private static State getMultilevelState(@Nullable String multilevelValue) {
+    private static State getMultilevelState(String multilevelValue) {
         if (multilevelValue != null) {
             return new DecimalType(multilevelValue);
         }
         return UnDefType.UNDEF;
     }
 
-    private static State getPercentState(@Nullable String multilevelValue) {
+    private static State getPercentState(String multilevelValue) {
         if (multilevelValue != null) {
             return new PercentType(multilevelValue);
         }
@@ -107,16 +104,16 @@ public class ZWayDeviceStateConverter {
     }
 
     /**
-     * Transforms a value in an openHAB type.
+     * Transforms an value in an openHAB type.
      *
      * @param binary switch value
      * @return transformed openHAB state
      */
-    private static State getBinaryState(@Nullable String binarySwitchState) {
+    private static State getBinaryState(String binarySwitchState) {
         if (binarySwitchState != null) {
-            if ("on".equals(binarySwitchState)) {
+            if (binarySwitchState.equals("on")) {
                 return OnOffType.ON;
-            } else if ("off".equals(binarySwitchState)) {
+            } else if (binarySwitchState.equals("off")) {
                 return OnOffType.OFF;
             }
         }
@@ -124,18 +121,18 @@ public class ZWayDeviceStateConverter {
     }
 
     /**
-     * Transforms a value in an openHAB type.
+     * Transforms an value in an openHAB type.
      * - ON to OPEN
      * - OFF to CLOSED
      *
      * @param binary sensor state
      * @return
      */
-    private static State getDoorlockState(@Nullable String binarySensorState) {
+    private static State getDoorlockState(String binarySensorState) {
         if (binarySensorState != null) {
-            if ("on".equals(binarySensorState)) {
+            if (binarySensorState.equals("on")) {
                 return OpenClosedType.OPEN;
-            } else if ("off".equals(binarySensorState)) {
+            } else if (binarySensorState.equals("off")) {
                 return OpenClosedType.CLOSED;
             }
         }
@@ -143,12 +140,12 @@ public class ZWayDeviceStateConverter {
     }
 
     /**
-     * Transforms a value in an openHAB type.
+     * Transforms an value in an openHAB type.
      *
      * @param Z-Way color value
      * @return transformed openHAB state
      */
-    private static State getColorState(@Nullable Color colorSwitchState) {
+    private static State getColorState(Color colorSwitchState) {
         if (colorSwitchState != null && colorSwitchState.getRed() != null && colorSwitchState.getGreen() != null
                 && colorSwitchState.getBlue() != null) {
             HSBType hsbType = HSBType.fromRGB(colorSwitchState.getRed(), colorSwitchState.getGreen(),

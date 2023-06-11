@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,15 +25,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NuvoMessageEvent extends EventObject {
     private static final long serialVersionUID = 1L;
     private final String type;
-    private final String zone;
-    private final String src;
+    private final String key;
     private final String value;
 
-    public NuvoMessageEvent(Object source, String type, String zone, String src, String value) {
+    public NuvoMessageEvent(Object source, String type, String key, String value) {
         super(source);
         this.type = type;
-        this.zone = zone;
-        this.src = src;
+        this.key = key;
         this.value = value;
     }
 
@@ -41,12 +39,8 @@ public class NuvoMessageEvent extends EventObject {
         return type;
     }
 
-    public String getZone() {
-        return zone;
-    }
-
-    public String getSrc() {
-        return src;
+    public String getKey() {
+        return key;
     }
 
     public String getValue() {

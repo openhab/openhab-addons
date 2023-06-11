@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -48,12 +49,12 @@ import org.slf4j.LoggerFactory;
 public class GardenaSmartWebSocket {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartWebSocket.class);
     private final GardenaSmartWebSocketListener socketEventListener;
-    private final int MAX_UNANSWERED_PINGS = 5;
+    private final long WEBSOCKET_IDLE_TIMEOUT = 300;
 
     private WebSocketSession session;
     private WebSocketClient webSocketClient;
     private boolean closing;
-    private int unansweredPings = 0;
+    private Instant lastPong = Instant.now();
     private ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> connectionTracker;
     private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes(StandardCharsets.UTF_8));
@@ -114,9 +115,8 @@ public class GardenaSmartWebSocket {
     }
 
     @OnWebSocketConnect
-    public synchronized void onConnect(Session session) {
+    public void onConnect(Session session) {
         closing = false;
-        unansweredPings = 0;
         logger.debug("Connected to Gardena Webservice ({})", socketId);
 
         ScheduledFuture<?> connectionTracker = this.connectionTracker;
@@ -129,9 +129,9 @@ public class GardenaSmartWebSocket {
     }
 
     @OnWebSocketFrame
-    public synchronized void onFrame(Frame pong) {
+    public void onFrame(Frame pong) {
         if (pong instanceof PongFrame) {
-            unansweredPings = 0;
+            lastPong = Instant.now();
             logger.trace("Pong received ({})", socketId);
         }
     }
@@ -170,14 +170,14 @@ public class GardenaSmartWebSocket {
      */
     private synchronized void sendKeepAlivePing() {
         final PostOAuth2Response accessToken = token;
-        if (unansweredPings > MAX_UNANSWERED_PINGS || accessToken == null || accessToken.isAccessTokenExpired()) {
+        if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT) || accessToken == null
+                || accessToken.isAccessTokenExpired()) {
             session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
         } else {
             if (session.isOpen()) {
                 try {
                     logger.trace("Sending ping ({})", socketId);
                     session.getRemote().sendPing(pingPayload);
-                    ++unansweredPings;
                 } catch (IOException ex) {
                     logger.debug("Error while sending ping: {}", ex.getMessage());
                 }

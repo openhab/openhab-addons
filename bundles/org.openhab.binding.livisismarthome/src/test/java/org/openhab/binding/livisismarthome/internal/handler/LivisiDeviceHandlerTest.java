@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedIsReachable() {
+    public void testOnDeviceStateChanged_IsReachable() {
         DeviceStateDTO deviceState = new DeviceStateDTO();
         deviceState.setReachable(true);
 
@@ -135,7 +135,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedIsNotReachable() {
+    public void testOnDeviceStateChanged_IsNotReachable() {
         DeviceStateDTO deviceState = new DeviceStateDTO();
         deviceState.setReachable(false);
 
@@ -150,7 +150,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedIsReachableVariableActuator() {
+    public void testOnDeviceStateChanged_IsReachable_VariableActuator() {
         DeviceStateDTO deviceState = new DeviceStateDTO();
         deviceState.setReachable(true);
 
@@ -166,7 +166,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedLowBattery() {
+    public void testOnDeviceStateChanged_LowBattery() {
         DeviceDTO device = createDevice();
         device.setIsBatteryPowered(true);
         device.setLowBattery(true);
@@ -178,7 +178,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedNoLowBattery() {
+    public void testOnDeviceStateChanged_NoLowBattery() {
         DeviceDTO device = createDevice();
         device.setIsBatteryPowered(true);
         device.setLowBattery(false);
@@ -190,7 +190,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedNotBatteryPowered() {
+    public void testOnDeviceStateChanged_NotBatteryPowered() {
         DeviceDTO device = createDevice();
         device.setIsBatteryPowered(false);
 
@@ -201,7 +201,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedVariableActuatorOn() {
+    public void testOnDeviceStateChanged_VariableActuator_On() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_VARIABLEACTUATOR, c -> c.setVariableActuatorState(true), device);
 
@@ -212,7 +212,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedVariableActuatorOff() {
+    public void testOnDeviceStateChanged_VariableActuator_Off() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_VARIABLEACTUATOR, c -> c.setVariableActuatorState(false), device);
 
@@ -223,7 +223,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedVariableActuatorEmptyState() {
+    public void testOnDeviceStateChanged_VariableActuator_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_VARIABLEACTUATOR, null, device);
 
@@ -234,7 +234,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTemperatureSensorFrostWarningOn() {
+    public void testOnDeviceStateChanged_TemperatureSensor_FrostWarning_On() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TEMPERATURESENSOR, c -> {
             c.setTemperatureSensorTemperatureState(21.5);
@@ -249,7 +249,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTemperatureSensorFrostWarningOff() {
+    public void testOnDeviceStateChanged_TemperatureSensor_FrostWarning_Off() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TEMPERATURESENSOR, c -> {
             c.setTemperatureSensorTemperatureState(21.5);
@@ -264,7 +264,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTemperatureSensorEmptyState() {
+    public void testOnDeviceStateChanged_TemperatureSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TEMPERATURESENSOR, null, device);
 
@@ -276,7 +276,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedThermostatActuatorWindowReductionOn() {
+    public void testOnDeviceStateChanged_ThermostatActuator_WindowReduction_On() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_THERMOSTATACTUATOR, c -> {
             c.setThermostatActuatorPointTemperatureState(21.5);
@@ -293,7 +293,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedThermostatActuatorWindowReductionOff() {
+    public void testOnDeviceStateChanged_ThermostatActuator_WindowReduction_Off() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_THERMOSTATACTUATOR, c -> {
             c.setThermostatActuatorPointTemperatureState(21.5);
@@ -310,7 +310,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedThermostatActuatorEmptyState() {
+    public void testOnDeviceStateChanged_ThermostatActuator_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_THERMOSTATACTUATOR, null, device);
 
@@ -323,7 +323,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedHumiditySensorMoldWarningOn() {
+    public void testOnDeviceStateChanged_HumiditySensor_MoldWarning_On() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_HUMIDITYSENSOR, c -> {
             c.setHumiditySensorHumidityState(35.5);
@@ -338,7 +338,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedHumiditySensorMoldWarningOff() {
+    public void testOnDeviceStateChanged_HumiditySensor_MoldWarning_Off() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_HUMIDITYSENSOR, c -> {
             c.setHumiditySensorHumidityState(35.5);
@@ -353,7 +353,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedHumiditySensorEmptyState() {
+    public void testOnDeviceStateChanged_HumiditySensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_HUMIDITYSENSOR, null, device);
 
@@ -365,7 +365,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedWindowDoorSensorOpen() {
+    public void testOnDeviceStateChanged_WindowDoorSensor_Open() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_WINDOWDOORSENSOR, c -> c.setWindowDoorSensorState(true), device);
 
@@ -376,7 +376,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedWindowDoorSensorClosed() {
+    public void testOnDeviceStateChanged_WindowDoorSensor_Closed() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_WINDOWDOORSENSOR, c -> c.setWindowDoorSensorState(false), device);
 
@@ -387,7 +387,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedWindowDoorSensorEmptyState() {
+    public void testOnDeviceStateChanged_WindowDoorSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_WINDOWDOORSENSOR, null, device);
 
@@ -398,7 +398,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedSmokeDetectorSensorOn() {
+    public void testOnDeviceStateChanged_SmokeDetectorSensor_On() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_SMOKEDETECTORSENSOR, c -> c.setSmokeDetectorSensorState(true), device);
 
@@ -409,7 +409,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedSmokeDetectorSensorOff() {
+    public void testOnDeviceStateChanged_SmokeDetectorSensor_Off() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_SMOKEDETECTORSENSOR, c -> c.setSmokeDetectorSensorState(false),
                 device);
@@ -421,7 +421,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedSmokeDetectorSensorEmptyState() {
+    public void testOnDeviceStateChanged_SmokeDetectorSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_SMOKEDETECTORSENSOR, null, device);
 
@@ -432,7 +432,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedAlarmActuatorOn() {
+    public void testOnDeviceStateChanged_AlarmActuator_On() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ALARMACTUATOR, c -> c.setAlarmActuatorState(true), device);
 
@@ -443,7 +443,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedAlarmActuatorOff() {
+    public void testOnDeviceStateChanged_AlarmActuator_Off() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ALARMACTUATOR, c -> c.setAlarmActuatorState(false), device);
 
@@ -454,7 +454,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedAlarmActuatorEmptyState() {
+    public void testOnDeviceStateChanged_AlarmActuator_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ALARMACTUATOR, null, device);
 
@@ -465,7 +465,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedSwitchActuatorOn() {
+    public void testOnDeviceStateChanged_SwitchActuator_On() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_SWITCHACTUATOR, c -> c.setSwitchActuatorState(true), device);
 
@@ -476,7 +476,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedSwitchActuatorOff() {
+    public void testOnDeviceStateChanged_SwitchActuator_Off() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_SWITCHACTUATOR, c -> c.setSwitchActuatorState(false), device);
 
@@ -487,7 +487,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedSwitchActuatorEmptyState() {
+    public void testOnDeviceStateChanged_SwitchActuator_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_SWITCHACTUATOR, null, device);
 
@@ -498,7 +498,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedDimmerActuator() {
+    public void testOnDeviceStateChanged_DimmerActuator() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_DIMMERACTUATOR, c -> c.setDimmerActuatorState(50), device);
 
@@ -509,7 +509,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedDimmerActuatorEmptyState() {
+    public void testOnDeviceStateChanged_DimmerActuator_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_DIMMERACTUATOR, null, device);
 
@@ -520,7 +520,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedRollerShutterActuator() {
+    public void testOnDeviceStateChanged_RollerShutterActuator() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR, c -> c.setRollerShutterActuatorState(40),
                 device);
@@ -532,7 +532,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedRollerShutterActuatorInvertTrue() {
+    public void testOnDeviceStateChanged_RollerShutterActuator_Invert_True() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR, c -> c.setRollerShutterActuatorState(40),
                 device);
@@ -550,7 +550,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedRollerShutterActuatorInvertFalse() {
+    public void testOnDeviceStateChanged_RollerShutterActuator_Invert_False() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR, c -> c.setRollerShutterActuatorState(40),
                 device);
@@ -568,7 +568,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedRollerShutterActuatorEmptyState() {
+    public void testOnDeviceStateChanged_RollerShutterActuator_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR, null, device);
 
@@ -579,7 +579,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedMotionDetectionSensor() {
+    public void testOnDeviceStateChanged_MotionDetectionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_MOTIONDETECTIONSENSOR, c -> c.setMotionDetectionSensorState(50),
                 device);
@@ -591,7 +591,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedMotionDetectionSensorEmptyState() {
+    public void testOnDeviceStateChanged_MotionDetectionSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_MOTIONDETECTIONSENSOR, null, device);
 
@@ -602,7 +602,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedLuminanceSensor() {
+    public void testOnDeviceStateChanged_LuminanceSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_LUMINANCESENSOR, c -> c.setLuminanceSensorState(50.1), device);
 
@@ -613,7 +613,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedLuminanceSensorEmptyState() {
+    public void testOnDeviceStateChanged_LuminanceSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_LUMINANCESENSOR, null, device);
 
@@ -624,7 +624,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEnergyConsumptionSensor() {
+    public void testOnDeviceStateChanged_EnergyConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ENERGYCONSUMPTIONSENSOR, c -> {
             c.setEnergyConsumptionSensorEnergyConsumptionMonthKWhState(201.51);
@@ -648,7 +648,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEnergyConsumptionSensorEmptyState() {
+    public void testOnDeviceStateChanged_EnergyConsumptionSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ENERGYCONSUMPTIONSENSOR, null, device);
 
@@ -663,7 +663,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedPowerConsumptionSensor() {
+    public void testOnDeviceStateChanged_PowerConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_POWERCONSUMPTIONSENSOR,
                 c -> c.setPowerConsumptionSensorPowerConsumptionWattState(350.5), device);
@@ -675,7 +675,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedPowerConsumptionSensorEmptyState() {
+    public void testOnDeviceStateChanged_PowerConsumptionSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_POWERCONSUMPTIONSENSOR, null, device);
 
@@ -686,7 +686,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedGenerationMeterEnergySensor() {
+    public void testOnDeviceStateChanged_GenerationMeterEnergySensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_GENERATIONMETERENERGYSENSOR, c -> {
             c.setGenerationMeterEnergySensorEnergyPerMonthInKWhState(201.51);
@@ -710,7 +710,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedGenerationMeterEnergySensorEmptyState() {
+    public void testOnDeviceStateChanged_GenerationMeterEnergySensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_GENERATIONMETERENERGYSENSOR, null, device);
 
@@ -725,7 +725,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedGenerationMeterPowerConsumptionSensor() {
+    public void testOnDeviceStateChanged_GenerationMeterPowerConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_GENERATIONMETERPOWERCONSUMPTIONSENSOR,
                 c -> c.setGenerationMeterPowerConsumptionSensorPowerInWattState(350.5), device);
@@ -737,7 +737,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedGenerationMeterPowerConsumptionSensorEmptyState() {
+    public void testOnDeviceStateChanged_GenerationMeterPowerConsumptionSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_GENERATIONMETERPOWERCONSUMPTIONSENSOR, null, device);
 
@@ -748,7 +748,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTwoWayMeterEnergyConsumptionSensor() {
+    public void testOnDeviceStateChanged_TwoWayMeterEnergyConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERENERGYCONSUMPTIONSENSOR, c -> {
             c.setTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInKWhState(201.51);
@@ -769,7 +769,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTwoWayMeterEnergyConsumptionSensorEmptyState() {
+    public void testOnDeviceStateChanged_TwoWayMeterEnergyConsumptionSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERENERGYCONSUMPTIONSENSOR, null, device);
 
@@ -784,7 +784,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTwoWayMeterEnergyFeedSensor() {
+    public void testOnDeviceStateChanged_TwoWayMeterEnergyFeedSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERENERGYFEEDSENSOR, c -> {
             c.setTwoWayMeterEnergyFeedSensorEnergyPerMonthInKWhState(201.51);
@@ -805,7 +805,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTwoWayMeterEnergyFeedSensorEmptyState() {
+    public void testOnDeviceStateChanged_TwoWayMeterEnergyFeedSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERENERGYFEEDSENSOR, null, device);
 
@@ -820,7 +820,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTwoWayMeterPowerConsumptionSensor() {
+    public void testOnDeviceStateChanged_TwoWayMeterPowerConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERPOWERCONSUMPTIONSENSOR,
                 c -> c.setTwoWayMeterPowerConsumptionSensorPowerInWattState(350.5), device);
@@ -832,7 +832,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedTwoWayMeterPowerConsumptionSensorEmptyState() {
+    public void testOnDeviceStateChanged_TwoWayMeterPowerConsumptionSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERPOWERCONSUMPTIONSENSOR, null, device);
 
@@ -843,7 +843,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedPushButtonSensorButton1ShortPress() {
+    public void testOnDeviceStateChanged_PushButtonSensor_Button1_ShortPress() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, c -> {
             c.setPushButtonSensorCounterState(10);
@@ -863,7 +863,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedPushButtonSensorButton1LongPress() {
+    public void testOnDeviceStateChanged_PushButtonSensor_Button1_LongPress() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, c -> {
             c.setPushButtonSensorCounterState(10);
@@ -883,7 +883,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedPushButtonSensorButton2ShortPress() {
+    public void testOnDeviceStateChanged_PushButtonSensor_Button2_ShortPress() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, c -> {
             c.setPushButtonSensorCounterState(10);
@@ -903,7 +903,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedPushButtonSensorButton2LongPress() {
+    public void testOnDeviceStateChanged_PushButtonSensor_Button2_LongPress() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, c -> {
             c.setPushButtonSensorCounterState(10);
@@ -923,7 +923,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedPushButtonSensorEmptyState() {
+    public void testOnDeviceStateChanged_PushButtonSensor_EmptyState() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);
 
@@ -938,7 +938,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventLinkedToDevice() {
+    public void testOnDeviceStateChanged_Event_LinkedToDevice() {
         DeviceStateDTO deviceState = new DeviceStateDTO();
         deviceState.setReachable(true);
 
@@ -956,7 +956,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventLinkedToCapabilityWithoutState() {
+    public void testOnDeviceStateChanged_Event_LinkedToCapability_WithoutState() {
         DeviceDTO device = createDevice();
 
         CapabilityConfigDTO capabilityConfig = new CapabilityConfigDTO();
@@ -991,7 +991,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventLinkedToCapabilityWithoutStateAlsoAfterRefresh() {
+    public void testOnDeviceStateChanged_Event_LinkedToCapability_WithoutStateAlsoAfterRefresh() {
         DeviceDTO device = createDevice();
 
         CapabilityConfigDTO capabilityConfig = new CapabilityConfigDTO();
@@ -1023,7 +1023,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventVariableActuator() {
+    public void testOnDeviceStateChanged_Event_VariableActuator() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_VARIABLEACTUATOR, null, device);
 
@@ -1036,7 +1036,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventSwitchActuator() {
+    public void testOnDeviceStateChanged_Event_SwitchActuator() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_SWITCHACTUATOR, null, device);
 
@@ -1049,7 +1049,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventDimmerActuator() {
+    public void testOnDeviceStateChanged_Event_DimmerActuator() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_DIMMERACTUATOR, null, device);
 
@@ -1062,7 +1062,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventRollerShutterActuator() {
+    public void testOnDeviceStateChanged_Event_RollerShutterActuator() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR, null, device);
 
@@ -1075,7 +1075,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventRollerShutterPushButtonSensor() {
+    public void testOnDeviceStateChanged_Event_RollerShutter_PushButtonSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ROLLERSHUTTERACTUATOR, null, device);
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);
@@ -1098,7 +1098,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventTemperatureSensor() {
+    public void testOnDeviceStateChanged_Event_TemperatureSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TEMPERATURESENSOR, null, device);
 
@@ -1115,7 +1115,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventThermostatSensor() {
+    public void testOnDeviceStateChanged_Event_ThermostatSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_THERMOSTATACTUATOR, null, device);
 
@@ -1134,7 +1134,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventHumiditySensor() {
+    public void testOnDeviceStateChanged_Event_HumiditySensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_HUMIDITYSENSOR, null, device);
 
@@ -1151,7 +1151,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventWindowDoorSensor() {
+    public void testOnDeviceStateChanged_Event_WindowDoorSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_WINDOWDOORSENSOR, null, device);
 
@@ -1164,7 +1164,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventSmokeDetectorSensor() {
+    public void testOnDeviceStateChanged_Event_SmokeDetectorSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_SMOKEDETECTORSENSOR, null, device);
 
@@ -1177,7 +1177,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventAlarmActuator() {
+    public void testOnDeviceStateChanged_Event_AlarmActuator() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ALARMACTUATOR, null, device);
 
@@ -1190,7 +1190,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventMotionDetectionSensor() {
+    public void testOnDeviceStateChanged_Event_MotionDetectionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_MOTIONDETECTIONSENSOR, null, device);
 
@@ -1203,7 +1203,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventLuminanceSensor() {
+    public void testOnDeviceStateChanged_Event_LuminanceSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_LUMINANCESENSOR, null, device);
 
@@ -1216,7 +1216,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventPushButtonSensorButton1ShortPress() {
+    public void testOnDeviceStateChanged_Event_PushButtonSensor_Button1_ShortPress() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);
 
@@ -1237,7 +1237,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventPushButtonSensorButton1LongPress() {
+    public void testOnDeviceStateChanged_Event_PushButtonSensor_Button1_LongPress() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_PUSHBUTTONSENSOR, null, device);
 
@@ -1258,7 +1258,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedStateChangedEventPushButtonSensorSHCClassic() {
+    public void testOnDeviceStateChanged_StateChangedEvent_PushButtonSensor_SHC_Classic() {
         when(bridgeHandlerMock.isSHCClassic()).thenReturn(true);
 
         DeviceDTO device = createDevice();
@@ -1282,7 +1282,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedStateChangedEventPushButtonSensorSHCA() {
+    public void testOnDeviceStateChanged_StateChangedEvent_PushButtonSensor_SHCA() {
         when(bridgeHandlerMock.isSHCClassic()).thenReturn(false);
 
         DeviceDTO device = createDevice();
@@ -1306,7 +1306,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventEnergyConsumptionSensor() {
+    public void testOnDeviceStateChanged_Event_EnergyConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_ENERGYCONSUMPTIONSENSOR, null, device);
 
@@ -1332,7 +1332,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventPowerConsumptionSensor() {
+    public void testOnDeviceStateChanged_Event_PowerConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_POWERCONSUMPTIONSENSOR, null, device);
 
@@ -1345,7 +1345,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventGenerationMeterEnergySensor() {
+    public void testOnDeviceStateChanged_Event_GenerationMeterEnergySensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_GENERATIONMETERENERGYSENSOR, null, device);
 
@@ -1371,7 +1371,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventGenerationMeterPowerConsumptionSensor() {
+    public void testOnDeviceStateChanged_Event_GenerationMeterPowerConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_GENERATIONMETERPOWERCONSUMPTIONSENSOR, null, device);
 
@@ -1384,7 +1384,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventTwoWayMeterEnergyConsumptionSensor() {
+    public void testOnDeviceStateChanged_Event_TwoWayMeterEnergyConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERENERGYCONSUMPTIONSENSOR, null, device);
 
@@ -1407,7 +1407,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventTwoWayMeterEnergyFeedSensor() {
+    public void testOnDeviceStateChanged_Event_TwoWayMeterEnergyFeedSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERENERGYFEEDSENSOR, null, device);
 
@@ -1430,7 +1430,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventTwoWayMeterPowerConsumptionSensor() {
+    public void testOnDeviceStateChanged_Event_TwoWayMeterPowerConsumptionSensor() {
         DeviceDTO device = createDevice();
         addCapabilityToDevice(CapabilityDTO.TYPE_TWOWAYMETERPOWERCONSUMPTIONSENSOR, null, device);
 
@@ -1443,7 +1443,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandUnsupportedChannel() {
+    public void testHandleCommand_UnsupportedChannel() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_CONTACT);
@@ -1463,7 +1463,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSwitchDeviceOn() {
+    public void testHandleCommand_CommandSwitchDevice_On() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_SWITCH);
@@ -1475,7 +1475,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSwitchDeviceOff() {
+    public void testHandleCommand_CommandSwitchDevice_Off() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_SWITCH);
@@ -1487,7 +1487,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSwitchAlarmOn() {
+    public void testHandleCommand_CommandSwitchAlarm_On() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_ALARM);
@@ -1499,7 +1499,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSwitchAlarmOff() {
+    public void testHandleCommand_CommandSwitchAlarm_Off() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_ALARM);
@@ -1511,7 +1511,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSetDimLevelOn() {
+    public void testHandleCommand_CommandSetDimLevel_On() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_DIMMER);
@@ -1523,7 +1523,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSetDimLevelOff() {
+    public void testHandleCommand_CommandSetDimLevel_Off() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_DIMMER);
@@ -1535,7 +1535,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSetDimLevelDecimalType() {
+    public void testHandleCommand_CommandSetDimLevel_DecimalType() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_DIMMER);
@@ -1547,7 +1547,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSetOperationModeAuto() {
+    public void testHandleCommand_CommandSetOperationMode_Auto() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_OPERATION_MODE);
@@ -1559,7 +1559,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSetOperationModeManual() {
+    public void testHandleCommand_CommandSetOperationMode_Manual() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_OPERATION_MODE);
@@ -1571,7 +1571,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandSetOperationModeUnknown() {
+    public void testHandleCommand_CommandSetOperationMode_Unknown() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_OPERATION_MODE);
@@ -1583,7 +1583,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandUpdatePointTemperatureQuantityType() {
+    public void testHandleCommand_CommandUpdatePointTemperature_QuantityType() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_TARGET_TEMPERATURE);
@@ -1595,7 +1595,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandUpdatePointTemperatureDecimalType() {
+    public void testHandleCommand_CommandUpdatePointTemperature_DecimalType() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_TARGET_TEMPERATURE);
@@ -1607,7 +1607,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandUpdatePointTemperatureMinTemperature() {
+    public void testHandleCommand_CommandUpdatePointTemperature_MinTemperature() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_TARGET_TEMPERATURE);
@@ -1620,7 +1620,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandUpdatePointTemperatureMaxTemperature() {
+    public void testHandleCommand_CommandUpdatePointTemperature_MaxTemperature() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_TARGET_TEMPERATURE);
@@ -1633,7 +1633,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandRollerShutterUp() {
+    public void testHandleCommand_CommandRollerShutter_Up() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
@@ -1645,7 +1645,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandRollerShutterDown() {
+    public void testHandleCommand_CommandRollerShutter_Down() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
@@ -1657,7 +1657,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandRollerShutterOn() {
+    public void testHandleCommand_CommandRollerShutter_On() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
@@ -1669,7 +1669,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandRollerShutterOff() {
+    public void testHandleCommand_CommandRollerShutter_Off() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
@@ -1681,7 +1681,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandRollerShutterStop() {
+    public void testHandleCommand_CommandRollerShutter_Stop() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
@@ -1693,7 +1693,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandRollerShutterDecimalType() {
+    public void testHandleCommand_CommandRollerShutter_DecimalType() {
         DeviceDTO device = createDevice();
 
         ChannelUID channelMock = createChannel(CHANNEL_ROLLERSHUTTER);
@@ -1705,7 +1705,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandRollerShutterDecimalTypeInverted() {
+    public void testHandleCommand_CommandRollerShutter_DecimalType_Inverted() {
         DeviceDTO device = createDevice();
 
         Channel rollerShutterChannelMock = createRollerShutterChannelMock(true);
@@ -1723,7 +1723,7 @@ public class LivisiDeviceHandlerTest {
     }
 
     @Test
-    public void testHandleCommandCommandRollerShutterDecimalTypeNotInverted() {
+    public void testHandleCommand_CommandRollerShutter_DecimalType_NotInverted() {
         DeviceDTO device = createDevice();
 
         Channel rollerShutterChannelMock = createRollerShutterChannelMock(false);
@@ -1894,12 +1894,10 @@ public class LivisiDeviceHandlerTest {
 
         @Override
         public boolean equals(@Nullable Object o) {
-            if (this == o) {
+            if (this == o)
                 return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
+            if (o == null || getClass() != o.getClass())
                 return false;
-            }
             TriggeredEvent that = (TriggeredEvent) o;
             return channelUID.equals(that.channelUID) && triggerValue.equals(that.triggerValue);
         }

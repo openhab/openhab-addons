@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Implements a datetime value.
@@ -34,20 +35,23 @@ public class DateTimeValue extends Value {
     }
 
     @Override
-    public DateTimeType parseCommand(Command command) throws IllegalArgumentException {
+    public void update(Command command) throws IllegalArgumentException {
         if (command instanceof DateTimeType) {
-            return ((DateTimeType) command);
+            state = ((DateTimeType) command);
         } else {
-            return DateTimeType.valueOf(command.toString());
+            state = DateTimeType.valueOf(command.toString());
         }
     }
 
     @Override
-    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
+    public String getMQTTpublishValue(@Nullable String pattern) {
+        if (state == UnDefType.UNDEF) {
+            return "";
+        }
         String formatPattern = pattern;
         if (formatPattern == null || "%s".contentEquals(formatPattern)) {
-            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(((DateTimeType) command).getZonedDateTime());
+            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(((DateTimeType) state).getZonedDateTime());
         }
-        return String.format(formatPattern, ((DateTimeType) command).getZonedDateTime());
+        return String.format(formatPattern, ((DateTimeType) state).getZonedDateTime());
     }
 }

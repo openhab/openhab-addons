@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Parses a {@link FilterToken}-Sequence into a {@link TimetableStopPredicate}.
+ * Parses an {@link FilterToken}-Sequence into a {@link TimetableStopPredicate}.
  * 
  * @author Sönke Küper - Initial contribution.
  */
@@ -134,7 +134,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing a conjunction.
+     * State while parsing an conjunction.
      */
     private static final class AndState extends State {
 
@@ -180,7 +180,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing a disjunction.
+     * State while parsing an disjunction.
      */
     private static final class OrState extends State {
 
@@ -226,7 +226,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing a Subquery.
+     * State while parsing an Subquery.
      */
     private static final class SubQueryState extends State {
 
@@ -287,7 +287,7 @@ public final class FilterParser {
     }
 
     /**
-     * Parses the given {@link FilterToken} into a {@link TimetableStopPredicate}.
+     * Parses the given {@link FilterToken} into an {@link TimetableStopPredicate}.
      */
     public static TimetableStopPredicate parse(final List<FilterToken> tokens) throws FilterParserException {
         State state = new InitialState();

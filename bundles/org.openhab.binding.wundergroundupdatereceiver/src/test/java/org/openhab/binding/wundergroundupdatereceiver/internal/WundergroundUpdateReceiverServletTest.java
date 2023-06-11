@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -74,6 +75,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
 /**
@@ -88,6 +90,7 @@ class WundergroundUpdateReceiverServletTest {
     private static final ThingUID TEST_THING_UID = new ThingUID(
             WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER, "test-receiver");
 
+    private @Mock HttpService httpService;
     private @Mock ChannelTypeRegistry channelTypeRegistry;
     private @Mock WundergroundUpdateReceiverDiscoveryService discoveryService;
     private @Mock ManagedThingProvider managedThingProvider;
@@ -100,7 +103,7 @@ class WundergroundUpdateReceiverServletTest {
     @Test
     void theServletIsActiveAfterTheFirstHandlerIsAdded() throws ServletException, NamespaceException {
         // Given
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler = mock(WundergroundUpdateReceiverHandler.class);
         when(handler.getStationId()).thenReturn(STATION_ID_1);
 
@@ -108,6 +111,7 @@ class WundergroundUpdateReceiverServletTest {
         sut.addHandler(handler);
 
         // Then
+        verify(httpService).registerServlet(eq(WundergroundUpdateReceiverServlet.SERVLET_URL), eq(sut), any(), any());
         assertThat(sut.isActive(), is(true));
     }
 
@@ -115,7 +119,7 @@ class WundergroundUpdateReceiverServletTest {
     void theServletIsInactiveAfterTheLastHandlerIsRemovedAndBackgroundDiscoveryIsDisabled()
             throws ServletException, NamespaceException {
         // Given
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler = mock(WundergroundUpdateReceiverHandler.class);
         when(handler.getStationId()).thenReturn(STATION_ID_1);
         when(discoveryService.isBackgroundDiscoveryEnabled()).thenReturn(false);
@@ -124,12 +128,14 @@ class WundergroundUpdateReceiverServletTest {
         sut.addHandler(handler);
 
         // Then
+        verify(httpService).registerServlet(eq(WundergroundUpdateReceiverServlet.SERVLET_URL), eq(sut), any(), any());
         assertThat(sut.isActive(), is(true));
 
         // When
         sut.removeHandler(handler.getStationId());
 
         // Then
+        verify(httpService).unregister(WundergroundUpdateReceiverServlet.SERVLET_URL);
         assertThat(sut.isActive(), is(false));
     }
 
@@ -137,7 +143,7 @@ class WundergroundUpdateReceiverServletTest {
     void theServletIsActiveAfterTheLastHandlerIsRemovedButBackgroundDiscoveryIsEnabled()
             throws ServletException, NamespaceException {
         // Given
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler = mock(WundergroundUpdateReceiverHandler.class);
         when(handler.getStationId()).thenReturn(STATION_ID_1);
         when(discoveryService.isBackgroundDiscoveryEnabled()).thenReturn(true);
@@ -146,19 +152,21 @@ class WundergroundUpdateReceiverServletTest {
         sut.addHandler(handler);
 
         // Then
+        verify(httpService).registerServlet(eq(WundergroundUpdateReceiverServlet.SERVLET_URL), eq(sut), any(), any());
         assertThat(sut.isActive(), is(true));
 
         // When
         sut.removeHandler(handler.getStationId());
 
         // Then
+        verify(httpService, never()).unregister(WundergroundUpdateReceiverServlet.SERVLET_URL);
         assertThat(sut.isActive(), is(true));
     }
 
     @Test
     void onDisposeAllHandlersAreRemovedAndServletIsInactive() throws ServletException, NamespaceException {
         // Given
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler1 = mock(WundergroundUpdateReceiverHandler.class);
         when(handler1.getStationId()).thenReturn(STATION_ID_1);
         WundergroundUpdateReceiverHandler handler2 = mock(WundergroundUpdateReceiverHandler.class);
@@ -169,12 +177,14 @@ class WundergroundUpdateReceiverServletTest {
         sut.addHandler(handler2);
 
         // Then
+        verify(httpService).registerServlet(eq(WundergroundUpdateReceiverServlet.SERVLET_URL), eq(sut), any(), any());
         assertThat(sut.isActive(), is(true));
 
         // When
         sut.dispose();
 
         // Then
+        verify(httpService, times(2)).unregister(WundergroundUpdateReceiverServlet.SERVLET_URL);
         assertThat(sut.isActive(), is(false));
     }
 
@@ -182,7 +192,7 @@ class WundergroundUpdateReceiverServletTest {
     void OnDisposeAllHandlersAreRemovedAndServletIsInactiveEvenThoughBackgroundDiscoveryIsEnabled()
             throws ServletException, NamespaceException {
         // Given
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler1 = mock(WundergroundUpdateReceiverHandler.class);
         when(handler1.getStationId()).thenReturn(STATION_ID_1);
         WundergroundUpdateReceiverHandler handler2 = mock(WundergroundUpdateReceiverHandler.class);
@@ -194,12 +204,14 @@ class WundergroundUpdateReceiverServletTest {
         sut.addHandler(handler2);
 
         // Then
+        verify(httpService).registerServlet(eq(WundergroundUpdateReceiverServlet.SERVLET_URL), eq(sut), any(), any());
         assertThat(sut.isActive(), is(true));
 
         // When
         sut.dispose();
 
         // Then
+        verify(httpService).unregister(WundergroundUpdateReceiverServlet.SERVLET_URL);
         assertThat(sut.isActive(), is(false));
     }
 
@@ -219,7 +231,7 @@ class WundergroundUpdateReceiverServletTest {
                 .thenReturn(ChannelTypeBuilder.state(LAST_QUERY_STATE_CHANNELTYPEUID, "Label", "String").build());
         when(this.channelTypeRegistry.getChannelType(LAST_QUERY_TRIGGER_CHANNELTYPEUID))
                 .thenReturn(ChannelTypeBuilder.trigger(LAST_QUERY_TRIGGER_CHANNELTYPEUID, "Label").build());
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
                 new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
         ThingHandlerCallback mockCallback = mock(ThingHandlerCallback.class);
@@ -229,6 +241,7 @@ class WundergroundUpdateReceiverServletTest {
         handler.initialize();
 
         // Then
+        verify(httpService).registerServlet(eq(WundergroundUpdateReceiverServlet.SERVLET_URL), eq(sut), any(), any());
         assertThat(sut.isActive(), is(true));
         assertThat(sut.getStationIds(), hasItems(STATION_ID_1));
 
@@ -250,7 +263,7 @@ class WundergroundUpdateReceiverServletTest {
         ThingUID testThingUID = new ThingUID(WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER,
                 "test-receiver");
         final String queryString = "ID=dfggger&PASSWORD=XXXXXX&tempf=26.1&humidity=74&dewptf=18.9&windchillf=26.1&winddir=14&windspeedmph=1.34&windgustmph=2.46&rainin=0.00&dailyrainin=0.00&weeklyrainin=0.00&monthlyrainin=0.08&yearlyrainin=3.06&solarradiation=42.24&UV=1&indoortempf=69.3&indoorhumidity=32&baromin=30.39&AqNOX=21&lowbatt=1&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5";
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         List<Channel> channels = List.of(
                 ChannelBuilder
                         .create(new ChannelUID(testThingUID, METADATA_GROUP,
@@ -394,7 +407,7 @@ class WundergroundUpdateReceiverServletTest {
         ThingUID testThingUID = new ThingUID(WundergroundUpdateReceiverBindingConstants.THING_TYPE_UPDATE_RECEIVER,
                 "test-receiver");
         final String queryString = "ID=dfggger&PASSWORD=XXXXXX&temp1f=26.1&humidity=74&temp2f=25.1&lowbatt=1&soilmoisture1=78&soilmoisture2=73&dateutc=2021-02-07%2014:04:03&softwaretype=WH2600%20V2.2.8&action=updateraw&realtime=1&rtfreq=5";
-        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
+        WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         List<Channel> channels = List.of(
                 ChannelBuilder
                         .create(new ChannelUID(testThingUID, METADATA_GROUP,

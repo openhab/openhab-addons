@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,54 +12,50 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link AvailableSources} is used to find out, which sources and functions are available
  *
  * @author Thomas Traunbauer - Initial contribution
  */
-
-@NonNullByDefault
 public interface AvailableSources {
 
-    boolean isBluetoothAvailable();
+    public boolean isBluetoothAvailable();
 
-    boolean isAUXAvailable();
+    public boolean isAUXAvailable();
 
-    boolean isAUX1Available();
+    public boolean isAUX1Available();
 
-    boolean isAUX2Available();
+    public boolean isAUX2Available();
 
-    boolean isAUX3Available();
+    public boolean isAUX3Available();
 
-    boolean isTVAvailable();
+    public boolean isTVAvailable();
 
-    boolean isHDMI1Available();
+    public boolean isHDMI1Available();
 
-    boolean isInternetRadioAvailable();
+    public boolean isInternetRadioAvailable();
 
-    boolean isStoredMusicAvailable();
+    public boolean isStoredMusicAvailable();
 
-    boolean isBassAvailable();
+    public boolean isBassAvailable();
 
-    void setAUXAvailable(boolean aux);
+    public void setAUXAvailable(boolean aux);
 
-    void setAUX1Available(boolean aux1);
+    public void setAUX1Available(boolean aux1);
 
-    void setAUX2Available(boolean aux2);
+    public void setAUX2Available(boolean aux2);
 
-    void setAUX3Available(boolean aux3);
+    public void setAUX3Available(boolean aux3);
 
-    void setStoredMusicAvailable(boolean storedMusic);
+    public void setStoredMusicAvailable(boolean storedMusic);
 
-    void setInternetRadioAvailable(boolean internetRadio);
+    public void setInternetRadioAvailable(boolean internetRadio);
 
-    void setBluetoothAvailable(boolean bluetooth);
+    public void setBluetoothAvailable(boolean bluetooth);
 
-    void setTVAvailable(boolean tv);
+    public void setTVAvailable(boolean tv);
 
-    void setHDMI1Available(boolean hdmi1);
+    public void setHDMI1Available(boolean hdmi1);
 
-    void setBassAvailable(boolean bass);
+    public void setBassAvailable(boolean bass);
 }

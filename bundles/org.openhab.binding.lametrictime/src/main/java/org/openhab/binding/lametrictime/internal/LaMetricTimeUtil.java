@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,9 @@ package org.openhab.binding.lametrictime.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lametrictime.internal.api.dto.CoreApps;
-import org.openhab.binding.lametrictime.internal.api.local.dto.Application;
-import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
+import org.openhab.binding.lametrictime.api.local.model.Application;
+import org.openhab.binding.lametrictime.api.local.model.Widget;
+import org.openhab.binding.lametrictime.api.model.CoreApps;
 
 import com.google.gson.JsonPrimitive;
 
@@ -27,7 +26,6 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Gregory Moyer - Initial contribution
  */
-@NonNullByDefault
 public class LaMetricTimeUtil {
     private static final Map<String, String> CORE_APP_LABELS = new HashMap<>();
     static {

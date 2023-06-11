@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,12 +137,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
-            case CHANNEL_EMETER_RESETTOTAL:
-                logger.debug("{}: Reset Meter Totals", thingName);
-                int mIndex = Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_METER)) - 1;
-                api.resetMeterTotal(mIndex);
-                updateChannel(groupName, CHANNEL_EMETER_RESETTOTAL, OnOffType.OFF);
-                break;
         }
         return true;
     }
@@ -150,8 +144,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     /**
      * Brightness channel has 2 functions: Switch On/Off (OnOnType) and setting brightness (PercentType)
      * There is some more logic in the control. When brightness is set to 0 the control sends also an OFF command
-     * When current brightness is 0 and slider will be moved the new brightness will be set, but also an ON command is
-     * sent.
+     * When current brightness is 0 and slider will be moved the new brightness will be set, but also a ON command is
+     * send.
      *
      * @param command
      * @param index
@@ -385,8 +379,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 createDimmerChannels(dstatus, l);
 
                 // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
-                // and send an OFF status to the same channel.
-                // When the device's brightness is > 0 we send the new value to the channel and an ON command
+                // and send a OFF status to the same channel.
+                // When the device's brightness is > 0 we send the new value to the channel and a ON command
                 if (dimmer.ison) {
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",

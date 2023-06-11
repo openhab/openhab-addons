@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,15 +64,17 @@ public interface KNXClient {
      * Register the given listener to be informed on KNX bus traffic.
      *
      * @param listener the listener
+     * @return {@code true} if it wasn't registered before
      */
-    void registerGroupAddressListener(GroupAddressListener listener);
+    boolean registerGroupAddressListener(GroupAddressListener listener);
 
     /**
      * Remove the given listener.
      *
      * @param listener the listener
+     * @return {@code true} if it was successfully removed
      */
-    void unregisterGroupAddressListener(GroupAddressListener listener);
+    boolean unregisterGroupAddressListener(GroupAddressListener listener);
 
     /**
      * Schedule the given data point for asynchronous reading.

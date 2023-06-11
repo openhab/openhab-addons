@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,10 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 
@@ -30,11 +28,15 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
  *
  */
 @NonNullByDefault
-class TypeSwitch extends KNXChannel {
-    public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_SWITCH, CHANNEL_SWITCH_CONTROL);
+class TypeSwitch extends KNXChannelType {
 
-    TypeSwitch(Channel channel) {
-        super(List.of(OnOffType.class), channel);
+    TypeSwitch() {
+        super(CHANNEL_SWITCH, CHANNEL_SWITCH_CONTROL);
+    }
+
+    @Override
+    protected Set<String> getAllGAKeys() {
+        return Collections.singleton(GA);
     }
 
     @Override

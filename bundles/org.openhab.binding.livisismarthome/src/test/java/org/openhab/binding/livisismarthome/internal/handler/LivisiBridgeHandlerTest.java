@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -198,7 +198,7 @@ public class LivisiBridgeHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedSHCClassic() {
+    public void testOnDeviceStateChanged_SHC_Classic() {
         DeviceDTO bridgeDevice = createBridgeDevice(true);
 
         StateDTO state = new StateDTO();
@@ -220,7 +220,7 @@ public class LivisiBridgeHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedSHCA() {
+    public void testOnDeviceStateChanged_SHCA() {
         DeviceDTO bridgeDevice = createBridgeDevice(false);
 
         StateDTO state = new StateDTO();
@@ -242,7 +242,7 @@ public class LivisiBridgeHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventSHCClassic() {
+    public void testOnDeviceStateChanged_Event_SHC_Classic() {
         DeviceDTO bridgeDevice = createBridgeDevice(true);
 
         // Example SHC-Classic-Event
@@ -276,7 +276,7 @@ public class LivisiBridgeHandlerTest {
     }
 
     @Test
-    public void testOnDeviceStateChangedEventSHCA() {
+    public void testOnDeviceStateChanged_Event_SHCA() {
         DeviceDTO bridgeDevice = createBridgeDevice(false);
 
         EventDTO event = createDeviceEvent(c -> {

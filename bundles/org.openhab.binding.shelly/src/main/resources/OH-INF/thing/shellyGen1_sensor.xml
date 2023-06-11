@@ -243,18 +243,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="sensorOpen">
-		<item-type>Contact</item-type>
-		<label>@text/channel-type.shelly.sensorOpen.label</label>
-		<description>@text/channel-type.shelly.sensorOpen.description</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="OPEN">@text/channel-type.shelly.sensorOpen.state.option.OPEN</option>
-				<option value="CLOSED">@text/channel-type.shelly.sensorOpen.state.option.CLOSED</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="sensorState">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorState.label</label>
@@ -321,6 +309,32 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="sensorExtTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.shelly.sensorExtTemp.label</label>
+		<description>@text/channel-type.shelly.sensorExtTemp.label</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorExtHum">
+		<item-type>Number:Dimensionless</item-type>
+		<label>@text/channel-type.shelly.sensorExtHum.label</label>
+		<description>@text/channel-type.shelly.sensorExtHum.description</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
 	<channel-type id="sensorHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>@text/channel-type.shelly.sensorHumidity.label</label>
@@ -330,7 +344,7 @@
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sensorFlood">
@@ -349,12 +363,6 @@
 		<category>Smoke</category>
 		<state readOnly="true">
 		</state>
-	</channel-type>
-
-	<channel-type id="sensorMute">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.sensorMute.label</label>
-		<description>@text/channel-type.shelly.sensorMute.description</description>
 	</channel-type>
 
 	<channel-type id="sensorLux">
@@ -476,65 +484,6 @@
 				<option value="checking">@text/channel-type.shelly.sensorValve.state.option.checking</option>
 				<option value="unknown">@text/channel-type.shelly.sensorValve.state.option.UNKNOWN</option>
 			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="sensorExtTemp">
-		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.shelly.sensorExtTemp.label</label>
-		<description>@text/channel-type.shelly.sensorExtTemp.label</description>
-		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-
-	<channel-type id="sensorExtHum">
-		<item-type>Number:Dimensionless</item-type>
-		<label>@text/channel-type.shelly.sensorExtHum.label</label>
-		<description>@text/channel-type.shelly.sensorExtHum.description</description>
-		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-
-	<channel-type id="sensorExtVolt">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>@text/channel-type.shelly.sensorExtVolt.label</label>
-		<description>@text/channel-type.shelly.sensorExtVolt.description</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
-		<state readOnly="true" pattern="%.2f %unit%">
-		</state>
-	</channel-type>
-
-	<channel-type id="sensorExtDigitalInput">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.sensorExtDigitalInput.label</label>
-		<description>@text/channel-type.shelly.sensorExtDigitalInput.description</description>
-		<category>Status</category>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-
-	<channel-type id="sensorExtAnalogInput">
-		<item-type>Number:Dimensionless</item-type>
-		<label>@text/channel-type.shelly.sensorExtAnalogInput.label</label>
-		<description>@text/channel-type.shelly.sensorExtAnalogInput.description</description>
-		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
-		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 

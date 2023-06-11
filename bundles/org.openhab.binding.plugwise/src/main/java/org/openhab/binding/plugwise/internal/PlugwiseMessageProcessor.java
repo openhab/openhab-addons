@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.TooManyListenersException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
@@ -94,7 +95,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
      */
     private void parseAndQueue(ByteBuffer readBuffer) {
         String response = new String(readBuffer.array(), 0, readBuffer.limit());
-        response = response.replaceAll("\r", "").replaceAll("\n", "");
+        response = StringUtils.chomp(response);
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,16 +87,19 @@ public class DS2438Configuration {
                     SensorId associatedSensorId = new SensorId(sensorId.getPath() + matcher.group(2));
 
                     switch (matcher.group(2).substring(0, 2)) {
-                        case "26" -> {
+                        case "26":
                             DS2438Configuration associatedDs2438Config = new DS2438Configuration(bridgeHandler,
                                     associatedSensorId);
                             associatedSensors.put(associatedSensorId, associatedDs2438Config.getSensorSubType());
                             associatedSensors.putAll(associatedDs2438Config.getAssociatedSensors());
-                        }
-                        case "28" -> associatedSensors.put(associatedSensorId, OwSensorType.DS18B20);
-                        case "3A" -> associatedSensors.put(associatedSensorId, OwSensorType.DS2413);
-                        default -> {
-                        }
+                            break;
+                        case "28":
+                            associatedSensors.put(associatedSensorId, OwSensorType.DS18B20);
+                            break;
+                        case "3A":
+                            associatedSensors.put(associatedSensorId, OwSensorType.DS2413);
+                            break;
+                        default:
                     }
                 }
             }
@@ -126,7 +129,7 @@ public class DS2438Configuration {
      * @return a list of OwDiscoveryItems
      */
     public List<SensorId> getAssociatedSensorIds(OwSensorType sensorType) {
-        return associatedSensors.entrySet().stream().filter(s -> s.getValue() == sensorType).map(Map.Entry::getKey)
+        return associatedSensors.entrySet().stream().filter(s -> s.getValue() == sensorType).map(s -> s.getKey())
                 .collect(Collectors.toList());
     }
 
@@ -195,16 +198,18 @@ public class DS2438Configuration {
             List<OwSensorType> associatedSensorTypes) {
         OwSensorType multisensorType = OwSensorType.UNKNOWN;
         switch (associatedSensorTypes.size()) {
-            case 0 -> multisensorType = mainsensorType;
-            case 1 -> {
+            case 0:
+                multisensorType = mainsensorType;
+                break;
+            case 1:
                 if (mainsensorType == OwSensorType.MS_TH_S && associatedSensorTypes.contains(OwSensorType.DS18B20)) {
                     multisensorType = OwSensorType.BMS_S;
                 } else if (mainsensorType == OwSensorType.MS_TH
                         && associatedSensorTypes.contains(OwSensorType.DS18B20)) {
                     multisensorType = OwSensorType.BMS;
                 }
-            }
-            case 3 -> {
+                break;
+            case 3:
                 if (mainsensorType == OwSensorType.MS_TH_S && associatedSensorTypes.contains(OwSensorType.MS_TV)
                         && associatedSensorTypes.contains(OwSensorType.DS18B20)
                         && associatedSensorTypes.contains(OwSensorType.DS2413)) {
@@ -216,9 +221,8 @@ public class DS2438Configuration {
                     // two DS2438 (first TH, second TV), DS18B20, DS2413
                     multisensorType = OwSensorType.AMS;
                 }
-            }
-            default -> {
-            }
+                break;
+            default:
         }
 
         return multisensorType;

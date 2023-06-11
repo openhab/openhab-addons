@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,6 @@ import java.util.Map;
 
 import javax.measure.Unit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 
@@ -29,7 +27,6 @@ import org.openhab.core.library.unit.Units;
  *
  * @author Boris Krivonog - Initial contribution
  */
-@NonNullByDefault
 public class RegoRegisterMapper {
     public static final RegoRegisterMapper REGO600;
 
@@ -38,7 +35,7 @@ public class RegoRegisterMapper {
 
         public double scaleFactor();
 
-        public @Nullable Unit<?> unit();
+        public Unit<?> unit();
 
         public int convertValue(short value);
     }
@@ -47,9 +44,9 @@ public class RegoRegisterMapper {
         private static class ChannelImpl implements Channel {
             private final short address;
             private final double scaleFactor;
-            private @Nullable final Unit<?> unit;
+            private final Unit<?> unit;
 
-            private ChannelImpl(short address, double scaleFactor, @Nullable Unit<?> unit) {
+            private ChannelImpl(short address, double scaleFactor, Unit<?> unit) {
                 this.address = address;
                 this.scaleFactor = scaleFactor;
                 this.unit = unit;
@@ -66,7 +63,7 @@ public class RegoRegisterMapper {
             }
 
             @Override
-            public @Nullable Unit<?> unit() {
+            public Unit<?> unit() {
                 return unit;
             }
 
@@ -107,7 +104,7 @@ public class RegoRegisterMapper {
         this.mappings = mappings;
     }
 
-    public @Nullable Channel map(String channelIID) {
+    public Channel map(String channelIID) {
         return mappings.get(channelIID);
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     public Ipx800v3Handler(Thing thing) {
         super(thing);
-        logger.debug("Create an IPX800 Handler for thing '{}'", getThing().getUID());
+        logger.debug("Create a IPX800 Handler for thing '{}'", getThing().getUID());
     }
 
     @Override

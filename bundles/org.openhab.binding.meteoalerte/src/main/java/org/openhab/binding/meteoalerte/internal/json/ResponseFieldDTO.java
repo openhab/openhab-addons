@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,21 +29,15 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ResponseFieldDTO {
     public enum AlertLevel {
+        UNKNOWN,
         @SerializedName("Vert")
-        GREEN("00ff00"),
+        GREEN,
         @SerializedName("Jaune")
-        YELLOW("ffff00"),
+        YELLOW,
         @SerializedName("Orange")
-        ORANGE("ef6c00"),
+        ORANGE,
         @SerializedName("Rouge")
-        RED("ff0000"),
-        UNKNOWN("3d3c3c");
-
-        public final String color;
-
-        AlertLevel(String color) {
-            this.color = color;
-        }
+        RED;
     }
 
     @SerializedName("nom_reg")
