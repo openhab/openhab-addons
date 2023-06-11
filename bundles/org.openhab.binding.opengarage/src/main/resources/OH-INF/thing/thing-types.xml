@@ -109,6 +109,7 @@
 				<option value="0">No vehicle detected</option>
 				<option value="1">Vehicle detected</option>
 				<option value="2">Vehicle status unknown</option>
+				<option value="3">Vehicle status not available</option>
 			</options>
 		</state>
 	</channel-type>
