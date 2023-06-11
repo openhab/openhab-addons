@@ -59,9 +59,6 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
             return null;
         }
 
-        String nice = service.getNiceTextString();
-        String qualifiedName = service.getQualifiedName();
-
         InetAddress[] ipAddresses = service.getInet4Addresses();
 
         if (ipAddresses.length > 0) {
@@ -69,12 +66,16 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
             String serverId = service.getPropertyString("SERVER");
             String serverCapability = service.getPropertyString("SERVER_CAPABILITY");
 
-            logger.debug("ShieldTV mDNS discovery notified of ShieldTV mDNS service: {}", nice);
-            logger.trace("ShieldTV mDNS service qualifiedName: {}", qualifiedName);
-            logger.trace("ShieldTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
-            logger.trace("ShieldTV mDNS service selected ipAddress: {}", ipAddress);
-            logger.trace("ShieldTV mDNS service property SERVER: {}", serverId);
-            logger.trace("ShieldTV mDNS service property SERVER_CAPABILITY: {}", serverCapability);
+            if (logger.isDebugEnabled()) {
+                String nice = service.getNiceTextString();
+                String qualifiedName = service.getQualifiedName();
+                logger.debug("ShieldTV mDNS discovery notified of ShieldTV mDNS service: {}", nice);
+                logger.trace("ShieldTV mDNS service qualifiedName: {}", qualifiedName);
+                logger.trace("ShieldTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
+                logger.trace("ShieldTV mDNS service selected ipAddress: {}", ipAddress);
+                logger.trace("ShieldTV mDNS service property SERVER: {}", serverId);
+                logger.trace("ShieldTV mDNS service property SERVER_CAPABILITY: {}", serverCapability);
+            }
 
             final ThingUID uid = getThingUID(service);
             if (uid != null) {

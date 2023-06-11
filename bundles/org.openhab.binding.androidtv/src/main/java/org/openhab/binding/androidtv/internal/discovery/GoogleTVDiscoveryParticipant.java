@@ -59,20 +59,21 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
             return null;
         }
 
-        String nice = service.getNiceTextString();
-        String qualifiedName = service.getQualifiedName();
-
         InetAddress[] ipAddresses = service.getInet4Addresses();
 
         if (ipAddresses.length > 0) {
             String ipAddress = ipAddresses[0].getHostAddress();
             String macAddress = service.getPropertyString("bt");
 
-            logger.debug("GoogleTV mDNS discovery notified of GoogleTV mDNS service: {}", nice);
-            logger.trace("GoogleTV mDNS service qualifiedName: {}", qualifiedName);
-            logger.trace("GoogleTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
-            logger.trace("GoogleTV mDNS service selected ipAddress: {}", ipAddress);
-            logger.trace("GoogleTV mDNS service property macAddress: {}", macAddress);
+            if (logger.isDebugEnabled()) {
+                String nice = service.getNiceTextString();
+                String qualifiedName = service.getQualifiedName();
+                logger.debug("GoogleTV mDNS discovery notified of GoogleTV mDNS service: {}", nice);
+                logger.trace("GoogleTV mDNS service qualifiedName: {}", qualifiedName);
+                logger.trace("GoogleTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
+                logger.trace("GoogleTV mDNS service selected ipAddress: {}", ipAddress);
+                logger.trace("GoogleTV mDNS service property macAddress: {}", macAddress);
+            }
 
             final ThingUID uid = getThingUID(service);
             if (uid != null) {
