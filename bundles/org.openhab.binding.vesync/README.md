@@ -123,8 +123,8 @@ Bridge vesync:bridge:vesyncServers [username="<USERNAME>", password="<PASSWORD>"
 #### Air Purifier Core 400S / 600S Model
 
 ```java
-Switch               LoungeAPPower                 "Lounge Air Purifier Power"                                 { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
-Switch               LoungeAPDisplay               "Lounge Air Purifier Display"                               { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
+Switch               LoungeAPPower                 "Lounge Air Purifier Power"                                  { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
+Switch               LoungeAPDisplay               "Lounge Air Purifier Display"                                { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
 Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:childLock" }
 Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
 String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:fanMode" }
@@ -175,7 +175,7 @@ Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level
 ```java
 Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:enabled" }
 Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:display" }
-String               LoungeAHNightLightMode    "Lounge Air Humidifier Night Light Mode"                       { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:nightLightMode }
+String               LoungeAHNightLightMode    "Lounge Air Humidifier Night Light Mode"                       { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:nightLightMode" }
 String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
 Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
 Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
