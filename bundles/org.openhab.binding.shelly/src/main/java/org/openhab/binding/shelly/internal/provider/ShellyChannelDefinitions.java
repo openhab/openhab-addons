@@ -509,7 +509,8 @@ public class ShellyChannelDefinitions {
             addChannel(thing, newChannels, sdata.sensor.vibration != null, CHANNEL_GROUP_SENSOR,
                     CHANNEL_SENSOR_VIBRATION);
         }
-        if (sdata.accel != null) { // DW2
+        // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
+        if (sdata.accel != null || (profile.isBlu && sdata.lux != null)) {
             addChannel(thing, newChannels, sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT);
         }
 

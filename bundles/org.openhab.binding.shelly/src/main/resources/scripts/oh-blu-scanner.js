@@ -1,6 +1,7 @@
 /*
  * This script uses the BLE scan functionality in scripting to pass scan reults to openHAB
  * Supported BLU Devices: SBBT , SBDW
+ * Version 0.2
  */
 
 let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW"];

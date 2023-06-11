@@ -453,13 +453,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
             params.config.enable = true;
             apiRequest(SHELLYRPC_METHOD_SCRIPT_SETCONFIG, params, String.class);
+
+            logger.info("{}: Script {} was {} installed successful", thingName, script);
         }
 
         if (!running) {
             // Script was created or is there and stopped -> start it
             apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_START).withId(ourId));
-            logger.debug("{}: Script {} was {} successful", thingName, script,
-                    restart ? "restarted" : "installed and started");
+            logger.info("{}: Script {} was {} successfully (re)started", thingName, script);
         }
     }
 
