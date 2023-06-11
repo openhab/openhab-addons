@@ -928,7 +928,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Map<String, String> properties = new HashMap<>(thing.getProperties());
 
             // resource data
-            properties.put(PROPERTY_RESOURCE_ID, resourceId);
             properties.put(PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
             properties.put(PROPERTY_RESOURCE_NAME, thisResource.getName());
 
