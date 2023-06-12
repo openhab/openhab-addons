@@ -81,8 +81,6 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
     public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
         if (cursorArgumentIndex <= 0) {
             return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
-        } else if (cursorArgumentIndex == 1) {
-            // no command with completable params
         }
         return false;
     }
