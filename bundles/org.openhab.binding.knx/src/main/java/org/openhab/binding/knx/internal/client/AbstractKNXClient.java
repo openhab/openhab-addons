@@ -334,7 +334,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);
             }
         }
-        // store information about unhandled GAs, can be shown on console using knx:list-unknown-ga
+        // Store information about unhandled GAs, can be shown on console using knx:list-unknown-ga.
+        // The idea is to store GA, message type, and size as key. The value counts the number of packets.
         if (!isHandled) {
             logger.trace("Address '{}' is not configured in openHAB", destination);
             final String type = switch (event.getServiceCode()) {
