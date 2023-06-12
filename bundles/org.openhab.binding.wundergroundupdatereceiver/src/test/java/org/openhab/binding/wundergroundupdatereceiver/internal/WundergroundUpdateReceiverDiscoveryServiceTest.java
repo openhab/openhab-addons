@@ -88,7 +88,6 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 true);
-        HttpService httpService = mock(HttpService.class);
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
@@ -179,7 +178,6 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 false);
-        HttpService httpService = mock(HttpService.class);
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
@@ -225,7 +223,6 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 true);
-        HttpService httpService = mock(HttpService.class);
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req1.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
@@ -292,7 +289,6 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 true);
-        HttpService httpService = mock(HttpService.class);
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req1.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
@@ -356,7 +352,6 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         UpdatingChannelTypeRegistry channelTypeRegistry = new UpdatingChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
                 true);
-        HttpService httpService = mock(HttpService.class);
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         discoveryService.addUnhandledStationId(REQ_STATION_ID, sut.normalizeParameterMap(req1.getParameterMap()));
         Thing thing = ThingBuilder.create(SUPPORTED_THING_TYPES_UIDS.stream().findFirst().get(), TEST_THING_UID)
