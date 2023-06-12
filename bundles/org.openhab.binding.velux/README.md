@@ -238,7 +238,7 @@ The supported Channel and its associated channel type is shown below.
 Unfortunately Velux has decided to closely integrate the rain sensor into the window device.
 The rain sensor is therefore not displayed in the device list.
 On the other hand, the 'limitMinimum' channel of a roof window provides information about rainy weather:
-If it is set internally by the Velux control unit to a value other than zero, it rains. (Joke!!)
+If it is set internally by the Velux control unit to a value other than zero, it rains.
 
 ## Properties of the "bridge" Thing
 
