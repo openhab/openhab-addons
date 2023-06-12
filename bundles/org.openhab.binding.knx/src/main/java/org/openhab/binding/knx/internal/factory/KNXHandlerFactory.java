@@ -14,15 +14,18 @@ package org.openhab.binding.knx.internal.factory;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.SerialTransportAdapter;
 import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
 import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
+import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.config.core.Configuration;
@@ -32,6 +35,7 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -49,7 +53,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Simon Kaufmann - Initial contribution and API
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.knx")
+@Component(service = { ThingHandlerFactory.class, KNXHandlerFactory.class }, configurationPid = "binding.knx")
 public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE,
@@ -58,14 +62,16 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     @Nullable
     private final NetworkAddressService networkAddressService;
     private final SerialPortManager serialPortManager;
+    private final ThingRegistry thingRegistry;
 
     @Activate
     public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
             final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
-            final @Reference SerialPortManager serialPortManager) {
+            final @Reference SerialPortManager serialPortManager, final @Reference ThingRegistry thingRegistry) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
         this.networkAddressService = networkAddressService;
         this.serialPortManager = serialPortManager;
+        this.thingRegistry = thingRegistry;
         SerialTransportAdapter.setSerialPortManager(serialPortManager);
         modified(config);
     }
@@ -125,5 +131,11 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         }
         String serialPort = (String) configuration.get(SERIAL_PORT);
         return new ThingUID(thingTypeUID, serialPort);
+    }
+
+    public Collection<KNXBridgeBaseThingHandler> getBridges() {
+        return thingRegistry.getAll().stream().filter(thing -> thing.getHandler() instanceof KNXBridgeBaseThingHandler)
+                .map(thing -> (KNXBridgeBaseThingHandler) thing.getHandler())
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

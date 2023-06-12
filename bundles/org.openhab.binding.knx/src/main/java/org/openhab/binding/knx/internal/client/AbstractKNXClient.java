@@ -340,8 +340,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             final String type = switch (event.getServiceCode()) {
                 case 0x80 -> " GROUP_WRITE(";
                 case 0x40 -> " GROUP_RESPONSE(";
-                case 0x20 -> " GROUP_READ(";
-                default -> "?(";
+                case 0x00 -> " GROUP_READ(";
+                default -> " ?(";
             };
             final String key = destination.toString() + type + event.getASDU().length + ")";
             commandExtensionData.unknownGA().compute(key, (k, v) -> v == null ? 1 : v + 1);

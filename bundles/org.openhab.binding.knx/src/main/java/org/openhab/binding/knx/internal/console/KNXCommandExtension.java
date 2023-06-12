@@ -19,15 +19,13 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.KNXBindingConstants;
+import org.openhab.binding.knx.internal.factory.KNXHandlerFactory;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
 import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,28 +42,23 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
     private static final String CMD_LIST_UNKNOWN_GA = "list-unknown-ga";
     private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_LIST_UNKNOWN_GA), false);
 
-    private final ThingRegistry thingRegistry;
+    private final KNXHandlerFactory knxHandlerFactory;
 
     @Activate
-    public KNXCommandExtension(final @Reference ThingRegistry thingRegistry) {
+    public KNXCommandExtension(final @Reference KNXHandlerFactory knxHandlerFactory) {
         super(KNXBindingConstants.BINDING_ID, "Interact with KNX devices.");
-        this.thingRegistry = thingRegistry;
+        this.knxHandlerFactory = knxHandlerFactory;
     }
 
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 1 && CMD_LIST_UNKNOWN_GA.equalsIgnoreCase(args[0])) {
-
-            for (Thing thing : thingRegistry.getAll()) {
-                ThingHandler thingHandler = thing.getHandler();
-                if (thingHandler instanceof KNXBridgeBaseThingHandler handler) {
-                    console.println("KNX bridge \"" + thing.getLabel()
-                            + "\": group address, type, number of bytes, and number of occurence since last reload of binding:");
-                    // console.println(handler.getCommandExtensionData().unknownGA().toString());
-                    for (Entry<String, Long> entry : handler.getCommandExtensionData().unknownGA().entrySet()) {
-                        console.println(entry.getKey() + " " + entry.getValue());
-                    }
-
+            for (KNXBridgeBaseThingHandler bridgeHandler : knxHandlerFactory.getBridges()) {
+                console.println("KNX bridge \"" + bridgeHandler.getThing().getLabel()
+                        + "\": group address, type, number of bytes, and number of occurence since last reload of binding:");
+                // console.println(handler.getCommandExtensionData().unknownGA().toString());
+                for (Entry<String, Long> entry : bridgeHandler.getCommandExtensionData().unknownGA().entrySet()) {
+                    console.println(entry.getKey() + " " + entry.getValue());
                 }
             }
             return;
