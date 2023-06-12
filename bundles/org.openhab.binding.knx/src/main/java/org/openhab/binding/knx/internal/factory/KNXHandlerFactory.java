@@ -14,11 +14,10 @@ package org.openhab.binding.knx.internal.factory;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,7 +34,6 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -62,16 +60,15 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     @Nullable
     private final NetworkAddressService networkAddressService;
     private final SerialPortManager serialPortManager;
-    private final ThingRegistry thingRegistry;
+    private final Map<ThingUID, KNXBridgeBaseThingHandler> bridges = new ConcurrentHashMap<>();
 
     @Activate
     public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
             final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
-            final @Reference SerialPortManager serialPortManager, final @Reference ThingRegistry thingRegistry) {
+            final @Reference SerialPortManager serialPortManager) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
         this.networkAddressService = networkAddressService;
         this.serialPortManager = serialPortManager;
-        this.thingRegistry = thingRegistry;
         SerialTransportAdapter.setSerialPortManager(serialPortManager);
         modified(config);
     }
@@ -105,14 +102,25 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (thing.getThingTypeUID().equals(THING_TYPE_IP_BRIDGE)) {
-            return new IPBridgeThingHandler((Bridge) thing, networkAddressService);
-        } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
-            return new SerialBridgeThingHandler((Bridge) thing, serialPortManager);
-        } else if (thing.getThingTypeUID().equals(THING_TYPE_DEVICE)) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (thingTypeUID.equals(THING_TYPE_IP_BRIDGE)) {
+            KNXBridgeBaseThingHandler bridgeHandler = new IPBridgeThingHandler((Bridge) thing, networkAddressService);
+            bridges.put(thing.getUID(), bridgeHandler);
+            return bridgeHandler;
+        } else if (thingTypeUID.equals(THING_TYPE_SERIAL_BRIDGE)) {
+            KNXBridgeBaseThingHandler bridgeHandler = new SerialBridgeThingHandler((Bridge) thing, serialPortManager);
+            bridges.put(thing.getUID(), bridgeHandler);
+            return bridgeHandler;
+        } else if (thingTypeUID.equals(THING_TYPE_DEVICE)) {
             return new DeviceThingHandler(thing);
         }
         return null;
+    }
+
+    @Override
+    public void unregisterHandler(Thing thing) {
+        bridges.remove(thing.getUID());
+        super.unregisterHandler(thing);
     }
 
     private ThingUID getIPBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
@@ -134,8 +142,6 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     }
 
     public Collection<KNXBridgeBaseThingHandler> getBridges() {
-        return thingRegistry.getAll().stream().filter(thing -> thing.getHandler() instanceof KNXBridgeBaseThingHandler)
-                .map(thing -> (KNXBridgeBaseThingHandler) thing.getHandler())
-                .collect(Collectors.toCollection(ArrayList::new));
+        return bridges.values();
     }
 }
