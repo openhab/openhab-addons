@@ -142,6 +142,6 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     }
 
     public Collection<KNXBridgeBaseThingHandler> getBridges() {
-        return bridges.values();
+        return Set.copyOf(bridges.values());
     }
 }
