@@ -46,7 +46,6 @@ import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.Ready;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
-import com.influxdb.exceptions.InfluxException;
 import com.influxdb.query.FluxTable;
 
 /**
@@ -138,7 +137,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
             List<Point> clientPoints = influxPoints.stream().map(this::convertPointToClientFormat)
                     .filter(Optional::isPresent).map(Optional::get).toList();
             currentWriteAPI.writePoints(clientPoints);
-        } catch (InfluxException e) {
+        } catch (Exception e) {
             logger.debug("Writing to database failed", e);
             return false;
         }
@@ -173,7 +172,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         try {
             deleteAPI.delete(start, stop, predicate, configuration.getRetentionPolicy(),
                     configuration.getDatabaseName());
-        } catch (InfluxException e) {
+        } catch (Exception e) {
             logger.debug("Deleting from database failed", e);
             return false;
         }

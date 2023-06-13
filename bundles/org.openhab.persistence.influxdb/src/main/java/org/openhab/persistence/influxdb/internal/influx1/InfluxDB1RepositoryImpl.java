@@ -44,8 +44,6 @@ import org.openhab.persistence.influxdb.internal.InfluxPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.influxdb.exceptions.InfluxException;
-
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 1.0
  *
@@ -109,7 +107,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                     logger.warn("database ping error, version is: \"{}\" response time was \"{}\"", version,
                             pong.getResponseTime());
                 }
-            } catch (RuntimeException e) {
+            } catch (Exception e) {
                 logger.warn("database error: {}", e.getMessage(), e);
             }
         } else {
@@ -130,7 +128,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             BatchPoints batchPoints = BatchPoints.database(configuration.getDatabaseName())
                     .retentionPolicy(configuration.getRetentionPolicy()).points(points).build();
             currentClient.write(batchPoints);
-        } catch (InfluxException e) {
+        } catch (Exception e) {
             logger.debug("Writing to database failed", e);
             return false;
         }
