@@ -113,7 +113,7 @@ public enum TapoErrorCode {
         for (TapoErrorCode e : TapoErrorCode.values()) {
             if (e.code.equals(errorCode)) {
                 return e;
-	    }
+            }
         }
         return ERR_UNKNOWN;
     }
