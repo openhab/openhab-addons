@@ -31,6 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.HomeConfiguration;
@@ -69,34 +70,38 @@ class SecurityCapability extends RestCapability<SecurityApi> {
 
     @Override
     protected void updateHomeData(HomeData homeData) {
-        persons = homeData.getPersons();
-        modules = homeData.getModules();
-        handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
-            String childId = childHandler.getId();
-            persons.getOpt(childId)
-                    .ifPresentOrElse(personData -> childHandler.setNewData(personData.ignoringForThingUpdate()), () -> {
-                        modules.getOpt(childId)
-                                .ifPresent(childData -> childHandler.setNewData(childData.ignoringForThingUpdate()));
-                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
-                    });
-        });
+        if (homeData instanceof HomeData.Security securityData) {
+            persons = securityData.getPersons();
+            modules = homeData.getModules();
+            handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
+                String childId = childHandler.getId();
+                persons.getOpt(childId).ifPresentOrElse(
+                        personData -> childHandler.setNewData(personData.ignoringForThingUpdate()), () -> {
+                            modules.getOpt(childId).ifPresent(
+                                    childData -> childHandler.setNewData(childData.ignoringForThingUpdate()));
+                            modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                                    .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+                        });
+            });
+        }
     }
 
     @Override
     protected void updateHomeStatus(HomeStatus homeStatus) {
-        NAObjectMap<HomeStatusPerson> persons = homeStatus.getPersons();
-        NAObjectMap<HomeStatusModule> modules = homeStatus.getModules();
-        handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
-            String childId = childHandler.getId();
-            persons.getOpt(childId).ifPresentOrElse(personData -> childHandler.setNewData(personData), () -> {
-                modules.getOpt(childId).ifPresent(childData -> {
-                    childHandler.setNewData(childData);
-                    modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                            .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+        if (homeStatus instanceof NAHomeStatus.Security securityStatus) {
+            NAObjectMap<HomeStatusPerson> persons = securityStatus.getPersons();
+            NAObjectMap<HomeStatusModule> modules = securityStatus.getModules();
+            handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
+                String childId = childHandler.getId();
+                persons.getOpt(childId).ifPresentOrElse(personData -> childHandler.setNewData(personData), () -> {
+                    modules.getOpt(childId).ifPresent(childData -> {
+                        childHandler.setNewData(childData);
+                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+                    });
                 });
             });
-        });
+        }
     }
 
     @Override

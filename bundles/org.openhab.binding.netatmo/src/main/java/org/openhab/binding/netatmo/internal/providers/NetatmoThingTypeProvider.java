@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -63,8 +62,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
     @Override
     public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
         return ModuleType.AS_SET.stream().filter(mt -> mt != ModuleType.UNKNOWN)
-                .map(mt -> Optional.ofNullable(getThingType(mt.thingTypeUID, locale))).map(Optional::get)
-                .collect(Collectors.toList());
+                .map(mt -> Optional.ofNullable(getThingType(mt.thingTypeUID, locale))).map(Optional::get).toList();
     }
 
     @Override
@@ -95,7 +93,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
 
     private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType thingType) {
         return thingType.getGroupTypes().stream().map(groupType -> new ChannelGroupDefinition(toGroupName(groupType),
-                new ChannelGroupTypeUID(BINDING_ID, groupType))).collect(Collectors.toList());
+                new ChannelGroupTypeUID(BINDING_ID, groupType))).toList();
     }
 
     public static String toGroupName(String groupeTypeName) {
