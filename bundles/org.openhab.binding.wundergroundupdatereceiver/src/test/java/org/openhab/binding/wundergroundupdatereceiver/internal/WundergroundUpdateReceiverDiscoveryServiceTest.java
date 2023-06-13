@@ -54,7 +54,6 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
 /**
