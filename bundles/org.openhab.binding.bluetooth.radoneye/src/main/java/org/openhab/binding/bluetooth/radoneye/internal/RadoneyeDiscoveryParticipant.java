@@ -94,7 +94,7 @@ public class RadoneyeDiscoveryParticipant implements BluetoothDiscoveryParticipa
     }
 
     private String getManufacturer(BluetoothDiscoveryDevice device) {
-        // String name = device.getName();
+        String name = device.getName();
         String[] parts = name.split(":");
         if (parts.length == 3) {
             return parts[0];
