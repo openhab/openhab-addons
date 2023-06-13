@@ -30,6 +30,7 @@ import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
+import org.openhab.core.types.UnDefType;
 import org.openhab.transform.vat.internal.config.VATConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,11 +85,12 @@ public class VATTransformationProfile implements StateProfile {
 
     private Type transformState(Type state) {
         String result = state.toFullString();
+        String percentage = getVATPercentage();
         try {
-            result = TransformationHelper.transform(service, getVATPercentage(), "%s", result);
+            result = TransformationHelper.transform(service, percentage, "%s", result);
         } catch (TransformationException e) {
             logger.warn("Could not apply '{}' transformation on state '{}' with value '{}'.", PROFILE_TYPE_UID.getId(),
-                    state, getVATPercentage());
+                    state, percentage);
         }
         Type resultType = state;
         if (result != null) {
@@ -96,6 +98,8 @@ public class VATTransformationProfile implements StateProfile {
                 resultType = DecimalType.valueOf(result);
             } else if (state instanceof QuantityType) {
                 resultType = QuantityType.valueOf(result);
+            } else if (state instanceof UnDefType) {
+                resultType = UnDefType.valueOf(result);
             }
             logger.debug("Transformed '{}' into '{}'", state, resultType);
         }
