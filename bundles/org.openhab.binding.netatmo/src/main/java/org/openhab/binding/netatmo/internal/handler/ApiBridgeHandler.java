@@ -61,6 +61,7 @@ import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
@@ -395,8 +396,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                                 || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
                         .forEach(home -> {
                             action.apply(home, accountUID).ifPresent(homeUID -> {
-                                home.getKnownPersons().forEach(person -> action.apply(person, homeUID));
-
+                                if (home instanceof HomeData.Security securityData) {
+                                    securityData.getKnownPersons().forEach(person -> action.apply(person, homeUID));
+                                }
                                 Map<String, ThingUID> bridgesUids = new HashMap<>();
 
                                 home.getRooms().values().stream().forEach(room -> {
