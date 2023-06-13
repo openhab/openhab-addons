@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
+import org.influxdb.InfluxDBIOException;
 import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
@@ -130,7 +131,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             BatchPoints batchPoints = BatchPoints.database(configuration.getDatabaseName())
                     .retentionPolicy(configuration.getRetentionPolicy()).points(points).build();
             currentClient.write(batchPoints);
-        } catch (InfluxException e) {
+        } catch (InfluxException | InfluxDBIOException e) {
             logger.debug("Writing to database failed", e);
             return false;
         }
@@ -165,15 +166,19 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
-        final InfluxDB currentClient = client;
-        if (currentClient != null) {
-            String query = queryCreator.createQuery(filter, retentionPolicy);
-            logger.trace("Query {}", query);
-            Query parsedQuery = new Query(query, configuration.getDatabaseName());
-            List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
-            return convertClientResultToRepository(results);
-        } else {
-            logger.warn("Returning empty list because queryAPI isn't present");
+        try {
+            final InfluxDB currentClient = client;
+            if (currentClient != null) {
+                String query = queryCreator.createQuery(filter, retentionPolicy);
+                logger.trace("Query {}", query);
+                Query parsedQuery = new Query(query, configuration.getDatabaseName());
+                List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
+                return convertClientResultToRepository(results);
+            } else {
+                throw new InfluxException("API not present");
+            }
+        } catch (InfluxException | InfluxDBIOException e) {
+            logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
             return List.of();
         }
     }
