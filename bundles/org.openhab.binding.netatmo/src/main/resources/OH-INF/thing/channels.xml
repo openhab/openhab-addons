@@ -404,6 +404,8 @@
 				<option value="BATTERY_VERY_LOW">Battery very low</option>
 				<option value="SMOKE_CLEARED">Smoke cleared</option>
 				<option value="SMOKE_DETECTED">Smoke detected</option>
+				<option value="HUSH_ACTIVATED">Smoke detection activated</option>
+				<option value="HUSH_DEACTIVATED">Smoke detection deactivated</option>
 				<option value="WIFI_STATUS_OK">Wi-Fi status ok</option>
 				<option value="WIFI_STATUS_ERROR">Wi-Fi status error</option>
 				<option value="CO_OK">Carbon Monoxide OK</option>
