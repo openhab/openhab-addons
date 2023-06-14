@@ -61,6 +61,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     private final NetworkAddressService networkAddressService;
     private final SerialPortManager serialPortManager;
     private final Map<ThingUID, KNXBridgeBaseThingHandler> bridges = new ConcurrentHashMap<>();
+    private final Map<ThingUID, DeviceThingHandler> devices = new ConcurrentHashMap<>();
 
     @Activate
     public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
@@ -112,7 +113,9 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
             bridges.put(thing.getUID(), bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DEVICE)) {
-            return new DeviceThingHandler(thing);
+            DeviceThingHandler deviceThingHandler = new DeviceThingHandler(thing);
+            devices.put(thing.getUID(), deviceThingHandler);
+            return deviceThingHandler;
         }
         return null;
     }
@@ -120,6 +123,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public void unregisterHandler(Thing thing) {
         bridges.remove(thing.getUID());
+        devices.remove(thing.getUID());
         super.unregisterHandler(thing);
     }
 
@@ -143,5 +147,9 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
     public Collection<KNXBridgeBaseThingHandler> getBridges() {
         return Set.copyOf(bridges.values());
+    }
+
+    public Collection<DeviceThingHandler> getDevices() {
+        return Set.copyOf(devices.values());
     }
 }

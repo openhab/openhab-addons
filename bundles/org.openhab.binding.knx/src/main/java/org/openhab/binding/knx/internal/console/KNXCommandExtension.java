@@ -18,7 +18,9 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.KNXBindingConstants;
+import org.openhab.binding.knx.internal.channel.KNXChannel;
 import org.openhab.binding.knx.internal.factory.KNXHandlerFactory;
+import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
@@ -28,6 +30,8 @@ import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import tuwien.auto.calimero.GroupAddress;
 
 /**
  * The {@link KNXCommandExtension} is responsible for handling console commands
@@ -39,7 +43,9 @@ import org.osgi.service.component.annotations.Reference;
 public class KNXCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String CMD_LIST_UNKNOWN_GA = "list-unknown-ga";
-    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_LIST_UNKNOWN_GA), false);
+    private static final String CMD_LIST_GA = "list-ga";
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(
+            List.of(CMD_LIST_UNKNOWN_GA, CMD_LIST_GA), false);
 
     private final KNXHandlerFactory knxHandlerFactory;
 
@@ -60,14 +66,24 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
                 }
             }
             return;
+        } else if (args.length == 1 && CMD_LIST_GA.equalsIgnoreCase(args[0])) {
+            for (DeviceThingHandler deviceHandler : knxHandlerFactory.getDevices()) {
+                for (GroupAddress ga : deviceHandler.getGroupAddresses()) {
+                    KNXChannel ch = deviceHandler.getChannel(ga);
+                    console.println("  " + ga.toString() + " " + ch.getListenSpec(ga).getDPT().toString()
+                            + ((ch.isControl()) ? " (control)" : ""));
+                }
+            }
+            return;
         }
         printUsage(console);
     }
 
     @Override
     public List<String> getUsages() {
-        return List
-                .of(buildCommandUsage(CMD_LIST_UNKNOWN_GA, "list group addresses which are not configured in openHAB"));
+        return List.of(
+                buildCommandUsage(CMD_LIST_UNKNOWN_GA, "list group addresses which are not configured in openHAB"),
+                buildCommandUsage(CMD_LIST_GA, "list group addresses configured in openHAB together with DPT"));
     }
 
     @Override

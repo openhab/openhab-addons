@@ -572,4 +572,30 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
             }
         }
     }
+
+    public Set<GroupAddress> getGroupAddresses() {
+        return Set.copyOf(groupAddresses);
+    }
+
+    public @Nullable KNXChannel getChannel(GroupAddress ga) {
+        /*
+         * using get does not work, it will return 0
+         *
+         * @Nullable KNXChannel kc = knxChannels.get(ga);
+         * if (kc != null) {
+         * return kc;
+         * }
+         */
+
+        // compare based on GA
+        final String gaS = ga.toString();
+        for (KNXChannel c : knxChannels.values()) {
+            for (GroupAddress g : c.getAllGroupAddresses()) {
+                if (gaS.equals(g.toString())) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
 }
