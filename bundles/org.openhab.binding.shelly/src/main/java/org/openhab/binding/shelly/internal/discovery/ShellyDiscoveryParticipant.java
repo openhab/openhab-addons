@@ -145,9 +145,6 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             try {
                 ShellyApiInterface api = gen2 ? new Shelly2ApiRpc(name, config, httpClient)
                         : new Shelly1HttpApi(name, config, httpClient);
-                if (name.contains("plus1pm")) {
-                    int i = 1;
-                }
                 api.initialize();
                 profile = api.getDeviceProfile(thingType);
                 api.close();

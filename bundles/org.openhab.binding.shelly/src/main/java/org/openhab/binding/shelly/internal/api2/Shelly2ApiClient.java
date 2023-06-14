@@ -289,7 +289,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return false;
         }
 
-        boolean updated = false;
         ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(0);
         sm.isValid = emeter.isValid = true;
