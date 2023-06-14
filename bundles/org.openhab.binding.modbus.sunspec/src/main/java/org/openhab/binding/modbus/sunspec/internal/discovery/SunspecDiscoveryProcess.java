@@ -146,7 +146,6 @@ public class SunspecDiscoveryProcess {
      * @throws EndpointNotInitializedException
      */
     public void detectModel() {
-
         if (possibleAddresses.isEmpty()) {
             parsingFinished();
             return;
@@ -189,7 +188,6 @@ public class SunspecDiscoveryProcess {
      * Look for a valid model block at the current base address
      */
     private void lookForModelBlock() {
-
         ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, baseAddress, // Start address
                 MODEL_HEADER_SIZE, // number or words to return
@@ -233,7 +231,6 @@ public class SunspecDiscoveryProcess {
                 createDiscoveryResult(block);
                 lookForModelBlock();
             }
-
         }
     }
 
