@@ -108,7 +108,6 @@ public class HTTPHandler {
                         latestTime = iterTime;
                         latestData = iterData;
                     } // else - found item is older - nothing to do
-
                 } else {
                     logger.warn("One or two dates cannot be decoded 1) {} 2) {}", iterTimeStr, latestTimeStr);
                 }
