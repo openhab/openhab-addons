@@ -117,7 +117,6 @@ public class RadoneyeDiscoveryParticipant implements BluetoothDiscoveryParticipa
         Map<String, Object> properties = new HashMap<>();
         properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
         properties.put(Thing.PROPERTY_VENDOR, "RadonEye");
-        // String name = device.getName();
         String serialNumber = device.getSerialNumber();
         String firmwareRevision = device.getFirmwareRevision();
         String model = device.getModel();
