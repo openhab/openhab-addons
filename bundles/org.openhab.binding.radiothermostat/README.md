@@ -46,7 +46,8 @@ If one or more time or setpoint fields are left blank in a given schedule and th
 A heating or cooling schedule with all fields left blank will be ignored by the binding.
 In that case, the existing schedule on the thermostat will remain untouched.
 
-The MyRadioThermostat/EnergyHub cloud service that previously enabled remote control and scheduling of the thermostat is now defunct. As such, disabling cloud connectivity on a thermostat that was previously connected to the cloud service may slightly improve the speed and reliability of accessing the local API.
+The MyRadioThermostat/EnergyHub cloud service that previously enabled remote control and scheduling of the thermostat is now defunct.
+As such, disabling cloud connectivity on a thermostat that was previously connected to the cloud service may slightly improve the speed and reliability of accessing the local API.
 
 The thermostat can de-provisioned from the cloud by issuing the following `curl` commands:
 
