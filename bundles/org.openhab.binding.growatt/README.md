@@ -1,94 +1,129 @@
-# growatt Binding
+# Growatt Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+![Growatt](doc/growatt.png)
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+This binding supports the integration of Growatt solar inverters.
+It depends on the independent [Grott](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor) proxy server application to intercept the data transmissions between the inverter and the Growatt cloud server.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The binding supports two types of things:
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `bridge`: The bridge is the interface to the Grott application; it receives the data from all inverters.
+- `inverter`: The inverter thing contains channels which are updated with solor production and consumption data.
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+There is no automatic discovery of the bridge or inverter things.
 
-## Binding Configuration
+## Grott Application
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+The Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
+It intercepts and decoded the data packets sent from the inverter to the cloud server.
+And it uses the `grottext.py` application extension to send a copy of the intercepted data also to your OpenHAB system.
+The data is transmitted via an HTTP POST to the 'http://<openhab-ip-address>:8080/growatt' end point with a JSON pay-load.
 
-```
-# Configuration for the growatt Binding
-#
-# Default secret key for the pairing of the growatt Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+You need to install the Grott application either on the same computer as OpenHAB or on another computer.
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
+_**NOTE**: make sure that the Grott application is fully operational for your inveter **BEFORE** you create any things in OpenHAB!_
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
+You should configure the Grott application via its `grott.ini` file.
+Configure Grott to match your inverter according to the [instructions](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor).
+To operate with OpenHAB the recommended Grott configuration is as follows:
+
+- Configure Grott to run in proxy mode.
+- Configure Grott to start as a service.
+- Configure your inverter type in Grott.
+- Install the `grottext.py` application extension in the Grott home folder.
+- Configure the `grottext` extension's ip address, port, and path via `grott.ini` as follows:
+
+| Entry   | Configuration Entry Value                        |
+|---------|--------------------------------------------------|
+| ip      | IP address of your OpenHab computer.             |
+| port    | Port of your OpenHab core server (usually 8080). |
+| path    | 'growatt' (fixed value).                         |
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+The `bridge` thing requires no configuration.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The `inverter` thing requires configuration of its serial number resp. `deviceId`:
 
-### `sample` Thing Configuration
-
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name      | Type    | Description                                                                               | Required |
+|-----------|---------|-------------------------------------------------------------------------------------------|----------|
+| deviceId  | text    | Device serial number or id as configuted in the Growatt cloud, and the Grott application. | yes      |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The `bridge` thing has no channels.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The `inverter` thing supports many possible channels relating to solar generation and consumption.
+All channels are read only.
+Depending on the inverter model, and it configuration, not all of the channels will be present.
+The list of all possible channels is as follows:
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel            | Type               | Description                                         |
+|--------------------|--------------------|-----------------------------------------------------|
+| pvstatus           | Number             | Status of the inverter (0=ready, 1=online, 2=fault) |
+| pvpowerin          | Number:power       | Total solar input power.                            |
+| pv1voltage         | Number:voltage     | Voltage from solar panel string #1.                 |
+| pv1current         | Number:current     | Current from solar panel string #1.                 |
+| pv1watt            | Number:power       | Power from solar panel string #1.                   |
+| pv2voltage         | Number:voltage     | Voltage of solar panel string #2.                   |
+| pv2current         | Number:current     | Current from solar panel string #2.                 |
+| pv2watt            | Number:power       | Power from solar panel string #2.                   |
+| pvpowerout         | Number:power       | Total solar output power.                           |
+| pvfrequency        | Number:frequency   | Frequency of the grid supply.                       |
+| pvgridvoltage      | Number:voltage     | Voltage of the grid supply.                         |
+| pvgridcurrent      | Number:current     | Current delivered to the grid supply.               |
+| pvgridpower        | Number:power       | Power delivered to the grid supply.                 |
+| pvgridvoltage2     | Number:voltage     | Voltage of the grid supply #2.                      |
+| pvgridcurrent2     | Number:current     | Current delivered to the grid supply #2.            |
+| pvgridpower2       | Number:power       | Power delivered to the grid supply #2.              |
+| pvgridvoltage3     | Number:voltage     | Voltage of the grid supply #3.                      |
+| pvgridcurrent3     | Number:current     | Current delivered to the grid supply #3.            |
+| pvgridpower3       | Number:power       | Power delivered to the grid supply #3.              |
+| pvenergytoday      | Number:energy      | Solar energy collected today.                       |
+| pvenergytotal      | Number:energy      | Total solar energy collected.                       |
+| totworktime        | Number:time        | Total uptime of the inverter.                       |
+| epv1today          | Number:energy      | Energy from solar panel string #1 today.            |
+| epv1total          | Number:energy      | Total energy from solar panel string #1.            |
+| epv2today          | Number:energy      | Energy from solar panel string #2 today.            |
+| epv2total          | Number:energy      | Total energy from solar panel string #2.            |
+| epvtotal           | Number:energy      | Total energy from all solar panels.                 |
+| pvtemperature      | Number:temperature | Temperature of the solar panels.                    |
+| pvipmtemperature   | Number:temperature | Temperature of the IPM.                             |
+| pvboosttemperature | Number:temperature | Boost temperature.                                  |
+| temp4              | Number:temperature | Temperature #4.                                     |
+| Vac_RS             | Number:voltage     | AC voltage R-S.                                     |
+| Vac_ST             | Number:voltage     | AC voltage S-T.                                     |
+| Vac_TR             | Number:voltage     | AC voltage T-R.                                     |
+| uwBatVolt_DSP      | Number:voltage     | Battery voltage DSP.                                |
+| pbusvolt           | Number:voltage     | P Bus voltage.                                      |
+| nbusvolt           | Number:voltage     | N Bus voltage.                                      |
+| eacCharToday       | Number:energy      | AC charge energy today.                             |
+| eacCharTotal       | Number:energy      | Total AC charge energy.                             |
+| ebatDischarToday   | Number:energy      | Battery discharge energy today.                     |
+| ebatDischarTotal   | Number:energy      | Total battery discharge energy.                     |
+| eacDischarToday    | Number:energy      | AC discharge energy today.                          |
+| eacDischarTotal    | Number:energy      | Total AC discharge energy.                          |
+| ACCharCurr         | Number:current     | AC charge current.                                  |
+| ACDischarWatt      | Number:power       | AC discharge power.                                 |
+| ACDischarVA        | Number:va          | AC discharge VA.                                    |
+| BatDischarWatt     | Number:power       | Battery discharge power.                            |
+| BatDischarVA       | Number:va          | Battery VA.                                         |
+| BatWatt            | Number:power       | Battery power.                                      |
 
 ## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
 
 ### Thing Configuration
 
 ```java
 Example thing configuration goes here.
 ```
+
 ### Item Configuration
 
 ```java
 Example item configuration goes here.
 ```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_

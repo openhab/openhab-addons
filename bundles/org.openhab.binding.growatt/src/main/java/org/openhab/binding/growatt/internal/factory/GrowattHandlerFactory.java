@@ -10,32 +10,44 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.growatt.internal;
+package org.openhab.binding.growatt.internal.factory;
 
-import static org.openhab.binding.growatt.internal.growattBindingConstants.*;
+import static org.openhab.binding.growatt.internal.GrowattBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.growatt.internal.handler.GrowattBridgeHandler;
+import org.openhab.binding.growatt.internal.handler.GrowattInverterHandler;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 
 /**
- * The {@link growattHandlerFactory} is responsible for creating things and thing
+ * The {@link GrowattHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.growatt", service = ThingHandlerFactory.class)
-public class growattHandlerFactory extends BaseThingHandlerFactory {
+public class GrowattHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_INVERTER);
+    private final HttpService httpService;
+
+    @Activate
+    public GrowattHandlerFactory(@Reference HttpService httpService) {
+        this.httpService = httpService;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +58,12 @@ public class growattHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new growattHandler(thing);
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
+            return new GrowattBridgeHandler((Bridge) thing, httpService);
+        }
+
+        if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
+            return new GrowattInverterHandler(thing);
         }
 
         return null;

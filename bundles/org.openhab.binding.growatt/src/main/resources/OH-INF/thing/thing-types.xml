@@ -4,45 +4,233 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="growattBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<!-- Bridge Thing Type -->
+	<bridge-type id="bridge">
+		<label>Growatt Bridge Thing</label>
+		<description>Bridge Thing for Growatt Binding</description>
+	</bridge-type>
 
-		<label>growatt Binding Thing</label>
-		<description>Sample thing for growatt Binding</description>
+	<!-- Inverter Thing Type -->
+	<thing-type id="inverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
 
+		<label>Growatt Inverter Thing</label>
+		<description>Inverter Thing for Growatt Binding</description>
+
+		<!-- All known channels; unused channels are dynamically deleted -->
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="pvstatus" typeId="status"/>
+			<channel id="pvpowerin" typeId="system.electric-power">
+				<label>Solar Input Power</label>
+				<description>Total solar input power.</description>
+			</channel>
+			<channel id="pv1voltage" typeId="system.electric-voltage">
+				<label>String #1 Voltage</label>
+				<description>Voltage from solar panel string #1.</description>
+			</channel>
+			<channel id="pv1current" typeId="system.electric-current">
+				<label>String #1 Current</label>
+				<description>Current from solar panel string #1.</description>
+			</channel>
+			<channel id="pv1watt" typeId="system.electric-power">
+				<label>String #1 Power</label>
+				<description>Power from solar panel string #1.</description>
+			</channel>
+			<channel id="pv2voltage" typeId="system.electric-voltage">
+				<label>String #2 Voltage</label>
+				<description>Voltage of solar panel string #2.</description>
+			</channel>
+			<channel id="pv2current" typeId="system.electric-current">
+				<label>String #2 Current</label>
+				<description>Current from solar panel string #2.</description>
+			</channel>
+			<channel id="pv2watt" typeId="system.electric-power">
+				<label>String #2 Power</label>
+				<description>Power from solar panel string #2.</description>
+			</channel>
+			<channel id="pvpowerout" typeId="system.electric-power">
+				<label>Solar Output Power</label>
+				<description>Total solar output power.</description>
+			</channel>
+			<channel id="pvfrequentie" typeId="frequency"/>
+			<channel id="pvgridvoltage" typeId="system.electric-voltage">
+				<label>Grid Voltage</label>
+				<description>Voltage of the grid supply.</description>
+			</channel>
+			<channel id="pvgridcurrent" typeId="system.electric-current">
+				<label>Grid Current</label>
+				<description>Current delivered to the grid supply.</description>
+			</channel>
+			<channel id="pvgridpower" typeId="system.electric-power">
+				<label>Grid Power</label>
+				<description>Power delivered to the grid supply.</description>
+			</channel>
+			<channel id="pvgridvoltage2" typeId="system.electric-voltage">
+				<label>Grid Voltage #2</label>
+				<description>Voltage of the grid supply #2.</description>
+			</channel>
+			<channel id="pvgridcurrent2" typeId="system.electric-current">
+				<label>Grid Current #2</label>
+				<description>Current delivered to the grid supply #2.</description>
+			</channel>
+			<channel id="pvgridpower2" typeId="system.electric-power">
+				<label>Grid Power #2</label>
+				<description>Power delivered to the grid supply #2.</description>
+			</channel>
+			<channel id="pvgridvoltage3" typeId="system.electric-voltage">
+				<label>Grid Voltage #3</label>
+				<description>Voltage of the grid supply #3.</description>
+			</channel>
+			<channel id="pvgridcurrent3" typeId="system.electric-current">
+				<label>Grid Current #3</label>
+				<description>Current delivered to the grid supply #3.</description>
+			</channel>
+			<channel id="pvgridpower3" typeId="system.electric-power">
+				<label>Grid Power #3</label>
+				<description>Power delivered to the grid supply #3.</description>
+			</channel>
+			<channel id="pvenergytoday" typeId="system.electric-energy">
+				<label>Solar Energy Today</label>
+				<description>Solar energy collected today.</description>
+			</channel>
+			<channel id="pvenergytotal" typeId="system.electric-energy">
+				<label>Solar Energy Total</label>
+				<description>Total solar energy collected.</description>
+			</channel>
+			<channel id="totworktime" typeId="work-time"/>
+			<channel id="epv1today" typeId="system.electric-energy">
+				<label>Solar Energy #1 Today</label>
+				<description>Energy from solar panel string #1 today.</description>
+			</channel>
+			<channel id="epv1total" typeId="system.electric-energy">
+				<label>Solar Energy #1 Total</label>
+				<description>Total energy from solar panel string #1.</description>
+			</channel>
+			<channel id="epv2today" typeId="system.electric-energy">
+				<label>Solar Energy #2 Today</label>
+				<description>Energy from solar panel string #2 today.</description>
+			</channel>
+			<channel id="epv2total" typeId="system.electric-energy">
+				<label>Solar Energy #2 Total</label>
+				<description>Total energy from solar panel string #2.</description>
+			</channel>
+			<channel id="epvtotal" typeId="system.electric-energy">
+				<label>Solar Energy Total</label>
+				<description>Total energy from all solar panels.</description>
+			</channel>
+			<channel id="pvtemperature" typeId="system.outdoor-temperature">
+				<label>Solar Panel Temperature</label>
+				<description>Temperature of the solar panels.</description>
+			</channel>
+			<channel id="pvipmtemperature" typeId="system.outdoor-temperature">
+				<label>Solar IPM Temperature</label>
+				<description>Temperature of the IPM.</description>
+			</channel>
+			<channel id="pvboottemperature" typeId="system.outdoor-temperature">
+				<label>Boost Temperature</label>
+				<description>Boost temperature.</description>
+			</channel>
+			<channel id="temp4" typeId="system.outdoor-temperature">
+				<label>Temp #4</label>
+				<description>Temperature #4.</description>
+			</channel>
+			<channel id="Vac_RS" typeId="system.electric-voltage">
+				<label>AC Voltage R-S</label>
+				<description>AC voltage R-S.</description>
+			</channel>
+			<channel id="Vac_ST" typeId="system.electric-voltage">
+				<label>AC Voltage S-T</label>
+				<description>AC voltage S-T.</description>
+			</channel>
+			<channel id="Vac_TR" typeId="system.electric-voltage">
+				<label>AC Voltage T-R</label>
+				<description>AC voltage T-R.</description>
+			</channel>
+			<channel id="uwBatVolt_DSP" typeId="system.electric-voltage">
+				<label>Battery Voltage DSP</label>
+				<description>Battery voltage DSP.</description>
+			</channel>
+			<channel id="pbusvolt" typeId="system.electric-voltage">
+				<label>P Bus Voltage</label>
+				<description>P Bus voltage.</description>
+			</channel>
+			<channel id="nbusvolt" typeId="system.electric-voltage">
+				<label>N Bus Voltage</label>
+				<description>N Bus voltage.</description>
+			</channel>
+			<channel id="eacCharToday" typeId="system.electric-energy">
+				<label>AC Charge Energy Today</label>
+				<description>AC charge energy today.</description>
+			</channel>
+			<channel id="eacCharTotal" typeId="system.electric-energy">
+				<label>AC Charge Energy Total</label>
+				<description>Total AC charge energy.</description>
+			</channel>
+			<channel id="ebatDischarToday" typeId="system.electric-energy">
+				<label>Battery Discharge Energy Today</label>
+				<description>Battery discharge energy today.</description>
+			</channel>
+			<channel id="ebatDischarTotal" typeId="system.electric-energy">
+				<label>Battery Discharge Energy Total</label>
+				<description>Total battery discharge energy.</description>
+			</channel>
+			<channel id="eacDischarToday" typeId="system.electric-energy">
+				<label>AC Discharge Energy Today</label>
+				<description>AC discharge energy today.</description>
+			</channel>
+			<channel id="eacDischarTotal" typeId="system.electric-energy">
+				<label>AC Discharge Energy Total</label>
+				<description>Total AC discharge energy.</description>
+			</channel>
+			<channel id="ACCharCurr" typeId="system.electric-current">
+				<label>AC Charge Current</label>
+				<description>AC charge current.</description>
+			</channel>
+			<channel id="ACDischarWatt" typeId="system.electric-power">
+				<label>AC Discharge Power</label>
+				<description>AC discharge power.</description>
+			</channel>
+			<channel id="ACDischarVA" typeId="kva">
+				<label>AC Discharge VA</label>
+				<description>AC discharge VA.</description>
+			</channel>
+			<channel id="BatDischarWatt" typeId="system.electric-power">
+				<label>Battery Discharge Power</label>
+				<description>Battery discharge power.</description>
+			</channel>
+			<channel id="BatDischarVA" typeId="kva">
+				<label>Battery VA</label>
+				<description>Battery VA.</description>
+			</channel>
+			<channel id="BatWatt" typeId="system.electric-power">
+				<label>Battery Power</label>
+				<description>Battery power.</description>
+			</channel>
 		</channels>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
-				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Id of the inverter.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for growatt Binding</description>
+	<!-- Binding Specific Channel Types -->
+	<channel-type id="status">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Inverter Status</label>
+		<description>Status code of the inverter (0=ready, 1=online, 2=fault).</description>
+		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
+
+	<channel-type id="frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Grid Frequency</label>
+		<description>Frequency of the grid supply.</description>
+		<state readOnly="true" pattern="%0.1f Hz"/>
+	</channel-type>
+
 </thing:thing-descriptions>
