@@ -19,9 +19,9 @@ There is no automatic discovery of the bridge or inverter things.
 ## Grott Application
 
 The Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
-It intercepts and decoded the data packets sent from the inverter to the cloud server.
+It intercepts and decodes the data packets sent from the inverter to the cloud server.
 And it uses the `grottext.py` application extension to send a copy of the intercepted data also to your OpenHAB system.
-The data is transmitted via an HTTP POST to the 'http://<openhab-ip-address>:8080/growatt' end point with a JSON pay-load.
+The data is transmitted via an HTTP POST to the 'http://openhab-ip-address:8080/growatt' end point with a JSON pay-load.
 
 You need to install the Grott application either on the same computer as OpenHAB or on another computer.
 
