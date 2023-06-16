@@ -20,6 +20,8 @@
 			<channel id="autarky" typeId="autarky-channel"/>
 			<channel id="self-consumption" typeId="self-consumption-channel"/>
 			<channel id="battery-soc" typeId="battery-soc-channel"/>
+			<channel id="battery-charged" typeId="battery-charged-channel"/>
+			<channel id="battery-uncharged" typeId="battery-uncharged-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

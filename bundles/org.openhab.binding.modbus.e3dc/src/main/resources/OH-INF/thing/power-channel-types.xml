@@ -75,4 +75,16 @@
 		<description>Charge Level of your attached Battery in Percent</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="battery-charged-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Charge</label>
+		<description>Charged energy of battery</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-uncharged-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Open Capacity</label>
+		<description>Open energy capacity of battery</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

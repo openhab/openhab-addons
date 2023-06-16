@@ -22,8 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class E3DCConfiguration {
 
-    /**
-     * Data refresh interval
-     */
     public int refresh = 2000;
+    public double batteryCapacity = -1;
 }
