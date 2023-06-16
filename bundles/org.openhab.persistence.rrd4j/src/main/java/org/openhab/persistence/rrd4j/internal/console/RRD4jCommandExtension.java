@@ -14,7 +14,6 @@ package org.openhab.persistence.rrd4j.internal.console;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -139,7 +138,7 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(CMD_LIST, "list Round Robin Database files"),
+        return List.of(buildCommandUsage(CMD_LIST, "list Round Robin Database files"),
                 buildCommandUsage(CMD_CHECK, "check for RRD files without existing item"),
                 buildCommandUsage(CMD_CLEAN + " [<itemName>]", "delete RRD files without existing item"));
     }
