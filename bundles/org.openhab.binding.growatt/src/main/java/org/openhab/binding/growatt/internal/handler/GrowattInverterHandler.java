@@ -68,7 +68,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
     public void handleGrottDevice(GrottDevice grottDevice) {
         GrottValues grottValues = grottDevice.getValues();
         if (grottValues == null) {
-            logger.debug("handleValues() device '{}' contained no values", grottDevice.getDeviceId());
+            logger.debug("handleGrottDevice() device '{}' contained no values", grottDevice.getDeviceId());
             return;
         }
 
@@ -85,14 +85,14 @@ public class GrowattInverterHandler extends BaseThingHandler {
                 missingFields.add(channelId);
                 continue;
             } catch (SecurityException e) {
-                logger.debug("handleValues() security exception field '{}'", channelId);
+                logger.debug("handleGrottDevice() security exception field '{}'", channelId);
                 continue;
             }
             Object value;
             try {
                 value = field.get(grottValues);
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                logger.debug("handleValues() error reading field '{}' value", channelId);
+                logger.debug("handleGrottDevice() error reading field '{}' value", channelId);
                 continue;
             }
             if (value != null && (value instanceof Integer)) {
@@ -104,7 +104,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
 
         // warn if fields missing from DTO
         if (!missingFields.isEmpty() && logger.isWarnEnabled()) {
-            logger.warn("handleValues() please notify maintainers: GrottValues.class is missing fields: {}",
+            logger.warn("handleGrottDevice() please notify maintainers: GrottValues.class is missing fields: {}",
                     missingFields.stream().collect(Collectors.joining(",")));
         }
 
@@ -113,7 +113,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
                 .filter(channel -> !channelStates.containsKey(channel.getUID().getId())).collect(Collectors.toList());
         if (!unusedChannels.isEmpty()) {
             updateThing(editThing().withoutChannels(unusedChannels).build());
-            logger.debug("handleValues() removed {} unused channels", unusedChannels.size());
+            logger.debug("handleGrottDevice() removed {} unused channels", unusedChannels.size());
         }
 
         // update channel states
@@ -123,7 +123,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
             if (channelIds.contains(channelId)) {
                 updateState(channelId, state);
             } else {
-                logger.debug("handleValues() channel '{}' not implemented in thing", channelId);
+                logger.debug("handleGrottDevice() channel '{}' not implemented in thing", channelId);
             }
         });
     }

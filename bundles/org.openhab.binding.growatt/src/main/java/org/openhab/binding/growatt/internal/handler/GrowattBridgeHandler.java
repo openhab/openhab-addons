@@ -95,7 +95,7 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
         try {
             jsonElement = JsonParser.parseString(json);
         } catch (JsonSyntaxException e) {
-            logger.debug("onContent() invalid JSON string '{}'", json, e);
+            logger.debug("handleGrottContent() invalid JSON string '{}'", json, e);
             return;
         }
         List<GrottDevice> grottDevices = new ArrayList<>();
@@ -114,7 +114,7 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
                 throw new JsonSyntaxException("Unsupported element type");
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("onContent() error parsing JSON '{}'", json, e);
+            logger.debug("handleGrottContent() error parsing JSON '{}'", json, e);
             return;
         }
         getThing().getThings().stream().map(thing -> thing.getHandler())
@@ -128,7 +128,7 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
             httpService.registerServlet(GROWATT_SERVLET_PATH_ALIAS, new GrottServlet(), null, null);
             updateStatus(ThingStatus.ONLINE);
         } catch (ServletException | NamespaceException e) {
-            logger.debug("serverStart() exception '{}'", e.getMessage(), e);
+            logger.debug("initialize() exception '{}'", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
