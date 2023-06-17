@@ -460,6 +460,7 @@ The Home thing has the following configuration elements:
 | securityId | String | No       | Id of a home holding security monitoring devices                                    |
 
 At least one of these parameter must be filled - at most two : 
+
 * id or securityId
 * id or energyId
 * securityId and energyId

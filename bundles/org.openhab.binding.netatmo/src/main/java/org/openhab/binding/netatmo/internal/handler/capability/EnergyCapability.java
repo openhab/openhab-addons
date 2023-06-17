@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.time.ZonedDateTime;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.EnergyApi;
@@ -26,6 +25,7 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataRoom;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.Room;
 import org.openhab.binding.netatmo.internal.config.HomeConfiguration;
@@ -65,38 +65,41 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
 
     @Override
     protected void updateHomeData(HomeData homeData) {
-        NAObjectMap<HomeDataRoom> rooms = homeData.getRooms();
-        NAObjectMap<HomeDataModule> modules = homeData.getModules();
-        handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
-            String childId = childHandler.getId();
-            rooms.getOpt(childId)
-                    .ifPresentOrElse(roomData -> childHandler.setNewData(roomData.ignoringForThingUpdate()), () -> {
-                        modules.getOpt(childId)
-                                .ifPresent(childData -> childHandler.setNewData(childData.ignoringForThingUpdate()));
-                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
-                    });
-        });
-        descriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), GROUP_ENERGY, CHANNEL_PLANNING),
-                homeData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName()))
-                        .collect(Collectors.toList()));
-        setPointDefaultDuration = homeData.getThermSetpointDefaultDuration();
+        if (homeData instanceof HomeData.Energy energyData) {
+            NAObjectMap<HomeDataRoom> rooms = energyData.getRooms();
+            NAObjectMap<HomeDataModule> modules = energyData.getModules();
+            handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
+                String childId = childHandler.getId();
+                rooms.getOpt(childId)
+                        .ifPresentOrElse(roomData -> childHandler.setNewData(roomData.ignoringForThingUpdate()), () -> {
+                            modules.getOpt(childId).ifPresent(
+                                    childData -> childHandler.setNewData(childData.ignoringForThingUpdate()));
+                            modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                                    .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+                        });
+            });
+            descriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), GROUP_ENERGY, CHANNEL_PLANNING),
+                    energyData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName())).toList());
+            setPointDefaultDuration = energyData.getThermSetpointDefaultDuration();
+        }
     }
 
     @Override
     protected void updateHomeStatus(HomeStatus homeStatus) {
-        NAObjectMap<Room> rooms = homeStatus.getRooms();
-        NAObjectMap<HomeStatusModule> modules = homeStatus.getModules();
-        handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
-            String childId = childHandler.getId();
-            rooms.getOpt(childId).ifPresentOrElse(roomData -> childHandler.setNewData(roomData), () -> {
-                modules.getOpt(childId).ifPresent(moduleData -> {
-                    childHandler.setNewData(moduleData);
-                    modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                            .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+        if (homeStatus instanceof NAHomeStatus.Energy energyStatus) {
+            NAObjectMap<Room> rooms = energyStatus.getRooms();
+            NAObjectMap<HomeStatusModule> modules = energyStatus.getModules();
+            handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
+                String childId = childHandler.getId();
+                rooms.getOpt(childId).ifPresentOrElse(roomData -> childHandler.setNewData(roomData), () -> {
+                    modules.getOpt(childId).ifPresent(moduleData -> {
+                        childHandler.setNewData(moduleData);
+                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+                    });
                 });
             });
-        });
+        }
     }
 
     public void setThermPoint(String roomId, SetpointMode mode, long endtime, double temp) {
