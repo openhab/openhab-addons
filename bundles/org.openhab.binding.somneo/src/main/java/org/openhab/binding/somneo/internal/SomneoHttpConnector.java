@@ -16,9 +16,12 @@ import static org.openhab.binding.somneo.internal.SomneoBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +31,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.somneo.internal.model.AlarmSchedulesData;
+import org.openhab.binding.somneo.internal.model.AlarmSettingsData;
+import org.openhab.binding.somneo.internal.model.AlarmStateData;
 import org.openhab.binding.somneo.internal.model.AudioData;
 import org.openhab.binding.somneo.internal.model.DeviceData;
 import org.openhab.binding.somneo.internal.model.FirmwareData;
@@ -40,10 +46,21 @@ import org.openhab.binding.somneo.internal.model.SunsetData;
 import org.openhab.binding.somneo.internal.model.TimerData;
 import org.openhab.binding.somneo.internal.model.WifiData;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link SomneoHttpConnector} is responsible for sending commands.
@@ -290,11 +307,163 @@ public class SomneoHttpConnector {
         return executeUrl("GET", PRESET_ENDPOINT, PresetData.class);
     }
 
+    public AlarmStateData fetchAlarmStateData() throws TimeoutException, InterruptedException, ExecutionException {
+        return executeUrl("GET", ALARM_STATES_ENDPOINT, AlarmStateData.class);
+    }
+
+    public AlarmSchedulesData fetchAlarmScheduleData()
+            throws TimeoutException, InterruptedException, ExecutionException {
+        return executeUrl("GET", ALARM_SCHEDULES_ENDPOINT, AlarmSchedulesData.class);
+    }
+
+    public AlarmSettingsData fetchAlarmSettingsData(final int position)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final String responseBody = executeUrl("PUT", ALARM_SETTINGS_ENDPOINT, "{\"prfnr\":" + (position) + "}");
+        AlarmSettingsData data = (AlarmSettingsData) gson.fromJson(responseBody, AlarmSettingsData.class);
+        if (data == null) {
+            return new AlarmSettingsData();
+        }
+        return data;
+    }
+
+    public State fetchSnoozeDuration() throws TimeoutException, InterruptedException, ExecutionException {
+        final JsonObject response = executeUrl("GET", ALARM_SETTINGS_ENDPOINT, JsonObject.class);
+        final JsonElement snooze = response.get("snztm");
+        if (snooze == null) {
+            return UnDefType.NULL;
+        }
+        return new QuantityType<>(snooze.getAsInt(), Units.MINUTE);
+    }
+
+    public void setAlarmSnooze(int snooze) throws TimeoutException, InterruptedException, ExecutionException {
+        final JsonObject data = new JsonObject();
+        data.addProperty("snztm", snooze);
+        executeUrl("PUT", ALARM_SETTINGS_ENDPOINT, data);
+    }
+
+    public void toggleAlarmConfiguration(int position, OnOffType command)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = AlarmSettingsData.withDefaultValues(position);
+
+        if (OnOffType.ON.equals(command)) {
+            final LocalTime now = LocalTime.now();
+            if (now == null) {
+                return;
+            }
+
+            data.setConfigured(true);
+            data.setEnabled(true);
+            data.setAlarmTime(now);
+            data.setRepeatDay(0);
+        } else {
+            data.setConfigured(false);
+            data.setEnabled(false);
+        }
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void toggleAlarm(int position, OnOffType enabled)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = new AlarmSettingsData();
+        data.setPosition(position);
+        data.setEnabledState(enabled);
+        if (OnOffType.ON.equals(enabled)) {
+            data.setConfigured(true);
+        }
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void setAlarmTime(int position, DateTimeType time)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = fetchAlarmSettingsData(position);
+        data.setConfigured(true);
+        data.setAlarmTime(time);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void setAlarmRepeatDay(int position, DecimalType days)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = new AlarmSettingsData();
+        data.setPosition(position);
+        data.setConfigured(true);
+        data.setRepeatDayState(days);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void toggleAlarmPowerWake(int position, OnOffType state)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = fetchAlarmSettingsData(position);
+        data.setPosition(position);
+        data.setPowerWakeState(state);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void setAlarmPowerWakeDelay(int position, QuantityType<Time> time)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = fetchAlarmSettingsData(position);
+        data.setConfigured(true);
+        data.setPowerWakeDelayState(time);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void setAlarmSunriseDuration(int position, QuantityType<Time> duration)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = new AlarmSettingsData();
+        data.setPosition(position);
+        data.setConfigured(true);
+        data.setSunriseDurationState(duration);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void setAlarmSunriseBrightness(int position, PercentType percent)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = new AlarmSettingsData();
+        data.setPosition(position);
+        data.setConfigured(true);
+        data.setSunriseBrightnessState(percent);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void setAlarmSunriseSchema(int position, DecimalType schema)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = new AlarmSettingsData();
+        data.setPosition(position);
+        data.setConfigured(true);
+        data.setSunriseSchemaState(schema);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void setAlarmSound(int position, StringType sound)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = new AlarmSettingsData();
+        data.setPosition(position);
+        data.setConfigured(true);
+        data.setAlarmSoundState(sound);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
+    public void setAlarmVolume(int position, PercentType volume)
+            throws TimeoutException, InterruptedException, ExecutionException {
+        final AlarmSettingsData data = new AlarmSettingsData();
+        data.setPosition(position);
+        data.setConfigured(true);
+        data.setAlarmVolumeState(volume);
+
+        executeUrl("PUT", ALARM_EDIT_ENDPOINT, data);
+    }
+
     private <T> T executeUrl(String httpMethod, String endpoint, Class<T> classOfT)
             throws TimeoutException, InterruptedException, ExecutionException {
-        final String responseBody = executeUrl("GET", endpoint, (String) null);
-        final T data = gson.fromJson(responseBody, classOfT);
-        return data;
+        final String responseBody = executeUrl(httpMethod, endpoint, (String) null);
+        return gson.fromJson(responseBody, classOfT);
     }
 
     private void executeUrl(String httpMethod, String endpoint, Object data)
