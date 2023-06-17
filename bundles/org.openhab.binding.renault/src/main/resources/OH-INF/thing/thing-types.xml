@@ -34,7 +34,7 @@
 		</properties>
 
 		<config-description>
-			<parameter name="accountType" type="text" required="true">
+			<parameter name="accountType" type="text">
 				<label>Account Type</label>
 				<options>
 					<option value="MYDACIA">MyDacia</option>
