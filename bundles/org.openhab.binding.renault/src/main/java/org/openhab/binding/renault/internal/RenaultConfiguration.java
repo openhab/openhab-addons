@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class RenaultConfiguration {
 
+    public String accountType = "MYRENAULT";
     public String myRenaultUsername = "";
     public String myRenaultPassword = "";
     public String locale = "";

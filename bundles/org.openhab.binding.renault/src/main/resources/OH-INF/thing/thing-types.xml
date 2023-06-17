@@ -34,7 +34,14 @@
 		</properties>
 
 		<config-description>
-
+			<parameter name="accountType" type="text">
+				<label>Account Type</label>
+				<options>
+					<option value="MYDACIA">MyDacia</option>
+					<option value="MYRENAULT">MyRenault</option>
+				</options>
+				<default>MYRENAULT</default>
+			</parameter>
 			<parameter name="myRenaultUsername" type="text" required="true">
 				<label>MyRenault Username</label>
 			</parameter>
