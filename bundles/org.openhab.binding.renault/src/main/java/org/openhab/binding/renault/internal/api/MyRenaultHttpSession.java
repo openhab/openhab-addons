@@ -192,14 +192,14 @@ public class MyRenaultHttpSession {
         if (responseJson != null) {
             JsonArray accounts = responseJson.getAsJsonArray("accounts");
             for (int i = 0; i < accounts.size(); i++) {
-                if (accounts.get(i).getAsJsonObject().get("accountType").getAsString().equals("MYRENAULT")) {
+                if (accounts.get(i).getAsJsonObject().get("accountType").getAsString().equals(config.accountType)) {
                     kamereonaccountId = accounts.get(i).getAsJsonObject().get("accountId").getAsString();
                     break;
                 }
             }
         }
         if (kamereonaccountId == null) {
-            throw new RenaultException("Can not get Kamereon MyRenault Account ID!");
+            throw new RenaultException("Can not get Kamereon " + config.accountType + " Account ID!");
         }
     }
 
