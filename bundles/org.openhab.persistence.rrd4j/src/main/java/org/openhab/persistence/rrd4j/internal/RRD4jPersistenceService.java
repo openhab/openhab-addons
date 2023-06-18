@@ -205,6 +205,16 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             return;
         }
 
+        try {
+            if (now < db.getLastUpdateTime()) {
+                logger.warn("RRD4J does not support adding past value this={}, last update={}. Discarding {} - {}", now,
+                        db.getLastUpdateTime(), name, value);
+                return;
+            }
+        } catch (IOException ignored) {
+            // we can ignore that here, we'll fail again later.
+        }
+
         ConsolFun function = getConsolidationFunction(db);
         if (function != ConsolFun.AVERAGE) {
             try {
@@ -231,8 +241,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             Sample sample = db.createSample();
             sample.setTime(now);
             double storeValue = value;
-            if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) { // counter values must be
-                                                                                  // adjusted by stepsize
+            if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) {
+                // counter values must be adjusted by stepsize
                 storeValue = value * db.getRrdDef().getStep();
             }
             sample.setValue(DATASOURCE_STATE, storeValue);
@@ -247,8 +257,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                     job.cancel(true);
                     scheduledJobs.remove(name);
                 }
-                job = scheduler.schedule(() -> internalStore(name, value, now + 1, false), 1, TimeUnit.SECONDS);
-                scheduledJobs.put(name, job);
+                internalStore(name, value, now + 1, false);
             } else {
                 logger.warn("Could not persist '{}' to rrd4j database: {}", name, e.getMessage());
             }
