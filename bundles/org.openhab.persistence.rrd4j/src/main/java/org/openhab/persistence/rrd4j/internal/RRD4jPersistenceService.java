@@ -206,10 +206,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         try {
-        if (now < db.getLastUpdateTime()) {
-            logger.warn("RRD4J does not support adding past value this={}, last update={}. Discarding {} - {}", now, db.getLastUpdateTime(), name, value);
-            return;
-        }} catch (IOException ignored) {
+            if (now < db.getLastUpdateTime()) {
+                logger.warn("RRD4J does not support adding past value this={}, last update={}. Discarding {} - {}", now,
+                        db.getLastUpdateTime(), name, value);
+                return;
+            }
+        } catch (IOException ignored) {
             // we can ignore that here, we'll fail again later.
         }
 
