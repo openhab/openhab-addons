@@ -708,7 +708,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z,
                                              // Alarm Zone (#Z) --> Z
                     str = str.substring(1);
-                } else if (str.indexOf('#') > 0) { // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z
+                } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') { // Thermo zone Z and actuator N (Z#N,
+                                                                           // Z=[1-99], N=[1-9]) --> Z
                     str = str.substring(0, str.indexOf('#'));
                 }
             }

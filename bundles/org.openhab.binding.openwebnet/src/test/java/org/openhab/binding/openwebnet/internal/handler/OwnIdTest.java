@@ -62,7 +62,7 @@ public class OwnIdTest {
      * BUS Thermo zone      1               1                   4.1             1
      * BUS Thermo zone CU   #1              1                   4.1             1
      * BUS Thermo CU 99-z   #0              0                   4.0             0
-     * BUS Thermo CU 4-z    #0#1            0                   4.0h1           0h1
+     * BUS Thermo CU 4-z    #0#1            0h1                 4.0h1           0h1
      * BUS Thermo actuator  1#2             1                   4.1             1
      * BUS TempSensor       500             500                 4.500           500
      * BUS Energy           51              51                  18.51           51

@@ -253,13 +253,12 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
             logger.debug("CU found: {}", w);
             if (w.value().charAt(0) == '#') { // 99-zone CU
                 thingLabel += " 99-zone";
-                logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@ THERMO CU found 99-zone: where={}, whereConfig={}", w,
+                logger.debug("@@@@@ THERMO CU found 99-zone: where={}, ownId={}, whereConfig={}", w, ownId,
                         whereConfig);
             } else {
                 thingLabel += " 4-zone";
                 whereConfig = "#" + w.value();
-                logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@ THERMO CU found 4-zone: where={}, whereConfig={}", w,
-                        whereConfig);
+                logger.debug("@@@@ THERMO CU found 4-zone: where={}, ownId={}, whereConfig={}", w, ownId, whereConfig);
             }
         } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID)) {
             if (cuFound) {
@@ -267,7 +266,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE, false);
             }
             whereConfig = "" + ((WhereThermo) w).getZone();
-            logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@ THERMO ZONE found: where={}, whereConfig={}, standalone={}", w,
+            logger.debug("@@@@@ THERMO ZONE found: where={}, ownId={}, whereConfig={}, standalone={}", w, ownId,
                     whereConfig, properties.get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE));
         }
 

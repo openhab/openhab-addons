@@ -26,6 +26,8 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
@@ -46,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * commands/messages for Thermoregulation
  * Things. It extends the abstract {@link OpenWebNetThingHandler}.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution. Added support for 4-zone CU
  * @author Andrea Conte - Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
  */
@@ -95,19 +97,17 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             if (standAloneConfig != null) {
                 isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
             }
-            logger.debug("@@@@@@@@@@@@@@@@@@@@  THERMO ZONE INITIALIZE isStandAlone={}", isStandAlone);
+            logger.debug("@@@@  THERMO ZONE INITIALIZE isStandAlone={}", isStandAlone);
         } else {
 
-            /*
-             * // central unit must have WHERE=0
-             * if (!deviceWhere.value().equals("0")) {
-             * logger.warn("initialize() Invalid WHERE={} for Central Unit.",
-             * deviceWhere.value());
-             *
-             * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-             * "@text/offline.conf-error-where");
-             * }
-             */
+            // central unit must have WHERE=#0 or WHERE=0 or WHERE=#0#n
+            String w = deviceWhere.value();
+            if (w == null || !("0".equals(w) || "#0".equals(w) || w.startsWith("#0#"))) {
+                logger.warn("initialize() Invalid WHERE={} for Central Unit.", deviceWhere.value());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error-where");
+                return;
+            }
             // reset state of signal channels (they will be setted when specific messages
             // are received)
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL, OnOffType.OFF);
@@ -267,7 +267,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private String getWhere(String where) {
         if (isCentralUnit) {
-            return "#0";
+            return where;
         } else {
             return isStandAlone ? where : "#" + where;
         }
