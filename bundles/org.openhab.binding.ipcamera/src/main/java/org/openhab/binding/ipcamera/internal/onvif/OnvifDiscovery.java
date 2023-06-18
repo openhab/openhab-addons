@@ -151,8 +151,8 @@ public class OnvifDiscovery {
                     brand = "onvif";
                 }
                 logger.info("Possible {} camera found at:{}", brand, packet.sender().getHostString());
-                if (brand.equals("reolink")) {
-                    ipCameraDiscoveryService.newCameraFound(brand, packet.sender().getHostString(), 80);
+                if ("reolink".equals(brand)) {
+                    ipCameraDiscoveryService.newCameraFound(brand, packet.sender().getHostString(), 8000);
                 } else {
                     ipCameraDiscoveryService.newCameraFound(brand, packet.sender().getHostString(), 80);
                 }
@@ -179,8 +179,6 @@ public class OnvifDiscovery {
             return "dahua";
         } else if (response.toLowerCase().contains("dh-sd")) {
             return "dahua";
-        } else if (response.toLowerCase().contains("reolink")) {
-            return "reolink";
         }
         return "onvif";
     }
