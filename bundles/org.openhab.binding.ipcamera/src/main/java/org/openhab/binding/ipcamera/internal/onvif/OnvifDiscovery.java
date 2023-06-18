@@ -144,8 +144,18 @@ public class OnvifDiscovery {
             if (!xAddr.isEmpty()) {
                 searchReply(xAddr, xml);
             } else if (xml.contains("onvif")) {
-                logger.info("Possible ONVIF camera found at:{}", packet.sender().getHostString());
-                ipCameraDiscoveryService.newCameraFound("onvif", packet.sender().getHostString(), 80);
+                String brand;
+                try {
+                    brand = getBrandFromLoginPage(packet.sender().getHostString());
+                } catch (IOException e) {
+                    brand = "onvif";
+                }
+                logger.info("Possible {} camera found at:{}", brand, packet.sender().getHostString());
+                if (brand.equals("reolink")) {
+                    ipCameraDiscoveryService.newCameraFound(brand, packet.sender().getHostString(), 80);
+                } else {
+                    ipCameraDiscoveryService.newCameraFound(brand, packet.sender().getHostString(), 80);
+                }
             }
         }
     }
@@ -155,14 +165,16 @@ public class OnvifDiscovery {
             return "dahua";
         } else if (response.toLowerCase().contains("dahua")) {
             return "dahua";
+        } else if (response.toLowerCase().contains("doorbird")) {
+            return "doorbird";
         } else if (response.toLowerCase().contains("foscam")) {
             return "foscam";
         } else if (response.toLowerCase().contains("hikvision")) {
             return "hikvision";
         } else if (response.toLowerCase().contains("instar")) {
             return "instar";
-        } else if (response.toLowerCase().contains("doorbird")) {
-            return "doorbird";
+        } else if (response.toLowerCase().contains("reolink")) {
+            return "reolink";
         } else if (response.toLowerCase().contains("ipc-")) {
             return "dahua";
         } else if (response.toLowerCase().contains("dh-sd")) {
