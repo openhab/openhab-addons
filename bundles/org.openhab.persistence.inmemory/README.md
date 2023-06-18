@@ -1,12 +1,14 @@
-# MapDB Persistence
+# InMemory Persistence
 
-The [MapDB](https://mapdb.org/) persistence service is based on a simple key-value store that only saves the last value.
-MapDB is useful for restoring items that have the `restoreOnStartup` strategy because other persistence options have some drawbacks if only the last value is needed on restarts.
+The InMemory persistence service provides a volatile storage, i.e. it is cleared on shutdown.
+Because of that the `restoreOnStartup` strategy is not supported for this service.
 
-Some disadvantages of other persistence services compared to MapDB are that they:
+The main use-case is to store data that is needed during runtime, e.g. temporary storage of forecast data that is retrieved from a binding.
 
-- grow in time
-- require complex installs (`influxdb`, `jdbc`, `jpa`)
-- `rrd4j` cannot store all item types (only numeric types)
+Since all data is stored in memory only, there is no default strategy for this service.
+Unlike other persistence services, you MUST add a configuration, otherwise no data will be persisted.
+To avoid excessive memory usage, it is recommended to persist only a limited number of items and use a strategy that stores only data that is actually needed.
 
-It is only possible to query the last value and not other historic values because the MapDB persistence service can only store one value per item.
+The service has a global configuration option `maxEntries` to limit the number of datapoints per item, the default value is `512`.
+When the number of datapoints is reached and a new value is persisted, the oldest (by timestamp) value will be removed.
+A `maxEntries` value of `0` disables automatic purging.
