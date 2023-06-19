@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>growatt Binding</name>
-	<description>This is the binding for growatt.</description>
+	<name>Growatt Binding</name>
+	<description>This is the binding for Growatt solar inverters.</description>
 
 </addon:addon>

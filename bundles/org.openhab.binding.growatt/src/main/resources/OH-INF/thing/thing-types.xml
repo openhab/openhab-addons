@@ -317,8 +317,8 @@
 
 			<!-- inverter up time -->
 			<channel id="total-work-time" typeId="work-time">
-                <label>Total Working Time</label>
-                <description>Total inverter working time.</description>
+				<label>Total Working Time</label>
+				<description>Total inverter working time.</description>
 			</channel>
 
 			<!-- bus voltages -->
@@ -481,7 +481,7 @@
 	<!-- Binding Specific Channel Types -->
 	<channel-type id="code">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Code</label>
+		<label>n</label>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
 
@@ -493,7 +493,7 @@
 
 	<channel-type id="frequency">
 		<item-type>Number:Frequency</item-type>
-		<label>Frequency</label>
+		<label>Hz</label>
 		<state readOnly="true" pattern="%0.2f Hz"/>
 	</channel-type>
 
@@ -505,7 +505,7 @@
 
 	<channel-type id="work-time">
 		<item-type>Number:Time</item-type>
-		<label>Time</label>
+		<label>h</label>
 		<state readOnly="true" pattern="%0.1f h"/>
 	</channel-type>
 
