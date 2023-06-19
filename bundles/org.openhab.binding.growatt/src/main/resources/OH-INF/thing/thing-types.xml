@@ -43,7 +43,7 @@
 			</channel>
 			<channel id="pv2-potential" typeId="system.electric-potential">
 				<label>String #2 Voltage</label>
-				<description>Voltage of solar panel string #2.</description>
+				<description>Voltage from solar panel string #2.</description>
 			</channel>
 
 			<channel id="pv1-current" typeId="system.electric-current">

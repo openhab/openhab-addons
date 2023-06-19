@@ -68,7 +68,7 @@ The list of all possible channels is as follows:
 | pv-power-in                       | Number:Power                  | Total solar input power.                                  |
 | pv-power-out                      | Number:Power                  | Total solar output power.                                 |
 | pv1-potential                     | Number:ElectricPotential      | Voltage from solar panel string #1.                       |
-| pv2-potential                     | Number:ElectricPotential      | Voltage of solar panel string #2.                         |
+| pv2-potential                     | Number:ElectricPotential      | Voltage from solar panel string #2.                       |
 | pv1-current                       | Number:ElectricCurrent        | Current from solar panel string #1.                       |
 | pv2-current                       | Number:ElectricCurrent        | Current from solar panel string #2.                       |
 | pv1-power                         | Number:Power                  | Power from solar panel string #1.                         |
