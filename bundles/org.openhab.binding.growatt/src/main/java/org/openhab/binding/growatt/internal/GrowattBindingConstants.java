@@ -76,20 +76,20 @@ public class GrowattBindingConstants {
             new AbstractMap.SimpleEntry<String, UoM>("grid-frequency", new UoM(Units.HERTZ, 100)),
 
             new AbstractMap.SimpleEntry<String, UoM>("grid-potential", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-2", new UoM(Units.VOLT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-3", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-s", new UoM(Units.VOLT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-potential-t", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("grid-potential-rs", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("grid-potential-st", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("grid-potential-tr", new UoM(Units.VOLT, 10)),
 
             // solar power to grid
             new AbstractMap.SimpleEntry<String, UoM>("grid-current", new UoM(Units.AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-current-2", new UoM(Units.AMPERE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-current-3", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-current-s", new UoM(Units.AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-current-t", new UoM(Units.AMPERE, 10)),
 
             new AbstractMap.SimpleEntry<String, UoM>("grid-power", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-power-2", new UoM(Units.WATT, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("grid-power-3", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-power-s", new UoM(Units.WATT, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("grid-power-t", new UoM(Units.WATT, 10)),
 
             new AbstractMap.SimpleEntry<String, UoM>("grid-va", new UoM(Units.VOLT_AMPERE, 10)),
 

@@ -76,6 +76,8 @@ public class GrowattInverterHandler extends BaseThingHandler {
             return;
         }
 
+        logger.debug("handleGrottDevice() channelStates size:{}", channelStates.size());
+
         // find unused channels
         List<Channel> actualChannels = thing.getChannels();
         List<Channel> unusedChannels = actualChannels.stream()

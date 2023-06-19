@@ -69,20 +69,20 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "pvfrequentie", alternate = { "line_freq" }) Integer grid_frequency;
 
     public @Nullable @SerializedName(value = "pvgridvoltage", alternate = { "grid_volt" }) Integer grid_potential;
-    public @Nullable @SerializedName(value = "pvgridvoltage2") Integer grid_potential_2;
-    public @Nullable @SerializedName(value = "pvgridvoltage3") Integer grid_potential_3;
+    public @Nullable @SerializedName(value = "pvgridvoltage2") Integer grid_potential_s;
+    public @Nullable @SerializedName(value = "pvgridvoltage3") Integer grid_potential_t;
     public @Nullable @SerializedName(value = "Vac_RS") Integer grid_potential_rs;
     public @Nullable @SerializedName(value = "Vac_ST") Integer grid_potential_st;
     public @Nullable @SerializedName(value = "Vac_TR") Integer grid_potential_tr;
 
     // solar power to grid
     public @Nullable @SerializedName(value = "pvgridcurrent", alternate = { "OP_Curr" }) Integer grid_current;
-    public @Nullable @SerializedName(value = "pvgridcurrent2") Integer grid_current_2;
-    public @Nullable @SerializedName(value = "pvgridcurrent3") Integer grid_current_3;
+    public @Nullable @SerializedName(value = "pvgridcurrent2") Integer grid_current_s;
+    public @Nullable @SerializedName(value = "pvgridcurrent3") Integer grid_current_t;
 
     public @Nullable @SerializedName(value = "pvgridpower", alternate = { "op_watt" }) Integer grid_power;
-    public @Nullable @SerializedName(value = "pvgridpower2") Integer grid_power_2;
-    public @Nullable @SerializedName(value = "pvgridpower3") Integer grid_power_3;
+    public @Nullable @SerializedName(value = "pvgridpower2") Integer grid_power_s;
+    public @Nullable @SerializedName(value = "pvgridpower3") Integer grid_power_t;
 
     public @Nullable @SerializedName(value = "op_va") Integer grid_va;
 

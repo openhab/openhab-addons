@@ -158,6 +158,10 @@ public class GrowattTest {
         assertEquals(QuantityType.valueOf(27.3, SIUnits.CELSIUS), channelStates.get("pv-temperature"));
         assertEquals(QuantityType.valueOf(4545.3, Units.KILOWATT_HOUR), channelStates.get("pv-grid-energy-total"));
 
+        assertEquals(QuantityType.valueOf(0, Units.VOLT), channelStates.get("pv2-potential"));
+        assertEquals(QuantityType.valueOf(0, Units.AMPERE), channelStates.get("pv2-current"));
+        assertEquals(QuantityType.valueOf(0, Units.WATT), channelStates.get("pv2-power"));
+
         State state = channelStates.get("total-work-time");
         assertTrue(state instanceof QuantityType<?>);
         if (state instanceof QuantityType<?> quantity) {
