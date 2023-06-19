@@ -42,7 +42,6 @@ public class DatahubTariffFilterFactory {
     private static final String GLN_L_NET = "5790001090111";
     private static final String GLN_MIDTFYNS_ELFORSYNING = "5790001089023";
     private static final String GLN_N1 = "5790001089030";
-    private static final String GLN_N1_RANDERS = "5790000681372";
     private static final String GLN_NETSELSKABET_ELVAERK = "5790000681075";
     private static final String GLN_NKE_ELNET = "5790001088231";
     private static final String GLN_NORD_ENERGI_NET = "5790000610877";
@@ -109,9 +108,6 @@ public class DatahubTariffFilterFactory {
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
             case GLN_N1:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("CD"), ChargeTypeCode.of("CD R")), Set.of(),
-                        DateQueryParameter.of(N1_CUTOFF_DATE));
-            case GLN_N1_RANDERS:
-                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("CD")), Set.of(NOTE_NET_TARIFF_C),
                         DateQueryParameter.of(N1_CUTOFF_DATE));
             case GLN_NETSELSKABET_ELVAERK:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("0NCFF")), Set.of(NOTE_NET_TARIFF_C + " Flex"),
