@@ -33,11 +33,12 @@ public class GrottDevice {
     public static final Type GROTT_DEVICE_ARRAY = new TypeToken<ArrayList<GrottDevice>>() {}.getType();
     // @formatter:on
 
-    private @SerializedName("device") String deviceId = "";
+    private @Nullable @SerializedName("device") String deviceId;
     private @Nullable GrottValues values;
 
     public String getDeviceId() {
-        return deviceId;
+        String deviceId = this.deviceId;
+        return deviceId != null ? deviceId : "unknown";
     }
 
     public @Nullable GrottValues getValues() {

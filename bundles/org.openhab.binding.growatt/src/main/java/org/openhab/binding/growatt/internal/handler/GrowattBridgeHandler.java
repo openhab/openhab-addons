@@ -21,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
@@ -50,6 +51,17 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
 
     private static final String GROWATT_SERVLET_PATH_ALIAS = "/growatt";
 
+    private static final String SERVLET_ONLINE_HTML = ""
+    // @formatter:off
+            + "<html>"
+            + "<body>"
+            + "<h1 style=\"font-family: Arial\">Growatt Binding</h1>"
+            + "<p>&nbsp;</p>"
+            + "<h3 style=\"font-family: Arial\">Servlet status: <span style=\"color: #339966;\">ONLINE</span></h3>"
+            + "</body>"
+            + "</html>";
+    // @formatter:off
+
     /**
      * Inner servlet instance class to handle POST data from the Grott application.
      */
@@ -63,6 +75,13 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
             response.setStatus(HttpServletResponse.SC_OK);
             handleGrottContent(request.getContentLength() <= 0 ? ""
                     : new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+        }
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType(MediaType.TEXT_HTML);
+            response.getWriter().write(SERVLET_ONLINE_HTML);
         }
     }
 

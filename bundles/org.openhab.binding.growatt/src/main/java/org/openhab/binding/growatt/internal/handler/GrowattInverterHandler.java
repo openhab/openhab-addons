@@ -12,17 +12,11 @@
  */
 package org.openhab.binding.growatt.internal.handler;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.growatt.internal.GrowattBindingConstants;
-import org.openhab.binding.growatt.internal.GrowattBindingConstants.UoM;
 import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
@@ -34,7 +28,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,62 +61,42 @@ public class GrowattInverterHandler extends BaseThingHandler {
     public void handleGrottDevice(GrottDevice grottDevice) {
         GrottValues grottValues = grottDevice.getValues();
         if (grottValues == null) {
-            logger.debug("handleGrottDevice() device '{}' contained no values", grottDevice.getDeviceId());
+            logger.warn("handleGrottDevice() device '{}' contains no values", grottDevice.getDeviceId());
             return;
         }
 
-        Map<String, State> channelStates = new HashMap<>();
-        List<String> missingFields = new ArrayList<>();
-
-        // read channel states from DTO
-        for (Entry<String, UoM> entry : GrowattBindingConstants.CHANNEL_ID_UOM_MAP.entrySet()) {
-            String channelId = entry.getKey();
-            Field field;
-            try {
-                field = GrottValues.class.getField(channelId);
-            } catch (NoSuchFieldException e) {
-                missingFields.add(channelId);
-                continue;
-            } catch (SecurityException e) {
-                logger.debug("handleGrottDevice() security exception field '{}'", channelId);
-                continue;
-            }
-            Object value;
-            try {
-                value = field.get(grottValues);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                logger.debug("handleGrottDevice() error reading field '{}' value", channelId);
-                continue;
-            }
-            if (value != null && (value instanceof Integer)) {
-                UoM uom = entry.getValue();
-                channelStates.put(channelId,
-                        QuantityType.valueOf(((Integer) value).doubleValue() / uom.divisor, uom.units));
-            }
+        // get channel states
+        Map<String, QuantityType<?>> channelStates;
+        try {
+            channelStates = grottValues.getChannelStates();
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
+            // should never happen since previously tested in JUnit tests
+            logger.warn("handleGrottDevice() unexpected exception:{}, message:{}", e.getClass().getName(),
+                    e.getMessage(), e);
+            return;
         }
 
-        // warn if fields missing from DTO
-        if (!missingFields.isEmpty() && logger.isWarnEnabled()) {
-            logger.warn("handleGrottDevice() please notify maintainers: GrottValues.class is missing fields: {}",
-                    missingFields.stream().collect(Collectors.joining(",")));
-        }
+        // find unused channels
+        List<Channel> actualChannels = thing.getChannels();
+        List<Channel> unusedChannels = actualChannels.stream()
+                .filter(channel -> !channelStates.containsKey(channel.getUID().getId())).collect(Collectors.toList());
 
         // remove unused channels
-        List<Channel> unusedChannels = thing.getChannels().stream()
-                .filter(channel -> !channelStates.containsKey(channel.getUID().getId())).collect(Collectors.toList());
         if (!unusedChannels.isEmpty()) {
             updateThing(editThing().withoutChannels(unusedChannels).build());
-            logger.debug("handleGrottDevice() removed {} unused channels", unusedChannels.size());
+            logger.debug("handleGrottDevice() channel count {} reduced by {} to {}", actualChannels.size(),
+                    unusedChannels.size(), thing.getChannels().size());
         }
 
-        // update channel states
-        List<String> channelIds = thing.getChannels().stream().map(channel -> channel.getUID().getId())
+        List<String> thingChannelIds = thing.getChannels().stream().map(channel -> channel.getUID().getId())
                 .collect(Collectors.toList());
+
+        // update channel states
         channelStates.forEach((channelId, state) -> {
-            if (channelIds.contains(channelId)) {
+            if (thingChannelIds.contains(channelId)) {
                 updateState(channelId, state);
             } else {
-                logger.debug("handleGrottDevice() channel '{}' not implemented in thing", channelId);
+                logger.debug("handleGrottDevice() channel '{}' not found in thing", channelId);
             }
         });
     }
@@ -149,5 +122,6 @@ public class GrowattInverterHandler extends BaseThingHandler {
         GrowattInverterConfiguration config = getConfigAs(GrowattInverterConfiguration.class);
         deviceId = config.deviceId;
         updateStatus(ThingStatus.UNKNOWN);
+        logger.debug("initialize() thing has {} channels", thing.getChannels().size());
     }
 }
