@@ -14,7 +14,8 @@ The binding supports two types of things:
 
 ## Discovery
 
-There is no automatic discovery of the bridge or inverter things.
+There is no automatic discovery of the bridge.
+However if bridge exists and it receives inverter data, then a matching inverter thing is created in the Inbox.
 
 ## Grott Application
 
@@ -29,19 +30,54 @@ _**NOTE**: make sure that the Grott application is fully operational for your in
 
 You should configure the Grott application via its `grott.ini` file.
 Configure Grott to match your inverter according to the [instructions](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor).
-To operate with OpenHAB the recommended Grott configuration is as follows:
 
-- Configure Grott to run in proxy mode.
-- Configure Grott to start as a service.
-- Configure your inverter type in Grott.
-- Install the `grottext.py` application extension in the Grott home folder.
-- Configure the `grottext` extension's ip address, port, and path via `grott.ini` as follows:
+### 1. Install Python
 
-| Entry   | Configuration Entry Value                        |
-|---------|--------------------------------------------------|
-| ip      | IP address of your OpenHab computer.             |
-| port    | Port of your OpenHab core server (usually 8080). |
-| path    | 'growatt' (fixed value).                         |
+If Python is not already installed on you computer, then istall it first.
+
+### 2. Install Grott
+
+First install the Grott application and application extension files in a Grott specific home folder.
+The recommended Grott configuration for OpenHAB is as follows:
+
+- Create the Grott 'home' folder e.g. `/usr/bin/grott/`.
+- Copy `grott.py`, `grottconf.py`, `grottdata.py`, `grottproxy.py`, `grottsniffer.py`, `grottserver.py` to the home folder.
+- Copy `grottext.py` application extension to the home folder.
+- Copy `grott.ini` configuration file to the home folder.
+- Modify `grott.ini` to run in proxy mode; not in compatibility mode; show your inverter type; not run MQTT; not run PVOutput; enable the `grottext` extension; and set the OpenHAB `/growatt` servlet url:
+
+```php
+[Generic]
+mode = proxy
+compat = False
+invtype = sph // or whatever
+
+[MQTT]
+nomqtt = True
+
+[PVOutput]
+pvoutput = False
+
+[extension]
+extension = True
+extname = grottext
+extvar = {"url": "http://xxx.xxx.xxx.xxx:8080/growatt"}
+```
+
+### 3. Run Grott as a Service
+
+For best performance the Grott application should be started automatically as a service when your computer starts.
+
+- Copy the `grott.service` file to the `/etc/systemd/system/` folder
+- Modify `grott.service` to enter your user name; the Grott settings; the path to Phyton; and the path to the Grott application:
+
+```php
+[Service]
+SyslogIdentifier=grott
+User=openhabian // your user name
+WorkingDirectory=/usr/bin/grott/
+ExecStart=-/usr/bin/python3 -u /usr/bin/grott/grott.py -v
+```
 
 ## Thing Configuration
 
