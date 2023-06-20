@@ -22,6 +22,8 @@ import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -34,8 +36,11 @@ public class GrowattDiscoveryService extends AbstractDiscoveryService {
 
     private final Map<ThingUID, Set<String>> bridgeInverterIds = new ConcurrentHashMap<>();
 
-    public GrowattDiscoveryService() throws IllegalArgumentException {
+    public GrowattDiscoveryService(TranslationProvider i18nProvider, LocaleProvider localeProvider)
+            throws IllegalArgumentException {
         super(Set.of(GrowattBindingConstants.THING_TYPE_INVERTER), 5, false);
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     public void putInverters(ThingUID bridgeUID, Set<String> inverterIds) {

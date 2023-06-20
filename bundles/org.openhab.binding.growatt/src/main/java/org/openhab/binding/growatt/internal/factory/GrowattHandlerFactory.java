@@ -28,6 +28,8 @@ import org.openhab.binding.growatt.internal.handler.GrowattBridgeHandler;
 import org.openhab.binding.growatt.internal.handler.GrowattInverterHandler;
 import org.openhab.binding.growatt.internal.servlet.GrottHttpServlet;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -60,13 +62,15 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(GrowattHandlerFactory.class);
 
     private final GrottHttpServlet httpServlet = new GrottHttpServlet();
-    private final GrowattDiscoveryService discoveryService = new GrowattDiscoveryService();
+    private final GrowattDiscoveryService discoveryService;
     private final Set<ThingUID> bridges = Collections.synchronizedSet(new HashSet<>());
 
     private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
 
     @Activate
-    public GrowattHandlerFactory(@Reference HttpService httpService) {
+    public GrowattHandlerFactory(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
+            @Reference HttpService httpService) {
+        discoveryService = new GrowattDiscoveryService(i18nProvider, localeProvider);
         try {
             httpService.registerServlet(GrottHttpServlet.PATH, httpServlet, null, null);
         } catch (ServletException | NamespaceException e) {
