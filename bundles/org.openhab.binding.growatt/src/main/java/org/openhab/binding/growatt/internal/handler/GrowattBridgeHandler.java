@@ -12,27 +12,18 @@
  */
 package org.openhab.binding.growatt.internal.handler;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.growatt.internal.discovery.GrowattDiscoveryService;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
+import org.openhab.binding.growatt.internal.servlet.GrottHttpServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,54 +40,23 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GrowattBridgeHandler extends BaseBridgeHandler {
 
-    private static final String GROWATT_SERVLET_PATH_ALIAS = "/growatt";
-
-    private static final String SERVLET_ONLINE_HTML = ""
-    // @formatter:off
-            + "<html>"
-            + "<body>"
-            + "<h1 style=\"font-family: Arial\">Growatt Binding</h1>"
-            + "<p>&nbsp;</p>"
-            + "<h3 style=\"font-family: Arial\">Servlet status: <span style=\"color: #339966;\">ONLINE</span></h3>"
-            + "</body>"
-            + "</html>";
-    // @formatter:off
-
-    /**
-     * Inner servlet instance class to handle POST data from the Grott application.
-     */
-    private class GrottServlet extends HttpServlet {
-
-        private static final long serialVersionUID = 36178542423191036L;
-
-        @Override
-        protected void doPost(HttpServletRequest request, HttpServletResponse response)
-                throws ServletException, IOException {
-            response.setStatus(HttpServletResponse.SC_OK);
-            handleGrottContent(request.getContentLength() <= 0 ? ""
-                    : new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
-        }
-
-        @Override
-        protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType(MediaType.TEXT_HTML);
-            response.getWriter().write(SERVLET_ONLINE_HTML);
-        }
-    }
-
     private final Logger logger = LoggerFactory.getLogger(GrowattBridgeHandler.class);
     private final Gson gson = new Gson();
-    private final HttpService httpService;
+    private final GrowattDiscoveryService discoveryService;
+    private final Map<String, GrottDevice> inverters = new HashMap<>();
+    private final GrottHttpServlet httpServlet;
 
-    public GrowattBridgeHandler(Bridge bridge, HttpService httpService) {
+    public GrowattBridgeHandler(Bridge bridge, GrottHttpServlet httpServlet, GrowattDiscoveryService discoveryService) {
         super(bridge);
-        this.httpService = httpService;
+        this.httpServlet = httpServlet;
+        this.discoveryService = discoveryService;
     }
 
     @Override
     public void dispose() {
-        httpService.unregister(GROWATT_SERVLET_PATH_ALIAS);
+        inverters.clear();
+        httpServlet.handlerRemove(this);
+        discoveryService.putInverters(thing.getUID(), inverters.keySet());
     }
 
     @Override
@@ -105,50 +65,50 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Process JSON content posted by the Grott application to our servlet.
+     * Process JSON content posted to the Grott application servlet.
      */
     @SuppressWarnings("null")
-    protected void handleGrottContent(String json) {
+    public void handleGrottContent(String json) {
         logger.trace("handleGrottContent() json:{}", json);
         JsonElement jsonElement;
         try {
             jsonElement = JsonParser.parseString(json);
+            if (!jsonElement.isJsonObject()) {
+                throw new JsonSyntaxException("Unsupported element type");
+            }
         } catch (JsonSyntaxException e) {
             logger.debug("handleGrottContent() invalid JSON string '{}'", json, e);
             return;
         }
-        List<GrottDevice> grottDevices = new ArrayList<>();
         try {
-            if (jsonElement.isJsonObject()) {
-                GrottDevice device = gson.fromJson(jsonElement, GrottDevice.class);
-                if (device != null) {
-                    grottDevices.add(device);
-                }
-            } else if (jsonElement.isJsonArray()) {
-                List<GrottDevice> devices = gson.fromJson(jsonElement, GrottDevice.GROTT_DEVICE_ARRAY);
-                if (devices != null) {
-                    grottDevices.addAll(devices);
-                }
-            } else {
-                throw new JsonSyntaxException("Unsupported element type");
+            GrottDevice inverter = gson.fromJson(jsonElement, GrottDevice.class);
+            if (inverter == null) {
+                throw new JsonSyntaxException("Inverter object is null");
             }
+            putInverter(inverter);
         } catch (JsonSyntaxException e) {
             logger.debug("handleGrottContent() error parsing JSON '{}'", json, e);
             return;
         }
         getThing().getThings().stream().map(thing -> thing.getHandler())
                 .filter(handler -> (handler instanceof GrowattInverterHandler))
-                .forEach(handler -> ((GrowattInverterHandler) handler).handleGrottDevices(grottDevices));
+                .forEach(handler -> ((GrowattInverterHandler) handler).handleInverters(inverters.values()));
     }
 
     @Override
     public void initialize() {
-        try {
-            httpService.registerServlet(GROWATT_SERVLET_PATH_ALIAS, new GrottServlet(), null, null);
-            updateStatus(ThingStatus.ONLINE);
-        } catch (ServletException | NamespaceException e) {
-            logger.debug("initialize() exception '{}'", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        httpServlet.handlerAdd(this);
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
+     * Put the given GrottDevice in our inverters map, and notify the discovery service if it was not already there.
+     *
+     * @param inverter a GrottDevice inverter object.
+     */
+    private void putInverter(GrottDevice inverter) {
+        if (inverters.put(inverter.getDeviceId(), inverter) == null) {
+            discoveryService.putInverters(thing.getUID(), inverters.keySet());
         }
     }
 }

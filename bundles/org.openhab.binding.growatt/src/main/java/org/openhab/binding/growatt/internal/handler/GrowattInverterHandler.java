@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.growatt.internal.handler;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,30 +54,39 @@ public class GrowattInverterHandler extends BaseThingHandler {
     }
 
     /**
-     * Receives a GrottDevice object containing data for this thing. Process the respective data values and update the
-     * channels accordingly.
+     * Receives a collection of GrottDevice inverter objects containing potential data for this thing. If the collection
+     * contains an entry matching the things's deviceId, and it contains GrottValues, then process it further. Otherwise
+     * go offline with a configuration error.
      *
-     * @param grottDevice a GrottDevice object containing the new status values.
+     * @param inverters collection of GrottDevice objects.
      */
-    public void handleGrottDevice(GrottDevice grottDevice) {
-        GrottValues grottValues = grottDevice.getValues();
-        if (grottValues == null) {
-            logger.warn("handleGrottDevice() device '{}' contains no values", grottDevice.getDeviceId());
-            return;
-        }
+    public void handleInverters(Collection<GrottDevice> inverters) {
+        inverters.stream().filter(inverter -> deviceId.equals(inverter.getDeviceId()))
+                .map(inverter -> inverter.getValues()).filter(values -> values != null).findAny()
+                .ifPresentOrElse(values -> {
+                    updateStatus(ThingStatus.ONLINE);
+                    handleInverterValues(values);
+                }, () -> {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                });
+    }
 
+    /**
+     * Receives a GrottValues object containing state values for this thing. Process the respective values and update
+     * the channels accordingly.
+     *
+     * @param inverter a GrottDevice object containing the new status values.
+     */
+    public void handleInverterValues(GrottValues inverterValues) {
         // get channel states
         Map<String, QuantityType<?>> channelStates;
         try {
-            channelStates = grottValues.getChannelStates();
+            channelStates = inverterValues.getChannelStates();
         } catch (NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
-            // should never happen since previously tested in JUnit tests
-            logger.warn("handleGrottDevice() unexpected exception:{}, message:{}", e.getClass().getName(),
+            logger.warn("handleInverterValues() unexpected exception:{}, message:{}", e.getClass().getName(),
                     e.getMessage(), e);
             return;
         }
-
-        logger.debug("handleGrottDevice() channelStates size:{}", channelStates.size());
 
         // find unused channels
         List<Channel> actualChannels = thing.getChannels();
@@ -86,7 +96,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
         // remove unused channels
         if (!unusedChannels.isEmpty()) {
             updateThing(editThing().withoutChannels(unusedChannels).build());
-            logger.debug("handleGrottDevice() channel count {} reduced by {} to {}", actualChannels.size(),
+            logger.debug("handleInverterValues() channel count {} reduced by {} to {}", actualChannels.size(),
                     unusedChannels.size(), thing.getChannels().size());
         }
 
@@ -98,25 +108,9 @@ public class GrowattInverterHandler extends BaseThingHandler {
             if (thingChannelIds.contains(channelId)) {
                 updateState(channelId, state);
             } else {
-                logger.debug("handleGrottDevice() channel '{}' not found in thing", channelId);
+                logger.debug("handleInverterValues() channel '{}' not found; try re-creating the thing", channelId);
             }
         });
-    }
-
-    /**
-     * Receives a list of GrottDevice objects containing potential data for this thing. If the list contains any entry
-     * matching the things's deviceId then process it further. Otherwise go offline with a configuration error.
-     *
-     * @param grottDevices list of GrottDevice objects.
-     */
-    public void handleGrottDevices(List<GrottDevice> grottDevices) {
-        grottDevices.stream().filter(grottDevice -> deviceId.equals(grottDevice.getDeviceId())).findAny()
-                .ifPresentOrElse(grottDevice -> {
-                    updateStatus(ThingStatus.ONLINE);
-                    handleGrottDevice(grottDevice);
-                }, () -> {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                });
     }
 
     @Override

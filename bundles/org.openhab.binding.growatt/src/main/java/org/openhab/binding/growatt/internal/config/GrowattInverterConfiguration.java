@@ -22,5 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class GrowattInverterConfiguration {
 
+    public static final String DEVICE_ID = "deviceId";
+
     public String deviceId = "";
 }
