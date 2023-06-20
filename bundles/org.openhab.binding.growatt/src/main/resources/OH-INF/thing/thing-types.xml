@@ -482,30 +482,35 @@
 	<channel-type id="code">
 		<item-type>Number:Dimensionless</item-type>
 		<label>n</label>
+		<category>Status</category>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
 
 	<channel-type id="percent">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percent</label>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%0.1f %%"/>
 	</channel-type>
 
 	<channel-type id="frequency">
 		<item-type>Number:Frequency</item-type>
 		<label>Hz</label>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%0.2f Hz"/>
 	</channel-type>
 
 	<channel-type id="va">
 		<item-type>Number:Power</item-type>
 		<label>VA</label>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%0.0f VA"/>
 	</channel-type>
 
 	<channel-type id="work-time">
 		<item-type>Number:Time</item-type>
 		<label>h</label>
+		<category>Time</category>
 		<state readOnly="true" pattern="%0.1f h"/>
 	</channel-type>
 
