@@ -63,12 +63,12 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private Thermoregulation.Function currentFunction = Thermoregulation.Function.GENERIC;
     private Thermoregulation.OperationMode currentMode = Thermoregulation.OperationMode.MANUAL;
+    private int currentWeeklyPrgNum = 1;
+    private int currentScenarioPrgNum = 1;
 
     private boolean isStandAlone = true; // true if zone is not associated to a CU
 
     private boolean isCentralUnit = false;
-
-    private String programNumber = "1";
 
     private static Set<String> probesInProtection = new HashSet<String>();
     private static Set<String> probesInOFF = new HashSet<String>();
@@ -113,8 +113,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL, OnOffType.OFF);
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF, OnOffType.OFF);
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION, OnOffType.OFF);
-            updateState(CHANNEL_CU_SCENARIO_PROGRAM_NUMBER, new DecimalType(programNumber));
-            updateState(CHANNEL_CU_WEEKLY_PROGRAM_NUMBER, new DecimalType(programNumber));
+            updateState(CHANNEL_CU_SCENARIO_PROGRAM_NUMBER, new DecimalType(currentScenarioPrgNum));
+            updateState(CHANNEL_CU_WEEKLY_PROGRAM_NUMBER, new DecimalType(currentWeeklyPrgNum));
             updateState(CHANNEL_CU_FAILURE_DISCOVERED, OnOffType.OFF);
         }
     }
@@ -136,7 +136,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 break;
             case CHANNEL_CU_WEEKLY_PROGRAM_NUMBER:
             case CHANNEL_CU_SCENARIO_PROGRAM_NUMBER:
-                handleSetProgramNumber(command);
+                handleSetProgramNumber(channel, command);
                 break;
             default: {
                 logger.warn("handleChannelCommand() Unsupported ChannelUID {}", channel.getId());
@@ -180,18 +180,29 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         }
     }
 
-    private void handleSetProgramNumber(Command command) {
+    private void handleSetProgramNumber(ChannelUID channel, Command command) {
         if (command instanceof DecimalType) {
             if (!isCentralUnit) {
                 logger.warn("handleSetProgramNumber() This command can be sent only for a Central Unit.");
                 return;
             }
 
-            programNumber = command.toString();
-            logger.debug("handleSetProgramNumber() Program number set to {}", programNumber);
+            int programNumber = ((DecimalType) command).intValue();
+            boolean updateOpMode = false;
 
-            // force OperationMode update if we are already in SCENARIO o WEEKLY mode
-            if (currentMode.isScenario() || currentMode.isWeekly()) {
+            if (CHANNEL_CU_WEEKLY_PROGRAM_NUMBER.equals(channel.getId())) {
+                updateOpMode = currentMode.isWeekly();
+                currentWeeklyPrgNum = programNumber;
+                logger.debug("handleSetProgramNumber() currentWeeklyPrgNum changed to: {}", programNumber);
+
+            } else {
+                updateOpMode = currentMode.isScenario();
+                currentScenarioPrgNum = programNumber;
+                logger.debug("handleSetProgramNumber() currentScenarioPrgNum changed to: {}", programNumber);
+            }
+
+            // force OperationMode update if we are already in SCENARIO or WEEKLY mode
+            if (updateOpMode) {
                 try {
                     Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode
                             .valueOf(currentMode.mode() + "_" + programNumber);
@@ -204,6 +215,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     logger.warn("handleSetProgramNumber() Unsupported command {} for thing {}", command,
                             getThing().getUID());
                 }
+            } else { // just update channel
+                updateState(channel, new DecimalType(programNumber));
             }
 
         } else {
@@ -244,6 +257,12 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode.OFF;
 
                     if (isCentralUnit && WhatThermo.isComplex(command.toString())) {
+                        int programNumber = 0;
+                        if ("WEEKLY".equalsIgnoreCase(command.toString())) {
+                            programNumber = currentWeeklyPrgNum;
+                        } else {
+                            programNumber = currentScenarioPrgNum;
+                        }
                         new_mode = Thermoregulation.OperationMode.valueOf(command.toString() + "_" + programNumber);
 
                         // store current mode
@@ -429,13 +448,16 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         // must convert from OperationMode to Mode and set ProgramNumber when necessary
         updateState(CHANNEL_MODE, new StringType(operationMode.mode()));
+        Integer programN = operationMode.programNumber();
         if (operationMode.isScenario()) {
-            logger.debug("updateModeAndFunction() set SCENARIO program to: {}", operationMode.programNumber());
-            updateState(CHANNEL_CU_SCENARIO_PROGRAM_NUMBER, new DecimalType(operationMode.programNumber()));
+            logger.debug("updateModeAndFunction() set SCENARIO program to: {}", programN);
+            updateState(CHANNEL_CU_SCENARIO_PROGRAM_NUMBER, new DecimalType(programN));
+            currentScenarioPrgNum = programN;
         }
         if (operationMode.isWeekly()) {
-            logger.debug("updateModeAndFunction() set WEEKLY program to: {}", operationMode.programNumber());
-            updateState(CHANNEL_CU_WEEKLY_PROGRAM_NUMBER, new DecimalType(operationMode.programNumber()));
+            logger.debug("updateModeAndFunction() set WEEKLY program to: {}", programN);
+            updateState(CHANNEL_CU_WEEKLY_PROGRAM_NUMBER, new DecimalType(programN));
+            currentWeeklyPrgNum = programN;
         }
 
         // store current function
