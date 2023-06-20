@@ -238,8 +238,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         boolean success = false;
 
         // don't sync clock if override is on because it will reset temporary hold
-        if (rthermData.getThermostatData().getOverride() == null
-                || rthermData.getThermostatData().getOverride().compareTo(0) == 0) {
+        final Integer override = rthermData.getThermostatData().getOverride();
+        if (override == null || override.compareTo(0) == 0) {
             Calendar c = Calendar.getInstance();
 
             // The thermostat week starts as Monday = 0, subtract 2 since in standard DoW Monday = 2
