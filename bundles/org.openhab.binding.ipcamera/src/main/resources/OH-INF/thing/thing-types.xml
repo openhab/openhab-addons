@@ -566,6 +566,15 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="disableSnapshotAtStartup" type="boolean" required="false" groupName="Settings">
+				<label>Disable Automatic Snapshot-Polling at Startup</label>
+				<description>For cameras without Snapshot URL, a ffmpeg process is automatically started for creating snapshots. Set
+					this flag to true, if you don't want it.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
 				<label>Use Continuous PTZ</label>
 				<description>Select if you want Relative (false) or Continuous (true) movements.

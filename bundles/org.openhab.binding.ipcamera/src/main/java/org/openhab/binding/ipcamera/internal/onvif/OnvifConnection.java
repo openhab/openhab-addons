@@ -14,6 +14,7 @@ package org.openhab.binding.ipcamera.internal.onvif;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -49,6 +50,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ConnectTimeoutException;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -127,6 +129,8 @@ public class OnvifConnection {
     private String imagingXAddr = "http://" + ipAddress + "/onvif/device_service";
     private String ptzXAddr = "http://" + ipAddress + "/onvif/ptz_service";
     private String subscriptionXAddr = "http://" + ipAddress + "/onvif/device_service";
+    private boolean connectError = false;
+    private boolean refusedError = false;
     private boolean isConnected = false;
     private int mediaProfileIndex = 0;
     private String snapshotUri = "";
@@ -312,10 +316,13 @@ public class OnvifConnection {
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
             connecting.lock();
             try {
+                connectError = false;
+                refusedError = false;
                 isConnected = true;
             } finally {
                 connecting.unlock();
             }
+            sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             parseDateAndTime(message);
             logger.debug("Openhabs UTC dateTime is:{}", getUTCdateTime());
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
@@ -324,6 +331,8 @@ public class OnvifConnection {
         } else if (message.contains("GetProfilesResponse")) {// 3rd to be sent.
             connecting.lock();
             try {
+                connectError = false;
+                refusedError = false;
                 isConnected = true;
             } finally {
                 connecting.unlock();
@@ -552,7 +561,7 @@ public class OnvifConnection {
 
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
-                    socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 0, 70));
+                    socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(20, 20, 20));
                     socketChannel.pipeline().addLast("HttpClientCodec", new HttpClientCodec());
                     socketChannel.pipeline().addLast("OnvifCodec", new OnvifCodec(getHandle()));
                 }
@@ -567,10 +576,22 @@ public class OnvifConnection {
                         return;
                     }
                     if (future.isSuccess()) {
+                        connectError = false;
                         Channel ch = future.channel();
                         ch.writeAndFlush(request);
                     } else { // an error occured
-                        logger.debug("Camera is not reachable on ONVIF port:{} or the port may be wrong.", onvifPort);
+                        if (future.isDone() && !future.isCancelled()) {
+                            Throwable cause = future.cause();
+                            logger.trace("connect failed - cause {}", cause.getMessage());
+                            if (cause instanceof ConnectTimeoutException) {
+                                logger.debug("Camera is not reachable on IP {}", ipAddress);
+                                connectError = true;
+                            } else if ((cause instanceof ConnectException)
+                                    && cause.getMessage().contains("Connection refused")) {
+                                logger.debug("Camera ONVIF port {} is refused.", onvifPort);
+                                connectError = true;
+                            }
+                        }
                         if (isConnected) {
                             disconnect();
                         }
@@ -913,17 +934,33 @@ public class OnvifConnection {
                 threadPool = Executors.newScheduledThreadPool(2);
                 sendOnvifRequest(requestBuilder(RequestType.GetSystemDateAndTime, deviceXAddr));
                 usingEvents = useEvents;
-                sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             }
         } finally {
             connecting.unlock();
         }
     }
 
+    public boolean isConnectError() {
+        return connectError;
+    }
+
+    public boolean isRefusedError() {
+        return refusedError;
+    }
+
     public boolean isConnected() {
         connecting.lock();
         try {
             return isConnected;
+        } finally {
+            connecting.unlock();
+        }
+    }
+
+    public void setIsConnected(boolean isConnected) {
+        connecting.lock();
+        try {
+            this.isConnected = isConnected;
         } finally {
             connecting.unlock();
         }
@@ -947,9 +984,9 @@ public class OnvifConnection {
     public void disconnect() {
         connecting.lock();// Lock out multiple disconnect()/connect() attempts as we try to send Unsubscribe.
         try {
-            isConnected = false;// isConnected is not thread safe, connecting.lock() used as fix.
             if (bootstrap != null) {
-                if (usingEvents && !mainEventLoopGroup.isShuttingDown()) {
+                if (isConnected && usingEvents && !mainEventLoopGroup.isShuttingDown()) {
+                    // Only makes sense to send if connected
                     // Some cameras may continue to send events even when they can't reach a server.
                     sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
                 }
@@ -958,6 +995,8 @@ public class OnvifConnection {
             } else {
                 cleanup();
             }
+
+            isConnected = false;// isConnected is not thread safe, connecting.lock() used as fix.
         } finally {
             connecting.unlock();
         }
