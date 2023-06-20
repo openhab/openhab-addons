@@ -1109,7 +1109,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -1225,21 +1225,22 @@ The `event` object provides some information about that trigger.
 
 This table gives an overview over the `event` object:
 
-| Property Name     | Trigger Types                                        | Description                                                                         | Rules DSL Equivalent   |
-|-------------------|------------------------------------------------------|-------------------------------------------------------------------------------------|------------------------|
-| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                                | `previousState`        |
-| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | New state of Item or Group that triggered event                                     | N/A                    |
-| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger`  | State of Item that triggered event                                                  | `triggeringItem.state` |
-| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`          | Command that triggered event                                                        | `receivedCommand`      |
-| `itemName`        | `Item****Trigger`, `Group****Trigger`                | Name of Item that triggered event                                                   | `triggeringItem.name`  |
-| `receivedEvent`   | `ChannelEventTrigger`                                | Channel event that triggered event                                                  | N/A                    |
-| `channelUID`      | `ChannelEventTrigger`                                | UID of channel that triggered event                                                 | N/A                    |
-| `oldStatus`       | `ThingStatusChangeTrigger`                           | Previous state of Thing that triggered event                                        | N/A                    |
-| `newStatus`       | `ThingStatusChangeTrigger`                           | New state of Thing that triggered event                                             | N/A                    |
-| `status`          | `ThingStatusUpdateTrigger`                           | State of Thing that triggered event                                                 | N/A                    |
-| `thingUID`        | `Thing****Trigger`                                   | UID of Thing that triggered event                                                   | N/A                    |
-| `eventType`       | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of event that triggered event (change, command, triggered, update)             | N/A                    |
-| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of trigger that triggered event                                                | N/A                    |
+| Property Name     | Trigger Types                                        | Description                                                             | Rules DSL Equivalent   |
+|-------------------|------------------------------------------------------|-------------------------------------------------------------------------|------------------------|
+| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                    | `previousState`        |
+| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | New state of Item or Group that triggered event                         | N/A                    |
+| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger`  | State of Item that triggered event                                      | `triggeringItem.state` |
+| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`          | Command that triggered event                                            | `receivedCommand`      |
+| `itemName`        | `Item****Trigger`, `Group****Trigger`                | Name of Item that triggered event                                       | `triggeringItem.name`  |
+| `groupName`       | `Group****Trigger`                                   | Name of the group whose member triggered event                          | N/A                    |
+| `receivedEvent`   | `ChannelEventTrigger`                                | Channel event that triggered event                                      | N/A                    |
+| `channelUID`      | `ChannelEventTrigger`                                | UID of channel that triggered event                                     | N/A                    |
+| `oldStatus`       | `ThingStatusChangeTrigger`                           | Previous state of Thing that triggered event                            | N/A                    |
+| `newStatus`       | `ThingStatusChangeTrigger`                           | New state of Thing that triggered event                                 | N/A                    |
+| `status`          | `ThingStatusUpdateTrigger`                           | State of Thing that triggered event                                     | N/A                    |
+| `thingUID`        | `Thing****Trigger`                                   | UID of Thing that triggered event                                       | N/A                    |
+| `eventType`       | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of event that triggered event (change, command, triggered, update) | N/A                    |
+| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of trigger that triggered event                                    | N/A                    |
 
 All properties are typeof `string`.
 
