@@ -176,7 +176,7 @@ The list of all possible channels is as follows:
 | battery-temperature               | Number:Temperature            | Battery temperature.                                      | yes      |
 | battery-potential                 | Number:ElectricPotential      | Battery voltage.                                          | yes      |
 | battery-display                   | Number:Dimensionless          | Battery display code.                                     | yes      |
-| battery-soc                       | Number:Dimensionless          | Battery SOC code.                                         | yes      |
+| battery-soc                       | Number:Dimensionless          | Battery State of Charge percent.                          | yes      |
 | system-fault-0                    | Number:Dimensionless          | System fault code #0.                                     | yes      |
 | system-fault-1                    | Number:Dimensionless          | System fault code #1.                                     | yes      |
 | system-fault-2                    | Number:Dimensionless          | System fault code #2.                                     | yes      |

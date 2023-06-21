@@ -184,7 +184,7 @@ public class GrowattBindingConstants {
             new AbstractMap.SimpleEntry<String, UoM>("battery-potential", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("battery-temperature", new UoM(SIUnits.CELSIUS, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("battery-display", new UoM(Units.ONE, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("battery-soc", new UoM(Units.ONE, 100)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-soc", new UoM(Units.PERCENT, 1)),
 
             // fault codes
             new AbstractMap.SimpleEntry<String, UoM>("system-fault-0", new UoM(Units.ONE, 1)),
@@ -209,7 +209,7 @@ public class GrowattBindingConstants {
             // duplicates ??
             new AbstractMap.SimpleEntry<String, UoM>("output-potential", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("output-frequency", new UoM(Units.HERTZ, 100)),
-            new AbstractMap.SimpleEntry<String, UoM>("load-percent", new UoM(Units.ONE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("load-percent", new UoM(Units.PERCENT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("inverter-current", new UoM(Units.AMPERE, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("grid-input-power", new UoM(Units.WATT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("grid-input-va", new UoM(Units.VOLT_AMPERE, 10))

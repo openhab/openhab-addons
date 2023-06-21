@@ -374,9 +374,9 @@
 				<label>Battery Display</label>
 				<description>Battery display code.</description>
 			</channel>
-			<channel id="battery-soc" typeId="advanced-status-code">
-				<label>Battery SOC</label>
-				<description>Battery SOC code.</description>
+			<channel id="battery-soc" typeId="advanced-percent">
+				<label>Battery Charge</label>
+				<description>Battery state of charge.</description>
 			</channel>
 
 			<!-- fault codes -->
@@ -503,7 +503,6 @@
 	<channel-type id="advanced-percent" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>advanced-percent</label>
-		<category>Energy</category>
 		<state readOnly="true" pattern="%0.1f %%"/>
 	</channel-type>
 
