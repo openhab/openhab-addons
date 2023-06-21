@@ -235,22 +235,27 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      * Sync the thermostat's clock with the host system clock
      */
     private void syncThermostatClock() {
-        Calendar c = Calendar.getInstance();
+        boolean success = false;
 
-        // The thermostat week starts as Monday = 0, subtract 2 since in standard DoW Monday = 2
-        int thermDayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
-        // Sunday will be -1, so add 7 to make it 6
-        if (thermDayOfWeek < 0) {
-            thermDayOfWeek += 7;
+        // don't sync clock if override is on because it will reset temporary hold
+        final Integer override = rthermData.getThermostatData().getOverride();
+        if (override == null || override.compareTo(0) == 0) {
+            Calendar c = Calendar.getInstance();
+
+            // The thermostat week starts as Monday = 0, subtract 2 since in standard DoW Monday = 2
+            int thermDayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
+            // Sunday will be -1, so add 7 to make it 6
+            if (thermDayOfWeek < 0) {
+                thermDayOfWeek += 7;
+            }
+
+            success = connector.sendCommand(null, null,
+                    String.format(JSON_TIME, thermDayOfWeek, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)),
+                    TIME_RESOURCE).contains("success");
         }
 
-        final String response = connector.sendCommand(null, null,
-                String.format(JSON_TIME, thermDayOfWeek, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)),
-                TIME_RESOURCE);
-
         // if sync call was successful run again in one hour, if un-successful try again in one minute
-        this.clockSyncJob = scheduler.schedule(this::syncThermostatClock, (response.contains("success") ? 60 : 1),
-                TimeUnit.MINUTES);
+        this.clockSyncJob = scheduler.schedule(this::syncThermostatClock, (success ? 60 : 1), TimeUnit.MINUTES);
     }
 
     /**
@@ -365,13 +370,15 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     }
                     break;
                 case SET_POINT:
-                    String cmdKey = null;
+                    String cmdKey;
                     if (rthermData.getThermostatData().getMode() == 1) {
                         cmdKey = this.setpointCmdKeyPrefix + "heat";
                         rthermData.getThermostatData().setHeatTarget(Double.valueOf(cmdInt));
+                        rthermData.getThermostatData().setOverride(1);
                     } else if (rthermData.getThermostatData().getMode() == 2) {
                         cmdKey = this.setpointCmdKeyPrefix + "cool";
                         rthermData.getThermostatData().setCoolTarget(Double.valueOf(cmdInt));
+                        rthermData.getThermostatData().setOverride(1);
                     } else {
                         // don't do anything if we are not in heat or cool mode
                         break;
