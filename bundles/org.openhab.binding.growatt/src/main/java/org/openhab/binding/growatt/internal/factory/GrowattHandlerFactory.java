@@ -17,6 +17,7 @@ import static org.openhab.binding.growatt.internal.GrowattBindingConstants.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -61,16 +62,21 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(GrowattHandlerFactory.class);
 
-    private final GrottHttpServlet httpServlet = new GrottHttpServlet();
-    private final GrowattDiscoveryService discoveryService;
+    private final HttpService httpService;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
     private final Set<ThingUID> bridges = Collections.synchronizedSet(new HashSet<>());
+    private final GrottHttpServlet httpServlet = new GrottHttpServlet();
 
+    private @Nullable GrowattDiscoveryService discoveryService;
     private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
 
     @Activate
-    public GrowattHandlerFactory(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
-            @Reference HttpService httpService) {
-        discoveryService = new GrowattDiscoveryService(i18nProvider, localeProvider);
+    public GrowattHandlerFactory(@Reference HttpService httpService, @Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider) {
+        this.httpService = httpService;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
         try {
             httpService.registerServlet(GrottHttpServlet.PATH, httpServlet, null, null);
         } catch (ServletException | NamespaceException e) {
@@ -85,7 +91,8 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             discoveryRegister();
             bridges.add(thing.getUID());
-            return new GrowattBridgeHandler((Bridge) thing, httpServlet, discoveryService);
+            return new GrowattBridgeHandler((Bridge) thing, Objects.requireNonNull(httpServlet),
+                    Objects.requireNonNull(discoveryService));
         }
 
         if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
@@ -97,24 +104,32 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void deactivate(ComponentContext componentContext) {
+        bridges.clear();
         discoveryUnregister();
+        httpService.unregister(GrottHttpServlet.PATH);
         super.deactivate(componentContext);
     }
 
     private void discoveryRegister() {
-        ServiceRegistration<?> temp = discoveryServiceRegistration;
+        GrowattDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService == null) {
+            discoveryService = new GrowattDiscoveryService(i18nProvider, localeProvider);
+            this.discoveryService = discoveryService;
+        }
+        ServiceRegistration<?> temp = this.discoveryServiceRegistration;
         if (temp == null) {
             temp = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
-            discoveryServiceRegistration = temp;
+            this.discoveryServiceRegistration = temp;
         }
     }
 
     private void discoveryUnregister() {
-        ServiceRegistration<?> temp = discoveryServiceRegistration;
-        if (temp != null) {
-            temp.unregister();
+        ServiceRegistration<?> discoveryServiceRegistration = this.discoveryServiceRegistration;
+        if (discoveryServiceRegistration != null) {
+            discoveryServiceRegistration.unregister();
         }
-        discoveryServiceRegistration = null;
+        this.discoveryService = null;
+        this.discoveryServiceRegistration = null;
     }
 
     @Override

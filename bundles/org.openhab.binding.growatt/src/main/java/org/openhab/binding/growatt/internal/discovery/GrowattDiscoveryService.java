@@ -58,7 +58,7 @@ public class GrowattDiscoveryService extends AbstractDiscoveryService {
             inverterIds.forEach(inverterId -> {
                 DiscoveryResult inverter = DiscoveryResultBuilder
                         .create(new ThingUID(GrowattBindingConstants.THING_TYPE_INVERTER, bridgeUID, inverterId))
-                        .withBridge(bridgeUID).withLabel("@text/discovery.growatt-inverter.label")
+                        .withBridge(bridgeUID).withLabel("@text/discovery.growatt-inverter")
                         .withProperty(GrowattInverterConfiguration.DEVICE_ID, inverterId)
                         .withRepresentationProperty(GrowattInverterConfiguration.DEVICE_ID).build();
                 thingDiscovered(inverter);

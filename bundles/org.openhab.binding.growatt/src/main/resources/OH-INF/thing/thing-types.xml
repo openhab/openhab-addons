@@ -65,7 +65,7 @@
 			</channel>
 
 			<!-- grid electric data (1-phase resp. 3-phase) -->
-			<channel id="grid-frequency" typeId="advanced-frequency">
+			<channel id="grid-frequency" typeId="advanced-electric-frequency">
 				<label>Grid Frequency</label>
 				<description>Frequency of the grid.</description>
 			</channel>
@@ -121,7 +121,7 @@
 				<description>Power delivered to the grid phase #T.</description>
 			</channel>
 
-			<channel id="grid-va" typeId="advanced-va">
+			<channel id="grid-va" typeId="advanced-electric-va">
 				<label>Grid VA</label>
 				<description>VA delivered to the grid.</description>
 			</channel>
@@ -135,7 +135,7 @@
 				<label>Charge Power </label>
 				<description>Grid power to charge battery.</description>
 			</channel>
-			<channel id="grid-charge-va" typeId="advanced-va">
+			<channel id="grid-charge-va" typeId="advanced-electric-va">
 				<label>Charge VA</label>
 				<description>Grid VA to charge battery.</description>
 			</channel>
@@ -145,7 +145,7 @@
 				<label>Discharge Power </label>
 				<description>Grid power from discharge of battery.</description>
 			</channel>
-			<channel id="grid-discharge-va" typeId="advanced-va">
+			<channel id="grid-discharge-va" typeId="advanced-electric-va">
 				<label>Discharge VA</label>
 				<description>Grid VA from discharge of battery.</description>
 			</channel>
@@ -159,7 +159,7 @@
 				<label>Battery Discharge Power</label>
 				<description>Battery discharge power.</description>
 			</channel>
-			<channel id="battery-discharge-va" typeId="advanced-va">
+			<channel id="battery-discharge-va" typeId="advanced-electric-va">
 				<label>Battery Discharge VA</label>
 				<description>Battery discharge VA.</description>
 			</channel>
@@ -447,7 +447,7 @@
 				<label>Output Voltage</label>
 				<description>Output voltage.</description>
 			</channel>
-			<channel id="output-frequency" typeId="advanced-frequency">
+			<channel id="output-frequency" typeId="advanced-electric-frequency">
 				<label>Output Frequency</label>
 				<description>Output frequency.</description>
 			</channel>
@@ -463,7 +463,7 @@
 				<label>Grid Input Power</label>
 				<description>Grid input power.</description>
 			</channel>
-			<channel id="grid-input-va" typeId="advanced-va">
+			<channel id="grid-input-va" typeId="advanced-electric-va">
 				<label>Grid Input VA</label>
 				<description>Grid input VA.</description>
 			</channel>
@@ -507,16 +507,16 @@
 		<state readOnly="true" pattern="%0.1f %%"/>
 	</channel-type>
 
-	<channel-type id="advanced-frequency" advanced="true">
+	<channel-type id="advanced-electric-frequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
-		<label>advanced-frequency</label>
+		<label>advanced-electric-frequency</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.2f Hz"/>
 	</channel-type>
 
-	<channel-type id="advanced-va" advanced="true">
+	<channel-type id="advanced-electric-va" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>advanced-va</label>
+		<label>advanced-electric-va</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.0f VA"/>
 	</channel-type>
@@ -542,9 +542,9 @@
 		<state readOnly="true" pattern="%0.1f A"/>
 	</channel-type>
 
-	<channel-type id="advanced-electric-potential" advanced="true">
+	<channel-type id="advanced-electric-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>advanced-electric-potential</label>
+		<label>advanced-electric-voltage</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.1f V"/>
 	</channel-type>
