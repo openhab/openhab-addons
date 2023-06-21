@@ -57,7 +57,7 @@ public class GrowattBindingConstants {
      */
     public static final Map<String, UoM> CHANNEL_ID_UOM_MAP = Map.ofEntries(
             // inverter state
-            new AbstractMap.SimpleEntry<String, UoM>("status", new UoM(Units.ONE, 1)),
+            new AbstractMap.SimpleEntry<String, UoM>("system-status", new UoM(Units.ONE, 1)),
 
             // solar generation
             new AbstractMap.SimpleEntry<String, UoM>("pv-power-in", new UoM(Units.WATT, 10)),

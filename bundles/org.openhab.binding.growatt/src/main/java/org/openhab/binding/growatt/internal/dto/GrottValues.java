@@ -50,7 +50,7 @@ public class GrottValues {
     // @formatter:off
 
     // inverter state
-    public @Nullable @SerializedName(value = "pvstatus") Integer status;
+    public @Nullable @SerializedName(value = "pvstatus") Integer system_status;
 
     // solar generation
     public @Nullable @SerializedName(value = "pvpowerin") Integer pv_power_in;

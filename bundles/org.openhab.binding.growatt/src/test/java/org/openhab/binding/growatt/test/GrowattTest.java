@@ -150,7 +150,7 @@ public class GrowattTest {
             assertTrue(state instanceof QuantityType<?>);
         });
 
-        assertEquals(QuantityType.ONE, channelStates.get("status"));
+        assertEquals(QuantityType.ONE, channelStates.get("system-status"));
         assertEquals(QuantityType.valueOf(235.3, Units.VOLT), channelStates.get("grid-potential"));
         assertEquals(QuantityType.valueOf(0.7, Units.AMPERE), channelStates.get("grid-current"));
         assertEquals(QuantityType.valueOf(146, Units.WATT), channelStates.get("grid-power"));
