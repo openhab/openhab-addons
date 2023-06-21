@@ -112,7 +112,7 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
             callbackURL = "http://%s:%d".formatted(openHabIp, port);
         }
         if (callbackURL.isEmpty()) {
-            logger.info("Unable to build a correct call back URL to stream media contents");
+            logger.warn("Unable to build a correct call back URL to stream media contents");
             return;
         }
     }

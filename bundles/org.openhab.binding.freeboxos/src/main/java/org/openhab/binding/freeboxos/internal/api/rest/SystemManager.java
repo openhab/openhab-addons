@@ -36,19 +36,9 @@ public class SystemManager extends ConfigurableRest<SystemManager.Config, System
 
     public static record Sensor(String id, String name, int value) {
         public enum SensorKind {
-            FAN("Vitesse"),
-            TEMP("Température"),
-            UNKNOWN("Uknown");
-
-            private String label;
-
-            SensorKind(String label) {
-                this.label = label;
-            }
-
-            public String getLabel() {
-                return label;
-            }
+            FAN,
+            TEMP,
+            UNKNOWN;
         }
 
         public SensorKind getKind() {

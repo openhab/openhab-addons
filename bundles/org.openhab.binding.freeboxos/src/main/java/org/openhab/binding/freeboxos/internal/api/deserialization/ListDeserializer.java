@@ -38,8 +38,8 @@ import com.google.gson.JsonParseException;
 public class ListDeserializer implements JsonDeserializer<List<?>> {
 
     @Override
-    public @NonNull List<?> deserialize(@NonNullByDefault({}) JsonElement json, @NonNullByDefault({}) Type clazz,
-            @NonNullByDefault({}) JsonDeserializationContext context) throws JsonParseException {
+    public @NonNull List<?> deserialize(JsonElement json, Type clazz, JsonDeserializationContext context)
+            throws JsonParseException {
         JsonArray jsonArray = toJsonArray(json);
         ArrayList<?> result = new ArrayList<>(jsonArray != null ? jsonArray.size() : 0);
 

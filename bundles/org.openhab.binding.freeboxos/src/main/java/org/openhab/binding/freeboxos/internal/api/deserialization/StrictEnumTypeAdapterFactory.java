@@ -45,15 +45,15 @@ public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
         return rawType.isEnum() ? newStrictEnumAdapter(gson.getDelegateAdapter(this, type)) : null;
     }
 
-    private <T> TypeAdapter<T> newStrictEnumAdapter(@NonNullByDefault({}) TypeAdapter<T> delegateAdapter) {
+    private <T> TypeAdapter<T> newStrictEnumAdapter(TypeAdapter<T> delegateAdapter) {
         return new TypeAdapter<T>() {
             @Override
-            public void write(@NonNullByDefault({}) JsonWriter out, @Nullable T value) throws IOException {
+            public void write(JsonWriter out, @Nullable T value) throws IOException {
                 delegateAdapter.write(out, value);
             }
 
             @Override
-            public @NonNull T read(@NonNullByDefault({}) JsonReader in) throws IOException {
+            public @NonNull T read(JsonReader in) throws IOException {
                 String searched = in.nextString().toUpperCase().replace("/", "_").replace("-", "_");
                 JsonReader delegateReader = new JsonReader(new StringReader('"' + searched + '"'));
 <<<<<<< Upstream, based on origin/main

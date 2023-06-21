@@ -85,8 +85,9 @@ public class FreeboxOsSession {
      * @param config
      * @return the app token used to open the session (can have changed if newly granted)
      * @throws FreeboxException
+     * @throws InterruptedException
      */
-    public String initialize(FreeboxOsConfiguration config) throws FreeboxException {
+    public String initialize(FreeboxOsConfiguration config) throws FreeboxException, InterruptedException {
         ApiVersion version = apiHandler.executeUri(config.getUriBuilder(API_VERSION_PATH).build(), HttpMethod.GET,
                 ApiVersion.class, null, null);
         this.uriBuilder = config.getUriBuilder(version.baseUrl());
@@ -128,7 +129,7 @@ public class FreeboxOsSession {
                 getManager(LoginManager.class).closeSession();
                 session = null;
             } catch (FreeboxException e) {
-                logger.info("Error closing session : {}", e.getMessage());
+                logger.info("Error closing session: {}", e.getMessage());
             }
         }
         appToken = "";
@@ -146,7 +147,7 @@ public class FreeboxOsSession {
                 return execute(uri, method, clazz, false, retryCount, aPayload);
             }
             if (!response.isSuccess()) {
-                throw new FreeboxException("Api request failed : %s", response.getMsg());
+                throw new FreeboxException("Api request failed: %s", response.getMsg());
             }
             List<F> result = response.getResult();
             return result == null ? List.of() : result;
@@ -156,6 +157,8 @@ public class FreeboxOsSession {
                 return execute(uri, method, clazz, false, retryCount, aPayload);
             }
             throw e;
+        } catch (InterruptedException ignored) {
+            return List.of();
         }
     }
 

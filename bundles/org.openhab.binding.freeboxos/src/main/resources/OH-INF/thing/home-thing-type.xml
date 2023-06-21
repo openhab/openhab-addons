@@ -6,7 +6,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="basic_shutter">
+	<thing-type id="basic-shutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="api"/>
 		</supported-bridge-type-refs>
@@ -21,8 +21,12 @@
 
 		<representation-property>id</representation-property>
 
+<<<<<<< Upstream, based on origin/main
 		<config-description-ref uri="thing-type:freeboxos:home_node"/>
 <<<<<<< Upstream, based on origin/main
+=======
+		<config-description-ref uri="thing-type:freeboxos:home-node"/>
+>>>>>>> b6f7a14 Corrections following fwolter code review
 	</thing-type>
 
 	<thing-type id="alarm">
@@ -55,7 +59,7 @@
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:freeboxos:home_node"/>
+		<config-description-ref uri="thing-type:freeboxos:home-node"/>
 	</thing-type>
 
 	<thing-type id="kfb">
@@ -74,7 +78,7 @@
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:freeboxos:home_node"/>
+		<config-description-ref uri="thing-type:freeboxos:home-node"/>
 	</thing-type>
 
 	<thing-type id="shutter">
@@ -86,12 +90,12 @@
 		<description>The Shutter configured in your Freebox Delta Server</description>
 
 		<channels>
-			<channel id="position_set" typeId="shutter"/>
+			<channel id="position-set" typeId="shutter"/>
 		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:freeboxos:home_node"/>
+		<config-description-ref uri="thing-type:freeboxos:home-node"/>
 	</thing-type>
 =======
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

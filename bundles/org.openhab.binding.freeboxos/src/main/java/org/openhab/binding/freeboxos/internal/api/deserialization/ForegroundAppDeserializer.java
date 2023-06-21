@@ -35,8 +35,7 @@ import com.google.gson.JsonParseException;
 public class ForegroundAppDeserializer implements JsonDeserializer<ForegroundApp> {
 
     @Override
-    public @NonNull ForegroundApp deserialize(@NonNullByDefault({}) JsonElement json,
-            @NonNullByDefault({}) Type typeOfT, @NonNullByDefault({}) JsonDeserializationContext context)
+    public @NonNull ForegroundApp deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
         Object obj;
 

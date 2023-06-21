@@ -16,6 +16,7 @@ import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import javax.crypto.Mac;
@@ -44,6 +45,7 @@ public class LoginManager extends RestManager {
     private static final String SESSION = "session";
     private static final String AUTHORIZE_ACTION = "authorize";
     private static final String LOGOUT = "logout";
+    private static final int GRANT_DELAY_MIN = 3;
 
     private final Mac mac;
 
@@ -112,7 +114,7 @@ public class LoginManager extends RestManager {
     public LoginManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(PATH));
         try {
-            mac = Mac.getInstance(ALGORITHM);
+            this.mac = Mac.getInstance(ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException(e);
         }
@@ -272,15 +274,22 @@ public class LoginManager extends RestManager {
         Authorization authorize = post(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION);
 >>>>>>> 6eeb4fa Some code enhancement for base classes
         Status track = Status.PENDING;
+        ZonedDateTime timeLimit = ZonedDateTime.now().plusMinutes(GRANT_DELAY_MIN);
         try {
-            while (Status.PENDING.equals(track)) {
+            while (Status.PENDING.equals(track) && ZonedDateTime.now().isBefore(timeLimit)) {
                 Thread.sleep(2000);
                 track = trackAuthorize(authorize.trackId());
             }
-            if (Status.GRANTED.equals(track)) {
-                return authorize.appToken();
+            switch (track) {
+                case GRANTED:
+                    return authorize.appToken();
+                case TIMEOUT, PENDING:
+                    throw new FreeboxException("Unable to grant session, delay expired");
+                case DENIED:
+                    throw new FreeboxException("Unable to grant session, access was denied");
+                default:
+                    throw new FreeboxException("Unable to grant session");
             }
-            throw new FreeboxException("Unable to grant session");
         } catch (InterruptedException e) {
             throw new FreeboxException(e, "Granting process interrupted");
         }

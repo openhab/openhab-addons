@@ -163,7 +163,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                     }
                     break;
                 default:
-                    logger.info("Unhandled event received : {}", result.getEvent());
+                    logger.warn("Unhandled event received : {}", result.getEvent());
             }
         } else {
             logger.warn("Empty json element in notification");

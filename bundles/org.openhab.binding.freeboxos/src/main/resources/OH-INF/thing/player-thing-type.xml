@@ -23,7 +23,7 @@
 		<config-description-ref uri="thing-type:freeboxos:player"/>
 	</thing-type>
 
-	<thing-type id="active_player">
+	<thing-type id="active-player">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="api"/>
 		</supported-bridge-type-refs>

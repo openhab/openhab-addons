@@ -38,6 +38,8 @@ import org.openhab.core.ui.icon.IconSet;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@FreeboxOsIconProvider} delivers icons provided by FreeboxOS
@@ -47,6 +49,9 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(immediate = true, service = { IconProvider.class })
 public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
+
+    private final Logger logger = LoggerFactory.getLogger(FreeboxOsIconProvider.class);
+
     private final HttpClient httpClient;
     private final UriBuilder uriBuilder;
 
@@ -80,6 +85,7 @@ public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
                 return new ByteArrayInputStream(response.getContent());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Error getting icon {} : {}", resourceName, e.getMessage());
         }
         return null;
     }

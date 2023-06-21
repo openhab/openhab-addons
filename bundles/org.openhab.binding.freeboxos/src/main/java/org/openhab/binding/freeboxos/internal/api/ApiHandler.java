@@ -92,7 +92,7 @@ public class ApiHandler {
     }
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String sessionToken,
-            @Nullable Object payload) throws FreeboxException {
+            @Nullable Object payload) throws FreeboxException, InterruptedException {
         logger.debug("executeUrl {} : {} ", method, uri);
 
         Request request = httpClient.newRequest(uri).method(method).timeout(timeoutInMs, TimeUnit.MILLISECONDS)
@@ -108,10 +108,17 @@ public class ApiHandler {
 
         try {
             ContentResponse response = request.send();
+
             Code statusCode = HttpStatus.getCode(response.getStatus());
+
+            if (statusCode != Code.OK && statusCode != Code.FORBIDDEN) {
+                throw new FreeboxException(statusCode.getMessage());
+            }
+
             String content = new String(response.getContent(), DEFAULT_CHARSET);
-            logger.trace("executeUrl {} - {} returned {}", method, uri, content);
             T result = deserialize(clazz, content);
+            logger.trace("executeUrl {} - {} returned {}", method, uri, content);
+
             if (statusCode == Code.OK) {
                 return result;
             } else if (statusCode == Code.FORBIDDEN) {
@@ -119,8 +126,9 @@ public class ApiHandler {
                 Response<?> error = (Response<?>) result;
                 throw new FreeboxException(error.getErrorCode(), error.getMsg());
             }
-            throw new FreeboxException("Error '%s' requesting : %s", statusCode.getMessage(), uri.toString());
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+
+            throw new FreeboxException("Error '%s' requesting: %s", statusCode.getMessage(), uri.toString());
+        } catch (TimeoutException | ExecutionException e) {
             throw new FreeboxException(e, "Exception while calling %s", request.getURI());
         }
     }

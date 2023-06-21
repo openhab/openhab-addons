@@ -225,7 +225,7 @@ public class FreeboxOsBindingConstants {
     private static final String THING_REVOLUTION = "revolution";
     private static final String THING_DELTA = "delta";
     private static final String THING_WIFI_HOST = "wifihost";
-    private static final String THING_ACTIVE_PLAYER = "active_player";
+    private static final String THING_ACTIVE_PLAYER = "active-player";
 
     public static final String THING_FREEPLUG = "freeplug";
     public static final String THING_VM = "vm";
@@ -340,7 +340,7 @@ public class FreeboxOsBindingConstants {
     // Home channels
     public static final String KEYFOB_ENABLE = "enable";
     public static final String NODE_BATTERY = "battery";
-    public static final String SHUTTER_POSITION = "position_set";
+    public static final String SHUTTER_POSITION = "position-set";
     public static final String SHUTTER_STOP = "stop";
     public static final String BASIC_SHUTTER_STATE = "state";
     public static final String BASIC_SHUTTER_UP = "up";

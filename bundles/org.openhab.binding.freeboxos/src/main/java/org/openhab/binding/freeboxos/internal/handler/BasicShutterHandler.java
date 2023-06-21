@@ -34,7 +34,7 @@ import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link BasicShutterHandler} is responsible for handling everything associated to
- * any Freebox Home basic_shutter thing type.
+ * any Freebox Home basic-shutter thing type.
  *
  * @author ben12 - Initial contribution
  */

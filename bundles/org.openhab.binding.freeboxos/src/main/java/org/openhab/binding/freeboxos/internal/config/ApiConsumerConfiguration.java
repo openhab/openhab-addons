@@ -24,8 +24,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ApiConsumerConfiguration {
 <<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
     // public static final String PASSWORD = "password";
     // public static final String PORT = "port";
+=======
+>>>>>>> b6f7a14 Corrections following fwolter code review
     public static final String REFRESH_INTERVAL = "refreshInterval";
 =======
     public static final String PASSWORD = "password";
@@ -44,7 +47,10 @@ public class ApiConsumerConfiguration {
     public String password = "";
 <<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
     // public int port = 24322;
+=======
+>>>>>>> b6f7a14 Corrections following fwolter code review
     public boolean acceptAllMp3 = true;
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project

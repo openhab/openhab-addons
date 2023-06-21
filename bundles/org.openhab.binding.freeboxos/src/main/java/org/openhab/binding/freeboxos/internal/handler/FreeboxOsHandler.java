@@ -92,6 +92,8 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             } catch (FreeboxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            } catch (InterruptedException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }));
     }

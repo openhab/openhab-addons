@@ -2,14 +2,22 @@
 <<<<<<< Upstream, based on origin/main
 # FreeboxOS Binding
 
+Free is a French telecom operator providing advanced equipments to manage your broadband access.
+
 This binding integrates the [Freebox Revolution](https://www.free.fr/freebox/freebox-revolution/) and [Freebox Delta](https://www.free.fr/freebox/freebox-delta/) to your openHAB installation.
 
 The server can be connected to Free infrastructures either by xDSL or fiber optic.
+
+This binding provides metrics about your network bridge/router and attached devices (wifi repeaters, TV boxes ...).
+It also provides home automation capabilities when appropriate dongle has been inserted in the server.
+
+IliadBox, italian version of the Freebox Pop are also compatible.
 
 ## Supported Things
 
 This binding supports the following thing types:
 
+<<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
 | Thing             | Thing Type | Description                                          |
@@ -28,8 +36,27 @@ This binding supports the following thing types:
 | shutter       (*) | Thing      | IO Home Control shutter configured in Freebox Home   |
 | kfb (*)           | Thing      | A keyfob associated with your alarm system           |
 | alarm (*)         | Thing      | The Freebox Home Alarm System                        |
+=======
+| Thing             | Thing Type | Description                                                   |
+|-------------------|------------|---------------------------------------------------------------|
+| api               | Bridge     | Bridge to access freebox OS API hosted by the server          |
+| delta             | Thing      | A Freebox Delta server                                        |
+| revolution        | Thing      | A Freebox Revolution server                                   |
+| player            | Thing      | A TV player equipment                                         |
+| active-player     | Thing      | The TV player equipment with API capabilities (e.g. Devialet) |
+| landline          | Thing      | The phone wired to the Freebox Server                         |
+| host              | Thing      | A network device on the local network                         |
+| wifihost          | Thing      | A wifi networked device on the local network                  |
+| vm            (*) | Thing      | A virtual machine hosted on the server                        |
+| freeplug          | Thing      | A virtual machine hosted on the server                        |
+| repeater          | Thing      | A Free wifi repeater                                          |
+| basic-shutter (*) | Thing      | RTS Shutter configured in Freebox Home                        |
+| shutter       (*) | Thing      | IO Home Control shutter configured in Freebox Home            |
+| kfb (*)           | Thing      | A keyfob associated with your alarm system                    |
+| alarm (*)         | Thing      | The Freebox Home Alarm System                                 |
+>>>>>>> b6f7a14 Corrections following fwolter code review
 
-(*) For servers >= Delta
+(*) Restricted to servers >= Delta
 
 ## Discovery
 
@@ -48,7 +75,7 @@ FreeboxOS binding has the following configuration parameters:
 
 ## Thing Configuration
 
-### Api bridge
+### API bridge
 
 | Parameter Label          | Parameter ID      | Description                                            | Required | Default              |
 |--------------------------|-------------------|--------------------------------------------------------|----------|----------------------|
@@ -61,7 +88,7 @@ FreeboxOS binding has the following configuration parameters:
 If the parameter *apiDomain* is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
 The bridge thing will initialize only if a valid application token (parameter *appToken*) is filled.
 
-### Server : Revolution or Delta
+### Server: Revolution or Delta
 
 The *revolution* or *delta* thing requires the following configuration parameters:
 
@@ -92,7 +119,7 @@ The *landline* thing requires the following configuration parameters:
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state. | No       | 2       |
 
-### Network devices : Host and WifiHost
+### Network devices: Host and WifiHost
 
 The *host* and *wifihost* things requires the following configuration parameters:
 
@@ -103,7 +130,7 @@ The *host* and *wifihost* things requires the following configuration parameters
 
 ### Repeater and Vm thing 
 
-The *repeater* thing is a specialized case of a *wifihost*. The *vm* derives from *host*. They share the same configuration definition : 
+The *repeater* thing is a specialized case of a *wifihost*. The *vm* derives from *host*. They share the same configuration definition: 
 
 | Parameter Label  | Parameter ID    | Description                                                      | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------|----------|---------|
@@ -113,7 +140,7 @@ The *repeater* thing is a specialized case of a *wifihost*. The *vm* derives fro
 
 ### Basic shutter thing
 
-The *basic_shutter* thing requires the following configuration parameters:
+The *basic-shutter* thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                      | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------|----------|---------|
@@ -125,7 +152,7 @@ The *basic_shutter* thing requires the following configuration parameters:
 
 ## Authentication
 
-You will have to authorize openHAB to connect to your Freebox. Here is the process described :
+You will have to authorize openHAB to connect to your Freebox. Here is the process described:
 
 **Step 1** At binding startup, if no token is recorded in the Freebox Server (bridge) configuration, the binding will run a pairing request
 
@@ -145,25 +172,25 @@ The following channels are supported:
 
 | Thing         | Channel Type ID             | Item Type     | Access Mode | Description                                                                    |
 |---------------|-----------------------------|---------------|-------------|--------------------------------------------------------------------------------|
-| revolution    | lcd_brightness              | Number        | RW          | Brightness level of the screen in percent                                      |
-| revolution    | lcd_orientation             | Number        | RW          | Screen Orientation in degrees (0 or 90 or 180 or 270)                          |
-| revolution    | lcd_forced                  | Switch        | RW          | Indicates whether the screen orientation forced                                |
+| revolution    | lcd-brightness              | Number        | RW          | Brightness level of the screen in percent                                      |
+| revolution    | lcd-orientation             | Number        | RW          | Screen Orientation in degrees (0 or 90 or 180 or 270)                          |
+| revolution    | lcd-forced                  | Switch        | RW          | Indicates whether the screen orientation forced                                |
 | server (*)    | uptime                      | Number        | R           | Time since last reboot of the Freebox Server                                   |
 | server (*)    | restarted                   | Switch        | R           | Indicates whether the Freebox server has restarted during the last poll period |
-| server (*)    | wifi_status                 | Switch        | RW          | Indicates whether the WiFi network is enabled                                  |
-| server (*)    | ftp_status                  | Switch        | RW          | Indicates whether the FTP server is enabled                                    |
-| server (*)    | airmedia_status             | Switch        | RW          | Indicates whether Air Media is enabled                                         |
-| server (*)    | upnpav_status               | Switch        | RW          | Indicates whether UPnP AV is enabled                                           |
+| server (*)    | wifi-status                 | Switch        | RW          | Indicates whether the WiFi network is enabled                                  |
+| server (*)    | ftp-status                  | Switch        | RW          | Indicates whether the FTP server is enabled                                    |
+| server (*)    | airmedia-status             | Switch        | RW          | Indicates whether Air Media is enabled                                         |
+| server (*)    | upnpav-status               | Switch        | RW          | Indicates whether UPnP AV is enabled                                           |
 | server (*)    | samba-file-status           | Switch        | RW          | Indicates whether Window File Sharing is enabled                               |
 | server (*)    | samba-printer-status        | Switch        | RW          | Indicates whether Window Printer Sharing is enabled                            |
-| server (*)    | xdsl_status                 | String        | R           | Status of the xDSL line                                                        |
-| server (*)    | ftth_status                 | Switch        | R           | Status of the Ftth line                                                        |
-| server (*)    | line_status                 | String        | R           | Status of network line connexion                                               |
+| server (*)    | xdsl-status                 | String        | R           | Status of the xDSL line                                                        |
+| server (*)    | ftth-status                 | Switch        | R           | Status of the Ftth line                                                        |
+| server (*)    | line-status                 | String        | R           | Status of network line connexion                                               |
 | server (*)    | ipv4                        | String        | R           | Public IP Address of the Freebox Server                                        |
-| server (*)    | rate_up                     | Number        | R           | Current upload rate in byte/s                                                  |
-| server (*)    | rate_down                   | Number        | R           | Current download  rate in byte/s                                               |
-| server (*)    | bytes_up                    | Number        | R           | Total uploaded bytes since last connection                                     |
-| server (*)    | bytes_down                  | Number        | R           | Total downloaded  bytes since last connection                                  |
+| server (*)    | rate-up                     | Number        | R           | Current upload rate in byte/s                                                  |
+| server (*)    | rate-down                   | Number        | R           | Current download  rate in byte/s                                               |
+| server (*)    | bytes-up                    | Number        | R           | Total uploaded bytes since last connection                                     |
+| server (*)    | bytes-down                  | Number        | R           | Total downloaded  bytes since last connection                                  |
 | phone         | state#onhook                | Switch        | R           | Indicates whether the phone is on hook                                         |
 | phone         | state#ringing               | Switch        | R           | Is the phone ringing                                                           |
 | call          | incoming#number             | Call          | R           | Current incoming call number                                                   |
@@ -175,7 +202,7 @@ The following channels are supported:
 | call          | accepted#name               | String        | R           | Last accepted caller name                                                      |
 | call          | missed#number               | Call          | R           | Last missed call number                                                        |
 | call          | missed#timestamp            | DateTime      | R           | Last missed call creation timestamp                                            |
-| call          | missed#name                 | String        | R           | Last missed  caller name                                                       |
+| call          | missed#name                 | String        | R           | Last missed caller name                                                        |
 | call          | outgoing#number             | Call          | R           | Last outgoing call number                                                      |
 | call          | outgoing#duration           | Number        | R           | Last outgoing call duration in seconds                                         |
 | call          | outgoing#timestamp          | DateTime      | R           | Last outgoing call creation timestamp                                          |
@@ -184,26 +211,26 @@ The following channels are supported:
 | net_interface | reachable                   | Switch        | R           | Indicates whether the network interface is reachable                           |
 | airplay       | playurl                     | String        | W           | Play an audio or video media from the given URL                                |
 | airplay       | stop                        | Switch        | W           | Stop the media playback                                                        |
-| basic_shutter | basic-shutter#basic-shutter | RollerShutter | W           | Up, stop and down commands for a RTS shutter                                   |
+| basic-shutter | basic-shutter#basic-shutter | RollerShutter | W           | Up, stop and down commands for a RTS shutter                                   |
 
-(*) : server means *delta* or *revolution*
+(*): server means *delta* or *revolution*
 
 ## Actions for rules
 
 The following actions are available in rules/scripting:
 
-| Thing Type  | Action Name      | Description                                          | 
-|-------------|------------------|------------------------------------------------------|
-| host        | wol              | Sends a wake on lan packet to the lan connected host |
-| player      | reboot           | Reboots the player device                            |
-| player      | sendKey          | Send a key (remote emulation) to the player          |
-| player      | sendLongKey      | Sends the key emulating a longpress on the button    |
-| player      | sendMultipleKeys | Sends multiple keys to the player, comma separated   |
-| player      | sendKeyRepeat    | Sends the key multiple times                         |
-| server      | reboot           | Reboots the Freebox Server                           |
-| freeplug    | reset            | Resets the Freeplug                                  |
-| call        | emptyQueue       | Clears the call log queue                            |
-| repeater    | reboot           | Reboots the Repeater                                 |
+| Thing Type  | Action Name      | Parameters                | Description                                          | 
+|-------------|------------------|---------------------------|------------------------------------------------------|
+| host        | wol              | None                      | Sends a wake on lan packet to the lan connected host |
+| player      | reboot           | None                      | Reboots the player device                            |
+| player      | sendKey          | key : String              | Send a key (remote emulation) to the player          |
+| player      | sendLongKey      | key : String              | Sends the key emulating a longpress on the button    |
+| player      | sendMultipleKeys | keys : String             | Sends multiple keys to the player, comma separated   |
+| player      | sendKeyRepeat    | key : String, count : int | Sends the key multiple times                         |
+| server      | reboot           | None                      | Reboots the Freebox Server                           |
+| freeplug    | reset            | None                      | Resets the Freeplug                                  |
+| call        | reset            | None                      | Clears the call log queue                            |
+| repeater    | reboot           | None                      | Reboots the Repeater                                 |
 
 =======
 # Freebox Binding
