@@ -3,7 +3,11 @@
 ![Growatt](doc/growatt.png)
 
 This binding supports the integration of Growatt solar inverters.
-It depends on the independent [Grott](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor) proxy server application to intercept the data transmissions between the inverter and the Growatt cloud server.
+
+It depends on the independent [Grott](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor) proxy server application.
+This intercepts the logging data that the Growatt inverter data logger normally sends directly to the Growatt cloud server.
+It sends the original (encoded) data onwards to the cloud server (so the cloud server will not notice anything different).
+But it also sends a (decoded) copy to OpenHAB as well.
 
 ## Supported Things
 
@@ -15,69 +19,7 @@ The binding supports two types of things:
 ## Discovery
 
 There is no automatic discovery of the bridge.
-However if bridge exists and it receives inverter data, then a matching inverter thing is created in the Inbox.
-
-## Grott Application
-
-The Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
-It intercepts and decodes the data packets sent from the inverter to the cloud server.
-And it uses the `grottext.py` application extension to send a copy of the intercepted data also to your OpenHAB system.
-The data is transmitted via an HTTP POST to the 'http://openhab-ip-address:8080/growatt' end point with a JSON pay-load.
-
-You need to install the Grott application either on the same computer as OpenHAB or on another computer.
-
-_**NOTE**: make sure that the Grott application is fully operational for your inveter **BEFORE** you create any things in OpenHAB!_
-
-You should configure the Grott application via its `grott.ini` file.
-Configure Grott to match your inverter according to the [instructions](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor).
-
-### 1. Install Python
-
-If Python is not already installed on you computer, then istall it first.
-
-### 2. Install Grott
-
-First install the Grott application and application extension files in a Grott specific home folder.
-The recommended Grott configuration for OpenHAB is as follows:
-
-- Create the Grott 'home' folder e.g. `/usr/bin/grott/`.
-- Copy `grott.py`, `grottconf.py`, `grottdata.py`, `grottproxy.py`, `grottsniffer.py`, `grottserver.py` to the home folder.
-- Copy `grottext.py` application extension to the home folder.
-- Copy `grott.ini` configuration file to the home folder.
-- Modify `grott.ini` to run in proxy mode; not in compatibility mode; show your inverter type; not run MQTT; not run PVOutput; enable the `grottext` extension; and set the OpenHAB `/growatt` servlet url:
-
-```php
-[Generic]
-mode = proxy
-compat = False
-invtype = sph // or whatever
-
-[MQTT]
-nomqtt = True
-
-[PVOutput]
-pvoutput = False
-
-[extension]
-extension = True
-extname = grottext
-extvar = {"url": "http://xxx.xxx.xxx.xxx:8080/growatt"}
-```
-
-### 3. Run Grott as a Service
-
-For best performance the Grott application should be started automatically as a service when your computer starts.
-
-- Copy the `grott.service` file to the `/etc/systemd/system/` folder
-- Modify `grott.service` to enter your user name; the Grott settings; the path to Phyton; and the path to the Grott application:
-
-```php
-[Service]
-SyslogIdentifier=grott
-User=openhabian // your user name
-WorkingDirectory=/usr/bin/grott/
-ExecStart=-/usr/bin/python3 -u /usr/bin/grott/grott.py -v
-```
+However if a bridge exists and it receives inverter data, then a matching inverter thing is created in the Inbox.
 
 ## Thing Configuration
 
@@ -85,9 +27,9 @@ The `bridge` thing requires no configuration.
 
 The `inverter` thing requires configuration of its serial number resp. `deviceId`:
 
-| Name      | Type    | Description                                                                               | Required |
-|-----------|---------|-------------------------------------------------------------------------------------------|----------|
-| deviceId  | text    | Device serial number or id as configuted in the Growatt cloud, and the Grott application. | yes      |
+| Name      | Type    | Description                                                                              | Required |
+|-----------|---------|------------------------------------------------------------------------------------------|----------|
+| deviceId  | text    | Device serial number or id as configured in the Growatt cloud and the Grott application. | yes      |
 
 ## Channels
 
@@ -95,7 +37,7 @@ The `bridge` thing has no channels.
 
 The `inverter` thing supports many possible channels relating to solar generation and consumption.
 All channels are read only.
-Depending on the inverter model, and it configuration, not all of the channels will be present.
+Depending on the inverter model, and its configuration, not all of the channels will be present.
 The list of all possible channels is as follows:
 
 | Channel                           | Type                          | Description                                               | Advanced |
@@ -200,14 +142,106 @@ The list of all possible channels is as follows:
 
 ## Full Example
 
-### Thing Configuration
+### Example `.things` file
 
 ```java
-Example thing configuration goes here.
+Bridge growatt:bridge:home "Growattt Bridge" [] {
+    Thing inverter sph "Growatt SPH Inverter" [deviceId="INVERTERTID"]
+}
 ```
 
-### Item Configuration
+### Example `.items` file
 
 ```java
-Example item configuration goes here.
+Number:ElectricPotential Solar_String1_Voltage "Solar String #1 PV Voltage" {channel="growatt:inverter:home:sph:pv1-potential"}
+Number:ElectricCurrent Solar_String1_Current "Solar String #1 PV Current" {channel="growatt:inverter:home:sph:pv1-current"}
+Number:Power Solar_String1_Power "Solar String #1 PV Power" {channel="growatt:inverter:home:sph:pv1-power"}
+Number:Energy Solar_Output_Energy "Solar Output Energy Total" {channel="growatt:inverter:home:sph:pv-energy-total"}
 ```
+
+## Grott Application Installation and Setup
+
+You can install the Grott application either on the same computer as OpenHAB or on another.
+The following assumes you will be running it on the same computer.
+Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
+It intercepts data packets between the inverter and the cloud server, and it sends a copy of the intercepted data also to OpenHAB.
+
+**NOTE**: make sure that the Grott application is **FULLY OPERATIONAL** for your inverter **BEFORE** you create any things in OpenHAB!
+Otherwise the binding might create a wrong (or even empty) list of channels for the inverter thing.
+(Yet if you do make that mistake you can rectify it by deleteing and recreating the thing).
+
+You should configure the Grott application via its `grott.ini` file.
+Configure Grott to match your inverter according to the [instructions](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor).
+
+### Install Python
+
+If Python is not already installed on you computer, then install it first.
+And install the following additional necessary python packages:
+
+```
+sudo pip3 install paho-mqtt
+sudo pip3 install requests
+```
+
+### Install Grott
+
+First install the Grott application and the Grott application extension files in a Grott specific home folder.
+Note that Grott requires the `grottext.py` application extension in addition to the standard application files.
+The installation is as follows:
+
+- Create a 'home' sub-folder for Grott e.g. `/home/<username>/grott/`.
+- Copy `grott.py`, `grottconf.py`, `grottdata.py`, `grottproxy.py`, `grottsniffer.py`, `grottserver.py` to the home folder.
+- Copy `grottext.py` application extension to the home folder.
+- Copy `grott.ini` configuration file to the home folder.
+- Modify `grott.ini` to run in proxy mode; not in compatibility mode; show your inverter type; not run MQTT;
+not run PVOutput; enable the `grottext` extension; and set the OpenHAB `/growatt` servlet url.
+A suggested Grott configuration for OpenHAB is as follows:
+
+```php
+[Generic]
+mode = proxy
+compat = False
+invtype = sph // your inverter type
+
+[MQTT]
+nomqtt = True // disable mqtt
+
+[PVOutput]
+pvoutput = False // disable pvoutput
+
+[extension]
+extension = True
+extname = grottext
+extvar = {"url": "http://xxx.xxx.xxx.xxx:8080/growatt"}
+```
+
+### Start Grott as a Service
+
+Finally you should set your computer to starts the Grott application automatically as a service when your computer starts.
+For Windows see wiki: https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Windows)
+For Linux see wiki: https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Linux)
+The service configuration for Linux is summarised below:
+
+- Copy the `grott.service` file to the `/etc/systemd/system/` folder
+- Modify `grott.service` to enter your user name; the Grott settings; the path to Python; and the path to the Grott application:
+
+```php
+[Service]
+SyslogIdentifier=grott
+User=<username>  // your username
+WorkingDirectory=/home/<username>/grott/ // your home grott folder
+ExecStart=-/usr/bin/python3 -u /home/<username>/grott/grott.py -v // ditto
+```
+
+### Route Growatt Inverter Logging via Grott Proxy
+
+Normally the Growatt inverter sends its logging data directly to port `5279` on the Growatt server at `server.growatt.com` (ip=47.91.67.66) on the cloud.
+Grott is a proxy server that interposes itself beween the inverter and the cloud server.
+i.e. it receives the inverter logging data and forwards it unchanged to the cloud server.
+
+**WARNING**: make sure that Grott is running on a computer with a **STATIC IP ADDRESS** (and note this safely)!
+Otherwise if the computer changes its ip address dynamically, it can no longer intercept the inverter data.
+This means **YOU WILL NO LONGER BE ABLE TO RESET THE INVERTER** to its original settings!
+
+You need to use the Growatt App to tell the inverter to send its logging data to the Grott proxy instead of to the cloud.
+See wiki: https://github.com/johanmeijer/grott/wiki/Rerouting-Growatt-Wifi-TCPIP-data-via-your-Grott-Server for more information.
