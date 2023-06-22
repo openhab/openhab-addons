@@ -178,7 +178,7 @@ Configure Grott to match your inverter according to the [instructions](https://g
 If Python is not already installed on you computer, then install it first.
 And install the following additional necessary python packages:
 
-```
+```bash
 sudo pip3 install paho-mqtt
 sudo pip3 install requests
 ```
@@ -231,6 +231,12 @@ SyslogIdentifier=grott
 User=<username>  // your username
 WorkingDirectory=/home/<username>/grott/ // your home grott folder
 ExecStart=-/usr/bin/python3 -u /home/<username>/grott/grott.py -v // ditto
+```
+
+And finally enable the Grott service:
+
+```bash
+sudo systemctl enable grott
 ```
 
 ### Route Growatt Inverter Logging via Grott Proxy

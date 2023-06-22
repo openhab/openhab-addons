@@ -70,6 +70,8 @@ public class GrottHttpServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_OK);
+        boolean online = handlers.size() > 0;
+        response.getWriter().write(online ? MESSAGE_ONLINE : MESSAGE_READY);
         if (request.getContentLength() > 0) {
             String content = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             handlers.forEach(handler -> handler.handleGrottContent(content));
