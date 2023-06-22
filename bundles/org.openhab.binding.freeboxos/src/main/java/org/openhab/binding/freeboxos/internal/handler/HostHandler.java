@@ -175,7 +175,7 @@ public class HostHandler extends ApiConsumerHandler {
         try {
             getManager(WebSocketManager.class).unregisterListener(getMac());
         } catch (FreeboxException e) {
-            logger.warn("Error unregistering host from the websocket : {}", e.getMessage());
+            logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
         }
         super.dispose();
     }
@@ -206,7 +206,7 @@ public class HostHandler extends ApiConsumerHandler {
             getManager(LanBrowserManager.class).wakeOnLan(getMac(),
                     getConfigAs(ApiConsumerConfiguration.class).password);
         } catch (FreeboxException e) {
-            logger.warn("Error waking up host : {}", e.getMessage());
+            logger.warn("Error waking up host: {}", e.getMessage());
         }
     }
 

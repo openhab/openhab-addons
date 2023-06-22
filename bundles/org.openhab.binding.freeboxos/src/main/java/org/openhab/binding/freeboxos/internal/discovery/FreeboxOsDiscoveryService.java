@@ -417,7 +417,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                     discoverHosts(localHandler, bridgeUID, lanHosts);
                 }
             } catch (FreeboxException e) {
-                logger.warn("Error while requesting data for things discovery : {}", e.getMessage());
+                logger.warn("Error while requesting data for things discovery: {}", e.getMessage());
             }
         }
     }

@@ -70,7 +70,7 @@ public class FreeboxOsSession {
             String uid) {
 
         /**
-         * @return a string like eg : '/api/v8'
+         * @return a string like eg: '/api/v8'
          */
         private String baseUrl() {
             return "%sv%s".formatted(apiBaseUrl, apiVersion.split("\\.")[0]);
@@ -129,7 +129,7 @@ public class FreeboxOsSession {
                 getManager(LoginManager.class).closeSession();
                 session = null;
             } catch (FreeboxException e) {
-                logger.info("Error closing session: {}", e.getMessage());
+                logger.warn("Error closing session: {}", e.getMessage());
             }
         }
         appToken = "";

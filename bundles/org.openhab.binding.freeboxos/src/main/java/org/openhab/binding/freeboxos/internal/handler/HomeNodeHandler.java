@@ -89,7 +89,7 @@ public abstract class HomeNodeHandler extends ApiConsumerHandler {
                         result = getChannelState(homeManager, channel.getUID().getIdWithoutGroup());
                     }
                 } catch (FreeboxException e) {
-                    logger.info("Error updating channel : {}", e.getMessage());
+                    logger.warn("Error updating channel: {}", e.getMessage());
                 }
             } else {
                 result = getChannelState(homeManager, channel.getUID().getIdWithoutGroup());

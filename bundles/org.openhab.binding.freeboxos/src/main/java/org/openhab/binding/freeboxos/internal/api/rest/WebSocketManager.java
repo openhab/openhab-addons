@@ -114,7 +114,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         try {
             wsSession.getRemote().sendString(apiHandler.serialize(REGISTRATION));
         } catch (IOException e) {
-            logger.warn("Error connecting to websocket : {}", e.getMessage());
+            logger.warn("Error connecting to websocket: {}", e.getMessage());
         }
     }
 
@@ -136,7 +136,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                     handleNotification(result);
                     break;
                 default:
-                    logger.info("Unhandled notification received : {}", result.action);
+                    logger.warn("Unhandled notification received: {}", result.action);
             }
         }
     }
@@ -163,7 +163,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                     }
                     break;
                 default:
-                    logger.warn("Unhandled event received : {}", result.getEvent());
+                    logger.warn("Unhandled event received: {}", result.getEvent());
             }
         } else {
             logger.warn("Empty json element in notification");
@@ -357,7 +357,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     @Override
     public void onWebSocketError(@NonNullByDefault({}) Throwable cause) {
-        logger.warn("Error on websocket : {}", cause.getMessage());
+        logger.warn("Error on websocket: {}", cause.getMessage());
     }
 
     @Override

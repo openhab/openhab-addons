@@ -18,7 +18,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,8 +64,6 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 public interface ApiConsumerIntf extends ThingHandler {
 
-    ScheduledExecutorService getScheduler();
-
     Map<String, String> editProperties();
 
     Configuration getConfig();
@@ -74,7 +72,11 @@ public interface ApiConsumerIntf extends ThingHandler {
 
     void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
 
-    void stopRefreshJob();
+    void stopJobs();
+
+    void addJob(String name, Runnable command, long initialDelay, long delay, TimeUnit unit);
+
+    void addJob(String name, Runnable command, long delay, TimeUnit unit);
 
     default int getClientId() {
         return ((BigDecimal) getConfig().get(ClientConfiguration.ID)).intValue();

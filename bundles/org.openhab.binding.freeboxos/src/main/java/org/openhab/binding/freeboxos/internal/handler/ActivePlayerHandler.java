@@ -89,7 +89,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
             try {
                 getManager(PlayerManager.class).reboot(getClientId());
             } catch (FreeboxException e) {
-                logger.warn("Error rebooting : {}", e.getMessage());
+                logger.warn("Error rebooting: {}", e.getMessage());
             }
         });
     }

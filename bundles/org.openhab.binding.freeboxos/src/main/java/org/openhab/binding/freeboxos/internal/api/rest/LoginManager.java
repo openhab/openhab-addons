@@ -45,7 +45,7 @@ public class LoginManager extends RestManager {
     private static final String SESSION = "session";
     private static final String AUTHORIZE_ACTION = "authorize";
     private static final String LOGOUT = "logout";
-    private static final int GRANT_DELAY_MIN = 3;
+    private static final int GRANT_DELAY_SEC = 180;
 
     private final Mac mac;
 
@@ -274,7 +274,7 @@ public class LoginManager extends RestManager {
         Authorization authorize = post(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION);
 >>>>>>> 6eeb4fa Some code enhancement for base classes
         Status track = Status.PENDING;
-        ZonedDateTime timeLimit = ZonedDateTime.now().plusMinutes(GRANT_DELAY_MIN);
+        ZonedDateTime timeLimit = ZonedDateTime.now().plusSeconds(GRANT_DELAY_SEC);
         try {
             while (Status.PENDING.equals(track) && ZonedDateTime.now().isBefore(timeLimit)) {
                 Thread.sleep(2000);

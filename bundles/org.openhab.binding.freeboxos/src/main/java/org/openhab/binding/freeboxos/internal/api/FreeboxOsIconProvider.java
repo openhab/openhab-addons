@@ -85,7 +85,7 @@ public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
                 return new ByteArrayInputStream(response.getContent());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error getting icon {} : {}", resourceName, e.getMessage());
+            logger.warn("Error getting icon {}: {}", resourceName, e.getMessage());
         }
         return null;
     }

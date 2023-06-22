@@ -196,7 +196,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
             try {
                 getManager(SystemManager.class).reboot();
             } catch (FreeboxException e) {
-                logger.warn("Error rebooting : {}", e.getMessage());
+                logger.warn("Error rebooting: {}", e.getMessage());
             }
         });
     }

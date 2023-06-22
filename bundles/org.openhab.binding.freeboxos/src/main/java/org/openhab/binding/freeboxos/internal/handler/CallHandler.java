@@ -98,9 +98,8 @@ public class CallHandler extends ApiConsumerHandler {
     public void emptyQueue() {
         try {
             getManager(CallManager.class).emptyQueue();
-            logger.info("Call log succesfully cleared");
         } catch (FreeboxException e) {
-            logger.warn("Error clearing call logs : {}", e.getMessage());
+            logger.warn("Error clearing call logs: {}", e.getMessage());
         }
     }
 

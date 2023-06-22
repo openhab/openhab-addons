@@ -388,7 +388,7 @@
 
 	<channel-type id="hardware-status">
 		<item-type>String</item-type>
-		<label>Hardware status</label>
+		<label>Hardware Status</label>
 		<description>Hardware status of the phone line</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -446,21 +446,21 @@
 	<channel-type id="alarm-timeout">
 		<item-type>Number:Time</item-type>
 		<label>Alarm Duration</label>
-		<category>zone_temporisee</category>
+		<category>oh:freeboxos:zone_temporisee</category>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="alarm-volume">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Alarm Volume</label>
-		<category>sirene</category>
+		<category>oh:freeboxos:sirene</category>
 		<state min="0" max="100" step="1" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="alarm-pin">
 		<item-type>String</item-type>
 		<label>PIN Code</label>
-		<category>pin_code</category>
+		<category>oh:freeboxos:pin_code</category>
 		<state pattern="%s"/>
 =======
 		<description>Activates / stops the integrated DECT base.</description>

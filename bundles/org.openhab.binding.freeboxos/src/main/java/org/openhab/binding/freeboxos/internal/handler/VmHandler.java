@@ -52,7 +52,7 @@ public class VmHandler extends HostHandler {
         try {
             getManager(WebSocketManager.class).unregisterVm(getClientId());
         } catch (FreeboxException e) {
-            logger.warn("Error unregistering VM from the websocket : {}", e.getMessage());
+            logger.warn("Error unregistering VM from the websocket: {}", e.getMessage());
         }
         super.dispose();
     }

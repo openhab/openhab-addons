@@ -100,7 +100,7 @@ public class RepeaterHandler extends HostHandler implements FreeDeviceIntf {
             try {
                 getManager(RepeaterManager.class).reboot(getClientId());
             } catch (FreeboxException e) {
-                logger.warn("Error rebooting : {}", e.getMessage());
+                logger.warn("Error rebooting: {}", e.getMessage());
             }
         });
     }

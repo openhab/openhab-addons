@@ -91,9 +91,9 @@ public class FreeplugHandler extends ApiConsumerHandler {
     public void reset() {
         try {
             getManager(FreeplugManager.class).reboot(getMac());
-            logger.info("Freeplug {} succesfully restarted", getMac());
+            logger.debug("Freeplug {} succesfully restarted", getMac());
         } catch (FreeboxException e) {
-            logger.warn("Error restarting freeplug : {}", e.getMessage());
+            logger.warn("Error restarting freeplug: {}", e.getMessage());
         }
     }
 

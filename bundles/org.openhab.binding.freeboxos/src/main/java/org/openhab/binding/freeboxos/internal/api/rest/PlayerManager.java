@@ -76,7 +76,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
 
         /**
-         * @return a string like eg : '17/api/v8'
+         * @return a string like eg: '17/api/v8'
          */
         private @Nullable String baseUrl() {
             String api = apiVersion;

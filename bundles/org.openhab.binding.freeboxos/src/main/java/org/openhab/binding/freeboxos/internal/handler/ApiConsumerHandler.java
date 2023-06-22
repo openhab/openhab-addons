@@ -17,9 +17,9 @@ package org.openhab.binding.freeboxos.internal.handler;
 import java.math.BigDecimal;
 <<<<<<< Upstream, based on origin/main
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -70,8 +70,8 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsumerIntf {
     private final Logger logger = LoggerFactory.getLogger(ApiConsumerHandler.class);
+    private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
 
-    private @Nullable ScheduledFuture<?> globalJob;
     private @Nullable ServiceRegistration<?> reg;
 
     ApiConsumerHandler(Thing thing) {
@@ -80,7 +80,6 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
 
     @Override
     public void initialize() {
-        logger.debug("Initializing handler for thing {}", getThing().getUID());
         FreeboxOsHandler bridgeHandler = checkBridgeHandler();
         if (bridgeHandler == null) {
             return;
@@ -93,7 +92,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
                 checkAirMediaCapabilities(properties);
                 updateProperties(properties);
             } catch (FreeboxException e) {
-                logger.warn("Error getting thing {} properties : {}", thing.getUID(), e.getMessage());
+                logger.warn("Error getting thing {} properties: {}", thing.getUID(), e.getMessage());
             }
         }
 
@@ -121,7 +120,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
                 }
             }
         } catch (FreeboxException e) {
-            logger.warn("Unable to retrieve Media Receivers");
+            logger.warn("Unable to retrieve Media Receivers: {}", e.getMessage());
         }
     }
 
@@ -137,11 +136,10 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("Thing {}: bridge status changed to {}", getThing().getUID(), bridgeStatusInfo);
         if (checkBridgeHandler() != null) {
             startRefreshJob();
         } else {
-            stopRefreshJob();
+            stopJobs();
         }
     }
 
@@ -155,7 +153,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
                 logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
             }
         } catch (FreeboxException e) {
-            logger.warn("Error handling command : {}", e.getMessage());
+            logger.warn("Error handling command: {}", e.getMessage());
         }
     }
 
@@ -189,8 +187,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
 
     @Override
     public void dispose() {
-        logger.debug("Disposing handler for thing {}", getThing().getUID());
-        stopRefreshJob();
+        stopJobs();
         ServiceRegistration<?> localReg = reg;
         if (localReg != null) {
             localReg.unregister();
@@ -199,47 +196,54 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
     }
 
     private void startRefreshJob() {
-        ScheduledFuture<?> job = globalJob;
-        if (job == null || job.isCancelled()) {
-            int refreshInterval = getConfigAs(ApiConsumerConfiguration.class).refreshInterval;
-            logger.debug("Scheduling state update every {} seconds for thing {}...", refreshInterval,
-                    getThing().getUID());
-            ThingStatusDetail detail = thing.getStatusInfo().getStatusDetail();
-            if (ThingStatusDetail.DUTY_CYCLE.equals(detail)) {
-                boolean rebooting = true;
-                while (rebooting) {
-                    try {
-                        internalPoll();
-                        rebooting = false;
-                    } catch (FreeboxException ignore) {
-                        try {
-                            Thread.sleep(20000);
-                        } catch (InterruptedException e) {
-                            rebooting = false;
-                        }
-                    }
-                }
-            }
+        removeJob("GlobalJob");
 
-            globalJob = scheduler.scheduleWithFixedDelay(() -> {
-                try {
-                    internalPoll();
-                } catch (FreeboxException e) {
-                    logger.warn("Error polling thing {} : {}", getThing().getUID(), e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                }
-            }, 0, refreshInterval, TimeUnit.SECONDS);
+        int refreshInterval = getConfigAs(ApiConsumerConfiguration.class).refreshInterval;
+        logger.debug("Scheduling state update every {} seconds for thing {}...", refreshInterval, getThing().getUID());
+
+        ThingStatusDetail detail = thing.getStatusInfo().getStatusDetail();
+        if (ThingStatusDetail.DUTY_CYCLE.equals(detail)) {
+            try {
+                internalPoll();
+            } catch (FreeboxException ignore) {
+                // An exception is normal if the box is rebooting then let's try again later...
+                addJob("Initialize", this::initialize, 10, TimeUnit.SECONDS);
+                return;
+            }
+        }
+
+        addJob("GlobalJob", () -> {
+            try {
+                internalPoll();
+            } catch (FreeboxException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }, 0, refreshInterval, TimeUnit.SECONDS);
+    }
+
+    private void removeJob(String name) {
+        ScheduledFuture<?> existing = jobs.get(name);
+        if (existing != null && !existing.isCancelled()) {
+            existing.cancel(true);
         }
     }
 
     @Override
-    public void stopRefreshJob() {
-        ScheduledFuture<?> job = globalJob;
-        if (job != null && !job.isCancelled()) {
-            logger.debug("Stop scheduled state update for thing {}", getThing().getUID());
-            job.cancel(true);
-            globalJob = null;
-        }
+    public void addJob(String name, Runnable command, long initialDelay, long delay, TimeUnit unit) {
+        removeJob(name);
+        jobs.put(name, scheduler.scheduleWithFixedDelay(command, initialDelay, delay, unit));
+    }
+
+    @Override
+    public void addJob(String name, Runnable command, long delay, TimeUnit unit) {
+        removeJob(name);
+        jobs.put(name, scheduler.schedule(command, delay, unit));
+    }
+
+    @Override
+    public void stopJobs() {
+        jobs.keySet().forEach(name -> removeJob(name));
+        jobs.clear();
     }
 
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
@@ -331,11 +335,6 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
     @Override
     public void updateProperties(@Nullable Map<String, String> properties) {
         super.updateProperties(properties);
-    }
-
-    @Override
-    public ScheduledExecutorService getScheduler() {
-        return scheduler;
     }
 
     @Override

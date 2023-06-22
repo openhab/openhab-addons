@@ -204,20 +204,20 @@ public class PlayerHandler extends HostHandler {
         String aKey = key.toLowerCase();
         IPAddress ip = ipAddress;
         if (ip == null) {
-            logger.info("Player IP is unknown");
+            logger.warn("Player IP is unknown");
         } else if (VALID_REMOTE_KEYS.contains(aKey)) {
             String remoteCode = (String) getConfig().get(PlayerConfiguration.REMOTE_CODE);
             if (remoteCode != null) {
                 try {
                     getManager(PlayerManager.class).sendKey(ip.toCanonicalString(), remoteCode, aKey, longPress, count);
                 } catch (FreeboxException e) {
-                    logger.info("Error sending key : {}", e.getMessage());
+                    logger.warn("Error sending key: {}", e.getMessage());
                 }
             } else {
                 logger.warn("A remote code must be configured in the on the player thing.");
             }
         } else {
-            logger.info("Key '{}' is not a valid key expression", key);
+            logger.warn("Key '{}' is not a valid key expression", key);
         }
     }
 

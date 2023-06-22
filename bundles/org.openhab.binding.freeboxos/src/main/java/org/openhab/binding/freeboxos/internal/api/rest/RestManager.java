@@ -47,7 +47,7 @@ public class RestManager {
         this.uriBuilder = uri;
         this.session = session;
         if (required != LoginManager.Permission.NONE && !session.hasPermission(required)) {
-            throw new PermissionException(required, "Permission missing : %s", required.toString());
+            throw new PermissionException(required, "Permission missing: %s", required.toString());
         }
     }
 

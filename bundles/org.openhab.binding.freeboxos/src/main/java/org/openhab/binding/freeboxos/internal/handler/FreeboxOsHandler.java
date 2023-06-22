@@ -65,7 +65,6 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Freebox OS API handler for thing {}.", getThing().getUID());
         freeConnectionJob();
 
         openConnectionJob = Optional.of(scheduler.submit(() -> {
@@ -86,7 +85,7 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
                     thingConfig.put(FreeboxOsConfiguration.APP_TOKEN, currentAppToken);
                     updateConfiguration(thingConfig);
                     logger.info(
-                            "App token updated in Configuration, please give needed permissions to openHAB app in your Freebox management console");
+                            "App token updated in Configuration, please ensure expected permissions are given openHAB in your Freebox management console");
                 }
 
                 updateStatus(ThingStatus.ONLINE);
@@ -109,8 +108,6 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Freebox OS API handler for thing {}", getThing().getUID());
-
         freeConnectionJob();
         session.closeSession();
 

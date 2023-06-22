@@ -52,8 +52,8 @@ public interface FreeDeviceIntf extends ApiConsumerIntf {
         triggerChannel(getEventChannelUID(), "reboot_requested");
         actualReboot.run();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "System rebooting...");
-        stopRefreshJob();
-        getScheduler().schedule(this::initialize, 30, TimeUnit.SECONDS);
+        stopJobs();
+        addJob("Initialize", this::initialize, 30, TimeUnit.SECONDS);
     }
 <<<<<<< Upstream, based on origin/main
 =======

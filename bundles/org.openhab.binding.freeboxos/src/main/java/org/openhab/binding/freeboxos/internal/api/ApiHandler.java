@@ -93,7 +93,7 @@ public class ApiHandler {
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String sessionToken,
             @Nullable Object payload) throws FreeboxException, InterruptedException {
-        logger.debug("executeUrl {} : {} ", method, uri);
+        logger.debug("executeUrl {}: {} ", method, uri);
 
         Request request = httpClient.newRequest(uri).method(method).timeout(timeoutInMs, TimeUnit.MILLISECONDS)
                 .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE);

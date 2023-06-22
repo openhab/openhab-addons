@@ -14,7 +14,7 @@ https://github.com/openhab/openhab-addons
 
 == Third-party Content
 
-IPAddress : Java library for handling IP addresses and subnets, both IPv4 and IPv6
+IPAddress: Java library for handling IP addresses and subnets, both IPv4 and IPv6
 * License: Apache License 2.0
 * Project: https://github.com/seancfoley/IPAddress
 * Source:  https://github.com/seancfoley/IPAddress
