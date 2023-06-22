@@ -30,10 +30,12 @@ import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Acti
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.MediaType;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSink;
+import org.openhab.core.audio.AudioSinkAsync;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.audio.StreamServed;
 import org.openhab.core.audio.URLAudioStream;
+import org.openhab.core.audio.UnsupportedAudioFormatException;
+import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -46,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AirMediaSink implements AudioSink {
+public class AirMediaSink extends AudioSinkAsync {
     private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
     private static final Set<AudioFormat> BASIC_FORMATS = Set.of(WAV, OGG);
     private static final Set<AudioFormat> ALL_MP3_FORMATS = Set.of(
@@ -110,31 +112,44 @@ public class AirMediaSink implements AudioSink {
     }
 
     @Override
-    public void process(@Nullable AudioStream audioStream) {
-        try {
-            if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+    protected void processAsynchronously(@Nullable AudioStream audioStream)
+            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            try {
                 MediaReceiverManager manager = thingHandler.getManager(MediaReceiverManager.class);
                 if (audioStream == null) {
                     manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
-                } else {
-                    String url = null;
-                    if (audioStream instanceof URLAudioStream) {
-                        // it is an external URL, we can access it directly
-                        url = ((URLAudioStream) audioStream).getURL();
-                    } else {
-                        // we serve it on our own HTTP server
-                        url = callbackUrl + (audioStream instanceof FixedLengthAudioStream
-                                ? audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 20)
-                                : audioHTTPServer.serve(audioStream));
-                    }
-                    logger.debug("AirPlay audio sink: process url {}", url);
-                    manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
-                    manager.sendToReceiver(playerName, password, Action.START, MediaType.VIDEO, url);
+                    return;
                 }
+
+                if (audioStream instanceof URLAudioStream urlAudioStream) {
+                    // it is an external URL, we can access it directly
+                    logger.debug("AirPlay audio sink: process url {}", urlAudioStream.getURL());
+                    playMedia(manager, urlAudioStream.getURL());
+                    return;
+                }
+                // we serve it on our own HTTP server
+                StreamServed streamServed = audioHTTPServer.serve(audioStream, 20, true);
+                streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
+                logger.debug("AirPlay audio sink: process url {}", callbackUrl + streamServed.url());
+                playMedia(manager, callbackUrl + streamServed.url());
+                try {
+                    audioStream.close();
+                } catch (IOException e) {
+                    logger.debug("Exception while closing audioStream", e);
+                }
+            } catch (FreeboxException e) {
+                logger.warn("Audio stream playback failed: {}", e.getMessage());
+            } catch (IOException e) {
+                throw new UnsupportedAudioStreamException("AirPlay device can only handle clonable audio streams.",
+                        audioStream.getClass(), e);
             }
-        } catch (FreeboxException e) {
-            logger.warn("Audio stream playback failed: {}", e.getMessage());
         }
+    }
+
+    private void playMedia(MediaReceiverManager manager, String url) throws FreeboxException {
+        manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
+        manager.sendToReceiver(playerName, password, Action.START, MediaType.VIDEO, url);
     }
 
     @Override
