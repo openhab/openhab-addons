@@ -164,8 +164,8 @@ public class GrowattTest {
 
         State state = channelStates.get("total-work-time");
         assertTrue(state instanceof QuantityType<?>);
-        if (state instanceof QuantityType<?> quantity) {
-            QuantityType<?> seconds = quantity.toUnit(Units.SECOND);
+        if (state instanceof QuantityType<?>) {
+            QuantityType<?> seconds = ((QuantityType<?>) state).toUnit(Units.SECOND);
             assertNotNull(seconds);
             assertEquals(QuantityType.valueOf(32751939, Units.SECOND).doubleValue(), seconds.doubleValue(), 0.1);
         }

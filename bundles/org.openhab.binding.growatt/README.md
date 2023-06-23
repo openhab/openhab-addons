@@ -193,8 +193,8 @@ The installation is as follows:
 - Copy `grott.py`, `grottconf.py`, `grottdata.py`, `grottproxy.py`, `grottsniffer.py`, `grottserver.py` to the home folder.
 - Copy `grottext.py` application extension to the home folder.
 - Copy `grott.ini` configuration file to the home folder.
-- Modify `grott.ini` to run in proxy mode; not in compatibility mode; show your inverter type; not run MQTT;
-not run PVOutput; enable the `grottext` extension; and set the OpenHAB `/growatt` servlet url.
+- Modify `grott.ini` to run in proxy mode; not in compatibility mode; show your inverter type; not run MQTT; not run PVOutput; enable the `grottext` extension; and set the OpenHAB `/growatt` servlet url.
+
 A suggested Grott configuration for OpenHAB is as follows:
 
 ```php

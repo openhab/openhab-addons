@@ -73,11 +73,15 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
         JsonElement jsonElement;
         try {
             jsonElement = JsonParser.parseString(json);
+            if (jsonElement.isJsonPrimitive()) {
+                // strip double escaping from Grott JSON
+                jsonElement = JsonParser.parseString(jsonElement.getAsString());
+            }
             if (!jsonElement.isJsonObject()) {
-                throw new JsonSyntaxException("Unsupported element type");
+                throw new JsonSyntaxException("Unsupported JSON element type");
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("handleGrottContent() invalid JSON string '{}'", json, e);
+            logger.debug("handleGrottContent() invalid JSON '{}'", json, e);
             return;
         }
         try {

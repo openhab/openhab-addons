@@ -61,17 +61,15 @@ public class GrottHttpServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.TEXT_HTML);
-        boolean online = handlers.size() > 0;
-        response.getWriter().write(
-                String.format(HTML, online ? COLOR_ONLINE : COLOR_READY, online ? MESSAGE_ONLINE : MESSAGE_READY));
+        response.getWriter().write(String.format(HTML, handlers.isEmpty() ? COLOR_READY : COLOR_ONLINE,
+                handlers.isEmpty() ? COLOR_READY : MESSAGE_ONLINE));
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_OK);
-        boolean online = handlers.size() > 0;
-        response.getWriter().write(online ? MESSAGE_ONLINE : MESSAGE_READY);
+        response.getWriter().write(handlers.isEmpty() ? MESSAGE_READY : MESSAGE_ONLINE);
         if (request.getContentLength() > 0) {
             String content = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             handlers.forEach(handler -> handler.handleGrottContent(content));
