@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
@@ -84,27 +86,34 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source) {
-        QuantityType<?> kelvin;
+        QuantityType<?> mirek;
         if (command instanceof QuantityType<?>) {
-            kelvin = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
-        } else if (command instanceof DecimalType) {
-            kelvin = QuantityType.valueOf(((DecimalType) command).doubleValue(), Units.KELVIN);
-        } else {
-            kelvin = null;
-        }
-        if (Objects.nonNull(kelvin)) {
-            QuantityType<?> mirek = kelvin.toInvertibleUnit(Units.MIRED);
-            if (Objects.nonNull(mirek)) {
-                MirekSchema schema = target.getMirekSchema();
-                schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
-                schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
-                ColorTemperature colorTemperature = target.getColorTemperature();
-                colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
-                double min = schema.getMirekMinimum();
-                double max = schema.getMirekMaximum();
-                double val = Math.max(min, Math.min(max, mirek.doubleValue()));
-                target.setColorTemperature(colorTemperature.setMirek(val));
+            QuantityType<?> quantity = (QuantityType<?>) command;
+            Unit<?> unit = quantity.getUnit();
+            if (Units.KELVIN == unit) {
+                mirek = quantity.toInvertibleUnit(Units.MIRED);
+            } else if (Units.MIRED == unit) {
+                mirek = quantity;
+            } else {
+                QuantityType<?> kelvin = quantity.toInvertibleUnit(Units.KELVIN);
+                mirek = Objects.nonNull(kelvin) ? kelvin.toInvertibleUnit(Units.MIRED) : null;
             }
+        } else if (command instanceof DecimalType) {
+            mirek = QuantityType.valueOf(((DecimalType) command).doubleValue(), Units.KELVIN)
+                    .toInvertibleUnit(Units.MIRED);
+        } else {
+            mirek = null;
+        }
+        if (Objects.nonNull(mirek)) {
+            MirekSchema schema = target.getMirekSchema();
+            schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
+            schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
+            ColorTemperature colorTemperature = target.getColorTemperature();
+            colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
+            double min = schema.getMirekMinimum();
+            double max = schema.getMirekMaximum();
+            double val = Math.max(min, Math.min(max, mirek.doubleValue()));
+            target.setColorTemperature(colorTemperature.setMirek(val));
         }
         return target;
     }
