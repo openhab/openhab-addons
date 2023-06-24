@@ -90,7 +90,7 @@ public class OnvifDiscovery {
                             && inetAddress.isSiteLocalAddress()) {
                         if (inetAddress.getHostAddress().equals(primaryHostAddress)) {
                             results.add(networkInterface);
-                            logger.info("Scanning network {} for any ONVIF cameras", primaryHostAddress);
+                            logger.debug("Scanning network {} for any ONVIF cameras", primaryHostAddress);
                         } else {
                             logger.debug("Skipping network {} as it was not selected as openHAB's 'Primary Address'",
                                     inetAddress.getHostAddress());
