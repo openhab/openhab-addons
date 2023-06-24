@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -52,6 +53,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -151,6 +153,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
+    private final ExecutorService threadPool = ThreadPoolManager.getPool("hue-api2-thing");
 
     private String resourceId = "?";
     private Resource thisResource;
@@ -543,7 +546,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 if (!updateDependenciesDone) {
                     resourceConsumed = true;
-                    scheduler.submit(() -> updateDependencies());
+                    threadPool.execute(() -> updateDependencies());
                 }
             } else if (ResourceType.SCENE == resource.getType()) {
                 Resource cachedScene = sceneContributorsCache.get(incomingResourceId);
@@ -952,6 +955,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             ProductData productData = thisResource.getProductData();
             if (Objects.nonNull(productData)) {
                 // standard properties
+                properties.put(PROPERTY_RESOURCE_ID, resourceId);
                 properties.put(Thing.PROPERTY_MODEL_ID, productData.getModelId());
                 properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
