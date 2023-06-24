@@ -90,9 +90,9 @@ public class Setters {
         if (command instanceof QuantityType<?>) {
             QuantityType<?> quantity = (QuantityType<?>) command;
             Unit<?> unit = quantity.getUnit();
-            if (Units.KELVIN == unit) {
+            if (Units.KELVIN.equals(unit)) {
                 mirek = quantity.toInvertibleUnit(Units.MIRED);
-            } else if (Units.MIRED == unit) {
+            } else if (Units.MIRED.equals(unit)) {
                 mirek = quantity;
             } else {
                 QuantityType<?> kelvin = quantity.toInvertibleUnit(Units.KELVIN);
