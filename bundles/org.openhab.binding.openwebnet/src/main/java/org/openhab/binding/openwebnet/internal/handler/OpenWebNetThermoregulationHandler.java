@@ -36,6 +36,7 @@ import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.MalformedFrameException;
 import org.openwebnet4j.message.Thermoregulation;
+import org.openwebnet4j.message.Thermoregulation.DimThermo;
 import org.openwebnet4j.message.Thermoregulation.WhatThermo;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereThermo;
@@ -59,7 +60,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.THERMOREGULATION_SUPPORTED_THING_TYPES;
 
-    private double currentSetPointTemp = 11.5d; // 11.5 is the default setTemp used in MyHomeUP mobile app
+    private double currentSetPointTemp = 20.0d;
 
     private Thermoregulation.Function currentFunction = Thermoregulation.Function.GENERIC;
     private Thermoregulation.OperationMode currentMode = Thermoregulation.OperationMode.MANUAL;
@@ -318,9 +319,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
-
         logger.debug("@@@@ Thermo.handleMessage(): {}", msg.toStringVerbose());
-
+        Thermoregulation tmsg = (Thermoregulation) msg;
         if (isCentralUnit) {
             if (msg.getWhat() == null) {
                 return;
@@ -357,35 +357,41 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 logger.debug("handleMessage() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
             } else {
                 // check and update values of other channel (mode, function, temp)
-                updateModeAndFunction((Thermoregulation) msg);
-                updateSetpoint((Thermoregulation) msg);
+                updateModeAndFunction(tmsg);
+                updateSetpoint(tmsg);
             }
             return;
         }
 
-        if (msg.isCommand()) {
-            updateModeAndFunction((Thermoregulation) msg);
+        if (tmsg.isCommand()) {
+            updateModeAndFunction(tmsg);
         } else {
-            if (msg.getDim() == null) {
-                return;
-            }
-            if (msg.getDim() == Thermoregulation.DimThermo.TEMPERATURE
-                    || msg.getDim() == Thermoregulation.DimThermo.PROBE_TEMPERATURE) {
-                updateTemperature((Thermoregulation) msg);
-            } else if (msg.getDim() == Thermoregulation.DimThermo.TEMP_SETPOINT
-                    || msg.getDim() == Thermoregulation.DimThermo.COMPLETE_PROBE_STATUS) {
-                updateSetpoint((Thermoregulation) msg);
-            } else if (msg.getDim() == Thermoregulation.DimThermo.VALVES_STATUS) {
-                updateValveStatus((Thermoregulation) msg);
-            } else if (msg.getDim() == Thermoregulation.DimThermo.ACTUATOR_STATUS) {
-                updateActuatorStatus((Thermoregulation) msg);
-            } else if (msg.getDim() == Thermoregulation.DimThermo.FAN_COIL_SPEED) {
-                updateFanCoilSpeed((Thermoregulation) msg);
-            } else if (msg.getDim() == Thermoregulation.DimThermo.OFFSET) {
-                updateLocalOffset((Thermoregulation) msg);
-            } else {
-                logger.debug("handleMessage() Ignoring unsupported DIM {} for thing {}. Frame={}", msg.getDim(),
-                        getThing().getUID(), msg);
+            DimThermo dim = (DimThermo) tmsg.getDim();
+            switch (dim) {
+                case TEMP_SETPOINT:
+                case COMPLETE_PROBE_STATUS:
+                    updateSetpoint(tmsg);
+                    break;
+                case PROBE_TEMPERATURE:
+                case TEMPERATURE:
+                    updateTemperature(tmsg);
+                    break;
+                case ACTUATOR_STATUS:
+                    updateActuatorStatus(tmsg);
+                    break;
+                case FAN_COIL_SPEED:
+                    updateFanCoilSpeed(tmsg);
+                    break;
+                case OFFSET:
+                    updateLocalOffset(tmsg);
+                    break;
+                case VALVES_STATUS:
+                    updateValveStatus(tmsg);
+                    break;
+                default:
+                    logger.debug("handleMessage() Ignoring unsupported DIM {} for thing {}. Frame={}", tmsg.getDim(),
+                            getThing().getUID(), tmsg);
+                    break;
             }
         }
     }
@@ -481,10 +487,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private void updateSetpoint(Thermoregulation tmsg) {
         try {
-            double temp = 11.5d;
+            double newTemp = -1;
             if (isCentralUnit) {
                 if (tmsg.getWhat() == null) {
-                    // it should be like *4*WHAT#TTTT*#0##
                     logger.debug("updateSetpoint() Could not parse function from {} (what is null)",
                             tmsg.getFrameValue());
                     return;
@@ -492,15 +497,18 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
                 String[] parameters = tmsg.getWhatParams();
                 if (parameters.length > 0) {
-                    temp = Thermoregulation.decodeTemperature(parameters[0]);
+                    // it should be like *4*WHAT#TTTT*#0##
+                    newTemp = Thermoregulation.decodeTemperature(parameters[0]);
                     logger.debug("updateSetpoint() parsed temperature from {}: {} ---> {}", tmsg.toStringVerbose(),
-                            parameters[0], temp);
+                            parameters[0], newTemp);
                 }
             } else {
-                temp = Thermoregulation.parseTemperature(tmsg);
+                newTemp = Thermoregulation.parseTemperature(tmsg);
             }
-            updateState(CHANNEL_TEMP_SETPOINT, getAsQuantityTypeOrNull(temp, SIUnits.CELSIUS));
-            currentSetPointTemp = temp;
+            if (newTemp > 0) {
+                updateState(CHANNEL_TEMP_SETPOINT, getAsQuantityTypeOrNull(newTemp, SIUnits.CELSIUS));
+                currentSetPointTemp = newTemp;
+            }
         } catch (NumberFormatException e) {
             logger.warn("updateSetpoint() NumberFormatException on frame {}: {}", tmsg, e.getMessage());
             updateState(CHANNEL_TEMP_SETPOINT, UnDefType.UNDEF);
@@ -514,6 +522,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         try {
             Thermoregulation.FanCoilSpeed speed = Thermoregulation.parseFanCoilSpeed(tmsg);
             updateState(CHANNEL_FAN_SPEED, new StringType(speed.toString()));
+        } catch (NumberFormatException e) {
+            logger.warn("updateFanCoilSpeed() NumberFormatException on frame {}: {}", tmsg, e.getMessage());
+            updateState(CHANNEL_FAN_SPEED, UnDefType.UNDEF);
         } catch (FrameException e) {
             logger.warn("updateFanCoilSpeed() FrameException on frame {}: {}", tmsg, e.getMessage());
             updateState(CHANNEL_FAN_SPEED, UnDefType.UNDEF);
