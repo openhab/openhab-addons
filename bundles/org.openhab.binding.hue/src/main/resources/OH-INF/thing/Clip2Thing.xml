@@ -35,7 +35,10 @@
 			<channel id="light-level-enabled" typeId="sensor-enabled">
 				<description>Light level sensor enabled.</description>
 			</channel>
-			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Temperature</label>
+				<description>Temperature at the sensor location.</description>
+			</channel>
 			<channel id="temperature-enabled" typeId="sensor-enabled">
 				<description>Temperature sensor enabled.</description>
 			</channel>

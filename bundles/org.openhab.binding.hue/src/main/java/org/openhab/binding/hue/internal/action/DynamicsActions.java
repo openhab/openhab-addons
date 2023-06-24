@@ -71,7 +71,7 @@ public class DynamicsActions implements ThingActions {
         }
         handler.handleDynamicsCommand(channelId, command,
                 new QuantityType<>(durationMSec.longValue(), MetricPrefix.MILLI(Units.SECOND)));
-        logger.debug("Dynamic command '{}' sent to channelId '{}' with duration {}mSec.", command, channelId,
+        logger.debug("Dynamic command '{}' sent to channelId '{}' with duration {}ms.", command, channelId,
                 durationMSec);
     }
 

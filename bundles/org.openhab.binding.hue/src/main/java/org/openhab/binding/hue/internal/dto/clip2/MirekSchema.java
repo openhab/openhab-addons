@@ -49,6 +49,6 @@ public class MirekSchema {
     }
 
     public String toPropertyValue() {
-        return String.format("%s .. %s", toKelvin(mirekMaximum), toKelvin(mirekMinimum));
+        return String.format("%s .. %s", toKelvin(mirekMinimum), toKelvin(mirekMaximum));
     }
 }

@@ -232,7 +232,7 @@
 	<channel-type id="dynamics" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Dynamics</label>
-		<description>The duration (mSec) of dynamic transitions between light or scene states.</description>
+		<description>The duration (ms) of dynamic transitions between light or scene states.</description>
 		<category>Time</category>
 		<state min="0" step="100" pattern="%d ms"/>
 	</channel-type>

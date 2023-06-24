@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ColorTemperature2 {
+public class ColorTemperature {
     private @Nullable Long mirek;
     private @Nullable @SerializedName("mirek_schema") MirekSchema mirekSchema;
 
@@ -74,12 +74,12 @@ public class ColorTemperature2 {
         throw new DTOPresentButEmptyException("'mirek_schema' DTO is present but empty");
     }
 
-    public ColorTemperature2 setMirek(double mirek) {
+    public ColorTemperature setMirek(double mirek) {
         this.mirek = Math.round(mirek);
         return this;
     }
 
-    public ColorTemperature2 setMirekSchema(@Nullable MirekSchema mirekSchema) {
+    public ColorTemperature setMirekSchema(@Nullable MirekSchema mirekSchema) {
         this.mirekSchema = mirekSchema;
         return this;
     }

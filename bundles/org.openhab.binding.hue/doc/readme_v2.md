@@ -186,12 +186,12 @@ val hueActions = getActions("hue","hue:device:g24:11111111-2222-3333-4444-555555
 ```
 
 Where the first parameter must always be `hue` and the second must be the full thing UID.
-Once the action instance has been retrieved, you can invoke its `dynamicCommand(String channelId, Command command, DecimalType durationMSec)` method as follows.
+Once the action instance has been retrieved, you can invoke its `dynamicCommand(String channelId, Command command, Long durationMSec)` method as follows.
 
 ```php
-hueActions.dynamicCommand("brightness", new PercentType(100), new DecimalType(10000))
+hueActions.dynamicCommand("brightness", new PercentType(100), new Long(10000))
 
-hueActions.dynamicCommand("scene", new StringType("SceneName"), new DecimalType(20000))
+hueActions.dynamicCommand("scene", new StringType("SceneName"), new Long(20000))
 ```
 
 | Parameter     | Description                                                                                                                                |

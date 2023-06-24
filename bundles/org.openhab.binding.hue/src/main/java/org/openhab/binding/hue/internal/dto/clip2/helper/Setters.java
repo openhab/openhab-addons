@@ -19,7 +19,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.Alerts;
-import org.openhab.binding.hue.internal.dto.clip2.ColorTemperature2;
+import org.openhab.binding.hue.internal.dto.clip2.ColorTemperature;
 import org.openhab.binding.hue.internal.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.dto.clip2.Effects;
@@ -84,23 +84,22 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source) {
-        QuantityType<?> colorTemperatureCommand = null;
+        QuantityType<?> kelvin;
         if (command instanceof QuantityType<?>) {
-            colorTemperatureCommand = (QuantityType<?>) command;
+            kelvin = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
         } else if (command instanceof DecimalType) {
-            colorTemperatureCommand = QuantityType.valueOf(((DecimalType) command).doubleValue(), Units.KELVIN);
+            kelvin = QuantityType.valueOf(((DecimalType) command).doubleValue(), Units.KELVIN);
+        } else {
+            kelvin = null;
         }
-        QuantityType<?> kelvin = Objects.nonNull(colorTemperatureCommand)
-                ? colorTemperatureCommand.toInvertibleUnit(Units.KELVIN)
-                : null;
         if (Objects.nonNull(kelvin)) {
             QuantityType<?> mirek = kelvin.toInvertibleUnit(Units.MIRED);
             if (Objects.nonNull(mirek)) {
                 MirekSchema schema = target.getMirekSchema();
                 schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
                 schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
-                ColorTemperature2 colorTemperature = target.getColorTemperature();
-                colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature2();
+                ColorTemperature colorTemperature = target.getColorTemperature();
+                colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
                 double min = schema.getMirekMinimum();
                 double max = schema.getMirekMaximum();
                 double val = Math.max(min, Math.min(max, mirek.doubleValue()));
@@ -126,8 +125,8 @@ public class Setters {
             MirekSchema schema = target.getMirekSchema();
             schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
-            ColorTemperature2 colorTemperature = target.getColorTemperature();
-            colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature2();
+            ColorTemperature colorTemperature = target.getColorTemperature();
+            colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
             double val = min + ((max - min) * ((PercentType) command).doubleValue() / 100f);
@@ -259,8 +258,8 @@ public class Setters {
             targetColor.setGamut(sourceGamut);
         }
         // color temperature
-        ColorTemperature2 targetColorTemp = target.getColorTemperature();
-        ColorTemperature2 sourceColorTemp = source.getColorTemperature();
+        ColorTemperature targetColorTemp = target.getColorTemperature();
+        ColorTemperature sourceColorTemp = source.getColorTemperature();
         if (Objects.isNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
             target.setColorTemperature(sourceColorTemp);
             targetColorTemp = target.getColorTemperature();
@@ -269,7 +268,7 @@ public class Setters {
         MirekSchema targetMirekSchema = Objects.nonNull(targetColorTemp) ? targetColorTemp.getMirekSchema() : null;
         MirekSchema sourceMirekSchema = Objects.nonNull(sourceColorTemp) ? sourceColorTemp.getMirekSchema() : null;
         if (Objects.isNull(targetMirekSchema) && Objects.nonNull(sourceMirekSchema)) {
-            targetColorTemp = Objects.nonNull(targetColorTemp) ? targetColorTemp : new ColorTemperature2();
+            targetColorTemp = Objects.nonNull(targetColorTemp) ? targetColorTemp : new ColorTemperature();
             targetColorTemp.setMirekSchema(sourceMirekSchema);
         }
         // metadata

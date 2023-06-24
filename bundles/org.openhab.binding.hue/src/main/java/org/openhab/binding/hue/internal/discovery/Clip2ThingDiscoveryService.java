@@ -41,6 +41,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Discovery service to find resource things on a Hue Bridge that is running CLIP 2.
@@ -49,6 +51,8 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  */
 @NonNullByDefault
 public class Clip2ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+
+    private final Logger logger = LoggerFactory.getLogger(Clip2ThingDiscoveryService.class);
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
     private static final int DISCOVERY_INTERVAL_SECONDS = 600;
@@ -146,7 +150,7 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                     }
                 }
             } catch (ApiException | AssetNotLoadedException e) {
-                // bridge is offline or in a bad state
+                logger.debug("discoverThings() bridge is offline or in a bad state");
             }
         }
         stopScan();

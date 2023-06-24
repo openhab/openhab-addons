@@ -75,7 +75,7 @@ public class Resource {
     private @Nullable List<ResourceReference> services;
     private @Nullable OnState on;
     private @Nullable Dimming dimming;
-    private @Nullable @SerializedName("color_temperature") ColorTemperature2 colorTemperature;
+    private @Nullable @SerializedName("color_temperature") ColorTemperature colorTemperature;
     private @Nullable ColorXy color;
     private @Nullable Alerts alert;
     private @Nullable Effects effects;
@@ -234,12 +234,12 @@ public class Resource {
         return UnDefType.NULL;
     }
 
-    public @Nullable ColorTemperature2 getColorTemperature() {
+    public @Nullable ColorTemperature getColorTemperature() {
         return colorTemperature;
     }
 
     public State getColorTemperatureAbsoluteState() {
-        ColorTemperature2 colorTemp = colorTemperature;
+        ColorTemperature colorTemp = colorTemperature;
         if (Objects.nonNull(colorTemp)) {
             try {
                 QuantityType<?> colorTemperature = colorTemp.getAbsolute();
@@ -260,7 +260,7 @@ public class Resource {
      * @return a PercentType with the colour temperature percentage.
      */
     public State getColorTemperaturePercentState() {
-        ColorTemperature2 colorTemperature = this.colorTemperature;
+        ColorTemperature colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
             try {
                 Double percent = colorTemperature.getPercent();
@@ -381,7 +381,7 @@ public class Resource {
     }
 
     public @Nullable MirekSchema getMirekSchema() {
-        ColorTemperature2 colorTemp = this.colorTemperature;
+        ColorTemperature colorTemp = this.colorTemperature;
         return Objects.nonNull(colorTemp) ? colorTemp.getMirekSchema() : null;
     }
 
@@ -562,7 +562,7 @@ public class Resource {
         return this;
     }
 
-    public Resource setColorTemperature(ColorTemperature2 colorTemperature) {
+    public Resource setColorTemperature(ColorTemperature colorTemperature) {
         this.colorTemperature = colorTemperature;
         return this;
     }
@@ -605,7 +605,7 @@ public class Resource {
     }
 
     public Resource setMirekSchema(@Nullable MirekSchema schema) {
-        ColorTemperature2 colorTemperature = this.colorTemperature;
+        ColorTemperature colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
             colorTemperature.setMirekSchema(schema);
         }
