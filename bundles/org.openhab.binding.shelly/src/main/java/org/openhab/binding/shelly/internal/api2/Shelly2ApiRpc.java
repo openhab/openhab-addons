@@ -900,7 +900,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * categories (e.g. bulbs)
      */
     @Override
-    public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
+    public void setLedStatus(String ledName, boolean value) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 
