@@ -108,5 +108,6 @@ Import-Package: \
 	io.netty.handler-proxy;version='[4.1.92,4.1.93)',\
 	io.netty.resolver;version='[4.1.92,4.1.93)',\
 	io.netty.transport;version='[4.1.92,4.1.93)',\
-	io.netty.transport-native-unix-common;version='[4.1.92,4.1.93)'
+	io.netty.transport-native-unix-common;version='[4.1.92,4.1.93)',\
+	jakarta.ws.rs-api;version='[2.1.6,2.1.7)'
 

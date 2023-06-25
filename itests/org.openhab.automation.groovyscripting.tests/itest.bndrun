@@ -77,4 +77,5 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	junit-platform-commons;version='[1.9.2,1.9.3)',\
 	junit-platform-engine;version='[1.9.2,1.9.3)',\
 	junit-platform-launcher;version='[1.9.2,1.9.3)',\
-	xstream;version='[1.4.20,1.4.21)'
+	xstream;version='[1.4.20,1.4.21)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'

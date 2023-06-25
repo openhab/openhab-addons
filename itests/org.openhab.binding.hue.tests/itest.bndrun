@@ -50,7 +50,6 @@ Fragment-Host: org.openhab.binding.hue
 	org.openhab.core.io.console;version='[4.0.0,4.0.1)',\
 	org.openhab.core.io.net;version='[4.0.0,4.0.1)',\
 	org.openhab.core.io.transport.mdns;version='[4.0.0,4.0.1)',\
-	org.openhab.core.io.transport.upnp;version='[4.0.0,4.0.1)',\
 	org.openhab.core.test;version='[4.0.0,4.0.1)',\
 	org.openhab.core.thing;version='[4.0.0,4.0.1)',\
 	com.google.gson;version='[2.9.1,2.9.2)',\
@@ -86,4 +85,5 @@ Fragment-Host: org.openhab.binding.hue
 	org.eclipse.jetty.http2.hpack;version='[9.4.50,9.4.51)',\
 	org.mockito.mockito-core;version='[4.11.0,4.11.1)',\
 	org.objenesis;version='[3.3.0,3.3.1)',\
-	xstream;version='[1.4.20,1.4.21)'
+	xstream;version='[1.4.20,1.4.21)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'
