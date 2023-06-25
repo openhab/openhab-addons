@@ -63,32 +63,32 @@ public class Capability {
 
     public final @Nullable String setNewData(NAObject newData) {
         beforeNewData();
-        if (newData instanceof HomeData) {
-            updateHomeData((HomeData) newData);
+        if (newData instanceof HomeData homeData) {
+            updateHomeData(homeData);
         }
-        if (newData instanceof HomeStatus) {
-            updateHomeStatus((HomeStatus) newData);
+        if (newData instanceof HomeStatus homeStatus) {
+            updateHomeStatus(homeStatus);
         }
-        if (newData instanceof HomeStatusModule) {
-            updateHomeStatusModule((HomeStatusModule) newData);
+        if (newData instanceof HomeStatusModule homeStatusModule) {
+            updateHomeStatusModule(homeStatusModule);
         }
-        if (newData instanceof Event) {
-            updateEvent((Event) newData);
+
+        if (newData instanceof HomeEvent homeEvent) {
+            updateHomeEvent(homeEvent);
+        } else if (newData instanceof WebhookEvent webhookEvent && webhookEvent.getEventType().validFor(moduleType)) {
+            updateWebhookEvent(webhookEvent);
+        } else if (newData instanceof Event event) {
+            updateEvent(event);
         }
-        if (newData instanceof WebhookEvent) {
-            updateWebhookEvent((WebhookEvent) newData);
+
+        if (newData instanceof NAThing naThing) {
+            updateNAThing(naThing);
         }
-        if (newData instanceof HomeEvent) {
-            updateHomeEvent((HomeEvent) newData);
+        if (newData instanceof NAMain naMain) {
+            updateNAMain(naMain);
         }
-        if (newData instanceof NAThing) {
-            updateNAThing((NAThing) newData);
-        }
-        if (newData instanceof NAMain) {
-            updateNAMain((NAMain) newData);
-        }
-        if (newData instanceof Device) {
-            updateNADevice((Device) newData);
+        if (newData instanceof Device device) {
+            updateNADevice(device);
         }
         afterNewData(newData);
         return statusReason;

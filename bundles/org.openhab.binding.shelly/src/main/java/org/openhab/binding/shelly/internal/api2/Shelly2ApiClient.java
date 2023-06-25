@@ -299,7 +299,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             status.totalReturned = em.totalAprtPower;
         }
 
-        ShellySettingsMeter sm = new ShellySettingsMeter();
+      ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(0);
         sm.isValid = emeter.isValid = true;
         if (em.aActPower != null) {

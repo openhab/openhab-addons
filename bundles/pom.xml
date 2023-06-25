@@ -300,6 +300,7 @@
     <module>org.openhab.binding.pjlinkdevice</module>
     <module>org.openhab.binding.playstation</module>
     <module>org.openhab.binding.plclogo</module>
+    <module>org.openhab.binding.plex</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
@@ -422,6 +423,7 @@
     <!-- persistence -->
     <module>org.openhab.persistence.dynamodb</module>
     <module>org.openhab.persistence.influxdb</module>
+    <module>org.openhab.persistence.inmemory</module>
     <module>org.openhab.persistence.jdbc</module>
     <module>org.openhab.persistence.jpa</module>
     <module>org.openhab.persistence.mapdb</module>
