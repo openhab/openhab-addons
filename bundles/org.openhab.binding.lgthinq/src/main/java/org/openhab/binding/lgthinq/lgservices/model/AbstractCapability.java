@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
-import static org.openhab.binding.lgthinq.lgservices.FeatureDefinition.NULL_DEFINITION;
+import static org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition.NULL_DEFINITION;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.lgservices.FeatureDefinition;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
