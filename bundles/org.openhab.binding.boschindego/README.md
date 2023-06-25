@@ -80,6 +80,7 @@ To authorize, please follow these steps:
 | 518   | Border cut                                  |
 | 519   | Idle in lawn                                |
 | 523   | SpotMow                                     |
+| 524   | Mowing randomly                             |
 | 768   | Returning to dock                           |
 | 769   | Returning to dock                           |
 | 770   | Returning to dock                           |
