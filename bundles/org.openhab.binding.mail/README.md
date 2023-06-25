@@ -96,7 +96,7 @@ mail.items:
 ```java
 Number InboxTotal  "INBOX [%d]"        { channel="mail:imap:sampleimap:inbox_total" }
 Number InboxUnread "INBOX Unread [%d]" { channel="mail:imap:sampleimap:inbox_unread" }
-ring FedexNotification               { channel="mail:imap:sampleimap:fedex_notification" }
+String FedexNotification               { channel="mail:imap:sampleimap:fedex_notification" }
 ```
 
 mail.sitemap:
