@@ -14,6 +14,7 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V2_CTRL_DEVICE_CONFIG_PATH;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -51,26 +52,19 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
     }
 
     @Override
-    protected RestResult sendControlCommands(String bridgeName, String deviceId, String controlPath, String controlKey,
+    protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
             String command, String keyName, String value) throws Exception {
-        return sendControlCommands(bridgeName, deviceId, controlPath, controlKey, command, keyName, value, null);
+        return sendCommand(bridgeName, deviceId, controlPath, controlKey, command, keyName, value, null);
     }
 
-    @Override
-    protected RestResult sendControlCommands(String bridgeName, String deviceId, String controlPath, String controlKey,
-            String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
-            throws Exception {
+    protected RestResult postCall(String bridgeName, String deviceId, String controlPath, String payload)
+            throws LGThinqApiException, IOException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
         UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
                 .path(String.format(V2_CTRL_DEVICE_CONFIG_PATH, deviceId, controlPath));
         Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-        ObjectNode payload = JsonNodeFactory.instance.objectNode();
-        payload.put("ctrlKey", controlKey).put("command", command).put("dataKey", keyName).put("dataValue", value);
-        if (extraNode != null) {
-            payload.setAll(extraNode);
-        }
-        RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, payload.toPrettyString());
+        RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, payload);
         if (resp == null) {
             logger.error("Null result returned sending command to LG API V2");
             throw new LGThinqApiException("Null result returned sending command to LG API V2");
@@ -78,16 +72,28 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
         return resp;
     }
 
+    @Override
+    public RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
+            String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
+            throws Exception {
+        ObjectNode payload = JsonNodeFactory.instance.objectNode();
+        payload.put("ctrlKey", controlKey).put("command", command).put("dataKey", keyName).put("dataValue", value);
+        if (extraNode != null) {
+            payload.setAll(extraNode);
+        }
+        return postCall(bridgeName, deviceId, controlPath, payload.toPrettyString());
+    }
+
     protected RestResult sendBasicControlCommands(String bridgeName, String deviceId, String command, String keyName,
             int value) throws Exception {
-        return sendControlCommands(bridgeName, deviceId, "control-sync", "basicCtrl", command, keyName, "" + value);
+        return sendCommand(bridgeName, deviceId, "control-sync", "basicCtrl", command, keyName, String.valueOf(value));
     }
 
     @Override
     protected Map<String, Object> handleGenericErrorResult(@Nullable RestResult resp) throws LGThinqApiException {
         Map<String, Object> metaResult;
         if (resp == null) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         if (resp.getStatusCode() != 200) {
             logger.error("Error returned by LG Server API. The reason is:{}", resp.getJsonResponse());
@@ -95,21 +101,20 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
                     String.format("Error returned by LG Server API. The reason is:%s", resp.getJsonResponse()));
         } else {
             try {
-                metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<Map<String, Object>>() {
+                metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 String code = (String) metaResult.get("resultCode");
-                if (!ResultCodes.OK.containsResultCode("" + metaResult.get("resultCode"))) {
+                if (!ResultCodes.OK.containsResultCode(String.valueOf(metaResult.get("resultCode")))) {
                     logger.error("LG API report error processing the request -> resultCode=[{}], message=[{}]", code,
                             getErrorCodeMessage(code));
                     throw new LGThinqApiException(
                             String.format("Status error executing endpoint. resultCode must be 0000, but was:%s",
                                     metaResult.get("resultCode")));
                 }
+                return metaResult;
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
             }
-
         }
-        return Collections.EMPTY_MAP;
     }
 }

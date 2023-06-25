@@ -122,4 +122,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
                     String.format("Error extracting mandatory %s node for this device cap file", node));
         }
     }
+
+    protected abstract Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode)
+            throws LGThinqApiException;
 }

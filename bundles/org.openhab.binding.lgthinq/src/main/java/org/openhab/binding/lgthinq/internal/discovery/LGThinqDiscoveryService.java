@@ -66,21 +66,15 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
             }
 
             @Override
-            public double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-                    throws LGThinqApiException, IOException {
-                return 0;
-            }
-
-            @Override
-            protected RestResult sendControlCommands(String bridgeName, String deviceId, String controlPath,
-                    String controlKey, String command, String keyName, String value) throws Exception {
+            protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
+                    String command, String keyName, String value) throws Exception {
                 throw new UnsupportedOperationException("Not to use");
             }
 
             @Override
-            protected RestResult sendControlCommands(String bridgeName, String deviceId, String controlPath,
-                    String controlKey, String command, @Nullable String keyName, @Nullable String value,
-                    @Nullable ObjectNode extraNode) throws Exception {
+            protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
+                    String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
+                    throws Exception {
                 throw new UnsupportedOperationException("Not to use");
             }
 

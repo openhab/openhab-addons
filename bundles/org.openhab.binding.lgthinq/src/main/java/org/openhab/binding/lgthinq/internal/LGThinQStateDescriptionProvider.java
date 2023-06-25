@@ -27,10 +27,10 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Nemer Daud - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class, LGThinQDeviceDynStateDescriptionProvider.class })
-public class LGThinQDeviceDynStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+@Component(service = { DynamicStateDescriptionProvider.class, LGThinQStateDescriptionProvider.class })
+public class LGThinQStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     @Activate
-    public LGThinQDeviceDynStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
+    public LGThinQStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
             final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.eventPublisher = eventPublisher;

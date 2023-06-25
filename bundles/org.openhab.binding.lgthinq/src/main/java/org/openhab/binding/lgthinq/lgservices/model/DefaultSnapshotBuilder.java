@@ -80,7 +80,6 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
                     for (String v : values) {
                         aliasesMethod.putIfAbsent(v, property);
                     }
-
                 }
             }
             for (MonitoringBinaryProtocol protField : prot) {

@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.FeatureDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -29,6 +34,12 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
     protected FeatureDefinition newFeatureDefinition(String featureName, JsonNode featuresNode,
             @Nullable String targetChannelId, @Nullable String refChannelId) {
         return FeatureDefinition.NULL_DEFINITION;
+    }
+
+    // TODO - Implement Commands parser
+    @Override
+    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
+        return Collections.emptyMap();
     }
 
     @Override

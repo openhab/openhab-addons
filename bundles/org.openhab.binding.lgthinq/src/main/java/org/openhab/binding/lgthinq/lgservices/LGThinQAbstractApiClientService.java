@@ -59,7 +59,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
 
     protected LGThinQAbstractApiClientService(Class<C> capabilityClass, Class<S> snapshotClass) {
         this.tokenManager = TokenManager.getInstance();
-
         this.capabilityClass = capabilityClass;
         this.snapshotClass = snapshotClass;
     }
@@ -257,6 +256,20 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         }
     }
 
+    private S handleV1OfflineException() {
+        try {
+            // As I don't know the current device status, then I reset to default values.
+            S shot = snapshotClass.getDeclaredConstructor().newInstance();
+            shot.setPowerStatus(DevicePowerState.DV_POWER_OFF);
+            shot.setOnline(false);
+            return shot;
+        } catch (Exception ex) {
+            logger.error("Unexpected Error. The default constructor of this Snapshot wasn't found", ex);
+            throw new IllegalStateException("Unexpected Error. The default constructor of this Snapshot wasn't found",
+                    ex);
+        }
+    }
+
     public @Nullable S getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workId,
             DeviceTypes deviceType, @NonNull C deviceCapability) throws LGThinqApiException,
             LGThinqDeviceV1MonitorExpiredException, IOException, LGThinqUnmarshallException {
@@ -268,23 +281,13 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 + "            \"deviceId\":\"%s\",\n" + "            \"workId\":\"%s\"\n" + "         }\n"
                 + "      ]\n" + "   }\n" + "}", deviceId, workId);
         RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, jsonData);
-        Map<String, Object> envelop = null;
+        Map<String, Object> envelop;
         // to unify the same behaviour then V2, this method handle Offline Exception and return a dummy shot with
         // offline flag.
         try {
             envelop = handleGenericErrorResult(resp);
         } catch (LGThinqDeviceV1OfflineException e) {
-            try {
-                // As I don't know the current device status, then I reset to default values.
-                S shot = snapshotClass.getDeclaredConstructor().newInstance();
-                shot.setPowerStatus(DevicePowerState.DV_POWER_OFF);
-                shot.setOnline(false);
-                return (S) shot;
-            } catch (Exception ex) {
-                logger.error("Unexpected Error. The default constructor of this Snapshot wasn't found", ex);
-                throw new IllegalStateException(
-                        "Unexpected Error. The default constructor of this Snapshot wasn't found", ex);
-            }
+            return handleV1OfflineException();
         }
         if (envelop.get("workList") != null
                 && ((Map<String, Object>) envelop.get("workList")).get("returnData") != null) {
@@ -390,9 +393,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         return null;
     }
 
-    public abstract double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException, IOException;
-
     /**
      * Start monitor data form specific device. This is old one, <b>works only on V1 API supported devices</b>.
      *
@@ -433,12 +433,12 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         return getCommonHeaders(language, country, accessToken, userNumber);
     }
 
-    protected abstract RestResult sendControlCommands(String bridgeName, String deviceId, String controlPath,
-            String controlKey, String command, String keyName, String value) throws Exception;
+    protected abstract RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
+            String command, String keyName, String value) throws Exception;
 
-    protected abstract RestResult sendControlCommands(String bridgeName, String deviceId, String controlPath,
-            String controlKey, String command, @Nullable String keyName, @Nullable String value,
-            @Nullable ObjectNode extraNode) throws Exception;
+    protected abstract RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
+            String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
+            throws Exception;
 
     protected abstract Map<String, Object> handleGenericErrorResult(@Nullable RestResult resp)
             throws LGThinqApiException;

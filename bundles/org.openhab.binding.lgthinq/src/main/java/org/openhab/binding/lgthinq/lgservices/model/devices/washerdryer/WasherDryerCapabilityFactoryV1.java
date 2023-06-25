@@ -54,7 +54,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
 
     @Override
     protected String getProcessStateNodeName() {
-        return "ProcessState";
+        return "PreState";
     }
 
     @Override
@@ -127,7 +127,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
                 Map<String, Object> data = new LinkedHashMap<>();
                 for (String f : strData.split(",")) {
                     if (f.contains("{")) {
-                        // its a featured field
+                        // it's a featured field
                         // create data entry with the key and blank value
                         data.put(f.replaceAll("[{\\[}\\]]", ""), "");
                     } else {
@@ -156,6 +156,11 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
     @Override
     protected String getCommandWakeUpNodeName() {
         return "OperationWakeUp";
+    }
+
+    @Override
+    protected String getDefaultCourseIdNodeName() {
+        return "defaultCourseId";
     }
 
     @Override

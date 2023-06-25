@@ -150,7 +150,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
 
     @Override
     protected String getProcessStateNodeName() {
-        return "ProcessState";
+        return "preState";
     }
 
     @Override
@@ -251,6 +251,11 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
     @Override
     protected String getCommandWakeUpNodeName() {
         return "WMWakeup";
+    }
+
+    @Override
+    protected String getDefaultCourseIdNodeName() {
+        return "defaultCourse";
     }
 
     @Override

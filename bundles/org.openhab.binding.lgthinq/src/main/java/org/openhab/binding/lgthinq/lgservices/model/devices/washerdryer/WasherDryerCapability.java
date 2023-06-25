@@ -37,6 +37,7 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
     private String remoteStartFeatName = "";
     private String commandWakeUp = "";
     private String commandStop = "";
+    private String defaultCourseId = "";
     private FeatureDefinition state = FeatureDefinition.NULL_DEFINITION;
     private FeatureDefinition soilWash = FeatureDefinition.NULL_DEFINITION;
     private FeatureDefinition spin = FeatureDefinition.NULL_DEFINITION;
@@ -69,6 +70,14 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
         public FeatureDefinition apply(WasherDryerCapability c) {
             return c.getSpinFeat();
         }
+    }
+
+    public String getDefaultCourseId() {
+        return defaultCourseId;
+    }
+
+    public void setDefaultCourseId(String defaultCourseId) {
+        this.defaultCourseId = defaultCourseId;
     }
 
     public Map<String, CommandDefinition> getCommandsDefinition() {

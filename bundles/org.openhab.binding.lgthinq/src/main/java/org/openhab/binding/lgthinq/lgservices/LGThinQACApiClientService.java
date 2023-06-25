@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACTargetTmp;
+import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ExtendedDeviceInfo;
 
 /**
  * The {@link LGThinQACApiClientService}
@@ -39,4 +41,7 @@ public interface LGThinQACApiClientService extends LGThinQApiClientService<ACCap
     void turnAutoDryMode(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException;
 
     void turnEnergySavingMode(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException;
+
+    ExtendedDeviceInfo getExtendedDeviceInfo(@NonNull String bridgeName, @NonNull String deviceId)
+            throws LGThinqApiException;
 }

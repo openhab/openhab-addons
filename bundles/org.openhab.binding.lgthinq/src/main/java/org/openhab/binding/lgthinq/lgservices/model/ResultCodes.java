@@ -24,6 +24,7 @@ import java.util.Map;
 
 public enum ResultCodes {
 
+    DEVICE_OFFLINE("Device Offline", "0106"),
     OK("Success", "0000", "0001"),
     DEVICE_NOT_RESPONSE("Device Not Response", "0111", "0103", "0104", "0106"),
     PORTAL_INTERWORKING_ERROR("Portal Internal Error", "0007"),
@@ -31,10 +32,10 @@ public enum ResultCodes {
             "Login/Session Failed, Duplicated or Terms Not Agreed. Try to login and correct issues direct on LG Account Portal",
             "0004", "0102", "0110", "0114"),
     BASE64_CODING_ERROR("Base64 Decoding/Encoding error", "9002", "9001"),
-    NOT_SUPPORTED_CONTROL("Commnad/Control/Service is not supported", "0005", "0012", "8001"),
+    NOT_SUPPORTED_CONTROL("Command/Control/Service is not supported", "0005", "0012", "8001"),
     CONTROL_ERROR("Error in device control", "0105"),
-    LG_SERVER_ERROR("LG Server Error", "8101", "8102", "8103", "8104", "8105", "8106", "8107", "9003", "9004", "9005",
-            "9000", "8900", "0107"),
+    LG_SERVER_ERROR("LG Server Error/Invalid Request", "8101", "8102", "8103", "8104", "8105", "8106", "8107", "9003",
+            "9004", "9005", "9000", "8900", "0107"),
     PAYLOAD_ERROR("Malformed or Wrong Payload", "9999"),
     DUPLICATED_DATA("Duplicated Data/Alias", "0008", "0013"),
     ACCESS_DENIED("Access Denied. Verify your account/password in LG Account Portal.", "9006", "0011", "0113"),
@@ -42,7 +43,7 @@ public enum ResultCodes {
     NETWORK_FAILED("Timeout/Network has failed.", "9020"),
     LIMIT_EXCEEDED_ERROR("Limit has been exceeded", "0112"),
     CUSTOMER_NUMBER_EXPIRED("Customer number has been expired", "0119"),
-    INVALID_CUSTOMER_DATA("Customer data is invalid", "0010"),
+    INVALID_CUSTOMER_DATA("Customer data is invalid or Data Doesn't exist.", "0010"),
     GENERAL_FAILURE("General Failure", "0100"),
     INVALID_CSR("Invalid CSR", "9010"),
     INVALID_PAYLOAD("Invalid Body/Payload", "0002"),

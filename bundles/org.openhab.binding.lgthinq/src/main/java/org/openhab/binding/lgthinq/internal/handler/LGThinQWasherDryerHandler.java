@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.LGThinQDeviceDynStateDescriptionProvider;
+import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.type.ThinqChannelGroupTypeProvider;
 import org.openhab.binding.lgthinq.internal.type.ThinqChannelTypeProvider;
@@ -32,7 +32,6 @@ import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.*;
-import org.openhab.core.items.Item;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
@@ -54,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public class LGThinQWasherDryerHandler
         extends LGThinQAbstractDeviceHandler<WasherDryerCapability, WasherDryerSnapshot> {
 
-    private final LGThinQDeviceDynStateDescriptionProvider stateDescriptionProvider;
+    private final LGThinQStateDescriptionProvider stateDescriptionProvider;
     private final ChannelUID courseChannelUID;
     private final ChannelUID remoteStartStopChannelUID;
     private final ChannelUID remainTimeChannelUID;
@@ -69,26 +68,23 @@ public class LGThinQWasherDryerHandler
     private final ChannelUID doorLockChannelUID;
     private final ChannelUID standByModeChannelUID;
     private final ChannelUID remoteStartFlagChannelUID;
+    private final ChannelUID remoteStartCourseChannelUID;
 
     public final ChannelGroupUID channelGroupRemoteStartUID;
     public final ChannelGroupUID channelGroupDashboardUID;
 
     private final List<Channel> remoteStartEnabledChannels = new CopyOnWriteArrayList<>();
 
-    private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Map<String, Map<String, Object>> cachedBitKeyDefinitions = new HashMap<>();
-    @Nullable
-    private WasherDryerSnapshot lastShot;
 
     private final Logger logger = LoggerFactory.getLogger(LGThinQWasherDryerHandler.class);
     @NonNullByDefault
     private final LGThinQWMApiClientService lgThinqWMApiClientService;
 
-    public LGThinQWasherDryerHandler(Thing thing, LGThinQDeviceDynStateDescriptionProvider stateDescriptionProvider,
+    public LGThinQWasherDryerHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ThinqChannelTypeProvider channelTypeProvider, ThinqChannelGroupTypeProvider channelGroupTypeProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        super(thing, stateDescriptionProvider);
-        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        super(thing, stateDescriptionProvider, itemChannelLinkRegistry);
         this.thinqChannelGroupProvider = channelGroupTypeProvider;
         this.thinqChannelProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
@@ -96,7 +92,7 @@ public class LGThinQWasherDryerHandler
                 ? LGThinQWMApiV1ClientServiceImpl.getInstance()
                 : LGThinQWMApiV2ClientServiceImpl.getInstance();
         channelGroupRemoteStartUID = new ChannelGroupUID(getThing().getUID(), WM_CHANNEL_REMOTE_START_GRP_ID);
-        channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), WM_CHANNEL_DASHBOARD_GRP_ID);
+        channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
         courseChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_COURSE_ID);
         dryLevelChannelUID = new ChannelUID(channelGroupDashboardUID, DR_CHANNEL_DRY_LEVEL_ID);
         stateChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_STATE_ID);
@@ -111,6 +107,7 @@ public class LGThinQWasherDryerHandler
         standByModeChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_STAND_BY_ID);
         remoteStartFlagChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_REMOTE_START_ID);
         remoteStartStopChannelUID = new ChannelUID(channelGroupRemoteStartUID, WM_CHANNEL_REMOTE_START_START_STOP);
+        remoteStartCourseChannelUID = new ChannelUID(channelGroupRemoteStartUID, WM_CHANNEL_REMOTE_COURSE);
     }
 
     @Override
@@ -129,6 +126,12 @@ public class LGThinQWasherDryerHandler
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
 
+    private void loadOptionsCourse(WasherDryerCapability cap, ChannelUID courseChannel) {
+        List<StateOption> optionsCourses = new ArrayList<>();
+        cap.getCourses().forEach((k, v) -> optionsCourses.add(new StateOption(k, emptyIfNull(v.getCourseName()))));
+        stateDescriptionProvider.setStateOptions(courseChannel, optionsCourses);
+    }
+
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         WasherDryerCapability wmCap = getCapabilities();
@@ -138,9 +141,7 @@ public class LGThinQWasherDryerHandler
                 .forEach((k, v) -> options.add(new StateOption(k, keyIfValueNotFound(CAP_WDM_STATE, v))));
         stateDescriptionProvider.setStateOptions(stateChannelUID, options);
 
-        List<StateOption> optionsCourses = new ArrayList<>();
-        wmCap.getCourses().forEach((k, v) -> optionsCourses.add(new StateOption(k, emptyIfNull(v.getCourseName()))));
-        stateDescriptionProvider.setStateOptions(courseChannelUID, optionsCourses);
+        loadOptionsCourse(wmCap, courseChannelUID);
 
         List<StateOption> optionsTemp = new ArrayList<>();
         wmCap.getTemperatureFeat().getValuesMapping()
@@ -200,20 +201,9 @@ public class LGThinQWasherDryerHandler
         return ZonedDateTime.of(1970, 1, 1, 0, Integer.parseInt(min), Integer.parseInt(sec), 0, ZoneId.systemDefault());
     }
 
-    @Nullable
-    private String getItemLinkedValue(ChannelUID channelUID) {
-        Set<Item> items = itemChannelLinkRegistry.getLinkedItems(channelUID);
-        if (items.size() > 0) {
-            for (Item i : items) {
-                return i.getState().toString();
-            }
-        }
-        return null;
-    }
-
     @Override
     protected void updateDeviceChannels(WasherDryerSnapshot shot) {
-        lastShot = shot;
+        WasherDryerSnapshot lastShot = getLastShot();
         updateState("dashboard#" + CHANNEL_POWER_ID,
                 (DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF));
         updateState(stateChannelUID, new StringType(shot.getState()));
@@ -238,12 +228,17 @@ public class LGThinQWasherDryerHandler
                 // === creating channel LaunchRemote
                 dynChannels
                         .add(createDynChannel(WM_CHANNEL_REMOTE_START_START_STOP, remoteStartStopChannelUID, "Switch"));
+                dynChannels.add(createDynChannel(WM_CHANNEL_REMOTE_COURSE, remoteStartCourseChannelUID, "String"));
                 // Just enabled remote start. Then is Off
                 updateState(remoteStartStopChannelUID, OnOffType.OFF);
                 // === creating selectable channels for the Course (if any)
                 try {
                     WasherDryerCapability cap = getCapabilities();
-                    CourseDefinition courseDef = cap.getCourses().get(shot.getCourse());
+                    // TODO - V1 - App will always get the default course, and V2 ?
+                    loadOptionsCourse(cap, remoteStartCourseChannelUID);
+                    updateState(remoteStartCourseChannelUID, new StringType(cap.getDefaultCourseId()));
+
+                    CourseDefinition courseDef = cap.getCourses().get(cap.getDefaultCourseId());
                     if (WM_COURSE_NOT_SELECTED_VALUE.equals(shot.getSmartCourse()) && courseDef != null) {
                         // only create selectable channels if the course is not a smart course. Smart courses have
                         // already predefined
@@ -290,9 +285,6 @@ public class LGThinQWasherDryerHandler
                 remoteStartEnabledChannels.addAll(dynChannels);
 
             }
-            if (isLinked(remoteStartStopChannelUID)) {
-                updateState(WM_CHANNEL_REMOTE_START_START_STOP, new StringType(""));
-            }
         } else if (remoteStartEnabledChannels.size() > 0) {
             ThingBuilder builder = editThing().withoutChannels(remoteStartEnabledChannels);
             updateThing(builder.build());
@@ -313,8 +305,14 @@ public class LGThinQWasherDryerHandler
     }
 
     private Map<String, Object> getRemoteStartData() throws LGThinqApiException {
-        if (lastShot == null) {
-            return Collections.EMPTY_MAP;
+        WasherDryerSnapshot lastShot = getLastShot();
+        if (lastShot.getRawData().isEmpty()) {
+            return lastShot.getRawData();
+        }
+        String selectedCourse = getItemLinkedValue(remoteStartCourseChannelUID);
+        if (selectedCourse == null) {
+            logger.error("Remote Start Channel must be linked to proceed with remote start.");
+            return Collections.emptyMap();
         }
         WasherDryerCapability cap = getCapabilities();
         Map<String, Object> rawData = lastShot.getRawData();
@@ -322,19 +320,27 @@ public class LGThinQWasherDryerHandler
         CommandDefinition cmd = cap.getCommandsDefinition().get(cap.getCommandRemoteStart());
         if (cmd == null) {
             logger.error("Command for Remote Start not found in the Washer descriptor. It's most likely a bug");
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         Map<String, Object> cmdData = cmd.getData();
+        // 1st - copy snapshot data to command
         cmdData.forEach((k, v) -> {
             data.put(k, rawData.getOrDefault(k, v));
         });
-        String course = lastShot.getCourse();
+        // 2nd - replace remote start data with selected course values
+        CourseDefinition selCourseDef = cap.getCourses().get(selectedCourse);
+        if (selCourseDef != null) {
+            selCourseDef.getFunctions().forEach(f -> {
+                data.put(f.getValue(), f.getDefaultValue());
+            });
+        }
         String smartCourse = lastShot.getSmartCourse();
-        data.put(cap.getDefaultCourseFieldName(), course);
+        data.put(cap.getDefaultCourseFieldName(), selectedCourse);
         data.put(cap.getDefaultSmartCourseFeatName(), smartCourse);
-        CourseType courseType = cap.getCourses().get("NOT_SELECTED".equals(smartCourse) ? course : smartCourse)
+        CourseType courseType = cap.getCourses().get("NOT_SELECTED".equals(smartCourse) ? selectedCourse : smartCourse)
                 .getCourseType();
         data.put("courseType", courseType.getValue());
+        // 3rd - replace custom selectable features with channel's ones.
         for (Channel c : remoteStartEnabledChannels) {
             String value = Objects.requireNonNullElse(getItemLinkedValue(c.getUID()), "");
             String simpleChannelUID = getSimpleChannelUID(c.getUID().getId());
@@ -358,6 +364,7 @@ public class LGThinQWasherDryerHandler
 
     @Override
     protected void processCommand(LGThinQAbstractDeviceHandler.AsyncCommandParams params) throws LGThinqApiException {
+        WasherDryerSnapshot lastShot = getLastShot();
         Command command = params.command;
         String simpleChannelUID;
         simpleChannelUID = getSimpleChannelUID(params.channelUID);
@@ -365,10 +372,10 @@ public class LGThinQWasherDryerHandler
             case WM_CHANNEL_REMOTE_START_START_STOP: {
                 if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
-                        if (lastShot != null && !lastShot.isStandBy()) {
+                        if (!lastShot.isStandBy()) {
                             lgThinqWMApiClientService.remoteStart(getBridgeId(), getCapabilities(), getDeviceId(),
                                     getRemoteStartData());
-                        } else if (lastShot != null && lastShot.isStandBy()) {
+                        } else {
                             logger.warn(
                                     "WM is in StandBy mode. Command START can't be sent to Remote Start channel. Ignoring");
                         }
@@ -382,12 +389,6 @@ public class LGThinQWasherDryerHandler
             }
             case WM_CHANNEL_STAND_BY_ID: {
                 if (command instanceof OnOffType) {
-                    if (lastShot == null || !lastShot.isStandBy()) {
-                        logger.warn(
-                                "Command {} was sent to StandBy channel, but the state of the WM is unknown or already waked up. Ignoring",
-                                command);
-                        break;
-                    }
                     lgThinqWMApiClientService.wakeUp(getBridgeId(), getDeviceId(), OnOffType.ON.equals(command));
                 } else {
                     logger.warn("Received command different of OnOffType in StandBy Channel. Ignoring");
@@ -398,23 +399,6 @@ public class LGThinQWasherDryerHandler
                 logger.error("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
             }
         }
-    }
-
-    /**
-     * Returns the simple channel UID name, i.e., without group.
-     * 
-     * @param uid Full UID name
-     * @return simple channel UID name, i.e., without group.
-     */
-    private static String getSimpleChannelUID(String uid) {
-        String simpleChannelUID;
-        if (uid.indexOf("#") > 0) {
-            // I have to remove the channelGroup from de channelUID
-            simpleChannelUID = uid.split("#")[1];
-        } else {
-            simpleChannelUID = uid;
-        }
-        return simpleChannelUID;
     }
 
     @Override

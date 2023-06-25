@@ -27,8 +27,13 @@ import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACTargetTmp;
+import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ExtendedDeviceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinQACApiV2ClientServiceImpl}
@@ -168,7 +173,7 @@ public class LGThinQACApiV2ClientServiceImpl extends
     protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId)
             throws LGThinqApiException {
         try {
-            RestResult resp = sendControlCommands(bridgeName, deviceId, "control", "allEventEnable", "Set",
+            RestResult resp = sendCommand(bridgeName, deviceId, "control", "allEventEnable", "Set",
                     "airState.mon.timeout", "70");
             handleGenericErrorResult(resp);
         } catch (Exception e) {
@@ -176,9 +181,59 @@ public class LGThinQACApiV2ClientServiceImpl extends
         }
     }
 
+    /**
+     * Expect receiving json of format: {
+     * ...
+     * result: {
+     * data: {
+     * ...
+     * }
+     * ...
+     * }
+     * }
+     * Data node will be deserialized into the object informed
+     * 
+     * @param jsonResult json result
+     * @param obj object to be updated
+     * @throws IOException if there are errors deserialization the jsonResult
+     */
+    private void readDataResultNodeToObject(String jsonResult, Object obj) throws IOException {
+        JsonNode node = objectMapper.readTree(jsonResult);
+        JsonNode data = node.path("result").path("data");
+        if (data.isObject()) {
+            objectMapper.readerForUpdating(obj).readValue(data);
+        } else {
+            logger.warn("Data returned by LG API to get energy state is not present. Result:{}", node.toPrettyString());
+        }
+    }
+
     @Override
-    public double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
+    public ExtendedDeviceInfo getExtendedDeviceInfo(@NonNull String bridgeName, @NonNull String deviceId)
             throws LGThinqApiException {
-        throw new UnsupportedOperationException("Not supporte for this device");
+        ExtendedDeviceInfo info = new ExtendedDeviceInfo();
+        try {
+            ObjectNode dataList = JsonNodeFactory.instance.objectNode();
+            dataList.put("dataGetList", (Integer) null);
+            dataList.put("dataSetList", (Integer) null);
+
+            RestResult resp = sendCommand(bridgeName, deviceId, "control-sync", "energyStateCtrl", "Get",
+                    "airState.energy.totalCurrent", "null", dataList);
+            handleGenericErrorResult(resp);
+            readDataResultNodeToObject(resp.getJsonResponse(), info);
+
+            ObjectNode dataGetList = JsonNodeFactory.instance.objectNode();
+            dataGetList.putArray("dataGetList").add("airState.filterMngStates.useTime")
+                    .add("airState.filterMngStates.maxTime");
+            resp = sendCommand(bridgeName, deviceId, "control-sync", "filterMngStateCtrl", "Get", null, null,
+                    dataGetList);
+            handleGenericErrorResult(resp);
+            readDataResultNodeToObject(resp.getJsonResponse(), info);
+
+            return info;
+        } catch (LGThinqApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error sending command to LG API", e);
+        }
     }
 }

@@ -22,14 +22,13 @@ import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.LGThinQDeviceDynStateDescriptionProvider;
+import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
 import org.openhab.binding.lgthinq.internal.model.*;
 import org.openhab.core.config.core.*;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.type.*;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nemer Daud - Initial contribution
  */
-@Component
+// @Component
 public class ThingModelTypeUtils {
     private static final Logger logger = LoggerFactory.getLogger(ThingModelTypeUtils.class);
 
@@ -47,7 +46,7 @@ public class ThingModelTypeUtils {
     private ThinqChannelTypeProvider channelTypeProvider;
     private ThinqChannelGroupTypeProvider channelGroupTypeProvider;
     private ThinqConfigDescriptionProvider configDescriptionProvider;
-    private LGThinQDeviceDynStateDescriptionProvider stateDescriptionProvider;
+    private LGThinQStateDescriptionProvider stateDescriptionProvider;
 
     @Reference
     public void setThingTypeProvider(ThinqThingTypeProvider thingTypeProvider) {
@@ -70,7 +69,7 @@ public class ThingModelTypeUtils {
     }
 
     @Reference
-    public void setStateDescriptionProvider(LGThinQDeviceDynStateDescriptionProvider stateDescriptionProvider) {
+    public void setStateDescriptionProvider(LGThinQStateDescriptionProvider stateDescriptionProvider) {
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -172,7 +171,7 @@ public class ThingModelTypeUtils {
                 .build();
     }
 
-    private void generateConfigDescription(ThinqDevice device, URI configDescriptionURI) {
+    public void generateConfigDescription(ThinqDevice device, URI configDescriptionURI) {
         List<ConfigDescriptionParameter> params = new ArrayList<>();
         List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
 

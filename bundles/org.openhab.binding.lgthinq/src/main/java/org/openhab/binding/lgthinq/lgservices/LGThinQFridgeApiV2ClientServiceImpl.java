@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
@@ -44,12 +42,6 @@ public class LGThinQFridgeApiV2ClientServiceImpl
     @Override
     protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
         // TODO - Analise what to do here
-    }
-
-    @Override
-    public double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException, IOException {
-        return 0;
     }
 
     public static LGThinQFridgeApiClientService getInstance() {
