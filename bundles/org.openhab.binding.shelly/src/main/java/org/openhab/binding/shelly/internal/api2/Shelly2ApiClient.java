@@ -299,7 +299,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
         sm.isValid = sm.power != null || sm.total != null;
         emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null;
-        emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null;
         status.meters.set(id, sm);
         status.emeters.set(id, emeter);
         relayStatus.meters.set(id, sm);
