@@ -60,6 +60,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CLOUDSET = "Cloud.SetConfig";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
+    public static final String SHELLYRPC_METHOD_EMDATARESET = "EMData.DeleteAllData";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
@@ -275,7 +276,7 @@ public class Shelly2ApiJsonDTO {
         }
 
         public class Shelly2DevConfigInput {
-            public String id;
+            public Integer id;
             public String name;
             public String type;
             public Boolean invert;
@@ -286,7 +287,7 @@ public class Shelly2ApiJsonDTO {
         }
 
         public class Shelly2DevConfigSwitch {
-            public String id;
+            public Integer id;
             public String name;
 
             @SerializedName("in_mode")

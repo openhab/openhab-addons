@@ -78,7 +78,7 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_POWER = "Number:Power";
     public static final String ITEMT_ENERGY = "Number:Energy";
     public static final String ITEMT_VOLT = "Number:ElectricPotential";
-    public static final String ITEMT_AMP = "Number:ElectricPotential";
+    public static final String ITEMT_AMP = "Number:ElectricCurrent";
     public static final String ITEMT_ANGLE = "Number:Angle";
     public static final String ITEMT_DISTANCE = "Number:Length";
     public static final String ITEMT_SPEED = "Number:Speed";
@@ -130,7 +130,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_VOLTAGE, "supplyVoltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CHARGER, "charger", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEMT_SWITCH))
@@ -364,7 +364,8 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, profile.status.extTemperature.sensor4 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP4);
             addChannel(thing, add, profile.status.extTemperature.sensor5 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP5);
         }
-        addChannel(thing, add, profile.status.extHumidity != null, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
+        addChannel(thing, add, profile.status.extHumidity != null && profile.status.extHumidity.sensor1 != null,
+                CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
         addChannel(thing, add, profile.status.extVoltage != null, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE);
         addChannel(thing, add, profile.status.extDigitalInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT);
         addChannel(thing, add, profile.status.extAnalogInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT);

@@ -183,6 +183,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         boolean updated = false;
 
         if (result.temperature0 != null && result.temperature0.tC != null && !getProfile().isSensor) {
+            if (status.tmp == null) {
+                status.tmp = new ShellySensorTmp();
+            }
             status.temperature = status.tmp.tC = result.temperature0.tC;
         }
 
@@ -229,6 +232,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             int duration = (int) (now() - rs.timerStartetAt);
             sr.timerRemaining = duration;
         }
+        if (status.tmp == null) {
+            status.tmp = new ShellySensorTmp();
+        }
         if (rs.temperature != null) {
             status.tmp.isValid = true;
             status.tmp.tC = rs.temperature.tC;
@@ -257,7 +263,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(rs.id);
-        sm.isValid = emeter.isValid = true;
         if (rs.apower != null) {
             sm.power = emeter.power = rs.apower;
         }
@@ -286,6 +291,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
     private void updateMeter(ShellySettingsStatus status, int id, ShellySettingsMeter sm, ShellySettingsEMeter emeter,
             boolean channelUpdate) throws ShellyApiException {
+        sm.isValid = sm.power != null || sm.total != null;
+        emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null;
         status.meters.set(id, sm);
         status.emeters.set(id, emeter);
         relayStatus.meters.set(id, sm);
@@ -309,7 +316,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(0);
-        sm.isValid = emeter.isValid = true;
         if (em.aActPower != null) {
             sm.power = emeter.power = em.aActPower;
         }
@@ -454,6 +460,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             rs.duration = (int) (now() - cs.moveStartedAt.longValue());
         }
         if (cs.temperature != null && cs.temperature.tC > getDouble(status.temperature)) {
+            if (status.tmp == null) {
+                status.tmp = new ShellySensorTmp();
+            }
             status.temperature = status.tmp.tC = getDouble(cs.temperature.tC);
         }
         if (cs.apower != null) {
