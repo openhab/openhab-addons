@@ -43,25 +43,27 @@ It requires a System Access Point with version 2.6.1 or higher.
  - IP-touch panel (function: door opener, door ring sensor)
  - Virtual devices (e.g. virtual switch, RTC and detectors)
 
-**Information to virtual devices**
-Virtual device in the free@home smart-home system needs continuous keep-alive signal otherwise the free@home defive is marked as unresponsive. This keep-alive signal must be provided by a user script or set the TTL value of the virtual device to "-1" during the creation of the virtual device.
+**Information about virtual devices**
+Virtual device in the free@home smart-home system needs continuous keep-alive signal otherwise the free@home device is marked as unresponsive.
+This keep-alive signal must be provided by a user script or set the TTL value of the virtual device to "-1" during the creation of the virtual device.
 
 # Tested SysAP Versions
 
-|Version|Supported|
+|<p style="text-align: center;">Version</p>|<p style="text-align: center;">Supported</p>|
 |---|---|
-|2.6.1|yes|
-|2.6.3|yes|
-|3.1.1|yes|
+|<p style="text-align: center;">2.6.1</p>|<p style="text-align: center;">yes</p>|
+|<p style="text-align: center;">2.6.3</p>|<p style="text-align: center;">yes</p>|
+|<p style="text-align: center;">3.1.1</p>|<p style="text-align: center;">yes</p>|
 
 # Setup / Installation
 
 ## Prerequisites
 
-To make use of this Binding first the local free@home API has to be activated. The API is disabled by default!
+To make use of this Binding first the local free@home API has to be activated.
+The API is disabled by default!
 
 1. Open the free@home next app
-2. Browse to "Settings ⇨ free@home settings ⇨ local API and activate the checkbox
+1. Browse to "Settings ⇨ free@home settings ⇨ local API and activate the checkbox
 
 ## Setup and Discovery
 
