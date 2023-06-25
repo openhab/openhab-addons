@@ -31,4 +31,8 @@ public class ShieldTVCommand {
     public String toString() {
         return command;
     }
+
+    public boolean isEmpty() {
+        return command.isEmpty();
+    }
 }

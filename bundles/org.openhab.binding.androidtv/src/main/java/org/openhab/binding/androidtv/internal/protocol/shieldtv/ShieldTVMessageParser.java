@@ -17,9 +17,9 @@ import static org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVC
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -49,7 +49,7 @@ public class ShieldTVMessageParser {
     }
 
     public void handleMessage(String msg) {
-        if (msg.trim().equals("")) {
+        if (msg.trim().isEmpty()) {
             return; // Ignore empty lines
         }
 
@@ -74,7 +74,7 @@ public class ShieldTVMessageParser {
                 int chunk = 0;
                 int i = 0;
                 String st = "";
-                StringBuffer hostname = new StringBuffer();
+                StringBuilder hostname = new StringBuilder();
                 while (chunk < 3) {
                     st = "" + charArray[i] + "" + charArray[i + 1];
                     if (DELIMITER_12.equals(st)) {
@@ -91,10 +91,9 @@ public class ShieldTVMessageParser {
                     hostname.append(st);
                 }
                 logger.trace("{} - Shield Hostname: {} {}", thingId, hostname, length);
-                logger.debug("{} - Shield Hostname Encoded: {}", thingId,
-                        ShieldTVRequest.encodeMessage(hostname.toString()));
-
-                callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
+                String encHostname = ShieldTVRequest.encodeMessage(hostname.toString());
+                logger.debug("{} - Shield Hostname Encoded: {}", thingId, encHostname);
+                callback.setHostName(encHostname);
             } else if (msg.startsWith(MESSAGE_HOSTNAME)) {
                 // Longer hostname reply
                 // 080b 12 5b08b510 12 TOTALLEN? 0a LEN Hostname 12 LEN IPADDR Padding? 22 LEN DeviceID 2a LEN arm64-v8a
@@ -111,7 +110,7 @@ public class ShieldTVMessageParser {
                 length = Integer.parseInt(st, 16) * 2;
                 i += 2;
 
-                StringBuffer hostname = new StringBuffer();
+                StringBuilder hostname = new StringBuilder();
                 current = i;
 
                 for (; i < current + length; i = i + 2) {
@@ -126,7 +125,7 @@ public class ShieldTVMessageParser {
                 length = Integer.parseInt(st, 16) * 2;
                 i += 2;
 
-                StringBuffer ipAddress = new StringBuffer();
+                StringBuilder ipAddress = new StringBuilder();
                 current = i;
 
                 for (; i < current + length; i = i + 2) {
@@ -148,7 +147,7 @@ public class ShieldTVMessageParser {
                 length = Integer.parseInt(st, 16) * 2;
                 i += 2;
 
-                StringBuffer deviceId = new StringBuffer();
+                StringBuilder deviceId = new StringBuilder();
                 current = i;
 
                 for (; i < current + length; i = i + 2) {
@@ -158,7 +157,7 @@ public class ShieldTVMessageParser {
 
                 // architectures
                 st = "" + charArray[i] + "" + charArray[i + 1];
-                StringBuffer arch = new StringBuffer();
+                StringBuilder arch = new StringBuilder();
                 while (DELIMITER_2A.equals(st)) {
                     i += 2;
                     st = "" + charArray[i] + "" + charArray[i + 1];
@@ -175,19 +174,21 @@ public class ShieldTVMessageParser {
                     }
                 }
 
-                logger.debug("{} - Hostname: {} - ipAddress: {} - deviceId: {} - arch: {}", thingId,
-                        ShieldTVRequest.encodeMessage(hostname.toString()),
-                        ShieldTVRequest.encodeMessage(ipAddress.toString()),
-                        ShieldTVRequest.encodeMessage(deviceId.toString()),
-                        ShieldTVRequest.encodeMessage(arch.toString()));
-
-                callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
-                callback.setDeviceID(ShieldTVRequest.encodeMessage(deviceId.toString()));
-                callback.setArch(ShieldTVRequest.encodeMessage(arch.toString()));
+                String encHostname = ShieldTVRequest.encodeMessage(hostname.toString());
+                String encIpAddress = ShieldTVRequest.encodeMessage(ipAddress.toString());
+                String encDeviceId = ShieldTVRequest.encodeMessage(deviceId.toString());
+                String encArch = ShieldTVRequest.encodeMessage(arch.toString());
+                logger.debug("{} - Hostname: {} - ipAddress: {} - deviceId: {} - arch: {}", thingId, encHostname,
+                        encIpAddress, encDeviceId, encArch);
+                callback.setHostName(encHostname);
+                callback.setDeviceID(encDeviceId);
+                callback.setArch(encArch);
             } else if (APP_START_SUCCESS.equals(msg)) {
                 // App successfully started
+                logger.debug("{} -  App started successfully", thingId);
             } else if (APP_START_FAILED.equals(msg)) {
                 // App failed to start
+                logger.debug("{} - App failed to start", thingId);
             } else if (msg.startsWith(MESSAGE_APPDB) && msg.startsWith(DELIMITER_0A, 18)) {
                 // Individual update?
                 // 08f10712 5808061254 0a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 300118f107
@@ -202,8 +203,8 @@ public class ShieldTVMessageParser {
                 String st = "";
                 int length;
                 int current;
-                StringBuffer appSBPrepend = new StringBuffer();
-                StringBuffer appSBDN = new StringBuffer();
+                StringBuilder appSBPrepend = new StringBuilder();
+                StringBuilder appSBDN = new StringBuilder();
 
                 // Load default apps that don't get sent in payload
 
@@ -222,8 +223,8 @@ public class ShieldTVMessageParser {
                 // Packet will end with 300118f107 after last entry
 
                 while (i < msg.length() - 10) {
-                    StringBuffer appSBName = new StringBuffer();
-                    StringBuffer appSBURL = new StringBuffer();
+                    StringBuilder appSBName = new StringBuilder();
+                    StringBuilder appSBURL = new StringBuilder();
 
                     // There are instances such as plex where multiple apps are sent as part of the same payload
                     // This is identified when 12 is the beginning of the set
@@ -231,8 +232,8 @@ public class ShieldTVMessageParser {
                     st = "" + charArray[i] + "" + charArray[i + 1];
 
                     if (!DELIMITER_12.equals(st)) {
-                        appSBPrepend = new StringBuffer();
-                        appSBDN = new StringBuffer();
+                        appSBPrepend = new StringBuilder();
+                        appSBDN = new StringBuilder();
 
                         appCount++;
 
@@ -316,16 +317,12 @@ public class ShieldTVMessageParser {
                     appURLDB.put(appDN, appURL);
                 }
                 if (appCount > 0) {
-                    LinkedHashMap<String, String> sortedAppNameDB = new LinkedHashMap<>();
-                    ArrayList<String> valueList = new ArrayList<>();
+                    Map<String, String> sortedAppNameDB = new LinkedHashMap<>();
+                    List<String> valueList = new ArrayList<>();
                     for (Map.Entry<String, String> entry : appNameDB.entrySet()) {
                         valueList.add(entry.getValue());
                     }
-                    Collections.sort(valueList, new Comparator<String>() {
-                        public int compare(String str, String str1) {
-                            return (str).compareTo(str1);
-                        }
-                    });
+                    Collections.sort(valueList);
                     for (String str : valueList) {
                         for (Entry<String, String> entry : appNameDB.entrySet()) {
                             if (entry.getValue().equals(str)) {
@@ -373,7 +370,7 @@ public class ShieldTVMessageParser {
                 // 08ec07 12 2a0807 22 262205 656e5f555342 1d 636f6d2e676f6f676c652e616e64726f69642e74766c61756e63686572
                 // 18ec07
                 // 08ec07 12 2a0807 22 262205 en_USB LEN AppName 18ec07
-                StringBuffer appName = new StringBuffer();
+                StringBuilder appName = new StringBuilder();
                 String lengthStr = "" + charArray[34] + charArray[35];
                 int length = Integer.parseInt(lengthStr, 16) * 2;
                 for (int i = 36; i < 36 + length; i++) {
@@ -394,9 +391,9 @@ public class ShieldTVMessageParser {
                 // |------------------------------------------------------------Priv Key RSA 2048
                 // |--------------------------------------------------------------------Cert X.509
                 if (msg.startsWith(MESSAGE_CERT_PAYLOAD, 28)) {
-                    StringBuffer preamble = new StringBuffer();
-                    StringBuffer privKey = new StringBuffer();
-                    StringBuffer pubKey = new StringBuffer();
+                    StringBuilder preamble = new StringBuilder();
+                    StringBuilder privKey = new StringBuilder();
+                    StringBuilder pubKey = new StringBuilder();
                     int i = 0;
                     int current;
                     for (; i < 44; i++) {

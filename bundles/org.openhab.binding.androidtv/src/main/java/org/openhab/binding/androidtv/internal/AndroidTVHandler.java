@@ -172,7 +172,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId().toString(), command);
+        logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId(), command);
 
         if (command.toString().equals("REFRESH")) {
             // REFRESH causes issues on some channels. Block for now until implemented.

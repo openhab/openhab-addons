@@ -1111,7 +1111,7 @@ public class GoogleTVConnectionManager {
     }
 
     public void sendCommand(GoogleTVCommand command) {
-        if ((!config.shim) && (!command.toString().equals(""))) {
+        if ((!config.shim) && (!command.isEmpty())) {
             int length = command.toString().length();
             String hexLength = GoogleTVRequest.encodeMessage(GoogleTVRequest.fixMessage(Integer.toHexString(length)));
             String message = hexLength + command.toString();
@@ -1121,7 +1121,7 @@ public class GoogleTVConnectionManager {
     }
 
     public void sendShim(GoogleTVCommand command) {
-        if (!command.toString().equals("")) {
+        if (!command.isEmpty()) {
             shimQueue.add(command);
         }
     }

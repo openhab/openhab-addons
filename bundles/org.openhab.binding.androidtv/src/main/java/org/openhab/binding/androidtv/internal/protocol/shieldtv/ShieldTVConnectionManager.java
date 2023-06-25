@@ -305,8 +305,7 @@ public class ShieldTVConnectionManager {
         this.appURLDB = appURLDB;
         this.appDBPopulated = true;
         logger.debug("{} - App DB Populated", handler.getThingID());
-        logger.trace("{} - Handler appNameDB: {} appURLDB: {}", handler.getThingID(), this.appNameDB.toString(),
-                this.appURLDB.toString());
+        logger.trace("{} - Handler appNameDB: {} appURLDB: {}", handler.getThingID(), this.appNameDB, this.appURLDB);
         handler.updateCDP(CHANNEL_APP, this.appNameDB);
     }
 
@@ -726,14 +725,14 @@ public class ShieldTVConnectionManager {
                 sendShim(new ShieldTVCommand(ShieldTVRequest.encodeMessage(sbReader.toString())));
             }
             sbReader.setLength(0);
-            sbReader.append(lastMsg.toString());
+            sbReader.append(lastMsg);
         }
-        sbReader.append(thisMsg.toString());
+        sbReader.append(thisMsg);
         lastMsg = thisMsg;
     }
 
     private void finishReaderMessage() {
-        sbReader.append(thisMsg.toString());
+        sbReader.append(thisMsg);
         lastMsg = "";
         inMessage = false;
         messageParser.handleMessage(sbReader.toString());
@@ -772,7 +771,7 @@ public class ShieldTVConnectionManager {
                     msgType = thisMsg;
                 } else if (DELIMITER_18.equals(lastMsg) && thisMsg.equals(msgType) && inMessage) {
                     if (!msgType.startsWith(DELIMITER_0)) {
-                        sbReader.append(thisMsg.toString());
+                        sbReader.append(thisMsg);
                         thisMsg = fixMessage(Integer.toHexString(reader.read()));
                     }
                     finishReaderMessage();
@@ -780,7 +779,7 @@ public class ShieldTVConnectionManager {
                     // keepalive messages don't have delimiters but are always 18 in length
                     finishReaderMessage();
                 } else {
-                    sbReader.append(thisMsg.toString());
+                    sbReader.append(thisMsg);
                     lastMsg = thisMsg;
                 }
             }
@@ -818,16 +817,16 @@ public class ShieldTVConnectionManager {
                 if (!inShimMessage) {
                     // Beginning of payload
                     sbShimReader.setLength(0);
-                    sbShimReader.append(thisShimMsg.toString());
+                    sbShimReader.append(thisShimMsg);
                     inShimMessage = true;
                     payloadBlock++;
                 } else if ((payloadBlock == 1) && (DELIMITER_00.equals(thisShimMsg))) {
-                    sbShimReader.append(thisShimMsg.toString());
+                    sbShimReader.append(thisShimMsg);
                     payloadRemain = 8;
                     thisShimMsgType = thisShimMsg;
                     while (payloadRemain > 1) {
                         thisShimMsg = fixMessage(Integer.toHexString(reader.read()));
-                        sbShimReader.append(thisShimMsg.toString());
+                        sbShimReader.append(thisShimMsg);
                         payloadRemain--;
                         payloadBlock++;
                     }
@@ -835,12 +834,12 @@ public class ShieldTVConnectionManager {
                     payloadBlock++;
                 } else if ((payloadBlock == 1)
                         && (thisShimMsg.startsWith(DELIMITER_F1) || thisShimMsg.startsWith(DELIMITER_F3))) {
-                    sbShimReader.append(thisShimMsg.toString());
+                    sbShimReader.append(thisShimMsg);
                     payloadRemain = 6;
                     thisShimMsgType = thisShimMsg;
                     while (payloadRemain > 1) {
                         thisShimMsg = fixMessage(Integer.toHexString(reader.read()));
-                        sbShimReader.append(thisShimMsg.toString());
+                        sbShimReader.append(thisShimMsg);
                         payloadRemain--;
                         payloadBlock++;
                     }
@@ -848,18 +847,18 @@ public class ShieldTVConnectionManager {
                     payloadBlock++;
                 } else if (payloadBlock == 1) {
                     thisShimMsgType = thisShimMsg;
-                    sbShimReader.append(thisShimMsg.toString());
+                    sbShimReader.append(thisShimMsg);
                     payloadBlock++;
                 } else if (payloadBlock == 2) {
-                    sbShimReader.append(thisShimMsg.toString());
+                    sbShimReader.append(thisShimMsg);
                     payloadBlock++;
                 } else if (payloadBlock == 3) {
                     // Length of remainder of packet
                     payloadRemain = thisShimRawMsg;
-                    sbShimReader.append(thisShimMsg.toString());
+                    sbShimReader.append(thisShimMsg);
                     payloadBlock++;
                 } else if (payloadBlock == 4) {
-                    sbShimReader.append(thisShimMsg.toString());
+                    sbShimReader.append(thisShimMsg);
                     logger.trace("PB4 SSR {} TSMT {} TSM {} PR {}", sbShimReader.toString(), thisShimMsgType,
                             thisShimMsg, payloadRemain);
                     if (DELIMITER_E9.equals(thisShimMsgType) || DELIMITER_F0.equals(thisShimMsgType)
@@ -868,7 +867,7 @@ public class ShieldTVConnectionManager {
                     }
                     while (payloadRemain > 1) {
                         thisShimMsg = fixMessage(Integer.toHexString(reader.read()));
-                        sbShimReader.append(thisShimMsg.toString());
+                        sbShimReader.append(thisShimMsg);
                         payloadRemain--;
                         payloadBlock++;
                     }
@@ -955,19 +954,19 @@ public class ShieldTVConnectionManager {
     }
 
     public void sendCommand(ShieldTVCommand command) {
-        if ((!config.shim) && (!command.toString().equals(""))) {
+        if ((!config.shim) && (!command.isEmpty())) {
             sendQueue.add(command);
         }
     }
 
     public void sendShim(ShieldTVCommand command) {
-        if (!command.toString().equals("")) {
+        if (!command.isEmpty()) {
             shimQueue.add(command);
         }
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("{} - Command received: {}", handler.getThingID(), channelUID.getId().toString());
+        logger.debug("{} - Command received: {}", handler.getThingID(), channelUID.getId());
 
         if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
             if (command instanceof StringType) {

@@ -38,7 +38,7 @@ public class GoogleTVMessageParser {
     }
 
     public void handleMessage(String msg) {
-        if (msg.trim().equals("")) {
+        if (msg.trim().isEmpty()) {
             return; // Ignore empty lines
         }
 
@@ -273,6 +273,7 @@ public class GoogleTVMessageParser {
                 } else {
                     // 080210c801a201081204080310061801
                     // 080210c801fa0100
+                    logger.debug("{} - PIN Intermediary Message: {}", thingId, msg);
                 }
             } else if (msg.startsWith(DELIMITER_C2)) {
                 // Power State

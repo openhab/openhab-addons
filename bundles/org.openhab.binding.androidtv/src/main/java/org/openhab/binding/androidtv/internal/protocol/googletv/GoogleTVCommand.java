@@ -31,4 +31,8 @@ public class GoogleTVCommand {
     public String toString() {
         return command;
     }
+
+    public boolean isEmpty() {
+        return command.isEmpty();
+    }
 }
