@@ -659,8 +659,9 @@ public class Clip2Bridge implements Closeable {
      * @param reference the Reference class to get.
      * @return a Resource object containing either a list of Resources or a list of Errors.
      * @throws ApiException if anything fails.
+     * @throws InterruptedException
      */
-    public Resources getResources(ResourceReference reference) throws ApiException {
+    public Resources getResources(ResourceReference reference) throws ApiException, InterruptedException {
         sleepDuringRestart();
         if (onlineState == State.CLOSED) {
             throw new ApiException("getResources() offline");
@@ -679,8 +680,10 @@ public class Clip2Bridge implements Closeable {
      * @return a Resource object containing either a list of Resources or a list of Errors.
      * @throws ApiException if the communication failed, or an unexpected result occurred.
      * @throws HttpUnauthorizedException if the request was refused as not authorised or forbidden.
+     * @throws InterruptedException
      */
-    private Resources getResourcesImpl(ResourceReference reference) throws ApiException, HttpUnauthorizedException {
+    private Resources getResourcesImpl(ResourceReference reference)
+            throws ApiException, HttpUnauthorizedException, InterruptedException {
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or closed");
@@ -717,7 +720,7 @@ public class Clip2Bridge implements Closeable {
                 throw (HttpUnauthorizedException) cause;
             }
             throw new ApiException("Error sending request", e);
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException e) {
             throw new ApiException("Error sending request", e);
         } finally {
             throttleDone();
@@ -755,6 +758,7 @@ public class Clip2Bridge implements Closeable {
             logger.warn("scheduledReconnectTask() failed ", e);
             internalRestartScheduled = false;
             close2();
+        } catch (InterruptedException e) {
         }
     }
 
@@ -811,8 +815,9 @@ public class Clip2Bridge implements Closeable {
      *
      * @throws ApiException if there was a communication error.
      * @throws HttpUnauthorizedException if the application key is not authorized.
+     * @throws InterruptedException
      */
-    public void open() throws ApiException, HttpUnauthorizedException {
+    public void open() throws ApiException, HttpUnauthorizedException, InterruptedException {
         logger.debug("open()");
         openPassive();
         openActive();
@@ -824,8 +829,9 @@ public class Clip2Bridge implements Closeable {
      *
      * @throws ApiException if an error was encountered.
      * @throws HttpUnauthorizedException if the application key is not authorized.
+     * @throws InterruptedException
      */
-    private void openActive() throws ApiException, HttpUnauthorizedException {
+    private void openActive() throws ApiException, HttpUnauthorizedException, InterruptedException {
         synchronized (this) {
             openEventStream();
             onlineState = State.ACTIVE;
@@ -849,8 +855,9 @@ public class Clip2Bridge implements Closeable {
      *
      * @throws ApiException if an error was encountered.
      * @throws HttpUnauthorizedException if the application key is not authorized.
+     * @throws InterruptedException
      */
-    private void openEventStream() throws ApiException, HttpUnauthorizedException {
+    private void openEventStream() throws ApiException, HttpUnauthorizedException, InterruptedException {
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or in an illegal state");
@@ -872,7 +879,7 @@ public class Clip2Bridge implements Closeable {
             stream.setAttribute(EVENT_STREAM_ID, session);
             // wait for "hi" from the bridge
             eventStreamListener.awaitResult();
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             if (Objects.nonNull(stream)) {
                 stream.reset(new ResetFrame(stream.getId(), 0), Callback.NOOP);
             }
@@ -885,8 +892,9 @@ public class Clip2Bridge implements Closeable {
      *
      * @throws ApiException if there was a communication error.
      * @throws HttpUnauthorizedException if the application key is not authorized.
+     * @throws InterruptedException
      */
-    private void openPassive() throws ApiException, HttpUnauthorizedException {
+    private void openPassive() throws ApiException, HttpUnauthorizedException, InterruptedException {
         synchronized (this) {
             logger.debug("openPassive()");
             onlineState = State.CLOSED;
@@ -905,8 +913,9 @@ public class Clip2Bridge implements Closeable {
      * Open the HTTP 2 session if necessary.
      *
      * @throws ApiException if it was not possible to create and connect the session.
+     * @throws InterruptedException
      */
-    private void openSession() throws ApiException {
+    private void openSession() throws ApiException, InterruptedException {
         Session session = http2Session;
         if (Objects.nonNull(session) && !session.isClosed()) {
             return;
@@ -920,7 +929,7 @@ public class Clip2Bridge implements Closeable {
             // wait for the (SSL) session to be opened
             http2Session = Objects.requireNonNull(sessionPromise.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
             checkAliveOk(); // initialise the session timeout window
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             throw new ApiException("Error opening HTTP 2 session", e);
         }
     }
@@ -966,8 +975,9 @@ public class Clip2Bridge implements Closeable {
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
+     * @throws InterruptedException
      */
-    public void putResource(Resource resource) throws ApiException {
+    public void putResource(Resource resource) throws ApiException, InterruptedException {
         sleepDuringRestart();
         if (onlineState == State.CLOSED) {
             return;
@@ -1006,7 +1016,7 @@ public class Clip2Bridge implements Closeable {
                 logger.warn("putResource() error parsing JSON response:{}", contentJson);
                 throw new ApiException("putResource() parsing error", e);
             }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             throw new ApiException("putResource() error sending request", e);
         } finally {
             throttleDone();
@@ -1021,9 +1031,10 @@ public class Clip2Bridge implements Closeable {
      * @return the existing or a newly created application key.
      * @throws ApiException if there was a communications error.
      * @throws HttpUnauthorizedException if the registration failed.
+     * @throws InterruptedException
      */
     public String registerApplicationKey(@Nullable String oldApplicationKey)
-            throws ApiException, HttpUnauthorizedException {
+            throws ApiException, HttpUnauthorizedException, InterruptedException {
         logger.debug("registerApplicationKey()");
         String json = jsonParser.toJson((Objects.isNull(oldApplicationKey) || oldApplicationKey.isEmpty())
                 ? new CreateUserRequest(APPLICATION_ID)
@@ -1035,7 +1046,7 @@ public class Clip2Bridge implements Closeable {
         try {
             logger.trace("POST {} HTTP/1.1 >> {}", registrationUrl, json);
             contentResponse = httpRequest.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             throw new ApiException("HTTP processing error", e);
         }
         int httpStatus = contentResponse.getStatus();
@@ -1072,13 +1083,14 @@ public class Clip2Bridge implements Closeable {
      * Sleep the caller during any period when the connection is restarting.
      *
      * @throws ApiException if anything failed.
+     * @throws InterruptedException
      */
-    private void sleepDuringRestart() throws ApiException {
+    private void sleepDuringRestart() throws ApiException, InterruptedException {
         ScheduledFuture<?> restartTask = this.internalRestartTask;
         if (Objects.nonNull(restartTask)) {
             try {
                 restartTask.get(RESTART_AFTER_SECONDS * 2, TimeUnit.SECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (ExecutionException | TimeoutException e) {
                 throw new ApiException("sleepDuringRestart() error", e);
             }
         }
@@ -1091,8 +1103,9 @@ public class Clip2Bridge implements Closeable {
      *
      * @throws ApiException if it was not possible to connect.
      * @throws HttpUnauthorizedException if it was possible to connect but not to authenticate.
+     * @throws InterruptedException
      */
-    public void testConnectionState() throws HttpUnauthorizedException, ApiException {
+    public void testConnectionState() throws HttpUnauthorizedException, ApiException, InterruptedException {
         logger.debug("testConnectionState()");
         try {
             openPassive();
@@ -1107,8 +1120,10 @@ public class Clip2Bridge implements Closeable {
      * Hue Bridges get confused if they receive too many HTTP requests in a short period of time (e.g. on start up), or
      * if too many HTTP sessions are opened at the same time. So this method throttles the requests to a maximum of one
      * per REQUEST_INTERVAL_MILLISECS, and ensures that no more than MAX_CONCURRENT_SESSIONS sessions are started.
+     *
+     * @throws InterruptedException
      */
-    private synchronized void throttle() {
+    private synchronized void throttle() throws InterruptedException {
         try {
             streamMutex.acquire();
             long delay = Duration.between(Instant.now(), lastRequestTime).toMillis() + REQUEST_INTERVAL_MILLISECS;
@@ -1116,8 +1131,6 @@ public class Clip2Bridge implements Closeable {
                 Thread.sleep(delay);
             }
         } catch (ArithmeticException e) {
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
         lastRequestTime = Instant.now();
     }

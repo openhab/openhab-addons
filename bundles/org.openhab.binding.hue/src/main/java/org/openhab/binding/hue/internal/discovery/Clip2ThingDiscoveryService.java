@@ -151,6 +151,7 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                 }
             } catch (ApiException | AssetNotLoadedException e) {
                 logger.debug("discoverThings() bridge is offline or in a bad state");
+            } catch (InterruptedException e) {
             }
         }
         stopScan();

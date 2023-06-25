@@ -162,6 +162,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         } catch (AssetNotLoadedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
             thingStatus = ThingStatusDetail.HANDLER_INITIALIZING_ERROR;
+        } catch (InterruptedException e) {
+            return;
         }
 
         // update the thing status
@@ -186,6 +188,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     } catch (AssetNotLoadedException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                 "@text/offline.api2.conf-error-assets-not-loaded");
+                    } catch (InterruptedException e) {
+                        return;
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -263,6 +267,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             if (Objects.nonNull(task)) {
                 task.cancel(true);
                 checkConnectionTask = null;
+            }
+            task = scheduledUpdateTask;
+            if (Objects.nonNull(task)) {
+                task.cancel(true);
+                scheduledUpdateTask = null;
             }
             ServiceRegistration<?> registration = trustManagerRegistration;
             if (Objects.nonNull(registration)) {
@@ -384,8 +393,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @return the resource, or null if something fails.
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
+     * @throws InterruptedException
      */
-    public Resources getResources(ResourceReference reference) throws ApiException, AssetNotLoadedException {
+    public Resources getResources(ResourceReference reference)
+            throws ApiException, AssetNotLoadedException, InterruptedException {
         logger.debug("getResources() {}", reference);
         checkAssetsLoaded();
         return getClip2Bridge().getResources(reference);
@@ -446,7 +457,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             } catch (IOException e) {
                 logger.trace("initializeAssets() communication error on '{}'", ipAddress, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication-error");
+                        "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
                 return;
             }
 
@@ -479,7 +490,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (assetsLoaded) {
             try {
                 getClip2Bridge().setExternalRestartScheduled();
-                scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+                ScheduledFuture<?> task = checkConnectionTask;
+                if (Objects.nonNull(task)) {
+                    task.cancel(false);
+                }
+                checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
+                        TimeUnit.SECONDS);
             } catch (AssetNotLoadedException e) {
                 // should never occur
             }
@@ -521,8 +537,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @param resource the resource to put.
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
+     * @throws InterruptedException
      */
-    public void putResource(Resource resource) throws ApiException, AssetNotLoadedException {
+    public void putResource(Resource resource) throws ApiException, AssetNotLoadedException, InterruptedException {
         logger.debug("putResource() {}", resource);
         checkAssetsLoaded();
         getClip2Bridge().putResource(resource);
@@ -535,9 +552,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @throws AssetNotLoadedException if one of the assets is not loaded.
      * @throws HttpUnauthorizedException if the communication was OK but the registration failed anyway.
      * @throws IllegalStateException if the configuration cannot be changed e.g. read only.
+     * @throws InterruptedException
      */
-    private void registerApplicationKey()
-            throws HttpUnauthorizedException, ApiException, AssetNotLoadedException, IllegalStateException {
+    private void registerApplicationKey() throws HttpUnauthorizedException, ApiException, AssetNotLoadedException,
+            IllegalStateException, InterruptedException {
         logger.debug("registerApplicationKey()");
         Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
         String newApplicationKey = getClip2Bridge().registerApplicationKey(config.applicationKey);
@@ -583,8 +601,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
+     * @throws InterruptedException
      */
-    private void updateProperties() throws ApiException, AssetNotLoadedException {
+    private void updateProperties() throws ApiException, AssetNotLoadedException, InterruptedException {
         logger.debug("updateProperties()");
         Map<String, String> properties = new HashMap<>(thing.getProperties());
 
@@ -646,7 +665,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         } catch (ApiException e) {
             logger.trace("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+                    "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
             onConnectionOffline();
         } catch (AssetNotLoadedException e) {
             logger.trace("updateSelf() {}", e.getMessage(), e);
@@ -655,7 +674,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         } catch (HttpUnauthorizedException e) {
             logger.trace("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error-access_denied");
+                    "@text/offline.api2.conf-error-access_denied [\"" + e.getMessage() + "\"]");
+        } catch (InterruptedException e) {
         }
     }
 
@@ -718,6 +738,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             }
         } catch (ApiException | AssetNotLoadedException e) {
             logger.warn("updateThingsNow() unexpected exception as thing is online. Please inform maintainers.", e);
+        } catch (InterruptedException e) {
         }
     }
 

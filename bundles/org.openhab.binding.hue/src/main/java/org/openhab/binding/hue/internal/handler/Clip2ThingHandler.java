@@ -168,6 +168,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateDependenciesDone;
 
     private @Nullable ScheduledFuture<?> updateServiceContributorsTask;
+    private @Nullable ScheduledFuture<?> alertResetTask;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -225,6 +226,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             task.cancel(true);
         }
         updateServiceContributorsTask = null;
+        task = alertResetTask;
+        if (Objects.nonNull(task)) {
+            task.cancel(true);
+        }
+        alertResetTask = null;
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceIds.clear();
@@ -289,6 +295,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                             updateServiceContributors();
                         } catch (ApiException | AssetNotLoadedException e) {
                             // exceptions will not occur here since thing is already online
+                        } catch (InterruptedException e) {
                         }
                     }, 3, TimeUnit.SECONDS);
                 }
@@ -314,7 +321,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (channelId) {
             case CHANNEL_2_ALERT:
                 putResource = Setters.setAlert(new Resource(lightResourceType), command, cache);
-                scheduler.schedule(() -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 10,
+                ScheduledFuture<?> task = alertResetTask;
+                if (Objects.nonNull(task)) {
+                    task.cancel(false);
+                }
+                alertResetTask = scheduler.schedule(
+                        () -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 10,
                         TimeUnit.SECONDS);
                 break;
 
@@ -464,6 +476,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             getBridgeHandler().putResource(putResource);
         } catch (ApiException | AssetNotLoadedException e) {
             logger.warn("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
+        } catch (InterruptedException e) {
         }
     }
 
@@ -851,6 +864,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.debug("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error-assets-not-loaded");
+            } catch (InterruptedException e) {
             }
         }
     }
@@ -980,8 +994,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param reference to the required resource.
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
+     * @throws InterruptedException
      */
-    private void updateResource(ResourceReference reference) throws ApiException, AssetNotLoadedException {
+    private void updateResource(ResourceReference reference)
+            throws ApiException, AssetNotLoadedException, InterruptedException {
         if (!disposing) {
             logger.debug("{} -> updateResource() from resource {}", resourceId, reference);
             getBridgeHandler().getResources(reference).getResources().stream()
@@ -994,8 +1010,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
+     * @throws InterruptedException
      */
-    public boolean updateSceneContributors() throws ApiException, AssetNotLoadedException {
+    public boolean updateSceneContributors() throws ApiException, AssetNotLoadedException, InterruptedException {
         if (!disposing && !updateSceneContributorsDone) {
             ResourceReference scenesReference = new ResourceReference().setType(ResourceType.SCENE);
             updateSceneContributors(getBridgeHandler().getResources(scenesReference).getResources());
@@ -1042,8 +1059,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
+     * @throws InterruptedException
      */
-    private void updateServiceContributors() throws ApiException, AssetNotLoadedException {
+    private void updateServiceContributors() throws ApiException, AssetNotLoadedException, InterruptedException {
         if (!disposing) {
             logger.debug("{} -> updateServiceContributors() called for {} contributors", resourceId,
                     serviceContributorsCache.size());

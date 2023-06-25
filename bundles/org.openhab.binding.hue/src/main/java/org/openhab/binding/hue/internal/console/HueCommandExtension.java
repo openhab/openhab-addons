@@ -152,6 +152,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                             .println(String.format(FMT_SCENE, scene.getId(), scene.getName())));
                                 }
                             } catch (ApiException | AssetNotLoadedException e) {
+                            } catch (InterruptedException e) {
                             }
                             console.println("}");
                             return;
@@ -166,6 +167,8 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                             .getResources(new ResourceReference().setType(resourceType)).getResources();
                                 } catch (ApiException | AssetNotLoadedException e) {
                                     continue;
+                                } catch (InterruptedException e) {
+                                    break;
                                 }
                                 if (!resources.isEmpty()) {
                                     console.println(String.format(FMT_COMMENT, resourceType.toString()));
