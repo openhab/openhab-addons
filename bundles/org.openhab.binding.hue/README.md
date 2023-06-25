@@ -1,29 +1,29 @@
 # Philips Hue Binding
 
 This binding integrates the [Philips Hue Lighting system](https://www.meethue.com).
-The integration happens through the Hue Bridge, which acts as an IP gateway to the ZigBee devices.
+The integration happens through the Hue Bridge, which acts as an IP gateway to the Zigbee devices.
 
 ![Philips Hue](doc/hue.jpg) ![Philips Hue](doc/hue2.png)
 
 ## Introduction
 
 The Hue Bridge is required as a "bridge" for accessing any other Hue device.
-It supports the ZigBee LightLink protocol as well as the upwards compatible ZigBee 3.0 protocol.
+It supports the Zigbee Light Link protocol as well as the upwards compatible Zigbee 3.0 protocol.
 There are two types of Hue Bridges, generally referred to as v1 (the rounded version) and v2 (the squared version).
 The difference between the two generations of bridges is that the v2 bridge added support for Apple HomeKit and the CLIP v2 API [see next paragraph](#api-versions).
 Both bridges are fully supported by this binding.
 
 Almost all available Hue devices are supported by this binding.
 This includes not only the "Friends of Hue", but also products like the LivingWhites adapter.
-Additionally, it is possible to use OSRAM Lightify devices as well as other ZigBee LightLink compatible products, including the IKEA TRÅDFRI lights (when updated). 
-Beside bulbs and luminaires the Hue binding also supports some ZigBee sensors.
+Additionally, it is possible to use OSRAM Lightify devices as well as other Zigbee Light Link compatible products, including the IKEA TRÅDFRI lights (when updated). 
+Beside bulbs and luminaires the Hue binding also supports some Zigbee sensors.
 Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
 Please note that the devices need to be registered with the Hue Bridge before it is possible for this binding to use them.
 
 ## API Versions
 
 Bridges are accessed by means of the "CLIP" ('Connected Lighting Interface Protocol') Application Program Interface ('API').
-There are two versions of CLIP - namely CLIP v2 and CLIP v1, which are referred to as API v2 and API v1 in the links below.
+There are two versions of CLIP - namely CLIP v1 and CLIP v2, which are referred to as API v1 and API v2 in the links below.
 Signify has stated that any new features (such as dynamic scenes) will only be available on API v2, and in the long term API v1 will eventually be removed.
 The API v2 has more features, e.g. it supports Server Sent Events 'SSE' which means that it is much faster to receive status updates in openHAB.
 For this reason it is recommended to use API v2 for new openHAB installations.
@@ -63,7 +63,7 @@ And also, if a legacy API v1 thing exists and has items linked to its channels, 
 
 ### Migration via a `.things` File
 
-You need to manually edit your bridge and thing definitions as shown below..
+You need to manually edit your bridge and thing definitions as shown below:
 
 - Bridge definitions change from `hue:bridge:bridgename` to `hue:bridge-api2:bridgename`.
 - Bridge configuration parameters change `userName` to `applicationKey`.

@@ -15,7 +15,6 @@ package org.openhab.binding.hue.internal.handler;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -97,8 +96,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * List of resource references that need to be mass down loaded.
      * NOTE: the SCENE resources must be mass down loaded first!
      */
-    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = Arrays.asList(SCENE, DEVICE, ROOM,
-            ZONE);
+    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = List.of(SCENE, DEVICE, ROOM, ZONE);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -163,7 +161,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             thingStatus = ThingStatusDetail.COMMUNICATION_ERROR;
         } catch (AssetNotLoadedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
-            thingStatus = ThingStatusDetail.BRIDGE_UNINITIALIZED;
+            thingStatus = ThingStatusDetail.HANDLER_INITIALIZING_ERROR;
         }
 
         // update the thing status
@@ -186,7 +184,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "@text/offline.api2.conf-error-read-only");
                     } catch (AssetNotLoadedException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                 "@text/offline.api2.conf-error-assets-not-loaded");
                     }
                 } else {
@@ -201,8 +199,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 retryConnection = connectRetriesRemaining > 0;
                 break;
 
-            case BRIDGE_UNINITIALIZED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            case HANDLER_INITIALIZING_ERROR:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "@text/offline.api2.conf-error-assets-not-loaded");
                 break;
 
@@ -247,7 +245,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("dispose() {}", this);
         if (assetsLoaded) {
             assetsLoaded = false;
             threadPool.execute(() -> disposeAssets());
@@ -255,7 +252,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Dispose the bridge handler's assets.
+     * Dispose the bridge handler's assets. Called from dispose() on a thread, so that dispose() itself can complete
+     * faster.
      */
     private void disposeAssets() {
         logger.debug("disposeAssets() {}", this);
@@ -263,7 +261,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             assetsLoaded = false;
             ScheduledFuture<?> task = checkConnectionTask;
             if (Objects.nonNull(task)) {
-                task.cancel(false);
+                task.cancel(true);
                 checkConnectionTask = null;
             }
             ServiceRegistration<?> registration = trustManagerRegistration;
@@ -273,8 +271,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             }
             Clip2Bridge bridge = clip2Bridge;
             if (Objects.nonNull(bridge)) {
-                bridge.close(); // NB this may take ~15 seconds
+                bridge.close();
                 clip2Bridge = null;
+            }
+            Clip2ThingDiscoveryService disco = discoveryService;
+            if (Objects.nonNull(disco)) {
+                disco.abortScan();
             }
         }
     }
@@ -408,12 +410,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (RefreshType.REFRESH.equals(command)) {
             return;
         }
-        logger.warn("handleCommand() bridge thing has no channels.");
+        logger.warn("Bridge thing has no channels, only REFRESH command supported.");
     }
 
     @Override
     public void initialize() {
-        logger.debug("initialize() {}", this);
         updateThingFromLegacy();
         updateStatus(ThingStatus.UNKNOWN);
         applKeyRetriesRemaining = APPLICATION_KEY_MAX_TRIES;
@@ -431,7 +432,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             String ipAddress = config.ipAddress;
             if (ipAddress.isBlank()) {
-                logger.warn("initializeAssets() invalid ip address '{}'", config.ipAddress);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-no-ip-address");
                 return;
@@ -439,13 +439,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             try {
                 if (!Clip2Bridge.isClip2Supported(ipAddress)) {
-                    logger.warn("initializeAssets() hub does not support clip 2");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.api2.conf-error-clip2-not-supported");
                     return;
                 }
             } catch (IOException e) {
-                logger.warn("initializeAssets() communication error on '{}'", ipAddress, e);
+                logger.trace("initializeAssets() communication error on '{}'", ipAddress, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.communication-error");
                 return;
@@ -479,7 +478,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public void onConnectionOffline() {
         if (assetsLoaded) {
             try {
-                getClip2Bridge().setRestartScheduled();
+                getClip2Bridge().setExternalRestartScheduled();
                 scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
             } catch (AssetNotLoadedException e) {
                 // should never occur
@@ -643,19 +642,18 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         try {
             checkAssetsLoaded();
             updateProperties();
-            updateStatus(ThingStatus.UNKNOWN);
             getClip2Bridge().open();
         } catch (ApiException e) {
-            logger.debug("updateSelf() {}", e.getMessage(), e);
+            logger.trace("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error");
             onConnectionOffline();
         } catch (AssetNotLoadedException e) {
-            logger.debug("updateSelf() {}", e.getMessage(), e);
+            logger.trace("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.api2.conf-error-assets-not-loaded");
         } catch (HttpUnauthorizedException e) {
-            logger.debug("updateSelf() {}", e.getMessage(), e);
+            logger.trace("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.api2.conf-error-access_denied");
         }
@@ -667,7 +665,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void updateThingFromLegacy() {
         if (isInitialized()) {
-            logger.warn("updateThingFromLegacy() was called after handler was initialized.");
+            logger.warn("updateThingFromLegacy() was called after handler was initialized. Please inform maintainers.");
             return;
         }
         Map<String, String> properties = thing.getProperties();
@@ -701,7 +699,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Execute the mass download of all relevant resource types, and inform all child thing handlers.
      */
     private void updateThingsNow() {
-        logger.debug("updateThings()");
+        logger.debug("updateThingsNow()");
         try {
             Clip2Bridge bridge = getClip2Bridge();
             for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES) {
@@ -719,7 +717,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 });
             }
         } catch (ApiException | AssetNotLoadedException e) {
-            // should never happen as we are already online
+            logger.warn("updateThingsNow() unexpected exception as thing is online. Please inform maintainers.", e);
         }
     }
 

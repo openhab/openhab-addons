@@ -42,15 +42,15 @@ public class DynamicsActions implements ThingActions {
     private @Nullable Clip2ThingHandler handler;
 
     public static void dynamicCommand(ThingActions actions, @Nullable String channelId, @Nullable Command command,
-            @Nullable Long durationMSec) {
-        ((DynamicsActions) actions).dynamicCommand(channelId, command, durationMSec);
+            @Nullable Long durationMs) {
+        ((DynamicsActions) actions).dynamicCommand(channelId, command, durationMs);
     }
 
     @RuleAction(label = "@text/dynamics.action.label", description = "@text/dynamics.action.description")
     public void dynamicCommand(
             @ActionInput(name = "channelId", label = "@text/dynamics.channel.label", description = "@text/dynamics.channel.description") @Nullable String channelId,
             @ActionInput(name = "command", label = "@text/dynamics.command.label", description = "@text/dynamics.command.description") @Nullable Command command,
-            @ActionInput(name = "durationMSec", label = "@text/dynamics.duration.label", description = "@text/dynamics.duration.description") @Nullable Long durationMSec) {
+            @ActionInput(name = "durationMs", label = "@text/dynamics.duration.label", description = "@text/dynamics.duration.description") @Nullable Long durationMs) {
         //
         Clip2ThingHandler handler = this.handler;
         if (handler == null) {
@@ -65,14 +65,13 @@ public class DynamicsActions implements ThingActions {
             logger.debug("Command is null.");
             return;
         }
-        if (durationMSec == null || durationMSec.longValue() <= 0) {
+        if (durationMs == null || durationMs.longValue() <= 0) {
             logger.debug("Duration is null, zero or negative.");
             return;
         }
         handler.handleDynamicsCommand(channelId, command,
-                new QuantityType<>(durationMSec.longValue(), MetricPrefix.MILLI(Units.SECOND)));
-        logger.debug("Dynamic command '{}' sent to channelId '{}' with duration {}ms.", command, channelId,
-                durationMSec);
+                new QuantityType<>(durationMs.longValue(), MetricPrefix.MILLI(Units.SECOND)));
+        logger.debug("Dynamic command '{}' sent to channelId '{}' with duration {}ms.", command, channelId, durationMs);
     }
 
     @Override

@@ -415,9 +415,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_DYNAMICS:
                 Duration clearAfter = Duration.ZERO;
                 if (command instanceof QuantityType<?>) {
-                    QuantityType<?> durationMSec = ((QuantityType<?>) command).toUnit(MetricPrefix.MILLI(Units.SECOND));
-                    if (Objects.nonNull(durationMSec) && durationMSec.longValue() > 0) {
-                        Duration duration = Duration.ofMillis(durationMSec.longValue());
+                    QuantityType<?> durationMs = ((QuantityType<?>) command).toUnit(MetricPrefix.MILLI(Units.SECOND));
+                    if (Objects.nonNull(durationMs) && durationMs.longValue() > 0) {
+                        Duration duration = Duration.ofMillis(durationMs.longValue());
                         dynamicsDuration = duration;
                         dynamicsExpireTime = Instant.now().plus(DYNAMICS_ACTIVE_WINDOW);
                         clearAfter = DYNAMICS_ACTIVE_WINDOW;
@@ -495,8 +495,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Clip2ThingConfig config = getConfigAs(Clip2ThingConfig.class);
 
         String resourceId = config.resourceId;
-        if (Objects.isNull(resourceId) || resourceId.isEmpty()) {
-            logger.debug("{} -> initialize() configuration resourceId is bad", resourceId);
+        if (resourceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.api2.conf-error-resource-id-bad");
             return;

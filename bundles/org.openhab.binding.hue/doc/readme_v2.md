@@ -42,7 +42,7 @@ Device things represent physical hardware devices in the system, whereas `room` 
 In addition to regular rooms and zones, there is a 'super' `zone` that allows you to control all of the lights in the system.
 
 All things are identified by a unique Resource Identifier string that the Hue Bridge assigns to them e.g. `d1ae958e-8908-449a-9897-7f10f9b8d4c2`.
-Thus, all it needs for manual configuration is this single value like
+Thus, all it needs for manual configuration is this single value, like:
 
 ```java
 device officelamp "Lamp 1" @ "Office" [ resourceId="d1ae958e-8908-449a-9897-7f10f9b8d4c2" ]
@@ -80,9 +80,14 @@ Device things support some of the following channels:
 | battery-level         | Number             | Shows the battery level. (Read Only)                                                                                |
 | battery-low           | Switch             | Indicates whether the battery is low or not. (Read Only)                                                            |
 | last-updated          | DateTime           | The date and time when the thing state was last updated. (Read Only) (Advanced)                                     |
+| color-xy-only         | Color              | Allows access to the `color-xy` parameter of the light(s) only. Has no impact on `dimming` or `on-off` parameters.  |
+| dimming-only          | Dimmer             | Allows access to the `dimming` parameter of the light(s) only. Has no impact on `color-xy` or `on-off` parameters.  |
+| on-off-only           | Switch             | Allows access to the `on-off` parameter of the light(s) only. Has no impact on `color-xy` or `dimming` parameters.  |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
+
+The channels `color-xy-only`,  `dimming-only` and `on-off-only` are *advanced* channels - see [below](###advanced-channels-for-devices-,-rooms-and-zones) for more details.
 
 The `button-last-event` channel is a trigger channel.
 When the button is pressed the channel receives a number as calculated by the following formula:
@@ -130,25 +135,18 @@ Some channels support dynamic transitions between light states.
 A dynamic transition is where, instead of the light state changing immediately to its new target value, it changes gradually to the new value over a period of time.
 
 If a thing supports dynamic transitions, then it will have a `dynamics` channel.
-This is a numeric channel where you can set the time delay for the transition in milli- seconds.
-When you set a value for the `dynamics` channel (e.g. 2000 milli seconds) and then quickly issue another command (e.g. brightness 100%), the second command will be executed gradually over the period of milli- seconds given by the `dynamics` channel value.
+This is a numeric channel where you can set the time delay for the transition in milliseconds.
+When you set a value for the `dynamics` channel (e.g. 2000 milli seconds) and then quickly issue another command (e.g. brightness 100%), the second command will be executed gradually over the period of milliseconds given by the `dynamics` channel value.
 When the `dynamics` channel value is changed, it triggers a time window of ten seconds during which the value is active.
 If the second command is sent within the active time window it will be executed gradually according to the `dynamics` channel value.
 However if the second command is sent after the active time window has expired then it will be executed immediately.
 
 ### Advanced Channels for Devices, Rooms and Zones
 
-In addition to the normal channels described above, some things support additional advanced channels.
+Some things support additional advanced channels `color-xy-only`,  `dimming-only` and/or `on-off-only`.
 For convenience the normal channels often amalgamate multiple elements of the state of a light, room or zone into one single channel.
-For example a full color light has one single `color` channel that can accept HSBType commands for changing the color, PercentType commands for changing the brightness, and OnOffType commands for switching it on or off.
+For example, a full color light has one single `color` channel that can accept HSBType commands for changing the color, PercentType commands for changing the brightness, and OnOffType commands for switching it on or off.
 By contrast the purpose of the advanced channels is to access specific individual state elements of the respective lights, rooms or zones individually.
-The possible advanced channels are as follows (although not every thing will have them):
-
-| Channel ID     | Item Type | Description                                                                                                        |
-|----------------|-----------|--------------------------------------------------------------------------------------------------------------------|
-| color-xy-only  | Color     | Allows access to the `color-xy` parameter of the light(s) only. Has no impact on `dimming` or `on-off` parameters. |
-| dimming-only   | Dimmer    | Allows access to the `dimming` parameter of the light(s) only. Has no impact on `color-xy` or `on-off` parameters. |
-| on-off-only    | Switch    | Allows access to the `on-off` parameter of the light(s) only. Has no impact on `color-xy` or `dimming` parameters. |
 
 These advance channels can be used as "presets".
 For example, you may want to preset the `dimming-only` channel to 20% at night, and to 100% in the day time.
@@ -186,7 +184,7 @@ val hueActions = getActions("hue","hue:device:g24:11111111-2222-3333-4444-555555
 ```
 
 Where the first parameter must always be `hue` and the second must be the full thing UID.
-Once the action instance has been retrieved, you can invoke its `dynamicCommand(String channelId, Command command, Long durationMSec)` method as follows.
+Once the action instance has been retrieved, you can invoke its `dynamicCommand(String channelId, Command command, Long durationMs)` method as follows.
 
 ```php
 hueActions.dynamicCommand("brightness", new PercentType(100), new Long(10000))
@@ -194,11 +192,11 @@ hueActions.dynamicCommand("brightness", new PercentType(100), new Long(10000))
 hueActions.dynamicCommand("scene", new StringType("SceneName"), new Long(20000))
 ```
 
-| Parameter     | Description                                                                                                                                |
-|---------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| channelId     | The channel ID of the channel to send the command to (one of `brightness`, `color`, `color-temperature`, `color-temp-kelvin`, or `scene`). |
-| command       | The target command state to transition to.                                                                                                 |
-| durationMSec  | The dynamic transition duration in mSec.                                                                                                   |
+| Parameter  | Description                                                                                                                                |
+|------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| channelId  | The channel ID of the channel to send the command to (one of `brightness`, `color`, `color-temperature`, `color-temp-kelvin`, or `scene`). |
+| command    | The target command state to transition to.                                                                                                 |
+| durationMs | The dynamic transition duration in milliseconds.                                                                                           |
 
 ## Full Example
 
