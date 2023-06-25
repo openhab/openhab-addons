@@ -45,6 +45,7 @@ import org.openhab.binding.freeathomesystem.internal.configuration.FreeAtHomeBri
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -422,8 +423,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
             ret = true;
         } catch (Exception ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.not-able-start-httpclient");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot start http client");
 
             logger.error("Cannot start http client - {}", ex.getMessage());
 
@@ -462,7 +462,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 }
             } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error.not-able-open-httpconnection");
+                        "Cannot open http connection, wrong passord");
 
                 logger.error("Cannot open http connection {}", ex.getMessage());
 
@@ -501,8 +501,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
             ret = true;
         } catch (Exception ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.not-able-start-httpclient");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot stop http client");
 
             logger.debug("Cannot stop http client - {}", ex.getMessage());
 
@@ -671,6 +670,19 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Method to re-initialize the bridge
+     *
+     * @author Andras Uhrin
+     *
+     */
+    @Override
+    public void thingUpdated(Thing thing) {
+        dispose();
+        this.thing = thing;
+        initialize();
+    }
+
+    /**
      * Method to initialize the bridge
      *
      * @author Andras Uhrin
@@ -678,6 +690,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+
         httpConnectionOK.set(false);
 
         // load configuration
@@ -693,7 +707,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         // Open Http connection
         if (!openHttpConnection()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.http-wrongpass-or-ip");
+                    "Cannot open http connection, wrong password or IP address");
 
             logger.debug("Cannot open http connection");
 
@@ -703,7 +717,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         // Open the websocket connection for immediate status updates
         if (!openWebSocketConnection()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.not-able-open-websocketconnection");
+                    "Cannot open websocket connection");
 
             logger.debug("Cannot open websocket connection");
 
@@ -714,7 +728,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         FreeAtHomeBridgeHandler.freeAtHomeSystemHandler = this;
     }
 
-    @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
 
@@ -773,7 +786,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             } catch (InterruptedException e) {
                 logger.error("Thread interrupted [{}]", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error.general-websocket-issue");
+                        "Problem in websocket connection");
             }
         }
 
@@ -791,7 +804,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
             if (!connectWebsocketSession()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error.general-websocket-issue");
+                        "Problem in websocket connection");
 
                 logger.error("Problem in websocket connection, trying to reconnect");
 
