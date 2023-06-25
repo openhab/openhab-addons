@@ -235,7 +235,6 @@ The supported Channel and its associated channel type is shown below.
 
 ## Rain Sensor
 
-
 Unfortunately the rain sensor is closely integrated into the window device and it is therefore not possible to display its state via a channel.
 However the 'limitMinimum' channel can provide information about rainy weather.
 The rain sensor, when triggered, overrides the window position so it cannot open more than the ventilation position.
