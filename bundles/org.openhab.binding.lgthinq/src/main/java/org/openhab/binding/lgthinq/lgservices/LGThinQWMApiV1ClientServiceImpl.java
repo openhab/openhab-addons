@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import java.io.IOException;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -59,12 +56,6 @@ public class LGThinQWMApiV1ClientServiceImpl
         // Nothing to do for V1 thinq
     }
 
-    @Override
-    public double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException, IOException {
-        return 0;
-    }
-
     public static LGThinQWMApiClientService getInstance() {
         return instance;
     }
@@ -92,7 +83,8 @@ public class LGThinQWMApiV1ClientServiceImpl
                 return;
             }
             Map<String, Object> cmdPayload = prepareCommandV1(cmdStartDef, data);
-            RestResult result = sendControlCommands(bridgeName, deviceId, cmdPayload);
+            logger.debug("token Payload:[{}]", cmdPayload);
+            RestResult result = sendCommand(bridgeName, deviceId, cmdPayload);
             handleGenericErrorResult(result);
         } catch (LGThinqApiException e) {
             throw e;
@@ -105,7 +97,7 @@ public class LGThinQWMApiV1ClientServiceImpl
     public void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) throws LGThinqApiException {
         try {
 
-            RestResult result = sendControlCommands(bridgeName, deviceId, "", "Control", "Operation", "", "WakeUp");
+            RestResult result = sendCommand(bridgeName, deviceId, "", "Control", "Operation", "", "WakeUp");
             handleGenericErrorResult(result);
         } catch (LGThinqApiException e) {
             throw e;
@@ -121,12 +113,15 @@ public class LGThinQWMApiV1ClientServiceImpl
         for (Map.Entry<String, Object> e : snapData.entrySet()) {
             String value = String.valueOf(e.getValue());
             if ("Start".equals(cmdDef.getCmdOptValue()) && e.getKey().equals("Option2")) {
-                value = String.valueOf(Integer.parseInt(value) | 1);
+                // For some reason, option2 fills only InitialBit with 1.
+                value = "1";
             }
             dataStr = dataStr.replace("{{" + e.getKey() + "}}", value);
         }
-        Map<String, Object> cmd = objectMapper.readValue(cmdDef.getRawCommand(), new TypeReference<>() {
+        // Keep the order
+        LinkedHashMap<String, Object> cmd = objectMapper.readValue(cmdDef.getRawCommand(), new TypeReference<>() {
         });
+        cmd.remove("encode"); // remove encode node in the raw command to be similar to LG App.
 
         logger.debug("Prepare command v1: {}", dataStr);
         if (cmdDef.isBinary()) {

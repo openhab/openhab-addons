@@ -82,7 +82,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     final ReentrantLock pollingLock = new ReentrantLock();
 
     /**
-     * Abstract Runnable Polling Class to schedule sincronization status of the Bridge Thing Kinds !
+     * Abstract Runnable Polling Class to schedule synchronization status of the Bridge Thing Kinds !
      */
     abstract class PollingRunnable implements Runnable {
         protected final String bridgeName;
@@ -279,27 +279,15 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         logger.debug("Initializing LGThinq bridge handler.");
         lgthinqConfig = getConfigAs(LGThinQBridgeConfiguration.class);
         lgDevicePollingRunnable.lgthinqConfig = lgthinqConfig;
-        // generateWasherDryerThingTypes();
         if (lgthinqConfig.username.isEmpty() || lgthinqConfig.password.isEmpty() || lgthinqConfig.language.isEmpty()
                 || lgthinqConfig.country.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.mandotory-fields-missing");
         } else {
-            updateStatus(ThingStatus.UNKNOWN);
+            // updateStatus(ThingStatus.UNKNOWN);
             startLGThinqDevicePolling();
         }
     }
-
-    // private void generateWasherDryerThingTypes() {
-    // // TODO - i18n labels and descriptions
-    // // Creating static channels
-    // List<ThinqChannel> channels = new ArrayList<>();
-    // channels.add(new ThinqChannel())
-    // ThinqDevice device = new ThinqDevice(THING_TYPE_WASHING_MACHINE.getId(),"Washer Machine", "LG Thinq Washer
-    // Machine",
-    //
-    // )
-    // }
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
@@ -334,7 +322,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         }
         // submit instantlly and schedule for the next polling interval.
         scheduler.submit(lgDevicePollingRunnable);
-        devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, poolingInterval, poolingInterval,
+        devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, 2, poolingInterval,
                 TimeUnit.SECONDS);
     }
 

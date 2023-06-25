@@ -30,6 +30,7 @@ public class CommandDefinition {
     /**
      * This is the command tag value that is used by the API to launch the command service
      */
+    private String dataKey = "";
     private String command = "";
     private Map<String, Object> data = new HashMap<>();
 

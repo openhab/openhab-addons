@@ -20,8 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelGroupTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link LGThinQBindingConstants} class defines common constants, which are
@@ -41,16 +39,8 @@ public class LGThinQBindingConstants {
             String.valueOf(DeviceTypes.AIR_CONDITIONER.deviceTypeId()));
     public static final ThingTypeUID THING_TYPE_WASHING_MACHINE = new ThingTypeUID(BINDING_ID, "201");
     public static final String WM_CHANNEL_REMOTE_START_GRP_ID = "remote-start-grp";
-    public static final String WM_CHANNEL_DASHBOARD_GRP_ID = "dashboard";
-    public static final ChannelTypeUID WM_RS_RINSE_CHANNEL_TYPE_UUID = new ChannelTypeUID(BINDING_ID, "washer-rinse");
-    public static final ChannelTypeUID WM_RS_SPIN_CHANNEL_TYPE_UUID = new ChannelTypeUID(BINDING_ID, "washer-spin");
-    public static final ChannelTypeUID WM_RS_TEMP_LEVEL_CHANNEL_TYPE_UUID = new ChannelTypeUID(BINDING_ID,
-            "washer-temp-level");
-    public static final ChannelTypeUID WM_RS_START_STOP_CHANNEL_TYPE_UUID = new ChannelTypeUID(BINDING_ID,
-            "rs-washer-start-stop");
-
-    public static final ChannelGroupTypeUID WM_CHANNEL_GROUP_TYPE_REMOTE_START_UID = new ChannelGroupTypeUID(BINDING_ID,
-            WM_CHANNEL_REMOTE_START_GRP_ID);
+    public static final String CHANNEL_DASHBOARD_GRP_ID = "dashboard";
+    public static final String CHANNEL_EXTENDED_INFO_GRP_ID = "extended-information";
     public static final ThingTypeUID THING_TYPE_WASHING_TOWER = new ThingTypeUID(BINDING_ID,
             "" + DeviceTypes.WASHING_TOWER.deviceTypeId());
     public static final ThingTypeUID THING_TYPE_DRYER = new ThingTypeUID(BINDING_ID,
@@ -127,8 +117,7 @@ public class LGThinQBindingConstants {
     static final Set<String> SUPPORTED_LG_PLATFORMS = Set.of(PLATFORM_TYPE_V1, PLATFORM_TYPE_V2);
 
     public static final int SEARCH_TIME = 20;
-    // delay between each device's scan for state changes (in seconds)
-    public static final int DEFAULT_STATE_POLLING_UPDATE_DELAY = 10;
+    public static final int DEFAULT_ENERGY_COLLECTOR_POLLING_UPDATE_DELAY = 60;
 
     // ====================== FRIDGE DEVICE CONSTANTS =============================
     // CHANNEL IDS
@@ -146,8 +135,6 @@ public class LGThinQBindingConstants {
     public static final String TEMP_UNIT_FAHRENHEIT = "FAHRENHEIT";
     public static final String TEMP_UNIT_CELSIUS_SYMBOL = "°C";
     public static final String TEMP_UNIT_FAHRENHEIT_SYMBOL = "°F";
-    public static final String FRIDGE_TEMP_NODE_NAME_V2 = "fridgeTemp";
-    public static final String FRIDGE_TEMP_NODE_NAME_V1 = "TempRefrigerator";
     public static final String REFRIGERATOR_SNAPSHOT_NODE_V2 = "refState";
 
     // ====================== AIR CONDITIONER DEVICE CONSTANTS =============================
@@ -155,6 +142,9 @@ public class LGThinQBindingConstants {
     public static final String CHANNEL_MOD_OP_ID = "op_mode";
     public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
     public static final String CHANNEL_POWER_ID = "power";
+    public static final String CHANNEL_EXTENDED_INFO_COLLECTOR_ID = "extended_info_collector";
+    public static final String CHANNEL_CURRENT_POWER_ID = "current_power";
+    public static final String CHANNEL_REMAINING_FILTER_ID = "remaining_filter";
     public static final String CHANNEL_TARGET_TEMP_ID = "target_temperature";
     public static final String CHANNEL_CURRENT_TEMP_ID = "current_temperature";
     public static final String CHANNEL_COOL_JET_ID = "cool_jet";
@@ -196,6 +186,11 @@ public class LGThinQBindingConstants {
     public static final String CAP_AC_AIR_CLEAN_COMMAND_ON = "@AC_MAIN_AIRCLEAN_ON_W";
     public static final String CAP_AC_AIR_CLEAN_COMMAND_OFF = "@AC_MAIN_AIRCLEAN_OFF_W";
 
+    // Extended Info Attribute Constants
+    public static final String EXTENDED_ATTR_INSTANT_POWER = "InOutInstantPower";
+    public static final String EXTENDED_ATTR_FILTER_MAX_TIME_TO_USE = "ChangePeriod";
+    public static final String EXTENDED_ATTR_FILTER_USED_TIME = "UseTime";
+
     // ====================== WASHING MACHINE CONSTANTS =============================
     public static final String WM_COURSE_NOT_SELECTED_VALUE = "NOT_SELECTED";
     public static final String WM_POWER_OFF_VALUE = "POWEROFF";
@@ -214,6 +209,8 @@ public class LGThinQBindingConstants {
     public static final String WM_CHANNEL_SPIN_ID = "spin";
 
     public static final String WM_CHANNEL_REMOTE_START_START_STOP = "rs-start-stop";
+
+    public static final String WM_CHANNEL_REMOTE_COURSE = "rs-course";
     public static final String WM_CHANNEL_REMOTE_START_RINSE = "rs-rinse";
     public static final String WM_CHANNEL_REMOTE_START_TEMP = "rs-temperature-level";
     public static final String WM_CHANNEL_REMOTE_START_SPIN = "rs-spin";

@@ -12,25 +12,50 @@
 
 		<label>LG ThinQ Washer</label>
 		<description>LG ThinQ Washing Machine</description>
-
 		<channel-groups>
-			<channel-group id="dashboard" typeId="dashboard"/>
-			<channel-group id="remote-start-grp" typeId="remote-start-grp"/>
+			<channel-group id="dashboard" typeId="wm-dashboard"/>
+			<channel-group id="remote-start-grp" typeId="wm-remote-start-grp"/>
 		</channel-groups>
+		<config-description>
+			<parameter-group name="Settings">
+				<label>Polling</label>
+				<description>Settings required to optimize the polling behaviour.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter name="polling-period-poweroff-seconds" type="integer" min="10" required="true"
+				groupName="Settings">
+				<label>Polling period in seconds when the device is off</label>
+				<description>Seconds to wait to the next polling when device is off. Useful to save up
+					i/o and cpu when your
+					device is
+					not working. If you use only this binding to control the
+					device, you can put higher values here.
+				</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="polling-period-poweron-seconds" type="integer" min="10" required="true"
+				groupName="Settings">
+				<label>Polling period in seconds for Device States when device is on</label>
+				<description>Seconds to wait to the next polling for device state (dashboard channels)
+				</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
 	</thing-type>
 
-	<channel-group-type id="remote-start-grp">
+	<channel-group-type id="wm-remote-start-grp">
 		<label>Remote Start Options</label>
 		<description>Remote Start Actions and Options.</description>
 		<channels>
 			<channel id="rs-start-stop" typeId="rs-start-stop"/>
+			<channel id="rs-course" typeId="rs-course"/>
 			<channel id="rs-rinse" typeId="rs-rinse"/>
 			<channel id="rs-spin" typeId="rs-spin"/>
 			<channel id="rs-temperature-level" typeId="rs-temperature-level"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="dashboard">
+	<channel-group-type id="wm-dashboard">
 		<label>Dashboard</label>
 		<description>This is the Displayed Information.</description>
 		<channels>

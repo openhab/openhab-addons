@@ -117,7 +117,7 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
 
     @Override
     public void setPowerStatus(DevicePowerState value) {
-        throw new IllegalArgumentException("This method must not be accessed.");
+        this.powerState = value;
     }
 
     @Override

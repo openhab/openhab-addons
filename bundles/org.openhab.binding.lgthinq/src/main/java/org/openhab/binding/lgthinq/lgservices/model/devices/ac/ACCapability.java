@@ -29,6 +29,8 @@ public class ACCapability extends AbstractCapability<ACCapability> {
     private Map<String, String> opMod = Collections.emptyMap();
     private Map<String, String> fanSpeed = Collections.emptyMap();
     private boolean isJetModeAvailable;
+    private boolean isEnergyMonitorAvailable;
+    private boolean isFilterMonitorAvailable;
     private boolean isAutoDryModeAvailable;
     private boolean isEnergySavingAvailable;
     private boolean isAirCleanAvailable;
@@ -153,5 +155,21 @@ public class ACCapability extends AbstractCapability<ACCapability> {
 
     public void setAirCleanModeCommandOff(String airCleanModeCommandOff) {
         this.airCleanModeCommandOff = airCleanModeCommandOff;
+    }
+
+    public boolean isEnergyMonitorAvailable() {
+        return isEnergyMonitorAvailable;
+    }
+
+    public void setEnergyMonitorAvailable(boolean energyMonitorAvailable) {
+        isEnergyMonitorAvailable = energyMonitorAvailable;
+    }
+
+    public boolean isFilterMonitorAvailable() {
+        return isFilterMonitorAvailable;
+    }
+
+    public void setFilterMonitorAvailable(boolean filterMonitorAvailable) {
+        isFilterMonitorAvailable = filterMonitorAvailable;
     }
 }

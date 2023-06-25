@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V1_CONTROL_OP;
+import static org.openhab.binding.lgthinq.internal.api.LGThinqCanonicalModelUtil.LG_ROOT_TAG_V1;
+
 import java.io.IOException;
+import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,8 +28,11 @@ import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACTargetTmp;
+import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ExtendedDeviceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * The {@link LGThinQACApiV1ClientServiceImpl}
@@ -72,34 +79,51 @@ public class LGThinQACApiV1ClientServiceImpl extends
         throw new UnsupportedOperationException("Method not supported in V1 API device.");
     }
 
-    @Override
-    public double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException, IOException {
-        // TODO
-        return 0;
+    private void readDataResultNodeToObject(String jsonResult, Object obj) throws IOException {
+        JsonNode node = objectMapper.readTree(jsonResult);
+        JsonNode data = node.path(LG_ROOT_TAG_V1).path("returnData");
+        if (data.isTextual()) {
+            // analyses if its b64 or not
+            JsonNode format = node.path(LG_ROOT_TAG_V1).path("format");
+            if ("B64".equals(format.textValue())) {
+                String dataStr = new String(Base64.getDecoder().decode(data.textValue()));
+                objectMapper.readerForUpdating(obj).readValue(dataStr);
+            } else {
+                objectMapper.readerForUpdating(obj).readValue(data.textValue());
+            }
+        } else {
+            logger.warn("Data returned by LG API to get energy state is not present. Result:{}", node.toPrettyString());
+        }
     }
 
-    // // TODO - Analise this to get power consumption
-    // @Nullable
-    // private RestResult getConfigCommands(String bridgeName, String deviceId, String keyName) throws Exception {
-    // TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-    // UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_CONTROL_OP);
-    // Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
-    // token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-    //
-    // String payload = String.format("{\n" + " \"lgedmRoot\":{\n" + " \"cmd\": \"Config\","
-    // + " \"cmdOpt\": \"Get\"," + " \"value\": \"%s\"," + " \"deviceId\": \"%s\","
-    // + " \"workId\": \"%s\"," + " \"data\": \"\"" + " }\n" + "}", keyName, deviceId,
-    // UUID.randomUUID().toString());
-    // return RestUtils.postCall(builder.build().toURL().toString(), headers, payload);
-    // }
+    @Override
+    public ExtendedDeviceInfo getExtendedDeviceInfo(@NonNull String bridgeName, @NonNull String deviceId)
+            throws LGThinqApiException {
+        ExtendedDeviceInfo info = new ExtendedDeviceInfo();
+        try {
+            RestResult resp = sendCommand(bridgeName, deviceId, V1_CONTROL_OP, "Config", "Get", "",
+                    "InOutInstantPower");
+            handleGenericErrorResult(resp);
+            readDataResultNodeToObject(resp.getJsonResponse(), info);
+
+            resp = sendCommand(bridgeName, deviceId, V1_CONTROL_OP, "Config", "Get", "", "Filter");
+            handleGenericErrorResult(resp);
+            readDataResultNodeToObject(resp.getJsonResponse(), info);
+
+            return info;
+        } catch (LGThinqApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error sending command to LG API", e);
+        }
+    }
 
     @Override
     public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
             throws LGThinqApiException {
         try {
-            RestResult resp = sendControlCommands(bridgeName, deviceId, "", "Control", "Set", "Operation",
-                    "" + newPowerState.commandValue());
+            RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", "Operation",
+                    String.valueOf(newPowerState.commandValue()));
             handleGenericErrorResult(resp);
         } catch (Exception e) {
             throw new LGThinqApiException("Error adjusting device power", e);
@@ -126,7 +150,7 @@ public class LGThinQACApiV1ClientServiceImpl extends
     protected void turnGenericMode(String bridgeName, String deviceId, String modeName, String modeOnOff)
             throws LGThinqApiException {
         try {
-            RestResult resp = sendControlCommands(bridgeName, deviceId, "", "Control", "Set", modeName, modeOnOff);
+            RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", modeName, modeOnOff);
             handleGenericErrorResult(resp);
         } catch (Exception e) {
             throw new LGThinqApiException("Error adjusting " + modeName + " mode", e);
@@ -136,7 +160,7 @@ public class LGThinQACApiV1ClientServiceImpl extends
     @Override
     public void changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGThinqApiException {
         try {
-            RestResult resp = sendControlCommands(bridgeName, deviceId, "", "Control", "Set", "OpMode", "" + newOpMode);
+            RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", "OpMode", "" + newOpMode);
             handleGenericErrorResult(resp);
         } catch (Exception e) {
             throw new LGThinqApiException("Error adjusting operation mode", e);
@@ -146,8 +170,8 @@ public class LGThinQACApiV1ClientServiceImpl extends
     @Override
     public void changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGThinqApiException {
         try {
-            RestResult resp = sendControlCommands(bridgeName, deviceId, "", "Control", "Set", "WindStrength",
-                    "" + newFanSpeed);
+            RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", "WindStrength",
+                    String.valueOf(newFanSpeed));
             handleGenericErrorResult(resp);
         } catch (Exception e) {
             throw new LGThinqApiException("Error adjusting fan speed", e);
@@ -158,8 +182,8 @@ public class LGThinQACApiV1ClientServiceImpl extends
     public void changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
             throws LGThinqApiException {
         try {
-            RestResult resp = sendControlCommands(bridgeName, deviceId, "", "Control", "Set", "TempCfg",
-                    "" + newTargetTemp.commandValue());
+            RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", "TempCfg",
+                    String.valueOf(newTargetTemp.commandValue()));
             handleGenericErrorResult(resp);
         } catch (Exception e) {
             throw new LGThinqApiException("Error adjusting target temperature", e);

@@ -49,13 +49,9 @@ public interface LGThinQApiClientService<C extends CapabilityDefinition, S exten
     S getDeviceData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull CapabilityDefinition capDef)
             throws LGThinqApiException;
 
-    double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException, IOException;
-
     void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) throws LGThinqApiException;
 
-    String startMonitor(String bridgeName, String deviceId)
-            throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException;
+    String startMonitor(String bridgeName, String deviceId) throws LGThinqApiException, IOException;
 
     C getCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
 

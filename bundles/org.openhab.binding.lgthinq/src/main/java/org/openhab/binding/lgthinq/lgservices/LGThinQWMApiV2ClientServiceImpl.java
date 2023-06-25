@@ -14,7 +14,6 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_COMMAND_REMOTE_START_V2;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -54,12 +53,6 @@ public class LGThinQWMApiV2ClientServiceImpl
         // TODO - Analise what to do here
     }
 
-    @Override
-    public double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException, IOException {
-        return 0;
-    }
-
     public static LGThinQWMApiClientService getInstance() {
         return instance;
     }
@@ -96,8 +89,8 @@ public class LGThinQWMApiV2ClientServiceImpl
                 }
             }
 
-            RestResult result = sendControlCommands(bridgeName, deviceId, "control-sync", WM_COMMAND_REMOTE_START_V2,
-                    "Set", null, null, dataSetList);
+            RestResult result = sendCommand(bridgeName, deviceId, "control-sync", WM_COMMAND_REMOTE_START_V2, "Set",
+                    null, null, dataSetList);
             handleGenericErrorResult(result);
         } catch (LGThinqApiException e) {
             throw e;
@@ -113,7 +106,7 @@ public class LGThinQWMApiV2ClientServiceImpl
             dataSetList.putObject("dataSetList").putObject("washerDryer").put("controlDataType", "WAKEUP")
                     .put("controlDataValueLength", wakeUp ? "1" : "0");
 
-            RestResult result = sendControlCommands(bridgeName, deviceId, "control-sync", "WMWakeup", "Set", null, null,
+            RestResult result = sendCommand(bridgeName, deviceId, "control-sync", "WMWakeup", "Set", null, null,
                     dataSetList);
             handleGenericErrorResult(result);
         } catch (LGThinqApiException e) {

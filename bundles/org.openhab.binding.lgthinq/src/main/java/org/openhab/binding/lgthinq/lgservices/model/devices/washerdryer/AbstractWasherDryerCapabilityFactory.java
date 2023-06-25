@@ -19,10 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapabilityFactory;
-import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.slf4j.Logger;
@@ -60,14 +58,13 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
 
     protected abstract MonitoringResultFormat getMonitorDataFormat(JsonNode rootNode);
 
-    protected abstract Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode)
-            throws LGThinqApiException;
-
     protected abstract String getCommandRemoteStartNodeName();
 
     protected abstract String getCommandStopNodeName();
 
     protected abstract String getCommandWakeUpNodeName();
+
+    protected abstract String getDefaultCourseIdNodeName();
 
     @Override
     public WasherDryerCapability create(JsonNode rootNode) throws LGThinqException {
@@ -115,6 +112,7 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
                         getRinseFeatureNodeName(), new WasherDryerCapability.RinseFeatureFunction(),
                         getSpinFeatureNodeName(), new WasherDryerCapability.SpinFeatureFunction()));
         wdCap.setMonitoringDataFormat(getMonitorDataFormat(rootNode));
+        wdCap.setDefaultCourseId(rootNode.path("Config").path(getDefaultCourseIdNodeName()).asText());
         return wdCap;
     }
 

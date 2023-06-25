@@ -63,5 +63,17 @@ It would certainly motivate me to further improve this work or to create new oth
 [![Buy me a coffee!](https://www.buymeacoffee.com/assets/img/custom_images/black_img.png)](https://www.buymeacoffee.com/nemerdaud)
 
 
+For openHAB 4.0 just enter
 
+mvn clean install -pl :org.openhab.binding.lgthinq
 
+for openHAB 3.4.x enter
+
+mvn clean install -pl :org.openhab.binding.lgthinq -Dohc.version=3.4.0 -Doh.java.version=11 -Dkaraf.version=4.3.7
+Just be carefull, the clean command deletes the content of the target folder, so you’d better copy files before issuing the second command.
+Only culprit, the openHAB 3 Binding version is still named
+
+org.openhab.binding.lgthinq-4.0.0-SNAPSHOT.jar
+So you need to manually change it to
+
+org.openhab.binding.lgthinq-3.4.5-SNAPSHOT.jar

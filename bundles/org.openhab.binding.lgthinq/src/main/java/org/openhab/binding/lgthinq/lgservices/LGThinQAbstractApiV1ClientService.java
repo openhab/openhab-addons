@@ -53,19 +53,14 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
     }
 
     @Override
-    protected RestResult sendControlCommands(String bridgeName, String deviceId, String controlPath, String controlKey,
+    protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
             String command, String keyName, String value) throws Exception {
-        return sendControlCommands(bridgeName, deviceId, controlPath, controlKey, command, keyName, value, null);
+        return sendCommand(bridgeName, deviceId, controlPath, controlKey, command, keyName, value, null);
     }
 
-    protected RestResult sendControlCommands(String bridgeName, String deviceId, String controlPath, String controlKey,
+    protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
             String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
             throws Exception {
-        TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_CONTROL_OP);
-        Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
-                token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-
         ObjectNode payloadNode = JsonNodeFactory.instance.objectNode();
         payloadNode.put("cmd", controlKey).put("cmdOpt", command);
         if (keyName == null || keyName.isEmpty()) {
@@ -82,10 +77,10 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
         if (extraNode != null) {
             payloadNode.setAll(extraNode);
         }
-        return sendControlCommands(bridgeName, deviceId, payloadNode);
+        return sendCommand(bridgeName, deviceId, payloadNode);
     }
 
-    protected RestResult sendControlCommands(String bridgeName, String deviceId, Object cmdPayload) throws Exception {
+    protected RestResult sendCommand(String bridgeName, String deviceId, Object cmdPayload) throws Exception {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
         UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_CONTROL_OP);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
@@ -97,11 +92,14 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
             payloadNode = objectMapper.convertValue(cmdPayload, ObjectNode.class);
         }
         ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
-        payloadNode.put("deviceId", deviceId);
-        payloadNode.put("workId", UUID.randomUUID().toString());
-        rootNode.set("lgedmRoot", payloadNode);
-
-        RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, rootNode.toPrettyString());
+        ObjectNode bodyNode = JsonNodeFactory.instance.objectNode();
+        bodyNode.put("deviceId", deviceId);
+        bodyNode.put("workId", UUID.randomUUID().toString());
+        bodyNode.setAll(payloadNode);
+        rootNode.set("lgedmRoot", bodyNode);
+        String url = builder.build().toURL().toString();
+        logger.debug("URL: {}, Post Payload:[{}]", url, rootNode.toPrettyString());
+        RestResult resp = RestUtils.postCall(url, headers, rootNode.toPrettyString());
         if (resp == null) {
             logger.error("Null result returned sending command to LG API V1");
             throw new LGThinqApiException("Null result returned sending command to LG API V1");
@@ -125,7 +123,7 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
                 metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 envelope = (Map<String, Object>) metaResult.get("lgedmRoot");
-                String code = "" + envelope.get("returnCd");
+                String code = String.valueOf(envelope.get("returnCd"));
                 if (envelope.isEmpty()) {
                     throw new LGThinqApiException(String.format(
                             "Unexpected json body returned (without root node lgedmRoot): %s", resp.getJsonResponse()));
@@ -139,9 +137,8 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
                     }
                     logger.error("LG API report error processing the request -> resultCode=[{}], message=[{}]", code,
                             getErrorCodeMessage(code));
-                    throw new LGThinqApiException(
-                            String.format("Status error executing endpoint. resultCode must be 0000, but was:%s",
-                                    metaResult.get("returnCd")));
+                    throw new LGThinqApiException(String
+                            .format("Status error executing endpoint. resultCode must be 0000, but was:%s", code));
                 }
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream", e);

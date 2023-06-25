@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.ac;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +42,28 @@ public class ACCapabilityFactoryV1 extends AbstractACCapabilityFactory {
     }
 
     @Override
+    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
+        return Collections.emptyMap();
+    }
+
+    @Override
     protected Map<String, String> extractFeatureOptions(JsonNode optionsNode) {
         Map<String, String> options = new HashMap<>();
         optionsNode.fields().forEachRemaining(o -> {
             options.put(o.getKey(), o.getValue().asText());
         });
         return options;
+    }
+
+    @Override
+    public ACCapability create(JsonNode rootNode) throws LGThinqException {
+        ACCapability cap = super.create(rootNode);
+        // set energy and filter availability (extended info)
+        cap.setEnergyMonitorAvailable(
+                !rootNode.path("ControlWifi").path("action").path("GetInOutInstantPower").isMissingNode());
+        cap.setFilterMonitorAvailable(
+                !rootNode.path("ControlWifi").path("action").path("GetFilterUse").isMissingNode());
+        return cap;
     }
 
     @Override

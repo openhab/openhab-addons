@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
@@ -47,12 +45,6 @@ public class LGThinQDRApiV2ClientServiceImpl
         // TODO - Analise what to do here
     }
 
-    @Override
-    public double getInstantPowerConsumption(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException, IOException {
-        return 0;
-    }
-
     public static LGThinQDRApiV2ClientServiceImpl getInstance() {
         return instance;
     }
@@ -66,8 +58,7 @@ public class LGThinQDRApiV2ClientServiceImpl
     @Override
     public void remoteStart(String bridgeName, String deviceId) throws LGThinqApiException {
         try {
-            RestResult result = sendControlCommands(bridgeName, deviceId, "control-sync", "WMStart", "WMStart",
-                    "WMStart", "");
+            RestResult result = sendCommand(bridgeName, deviceId, "control-sync", "WMStart", "WMStart", "WMStart", "");
             handleGenericErrorResult(result);
         } catch (LGThinqApiException e) {
             throw e;
@@ -79,8 +70,7 @@ public class LGThinQDRApiV2ClientServiceImpl
     @Override
     public void wakeUp(String bridgeName, String deviceId) throws LGThinqApiException {
         try {
-            RestResult result = sendControlCommands(bridgeName, deviceId, "control-sync", "WMWakeup", "WMWakeup", "",
-                    "");
+            RestResult result = sendCommand(bridgeName, deviceId, "control-sync", "WMWakeup", "WMWakeup", "", "");
             handleGenericErrorResult(result);
         } catch (LGThinqApiException e) {
             throw e;

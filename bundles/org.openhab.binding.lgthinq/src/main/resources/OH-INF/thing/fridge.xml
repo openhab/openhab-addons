@@ -13,6 +13,15 @@
 		<label>LG ThinQ Fridge</label>
 		<description>LG ThinQ Fridge</description>
 
+		<channel-groups>
+			<channel-group id="dashboard" typeId="fr-dashboard"/>
+			<channel-group id="extended-information" typeId="fr-extended-information"/>
+		</channel-groups>
+	</thing-type>
+
+	<channel-group-type id="fr-dashboard">
+		<label>Dashboard</label>
+		<description>This is the Displayed Information.</description>
 		<channels>
 			<channel id="some-door-open" typeId="fridge-some-door-open"/>
 			<channel id="freezer-temperature" typeId="fridge-freezer-temperature"/>
@@ -22,7 +31,13 @@
 			<!-- <channel id="fresh-air-filter-status" typeId="fridge-fresh-air-filter-status"/> -->
 			<!-- <channel id="mon-status" typeId="fridge-mon-status"/> -->
 		</channels>
-
-	</thing-type>
-
+	</channel-group-type>
+	<channel-group-type id="fr-extended-information">
+		<label>More Information</label>
+		<description>Show more information about the device.</description>
+		<channels>
+			<channel id="extended_info_collector" typeId="extended_info_collector"/>
+			<channel id="water_filter" typeId="water_filter"/>
+		</channels>
+	</channel-group-type>
 </thing:thing-descriptions>
