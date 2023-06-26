@@ -466,7 +466,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         logger.trace("Start Refresh Job");
-        refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, config.pollingIntervall,
+        refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, config.pollingInterval,
                 TimeUnit.SECONDS);
     }
 
