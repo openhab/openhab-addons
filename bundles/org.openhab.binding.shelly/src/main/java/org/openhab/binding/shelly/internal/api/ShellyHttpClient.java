@@ -146,14 +146,15 @@ public class ShellyHttpClient {
                         HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(value.getBytes()));
             }
             fillPostData(request, data);
-            logger.trace("{}: HTTP {} for {} {}", thingName, method, url, data);
+            logger.trace("{}: HTTP {} for {} {}\n{}", thingName, method, url, data, request.getHeaders());
 
             // Do request and get response
             ContentResponse contentResponse = request.send();
             apiResult = new ShellyApiResult(contentResponse);
             apiResult.httpCode = contentResponse.getStatus();
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
-            logger.trace("{}: HTTP Response {}: {}", thingName, contentResponse.getStatus(), response);
+            logger.trace("{}: HTTP Response {}: {}\n{}", thingName, contentResponse.getStatus(), response,
+                    contentResponse.getHeaders());
 
             if (response.contains("\"error\":{")) { // Gen2
                 Shelly2RpcBaseMessage message = gson.fromJson(response, Shelly2RpcBaseMessage.class);
@@ -204,7 +205,7 @@ public class ShellyHttpClient {
             StringContentProvider postData;
             postData = new StringContentProvider(type, data, StandardCharsets.UTF_8);
             request.content(postData);
-            request.header(HttpHeader.CONTENT_LENGTH, Long.toString(postData.getLength()));
+            // request.header(HttpHeader.CONTENT_LENGTH, Long.toString(postData.getLength()));
         }
     }
 
@@ -252,5 +253,9 @@ public class ShellyHttpClient {
 
     public int getTimeoutsRecovered() {
         return timeoutsRecovered;
+    }
+
+    public void postEvent(String device, String index, String event, Map<String, String> parms)
+            throws ShellyApiException {
     }
 }

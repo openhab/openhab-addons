@@ -46,6 +46,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
+import org.openhab.binding.shelly.internal.api2.ShellyBluApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
@@ -104,6 +105,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
 
     private final boolean gen2;
+    private final boolean blu;
     protected boolean autoCoIoT = false;
 
     // Thing status
@@ -151,7 +153,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             gen = "2";
         }
         gen2 = "2".equals(gen);
-        this.api = !gen2 ? new Shelly1HttpApi(thingName, this) : new Shelly2ApiRpc(thingName, thingTable, this);
+        blu = thingType.startsWith("shellyblu");
+        this.api = !blu ? !gen2 ? new Shelly1HttpApi(thingName, this) : new Shelly2ApiRpc(thingName, thingTable, this)
+                : new ShellyBluApi(thingName, thingTable, this);
         if (gen2) {
             config.eventsCoIoT = false;
         }
@@ -162,7 +166,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public boolean checkRepresentation(String key) {
-        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceIp)
+        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceAddress)
                 || key.equalsIgnoreCase(config.serviceName) || key.equalsIgnoreCase(getThingName());
     }
 
@@ -176,15 +180,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             boolean start = true;
             try {
                 initializeThingConfig();
-                logger.debug("{}: Device config: IP address={}, HTTP user/password={}/{}, update interval={}",
-                        thingName, config.deviceIp, config.userId.isEmpty() ? "<non>" : config.userId,
+                logger.debug("{}: Device config: Device address={}, HTTP user/password={}/{}, update interval={}",
+                        thingName, config.deviceAddress, config.userId.isEmpty() ? "<non>" : config.userId,
                         config.password.isEmpty() ? "<none>" : "***", config.updateInterval);
                 logger.debug(
                         "{}: Configured Events: Button: {}, Switch (on/off): {}, Push: {}, Roller: {}, Sensor: {}, CoIoT: {}, Enable AutoCoIoT: {}",
                         thingName, config.eventsButton, config.eventsSwitch, config.eventsPush, config.eventsRoller,
                         config.eventsSensorReport, config.eventsCoIoT, bindingConfig.autoCoIoT);
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                        messages.get("status.unknown.initializing"));
                 start = initializeThing();
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
@@ -225,6 +227,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         return httpClient;
     }
 
+    @Override
+    public void startScan() {
+        if (api.isInitialized()) {
+            api.startScan();
+        }
+    }
+
     /**
      * This routine is called every time the Thing configuration has been changed
      */
@@ -257,11 +266,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         resetStats();
 
         logger.debug("{}: Start initializing for thing {}, type {}, IP address {}, Gen2: {}, CoIoT: {}", thingName,
-                getThing().getLabel(), thingType, config.deviceIp, gen2, config.eventsCoIoT);
-        if (config.deviceIp.isEmpty()) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-device-ip");
+                getThing().getLabel(), thingType, config.deviceAddress, gen2, config.eventsCoIoT);
+        if (config.deviceAddress.isEmpty()) {
+            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-device-address");
             return false;
         }
+
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                messages.get("status.unknown.initializing"));
 
         profile.initFromThingType(thingType); // do some basic initialization
 
@@ -326,7 +338,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         checkVersion(tmpPrf, tmpPrf.status);
 
         startCoap(config, tmpPrf);
-        if (!gen2) {
+        if (!gen2 && !blu) {
             api.setActionURLs(); // register event urls
         }
 
@@ -358,7 +370,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 return;
             }
 
-            if (!profile.isInitialized() || (isThingOffline() && profile.alwaysOn)) {
+            if (!profile.isInitialized()) {
                 logger.debug("{}: {}", thingName, messages.get("command.init", command));
                 initializeThing();
             } else {
@@ -468,6 +480,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 logger.warn("{}: {} - {}", thingName, messages.get("command.failed", command, channelUID),
                         e.toString());
             }
+
+            String group = getString(channelUID.getGroupId());
+            String channel = getString(channelUID.getIdWithoutGroup());
+            State oldValue = getChannelValue(group, channel);
+            if (oldValue != UnDefType.NULL) {
+                logger.info("{}: Restore channel value to {}", thingName, oldValue);
+                updateChannel(group, channel, oldValue);
+            }
+
         } catch (IllegalArgumentException e) {
             logger.debug("{}: {}", thingName, messages.get("command.failed", command, channelUID));
         }
@@ -518,8 +539,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     postEvent(ALARM_TYPE_RESTARTED, true);
                 }
 
-                // If status update was successful the thing must be online
-                setThingOnline();
+                // If status update was successful the thing must be online,
+                // but not while firmware update is in progress
+                if (getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
+                    setThingOnline();
+                }
 
                 // map status to channels
                 updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_NAME, getStringType(profile.settings.name));
@@ -587,13 +611,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
         logger.debug("{}: Device "
                 + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{}), ext. Switch Add-On: {}"
-                + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
+                + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}, BLU Gateway support: {}"
                 + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
                 profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
                 profile.settings.extSwitch != null ? "installed" : "n/a", profile.isSensor, profile.isDW,
                 profile.hasBattery, profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
                 profile.isSense, profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2,
-                profile.inColor, profile.alwaysOn, profile.updatePeriod);
+                profile.inColor, profile.alwaysOn, profile.updatePeriod, config.enableBluGateway);
         if (profile.status.extTemperature != null || profile.status.extHumidity != null
                 || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
             logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
@@ -715,7 +739,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Update uptime and WiFi, internal temp
         ShellyComponents.updateDeviceStatus(this, status);
-        stats.wifiRssi = status.wifiSta.rssi;
+        stats.wifiRssi = getInteger(status.wifiSta.rssi);
 
         if (api.isInitialized()) {
             stats.timeoutErrors = api.getTimeoutErrors();
@@ -829,9 +853,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @return true if event was processed
      */
     @Override
-    public boolean onEvent(String ipAddress, String deviceName, String deviceIndex, String type,
+    public boolean onEvent(String address, String deviceName, String deviceIndex, String type,
             Map<String, String> parameters) {
-        if (thingName.equalsIgnoreCase(deviceName) || config.deviceIp.equals(ipAddress)) {
+        if (thingName.equalsIgnoreCase(deviceName) || config.deviceAddress.equals(address)
+                || config.serviceName.equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
             int idx = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) : 1;
@@ -851,7 +876,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 String payload = "";
                 String parmType = getString(parameters.get("type"));
                 String event = !parmType.isEmpty() ? parmType : type;
-                boolean isButton = profile.inButtonMode(idx - 1);
+                boolean isButton = profile.inButtonMode(idx - 1) || type.equals("button");
                 switch (event) {
                     case SHELLY_EVENT_SHORTPUSH:
                     case SHELLY_EVENT_DOUBLE_SHORTPUSH:
@@ -959,23 +984,31 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         thingName = getString(properties.get(PROPERTY_SERVICE_NAME));
         if (thingName.isEmpty()) {
             thingName = getString(thingType + "-" + getString(getThing().getUID().getId())).toLowerCase();
-            logger.debug("{}: Thing name derived from UID {}", thingName, getString(getThing().getUID().toString()));
         }
 
         config = getConfigAs(ShellyThingConfiguration.class);
-        if (config.deviceIp.isEmpty()) {
-            logger.debug("{}: IP address for the device must not be empty", thingName); // may not set in .things file
+        if (config.deviceAddress.isEmpty()) {
+            config.deviceAddress = config.deviceIp;
+        }
+        if (config.deviceAddress.isEmpty()) {
+            logger.debug("{}: IP/MAC address for the device must not be empty", thingName); // may not set in .things
+                                                                                            // file
             return;
         }
-        try {
-            InetAddress addr = InetAddress.getByName(config.deviceIp);
-            String saddr = addr.getHostAddress();
-            if (!config.deviceIp.equals(saddr)) {
-                logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
-                config.deviceIp = saddr;
+
+        config.deviceAddress = config.deviceAddress.toLowerCase().replaceAll(":", ""); // remove : from MAC address and
+                                                                                       // convert to lower case
+        if (!config.deviceIp.isEmpty()) {
+            try {
+                InetAddress addr = InetAddress.getByName(config.deviceIp);
+                String saddr = addr.getHostAddress();
+                if (!config.deviceIp.equals(saddr)) {
+                    logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
+                    config.deviceIp = saddr;
+                }
+            } catch (UnknownHostException e) {
+                logger.debug("{}: Unable to resolve hostname {}", thingName, config.deviceIp);
             }
-        } catch (UnknownHostException e) {
-            logger.debug("{}: Unable to resolve hostname {}", thingName, config.deviceIp);
         }
 
         config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
@@ -1406,9 +1439,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             properties.put(PROPERTY_MAC_ADDRESS, profile.mac);
             properties.put(PROPERTY_FIRMWARE_VERSION, profile.fwVersion + "/" + profile.fwDate);
             properties.put(PROPERTY_DEV_MODE, profile.mode);
-            properties.put(PROPERTY_NUM_RELAYS, String.valueOf(profile.numRelays));
-            properties.put(PROPERTY_NUM_ROLLERS, String.valueOf(profile.numRollers));
-            properties.put(PROPERTY_NUM_METER, String.valueOf(profile.numMeters));
+            if (profile.hasRelays) {
+                properties.put(PROPERTY_NUM_RELAYS, String.valueOf(profile.numRelays));
+                properties.put(PROPERTY_NUM_ROLLERS, String.valueOf(profile.numRollers));
+                properties.put(PROPERTY_NUM_METER, String.valueOf(profile.numMeters));
+            }
             properties.put(PROPERTY_UPDATE_PERIOD, String.valueOf(profile.updatePeriod));
             if (!profile.hwRev.isEmpty()) {
                 properties.put(PROPERTY_HWREV, profile.hwRev);

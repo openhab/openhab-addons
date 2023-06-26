@@ -56,15 +56,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
     private final Map<Integer, ShellyColorUtils> channelColors;
 
-    /**
-     * Constructor
-     *
-     * @param thing The thing passed by the HandlerFactory
-     * @param bindingConfig configuration of the binding
-     * @param coapServer coap server instance
-     * @param localIP local IP of the openHAB host
-     * @param httpPort port of the openHAB HTTP API
-     */
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient) {
@@ -230,6 +221,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private boolean handleColorPicker(ShellyDeviceProfile profile, Integer lightId, ShellyColorUtils col,
             Command command) throws ShellyApiException {
         boolean updated = false;

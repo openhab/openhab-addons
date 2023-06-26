@@ -24,15 +24,15 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
 @NonNullByDefault
 public interface Shelly2RpctInterface {
 
-    void onConnect(String deviceIp, boolean connected);
+    public void onConnect(String deviceIp, boolean connected);
 
-    void onMessage(String decodedmessage);
+    public void onMessage(String decodedmessage);
 
-    void onNotifyStatus(Shelly2RpcNotifyStatus message);
+    public void onNotifyStatus(Shelly2RpcNotifyStatus message);
 
-    void onNotifyEvent(Shelly2RpcNotifyEvent message);
+    public void onNotifyEvent(Shelly2RpcNotifyEvent message);
 
-    void onClose(int statusCode, String reason);
+    public void onClose(int statusCode, String reason);
 
-    void onError(Throwable cause);
+    public void onError(Throwable cause);
 }

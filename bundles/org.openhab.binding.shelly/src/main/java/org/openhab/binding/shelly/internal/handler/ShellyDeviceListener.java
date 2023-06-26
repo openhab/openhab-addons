@@ -28,6 +28,6 @@ public interface ShellyDeviceListener {
     /**
      * This method is called when new device information is received.
      */
-    boolean onEvent(String ipAddress, String deviceName, String deviceIndex, String eventType,
+    public boolean onEvent(String ipAddress, String deviceName, String deviceIndex, String eventType,
             Map<String, String> parameters);
 }

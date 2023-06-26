@@ -739,7 +739,12 @@ public class Shelly1ApiJsonDTO {
         public ArrayList<ShellyRollerStatus> rollers;
         public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellySettingsMeter> meters;
+
         public ArrayList<ShellySettingsEMeter> emeters;
+        public Double totalCurrent;
+        public Double totalPower;
+        public Double totalReturned;
+
         @SerializedName("ext_temperature")
         public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
         @SerializedName("ext_humidity")

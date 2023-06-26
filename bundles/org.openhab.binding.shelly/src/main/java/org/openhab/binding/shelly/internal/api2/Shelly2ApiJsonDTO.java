@@ -58,6 +58,15 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
+    public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
+    public static final String SHELLYRPC_METHOD_SCRIPT_SETCONFIG = "Script.SetConfig";
+    public static final String SHELLYRPC_METHOD_SCRIPT_GETSTATUS = "Script.GetStatus";
+    public static final String SHELLYRPC_METHOD_SCRIPT_DELETE = "Script.Delete";
+    public static final String SHELLYRPC_METHOD_SCRIPT_CREATE = "Script.Create";
+    public static final String SHELLYRPC_METHOD_SCRIPT_GETCODE = "Script.GetCode";
+    public static final String SHELLYRPC_METHOD_SCRIPT_PUTCODE = "Script.PutCode";
+    public static final String SHELLYRPC_METHOD_SCRIPT_START = "Script.Start";
+    public static final String SHELLYRPC_METHOD_SCRIPT_STOP = "Script.Stop";
 
     public static final String SHELLYRPC_METHOD_NOTIFYSTATUS = "NotifyStatus"; // inbound status
     public static final String SHELLYRPC_METHOD_NOTIFYFULLSTATUS = "NotifyFullStatus"; // inbound status from bat device
@@ -117,6 +126,12 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_OTADONE = "ota_success";
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
+
+    // BLU events
+    public static final String SHELLY2_BLU_GWSCRIPT = "oh-blu-scanner.js";
+    public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
+    public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
+    public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -549,6 +564,13 @@ public class Shelly2ApiJsonDTO {
 
                 @SerializedName("n_current")
                 public Double nCurrent;
+
+                @SerializedName("total_current")
+                public Double totalCurrent;
+                @SerializedName("total_act_power")
+                public Double totalActPower;
+                @SerializedName("total_aprt_power")
+                public Double totalAprtPower;
             }
 
             public static class Shelly2DeviceStatusEmData {
@@ -754,6 +776,9 @@ public class Shelly2ApiJsonDTO {
             // Cloud.SetConfig
             public Shelly2ConfigParms config;
 
+            // Script
+            public String name;
+
             public Shelly2RpcRequestParams withConfig() {
                 config = new Shelly2ConfigParms();
                 return this;
@@ -779,6 +804,11 @@ public class Shelly2ApiJsonDTO {
             params.pos = pos;
             return this;
         }
+
+        public Shelly2RpcRequest withName(String name) {
+            params.name = name;
+            return this;
+        }
     }
 
     public static class Shelly2WsConfigResponse {
@@ -793,6 +823,30 @@ public class Shelly2ApiJsonDTO {
         public Shelly2WsConfigResult result;
     }
 
+    public static class ShellyScriptListResponse {
+        public static class ShellyScriptListEntry {
+            public Integer id;
+            public String name;
+            public Boolean enable;
+            public Boolean running;
+        }
+
+        public ArrayList<ShellyScriptListEntry> scripts;
+    }
+
+    public static class ShellyScriptResponse {
+        public Integer id;
+        public Boolean running;
+        public Integer len;
+        public String data;
+    }
+
+    public static class ShellyScriptPutCodeParams {
+        public Integer id;
+        public String code;
+        public Boolean append;
+    }
+
     public static class Shelly2RpcBaseMessage {
         // Basic message format, e.g.
         // {"id":1,"src":"localweb528","method":"Shelly.GetConfig"}
@@ -804,8 +858,10 @@ public class Shelly2ApiJsonDTO {
         public Integer id;
         public String src;
         public String dst;
+        public String component;
         public String method;
         public Object params;
+        public String event;
         public Object result;
         public Shelly2AuthRequest auth;
         public Shelly2RpcMessageError error;
@@ -852,11 +908,49 @@ public class Shelly2ApiJsonDTO {
         public String algorithm;
     }
 
+    // BTHome samples
+    // BLU Button 1
+    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
+    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
+    // {"component":"script:2", "id":2, "event":"oh-blu.data",
+    // "data":{"encryption":false,"BTHome_version":2,"pid":205,"Battery":100,"Button":1,"addr":"b4:35:22:fd:b3:81","rssi":-68},
+    // "ts":1682877399.22}
+    //
+    // BLU Door Window
+    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
+    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
+    // {"component":"script:2", "id":2, "event":"oh-blu.data",
+    // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
+    // "ts":1682877414.25}
+
+    public class Shelly2NotifyEventMessage {
+        public String addr;
+        public String name;
+        public Boolean encryption;
+        @SerializedName("BTHome_version")
+        public Integer bthVersion;
+        public Integer pid;
+        @SerializedName("Battery")
+        public Integer battery;
+        @SerializedName("Button")
+        public Integer buttonEvent;
+        @SerializedName("Illuminance")
+        public Integer illuminance;
+        @SerializedName("Window")
+        public Integer windowState;
+        @SerializedName("Rotation")
+        public Double rotation;
+
+        public Integer rssi;
+        public Integer tx_power;
+    }
+
     public class Shelly2NotifyEvent {
         public Integer id;
         public Double ts;
         public String component;
         public String event;
+        public Shelly2NotifyEventMessage data;
         public String msg;
         public Integer reason;
         @SerializedName("cfg_rev")
@@ -869,7 +963,8 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2RpcNotifyEvent {
+        public String src;
         public Double ts;
-        Shelly2NotifyEventData params;
+        public Shelly2NotifyEventData params;
     }
 }

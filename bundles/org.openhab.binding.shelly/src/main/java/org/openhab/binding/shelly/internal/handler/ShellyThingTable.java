@@ -16,8 +16,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.discovery.ShellyBluDiscoveryService;
+import org.openhab.core.thing.ThingTypeUID;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /***
  * The{@link ShellyThingTable} implements a simple table to allow dispatching incoming events to the proper thing
@@ -29,6 +34,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
 @Component(service = ShellyThingTable.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ShellyThingTable {
     private Map<String, ShellyThingInterface> thingTable = new ConcurrentHashMap<>();
+    private @Nullable ShellyBluDiscoveryService bluDiscoveryService;
 
     public void addThing(String key, ShellyThingInterface thing) {
         if (thingTable.containsKey(key)) {
@@ -37,7 +43,7 @@ public class ShellyThingTable {
         thingTable.put(key, thing);
     }
 
-    public ShellyThingInterface getThing(String key) {
+    public @Nullable ShellyThingInterface findThing(String key) {
         ShellyThingInterface t = thingTable.get(key);
         if (t != null) {
             return t;
@@ -48,7 +54,15 @@ public class ShellyThingTable {
                 return t;
             }
         }
-        throw new IllegalArgumentException();
+        return null;
+    }
+
+    public ShellyThingInterface getThing(String key) {
+        ShellyThingInterface t = findThing(key);
+        if (t == null) {
+            throw new IllegalArgumentException();
+        }
+        return t;
     }
 
     public void removeThing(String key) {
@@ -63,5 +77,37 @@ public class ShellyThingTable {
 
     public int size() {
         return thingTable.size();
+    }
+
+    public void startDiscoveryService(BundleContext bundleContext) {
+        if (bluDiscoveryService == null) {
+            bluDiscoveryService = new ShellyBluDiscoveryService(bundleContext, this);
+            bluDiscoveryService.registerDeviceDiscoveryService();
+        }
+    }
+
+    public void startScan() {
+        for (Map.Entry<String, ShellyThingInterface> thing : thingTable.entrySet()) {
+            (thing.getValue()).startScan();
+        }
+    }
+
+    public void stopDiscoveryService() {
+        if (bluDiscoveryService != null) {
+            bluDiscoveryService.unregisterDeviceDiscoveryService();
+            bluDiscoveryService = null;
+        }
+    }
+
+    public void discoveredResult(ThingTypeUID uid, String model, String serviceName, String address,
+            Map<String, Object> properties) {
+        if (bluDiscoveryService != null) {
+            bluDiscoveryService.discoveredResult(uid, model, serviceName, address, properties);
+        }
+    }
+
+    @Deactivate
+    public void deactivate() {
+        stopDiscoveryService();
     }
 }

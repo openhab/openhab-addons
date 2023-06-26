@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ShellyThingConfiguration {
     public String deviceIp = ""; // ip address of thedevice
+    public String deviceAddress = ""; // IP address or MAC address for BLU devices
     public String userId = ""; // userid for http basic auth
     public String password = ""; // password for http basic auth
 
@@ -42,4 +43,6 @@ public class ShellyThingConfiguration {
     public String localIp = ""; // local ip addresses used to create callback url
     public String localPort = "8080";
     public String serviceName = "";
+
+    public boolean enableBluGateway = false;
 }
