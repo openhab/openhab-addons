@@ -58,7 +58,7 @@
 			<parameter name="pollingInterval" type="decimal" min="45" unit="s">
 				<label>Polling Interval</label>
 				<description>
-					Defines the time in seconds for openHAB to pull the
+					Defines the time in seconds to pull the
 					state of the connected devices. The minimum is 45
 					seconds.
 				</description>
