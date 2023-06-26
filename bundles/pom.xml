@@ -56,6 +56,7 @@
     <module>org.openhab.binding.ambientweather</module>
     <module>org.openhab.binding.amplipi</module>
     <module>org.openhab.binding.androiddebugbridge</module>
+    <module>org.openhab.binding.androidtv</module>
     <module>org.openhab.binding.anel</module>
     <module>org.openhab.binding.anthem</module>
     <module>org.openhab.binding.astro</module>
