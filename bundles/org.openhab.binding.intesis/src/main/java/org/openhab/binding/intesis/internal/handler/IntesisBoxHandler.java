@@ -112,7 +112,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 }
                 updateStatus(ThingStatus.ONLINE);
             });
-            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 3, config.pollingIntervall, TimeUnit.SECONDS);
+            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 3, config.pollingInterval, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address specified)");
         }
