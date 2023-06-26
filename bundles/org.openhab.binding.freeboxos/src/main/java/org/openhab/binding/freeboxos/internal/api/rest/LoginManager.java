@@ -47,30 +47,12 @@ public class LoginManager extends RestManager {
     private static final String LOGOUT = "logout";
     private static final int GRANT_DELAY_SEC = 180;
 
-    private final Mac mac;
-
-    private static class AuthStatus extends Response<AuthorizationStatus> {
-    }
-
     private static enum Status {
         PENDING, // the user has not confirmed the autorization request yet
         TIMEOUT, // the user did not confirmed the authorization within the given time
         GRANTED, // the app_token is valid and can be used to open a session
         DENIED, // the user denied the authorization request
         UNKNOWN; // the app_token is invalid or has been revoked
-    }
-
-    private static record AuthorizationStatus(Status status, boolean loggedIn, String challenge,
-            @Nullable String passwordSalt, boolean passwordSet) {
-    }
-
-    private static class AuthResponse extends Response<Authorization> {
-    }
-
-    private static record Authorization(String appToken, int trackId) {
-    }
-
-    private static class SessionResponse extends Response<Session> {
     }
 
     public static enum Permission {
@@ -92,6 +74,22 @@ public class LoginManager extends RestManager {
         UNKNOWN;
     }
 
+    private static class AuthStatus extends Response<AuthorizationStatus> {
+    }
+
+    private static class AuthResponse extends Response<Authorization> {
+    }
+
+    private static class SessionResponse extends Response<Session> {
+    }
+
+    private static record AuthorizationStatus(Status status, boolean loggedIn, String challenge,
+            @Nullable String passwordSalt, boolean passwordSet) {
+    }
+
+    private static record Authorization(String appToken, int trackId) {
+    }
+
     public static record Session(Map<LoginManager.Permission, @Nullable Boolean> permissions,
             @Nullable String sessionToken) {
 
@@ -104,12 +102,13 @@ public class LoginManager extends RestManager {
     }
 
     private static record AuthorizeData(String appId, String appName, String appVersion, String deviceName) {
-
         AuthorizeData(String appId, Bundle bundle) {
             this(appId, bundle.getHeaders().get("Bundle-Name"), bundle.getVersion().toString(),
                     bundle.getHeaders().get("Bundle-Vendor"));
         }
     }
+
+    private final Mac mac;
 
     public LoginManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(PATH));

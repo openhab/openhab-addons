@@ -123,6 +123,7 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
         List<Station> hosts = new ArrayList<>();
         for (WifiAp ap : getDevices()) {
             List<Station> stations = getApStations(ap.id);
+<<<<<<< Upstream, based on origin/main
             if (stations != null) {
                 hosts.addAll(stations);
             }
@@ -235,6 +236,9 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
                 hosts.addAll(stations);
             }
 >>>>>>> 6340384 Commiting work
+=======
+            hosts.addAll(stations);
+>>>>>>> ad5a724 Removing redundant null checks.
         }
         return hosts;
     }

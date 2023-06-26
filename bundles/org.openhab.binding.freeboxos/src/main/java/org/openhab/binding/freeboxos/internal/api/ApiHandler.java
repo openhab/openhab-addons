@@ -123,10 +123,10 @@ public class ApiHandler {
                 return result;
             } else if (statusCode == Code.FORBIDDEN) {
                 logger.debug("Fobidden, serviceReponse was {}, ", content);
-                Response<?> error = (Response<?>) result;
-                throw new FreeboxException(error.getErrorCode(), error.getMsg());
+                if (result instanceof Response<?> error) {
+                    throw new FreeboxException(error.getErrorCode(), error.getMsg());
+                }
             }
-
             throw new FreeboxException("Error '%s' requesting: %s", statusCode.getMessage(), uri.toString());
         } catch (TimeoutException | ExecutionException e) {
             throw new FreeboxException(e, "Exception while calling %s", request.getURI());
