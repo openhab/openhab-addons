@@ -498,6 +498,20 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
+     * Cancel the given task.
+     *
+     * @param cancelTask the task to be cancelled (may be null)
+     * @param mayInterrupt allows cancel() to interrupt the thread.
+     * @return always returns null.
+     */
+    private @Nullable Future<?> cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
+        if (Objects.nonNull(cancelTask)) {
+            cancelTask.cancel(mayInterrupt);
+        }
+        return null;
+    }
+
+    /**
      * Send a ping to the Hue bridge to check that the session is still alive.
      */
     private void checkAlive() {
@@ -585,7 +599,7 @@ public class Clip2Bridge implements Closeable {
      * @param cause the exception that caused the error.
      */
     private synchronized void fatalError(Object listener, Http2Exception cause) {
-        if (externalRestartScheduled || internalRestartScheduled || onlineState == State.CLOSED) {
+        if (externalRestartScheduled || internalRestartScheduled || onlineState == State.CLOSED || closing) {
             return;
         }
         String causeId = listener.getClass().getSimpleName();
@@ -1121,19 +1135,5 @@ public class Clip2Bridge implements Closeable {
      */
     private void throttleDone() {
         streamMutex.release();
-    }
-
-    /**
-     * Cancel the given task.
-     *
-     * @param cancelTask the task to be cancelled (may be null)
-     * @param mayInterrupt allows cancel() to interrupt the thread.
-     * @return always returns null.
-     */
-    private @Nullable Future<?> cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
-        if (Objects.nonNull(cancelTask)) {
-            cancelTask.cancel(mayInterrupt);
-        }
-        return null;
     }
 }
