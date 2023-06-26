@@ -20,8 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Receiver;
 
 /**
@@ -80,72 +78,5 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
 
     private void sendToReceiver(String receiver, Request payload) throws FreeboxException {
         post(payload, GenericResponse.class, receiver);
-=======
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
-=======
->>>>>>> 9aef877 Rebooting Home Node part
-import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Receiver;
-
-/**
- * The {@link MediaReceiverManager} is the Java class used to handle api requests related to air media receivers
- *
- * @author Gaël L'hopital - Initial contribution
- */
-@NonNullByDefault
-public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverManager.ReceiverResponse> {
-    private static final String SUB_PATH = "receivers";
-
-    public static record Receiver(boolean passwordProtected, //
-            Map<MediaType, Boolean> capabilities, //
-            String name // This name is the UPnP name of the host
-    ) {
-    }
-
-    protected static class ReceiverResponse extends Response<Receiver> {
-    }
-
-    public static enum Action {
-        START,
-        STOP,
-        UNKNOWN;
-    }
-
-    public static enum MediaType {
-        VIDEO,
-        PHOTO,
-        AUDIO,
-        SCREEN,
-        UNKNOWN;
-    }
-
-    private static record Request(String password, Action action, MediaType mediaType, @Nullable String media,
-            int position) {
-    }
-
-    public MediaReceiverManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
-        super(session, LoginManager.Permission.NONE, ReceiverResponse.class, uriBuilder.path(SUB_PATH));
-    }
-
-    public @Nullable Receiver getReceiver(String receiverName) throws FreeboxException {
-        return getDevices().stream().filter(rcv -> receiverName.equals(rcv.name())).findFirst().orElse(null);
-    }
-
-    public void sendToReceiver(String receiver, String password, Action action, MediaType type)
-            throws FreeboxException {
-        sendToReceiver(receiver, new Request(password, action, type, null, 0));
-    }
-
-    public void sendToReceiver(String receiver, String password, Action action, MediaType type, String url)
-            throws FreeboxException {
-        sendToReceiver(receiver, new Request(password, action, type, url, 0));
-    }
-
-    private void sendToReceiver(String receiver, Request payload) throws FreeboxException {
-<<<<<<< Upstream, based on origin/main
-        post(payload, receiver);
->>>>>>> e4ef5cc Switching to Java 17 records
-=======
-        post(payload, GenericResponse.class, receiver);
->>>>>>> 6eeb4fa Some code enhancement for base classes
     }
 }

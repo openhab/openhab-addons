@@ -16,8 +16,6 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.T
 
 import java.util.List;
 import java.util.Optional;
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -72,69 +70,6 @@ public class FreeplugManager extends RestManager {
     // Most of the users will host only one CPL network on their server, so we hide the network level in the manager
     public List<Freeplug> getPlugs() throws FreeboxException {
         return get(Networks.class).stream().map(Network::members).flatMap(List::stream).toList();
-=======
-import java.util.stream.Collectors;
-=======
->>>>>>> 9aef877 Rebooting Home Node part
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.Response;
-
-import inet.ipaddr.mac.MACAddress;
-
-/**
- * The {@link FreeplugManager} is the Java class used to handle api requests related to freeplugs
- *
- * @author Gaël L'hopital - Initial contribution
- */
-@NonNullByDefault
-public class FreeplugManager extends RestManager {
-    private static final String RESET_ACTION = "reset";
-
-    private static class Networks extends Response<Network> {
-    }
-
-    public static enum NetRole {
-        STA, // Freeplug station
-        PCO, // Freeplug proxy coordinator
-        CCO, // Central Coordinator
-        UNKNOWN;
-    }
-
-    private enum Status {
-        UP,
-        DOWN,
-        UNKNOWN
-    }
-
-    public static record Freeplug(MACAddress id, String netId, // Id of the network holding the plug
-            boolean local, // if true the Freeplug is connected directly to the Freebox
-            NetRole netRole, // Freeplug network role
-            String model, Status ethPortStatus, //
-            boolean ethFullDuplex, // ethernet link is full duplex
-            boolean hasNetwork, // is connected to the network
-            int ethSpeed, // ethernet port speed
-            int inactive, // seconds since last activity
-            int rxRate, // rx rate (from the freeplugs to the “cco” freeplug) (in Mb/s) -1 if not available
-            int txRate) { // tx rate (from the “cco” freeplug to the freeplugs) (in Mb/s) -1 if not available
-    }
-
-    private static record Network(MACAddress id, List<Freeplug> members) {
-    }
-
-    public FreeplugManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(THING_FREEPLUG));
-    }
-
-    // Most of the users will host only one CPL network on their server, so we hide the network level in the manager
-    public List<Freeplug> getPlugs() throws FreeboxException {
-<<<<<<< Upstream, based on origin/main
-        return get(Networks.class).stream().map(Network::members).flatMap(List::stream).collect(Collectors.toList());
->>>>>>> e4ef5cc Switching to Java 17 records
-=======
-        return get(Networks.class).stream().map(Network::members).flatMap(List::stream).toList();
->>>>>>> 9aef877 Rebooting Home Node part
     }
 
     public Optional<Freeplug> getPlug(MACAddress mac) throws FreeboxException {

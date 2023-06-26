@@ -8,8 +8,6 @@
 		<label>System Sensors</label>
 	</channel-group-type>
 
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
 	<channel-group-type id="fans">
 		<label>Fans</label>
 	</channel-group-type>
@@ -75,80 +73,6 @@
 			<channel id="bandwidth-down" typeId="transfer-rate">
 				<label>Bandwidth Down</label>
 				<description>Raw value of the download bandwidth currently used</description>
-=======
-=======
-	<channel-group-type id="fans">
-		<label>Fans</label>
-	</channel-group-type>
-
->>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
-	<channel-group-type id="sysinfo">
-		<label>System Informations</label>
-		<channels>
-			<channel id="uptime" typeId="uptime"/>
-			<channel id="ip-address" typeId="ip-address">
-				<label>Internal IP</label>
-				<description>Internal IPv4 Address of the host</description>
-			</channel>
-			<channel id="box-event" typeId="box-event"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="actions">
-		<label>Server Settings</label>
-		<channels>
-			<channel id="wifi-status" typeId="wifi-status"/>
-			<channel id="upnpav-status" typeId="upnpav-status"/>
-			<channel id="airmedia-status" typeId="airmedia-status"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="file-sharing">
-		<label>File Sharing</label>
-		<channels>
-			<channel id="ftp-status" typeId="ftp-status"/>
-			<channel id="samba-file-status" typeId="samba-file-status"/>
-			<channel id="samba-printer-status" typeId="samba-printer-status"/>
-			<channel id="afp-file-status" typeId="afp-file-status"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="display">
-		<label>Front Display Panel</label>
-		<channels>
-			<channel id="lcd-brightness" typeId="lcd-brightness"/>
-			<channel id="lcd-orientation" typeId="lcd-orientation"/>
-			<channel id="lcd-forced" typeId="lcd-forced"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="connection-status">
-		<label>Connection Status Details</label>
-		<channels>
-			<channel id="line-status" typeId="line-status"/>
-			<channel id="line-type" typeId="line-type"/>
-			<channel id="line-media" typeId="line-media"/>
-			<channel id="ip-address" typeId="ip-address">
-<<<<<<< Upstream, based on origin/main
-				<label>Public IP</label>
-				<description>Public IP Address of the Freebox Server</description>
->>>>>>> 46dadb1 SAT warnings handling
-=======
-				<label>Public IPv4</label>
-				<description>Public IPv4 Address of the Freebox (this field is only available when connection state is up)</description>
-			</channel>
-			<channel id="ipv6-address" typeId="ip-address">
-				<label>Public IPv6</label>
-				<description>Public IPv6 Address of the Freebox (this field is only available when connection state is up)</description>
-			</channel>
-			<channel id="bandwidth-up" typeId="transfer-rate">
-				<label>Bandwidth Up</label>
-				<description>Raw value of the upload bandwidth currently used</description>
-			</channel>
-			<channel id="bandwidth-down" typeId="transfer-rate">
-				<label>Bandwidth Down</label>
-				<description>Raw value of the download bandwidth currently used</description>
->>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 			</channel>
 			<channel id="bandwidth-usage-up" typeId="bandwidth-usage">
 				<label>Bandwidth Usage Up</label>

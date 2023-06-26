@@ -24,8 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -122,123 +120,7 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
     public List<Station> getStations() throws FreeboxException {
         List<Station> hosts = new ArrayList<>();
         for (WifiAp ap : getDevices()) {
-            List<Station> stations = getApStations(ap.id);
-<<<<<<< Upstream, based on origin/main
-            if (stations != null) {
-                hosts.addAll(stations);
-            }
-=======
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
-=======
->>>>>>> 9aef877 Rebooting Home Node part
-
-import inet.ipaddr.mac.MACAddress;
-
-/**
- * The {@link APManager} is the Java class used to handle api requests related to wifi access points
- * provided by the Freebox Server
- *
- * @author Gaël L'hopital - Initial contribution
- */
-@NonNullByDefault
-public class APManager extends ListableRest<APManager.WifiAp, APManager.APResponse> {
-    private static final String PATH = "ap";
-    private static final String STATIONS_PATH = "stations";
-
-    protected static record WifiInformation(String ssid, String band, int signal) { // Valid RSSI goes from -120 to 0
-    }
-
-    public static record LanAccessPoint(String mac, String type, String uid, @Nullable String connectivityType,
-            long rxBytes, // received bytes (from station to Freebox)
-            long txBytes, // transmitted bytes (from Freebox to station)
-            long txRate, // reception data rate (in bytes/s)
-            long rxRate, // transmission data rate (in bytes/s)
-            WifiInformation wifiInformation) {
-
-        public int getSignal() {
-            return wifiInformation.signal();
-        }
-
-        public @Nullable String getSsid() {
-            return wifiInformation().ssid();
-        }
-    }
-
-    private static enum State {
-        ASSOCIATED,
-        AUTHENTICATED,
-        UNKNOWN;
-    }
-
-    public static record Station(String id, MACAddress mac, String bssid, @Nullable String hostname, LanHost host,
-            State state, int inactive, int connDuration, //
-            long rxBytes, // received bytes (from station to Freebox)
-            long txBytes, // transmitted bytes (from Freebox to station)
-            long txRate, // reception data rate (in bytes/s)
-            long rxRate, // transmission data rate (in bytes/s)
-            int signal) { // signal attenuation (in dB)
-
-        public @Nullable String getSsid() {
-            LanAccessPoint accessPoint = host.accessPoint();
-            return accessPoint != null ? accessPoint.getSsid() : null;
-        }
-
-        public @Nullable ZonedDateTime getLastSeen() {
-            return host.getLastSeen();
-        }
-    }
-
-    protected static record ApStatus(ApState state, int channelWidth, int primaryChannel, int secondaryChannel,
-            int dfsCacRemainingTime, boolean dfsDisabled) {
-        private static enum ApState {
-            SCANNING, // Ap is probing wifi channels
-            NO_PARAM, // Ap is not configured
-            BAD_PARAM, // Ap has an invalid configuration
-            DISABLED, // Ap is permanently disabled
-            DISABLED_PLANNING, // Ap is currently disabled according to planning
-            NO_ACTIVE_BSS, // Ap has no active BSS
-            STARTING, // Ap is starting
-            ACS, // Ap is selecting the best available channel
-            HT_SCAN, // Ap is scanning for other access point
-            DFS, // Ap is performing dynamic frequency selection
-            ACTIVE, // Ap is active
-            FAILED, // Ap has failed to start
-            UNKNOWN;
-        }
-    }
-
-    protected static record WifiAp(int id, String name, ApStatus status) {
-    }
-
-    private class ApHostsResponse extends Response<Station> {
-    }
-
-    protected class APResponse extends Response<WifiAp> {
-    }
-
-    public APManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
-        super(session, LoginManager.Permission.NONE, APResponse.class, uriBuilder.path(PATH));
-    }
-
-    private List<Station> getApStations(int apId) throws FreeboxException {
-        return get(ApHostsResponse.class, Integer.toString(apId), STATIONS_PATH);
-    }
-
-    public List<Station> getStations() throws FreeboxException {
-        List<Station> hosts = new ArrayList<>();
-        for (WifiAp ap : getDevices()) {
-<<<<<<< Upstream, based on origin/main
             hosts.addAll(getApStations(ap.id));
->>>>>>> e4ef5cc Switching to Java 17 records
-=======
-            List<Station> stations = getApStations(ap.id);
-            if (stations != null) {
-                hosts.addAll(stations);
-            }
->>>>>>> 6340384 Commiting work
-=======
-            hosts.addAll(stations);
->>>>>>> ad5a724 Removing redundant null checks.
         }
         return hosts;
     }

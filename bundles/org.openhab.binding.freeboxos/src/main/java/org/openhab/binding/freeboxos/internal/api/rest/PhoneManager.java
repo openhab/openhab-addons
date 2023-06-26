@@ -19,8 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link PhoneManager} is the Java class used to handle api requests related to phone and calls
@@ -66,60 +64,6 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     public PhoneManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.CALLS, ConfigResponse.class, session.getUriBuilder().path(PATH),
                 CONFIG_PATH);
-=======
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
-=======
->>>>>>> 9aef877 Rebooting Home Node part
-
-/**
- * The {@link PhoneManager} is the Java class used to handle api requests related to phone and calls
- *
- * @author Gaël L'hopital - Initial contribution
- */
-@NonNullByDefault
-public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneManager.ConfigResponse> {
-    private static final String DECT_PAGE_ACTION = "dect_page_%s";
-    private static final String FXS_RING_ACTION = "fxs_ring_%s";
-    private static final String PATH = "phone";
-
-    protected class ConfigResponse extends Response<Config> {
-    }
-
-    protected class StatusResponse extends Response<Status> {
-    }
-
-    private static enum NetworkStatus {
-        WORKING,
-        UNKNOWN;
-    }
-
-    public static record Config(NetworkStatus network, boolean dectEcoMode, String dectPin, int dectRingPattern,
-            boolean dectRegistration, boolean dectNemoMode, boolean dectEnabled, boolean dectRingOnOff) {
-    }
-
-    public enum Type {
-        FXS,
-        DECT,
-        UNKNOWN;
-    }
-
-    public static record Status(int id, boolean isRinging, boolean onHook, boolean hardwareDefect, Type type,
-            @Nullable String vendor, int gainRx, int gainTx) {
-
-        public String vendor() {
-            String localVendor = vendor;
-            return localVendor != null ? localVendor : "Unknown";
-        }
-    }
-
-    public PhoneManager(FreeboxOsSession session) throws FreeboxException {
-<<<<<<< Upstream, based on origin/main
-        super(session, Permission.CALLS, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
->>>>>>> e4ef5cc Switching to Java 17 records
-=======
-        super(session, LoginManager.Permission.CALLS, ConfigResponse.class, session.getUriBuilder().path(PATH),
-                CONFIG_PATH);
->>>>>>> 9aef877 Rebooting Home Node part
     }
 
     public List<Status> getPhoneStatuses() throws FreeboxException {

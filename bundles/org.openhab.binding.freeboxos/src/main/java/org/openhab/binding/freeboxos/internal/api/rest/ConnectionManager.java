@@ -18,8 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.IPAddress;
 
@@ -74,68 +72,5 @@ public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status
 
     public ConnectionManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, StatusResponse.class, session.getUriBuilder().path(PATH), null);
-=======
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
-=======
->>>>>>> 9aef877 Rebooting Home Node part
-
-import inet.ipaddr.IPAddress;
-
-/**
- * The {@link ConnectionManager} is the Java class used to handle api requests related to connection
- *
- * https://dev.freebox.fr/sdk/os/system/#
- *
- * @author Gaël L'hopital - Initial contribution
- */
-@NonNullByDefault
-public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status, ConnectionManager.StatusResponse> {
-    private static final String PATH = "connection";
-
-    protected static class StatusResponse extends Response<Status> {
-    }
-
-    private static enum State {
-        GOING_UP,
-        UP,
-        GOING_DOWN,
-        DOWN,
-        UNKNOWN;
-    }
-
-    private static enum Type {
-        ETHERNET,
-        RFC2684,
-        PPPOATM,
-        UNKNOWN;
-    }
-
-    private static enum Media {
-        FTTH,
-        ETHERNET,
-        XDSL,
-        BACKUP_4G,
-        UNKNOWN;
-    }
-
-    public static record Status(State state, Type type, Media media, @Nullable List<Integer> ipv4PortRange,
-            @Nullable IPAddress ipv4, // This can be null if state is not up
-            @Nullable IPAddress ipv6, // This can be null if state is not up
-            long rateUp, // current upload rate in byte/s
-            long rateDown, // current download rate in byte/s
-            long bandwidthUp, // available upload bandwidth in bit/s
-            long bandwidthDown, // available download bandwidth in bit/s
-            long bytesUp, // total uploaded bytes since last connection
-            long bytesDown // total downloaded bytes since last connection
-    ) {
-    }
-
-    public ConnectionManager(FreeboxOsSession session) throws FreeboxException {
-<<<<<<< Upstream, based on origin/main
-        super(session, Permission.NONE, StatusResponse.class, session.getUriBuilder().path(PATH), null);
->>>>>>> e4ef5cc Switching to Java 17 records
-=======
-        super(session, LoginManager.Permission.NONE, StatusResponse.class, session.getUriBuilder().path(PATH), null);
->>>>>>> 9aef877 Rebooting Home Node part
     }
 }

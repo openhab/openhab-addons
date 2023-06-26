@@ -1,6 +1,4 @@
 /**
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -40,7 +38,6 @@ public class PlayerActions implements ThingActions {
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof PlayerHandler playerHandler) {
             this.handler = playerHandler;
-<<<<<<< Upstream, based on origin/main
         }
     }
 
@@ -90,105 +87,6 @@ public class PlayerActions implements ThingActions {
             playerHandler.sendKey(key, false, count);
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null");
-=======
- * Copyright (c) 2010-2022 Contributors to the openHAB project
-=======
- * Copyright (c) 2010-2023 Contributors to the openHAB project
->>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-package org.openhab.binding.freeboxos.internal.action;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
-import org.openhab.core.automation.annotation.ActionInput;
-import org.openhab.core.automation.annotation.RuleAction;
-import org.openhab.core.thing.binding.ThingActions;
-import org.openhab.core.thing.binding.ThingActionsScope;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * The {PlayerActions} class is responsible to call corresponding actions on Freebox Player
- *
- * @author Gaël L'hopital - Initial contribution
- */
-@ThingActionsScope(name = "freeboxos")
-@NonNullByDefault
-public class PlayerActions implements ThingActions {
-    private final Logger logger = LoggerFactory.getLogger(PlayerActions.class);
-    protected @Nullable PlayerHandler handler;
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof PlayerHandler) {
-            this.handler = (PlayerHandler) handler;
-=======
->>>>>>> 9aef877 Rebooting Home Node part
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return this.handler;
-    }
-
-    @RuleAction(label = "send a key to player", description = "Sends a given key to the player")
-    public void sendKey(@ActionInput(name = "key") String key) {
-        logger.debug("Sending key {} to player", key);
-        PlayerHandler playerHandler = this.handler;
-        if (playerHandler != null) {
-            playerHandler.sendKey(key, false, 1);
-        } else {
-            logger.warn("Freebox Player Action service ThingHandler is null");
-        }
-    }
-
-    @RuleAction(label = "send a long key to player", description = "Sends a given key to the player and keep it pressed")
-    public void sendLongKey(@ActionInput(name = "key") String key) {
-        logger.debug("Sending long press key {} to player", key);
-        PlayerHandler playerHandler = this.handler;
-        if (playerHandler != null) {
-            playerHandler.sendKey(key, true, 1);
-        } else {
-            logger.warn("Freebox Player Action service ThingHandler is null");
-        }
-    }
-
-    @RuleAction(label = "send multiple keys to player", description = "Sends multiple keys to the player, comma separated")
-    public void sendMultipleKeys(@ActionInput(name = "keys") String keys) {
-        logger.debug("Sending keys {} to player", keys);
-        PlayerHandler playerHandler = this.handler;
-        if (playerHandler != null) {
-            playerHandler.sendMultipleKeys(keys);
-        } else {
-            logger.warn("Freebox Player Action service ThingHandler is null");
-        }
-    }
-
-    @RuleAction(label = "send repeating key to player", description = "Sends a given key multiple times to the player")
-    public void sendKeyRepeat(@ActionInput(name = "key") String key, @ActionInput(name = "count") int count) {
-        logger.debug("Sending key {} to player {} times", key, count);
-        PlayerHandler playerHandler = this.handler;
-        if (playerHandler != null) {
-            playerHandler.sendKey(key, false, count);
-        } else {
-<<<<<<< Upstream, based on origin/main
-            logger.warn("Freebox Player Action service ThingHandler is null!");
->>>>>>> 46dadb1 SAT warnings handling
-=======
-            logger.warn("Freebox Player Action service ThingHandler is null");
->>>>>>> 089708c Switching to addons.xml, headers updated
         }
     }
 }

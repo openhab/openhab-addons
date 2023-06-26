@@ -17,8 +17,6 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.T
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -45,45 +43,6 @@ public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.
     public VmManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.VM, VirtualMachineResponse.class,
                 session.getUriBuilder().path(THING_VM));
-=======
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
-=======
->>>>>>> 9aef877 Rebooting Home Node part
-
-import inet.ipaddr.mac.MACAddress;
-
-/**
- * The {@link VmManager} is the Java class used to handle api requests related to virtual machines
- *
- * @author Gaël L'hopital - Initial contribution
- */
-@NonNullByDefault
-public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.VirtualMachineResponse> {
-
-    protected class VirtualMachineResponse extends Response<VirtualMachine> {
-    }
-
-    public static enum Status {
-        STOPPED,
-        RUNNING,
-        UNKNOWN;
-    }
-
-    public static record VirtualMachine(int id, String name, MACAddress mac, Status status) {
-    }
-
-    public VmManager(FreeboxOsSession session) throws FreeboxException {
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
-        super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(PATH));
->>>>>>> e4ef5cc Switching to Java 17 records
-=======
-        super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(THING_VM));
->>>>>>> f468f3b Enhance usage of global variables
-=======
-        super(session, LoginManager.Permission.VM, VirtualMachineResponse.class,
-                session.getUriBuilder().path(THING_VM));
->>>>>>> 9aef877 Rebooting Home Node part
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {

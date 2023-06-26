@@ -15,14 +15,11 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.IPAddress;
 
 /**
  * The {@link LanManager} is the Java class used to handle api requests related to lan
- *
  * https://dev.freebox.fr/sdk/os/system/#
  *
  * @author Gaël L'hopital - Initial contribution
@@ -48,44 +45,4 @@ public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManage
         super(session, LoginManager.Permission.NONE, Config.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
         session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
     }
-=======
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
-=======
->>>>>>> 9aef877 Rebooting Home Node part
-
-import inet.ipaddr.IPAddress;
-
-/**
- * The {@link LanManager} is the Java class used to handle api requests related to lan
- *
- * https://dev.freebox.fr/sdk/os/system/#
- *
- * @author Gaël L'hopital - Initial contribution
- */
-@NonNullByDefault
-public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManager.Config> {
-    private static final String PATH = "lan";
-
-    protected static class Config extends Response<LanConfig> {
-    }
-
-    private static enum Mode {
-        ROUTER,
-        BRIDGE,
-        UNKNOWN;
-    }
-
-    public static record LanConfig(IPAddress ip, String name, String nameDns, String nameMdns, String nameNetbios,
-            Mode mode) {
-    }
-
-    public LanManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, LoginManager.Permission.NONE, Config.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
-        session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
-    }
-<<<<<<< Upstream, based on origin/main
-
->>>>>>> e4ef5cc Switching to Java 17 records
-=======
->>>>>>> 089708c Switching to addons.xml, headers updated
 }

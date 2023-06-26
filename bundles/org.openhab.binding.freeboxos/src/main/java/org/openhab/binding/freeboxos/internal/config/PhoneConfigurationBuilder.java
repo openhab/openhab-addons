@@ -10,14 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.discovery;
+package org.openhab.binding.freeboxos.internal.config;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Status;
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Type;
-import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;

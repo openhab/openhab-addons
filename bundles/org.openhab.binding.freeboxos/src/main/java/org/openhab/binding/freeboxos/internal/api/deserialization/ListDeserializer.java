@@ -38,21 +38,24 @@ import com.google.gson.JsonParseException;
 public class ListDeserializer implements JsonDeserializer<List<?>> {
 
     @Override
-    public @NonNull List<?> deserialize(JsonElement json, Type clazz, JsonDeserializationContext context)
-            throws JsonParseException {
-        JsonArray jsonArray = toJsonArray(json);
-        ArrayList<?> result = new ArrayList<>(jsonArray != null ? jsonArray.size() : 0);
+    public @NonNull List<?> deserialize(@Nullable JsonElement json, @Nullable Type clazz,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
+        if (json != null && clazz != null && context != null) {
+            JsonArray jsonArray = toJsonArray(json);
+            ArrayList<?> result = new ArrayList<>(jsonArray != null ? jsonArray.size() : 0);
 
-        if (jsonArray != null) {
-            Type[] typeArguments = ((ParameterizedType) clazz).getActualTypeArguments();
-            if (typeArguments.length > 0) {
-                Type objectType = typeArguments[0];
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    result.add(context.deserialize(jsonArray.get(i), objectType));
+            if (jsonArray != null) {
+                Type[] typeArguments = ((ParameterizedType) clazz).getActualTypeArguments();
+                if (typeArguments.length > 0) {
+                    Type objectType = typeArguments[0];
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        result.add(context.deserialize(jsonArray.get(i), objectType));
+                    }
+                    return result;
                 }
             }
         }
-        return result;
+        return List.of();
     }
 
     private @Nullable JsonArray toJsonArray(JsonElement json) {

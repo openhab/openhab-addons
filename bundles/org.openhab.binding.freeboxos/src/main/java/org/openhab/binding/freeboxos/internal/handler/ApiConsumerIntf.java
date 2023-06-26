@@ -1,7 +1,3 @@
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
-=======
->>>>>>> 089708c Switching to addons.xml, headers updated
 /**
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
@@ -38,29 +34,6 @@ import inet.ipaddr.mac.MACAddress;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-<<<<<<< Upstream, based on origin/main
-=======
-package org.openhab.binding.freeboxos.internal.handler;
-
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandler;
-
-import inet.ipaddr.MACAddressString;
-import inet.ipaddr.mac.MACAddress;
-
->>>>>>> e4ef5cc Switching to Java 17 records
-=======
->>>>>>> 089708c Switching to addons.xml, headers updated
 @NonNullByDefault
 public interface ApiConsumerIntf extends ThingHandler {
 

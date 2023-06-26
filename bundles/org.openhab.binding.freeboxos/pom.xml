@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -10,7 +8,6 @@
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>4.0.0-SNAPSHOT</version>
-<<<<<<< Upstream, based on origin/main
   </parent>
 
   <artifactId>org.openhab.binding.freeboxos</artifactId>
@@ -29,38 +26,5 @@
       <version>5.4.0</version>
     </dependency>
   </dependencies>
-
-  <dependencies>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.seancfoley</groupId>
-      <artifactId>ipaddress</artifactId>
-      <version>5.4.0</version>
-    </dependency>
-  </dependencies>
-=======
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-=======
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
->>>>>>> 67d40d3 Taking #11833 in accound
-
-  <modelVersion>4.0.0</modelVersion>
-
-  <parent>
-    <groupId>org.openhab.addons.bundles</groupId>
-    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
-=======
->>>>>>> bce4476 Switching to Snapshot 4.0.0 Correcting apiDomain was not used as expected Code cleansing.
-  </parent>
-
-  <artifactId>org.openhab.binding.freeboxos</artifactId>
-
-  <name>openHAB Add-ons :: Bundles :: FreeboxOS Binding</name>
->>>>>>> 46dadb1 SAT warnings handling
 
 </project>
