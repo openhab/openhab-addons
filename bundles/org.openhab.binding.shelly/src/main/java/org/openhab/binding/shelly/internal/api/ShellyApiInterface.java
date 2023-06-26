@@ -141,5 +141,4 @@ public interface ShellyApiInterface {
     void close();
 
     void startScan();
-
 }
