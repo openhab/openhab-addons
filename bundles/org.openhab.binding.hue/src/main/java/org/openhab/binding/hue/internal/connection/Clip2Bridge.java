@@ -32,7 +32,7 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -462,15 +462,17 @@ public class Clip2Bridge implements Closeable {
     private final Gson jsonParser = new Gson();
     private final Semaphore streamMutex = new Semaphore(MAX_CONCURRENT_STREAMS, true);
 
+    private boolean closing;
     private boolean internalRestartScheduled;
     private boolean externalRestartScheduled;
     private State onlineState = State.CLOSED;
     private Instant lastRequestTime = Instant.MIN;
     private Instant sessionExpireTime = Instant.MAX;
     private @Nullable Session http2Session;
-    private @Nullable ScheduledFuture<?> checkAliveTask;
-    private @Nullable ScheduledFuture<?> internalRestartTask;
-    private Map<Integer, ScheduledFuture<?>> fatalErrorTasks = new ConcurrentHashMap<>();
+
+    private @Nullable Future<?> checkAliveTask;
+    private @Nullable Future<?> internalRestartTask;
+    private Map<Integer, Future<?>> fatalErrorTasks = new ConcurrentHashMap<>();
 
     /**
      * Constructor.
@@ -526,6 +528,8 @@ public class Clip2Bridge implements Closeable {
      */
     @Override
     public void close() {
+        closing = true;
+        externalRestartScheduled = false;
         internalRestartScheduled = false;
         close2();
     }
@@ -537,17 +541,17 @@ public class Clip2Bridge implements Closeable {
         synchronized (this) {
             logger.debug("close2()");
             boolean notifyHandler = onlineState == State.ACTIVE && !internalRestartScheduled
-                    && !externalRestartScheduled;
+                    && !externalRestartScheduled && !closing;
             onlineState = State.CLOSED;
             synchronized (fatalErrorTasks) {
-                fatalErrorTasks.values().forEach(task -> task.cancel(true));
+                fatalErrorTasks.values().forEach(task -> cancelTask(task, true));
                 fatalErrorTasks.clear();
             }
             if (!internalRestartScheduled) {
                 // don't close the task if a restart is current
-                closeInternalRestartTask();
+                internalRestartTask = cancelTask(internalRestartTask, false);
             }
-            closeCheckAliveTask();
+            checkAliveTask = cancelTask(checkAliveTask, true);
             closeSession();
             try {
                 http2Client.stop();
@@ -558,31 +562,6 @@ public class Clip2Bridge implements Closeable {
                 bridgeHandler.onConnectionOffline();
             }
         }
-    }
-
-    /**
-     * Close the check alive task if necessary.
-     */
-    private void closeCheckAliveTask() {
-        ScheduledFuture<?> task = checkAliveTask;
-        if (Objects.nonNull(task)) {
-            logger.debug("closeCheckAliveTask()");
-            task.cancel(true);
-        }
-        checkAliveTask = null;
-    }
-
-    /**
-     * Close the restart task if necessary.
-     */
-    private void closeInternalRestartTask() {
-        ScheduledFuture<?> task = internalRestartTask;
-        if (Objects.nonNull(task)) {
-            logger.debug("closeInternalRestartTask()");
-            task.cancel(true);
-        }
-        internalRestartTask = null;
-        internalRestartScheduled = false;
     }
 
     /**
@@ -617,8 +596,8 @@ public class Clip2Bridge implements Closeable {
             logger.debug("fatalError() {} {} scheduling reconnect", causeId, cause.error);
 
             // schedule task to open again
-            closeInternalRestartTask();
             internalRestartScheduled = true;
+            cancelTask(internalRestartTask, false);
             internalRestartTask = bridgeHandler.getScheduler().schedule(
                     () -> internalRestart(onlineState == State.ACTIVE), RESTART_AFTER_SECONDS, TimeUnit.SECONDS);
 
@@ -842,9 +821,10 @@ public class Clip2Bridge implements Closeable {
      * Open the check alive task if necessary.
      */
     private void openCheckAliveTask() {
-        ScheduledFuture<?> task = checkAliveTask;
+        Future<?> task = checkAliveTask;
         if (Objects.isNull(task) || task.isCancelled() || task.isDone()) {
             logger.debug("openCheckAliveTask()");
+            cancelTask(checkAliveTask, false);
             checkAliveTask = bridgeHandler.getScheduler().scheduleWithFixedDelay(() -> checkAlive(),
                     CHECK_ALIVE_SECONDS, CHECK_ALIVE_SECONDS, TimeUnit.SECONDS);
         }
@@ -1075,7 +1055,8 @@ public class Clip2Bridge implements Closeable {
 
     public void setExternalRestartScheduled() {
         externalRestartScheduled = true;
-        closeInternalRestartTask();
+        internalRestartScheduled = false;
+        internalRestartTask = cancelTask(internalRestartTask, false);
         close2();
     }
 
@@ -1086,7 +1067,7 @@ public class Clip2Bridge implements Closeable {
      * @throws InterruptedException
      */
     private void sleepDuringRestart() throws ApiException, InterruptedException {
-        ScheduledFuture<?> restartTask = this.internalRestartTask;
+        Future<?> restartTask = this.internalRestartTask;
         if (Objects.nonNull(restartTask)) {
             try {
                 restartTask.get(RESTART_AFTER_SECONDS * 2, TimeUnit.SECONDS);
@@ -1140,5 +1121,19 @@ public class Clip2Bridge implements Closeable {
      */
     private void throttleDone() {
         streamMutex.release();
+    }
+
+    /**
+     * Cancel the given task.
+     *
+     * @param cancelTask the task to be cancelled (may be null)
+     * @param mayInterrupt allows cancel() to interrupt the thread.
+     * @return always returns null.
+     */
+    private @Nullable Future<?> cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
+        if (Objects.nonNull(cancelTask)) {
+            cancelTask.cancel(mayInterrupt);
+        }
+        return null;
     }
 }

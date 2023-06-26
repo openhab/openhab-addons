@@ -131,8 +131,8 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                     }
                 } else if (clip2BridgeHandler != null) {
                     String applicationKey = clip2BridgeHandler.getApplicationKey();
-
                     String ipAddress = clip2BridgeHandler.getIpAddress();
+                    String exception = "";
 
                     switch (args[1]) {
                         case APPLICATION_KEY:
@@ -152,9 +152,13 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                             .println(String.format(FMT_SCENE, scene.getId(), scene.getName())));
                                 }
                             } catch (ApiException | AssetNotLoadedException e) {
+                                exception = String.format("%s: '%s'", e.getClass().getName(), e.getMessage());
                             } catch (InterruptedException e) {
                             }
                             console.println("}");
+                            if (!exception.isBlank()) {
+                                console.println(exception);
+                            }
                             return;
 
                         case THINGS:
@@ -166,7 +170,8 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                     resources = clip2BridgeHandler
                                             .getResources(new ResourceReference().setType(resourceType)).getResources();
                                 } catch (ApiException | AssetNotLoadedException e) {
-                                    continue;
+                                    exception = String.format("%s: '%s'", e.getClass().getName(), e.getMessage());
+                                    break;
                                 } catch (InterruptedException e) {
                                     break;
                                 }
@@ -210,6 +215,9 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                 }
                             }
                             console.println("}");
+                            if (!exception.isBlank()) {
+                                console.println(exception);
+                            }
                             return;
                     }
                 }

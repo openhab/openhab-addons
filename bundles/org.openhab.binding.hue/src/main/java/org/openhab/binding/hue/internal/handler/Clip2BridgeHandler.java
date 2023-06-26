@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +44,6 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -105,13 +105,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final Bundle bundle;
     private final LocaleProvider localeProvider;
     private final TranslationProvider translationProvider;
-    private final ExecutorService threadPool = ThreadPoolManager.getPool("hue-api2-bridge");
 
     private @Nullable Clip2Bridge clip2Bridge;
-    private @Nullable ScheduledFuture<?> checkConnectionTask;
     private @Nullable ServiceRegistration<?> trustManagerRegistration;
     private @Nullable Clip2ThingDiscoveryService discoveryService;
+
+    private @Nullable Future<?> checkConnectionTask;
+    private @Nullable Future<?> updateOnlineStateTask;
     private @Nullable ScheduledFuture<?> scheduledUpdateTask;
+    private Map<Integer, Future<?>> resourcesEventTasks = new ConcurrentHashMap<>();
 
     private boolean assetsLoaded;
     private int applKeyRetriesRemaining;
@@ -125,6 +127,20 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.localeProvider = localeProvider;
         this.translationProvider = translationProvider;
+    }
+
+    /**
+     * Cancel the given task.
+     *
+     * @param cancelTask the task to be cancelled (may be null)
+     * @param mayInterrupt allows cancel() to interrupt the thread.
+     * @return always returns null.
+     */
+    private @Nullable Future<?> cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
+        if (Objects.nonNull(cancelTask)) {
+            cancelTask.cancel(mayInterrupt);
+        }
+        return null;
     }
 
     /**
@@ -215,10 +231,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         }
 
         // this method schedules itself to be called again in a loop..
-        ScheduledFuture<?> task = checkConnectionTask;
-        if (Objects.nonNull(task)) {
-            task.cancel(false);
-        }
+        checkConnectionTask = cancelTask(checkConnectionTask, false);
         int milliSeconds;
         if (retryApplicationKey) {
             // short delay used during attempts to create or validate an application key
@@ -251,7 +264,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         if (assetsLoaded) {
             assetsLoaded = false;
-            threadPool.execute(() -> disposeAssets());
+            scheduler.execute(() -> disposeAssets());
         }
     }
 
@@ -263,15 +276,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("disposeAssets() {}", this);
         synchronized (this) {
             assetsLoaded = false;
-            ScheduledFuture<?> task = checkConnectionTask;
-            if (Objects.nonNull(task)) {
-                task.cancel(true);
-                checkConnectionTask = null;
-            }
-            task = scheduledUpdateTask;
-            if (Objects.nonNull(task)) {
-                task.cancel(true);
-                scheduledUpdateTask = null;
+            checkConnectionTask = cancelTask(checkConnectionTask, true);
+            updateOnlineStateTask = cancelTask(updateOnlineStateTask, true);
+            scheduledUpdateTask = (ScheduledFuture<?>) cancelTask(scheduledUpdateTask, true);
+            synchronized (resourcesEventTasks) {
+                resourcesEventTasks.values().forEach(task -> cancelTask(task, true));
+                resourcesEventTasks.clear();
             }
             ServiceRegistration<?> registration = trustManagerRegistration;
             if (Objects.nonNull(registration)) {
@@ -430,7 +440,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         applKeyRetriesRemaining = APPLICATION_KEY_MAX_TRIES;
         connectRetriesRemaining = RECONNECT_MAX_TRIES;
-        threadPool.execute(() -> initializeAssets());
+        scheduler.execute(() -> initializeAssets());
     }
 
     /**
@@ -479,8 +489,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             assetsLoaded = true;
         }
-
-        threadPool.execute(() -> checkConnection());
+        cancelTask(checkConnectionTask, false);
+        checkConnectionTask = scheduler.submit(() -> checkConnection());
     }
 
     /**
@@ -490,10 +500,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (assetsLoaded) {
             try {
                 getClip2Bridge().setExternalRestartScheduled();
-                ScheduledFuture<?> task = checkConnectionTask;
-                if (Objects.nonNull(task)) {
-                    task.cancel(false);
-                }
+                cancelTask(checkConnectionTask, false);
                 checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
                         TimeUnit.SECONDS);
             } catch (AssetNotLoadedException e) {
@@ -506,7 +513,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Called when the connection goes online. Schedule a general state update.
      */
     public void onConnectionOnline() {
-        threadPool.execute(() -> updateOnlineState());
+        cancelTask(updateOnlineStateTask, false);
+        updateOnlineStateTask = scheduler.schedule(() -> updateOnlineState(), 0, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -517,18 +525,26 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public void onResourcesEvent(List<Resource> resources) {
         if (assetsLoaded) {
-            threadPool.execute(() -> {
-                logger.debug("onResourcesEvent() resource count {}", resources.size());
-                getThing().getThings().forEach(thing -> {
-                    ThingHandler handler = thing.getHandler();
-                    if (handler instanceof Clip2ThingHandler) {
-                        resources.forEach(resource -> {
-                            ((Clip2ThingHandler) handler).onResource(resource);
-                        });
-                    }
-                });
-            });
+            synchronized (resourcesEventTasks) {
+                int index = resourcesEventTasks.size();
+                resourcesEventTasks.put(index, scheduler.submit(() -> {
+                    onResourcesEventTask(resources);
+                    resourcesEventTasks.remove(index);
+                }));
+            }
         }
+    }
+
+    private void onResourcesEventTask(List<Resource> resources) {
+        logger.debug("onResourcesEventTask() resource count {}", resources.size());
+        getThing().getThings().forEach(thing -> {
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof Clip2ThingHandler) {
+                resources.forEach(resource -> {
+                    ((Clip2ThingHandler) handler).onResource(resource);
+                });
+            }
+        });
     }
 
     /**
@@ -751,6 +767,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private void updateThingsScheduled(int delayMilliSeconds) {
         ScheduledFuture<?> task = this.scheduledUpdateTask;
         if (Objects.isNull(task) || task.getDelay(TimeUnit.MILLISECONDS) < 100) {
+            cancelTask(scheduledUpdateTask, false);
             scheduledUpdateTask = scheduler.schedule(() -> updateThingsNow(), delayMilliSeconds, TimeUnit.MILLISECONDS);
         }
     }

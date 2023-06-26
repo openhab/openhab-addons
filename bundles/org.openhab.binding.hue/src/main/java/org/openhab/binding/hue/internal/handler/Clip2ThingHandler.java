@@ -26,8 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,7 +52,6 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -153,7 +151,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
-    private final ExecutorService threadPool = ThreadPoolManager.getPool("hue-api2-thing");
 
     private String resourceId = "?";
     private Resource thisResource;
@@ -167,8 +164,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
 
-    private @Nullable ScheduledFuture<?> updateServiceContributorsTask;
-    private @Nullable ScheduledFuture<?> alertResetTask;
+    private @Nullable Future<?> alertResetTask;
+    private @Nullable Future<?> dynamicsResetTask;
+    private @Nullable Future<?> updateDependenciesTask;
+    private @Nullable Future<?> updateServiceContributorsTask;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -209,6 +208,20 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Cancel the given task.
+     *
+     * @param cancelTask the task to be cancelled (may be null)
+     * @param mayInterrupt allows cancel() to interrupt the thread.
+     * @return always returns null.
+     */
+    private @Nullable Future<?> cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
+        if (Objects.nonNull(cancelTask)) {
+            cancelTask.cancel(mayInterrupt);
+        }
+        return null;
+    }
+
+    /**
      * Clear the dynamics channel parameters.
      */
     private void clearDynamicsChannel() {
@@ -221,16 +234,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("{} -> dispose()", resourceId);
         disposing = true;
-        ScheduledFuture<?> task = updateServiceContributorsTask;
-        if (Objects.nonNull(task)) {
-            task.cancel(true);
-        }
-        updateServiceContributorsTask = null;
-        task = alertResetTask;
-        if (Objects.nonNull(task)) {
-            task.cancel(true);
-        }
-        alertResetTask = null;
+        alertResetTask = cancelTask(alertResetTask, true);
+        dynamicsResetTask = cancelTask(dynamicsResetTask, true);
+        updateDependenciesTask = cancelTask(updateDependenciesTask, true);
+        updateServiceContributorsTask = cancelTask(updateServiceContributorsTask, true);
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceIds.clear();
@@ -288,8 +295,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command commandParam) {
         if (RefreshType.REFRESH.equals(commandParam)) {
             if ((thing.getStatus() == ThingStatus.ONLINE) && updateDependenciesDone) {
-                ScheduledFuture<?> task = updateServiceContributorsTask;
+                Future<?> task = updateServiceContributorsTask;
                 if (Objects.isNull(task) || !task.isDone()) {
+                    cancelTask(updateServiceContributorsTask, false);
                     updateServiceContributorsTask = scheduler.schedule(() -> {
                         try {
                             updateServiceContributors();
@@ -321,10 +329,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (channelId) {
             case CHANNEL_2_ALERT:
                 putResource = Setters.setAlert(new Resource(lightResourceType), command, cache);
-                ScheduledFuture<?> task = alertResetTask;
-                if (Objects.nonNull(task)) {
-                    task.cancel(false);
-                }
+                cancelTask(alertResetTask, false);
                 alertResetTask = scheduler.schedule(
                         () -> updateState(channelUID, new StringType(ActionType.NO_ACTION.name())), 10,
                         TimeUnit.SECONDS);
@@ -437,7 +442,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                                 clearAfter);
                     }
                 }
-                scheduler.schedule(() -> clearDynamicsChannel(), clearAfter.toMillis(), TimeUnit.MILLISECONDS);
+                cancelTask(dynamicsResetTask, false);
+                dynamicsResetTask = scheduler.schedule(() -> clearDynamicsChannel(), clearAfter.toMillis(),
+                        TimeUnit.MILLISECONDS);
                 return;
 
             default:
@@ -558,7 +565,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
                 if (!updateDependenciesDone) {
                     resourceConsumed = true;
-                    threadPool.execute(() -> updateDependencies());
+                    cancelTask(updateDependenciesTask, false);
+                    updateDependenciesTask = scheduler.submit(() -> updateDependencies());
                 }
             } else if (ResourceType.SCENE == resource.getType()) {
                 Resource cachedScene = sceneContributorsCache.get(incomingResourceId);
