@@ -125,6 +125,7 @@ public class ShellyChannelDefinitions {
         CHANNEL_DEFINITIONS
                 // Device
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_NAME, "deviceName", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_GATEWAY, "gatewayDevice", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "deviceTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
@@ -297,9 +298,11 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> add = new LinkedHashMap<>();
 
         addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
+        addChannel(thing, add, !profile.gateway.isEmpty() || profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_GATEWAY);
 
-        if (!profile.isSensor && !profile.isIX && status.temperature != null
-                && status.temperature != SHELLY_API_INVTEMP) {
+        if (!profile.isSensor && !profile.isIX
+                && ((status.temperature != null && getDouble(status.temperature) != SHELLY_API_INVTEMP)
+                        || (status.tmp != null && getDouble(status.tmp.tC) != SHELLY_API_INVTEMP))) {
             // Only some devices report the internal device temp
             addChannel(thing, add, status.tmp != null || status.temperature != null, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
         }
@@ -355,6 +358,8 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1);
             addChannel(thing, add, profile.status.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2);
             addChannel(thing, add, profile.status.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP3);
+            addChannel(thing, add, profile.status.extTemperature.sensor4 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP4);
+            addChannel(thing, add, profile.status.extTemperature.sensor5 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP5);
         }
         addChannel(thing, add, profile.status.extHumidity != null, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
         addChannel(thing, add, profile.status.extVoltage != null, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE);
@@ -411,7 +416,7 @@ public class ShellyChannelDefinitions {
             for (int i = 0; i < profile.numInputs; i++) {
                 String group = profile.getInputGroup(i);
                 String suffix = profile.getInputSuffix(i); // multi ? String.valueOf(i + 1) : "";
-                addChannel(thing, add, true, group, CHANNEL_INPUT + suffix);
+                addChannel(thing, add, !profile.isButton, group, CHANNEL_INPUT + suffix);
                 addChannel(thing, add, true, group,
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {

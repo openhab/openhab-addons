@@ -101,6 +101,10 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PRO4PM = "SPSW-004PE16EU";
     public static final String SHELLYDT_PRO4PM_2 = "SPSW-104PE16EU";
 
+    // Shelly BLU Series
+    public static final String SHELLYDT_BLUBUTTON = "SBBT";
+    public static final String SHELLYDT_BLUDW = "SBDW";
+
     // Thing names
     public static final String THING_TYPE_SHELLY1_STR = "shelly1";
     public static final String THING_TYPE_SHELLY1L_STR = "shelly1l";
@@ -164,6 +168,12 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPRO3EM_STR = "shellypro3em";
     public static final String THING_TYPE_SHELLYPRO4PM_STR = "shellypro4pm";
 
+    // Shelly BLU Series
+    public static final String THING_TYPE_SHELLYBLU_PREFIX = "shellyblu";
+    public static final String THING_TYPE_SHELLYBLUBUTTON_STR = THING_TYPE_SHELLYBLU_PREFIX + "button";
+    public static final String THING_TYPE_SHELLYBLUDW_STR = THING_TYPE_SHELLYBLU_PREFIX + "dw";
+
+    // Password protected or unknown device
     public static final String THING_TYPE_SHELLYPROTECTED_STR = "shellydevice";
     public static final String THING_TYPE_SHELLYUNKNOWN_STR = "shellyunknown";
 
@@ -258,6 +268,11 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO4PM = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPRO4PM_STR);
 
+    // Shelly Blu series
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLYBLUBUTTON_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUDW = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUDW_STR);
+
     private static final Map<String, String> THING_TYPE_MAPPING = new LinkedHashMap<>();
     static {
         // mapping by device type id
@@ -323,6 +338,10 @@ public class ShellyThingCreator {
         THING_TYPE_MAPPING.put(SHELLYDT_PRO3EM, THING_TYPE_SHELLYPRO3EM_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO4PM, THING_TYPE_SHELLYPRO4PM_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO4PM_2, THING_TYPE_SHELLYPRO4PM_STR);
+
+        // Blu Series
+        THING_TYPE_MAPPING.put(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW_STR);
 
         // mapping by thing type
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1_STR);
