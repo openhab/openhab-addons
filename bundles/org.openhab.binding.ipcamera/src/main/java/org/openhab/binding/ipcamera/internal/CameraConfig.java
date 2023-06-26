@@ -30,7 +30,6 @@ public class CameraConfig {
     public boolean useToken = true;
     private int onvifMediaProfile;
     private int pollTime;
-    private boolean disableSnapshotAtStartup;
     private String ffmpegInput = "";
     private String snapshotUrl = "";
     private String mjpegUrl = "";
@@ -169,9 +168,5 @@ public class CameraConfig {
 
     public int getPort() {
         return port;
-    }
-
-    public boolean getDisableSnapshotAtStartup() {
-        return disableSnapshotAtStartup;
     }
 }

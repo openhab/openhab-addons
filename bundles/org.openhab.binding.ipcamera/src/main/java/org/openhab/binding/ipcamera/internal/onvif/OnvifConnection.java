@@ -314,14 +314,7 @@ public class OnvifConnection {
         } else if (message.contains("RenewResponse")) {
             sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
-            connecting.lock();
-            try {
-                connectError = false;
-                refusedError = false;
-                isConnected = true;
-            } finally {
-                connecting.unlock();
-            }
+            setIsConnected(true);
             sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             parseDateAndTime(message);
             logger.debug("Openhabs UTC dateTime is:{}", getUTCdateTime());
@@ -329,14 +322,7 @@ public class OnvifConnection {
             parseXAddr(message);
             sendOnvifRequest(requestBuilder(RequestType.GetProfiles, mediaXAddr));
         } else if (message.contains("GetProfilesResponse")) {// 3rd to be sent.
-            connecting.lock();
-            try {
-                connectError = false;
-                refusedError = false;
-                isConnected = true;
-            } finally {
-                connecting.unlock();
-            }
+            setIsConnected(true);
             parseProfiles(message);
             sendOnvifRequest(requestBuilder(RequestType.GetSnapshotUri, mediaXAddr));
             sendOnvifRequest(requestBuilder(RequestType.GetStreamUri, mediaXAddr));
@@ -589,7 +575,7 @@ public class OnvifConnection {
                             } else if ((cause instanceof ConnectException)
                                     && cause.getMessage().contains("Connection refused")) {
                                 logger.debug("Camera ONVIF port {} is refused.", onvifPort);
-                                connectError = true;
+                                refusedError = true;
                             }
                         }
                         if (isConnected) {
@@ -961,6 +947,8 @@ public class OnvifConnection {
         connecting.lock();
         try {
             this.isConnected = isConnected;
+            this.connectError = false;
+            this.refusedError = false;
         } finally {
             connecting.unlock();
         }

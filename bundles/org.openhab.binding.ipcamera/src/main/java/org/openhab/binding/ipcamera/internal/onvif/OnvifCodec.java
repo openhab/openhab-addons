@@ -69,10 +69,9 @@ public class OnvifCodec extends ChannelDuplexHandler {
             IdleStateEvent e = (IdleStateEvent) evt;
             logger.trace("IdleStateEvent received {}", e.state());
             onvifConnection.setIsConnected(false);
-            // }
             ctx.close();
         } else {
-            logger.trace("other event received {}", evt);
+            logger.trace("Other ONVIF netty channel event occured {}", evt);
         }
     }
 

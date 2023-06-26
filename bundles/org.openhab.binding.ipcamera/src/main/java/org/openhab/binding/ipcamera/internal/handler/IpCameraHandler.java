@@ -527,14 +527,8 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         // if ONVIF cam also use connection state which is updated by regular messages to camera
-        if (thing.getThingTypeUID().getId().equals(ONVIF_THING) && snapshotUri.isEmpty()) {
-            logger.trace("is ONVIF with empty snapshot URI");
-            if (onvifCamera.isConnected()) {
-                logger.trace("cam is connected");
-                return;
-            } else {
-                logger.trace("cam not connected");
-            }
+        if (thing.getThingTypeUID().getId().equals(ONVIF_THING) && snapshotUri.isEmpty() && onvifCamera.isConnected()) {
+            return;
         }
 
         // Open a HTTP connection without sending any requests as we do not need a snapshot.
@@ -1409,16 +1403,10 @@ public class IpCameraHandler extends BaseThingHandler {
                 "Binding has no snapshot url. Will use your CPU and FFmpeg to create snapshots from the cameras RTSP.");
         bringCameraOnline();
         if (!rtspUri.isEmpty()) {
-            if (!cameraConfig.getDisableSnapshotAtStartup()) {
-                updateImageChannel = false;
-                ffmpegSnapshotGeneration = true;
-                setupFfmpegFormat(FFmpegFormat.SNAPSHOT);
-                updateState(CHANNEL_POLL_IMAGE, OnOffType.ON);
-            } else {
-                logger.debug("snapshot polling with ffmpeg at startup is disabled");
-                ffmpegSnapshotGeneration = false;
-                updateState(CHANNEL_POLL_IMAGE, OnOffType.OFF);
-            }
+            updateImageChannel = false;
+            ffmpegSnapshotGeneration = true;
+            setupFfmpegFormat(FFmpegFormat.SNAPSHOT);
+            updateState(CHANNEL_POLL_IMAGE, OnOffType.ON);
         } else {
             cameraConfigError("Binding can not find a RTSP url for this camera, please provide a FFmpeg Input URL.");
         }
