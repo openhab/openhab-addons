@@ -76,7 +76,6 @@ The binding provides the same feature set across all devices as good as possible
 
 ### Generation 2 Plus series
 
-<<<<<<< HEAD
 | thing-type           | Model                                                    | Vendor ID                    |
 | -------------------- | -------------------------------------------------------- | ---------------------------- |
 | shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU                |
