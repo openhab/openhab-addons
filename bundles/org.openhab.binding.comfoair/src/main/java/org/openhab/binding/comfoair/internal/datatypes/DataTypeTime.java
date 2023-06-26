@@ -15,6 +15,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -69,21 +70,33 @@ public class DataTypeTime implements ComfoAirDataType {
         int[] template = commandType.getChangeDataTemplate();
         int[] possibleValues = commandType.getPossibleValues();
         int position = commandType.getChangeDataPos();
-        QuantityType<?> quantity = new QuantityType<>();
+        DecimalType decimal = new DecimalType();
 
-        if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_DELAYS
-                || commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_PREHEATER) {
-            if (commandType == ComfoAirCommandType.FILTER_WEEKS) {
-                quantity = ((QuantityType<?>) value).toUnit(Units.WEEK);
+        if (value instanceof QuantityType<?>) {
+            QuantityType<?> internalQuantity = new QuantityType<>();
+
+            if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_DELAYS
+                    || commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_PREHEATER) {
+                if (commandType == ComfoAirCommandType.FILTER_WEEKS) {
+                    internalQuantity = ((QuantityType<?>) value).toUnit(Units.WEEK);
+                } else {
+                    internalQuantity = ((QuantityType<?>) value).toUnit(Units.MINUTE);
+                }
             } else {
-                quantity = ((QuantityType<?>) value).toUnit(Units.MINUTE);
+                internalQuantity = ((QuantityType<?>) value).toUnit(Units.HOUR);
+            }
+
+            if (internalQuantity != null) {
+                decimal = internalQuantity.as(DecimalType.class);
+            } else {
+                logger.trace("\"DataTypeTime\" class \"convertFromState\" could not convert state to internal unit");
             }
         } else {
-            quantity = ((QuantityType<?>) value).toUnit(Units.HOUR);
+            decimal = (DecimalType) value;
         }
 
-        if (quantity != null) {
-            int intValue = quantity.intValue();
+        if (decimal != null) {
+            int intValue = decimal.intValue();
 
             if (possibleValues == null) {
                 template[position] = intValue;

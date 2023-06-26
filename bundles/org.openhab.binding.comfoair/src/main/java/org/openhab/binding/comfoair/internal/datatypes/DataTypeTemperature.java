@@ -15,6 +15,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
@@ -63,13 +64,26 @@ public class DataTypeTemperature implements ComfoAirDataType {
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
         int[] template = commandType.getChangeDataTemplate();
-        QuantityType<?> celsius = ((QuantityType<?>) value).toUnit(SIUnits.CELSIUS);
+        DecimalType decimal = new DecimalType();
 
-        if (celsius != null) {
-            if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_GHX) {
-                template[commandType.getChangeDataPos()] = celsius.intValue();
+        if (value instanceof QuantityType) {
+            QuantityType<?> celsius = ((QuantityType<?>) value).toUnit(SIUnits.CELSIUS);
+
+            if (celsius != null) {
+                decimal = celsius.as(DecimalType.class);
             } else {
-                template[commandType.getChangeDataPos()] = (int) (celsius.doubleValue() + 20) * 2;
+                logger.trace(
+                        "\"DataTypeTemperature\" class \"convertFromState\" could not convert state to internal unit");
+            }
+        } else {
+            decimal = (DecimalType) value;
+        }
+
+        if (decimal != null) {
+            if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_GHX) {
+                template[commandType.getChangeDataPos()] = decimal.intValue();
+            } else {
+                template[commandType.getChangeDataPos()] = (int) (decimal.doubleValue() + 20) * 2;
             }
             return template;
         } else {

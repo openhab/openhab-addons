@@ -794,7 +794,7 @@ public enum ComfoAirCommandType {
         if (commandType != null) {
             ComfoAirDataType dataType = commandType.getDataType();
             if (dataType == DataTypeBoolean.getInstance() || dataType == DataTypeNumber.getInstance()
-                    || command instanceof QuantityType<?>) {
+                    || command instanceof QuantityType<?> || command instanceof DecimalType) {
                 value = (State) command;
             }
             if (value instanceof UnDefType) {

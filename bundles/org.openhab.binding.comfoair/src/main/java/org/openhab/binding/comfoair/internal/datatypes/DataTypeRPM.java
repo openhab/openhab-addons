@@ -15,6 +15,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -60,11 +61,23 @@ public class DataTypeRPM implements ComfoAirDataType {
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
         int[] template = commandType.getChangeDataTemplate();
-        QuantityType<?> rpms = ((QuantityType<?>) value).toUnit(Units.RPM);
+        DecimalType decimal = new DecimalType();
 
-        if (rpms != null) {
+        if (value instanceof QuantityType<?>) {
+            QuantityType<?> rpms = ((QuantityType<?>) value).toUnit(Units.RPM);
+
+            if (rpms != null) {
+                decimal = rpms.as(DecimalType.class);
+            } else {
+                logger.trace("\"DataTypeRPM\" class \"convertFromState\" could not convert state to internal unit");
+            }
+        } else {
+            decimal = (DecimalType) value;
+        }
+
+        if (decimal != null) {
             // transferred value is (1875000 / rpm) per protocol
-            template[commandType.getChangeDataPos()] = (int) (1875000 / rpms.doubleValue());
+            template[commandType.getChangeDataPos()] = (int) (1875000 / decimal.doubleValue());
             return template;
         } else {
             logger.trace("\"DataTypeRPM\" class \"convertFromState\" undefined state");
