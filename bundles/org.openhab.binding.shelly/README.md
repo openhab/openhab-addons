@@ -76,7 +76,6 @@ The binding provides the same feature set across all devices as good as possible
 
 ### Generation 2 Plus series
 
-<<<<<<< HEAD
 | thing-type           | Model                                                    | Vendor ID                    |
 | -------------------- | -------------------------------------------------------- | ---------------------------- |
 | shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU                |
@@ -91,8 +90,8 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
-| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                   |
-| shellypluswalldisplay| Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                               |
+| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
+| shellypluswalldisplay| Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
 
 ### Generation 2 Pro series
 
@@ -1208,13 +1207,13 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
-|Group     |Channel      |Type     |read-only |Description                                                                        |
-|----------|-------------|---------|----------|-----------------------------------------------------------------------------------|
-| relay | brightness   | Dimmer   | r/w       | Currently selected brightness.                                                    |
-|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|Group  | Channel     |Type     |read-only |Description                                                                         |
+|-------|-------------|---------|----------|------------------------------------------------------------------------------------|
+| relay | brightness  | Dimmer  | r/w       | Currently selected brightness.                                                    |
+|       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | 
 
 ## Shelly Pro Series
