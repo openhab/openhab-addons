@@ -41,11 +41,11 @@
 			<channel-group id="resets" typeId="resets"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:comfoair:serial"/>
-		
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
+		
+		<config-description-ref uri="thing-type:comfoair:serial"/>
 
 	</thing-type>
 
@@ -70,12 +70,12 @@
 			<channel-group id="resets" typeId="resets"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:comfoair:serial"/>
-		
-		<properties>
+    <properties>
 			<property name="vendor">Zehnder</property>
 			<property name="thingTypeVersion">1</property>
 		</properties>
+		
+		<config-description-ref uri="thing-type:comfoair:serial"/>
 
 	</thing-type>
 
@@ -1238,7 +1238,7 @@
 		<label>Filter Period (P24)</label>
 		<description>Usage period until filter pollution message (uses full weeks internally)</description>
 		<category>Time</category>
-		<state min="10" max="26" step="1" readOnly="false" pattern="%.0f wk"/>
+		<state min="10" max="26" step="1" readOnly="false" pattern="%.0f week"/>
 	</channel-type>
 
 	<channel-type id="RF_short_delay" advanced="true">
