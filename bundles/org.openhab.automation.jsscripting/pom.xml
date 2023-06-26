@@ -24,7 +24,7 @@
     </bnd.importpackage>
     <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 & armv7l / Zulu 17.0.5+8 -->
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@4.3.0</ohjs.version>
+    <ohjs.version>openhab@4.4.0</ohjs.version>
   </properties>
 
   <build>
@@ -67,7 +67,7 @@
             </goals>
             <configuration>
               <!--suppress UnresolvedMavenProperty -->
-              <arguments>install ${ohjs.version} webpack@5.75.0 webpack-cli@4.10.0</arguments> <!-- webpack-cli >= 5.0.0 doesn't properly process the given entrypoint -->
+              <arguments>install ${ohjs.version} webpack@^5.87.0 webpack-cli@^5.1.4</arguments> <!-- webpack & webpack-cli versions should match to the ones from openhab-js -->
             </configuration>
           </execution>
           <execution>
@@ -77,8 +77,8 @@
             </goals>
             <configuration>
               <!--suppress UnresolvedMavenProperty -->
-              <arguments>webpack -c ./node_modules/openhab/@globals-webpack.config.js --entry
-                ./node_modules/openhab/@openhab-globals.js -o ./dist</arguments>
+              <arguments>webpack -c ./node_modules/openhab/build/@globals-webpack.config.js --entry-reset --entry
+                ./node_modules/openhab/build/@openhab-globals.js -o ./dist</arguments>
             </configuration>
           </execution>
           <execution>
@@ -87,7 +87,9 @@
               <goal>npx</goal>
             </goals>
             <configuration>
-              <arguments>webpack -c ./node_modules/openhab/webpack.config.js --entry ./node_modules/openhab/ -o ./dist</arguments>
+              <!--suppress UnresolvedMavenProperty -->
+              <arguments>webpack -c ./node_modules/openhab/build/webpack.config.js --entry-reset --entry
+                ./node_modules/openhab/ -o ./dist</arguments>
             </configuration>
           </execution>
         </executions>

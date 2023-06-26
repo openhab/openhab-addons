@@ -24,6 +24,7 @@
 /bundles/org.openhab.binding.ambientweather/ @mhilbush
 /bundles/org.openhab.binding.amplipi/ @kaikreuzer
 /bundles/org.openhab.binding.androiddebugbridge/ @GiviMAD
+/bundles/org.openhab.binding.androidtv/ @morph166955
 /bundles/org.openhab.binding.anel/ @paphko
 /bundles/org.openhab.binding.anthem/ @mhilbush
 /bundles/org.openhab.binding.astro/ @gerrieg
@@ -267,6 +268,7 @@
 /bundles/org.openhab.binding.pjlinkdevice/ @nils
 /bundles/org.openhab.binding.playstation/ @FluBBaOfWard
 /bundles/org.openhab.binding.plclogo/ @falkena
+/bundles/org.openhab.binding.plex/ @aronbeurskens
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.plugwiseha/ @lsiepel
 /bundles/org.openhab.binding.powermax/ @lolodomo

@@ -85,4 +85,5 @@ Fragment-Host: org.openhab.binding.mielecloud
 	org.eclipse.jetty.http2.hpack;version='[9.4.50,9.4.51)',\
 	org.mockito.mockito-core;version='[4.11.0,4.11.1)',\
 	org.objenesis;version='[3.3.0,3.3.1)',\
-	xstream;version='[1.4.20,1.4.21)'
+	xstream;version='[1.4.20,1.4.21)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'
