@@ -26,7 +26,7 @@
 				<label>Polling Interval</label>
 				<description>
 					Defines the time in seconds for openHAB to pull the
-					state of the connected devices. The minimum is 60
+					state of the connected devices. The minimum is 30
 					seconds.
 				</description>
 				<default>30</default>
