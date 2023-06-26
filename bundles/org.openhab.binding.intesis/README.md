@@ -24,7 +24,7 @@ The binding uses the following configuration parameters.
 | ipAddress        | Both                | IP-Address of the device                                       |
 | password         | IntesisHome         | Password to login to the local webserver of IntesisHome device |
 | port             | IntesisBox          | TCP port to connect to IntesisBox device, defaults to 3310     |
-| pollingIntervall | Both                | Interval to retrieve updates from the connected devices        |
+| pollingInterval  | Both                | Interval to retrieve updates from the connected devices        |
 
 ## Channels
 
