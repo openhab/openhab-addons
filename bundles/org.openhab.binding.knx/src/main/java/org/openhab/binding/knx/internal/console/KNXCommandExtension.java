@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.knx.internal.console;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -56,7 +55,6 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
             for (KNXBridgeBaseThingHandler bridgeHandler : knxHandlerFactory.getBridges()) {
                 console.println("KNX bridge \"" + bridgeHandler.getThing().getLabel()
                         + "\": group address, type, number of bytes, and number of occurence since last reload of binding:");
-                // console.println(handler.getCommandExtensionData().unknownGA().toString());
                 for (Entry<String, Long> entry : bridgeHandler.getCommandExtensionData().unknownGA().entrySet()) {
                     console.println(entry.getKey() + " " + entry.getValue());
                 }
@@ -68,8 +66,8 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(
-                buildCommandUsage(CMD_LIST_UNKNOWN_GA, "list group addresses which are not configured in openHAB"));
+        return List
+                .of(buildCommandUsage(CMD_LIST_UNKNOWN_GA, "list group addresses which are not configured in openHAB"));
     }
 
     @Override

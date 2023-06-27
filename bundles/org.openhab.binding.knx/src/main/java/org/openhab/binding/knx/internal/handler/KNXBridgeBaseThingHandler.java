@@ -14,7 +14,6 @@ package org.openhab.binding.knx.internal.handler;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -30,9 +29,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 
-import tuwien.auto.calimero.IndividualAddress;
 import tuwien.auto.calimero.knxnetip.SecureConnection;
-import tuwien.auto.calimero.mgmt.Destination;
 import tuwien.auto.calimero.secure.KnxSecureException;
 
 /**
@@ -74,7 +71,6 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     public record CommandExtensionData(Map<String, Long> unknownGA) {
     }
 
-    protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
     private final ScheduledExecutorService knxScheduler = ThreadPoolManager.getScheduledPool("knx");
     private final ScheduledExecutorService backgroundScheduler = Executors.newSingleThreadScheduledExecutor();
     protected SecureRoutingConfig secureRouting;
