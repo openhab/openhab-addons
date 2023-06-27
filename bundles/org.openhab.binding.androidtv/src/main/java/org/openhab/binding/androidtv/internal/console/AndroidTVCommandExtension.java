@@ -84,7 +84,7 @@ public class AndroidTVCommandExtension extends AbstractConsoleCommandExtension {
                 String channel = args[0] + ":" + args[1];
                 ChannelUID channelUID = new ChannelUID(channel);
                 Command command = (Command) new StringType(args[2]);
-                logger.debug("Sending CLI Command to Handler: {} |||{}|||", channel.toString(), command.toString());
+                logger.debug("Sending CLI Command to Handler: {} |||{}|||", channelUID.toString(), command.toString());
                 handler.handleCommand(channelUID, command);
             }
         } else {
