@@ -214,7 +214,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
         try {
             return Clip2Bridge.isClip2Supported(ipAddress);
         } catch (IOException e) {
+            return false;
         }
-        return false;
     }
 }

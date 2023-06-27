@@ -187,9 +187,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         boolean retryConnection = false;
         switch (thingStatus) {
             case CONFIGURATION_ERROR:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error-press-pairing-button");
                 if (applKeyRetriesRemaining > 0) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.api2.conf-error.press-pairing-button");
                     try {
                         registerApplicationKey();
                         retryApplicationKey = true;
@@ -200,16 +200,16 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                                 "@text/offline.communication-error");
                     } catch (IllegalStateException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "@text/offline.api2.conf-error-read-only");
+                                "@text/offline.api2.conf-error.read-only");
                     } catch (AssetNotLoadedException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                "@text/offline.api2.conf-error-assets-not-loaded");
+                                "@text/offline.api2.conf-error.assets-not-loaded");
                     } catch (InterruptedException e) {
                         return;
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.api2.conf-error-creation-applicationkey");
+                            "@text/offline.api2.conf-error.not-authorized");
                 }
                 break;
 
@@ -221,7 +221,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             case HANDLER_INITIALIZING_ERROR:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "@text/offline.api2.conf-error-assets-not-loaded");
+                        "@text/offline.api2.conf-error.assets-not-loaded");
                 break;
 
             case NONE:
@@ -230,8 +230,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 break;
         }
 
-        // this method schedules itself to be called again in a loop..
-        checkConnectionTask = cancelTask(checkConnectionTask, false);
         int milliSeconds;
         if (retryApplicationKey) {
             // short delay used during attempts to create or validate an application key
@@ -248,6 +246,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 connectRetriesRemaining--;
             }
         }
+
+        // this method schedules itself to be called again in a loop..
+        checkConnectionTask = cancelTask(checkConnectionTask, false);
         checkConnectionTask = scheduler.schedule(() -> checkConnection(), milliSeconds, TimeUnit.MILLISECONDS);
     }
 
@@ -461,7 +462,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             try {
                 if (!Clip2Bridge.isClip2Supported(ipAddress)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.api2.conf-error-clip2-not-supported");
+                            "@text/offline.api2.conf-error.clip2-not-supported");
                     return;
                 }
             } catch (IOException e) {
@@ -476,7 +477,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error-certificate-load");
+                        "@text/offline.api2.conf-error.certificate-load");
                 return;
             }
 
@@ -686,11 +687,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         } catch (AssetNotLoadedException e) {
             logger.trace("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error-assets-not-loaded");
-        } catch (HttpUnauthorizedException e) {
-            logger.trace("updateSelf() {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error-access_denied [\"" + e.getMessage() + "\"]");
+                    "@text/offline.api2.conf-error.assets-not-loaded");
         } catch (InterruptedException e) {
         }
     }

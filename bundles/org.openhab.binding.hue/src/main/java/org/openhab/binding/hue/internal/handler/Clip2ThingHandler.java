@@ -517,7 +517,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         String resourceId = config.resourceId;
         if (resourceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error-resource-id-bad");
+                    "@text/offline.api2.conf-error.resource-id-bad");
             return;
         }
         thisResource.setId(resourceId);
@@ -609,7 +609,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         if (resourceType == thisResource.getType()) {
                             logger.debug("{} -> onResourcesList() configuration error: unknown resourceId", resourceId);
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "@text/offline.api2.conf-error-resource-id-bad");
+                                    "@text/offline.api2.conf-error.resource-id-bad");
                         }
                     });
         }
@@ -871,7 +871,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             } catch (AssetNotLoadedException e) {
                 logger.debug("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error-assets-not-loaded");
+                        "@text/offline.api2.conf-error.assets-not-loaded");
             } catch (InterruptedException e) {
             }
         }
