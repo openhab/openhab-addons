@@ -141,9 +141,15 @@ For the AndroidTV to be successfully accessed an on-screen PIN authentication is
 
 To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your AndroidTV.
 
+CLI Example Usage: 
+openhab> openhab:androidtv androidtv:googletv:theater pincode REQUEST
+
 A 6 digit PIN should be displayed on the screen.
 
 To complete the PIN process, send the PIN displayed to the pincode channel.
+
+CLI Example Usage:
+openhab> openhab:androidtv androidtv:googletv:theater pincode abc123
 
 The display should return back to where it was originally.
 
