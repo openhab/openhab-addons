@@ -574,6 +574,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             ProductBridgeIndex productPbi = product.getBridgeProductIndex();
             logger.trace("syncChannelsWithProducts(): bridge index is {}.", productPbi);
             for (ChannelUID channelUID : BridgeChannels.getAllLinkedChannelUIDs(this)) {
+                if (!VeluxBindingConstants.POSITION_CHANNELS.contains(channelUID.getId())) {
+                    logger.trace("syncChannelsWithProducts(): skipping channel {}.", channelUID);
+                    continue;
+                }
                 if (!channel2VeluxActuator.containsKey(channelUID)) {
                     logger.trace("syncChannelsWithProducts(): channel {} not found.", channelUID);
                     continue;
