@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.androidtv.internal.console;
 
-import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
-
 import java.util.Arrays;
 import java.util.List;
 
