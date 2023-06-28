@@ -790,7 +790,7 @@ public class Clip2Bridge implements Closeable {
         try {
             events = jsonParser.fromJson(jsonElement, Event.EVENT_LIST_TYPE);
         } catch (JsonParseException e) {
-            logger.debug("onEventData() {}", e.getMessage(), e);
+            logger.debug("onEventData() parsing error json:{}", data, e);
             return;
         }
         if (Objects.isNull(events) || events.isEmpty()) {
@@ -1007,8 +1007,8 @@ public class Clip2Bridge implements Closeable {
                     resources.getErrors().forEach(error -> logger.debug("putResource() resources error:{}", error));
                 }
             } catch (JsonParseException e) {
-                logger.debug("putResource() error parsing JSON response:{}", contentJson);
-                throw new ApiException("putResource() parsing error", e);
+                logger.debug("putResource() parsing error json:{}", contentJson, e);
+                throw new ApiException("Parsing error", e);
             }
         } catch (ExecutionException | TimeoutException e) {
             throw new ApiException("putResource() error sending request", e);
@@ -1062,7 +1062,7 @@ public class Clip2Bridge implements Closeable {
                 }
             }
         } catch (JsonParseException e) {
-            logger.debug("registerApplicationKey() error parsing JSON response:{}", json);
+            logger.debug("registerApplicationKey() parsing error json:{}", json, e);
         }
         throw new HttpUnauthorizedException("Application key registration failed");
     }
