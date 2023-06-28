@@ -618,7 +618,11 @@ public class Clip2Bridge implements Closeable {
             // force close immediately to be clean when internalRestart() starts
             close2();
         } else {
-            logger.warn("fatalError() {} {} closing", causeId, cause.error, cause);
+            if (logger.isDebugEnabled()) {
+                logger.debug("fatalError() {} {} closing", causeId, cause.error, cause);
+            } else {
+                logger.warn("Fatal error {} {} => closing session.", causeId, cause.error);
+            }
             close2();
         }
     }
@@ -659,11 +663,7 @@ public class Clip2Bridge implements Closeable {
         if (onlineState == State.CLOSED) {
             throw new ApiException("getResources() offline");
         }
-        try {
-            return getResourcesImpl(reference);
-        } catch (HttpUnauthorizedException e) {
-            throw new ApiException("getResources() unauthorized error", e);
-        }
+        return getResourcesImpl(reference);
     }
 
     /**
@@ -671,12 +671,12 @@ public class Clip2Bridge implements Closeable {
      *
      * @param reference the Reference class to get.
      * @return a Resource object containing either a list of Resources or a list of Errors.
-     * @throws ApiException if the communication failed, or an unexpected result occurred.
      * @throws HttpUnauthorizedException if the request was refused as not authorised or forbidden.
+     * @throws ApiException if the communication failed, or an unexpected result occurred.
      * @throws InterruptedException
      */
     private Resources getResourcesImpl(ResourceReference reference)
-            throws ApiException, HttpUnauthorizedException, InterruptedException {
+            throws HttpUnauthorizedException, ApiException, InterruptedException {
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or closed");
@@ -748,7 +748,11 @@ public class Clip2Bridge implements Closeable {
                 openActive();
             }
         } catch (ApiException e) {
-            logger.warn("scheduledReconnectTask() failed ", e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("scheduledReconnectTask() failed", e);
+            } else {
+                logger.warn("Scheduled reconnection task failed.");
+            }
             internalRestartScheduled = false;
             close2();
         } catch (InterruptedException e) {
@@ -851,7 +855,7 @@ public class Clip2Bridge implements Closeable {
     private void openEventStream() throws ApiException, InterruptedException {
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
-            throw new ApiException("HTTP 2 session is null or in an illegal state");
+            throw new ApiException("HTTP 2 session is null or closed");
         }
         if (session.getStreams().stream().anyMatch(stream -> Objects.nonNull(stream.getAttribute(EVENT_STREAM_ID)))) {
             return;
@@ -1003,7 +1007,7 @@ public class Clip2Bridge implements Closeable {
                     resources.getErrors().forEach(error -> logger.debug("putResource() resources error:{}", error));
                 }
             } catch (JsonParseException e) {
-                logger.warn("putResource() error parsing JSON response:{}", contentJson);
+                logger.debug("putResource() error parsing JSON response:{}", contentJson);
                 throw new ApiException("putResource() parsing error", e);
             }
         } catch (ExecutionException | TimeoutException e) {
@@ -1019,12 +1023,12 @@ public class Clip2Bridge implements Closeable {
      *
      * @param oldApplicationKey existing application key if any i.e. may be empty.
      * @return the existing or a newly created application key.
-     * @throws ApiException if there was a communications error.
      * @throws HttpUnauthorizedException if the registration failed.
+     * @throws ApiException if there was a communications error.
      * @throws InterruptedException
      */
     public String registerApplicationKey(@Nullable String oldApplicationKey)
-            throws ApiException, HttpUnauthorizedException, InterruptedException {
+            throws HttpUnauthorizedException, ApiException, InterruptedException {
         logger.debug("registerApplicationKey()");
         String json = jsonParser.toJson((Objects.isNull(oldApplicationKey) || oldApplicationKey.isEmpty())
                 ? new CreateUserRequest(APPLICATION_ID)
@@ -1058,7 +1062,7 @@ public class Clip2Bridge implements Closeable {
                 }
             }
         } catch (JsonParseException e) {
-            // fall through
+            logger.debug("registerApplicationKey() error parsing JSON response:{}", json);
         }
         throw new HttpUnauthorizedException("Application key registration failed");
     }
@@ -1092,8 +1096,8 @@ public class Clip2Bridge implements Closeable {
      * Test the Hue Bridge connection state by attempting to connect and trying to execute a basic command that requires
      * authentication.
      *
-     * @throws ApiException if it was not possible to connect.
      * @throws HttpUnauthorizedException if it was possible to connect but not to authenticate.
+     * @throws ApiException if it was not possible to connect.
      * @throws InterruptedException
      */
     public void testConnectionState() throws HttpUnauthorizedException, ApiException, InterruptedException {
@@ -1101,7 +1105,7 @@ public class Clip2Bridge implements Closeable {
         try {
             openPassive();
             getResourcesImpl(BRIDGE);
-        } catch (HttpUnauthorizedException | ApiException e) {
+        } catch (ApiException e) {
             close2();
             throw e;
         }

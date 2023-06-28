@@ -54,7 +54,7 @@ public class DynamicsActions implements ThingActions {
         //
         Clip2ThingHandler handler = this.handler;
         if (handler == null) {
-            logger.warn("ThingHandler is null!");
+            logger.warn("ThingHandler is null.");
             return;
         }
         if (channelId == null) {

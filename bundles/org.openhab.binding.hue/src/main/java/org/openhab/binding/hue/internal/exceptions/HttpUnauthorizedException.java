@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HttpUnauthorizedException extends Exception {
+public class HttpUnauthorizedException extends ApiException {
     private static final long serialVersionUID = -1;
 
     public HttpUnauthorizedException() {

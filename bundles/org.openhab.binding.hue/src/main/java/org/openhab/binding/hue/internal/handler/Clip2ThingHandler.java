@@ -313,7 +313,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         Channel channel = thing.getChannel(channelUID);
         if (channel == null) {
-            logger.warn("{} -> handleCommand() channelUID:{} does not exist", resourceId, channelUID);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} -> handleCommand() channelUID:{} does not exist", resourceId, channelUID);
+
+            } else {
+                logger.warn("Command received for channel '{}' which is not in thing '{}'.", channelUID,
+                        thing.getUID());
+            }
             return;
         }
 
@@ -448,20 +454,34 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 return;
 
             default:
-                logger.warn("{} -> handleCommand() channelUID:{} not supported", resourceId, channelUID);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{} -> handleCommand() channelUID:{} unknown", resourceId, channelUID);
+                } else {
+                    logger.warn("Command received for unknown channel '{}'.", channelUID);
+                }
                 return;
         }
 
         if (putResource == null) {
-            logger.warn("{} -> handleCommand() command:{} not supported on channelUID:{}", resourceId, command,
-                    channelUID);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} -> handleCommand() command:{} not supported on channelUID:{}", resourceId, command,
+                        channelUID);
+            } else {
+                logger.warn("Command '{}' is not supported on channel '{}'.", command, channelUID);
+            }
             return;
         }
 
         putResourceId = Objects.nonNull(putResourceId) ? putResourceId : commandResourceIds.get(putResource.getType());
         if (putResourceId == null) {
-            logger.warn("{} -> handleCommand() channelUID:{}, command:{}, putResourceType:{} => missing resource ID",
-                    resourceId, channelUID, command, putResource.getType());
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                        "{} -> handleCommand() channelUID:{}, command:{}, putResourceType:{} => missing resource ID",
+                        resourceId, channelUID, command, putResource.getType());
+            } else {
+                logger.warn("Command '{}' for channel '{}' cannot be processed by thing '{}'.", command, channelUID,
+                        thing.getUID());
+            }
             return;
         }
 
@@ -482,7 +502,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             getBridgeHandler().putResource(putResource);
         } catch (ApiException | AssetNotLoadedException e) {
-            logger.warn("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
+            } else {
+                logger.warn("Command '{}' for thing '{}', channel '{}' failed with error '{}'.", command,
+                        thing.getUID(), channelUID, e.getMessage());
+            }
         } catch (InterruptedException e) {
         }
     }
@@ -506,8 +531,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 return;
             }
         }
-        logger.warn("{} - handleDynamicsCommand() failed for channelId:{}, command:{}, duration:{}", resourceId,
-                channelId, command, duration);
+        logger.warn("Dynamics command '{}' for thing '{}', channel '{}' and duration'{}' failed.", command,
+                thing.getUID(), channelId, duration);
     }
 
     @Override
@@ -648,9 +673,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         itemChannelLinkRegistry.getLinkedItems(legacyLinkedChannelUID).forEach(linkedItem -> {
                             String item = linkedItem.getName();
                             if (!itemChannelLinkRegistry.isLinked(item, uid)) {
-                                logger.info(
-                                        "{} -> updateChannelItemLinksFromLegacy() created link between Channel:{} and Item:{}",
-                                        resourceId, uid, item);
+                                if (logger.isDebugEnabled()) {
+                                    logger.debug(
+                                            "{} -> updateChannelItemLinksFromLegacy() item:{} linked to channel:{}",
+                                            resourceId, item, uid);
+                                } else {
+                                    logger.info("Item '{}' linked to thing '{}' channel '{}'", item, thing.getUID(),
+                                            targetChannelId);
+                                }
                                 itemChannelLinkRegistry.add(new ItemChannelLink(item, uid));
                             }
                         });
@@ -701,11 +731,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     supportedChannelIdSet.add(CHANNEL_2_ON_OFF_ONLY);
                 }
 
-                // warn about any missing channels
-                supportedChannelIdSet.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
-                        .forEach(channelId -> logger.warn(
-                                "{} -> updateChannelList() required channel '{}' missing => please recreate thing!",
-                                resourceId, channelId));
+                /*
+                 * This binding creates its dynamic list of channels by a 'subtractive' method i.e. the full set of
+                 * channels is initially created from the thing type xml, and then for any channels where UndfType.NULL
+                 * data is returned, the respective channel is removed from the full list. However in seldom cases
+                 * UndfType.NULL may wrongly be returned, so we should log a warning here just in case.
+                 */
+                if (logger.isDebugEnabled()) {
+                    supportedChannelIdSet.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
+                            .forEach(channelId -> logger.debug(
+                                    "{} -> updateChannelList() required channel '{}' missing", resourceId, channelId));
+                } else {
+                    supportedChannelIdSet.stream().filter(channelId -> Objects.isNull(thing.getChannel(channelId)))
+                            .forEach(channelId -> logger.warn(
+                                    "Thing '{}' is missing required channel '{}'. Please recreate the thing!",
+                                    thing.getUID(), channelId));
+                }
 
                 // get list of unused channels
                 List<Channel> unusedChannels = thing.getChannels().stream()
@@ -850,11 +891,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             logger.debug("{} -> updateDependencies()", resourceId);
             try {
                 if (!updatePropertiesDone) {
-                    logger.warn("{} -> updateDependencies() properties not initialized", resourceId);
+                    logger.debug("{} -> updateDependencies() properties not initialized", resourceId);
                     return;
                 }
                 if (!updateSceneContributorsDone && !updateSceneContributors()) {
-                    logger.warn("{} -> updateDependencies() scenes not initialized", resourceId);
+                    logger.debug("{} -> updateDependencies() scenes not initialized", resourceId);
                     return;
                 }
                 updateLookups();
@@ -1121,7 +1162,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateThingFromLegacy() {
         if (isInitialized()) {
-            logger.warn("{} -> updateThingFromLegacy() was called after handler was initialized.", resourceId);
+            logger.warn("Cannot update thing '{}' from legacy thing since handler already initialized.",
+                    thing.getUID());
             return;
         }
         Map<String, String> properties = thing.getProperties();

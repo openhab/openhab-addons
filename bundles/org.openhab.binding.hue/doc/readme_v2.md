@@ -136,19 +136,19 @@ A dynamic transition is where, instead of the light state changing immediately t
 
 If a thing supports dynamic transitions, then it will have a `dynamics` channel.
 This is a numeric channel where you can set the time delay for the transition in milliseconds.
-When you set a value for the `dynamics` channel (e.g. 2000 milli seconds) and then quickly issue another command (e.g. brightness 100%), the second command will be executed gradually over the period of milliseconds given by the `dynamics` channel value.
+When you set a value for the `dynamics` channel (e.g. 2000 milliseconds) and then quickly issue another command (e.g. brightness 100%), the second command will be executed gradually over the period of milliseconds given by the `dynamics` channel value.
 When the `dynamics` channel value is changed, it triggers a time window of ten seconds during which the value is active.
-If the second command is sent within the active time window it will be executed gradually according to the `dynamics` channel value.
-However if the second command is sent after the active time window has expired then it will be executed immediately.
+If the second command is sent within the active time window, it will be executed gradually according to the `dynamics` channel value.
+However, if the second command is sent after the active time window has expired, then it will be executed immediately.
 
 ### Advanced Channels for Devices, Rooms and Zones
 
 Some things support additional advanced channels `color-xy-only`,  `dimming-only` and/or `on-off-only`.
 For convenience the normal channels often amalgamate multiple elements of the state of a light, room or zone into one single channel.
 For example, a full color light has one single `color` channel that can accept HSBType commands for changing the color, PercentType commands for changing the brightness, and OnOffType commands for switching it on or off.
-By contrast the purpose of the advanced channels is to access specific individual state elements of the respective lights, rooms or zones individually.
+By contrast, the purpose of the advanced channels is to individually access specificstate elements of the respective lights, rooms or zones.
 
-These advance channels can be used as "presets".
+These advanced channels can be used as "presets".
 For example, you may want to preset the `dimming-only` channel to 20% at night, and to 100% in the day time.
 Then if somebody turns on the light at night time it will turn on to 20% resp. to 100% in the day time.
 You can also use the `color-xy-only` channel to preset (say) a cool color in the morning, and a warm color in the evening.
