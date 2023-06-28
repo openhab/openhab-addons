@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.androidtv.internal.console;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -94,7 +93,6 @@ public class AndroidTVCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(
-                buildCommandUsage("<thingUID> <channelname> <command>", "Send a command to a specific channel"));
+        return List.of(buildCommandUsage("<thingUID> <channelname> <command>", "Send a command to a specific channel"));
     }
 }
