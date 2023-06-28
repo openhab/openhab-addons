@@ -745,7 +745,7 @@
 		<label>Level 0 Duration</label>
 		<description>Uptime at level 0 (away)</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="level1_time" advanced="true">
@@ -753,7 +753,7 @@
 		<label>Level 1 Duration</label>
 		<description>Uptime at level 1</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="level2_time" advanced="true">
@@ -761,7 +761,7 @@
 		<label>Level 2 Duration</label>
 		<description>Uptime at level 2</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="level3_time" advanced="true">
@@ -769,7 +769,7 @@
 		<label>Level 3 Duration</label>
 		<description>Uptime at level 3</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="freeze_time" advanced="true">
@@ -777,7 +777,7 @@
 		<label>Antifrost Duration</label>
 		<description>Uptime of antifrost</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="preheater_time" advanced="true">
@@ -785,7 +785,7 @@
 		<label>Preheater Duration</label>
 		<description>Uptime of preheater</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="bypass_time" advanced="true">
@@ -793,7 +793,7 @@
 		<label>Bypass Duration</label>
 		<description>Hours of bypass open</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="filter_hours">
@@ -801,7 +801,7 @@
 		<label>Filter Duration</label>
 		<description>Uptime of the filter</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
 
 	<channel-type id="bypass_factor" advanced="true">
