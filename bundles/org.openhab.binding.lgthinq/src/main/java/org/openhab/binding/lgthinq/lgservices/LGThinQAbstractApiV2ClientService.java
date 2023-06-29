@@ -51,7 +51,7 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
         super(capabilityClass, snapshotClass);
     }
 
-    @Override
+    @Override	
     protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
             String command, String keyName, String value) throws Exception {
         return sendCommand(bridgeName, deviceId, controlPath, controlKey, command, keyName, value, null);
@@ -66,7 +66,7 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, payload);
         if (resp == null) {
-            logger.error("Null result returned sending command to LG API V2");
+            logger.warn("Null result returned sending command to LG API V2: {}, {}, {}", deviceId, controlPath, payload);
             throw new LGThinqApiException("Null result returned sending command to LG API V2");
         }
         return resp;
@@ -96,9 +96,14 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
             return Collections.emptyMap();
         }
         if (resp.getStatusCode() != 200) {
-            logger.error("Error returned by LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGThinqApiException(
-                    String.format("Error returned by LG Server API. The reason is:%s", resp.getJsonResponse()));
+            if (resp.getStatusCode() == 400) {
+                logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                return Collections.emptyMap();
+            } else {
+                logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                throw new LGThinqApiException(
+                        String.format("Error returned by LG Server API. HTTP Status: %s. The reason is: %s", resp.getStatusCode(), resp.getJsonResponse()));
+            }
         } else {
             try {
                 metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
