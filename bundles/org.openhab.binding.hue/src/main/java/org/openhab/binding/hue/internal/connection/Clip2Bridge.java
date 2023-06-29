@@ -748,7 +748,7 @@ public class Clip2Bridge implements Closeable {
             }
         } catch (ApiException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("scheduledReconnectTask() failed", e);
+                logger.debug("internalRestart() failed", e);
             } else {
                 logger.warn("Scheduled reconnection task failed.");
             }
