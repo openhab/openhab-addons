@@ -302,7 +302,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         try {
                             updateServiceContributors();
                         } catch (ApiException | AssetNotLoadedException e) {
-                            // exceptions will not occur here since thing is already online
+                            logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
                         } catch (InterruptedException e) {
                         }
                     }, 3, TimeUnit.SECONDS);

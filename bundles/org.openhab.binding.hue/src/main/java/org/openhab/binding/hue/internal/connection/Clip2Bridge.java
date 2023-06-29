@@ -284,7 +284,6 @@ public class Clip2Bridge implements Closeable {
                             eventContent.append(receivedLine.substring(5).stripLeading());
                         }
                     }
-                    // note: StringBuilder.isEmpty() only available from Java 15+
                     if (eventContent.length() > 0) {
                         onEventData(eventContent.toString().trim());
                     }
@@ -1119,13 +1118,10 @@ public class Clip2Bridge implements Closeable {
      * @throws InterruptedException
      */
     private synchronized void throttle() throws InterruptedException {
-        try {
-            streamMutex.acquire();
-            long delay = Duration.between(Instant.now(), lastRequestTime).toMillis() + REQUEST_INTERVAL_MILLISECS;
-            if (delay > 0) {
-                Thread.sleep(delay);
-            }
-        } catch (ArithmeticException e) {
+        streamMutex.acquire();
+        long delay = Duration.between(Instant.now(), lastRequestTime).toMillis() + REQUEST_INTERVAL_MILLISECS;
+        if (delay > 0) {
+            Thread.sleep(delay);
         }
         lastRequestTime = Instant.now();
     }

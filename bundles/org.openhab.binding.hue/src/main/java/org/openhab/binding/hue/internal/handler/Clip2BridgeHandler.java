@@ -202,7 +202,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "@text/offline.api2.conf-error.read-only");
                     } catch (AssetNotLoadedException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/offline.api2.conf-error.assets-not-loaded");
                     } catch (InterruptedException e) {
                         return;
@@ -220,7 +220,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 break;
 
             case HANDLER_INITIALIZING_ERROR:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.api2.conf-error.assets-not-loaded");
                 break;
 
@@ -248,7 +248,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         }
 
         // this method schedules itself to be called again in a loop..
-        checkConnectionTask = cancelTask(checkConnectionTask, false);
+        cancelTask(checkConnectionTask, false);
         checkConnectionTask = scheduler.schedule(() -> checkConnection(), milliSeconds, TimeUnit.MILLISECONDS);
     }
 
