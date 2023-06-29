@@ -441,7 +441,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         applKeyRetriesRemaining = APPLICATION_KEY_MAX_TRIES;
         connectRetriesRemaining = RECONNECT_MAX_TRIES;
-        scheduler.execute(() -> initializeAssets());
+        initializeAssets();
     }
 
     /**
