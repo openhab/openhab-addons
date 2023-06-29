@@ -322,6 +322,11 @@ public class Shelly2ApiJsonDTO {
             public Boolean monitorPhaseSequence;
         }
 
+        public class Shelly2DevConfigPm1 {
+            public Integer id;
+            public String name;
+        }
+
         public class Shelly2DevConfigCover {
             public class Shelly2DeviceConfigCoverMotor {
                 @SerializedName("idle_power_thr")
@@ -461,6 +466,8 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("em:0")
             public Shelly2DevConfigEm em0;
+            @SerializedName("pm1:0")
+            public Shelly2DevConfigPm1 pm10;
 
             @SerializedName("cover:0")
             public Shelly2DevConfigCover cover0;
@@ -678,6 +685,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("switch:3")
             public Shelly2RelayStatus switch3;
 
+            @SerializedName("pm1:0")
+            public Shelly2RelayStatus pm10;
+
             @SerializedName("em:0")
             Shelly2DeviceStatusEm em0;
             @SerializedName("emdata:0")
@@ -777,6 +787,23 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2RelayStatus {
+        public Integer id;
+        public String source;
+        public Boolean output;
+        @SerializedName("timer_started_at")
+        public Double timerStartetAt;
+        @SerializedName("timer_duration")
+        public Integer timerDuration;
+        public Double apower;
+        public Double voltage;
+        public Double current;
+        public Double pf;
+        public Shelly2Energy aenergy;
+        public Shelly2DeviceStatusTemp temperature;
+        public String[] errors;
+    }
+
+    public static class Shelly2Pm1Status {
         public Integer id;
         public String source;
         public Boolean output;

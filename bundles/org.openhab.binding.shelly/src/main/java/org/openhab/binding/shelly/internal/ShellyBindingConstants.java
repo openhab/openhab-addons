@@ -82,6 +82,11 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSDIMMERUS, //
             THING_TYPE_SHELLYPLUSWALLDISPLAY, //
 
+            // Shelly Plus Mini
+            THING_TYPE_SHELLYMINI1, //
+            THING_TYPE_SHELLYMINIPM, //
+            THING_TYPE_SHELLYMINI1PM, //
+
             // Shelly Pro
             THING_TYPE_SHELLYPRO1, //
             THING_TYPE_SHELLYPRO1PM, //

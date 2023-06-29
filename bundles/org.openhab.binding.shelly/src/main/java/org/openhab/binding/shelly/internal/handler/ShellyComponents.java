@@ -75,7 +75,8 @@ public class ShellyComponents {
 
         Integer rssi = getInteger(status.wifiSta.rssi);
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
-        if (status.tmp != null && !thingHandler.getProfile().isSensor && status.tmp.tC != SHELLY_API_INVTEMP) {
+        if (status.tmp != null && status.tmp.isValid && !thingHandler.getProfile().isSensor
+                && status.tmp.tC != SHELLY_API_INVTEMP) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                     toQuantityType(getDouble(status.tmp.tC), DIGITS_NONE, SIUnits.CELSIUS));
         } else if (status.temperature != null && status.temperature != SHELLY_API_INVTEMP) {

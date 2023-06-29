@@ -103,6 +103,12 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_PRO4PM = "SPSW-004PE16EU";
     public static final String SHELLYDT_PRO4PM_2 = "SPSW-104PE16EU";
 
+    // Shelly Plus Mini Series
+    // Shelly Mini Series
+    public static final String SHELLYDT_MINI1 = "SNSW-001X8EU";
+    public static final String SHELLYDT_MINIPM = "SNPM-001PCEU16";
+    public static final String SHELLYDT_MINI1PM = "SNSW-001P8EU";
+
     // Shelly BLU Series
     public static final String SHELLYDT_BLUBUTTON = "SBBT";
     public static final String SHELLYDT_BLUDW = "SBDW";
@@ -161,6 +167,11 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPLUSPLUGUS_STR = "shellyplusplugus";
     public static final String THING_TYPE_SHELLYPLUSDIMMERUS_STR = "shellypluswdus";
     public static final String THING_TYPE_SHELLYPLUSWALLDISPLAY_STR = "shellywalldisplay";
+
+    // Shelly Plus Mini Series
+    public static final String THING_TYPE_SHELLYMINI1_STR = "shelly1mini";
+    public static final String THING_TYPE_SHELLYMINIPM_STR = "shellypmmini";
+    public static final String THING_TYPE_SHELLYMINI1PM_STR = "shelly1pmmini";
 
     // Shelly Pro Series
     public static final String THING_TYPE_SHELLYPRO1_STR = "shellypro1";
@@ -262,6 +273,13 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSWALLDISPLAY = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);
 
+    // Shelly Plus Mini Series
+    public static final ThingTypeUID THING_TYPE_SHELLYMINI1 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYMINI1_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYMINIPM = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLYMINIPM_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYMINI1PM = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_SHELLYMINI1PM_STR);
+
     // Shelly Pro
     public static final ThingTypeUID THING_TYPE_SHELLYPRO1 = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPRO1_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYPRO1PM = new ThingTypeUID(BINDING_ID,
@@ -329,6 +347,11 @@ public class ShellyThingCreator {
         THING_TYPE_MAPPING.put(SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMERUS_STR);
 
+        // Plus Mini Series
+        THING_TYPE_MAPPING.put(SHELLYDT_MINI1, THING_TYPE_SHELLYMINI1_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_MINIPM, THING_TYPE_SHELLYMINIPM_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_MINI1PM, THING_TYPE_SHELLYMINI1PM_STR);
+
         // Pro Series
         THING_TYPE_MAPPING.put(SHELLYDT_PRO1, THING_TYPE_SHELLYPRO1_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO1_2, THING_TYPE_SHELLYPRO1_STR);
@@ -350,7 +373,7 @@ public class ShellyThingCreator {
         THING_TYPE_MAPPING.put(SHELLYDT_PRO4PM, THING_TYPE_SHELLYPRO4PM_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_PRO4PM_2, THING_TYPE_SHELLYPRO4PM_STR);
 
-        // Blu Series
+        // BLU Series
         THING_TYPE_MAPPING.put(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW_STR);
 
@@ -401,6 +424,10 @@ public class ShellyThingCreator {
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPLUSSMOKE_STR, THING_TYPE_SHELLYPLUSSMOKE_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPLUSDIMMERUS_STR, THING_TYPE_SHELLYPLUSDIMMERUS_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR, THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);
+
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYMINI1_STR, THING_TYPE_SHELLYMINI1_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYMINIPM_STR, THING_TYPE_SHELLYMINIPM_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYMINI1PM_STR, THING_TYPE_SHELLYMINI1PM_STR);
 
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPRO1_STR, THING_TYPE_SHELLYPRO1_STR);
         THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPRO1PM_STR, THING_TYPE_SHELLYPRO1PM_STR);

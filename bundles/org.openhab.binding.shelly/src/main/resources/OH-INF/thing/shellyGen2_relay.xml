@@ -121,6 +121,44 @@
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
+    <thing-type id="shelly1mini">
+        <label>ShellyPlus 1 Mini</label>
+        <description>@text/thing-type.shelly.shelly1mini.description</description>
+        <channel-groups>
+            <channel-group id="relay" typeId="relayChannel"/>
+            <channel-group id="device" typeId="deviceStatus"/>
+        </channel-groups>
+
+        <representation-property>serviceName</representation-property>
+        <config-description-ref uri="thing-type:shelly:relay-gen2"/>
+    </thing-type>
+
+
+    <thing-type id="shellypmmini">
+        <label>ShellyPlus PM Mini</label>
+        <description>@text/thing-type.shelly.shellypmmini.description</description>
+        <channel-groups>
+            <channel-group id="meter" typeId="meter"/>
+            <channel-group id="device" typeId="deviceStatus"/>
+        </channel-groups>
+
+        <representation-property>serviceName</representation-property>
+        <config-description-ref uri="thing-type:shelly:relay-gen2"/>
+    </thing-type>
+
+    <thing-type id="shelly1pmmini">
+        <label>ShellyPlus 1PM Mini</label>
+        <description>@text/thing-type.shelly.shelly1pmmini.description</description>
+        <channel-groups>
+            <channel-group id="relay" typeId="relayChannel"/>
+            <channel-group id="meter" typeId="meter"/>
+            <channel-group id="device" typeId="deviceStatus"/>
+        </channel-groups>
+
+        <representation-property>serviceName</representation-property>
+        <config-description-ref uri="thing-type:shelly:relay-gen2"/>
+    </thing-type>
+
 
 	<thing-type id="shellypro1">
 		<label>ShellyPro 1</label>

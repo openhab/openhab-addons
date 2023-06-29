@@ -196,6 +196,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateRelayStatus(status, result.switch1, channelUpdate);
         updated |= updateRelayStatus(status, result.switch2, channelUpdate);
         updated |= updateRelayStatus(status, result.switch3, channelUpdate);
+        updated |= updateRelayStatus(status, result.pm10, channelUpdate);
         updated |= updateEmStatus(status, result.em0, channelUpdate);
         updated |= updateRollerStatus(status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(status, result.light0, channelUpdate);
@@ -219,12 +220,20 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return false;
         }
         ShellyDeviceProfile profile = getProfile();
-        if (rs.id >= profile.numRelays) {
-            throw new IllegalArgumentException("Update for invalid relay index");
+
+        ShellySettingsRelay rstatus;
+        ShellyShortStatusRelay sr;
+        if (profile.hasRelays) {
+            if (rs.id >= profile.numRelays) {
+                throw new IllegalArgumentException("Update for invalid relay index");
+            }
+            rstatus = status.relays.get(rs.id);
+            sr = relayStatus.relays.get(rs.id);
+        } else {
+            rstatus = new ShellySettingsRelay();
+            sr = new ShellyShortStatusRelay();
         }
 
-        ShellySettingsRelay rstatus = status.relays.get(rs.id);
-        ShellyShortStatusRelay sr = relayStatus.relays.get(rs.id);
         sr.isValid = rstatus.isValid = true;
         sr.name = rstatus.name = status.name;
         if (rs.output != null) {
@@ -250,7 +259,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                 status.temperature = sr.temperature;
             }
         }
-        if (rs.voltage != null) {
+
+        if (rs.voltage != null)
+
+        {
             if (status.voltage == null || rs.voltage > status.voltage) {
                 status.voltage = rs.voltage;
             }
@@ -285,11 +297,16 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             emeter.pf = rs.pf;
         }
 
-        // Update internal structures
-        status.relays.set(rs.id, rstatus);
-        relayStatus.relays.set(rs.id, sr);
+        if (profile.hasRelays) {
+            // Update internal structures
+            status.relays.set(rs.id, rstatus);
+            relayStatus.relays.set(rs.id, sr);
+        }
+
         updateMeter(status, rs.id, sm, emeter, channelUpdate);
-        return channelUpdate ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rs.id) : false;
+        return channelUpdate && profile.hasRelays
+                ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rs.id)
+                : false;
     }
 
     private void updateMeter(ShellySettingsStatus status, int id, ShellySettingsMeter sm, ShellySettingsEMeter emeter,
@@ -474,7 +491,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             rs.power = sm.power = emeter.power = cs.apower;
         }
         if (cs.aenergy != null) {
-            sm.total = emeter.total = cs.aenergy.total / 3600;
+            sm.total = emeter.total = cs.aenergy.total;
             sm.counters = cs.aenergy.byMinute;
             if (cs.aenergy.minuteTs != null) {
                 sm.timestamp = (long) cs.aenergy.minuteTs;
