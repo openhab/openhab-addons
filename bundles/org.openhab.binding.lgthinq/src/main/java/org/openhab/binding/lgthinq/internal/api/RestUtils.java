@@ -53,10 +53,10 @@ public class RestUtils {
     private static final Logger logger = LoggerFactory.getLogger(RestUtils.class);
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
     private static final RequestConfig requestConfig;
+    private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10 * 1000;
     static {
-        int timeout = 5;
-        requestConfig = RequestConfig.custom().setConnectTimeout(timeout * 1000)
-                .setConnectionRequestTimeout(timeout * 1000).setSocketTimeout(timeout * 1000).build();
+        requestConfig = RequestConfig.custom().setConnectTimeout(DEFAULT_TIMEOUT_MILLISECONDS)
+                .setConnectionRequestTimeout(DEFAULT_TIMEOUT_MILLISECONDS).setSocketTimeout(DEFAULT_TIMEOUT_MILLISECONDS).build();
     }
 
     public static String getPreLoginEncPwd(String pwdToEnc) {
@@ -162,7 +162,6 @@ public class RestUtils {
             HttpPost request = new HttpPost(encodedUrl);
             headers.forEach(request::setHeader);
             request.setEntity(entity);
-            int hardTimeout = 6000; // milliseconds
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
@@ -170,7 +169,7 @@ public class RestUtils {
                         request.abort();
                 }
             };
-            new Timer(true).schedule(task, hardTimeout);
+            new Timer(true).schedule(task, DEFAULT_TIMEOUT_MILLISECONDS);
             HttpResponse resp = client.execute(request);
             if (request.isAborted()) {
                 logger.warn("POST to LG API was aborted due to timeout waiting for connection or data");
