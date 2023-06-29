@@ -36,7 +36,6 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapabil
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -81,13 +80,6 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
         freezerTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_FREEZER_TEMP_ID);
         doorChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_DOOR_ID);
         tempUnitUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_REF_TEMP_UNIT);
-    }
-
-    @Override
-    public void initialize() {
-        logger.debug("Initializing Thinq thing.");
-        Bridge bridge = getBridge();
-        initializeThing((bridge == null) ? null : bridge.getStatus());
     }
 
     @Override

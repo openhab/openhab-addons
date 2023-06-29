@@ -119,13 +119,6 @@ public class LGThinQWasherDryerHandler
         remoteStartEnabledChannels.clear();
     }
 
-    @Override
-    public void initialize() {
-        logger.debug("Initializing Thinq thing. Washer/Dryer Thing v3.4.3");
-        Bridge bridge = getBridge();
-        initializeThing((bridge == null) ? null : bridge.getStatus());
-    }
-
     private void loadOptionsCourse(WasherDryerCapability cap, ChannelUID courseChannel) {
         List<StateOption> optionsCourses = new ArrayList<>();
         cap.getCourses().forEach((k, v) -> optionsCourses.add(new StateOption(k, emptyIfNull(v.getCourseName()))));
