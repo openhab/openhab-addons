@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -465,7 +466,7 @@ public class Clip2Bridge implements Closeable {
     private boolean internalRestartScheduled;
     private boolean externalRestartScheduled;
     private State onlineState = State.CLOSED;
-    private Instant lastRequestTime = Instant.MIN;
+    private Optional<Instant> lastRequestTime = Optional.empty();
     private Instant sessionExpireTime = Instant.MAX;
     private @Nullable Session http2Session;
 
@@ -1119,13 +1120,13 @@ public class Clip2Bridge implements Closeable {
      */
     private synchronized void throttle() throws InterruptedException {
         streamMutex.acquire();
-        if (lastRequestTime.isAfter(Instant.MIN)) {
-            long delay = Duration.between(Instant.now(), lastRequestTime).toMillis() + REQUEST_INTERVAL_MILLISECS;
+        if (lastRequestTime.isPresent()) {
+            long delay = Duration.between(Instant.now(), lastRequestTime.get()).toMillis() + REQUEST_INTERVAL_MILLISECS;
             if (delay > 0) {
                 Thread.sleep(delay);
             }
         }
-        lastRequestTime = Instant.now();
+        lastRequestTime = Optional.of(Instant.now());
     }
 
     /**
