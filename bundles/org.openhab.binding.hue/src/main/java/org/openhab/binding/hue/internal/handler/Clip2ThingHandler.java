@@ -212,13 +212,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
      *
      * @param cancelTask the task to be cancelled (may be null)
      * @param mayInterrupt allows cancel() to interrupt the thread.
-     * @return always returns null.
      */
-    private @Nullable Future<?> cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
+    private void cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
         if (Objects.nonNull(cancelTask)) {
             cancelTask.cancel(mayInterrupt);
         }
-        return null;
     }
 
     /**
@@ -234,10 +232,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("{} -> dispose()", resourceId);
         disposing = true;
-        alertResetTask = cancelTask(alertResetTask, true);
-        dynamicsResetTask = cancelTask(dynamicsResetTask, true);
-        updateDependenciesTask = cancelTask(updateDependenciesTask, true);
-        updateServiceContributorsTask = cancelTask(updateServiceContributorsTask, true);
+        cancelTask(alertResetTask, true);
+        cancelTask(dynamicsResetTask, true);
+        cancelTask(updateDependenciesTask, true);
+        cancelTask(updateServiceContributorsTask, true);
+        alertResetTask = null;
+        dynamicsResetTask = null;
+        updateDependenciesTask = null;
+        updateServiceContributorsTask = null;
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceIds.clear();

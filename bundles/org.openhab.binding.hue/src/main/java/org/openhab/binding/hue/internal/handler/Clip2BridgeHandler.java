@@ -134,13 +134,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      *
      * @param cancelTask the task to be cancelled (may be null)
      * @param mayInterrupt allows cancel() to interrupt the thread.
-     * @return always returns null.
      */
-    private @Nullable Future<?> cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
+    private void cancelTask(@Nullable Future<?> cancelTask, boolean mayInterrupt) {
         if (Objects.nonNull(cancelTask)) {
             cancelTask.cancel(mayInterrupt);
         }
-        return null;
     }
 
     /**
@@ -264,8 +262,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         if (assetsLoaded) {
-            assetsLoaded = false;
-            scheduler.execute(() -> disposeAssets());
+            disposeAssets());
         }
     }
 
@@ -277,9 +274,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("disposeAssets() {}", this);
         synchronized (this) {
             assetsLoaded = false;
-            checkConnectionTask = cancelTask(checkConnectionTask, true);
-            updateOnlineStateTask = cancelTask(updateOnlineStateTask, true);
-            scheduledUpdateTask = (ScheduledFuture<?>) cancelTask(scheduledUpdateTask, true);
+            cancelTask(checkConnectionTask, true);
+            cancelTask(updateOnlineStateTask, true);
+            cancelTask(scheduledUpdateTask, true);
+            checkConnectionTask = null;
+            updateOnlineStateTask = null;
+            scheduledUpdateTask = null;
             synchronized (resourcesEventTasks) {
                 resourcesEventTasks.values().forEach(task -> cancelTask(task, true));
                 resourcesEventTasks.clear();
