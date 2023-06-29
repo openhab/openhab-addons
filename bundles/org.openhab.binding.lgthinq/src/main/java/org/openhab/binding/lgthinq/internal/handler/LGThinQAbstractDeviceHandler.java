@@ -47,7 +47,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinition, S extends SnapshotDefinition>
         extends BaseThingWithExtraInfoHandler {
-    private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractDeviceHandler.class);
+	private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractDeviceHandler.class);
+	protected @Nullable LGThinQBridgeHandler account;
     protected final String lgPlatformType;
     @Nullable
     private S lastShot;
@@ -278,10 +279,26 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
 
     protected abstract Logger getLogger();
 
+    @Override
+    public void initialize() {
+        getLogger().debug("Initializing Thinq thing.");
+
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            this.account = (LGThinQBridgeHandler) bridge.getHandler();
+            this.bridgeId = bridge.getUID().getId();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not set");
+            return;
+        }
+
+        initializeThing(bridge.getStatus());
+    }
+    
     protected void initializeThing(@Nullable ThingStatus bridgeStatus) {
         getLogger().debug("initializeThing LQ Thinq {}. Bridge status {}", getThing().getUID(), bridgeStatus);
         String thingId = getThing().getUID().getId();
-        Bridge bridge = getBridge();
+
         // setup configurations
         loadConfigurations();
 
@@ -293,22 +310,26 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
                         "Error updating channels dynamic options descriptions based on capabilities of the device. Fallback to default values.",
                         e);
             }
-            if (bridge != null) {
-                bridgeId = bridge.getUID().getId();
-                LGThinQBridgeHandler handler = (LGThinQBridgeHandler) bridge.getHandler();
-                // registry this thing to the bridge
-                if (handler == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-                } else {
-                    handler.registryListenerThing(this);
-                    if (bridgeStatus == ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    }
-                }
+            // registry this thing to the bridge
+            if (account == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account not set");
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            	account.registryListenerThing(this);
+                switch (bridgeStatus) {
+                    case ONLINE:
+                        updateStatus(ThingStatus.ONLINE);
+                        break;
+                    case INITIALIZING:
+                    case UNINITIALIZED:
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                        break;
+                    case UNKNOWN:
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        break;
+                    default:
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                        break;
+                }
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -334,6 +355,12 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             // force start state pooling if the device is ONLINE
             resetExtraInfoChannels();
             startThingStatePolling();
+        }
+    }
+    
+    public void refreshStatus() {
+        if (thing.getStatus() == ThingStatus.OFFLINE) {
+            initialize();
         }
     }
 
@@ -406,8 +433,8 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             updateExtraInfoStateChannels(extraInfoCollected);
         } catch (LGThinqException ex) {
             getLogger().error(
-                    "Error getting energy state and update the correlated channels. DeviceName:{}, DeviceId:{} ",
-                    getDeviceAlias(), getDeviceId(), ex);
+                    "Error getting energy state and update the correlated channels. DeviceName: {}, DeviceId: {}. Error: {}",
+                    getDeviceAlias(), getDeviceId(), ex.getMessage(), ex);
         }
     }
 
@@ -452,8 +479,8 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } catch (LGThinqException e) {
-            getLogger().error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry.",
-                    getDeviceAlias(), getDeviceId(), e);
+            getLogger().error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry: {}",
+                    getDeviceAlias(), getDeviceId(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Throwable e) {
             getLogger().error(
@@ -700,6 +727,11 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     @Override
     public void dispose() {
         logger.debug("Disposing Thinq Thing {}", getDeviceId());
+        
+        if (account != null) {
+            account.unRegistryListenerThing(this);
+        }
+        
         if (thingStatePollingJob != null) {
             thingStatePollingJob.cancel(true);
             stopThingStatePolling();

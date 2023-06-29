@@ -140,7 +140,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                 try {
                     doConnectedRun();
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.lgapi-getting-devices");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.lgapi-getting-devices");
                 }
 
             } finally {
@@ -227,6 +227,8 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                     discoveryService.removeLgDeviceDiscovery(device);
                 }
             });
+            
+            lGDeviceRegister.values().forEach(LGThinQAbstractDeviceHandler::refreshStatus);
         }
     };
 

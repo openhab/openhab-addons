@@ -109,9 +109,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Thinq thing.");
-        Bridge bridge = getBridge();
-        initializeThing((bridge == null) ? null : bridge.getStatus());
+    	super.initialize();
         try {
             ACCapability cap = getCapabilities();
             if (!isExtraInfoCollectorSupported()) {
