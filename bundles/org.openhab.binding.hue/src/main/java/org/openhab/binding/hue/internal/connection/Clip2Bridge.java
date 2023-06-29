@@ -740,12 +740,12 @@ public class Clip2Bridge implements Closeable {
      * @param active boolean that selects whether to restart in active or passive mode.
      */
     private void internalRestart(boolean active) {
-        internalRestartScheduled = false;
         try {
             openPassive();
             if (active) {
                 openActive();
             }
+            internalRestartScheduled = false;
         } catch (ApiException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("internalRestart() failed", e);
@@ -1119,9 +1119,11 @@ public class Clip2Bridge implements Closeable {
      */
     private synchronized void throttle() throws InterruptedException {
         streamMutex.acquire();
-        long delay = Duration.between(Instant.now(), lastRequestTime).toMillis() + REQUEST_INTERVAL_MILLISECS;
-        if (delay > 0) {
-            Thread.sleep(delay);
+        if (lastRequestTime.isAfter(Instant.MIN)) {
+            long delay = Duration.between(Instant.now(), lastRequestTime).toMillis() + REQUEST_INTERVAL_MILLISECS;
+            if (delay > 0) {
+                Thread.sleep(delay);
+            }
         }
         lastRequestTime = Instant.now();
     }
