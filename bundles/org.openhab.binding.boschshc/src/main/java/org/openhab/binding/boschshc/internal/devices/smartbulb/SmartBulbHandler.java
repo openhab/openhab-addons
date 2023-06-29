@@ -31,6 +31,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * Handler for smart light bulbs connected via Zigbee, e.g. Ledvance Smart+ bulbs
@@ -68,18 +69,18 @@ public class SmartBulbHandler extends BoschSHCDeviceHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_POWER_SWITCH:
-                if (command instanceof OnOffType) {
-                    updateBinarySwitchState((OnOffType) command);
+                if (command instanceof OnOffType onOffType) {
+                    updateBinarySwitchState(onOffType);
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
-                if (command instanceof PercentType) {
-                    updateMultiLevelSwitchState((PercentType) command);
+                if (command instanceof PercentType percentType) {
+                    updateMultiLevelSwitchState(percentType);
                 }
                 break;
             case CHANNEL_COLOR:
-                if (command instanceof HSBType) {
-                    updateColorState((HSBType) command);
+                if (command instanceof HSBType hsbType) {
+                    updateColorState(hsbType);
                 }
                 break;
         }
@@ -99,7 +100,7 @@ public class SmartBulbHandler extends BoschSHCDeviceHandler {
 
     private void updateColorState(HSBType command) {
         HSBColorActuatorServiceState serviceState = new HSBColorActuatorServiceState();
-        serviceState.rgb = command.getRGB();
+        serviceState.rgb = ColorUtil.hsbTosRgb(command);
         this.updateServiceState(hsbColorActuatorService, serviceState);
     }
 
