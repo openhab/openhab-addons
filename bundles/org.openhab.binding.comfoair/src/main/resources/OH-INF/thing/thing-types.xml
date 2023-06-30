@@ -873,7 +873,7 @@
 		<label>Preheater Frost Safety</label>
 		<description>Frost safety setting</description>
 		<category>Number</category>
-		<state readOnly="false">
+		<state readOnly="true">
 			<options>
 				<option value="0">Extra-safe setting</option>
 				<option value="1">Safe setting</option>
