@@ -158,6 +158,10 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         String resultCode = "???";
         if (resp.getStatusCode() != 200) {
             try {
+                if (resp.getStatusCode() == 400) {
+                    logger.warn("Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                    return Collections.emptyMap();
+                }
                 respMap = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 resultCode = respMap.get("resultCode");
@@ -200,6 +204,10 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         Map<String, Object> devicesResult;
         List<LGDevice> devices;
         if (resp.getStatusCode() != 200) {
+            if (resp.getStatusCode() == 400) {
+                logger.warn("Error calling device list from LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                return Collections.emptyList();
+            }
             logger.error("Error calling device list from LG Server API. The reason is:{}", resp.getJsonResponse());
             throw new LGThinqApiException(String
                     .format("Error calling device list from LG Server API. The reason is:%s", resp.getJsonResponse()));
