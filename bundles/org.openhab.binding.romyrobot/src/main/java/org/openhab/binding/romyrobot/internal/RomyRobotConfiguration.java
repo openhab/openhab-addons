@@ -26,6 +26,7 @@ public class RomyRobotConfiguration {
      * Sample configuration parameters. Replace with your own.
      */
     public String hostname = "";
+    public String password = "";
     public int refreshInterval = 600;
     public int port = 8080;
     public int timeout = 5;

@@ -28,8 +28,14 @@
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>The host name or IP address of the RomyRobot Web API interface. Please take note that you have to first
-					open the URL in your browser and unlock the HTTP interface with the code you find under the dustbin.</description>
+				<description>The host name or IP address of your ROMY robot</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Please take note that the local http interface is locked per default you have to unlock it with the
+					code
+					you find under the dustbin.</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="true">
 				<label>Port</label>
