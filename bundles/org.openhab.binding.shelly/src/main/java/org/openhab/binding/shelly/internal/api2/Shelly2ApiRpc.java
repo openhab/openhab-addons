@@ -262,6 +262,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.numMeters = 1;
         } else if (dc.em0 != null) {
             profile.numMeters = 3;
+        } else if (dc.em10 != null) {
+            profile.numMeters = 2;
         }
 
         if (profile.numMeters > 0) {
@@ -780,10 +782,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return relayStatus;
     }
 
+    @SuppressWarnings("null")
     @Override
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        int rIdx = id;
+        if (profile.settings.relays != null) {
+            Integer rid = profile.settings.relays.get(id).id;
+            if (rid != null) {
+                rIdx = rid;
+            }
+        }
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        params.id = id;
+        params.id = rIdx;
         params.on = SHELLY_API_ON.equals(turnMode);
         apiRequest(SHELLYRPC_METHOD_SWITCH_SET, params, String.class);
     }

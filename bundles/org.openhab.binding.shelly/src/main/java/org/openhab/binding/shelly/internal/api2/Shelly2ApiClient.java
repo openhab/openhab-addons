@@ -151,15 +151,13 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
     protected @Nullable ArrayList<@Nullable ShellySettingsRelay> fillRelaySettings(ShellyDeviceProfile profile,
             Shelly2GetConfigResult dc) {
-        if (dc.switch0 == null) {
-            return null;
-        }
         ArrayList<@Nullable ShellySettingsRelay> relays = new ArrayList<>();
         addRelaySettings(relays, dc.switch0);
         addRelaySettings(relays, dc.switch1);
         addRelaySettings(relays, dc.switch2);
         addRelaySettings(relays, dc.switch3);
-        return relays;
+        addRelaySettings(relays, dc.switch100);
+        return relays.size() > 0 ? relays : null;
     }
 
     private void addRelaySettings(ArrayList<@Nullable ShellySettingsRelay> relays,
@@ -196,8 +194,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateRelayStatus(status, result.switch1, channelUpdate);
         updated |= updateRelayStatus(status, result.switch2, channelUpdate);
         updated |= updateRelayStatus(status, result.switch3, channelUpdate);
+        updated |= updateRelayStatus(status, result.switch100, channelUpdate);
         updated |= updateRelayStatus(status, result.pm10, channelUpdate);
         updated |= updateEmStatus(status, result.em0, channelUpdate);
+        updated |= updateEmStatus(status, result.em10, channelUpdate);
+        updated |= updateEmStatus(status, result.em11, channelUpdate);
         updated |= updateRollerStatus(status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(status, result.light0, channelUpdate);
         if (channelUpdate) {
@@ -223,12 +224,13 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         ShellySettingsRelay rstatus;
         ShellyShortStatusRelay sr;
+        int rIdx = getRelayIdx(profile, rs.id);
         if (profile.hasRelays) {
-            if (rs.id >= profile.numRelays) {
+            if (rIdx == -1) {
                 throw new IllegalArgumentException("Update for invalid relay index");
             }
-            rstatus = status.relays.get(rs.id);
-            sr = relayStatus.relays.get(rs.id);
+            rstatus = status.relays.get(rIdx);
+            sr = relayStatus.relays.get(rIdx);
         } else {
             rstatus = new ShellySettingsRelay();
             sr = new ShellyShortStatusRelay();
@@ -277,7 +279,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
 
         ShellySettingsMeter sm = new ShellySettingsMeter();
-        ShellySettingsEMeter emeter = status.emeters.get(rs.id);
+        ShellySettingsEMeter emeter = status.emeters != null ? status.emeters.get(rIdx) : new ShellySettingsEMeter();
         if (rs.apower != null) {
             sm.power = emeter.power = rs.apower;
         }
@@ -299,14 +301,27 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         if (profile.hasRelays) {
             // Update internal structures
-            status.relays.set(rs.id, rstatus);
-            relayStatus.relays.set(rs.id, sr);
+            status.relays.set(rIdx, rstatus);
+            relayStatus.relays.set(rIdx, sr);
         }
 
-        updateMeter(status, rs.id, sm, emeter, channelUpdate);
+        updateMeter(status, rIdx, sm, emeter, channelUpdate);
         return channelUpdate && profile.hasRelays
-                ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rs.id)
+                ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rIdx)
                 : false;
+    }
+
+    private int getRelayIdx(ShellyDeviceProfile profile, @Nullable Integer id) {
+        if (id != null && profile.settings.relays != null) {
+            int idx = 0;
+            for (ShellySettingsRelay relay : profile.settings.relays) {
+                if (relay.isValid && relay.id == id) {
+                    return idx;
+                }
+            }
+            idx++;
+        }
+        return -1;
     }
 
     private void updateMeter(ShellySettingsStatus status, int id, ShellySettingsMeter sm, ShellySettingsEMeter emeter,

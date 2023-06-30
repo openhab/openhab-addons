@@ -463,9 +463,15 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DevConfigSwitch switch2;
             @SerializedName("switch:3")
             public Shelly2DevConfigSwitch switch3;
+            @SerializedName("switch:100")
+            public Shelly2DevConfigSwitch switch100; // Pro 3EM Add-On
 
             @SerializedName("em:0")
             public Shelly2DevConfigEm em0;
+            @SerializedName("em1:0")
+            public Shelly2DevConfigEm em10;
+            @SerializedName("em1:1")
+            public Shelly2DevConfigEm em11;
             @SerializedName("pm1:0")
             public Shelly2DevConfigPm1 pm10;
 
@@ -684,6 +690,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2RelayStatus switch2;
             @SerializedName("switch:3")
             public Shelly2RelayStatus switch3;
+            @SerializedName("switch:100")
+            public Shelly2RelayStatus switch100; // Pro 3EM Add-On
 
             @SerializedName("pm1:0")
             public Shelly2RelayStatus pm10;
@@ -692,6 +700,12 @@ public class Shelly2ApiJsonDTO {
             Shelly2DeviceStatusEm em0;
             @SerializedName("emdata:0")
             Shelly2DeviceStatusEmData emdata0;
+            @SerializedName("em1:0")
+            Shelly2DeviceStatusEm em10;
+            @SerializedName("em1:11")
+            Shelly2DeviceStatusEm em11;
+            @SerializedName("em1data:0")
+            Shelly2DeviceStatusEmData em1data0;
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
