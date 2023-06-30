@@ -53,6 +53,10 @@
 			<update-channel id="preheaterFrostTime" groupIds="menuP2">
 				<type>comfoair:preheater_frost_time</type>
 			</update-channel>
+			
+			<update-channel id="preheaterSafety" groupIds="preheater">
+				<type>comfoair:preheater_safety</type>
+			</update-channel>
 		</instruction-set>
 
 	</thing-type>
@@ -94,6 +98,10 @@
 
 			<update-channel id="preheaterFrostTime" groupIds="menuP2">
 				<type>comfoair:preheater_frost_time</type>
+			</update-channel>
+			
+			<update-channel id="preheaterSafety" groupIds="preheater">
+				<type>comfoair:preheater_safety</type>
 			</update-channel>
 		</instruction-set>
 
