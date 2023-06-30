@@ -443,7 +443,8 @@ public class ShieldTVMessageParser {
                 logger.info("{} - Unknown payload received. {}", thingId, msg);
             }
         } catch (Exception e) {
-            logger.info("{} - Message Parser Caught Exception", thingId, e);
+            logger.warn("{} - Message Parser Exception on {}", thingId, msg);
+            logger.warn("{} - Message Parser Caught Exception", thingId, e);
         }
     }
 }

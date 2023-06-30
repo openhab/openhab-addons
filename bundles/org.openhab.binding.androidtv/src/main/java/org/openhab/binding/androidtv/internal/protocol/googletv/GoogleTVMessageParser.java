@@ -329,8 +329,8 @@ public class GoogleTVMessageParser {
                 logger.info("{} - Unknown payload received. {} {}", thingId, len, msg);
             }
         } catch (Exception e) {
-            logger.debug("{} - Message Parser Exception on {}", thingId, msg);
-            logger.debug("Message Parser Caught Exception", e);
+            logger.warn("{} - Message Parser Exception on {}", thingId, msg);
+            logger.warn("{} - Message Parser Caught Exception", thingId, e);
         }
     }
 }
