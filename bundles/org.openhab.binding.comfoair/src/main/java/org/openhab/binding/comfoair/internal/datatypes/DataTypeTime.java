@@ -60,6 +60,8 @@ public class DataTypeTime implements ComfoAirDataType {
                 } else {
                     return new QuantityType<>(value, Units.MINUTE);
                 }
+            } else if (commandType == ComfoAirCommandType.ENTHALPY_TIME) {
+                return new QuantityType<>(value * 12, Units.MINUTE);
             }
             return new QuantityType<>(value, Units.HOUR);
         }

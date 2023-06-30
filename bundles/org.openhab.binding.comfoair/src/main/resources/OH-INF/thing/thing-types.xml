@@ -964,11 +964,11 @@
 	</channel-type>
 
 	<channel-type id="enthalpy_time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Enthalpy Sensor Timer</label>
 		<description>Timer state of the enthalpy sensor</description>
 		<category>Time</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="is_preheater" advanced="true">

@@ -46,6 +46,10 @@
 				<type>comfoair:cookerhood_delay</type>
 			</update-channel>
 			
+			<update-channel id="enthalpyTime" groupIds="enthalpy">
+				<type>comfoair:enthalpy_time</type>
+			</update-channel>
+			
 			<update-channel id="preheaterFrostTime" groupIds="menuP2">
 				<type>comfoair:preheater_frost_time</type>
 			</update-channel>

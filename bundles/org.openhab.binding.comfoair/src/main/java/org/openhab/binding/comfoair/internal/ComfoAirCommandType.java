@@ -227,7 +227,7 @@ public enum ComfoAirCommandType {
     ENTHALPY_LEVEL(ComfoAirBindingConstants.CG_ENTHALPY_PREFIX + ComfoAirBindingConstants.CHANNEL_ENTHALPY_LEVEL,
             DataTypeNumber.getInstance(), Constants.REQUEST_GET_SENSORS, Constants.REPLY_GET_SENSORS, new int[] { 4 }),
     ENTHALPY_TIME(ComfoAirBindingConstants.CG_ENTHALPY_PREFIX + ComfoAirBindingConstants.CHANNEL_ENTHALPY_TIME,
-            DataTypeNumber.getInstance(), Constants.REQUEST_GET_SENSORS, Constants.REPLY_GET_SENSORS, new int[] { 5 }),
+            DataTypeTime.getInstance(), Constants.REQUEST_GET_SENSORS, Constants.REPLY_GET_SENSORS, new int[] { 5 }),
     PREHEATER_VALVE(ComfoAirBindingConstants.CG_PREHEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_PREHEATER_VALVE,
             DataTypeNumber.getInstance(), Constants.REQUEST_GET_PREHEATER, Constants.REPLY_GET_PREHEATER,
             new int[] { 0 }),
