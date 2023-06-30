@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.discovery.PulseaudioDeviceDiscoveryService;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioBridgeHandler;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
+import org.openhab.core.audio.utils.AudioSinkUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -39,6 +40,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +63,16 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
 
     private PulseAudioBindingConfiguration configuration = new PulseAudioBindingConfiguration();
 
+    private @Nullable AudioSinkUtils audioSinkUtils;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
+
+    @Reference
+    public void setAudioSinkUtils(AudioSinkUtils audioSinkUtils) {
+        this.audioSinkUtils = audioSinkUtils;
     }
 
     @Override
@@ -119,7 +128,7 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new PulseaudioHandler(thing, bundleContext);
+            return new PulseaudioHandler(thing, bundleContext, audioSinkUtils);
         }
 
         return null;
