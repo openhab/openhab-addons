@@ -44,7 +44,7 @@
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
-		
+
 		<config-description-ref uri="thing-type:comfoair:serial"/>
 
 	</thing-type>
@@ -70,11 +70,11 @@
 			<channel-group id="resets" typeId="resets"/>
 		</channel-groups>
 
-    <properties>
+		<properties>
 			<property name="vendor">Zehnder</property>
 			<property name="thingTypeVersion">1</property>
 		</properties>
-		
+
 		<config-description-ref uri="thing-type:comfoair:serial"/>
 
 	</thing-type>
