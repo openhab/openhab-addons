@@ -18,6 +18,10 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -26,8 +30,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.core.common.ThreadPoolManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LoginManager} is the Java class used to handle api requests related to session handling and login
@@ -45,7 +52,12 @@ public class LoginManager extends RestManager {
     private static final String LOGOUT = "logout";
     private static final int GRANT_DELAY_SEC = 180;
 
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(APP_ID + LoginManager.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(LoginManager.class);
+
     private final Mac mac;
+    private Optional<ScheduledFuture<?>> grantJob = Optional.empty();
 
     private static class AuthStatus extends Response<AuthorizationStatus> {
     }
@@ -138,31 +150,67 @@ public class LoginManager extends RestManager {
         post(LOGOUT);
     }
 
-    private Status trackAuthorize(int trackId) throws FreeboxException {
-        return getSingle(AuthStatus.class, AUTHORIZE_ACTION, Integer.toString(trackId)).status();
+    private class GrantLoop implements Runnable {
+        private final ZonedDateTime timeLimit;
+        private final Authorization authorize;
+        private Status track;
+
+        public GrantLoop(ZonedDateTime timeLimit, Authorization authorize, Status track) {
+            this.timeLimit = timeLimit;
+            this.authorize = authorize;
+            this.track = track;
+        }
+
+        @Override
+        public void run() {
+            try {
+                track = ZonedDateTime.now().isAfter(timeLimit) ? Status.TIMEOUT
+                        : getSingle(AuthStatus.class, AUTHORIZE_ACTION, Integer.toString(authorize.trackId)).status();
+                if (track == Status.PENDING) {
+                    grantJob = Optional.of(scheduler.schedule(new GrantLoop(timeLimit, authorize, track), 2000,
+                            TimeUnit.MILLISECONDS));
+                    return;
+                }
+            } catch (FreeboxException e) {
+                logger.warn("Error during granting process : {}", e.getMessage());
+                track = Status.UNKNOWN;
+            }
+            grantJob = Optional.empty();
+        }
     }
 
     public String grant() throws FreeboxException {
+        ZonedDateTime timeLimit = ZonedDateTime.now().plusSeconds(GRANT_DELAY_SEC);
         Authorization authorize = post(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION);
         Status track = Status.PENDING;
-        ZonedDateTime timeLimit = ZonedDateTime.now().plusSeconds(GRANT_DELAY_SEC);
-        try {
-            while (Status.PENDING.equals(track) && ZonedDateTime.now().isBefore(timeLimit)) {
-                Thread.sleep(2000);
-                track = trackAuthorize(authorize.trackId());
+
+        grantJob = Optional
+                .of(scheduler.schedule(new GrantLoop(timeLimit, authorize, track), 2000, TimeUnit.MILLISECONDS));
+
+        while (track == Status.PENDING) {
+            try {
+                grantJob.wait();
+            } catch (InterruptedException e) {
+                break;
             }
-            switch (track) {
-                case GRANTED:
-                    return authorize.appToken();
-                case TIMEOUT, PENDING:
-                    throw new FreeboxException("Unable to grant session, delay expired");
-                case DENIED:
-                    throw new FreeboxException("Unable to grant session, access was denied");
-                default:
-                    throw new FreeboxException("Unable to grant session");
-            }
-        } catch (InterruptedException e) {
-            throw new FreeboxException(e, "Granting process interrupted");
         }
+
+        disposeGrantJob();
+
+        switch (track) {
+            case GRANTED:
+                return authorize.appToken;
+            case TIMEOUT, PENDING:
+                throw new FreeboxException("Unable to grant session, delay expired");
+            case DENIED:
+                throw new FreeboxException("Unable to grant session, access was denied");
+            default:
+                throw new FreeboxException("Unable to grant session");
+        }
+    }
+
+    private void disposeGrantJob() {
+        grantJob.ifPresent(job -> job.cancel(true));
+        grantJob = Optional.empty();
     }
 }
