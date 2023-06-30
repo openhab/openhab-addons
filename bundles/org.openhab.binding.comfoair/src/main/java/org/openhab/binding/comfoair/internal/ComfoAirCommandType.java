@@ -30,10 +30,8 @@ import org.openhab.binding.comfoair.internal.datatypes.DataTypeTemperature;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeTime;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeVolt;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Represents all valid commands which could be processed by this binding
@@ -786,29 +784,22 @@ public enum ComfoAirCommandType {
      *            new state
      * @return initialized ComfoAirCommand
      */
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public static @Nullable ComfoAirCommand getChangeCommand(String key, Command command) {
         ComfoAirCommandType commandType = getCommandTypeByKey(key);
-        State value = UnDefType.NULL;
 
         if (commandType != null) {
             ComfoAirDataType dataType = commandType.getDataType();
-            if (dataType == DataTypeBoolean.getInstance() || dataType == DataTypeNumber.getInstance()
-                    || command instanceof QuantityType<?> || command instanceof DecimalType) {
-                value = (State) command;
-            }
-            if (value instanceof UnDefType) {
-                return null;
-            } else {
-                int[] data = dataType.convertFromState(value, commandType);
-                DecimalType decimalValue = value.as(DecimalType.class);
-                if (decimalValue != null) {
-                    int intValue = decimalValue.intValue();
 
-                    if (data != null) {
-                        int dataPosition = commandType.getChangeDataPos();
-                        return new ComfoAirCommand(key, commandType.changeCommand, null, data, dataPosition, intValue);
-                    }
+            State value = (State) command;
+
+            int[] data = dataType.convertFromState(value, commandType);
+            DecimalType decimalValue = value.as(DecimalType.class);
+            if (decimalValue != null) {
+                int intValue = decimalValue.intValue();
+
+                if (data != null) {
+                    int dataPosition = commandType.getChangeDataPos();
+                    return new ComfoAirCommand(key, commandType.changeCommand, null, data, dataPosition, intValue);
                 }
             }
         }
