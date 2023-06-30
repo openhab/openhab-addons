@@ -262,7 +262,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         if (assetsLoaded) {
-            disposeAssets());
+            disposeAssets();
         }
     }
 
