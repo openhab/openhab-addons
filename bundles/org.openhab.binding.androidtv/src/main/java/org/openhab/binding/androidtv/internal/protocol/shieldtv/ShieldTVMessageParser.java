@@ -340,14 +340,17 @@ public class ShieldTVMessageParser {
                 }
             } else if (msg.startsWith(MESSAGE_GOOD_COMMAND)) {
                 // This has something to do with successful command response, maybe.
+                logger.trace("{} - Good Command Response", thingId);
             } else if (KEEPALIVE_REPLY.equals(msg)) {
                 // Keepalive Reply
+                logger.trace("{} - Keepalive Reply", thingId);
             } else if (msg.startsWith(MESSAGE_LOWPRIV) && msg.startsWith(MESSAGE_PINSTART, 6)) {
                 // 080a 12 0308cf08 180a
                 logger.debug("PIN Process Started");
             } else if (msg.startsWith(MESSAGE_CERT_COMING) && msg.length() == 6) {
                 // This seems to be 20**** when observed. It is unclear what this does.
                 // This seems to send immediately before the certificate reply and as a reply to the pin being sent
+                logger.trace("{} - Certificate To Follow", thingId);
             } else if (msg.startsWith(MESSAGE_SUCCESS)) {
                 // Successful command received
                 // 08f007 12 0c 0804 12 08 0a0608 01100c200f 18f007 - GOOD LOGIN
@@ -365,6 +368,7 @@ public class ShieldTVMessageParser {
                 logger.debug("{} - Timeout {}", thingId, msg);
             } else if (msg.startsWith(MESSAGE_APP_SUCCESS) && msg.startsWith(MESSAGE_APP_GET_SUCCESS, 10)) {
                 // Get current app command successful. Usually paired with 0807 reply below.
+                logger.trace("{} - Current App Request Successful", thingId);
             } else if (msg.startsWith(MESSAGE_APP_SUCCESS) && msg.startsWith(MESSAGE_APP_CURRENT, 10)) {
                 // Current App
                 // 08ec07 12 2a0807 22 262205 656e5f555342 1d 636f6d2e676f6f676c652e616e64726f69642e74766c61756e63686572
