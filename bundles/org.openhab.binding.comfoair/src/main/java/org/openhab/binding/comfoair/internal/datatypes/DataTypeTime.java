@@ -70,48 +70,44 @@ public class DataTypeTime implements ComfoAirDataType {
         int[] template = commandType.getChangeDataTemplate();
         int[] possibleValues = commandType.getPossibleValues();
         int position = commandType.getChangeDataPos();
-        DecimalType decimal = new DecimalType();
+        int intValue;
 
-        if (value instanceof QuantityType<?>) {
+        if (value instanceof QuantityType<?> qt) {
             QuantityType<?> internalQuantity = new QuantityType<>();
 
             if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_DELAYS
                     || commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_PREHEATER) {
                 if (commandType == ComfoAirCommandType.FILTER_WEEKS) {
-                    internalQuantity = ((QuantityType<?>) value).toUnit(Units.WEEK);
+                    internalQuantity = qt.toUnit(Units.WEEK);
                 } else {
-                    internalQuantity = ((QuantityType<?>) value).toUnit(Units.MINUTE);
+                    internalQuantity = qt.toUnit(Units.MINUTE);
                 }
             } else {
-                internalQuantity = ((QuantityType<?>) value).toUnit(Units.HOUR);
+                internalQuantity = qt.toUnit(Units.HOUR);
             }
 
             if (internalQuantity != null) {
-                decimal = internalQuantity.as(DecimalType.class);
+                intValue = internalQuantity.intValue();
             } else {
-                logger.trace("\"DataTypeTime\" class \"convertFromState\" could not convert state to internal unit");
+                return null;
             }
-        } else {
-            decimal = (DecimalType) value;
-        }
-
-        if (decimal != null) {
-            int intValue = decimal.intValue();
-
-            if (possibleValues == null) {
-                template[position] = intValue;
-            } else {
-                for (int i = 0; i < possibleValues.length; i++) {
-                    if (possibleValues[i] == intValue) {
-                        template[position] = intValue;
-                        break;
-                    }
-                }
-            }
-            return template;
+        } else if (value instanceof DecimalType dt) {
+            intValue = dt.intValue();
         } else {
             logger.trace("\"DataTypeTime\" class \"convertFromState\" undefined state");
             return null;
         }
+
+        if (possibleValues == null) {
+            template[position] = intValue;
+        } else {
+            for (int i = 0; i < possibleValues.length; i++) {
+                if (possibleValues[i] == intValue) {
+                    template[position] = intValue;
+                    break;
+                }
+            }
+        }
+        return template;
     }
 }

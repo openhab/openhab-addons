@@ -60,26 +60,24 @@ public class DataTypeVolt implements ComfoAirDataType {
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
         int[] template = commandType.getChangeDataTemplate();
-        DecimalType decimal = new DecimalType();
+        float volt;
 
-        if (value instanceof QuantityType<?>) {
-            QuantityType<?> volts = ((QuantityType<?>) value).toUnit(Units.VOLT);
+        if (value instanceof QuantityType<?> qt) {
+            QuantityType<?> qtVolt = qt.toUnit(Units.VOLT);
 
-            if (volts != null) {
-                decimal = volts.as(DecimalType.class);
+            if (qtVolt != null) {
+                volt = qtVolt.floatValue();
             } else {
-                logger.trace("\"DataTypeVolt\" class \"convertFromState\" could not convert state to internal unit");
+                return null;
             }
-        } else {
-            decimal = (DecimalType) value;
-        }
-
-        if (decimal != null) {
-            template[commandType.getChangeDataPos()] = (int) (decimal.doubleValue() * 255 / 10);
-            return template;
+        } else if (value instanceof DecimalType dt) {
+            volt = dt.floatValue();
         } else {
             logger.trace("\"DataTypeVolt\" class \"convertFromState\" undefined state");
             return null;
         }
+
+        template[commandType.getChangeDataPos()] = (int) (volt * 255 / 10);
+        return template;
     }
 }

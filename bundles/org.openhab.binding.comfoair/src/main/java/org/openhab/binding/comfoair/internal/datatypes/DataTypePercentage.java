@@ -15,6 +15,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -70,24 +71,33 @@ public class DataTypePercentage implements ComfoAirDataType {
         int[] template = commandType.getChangeDataTemplate();
         int[] possibleValues = commandType.getPossibleValues();
         int position = commandType.getChangeDataPos();
+        int percent;
 
-        QuantityType<?> percents = ((QuantityType<?>) value).toUnit(Units.PERCENT);
+        if (value instanceof QuantityType<?> qt) {
+            QuantityType<?> qtPercent = qt.toUnit(Units.PERCENT);
 
-        if (percents != null) {
-            if (possibleValues == null) {
-                template[position] = percents.intValue();
+            if (qtPercent != null) {
+                percent = qtPercent.intValue();
             } else {
-                for (int i = 0; i < possibleValues.length; i++) {
-                    if (possibleValues[i] == percents.intValue()) {
-                        template[position] = percents.intValue();
-                        break;
-                    }
-                }
+                return null;
             }
-            return template;
+        } else if (value instanceof DecimalType dt) {
+            percent = dt.intValue();
         } else {
             logger.trace("\"DataTypePercentage\" class \"convertFromState\" undefined state");
             return null;
         }
+
+        if (possibleValues == null) {
+            template[position] = percent;
+        } else {
+            for (int i = 0; i < possibleValues.length; i++) {
+                if (possibleValues[i] == percent) {
+                    template[position] = percent;
+                    break;
+                }
+            }
+        }
+        return template;
     }
 }

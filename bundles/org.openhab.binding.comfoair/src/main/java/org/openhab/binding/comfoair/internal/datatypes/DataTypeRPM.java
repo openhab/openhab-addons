@@ -61,27 +61,25 @@ public class DataTypeRPM implements ComfoAirDataType {
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
         int[] template = commandType.getChangeDataTemplate();
-        DecimalType decimal = new DecimalType();
+        float rpm;
 
-        if (value instanceof QuantityType<?>) {
-            QuantityType<?> rpms = ((QuantityType<?>) value).toUnit(Units.RPM);
+        if (value instanceof QuantityType<?> qt) {
+            QuantityType<?> qtRpm = ((QuantityType<?>) value).toUnit(Units.RPM);
 
-            if (rpms != null) {
-                decimal = rpms.as(DecimalType.class);
+            if (qtRpm != null) {
+                rpm = qtRpm.floatValue();
             } else {
-                logger.trace("\"DataTypeRPM\" class \"convertFromState\" could not convert state to internal unit");
+                return null;
             }
-        } else {
-            decimal = (DecimalType) value;
-        }
-
-        if (decimal != null) {
-            // transferred value is (1875000 / rpm) per protocol
-            template[commandType.getChangeDataPos()] = (int) (1875000 / decimal.doubleValue());
-            return template;
+        } else if (value instanceof DecimalType dt) {
+            rpm = dt.floatValue();
         } else {
             logger.trace("\"DataTypeRPM\" class \"convertFromState\" undefined state");
             return null;
         }
+
+        // transferred value is (1875000 / rpm) per protocol
+        template[commandType.getChangeDataPos()] = (int) (1875000 / rpm);
+        return template;
     }
 }

@@ -64,31 +64,28 @@ public class DataTypeTemperature implements ComfoAirDataType {
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
         int[] template = commandType.getChangeDataTemplate();
-        DecimalType decimal = new DecimalType();
+        float celsius;
 
-        if (value instanceof QuantityType) {
-            QuantityType<?> celsius = ((QuantityType<?>) value).toUnit(SIUnits.CELSIUS);
+        if (value instanceof QuantityType<?> qt) {
+            QuantityType<?> qtCelsius = qt.toUnit(SIUnits.CELSIUS);
 
-            if (celsius != null) {
-                decimal = celsius.as(DecimalType.class);
+            if (qtCelsius != null) {
+                celsius = qtCelsius.floatValue();
             } else {
-                logger.trace(
-                        "\"DataTypeTemperature\" class \"convertFromState\" could not convert state to internal unit");
+                return null;
             }
-        } else {
-            decimal = (DecimalType) value;
-        }
-
-        if (decimal != null) {
-            if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_GHX) {
-                template[commandType.getChangeDataPos()] = decimal.intValue();
-            } else {
-                template[commandType.getChangeDataPos()] = (int) (decimal.doubleValue() + 20) * 2;
-            }
-            return template;
+        } else if (value instanceof DecimalType dt) {
+            celsius = dt.floatValue();
         } else {
             logger.trace("\"DataTypeTemperature\" class \"convertFromState\" undefined state");
             return null;
         }
+
+        if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_GHX) {
+            template[commandType.getChangeDataPos()] = (int) celsius;
+        } else {
+            template[commandType.getChangeDataPos()] = (int) (celsius + 20) * 2;
+        }
+        return template;
     }
 }
