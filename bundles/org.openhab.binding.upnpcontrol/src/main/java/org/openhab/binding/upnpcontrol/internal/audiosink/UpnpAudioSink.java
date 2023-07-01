@@ -72,22 +72,31 @@ public class UpnpAudioSink extends AudioSinkAsync {
 
         if (audioStream instanceof URLAudioStream urlAudioStream) {
             playMedia(urlAudioStream.getURL());
+            try {
+                audioStream.close();
+            } catch (IOException e) {
+            }
         } else if (!callbackUrl.isEmpty()) {
             StreamServed streamServed;
             try {
-                streamServed = audioHTTPServer.serve(audioStream, 20, true);
+                streamServed = audioHTTPServer.serve(audioStream, 5, true);
             } catch (IOException e) {
-                throw new UnsupportedAudioStreamException(handler.getUDN() + " can only handle clonable audio streams.",
+                try {
+                    audioStream.close();
+                } catch (IOException ex) {
+                }
+                throw new UnsupportedAudioStreamException(
+                        handler.getUDN() + " was not able to handle the audio stream (cache on disk failed).",
                         audioStream.getClass(), e);
             }
             streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
             playMedia(callbackUrl + streamServed.url());
         } else {
             logger.warn("We do not have any callback url, so {} cannot play the audio stream!", handler.getUDN());
-        }
-        try {
-            audioStream.close();
-        } catch (IOException e) {
+            try {
+                audioStream.close();
+            } catch (IOException e) {
+            }
         }
     }
 
