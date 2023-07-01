@@ -135,8 +135,13 @@ public class SonosAudioSink extends AudioSinkSync {
             try {
                 streamServed = audioHTTPServer.serve(audioStream, 10, true);
             } catch (IOException e) {
-                throw new UnsupportedAudioStreamException("Sonos can only handle clonable audio streams.",
-                        audioStream.getClass(), e);
+                try {
+                    audioStream.close();
+                } catch (IOException ex) {
+                }
+                throw new UnsupportedAudioStreamException(
+                        "Sonos was not able to handle the audio stream (cache on disk failed).", audioStream.getClass(),
+                        e);
             }
             String url = callbackUrl + streamServed.url();
 
@@ -155,10 +160,10 @@ public class SonosAudioSink extends AudioSinkSync {
             }
         } else {
             logger.warn("We do not have any callback url, so Sonos cannot play the audio stream!");
-        }
-        try {
-            audioStream.close();
-        } catch (IOException e) {
+            try {
+                audioStream.close();
+            } catch (IOException e) {
+            }
         }
     }
 
