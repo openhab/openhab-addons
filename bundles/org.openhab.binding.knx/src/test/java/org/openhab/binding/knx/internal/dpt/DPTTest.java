@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.knx.internal.dpt;
 
+import static java.lang.Double.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.DecimalFormat;
@@ -152,7 +153,7 @@ class DPTTest {
     void testToDPT9ValueFromQuantityType() {
         assertEquals("23.1", ValueEncoder.encode(new QuantityType<>("23.1 °C"), "9.001"));
         assertEquals(5.0,
-                Double.parseDouble(Objects.requireNonNull(ValueEncoder.encode(new QuantityType<>("41 °F"), "9.001"))));
+                parseDouble(Objects.requireNonNull(ValueEncoder.encode(new QuantityType<>("41 °F"), "9.001"))));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("274.15 K"), "9.001"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K"), "9.002"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 mK"), "9.002"));
@@ -167,8 +168,8 @@ class DPTTest {
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 m/s"), "9.005"));
         assertTrue(Objects.requireNonNullElse(ValueEncoder.encode(new QuantityType<>("1.94 kn"), "9.005"), "")
                 .startsWith("0.99"));
-        assertEquals(1.0, Double
-                .parseDouble(Objects.requireNonNull(ValueEncoder.encode(new QuantityType<>("3.6 km/h"), "9.005"))));
+        assertEquals(1.0,
+                parseDouble(Objects.requireNonNull(ValueEncoder.encode(new QuantityType<>("3.6 km/h"), "9.005"))));
         assertEquals("456", ValueEncoder.encode(new QuantityType<>("456 Pa"), "9.006"));
         assertEquals("70", ValueEncoder.encode(new QuantityType<>("70 %"), "9.007"));
         assertEquals("8", ValueEncoder.encode(new QuantityType<>("8 ppm"), "9.008"));
@@ -497,9 +498,9 @@ class DPTTest {
         String[] parts = enc.split(" ");
         assertEquals(5, parts.length);
         int[] rgb = ColorUtil.hsbToRgb(hsbType);
-        assertEquals(rgb[0] * 100d / 255, Double.valueOf(parts[0].replace(',', '.')), 1);
-        assertEquals(rgb[1] * 100d / 255, Double.valueOf(parts[1].replace(',', '.')), 1);
-        assertEquals(rgb[2] * 100d / 255, Double.valueOf(parts[2].replace(',', '.')), 1);
+        assertEquals(rgb[0] * 100d / 255, valueOf(parts[0].replace(',', '.')), 1);
+        assertEquals(rgb[1] * 100d / 255, valueOf(parts[1].replace(',', '.')), 1);
+        assertEquals(rgb[2] * 100d / 255, valueOf(parts[2].replace(',', '.')), 1);
     }
 
     @Test
@@ -519,9 +520,9 @@ class DPTTest {
         String[] parts = enc.split(" ");
         assertEquals(5, parts.length);
         int[] rgb = ColorUtil.hsbToRgb(hsbType);
-        assertEquals(rgb[0] * 100d / 255, Double.valueOf(parts[0].replace(',', '.')), 1);
-        assertEquals(rgb[1] * 100d / 255, Double.valueOf(parts[1].replace(',', '.')), 1);
-        assertEquals(rgb[2] * 100d / 255, Double.valueOf(parts[2].replace(',', '.')), 1);
+        assertEquals(rgb[0] * 100d / 255, valueOf(parts[0].replace(',', '.')), 1);
+        assertEquals(rgb[1] * 100d / 255, valueOf(parts[1].replace(',', '.')), 1);
+        assertEquals(rgb[2] * 100d / 255, valueOf(parts[2].replace(',', '.')), 1);
     }
 
     // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
@@ -640,6 +641,7 @@ class DPTTest {
 
         // encoding will return a String in notation defined by Calimero: "(x,xxxx y,yyyy) YY,Y %"
         String result = ValueEncoder.encode(hsb, dpt);
+        assertNotNull(result);
 
         // for back to back test, compare numerical values to allow tolerances
         double dx = (((value[0] & 0xff) << 8) | (value[1] & 0xff)) / 65535.0;
@@ -654,9 +656,9 @@ class DPTTest {
         Assertions.assertNotNull(stringx);
         Assertions.assertNotNull(stringy);
         Assertions.assertNotNull(stringY);
-        double rx = Double.parseDouble(stringx.replace(',', '.'));
-        double ry = Double.parseDouble(stringy.replace(',', '.'));
-        double rY = Double.parseDouble(stringY.replace(',', '.'));
+        double rx = parseDouble(stringx.replace(',', '.'));
+        double ry = parseDouble(stringy.replace(',', '.'));
+        double rY = parseDouble(stringY.replace(',', '.'));
 
         final double tolerance = 0.001;
         if ((Math.abs(dx - rx) > tolerance) || (Math.abs(dy - ry) > tolerance)
