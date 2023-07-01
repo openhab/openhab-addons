@@ -57,20 +57,20 @@
 			<update-channel id="preheaterSafety" groupIds="preheater">
 				<type>comfoair:preheater_safety</type>
 			</update-channel>
-			
+
 			<update-channel id="ewtTemperatureLow" groupIds="ghx">
 				<type>comfoair:ghx_temperature_low</type>
 			</update-channel>
-			
+
 			<update-channel id="ewtTemperatureHigh" groupIds="ghx">
 				<type>comfoair:ghx_temperature_high</type>
 			</update-channel>
-			
+
 			<update-channel id="ewtSpeed" groupIds="ghx">
 				<type>comfoair:ghx_speed</type>
 			</update-channel>
-			
-      <update-channel id="heaterTargetTemperature" groupIds="heater">
+
+			<update-channel id="heaterTargetTemperature" groupIds="heater">
 				<type>comfoair:heater_target_temperature</type>
 			</update-channel>
 		</instruction-set>
