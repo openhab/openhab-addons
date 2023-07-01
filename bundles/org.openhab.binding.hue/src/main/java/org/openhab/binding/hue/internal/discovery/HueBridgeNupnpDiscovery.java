@@ -16,20 +16,24 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
+import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +62,12 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
     private static final int DISCOVERY_TIMEOUT = 10;
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeNupnpDiscovery.class);
+    private final ThingRegistry thingRegistry;
 
-    public HueBridgeNupnpDiscovery() {
-        super(HueBridgeHandler.SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT, false);
+    @Activate
+    public HueBridgeNupnpDiscovery(final @Reference ThingRegistry thingRegistry) {
+        super(Set.of(THING_TYPE_BRIDGE, THING_TYPE_BRIDGE_API2), DISCOVERY_TIMEOUT, false);
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -77,14 +84,31 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
                 String host = bridge.getInternalIpAddress();
                 String serialNumber = bridge.getId().toLowerCase();
                 ThingUID uid = new ThingUID(THING_TYPE_BRIDGE, serialNumber);
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid) //
-                        .withProperties(Map.of( //
-                                HOST, host, //
-                                Thing.PROPERTY_SERIAL_NUMBER, serialNumber)) //
-                        .withLabel(String.format(DISCOVERY_LABEL_PATTERN, host)) //
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
-                        .build();
-                thingDiscovered(result);
+                ThingUID legacyUID = null;
+                String label = String.format(DISCOVERY_LABEL_PATTERN, host);
+
+                if (isClip2Supported(host)) {
+                    legacyUID = uid;
+                    uid = new ThingUID(THING_TYPE_BRIDGE_API2, serialNumber);
+                    Optional<Thing> legacyThingOptional = getLegacyBridge(host);
+                    if (legacyThingOptional.isPresent()) {
+                        Thing legacyThing = legacyThingOptional.get();
+                        String label2 = legacyThing.getLabel();
+                        label = Objects.nonNull(label2) ? label2 : label;
+                    }
+                }
+
+                DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
+                        .withLabel(label) //
+                        .withProperty(HOST, host) //
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber) //
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER);
+
+                if (Objects.nonNull(legacyUID)) {
+                    builder.withProperty(PROPERTY_LEGACY_THING_UID, legacyUID.getAsString());
+                }
+
+                thingDiscovered(builder.build());
             }
         }
     }
@@ -169,5 +193,28 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
      */
     protected @Nullable String doGetRequest(String url) throws IOException {
         return HttpUtil.executeUrl("GET", url, REQUEST_TIMEOUT);
+    }
+
+    /**
+     * Get the legacy Hue bridge (if any) on the given IP address.
+     *
+     * @param ipAddress the IP address.
+     * @return Optional of a legacy bridge thing.
+     */
+    private Optional<Thing> getLegacyBridge(String ipAddress) {
+        return thingRegistry.getAll().stream().filter(thing -> THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
+                && ipAddress.equals(thing.getConfiguration().get(HOST))).findFirst();
+    }
+
+    /**
+     * Wrap Clip2Bridge.isClip2Supported() inside this method so that integration tests can can override the method, to
+     * avoid making live network calls.
+     */
+    protected boolean isClip2Supported(String ipAddress) {
+        try {
+            return Clip2Bridge.isClip2Supported(ipAddress);
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

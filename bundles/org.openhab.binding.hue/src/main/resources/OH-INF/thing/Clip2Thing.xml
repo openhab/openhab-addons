@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- API v2 device thing -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-api2"/>
+		</supported-bridge-type-refs>
+
+		<label>Hue Device</label>
+		<description>A Hue API v2 device with channels depending on its actual capabilities.</description>
+
+		<channels>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color-temperature" typeId="system.color-temperature"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="alert" typeId="alert-v2">
+				<description>Activate the alert for the light.</description>
+			</channel>
+			<channel id="effect" typeId="effect-v2">
+				<description>Activate the effect for the light.</description>
+			</channel>
+			<channel id="button-last-event" typeId="button-last-event"/>
+			<channel id="rotary-steps" typeId="rotary-steps"/>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion-enabled" typeId="sensor-enabled">
+				<description>Motion sensor enabled.</description>
+			</channel>
+			<channel id="light-level" typeId="illuminance">
+				<description>Current light level.</description>
+			</channel>
+			<channel id="light-level-enabled" typeId="sensor-enabled">
+				<description>Light level sensor enabled.</description>
+			</channel>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Temperature</label>
+				<description>Temperature at the sensor location.</description>
+			</channel>
+			<channel id="temperature-enabled" typeId="sensor-enabled">
+				<description>Temperature sensor enabled.</description>
+			</channel>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="battery-low" typeId="system.low-battery"/>
+			<channel id="last-updated" typeId="last-updated-v2"/>
+			<channel id="dynamics" typeId="dynamics"/>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
+			<channel id="color-xy-only" typeId="advanced-color">
+				<description>Set the color xy parameter of the light without changing other state parameters.</description>
+			</channel>
+			<channel id="dimming-only" typeId="advanced-brightness">
+				<description>Set the dimming parameter of the light without changing other state parameters.</description>
+			</channel>
+			<channel id="on-off-only" typeId="advanced-power">
+				<description>Set the on/off parameter of the light without changing other state parameters.</description>
+			</channel>
+		</channels>
+
+		<representation-property>resourceId</representation-property>
+
+		<config-description>
+			<parameter name="resourceId" type="text" required="true">
+				<label>Resource ID</label>
+				<description>Unique Resource ID of the device in the Hue bridge</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- API v2 room thing -->
+	<thing-type id="room">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-api2"/>
+		</supported-bridge-type-refs>
+
+		<label>Hue Room Light Group</label>
+		<description>A group of Hue API v2 lights that are located in a single room.</description>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness">
+				<description>Controls the brightness and switches on/off the group of lights in the room.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<description>Switch on/off the group of lights in the room.</description>
+			</channel>
+			<channel id="scene" typeId="scene-v2">
+				<description>Activate the scene for the group of lights in the room.</description>
+			</channel>
+			<channel id="alert" typeId="alert-v2">
+				<description>Activate the alert for the group of lights in the room.</description>
+			</channel>
+			<channel id="dynamics" typeId="dynamics"/>
+			<channel id="dimming-only" typeId="advanced-brightness">
+				<description>Set the dimming parameter of the group of lights in the room without changing other state parameters.</description>
+			</channel>
+			<channel id="on-off-only" typeId="advanced-power">
+				<description>Set the on/off parameter of the group of lights in the room without changing other state
+					parameters.</description>
+			</channel>
+		</channels>
+
+		<representation-property>resourceId</representation-property>
+
+		<config-description>
+			<parameter name="resourceId" type="text" required="true">
+				<label>Resource ID</label>
+				<description>Unique Resource ID of the room in the Hue bridge</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- API v2 zone thing -->
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-api2"/>
+		</supported-bridge-type-refs>
+
+		<label>Hue Zone Light Group</label>
+		<description>A group of Hue API v2 lights that are located in a zone.</description>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness">
+				<description>Controls the brightness and switches on/off the group of lights in the zone.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<description>Switch on/off the group of lights in the zone.</description>
+			</channel>
+			<channel id="scene" typeId="scene-v2">
+				<description>Activate the scene for the group of lights in the zone.</description>
+			</channel>
+			<channel id="alert" typeId="alert-v2">
+				<description>Activate the alert for the group of lights in the zone.</description>
+			</channel>
+			<channel id="dynamics" typeId="dynamics"/>
+			<channel id="dimming-only" typeId="advanced-brightness">
+				<description>Set the dimming parameter of the group of lights in the zone without changing other state parameters.</description>
+			</channel>
+			<channel id="on-off-only" typeId="advanced-power">
+				<description>Set the on/off parameter of the group of lights in the zone without changing other state parameters.</description>
+			</channel>
+		</channels>
+
+		<representation-property>resourceId</representation-property>
+
+		<config-description>
+			<parameter name="resourceId" type="text" required="true">
+				<label>Resource ID</label>
+				<description>Unique Resource ID of the zone in the Hue bridge</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

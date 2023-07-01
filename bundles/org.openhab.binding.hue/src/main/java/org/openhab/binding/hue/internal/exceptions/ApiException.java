@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Thrown when the API returns an unknown error.
@@ -28,5 +29,9 @@ public class ApiException extends Exception {
 
     public ApiException(String message) {
         super(message);
+    }
+
+    public ApiException(String message, @Nullable Throwable e) {
+        super(message, e);
     }
 }

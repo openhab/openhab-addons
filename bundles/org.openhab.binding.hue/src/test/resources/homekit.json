@@ -1,0 +1,15 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "886121d4-6809-4adc-961d-53c25ce05e7d",
+			"status": "paired",
+			"status_values": [
+				"pairing",
+				"paired",
+				"unpaired"
+			],
+			"type": "homekit"
+		}
+	]
+}

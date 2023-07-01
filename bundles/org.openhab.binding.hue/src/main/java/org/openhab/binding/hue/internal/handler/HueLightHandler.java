@@ -180,7 +180,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                 }
             }
             properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
-            properties.put(PRODUCT_NAME, fullLight.getProductName());
+            properties.put(PROPERTY_PRODUCT_NAME, fullLight.getProductName());
             String uniqueID = fullLight.getUniqueID();
             if (uniqueID != null) {
                 properties.put(UNIQUE_ID, uniqueID);

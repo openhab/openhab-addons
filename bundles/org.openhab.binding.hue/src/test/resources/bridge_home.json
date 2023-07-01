@@ -1,0 +1,106 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "f467cdcc-405f-40ab-8db9-4664aa1c3d63",
+			"id_v1": "/groups/0",
+			"children": [
+				{
+					"rid": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+					"rtype": "room"
+				},
+				{
+					"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+					"rtype": "room"
+				},
+				{
+					"rid": "8b529073-36dd-409b-8006-80df304048ea",
+					"rtype": "room"
+				},
+				{
+					"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+					"rtype": "room"
+				},
+				{
+					"rid": "8cec1e2f-bcc9-45c9-a0aa-bc9c30c68b64",
+					"rtype": "room"
+				},
+				{
+					"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+					"rtype": "room"
+				},
+				{
+					"rid": "b5fe0539-171c-4733-bf0b-244635a309be",
+					"rtype": "device"
+				},
+				{
+					"rid": "a1155885-4bbe-469f-83bb-f964f8e13e82",
+					"rtype": "device"
+				},
+				{
+					"rid": "a0509519-3ecb-47d0-9183-25db1e4ea2b2",
+					"rtype": "device"
+				},
+				{
+					"rid": "112853f9-c4c4-4d65-ba96-b4c2ab26d94d",
+					"rtype": "device"
+				},
+				{
+					"rid": "8c5b05ba-b4f4-47b2-8ba0-fc44363192bc",
+					"rtype": "device"
+				},
+				{
+					"rid": "e130feac-3a5c-452e-a97d-5bca470783b3",
+					"rtype": "device"
+				},
+				{
+					"rid": "81d9a9d5-228c-45df-828e-0d224929b3d1",
+					"rtype": "device"
+				},
+				{
+					"rid": "68ff07d0-6543-4967-9889-e0bc0bc16c31",
+					"rtype": "device"
+				},
+				{
+					"rid": "56b560bc-a127-4634-8d80-9946104a4028",
+					"rtype": "device"
+				},
+				{
+					"rid": "0e22f8de-eff5-440a-a9ed-06d547d125d7",
+					"rtype": "device"
+				},
+				{
+					"rid": "96bec26d-d7c6-4c00-98cd-6f96733296a0",
+					"rtype": "device"
+				},
+				{
+					"rid": "f78c5b4b-2f52-4bc3-8097-1ddf97949cc5",
+					"rtype": "device"
+				},
+				{
+					"rid": "431026fb-298c-4726-8ce4-47450fea13c4",
+					"rtype": "device"
+				},
+				{
+					"rid": "b56191ea-8d18-4257-b5d2-cfc3fc86a1ee",
+					"rtype": "device"
+				},
+				{
+					"rid": "e12b3d9c-0b23-4edd-a967-66f5b5cefa92",
+					"rtype": "device"
+				},
+				{
+					"rid": "cfecbbd0-e918-42a2-b714-2bad33061d95",
+					"rtype": "device"
+				}
+			],
+			"services": [
+				{
+					"rid": "9228d710-3c54-4ae4-8c88-bfe57d8fd220",
+					"rtype": "grouped_light"
+				}
+			],
+			"type": "bridge_home"
+		}
+	]
+}

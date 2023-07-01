@@ -1,0 +1,19 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "97244487-dd25-4f4c-b829-8eb5ffb82c29",
+			"id_v1": "/sensors/30",
+			"owner": {
+				"rid": "70660557-692d-4d37-8b6b-e3ec63716a72",
+				"rtype": "device"
+			},
+			"enabled": true,
+			"motion": {
+				"motion": true,
+				"motion_valid": true
+			},
+			"type": "motion"
+		}
+	]
+}

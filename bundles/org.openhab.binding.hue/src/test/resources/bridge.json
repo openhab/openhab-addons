@@ -1,0 +1,18 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "703765c0-f78a-4aac-9458-f50c0b41e1d8",
+			"id_v1": "",
+			"owner": {
+				"rid": "f4c5c816-925b-4e22-a112-2b44a23f5613",
+				"rtype": "device"
+			},
+			"bridge_id": "001788fffe2157c7",
+			"time_zone": {
+				"time_zone": "Europe/London"
+			},
+			"type": "bridge"
+		}
+	]
+}
