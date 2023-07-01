@@ -20,6 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.KNXBindingConstants;
 import org.openhab.binding.knx.internal.factory.KNXHandlerFactory;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
+import org.openhab.binding.knx.internal.tpm.TpmInterface;
+import org.openhab.core.auth.SecurityException;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.ConsoleCommandCompleter;
 import org.openhab.core.io.console.StringsCompleter;
@@ -39,7 +41,10 @@ import org.osgi.service.component.annotations.Reference;
 public class KNXCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String CMD_LIST_UNKNOWN_GA = "list-unknown-ga";
-    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_LIST_UNKNOWN_GA), false);
+    private static final String CMD_TPM_INFO = "tpm-info";
+    private static final String CMD_TPM_ENCRYPT = "tpm-encrypt";
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(
+            List.of(CMD_LIST_UNKNOWN_GA, CMD_TPM_INFO, CMD_TPM_ENCRYPT), false);
 
     private final KNXHandlerFactory knxHandlerFactory;
 
@@ -60,14 +65,49 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
                 }
             }
             return;
+        } else if (args.length == 1 && CMD_TPM_INFO.equalsIgnoreCase(args[0])) {
+            try {
+                console.println("trying to access TPM module");
+                TpmInterface tpm = new TpmInterface();
+                console.println("TPM version:   " + tpm.getTpmVersion());
+                console.println("TPM model:     " + tpm.getTpmManufacturerShort() + " " + tpm.getTpmModel());
+                console.println("TPM firmware:  " + tpm.getTpmFirmwareVersion());
+                console.println("TPM TCG Spec.: rev. " + tpm.getTpmTcgRevision() + " level " + tpm.getTpmTcgLevel());
+            } catch (SecurityException e) {
+                console.print("error: " + e.getMessage());
+            }
+            return;
+        } else if (args.length == 2 && CMD_TPM_ENCRYPT.equalsIgnoreCase(args[0])) {
+            try {
+                console.println("trying to access TPM module");
+                TpmInterface tpm = new TpmInterface();
+                console.println("generating keys, this might take some time");
+                String p = tpm.encryptAndSerializeSecret(args[1]);
+                console.println("encrypted representation of password");
+                console.println(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX + p);
+
+                // check if TPM can decrypt
+                String decrypted = tpm.deserializeAndDectryptSecret(p);
+                if (args[1].equals(decrypted)) {
+                    console.println("Password successfully recovered from encrypted representation");
+                } else {
+                    console.println("WARNING: could not decrypt");
+                }
+
+            } catch (SecurityException e) {
+                console.print("error: " + e.getMessage());
+            }
+            return;
         }
         printUsage(console);
     }
 
     @Override
     public List<String> getUsages() {
-        return List
-                .of(buildCommandUsage(CMD_LIST_UNKNOWN_GA, "list group addresses which are not configured in openHAB"));
+        return List.of(
+                buildCommandUsage(CMD_LIST_UNKNOWN_GA, "list group addresses which are not configured in openHAB"),
+                buildCommandUsage(CMD_TPM_ENCRYPT + " <password>", "Encrypt a password"),
+                buildCommandUsage(CMD_TPM_INFO, "Get information about available TPM"));
     }
 
     @Override
