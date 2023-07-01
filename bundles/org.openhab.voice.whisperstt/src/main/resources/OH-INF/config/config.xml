@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:whisperstt">
+		<parameter-group name="stt">
+			<label>STT Configuration</label>
+			<description>Configure Speech to Text.</description>
+		</parameter-group>
+		<parameter-group name="whisper">
+			<label>Whisper Options</label>
+			<description>Configure some library settings.</description>
+		</parameter-group>
+		<parameter-group name="messages">
+			<label>Info Messages</label>
+			<description>Configure service information messages.</description>
+		</parameter-group>
+		<parameter name="modelName" type="text" groupName="stt" required="true">
+			<label>Model Name</label>
+			<description>Model name without extension.</description>
+		</parameter>
+		<parameter name="preloadModel" type="boolean" groupName="stt">
+			<label>Preload Model</label>
+			<description>Keep the model loaded. If the parameter is set to true, the model will be reloaded only on
+				configuration
+				updates. If the model is not loaded when needed, the service will try to load it. If the parameter is
+				set to false,
+				the model will be loaded and unloaded on each run.
+			</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="singleUtteranceMode" type="boolean" groupName="stt">
+			<label>Single Utterance Mode</label>
+			<description>When enabled recognition stops listening after a single utterance.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="maxSeconds" type="integer" unit="s" groupName="stt">
+			<label>Max Transcription Seconds</label>
+			<description>Max seconds to wait to force stop the transcription.</description>
+			<default>20</default>
+		</parameter>
+		<parameter name="stepSeconds" type="integer" unit="s" groupName="stt">
+			<label>Step Seconds</label>
+			<description>Transcription step seconds. Does not apply when using VAD.</description>
+			<default>5</default>
+		</parameter>
+		<parameter name="lengthSeconds" type="integer" unit="s" groupName="stt">
+			<label>Length Seconds</label>
+			<description>Transcription length seconds. Max audio to feed whisper with.</description>
+			<default>10</default>
+		</parameter>
+		<parameter name="keepMs" type="integer" unit="ms" groupName="stt">
+			<label>Keep Milliseconds</label>
+			<description>Audio to keep after length seconds is reached and a new segment starts. Does not apply when using VAD.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="useVAD" type="boolean" groupName="stt">
+			<label>Use VAD</label>
+			<description>Use a voice activity detector to trigger transcription on silence.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="vadThreshold" type="decimal" groupName="stt">
+			<label>VAD Threshold</label>
+			<description>Threshold for voice activity detection.</description>
+			<default>0.01</default>
+		</parameter>
+		<parameter name="vadMaxSilenceSeconds" type="integer" unit="s" groupName="stt">
+			<label>VAD Max Silence Seconds</label>
+			<description>Seconds of silence to trigger transcription.</description>
+			<default>2</default>
+		</parameter>
+		<parameter name="removeSpecials" type="boolean" groupName="stt">
+			<label>Remove Specials</label>
+			<description>Remove some characters from the transcription: ",", ".", "¿", "?", "¡", "!".</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="createWAVFile" type="boolean" groupName="stt">
+			<label>Create WAV File</label>
+			<description>Create wav audio file on each transcription call, useful for debugging purposes, or to collect
+				recordings.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="threads" type="integer" groupName="whisper">
+			<label>Threads</label>
+			<description>Number of threads used by whisper. (0 for default)</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="audioContext" type="integer" groupName="whisper" min="0">
+			<label>Audio Context</label>
+			<description>Overwrite the audio context size. (0 for default)</description>
+			<default>512</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="samplingStrategy" type="text" groupName="whisper">
+			<label>Sampling strategy</label>
+			<description>Sampling strategy used.</description>
+			<default>GREEDY</default>
+			<options>
+				<option value="GREEDY">Greedy</option>
+				<option value="BEAN_SEARCH">Bean Search</option>
+			</options>
+		</parameter>
+		<parameter name="beamSize" type="integer" groupName="whisper" min="1">
+			<label>Beam Size</label>
+			<description>Beam Size configuration for sampling strategy Bean Search.</description>
+			<default>2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="greedyBestOf" type="integer" groupName="whisper" min="-1">
+			<label>Greedy Best Of</label>
+			<description>Best Of configuration for sampling strategy Greedy.</description>
+			<default>-1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="temperature" type="decimal" groupName="whisper">
+			<label>Temperature</label>
+			<description>Temperature threshold.</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="speedUp" type="boolean" groupName="whisper">
+			<label>Speed Up</label>
+			<description>Speed up audio by x2. (reduced accuracy)</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="noResultsMessage" type="text" groupName="messages">
+			<label>No Results Message</label>
+			<description>Message to be told when no results.</description>
+			<default>Sorry, I didn't understand you</default>
+		</parameter>
+		<parameter name="errorMessage" type="text" groupName="messages">
+			<label>Error Message</label>
+			<description>Message to be told when an error has happened. (Empty for disabled)</description>
+			<default>Sorry, something went wrong</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
