@@ -54,3 +54,7 @@ org.openhab.voice:defaultVoice=mactts:Alex
 ## Supported Audio Formats
 
 The MacTTS service produces audio streams using WAV containers and PCM (signed) codec with 16bit depth and 44.1kHz frequency.
+
+## Caching
+
+The macOS TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.

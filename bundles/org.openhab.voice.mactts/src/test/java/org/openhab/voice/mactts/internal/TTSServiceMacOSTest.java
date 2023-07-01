@@ -16,13 +16,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.internal.cache.TTSLRUCacheImpl;
 
 /**
  * Test TTSServiceMacOS
@@ -31,6 +35,8 @@ import org.openhab.core.voice.Voice;
  */
 public class TTSServiceMacOSTest {
 
+    private StorageService storageService;
+
     /**
      * Test TTSServiceMacOS.getAvailableVoices()
      */
@@ -38,7 +44,10 @@ public class TTSServiceMacOSTest {
     public void getAvailableVoicesTest() {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
 
-        MacTTSService ttsServiceMacOS = new MacTTSService();
+        Map<String, Object> config = new HashMap<>();
+        config.put("enableCacheTTS", false);
+        TTSLRUCacheImpl voiceLRUCache = new TTSLRUCacheImpl(storageService, config);
+        MacTTSService ttsServiceMacOS = new MacTTSService(voiceLRUCache);
         assertFalse(ttsServiceMacOS.getAvailableVoices().isEmpty());
     }
 
@@ -49,7 +58,10 @@ public class TTSServiceMacOSTest {
     public void getSupportedFormatsTest() {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
 
-        MacTTSService ttsServiceMacOS = new MacTTSService();
+        Map<String, Object> config = new HashMap<>();
+        config.put("enableCacheTTS", false);
+        TTSLRUCacheImpl voiceLRUCache = new TTSLRUCacheImpl(storageService, config);
+        MacTTSService ttsServiceMacOS = new MacTTSService(voiceLRUCache);
         assertFalse(ttsServiceMacOS.getSupportedFormats().isEmpty());
     }
 
@@ -60,7 +72,10 @@ public class TTSServiceMacOSTest {
     public void synthesizeTest() throws IOException, TTSException {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
 
-        MacTTSService ttsServiceMacOS = new MacTTSService();
+        Map<String, Object> config = new HashMap<>();
+        config.put("enableCacheTTS", false);
+        TTSLRUCacheImpl voiceLRUCache = new TTSLRUCacheImpl(storageService, config);
+        MacTTSService ttsServiceMacOS = new MacTTSService(voiceLRUCache);
         Set<Voice> voices = ttsServiceMacOS.getAvailableVoices();
         Set<AudioFormat> audioFormats = ttsServiceMacOS.getSupportedFormats();
         try (AudioStream audioStream = ttsServiceMacOS.synthesize("Hello", voices.iterator().next(),
