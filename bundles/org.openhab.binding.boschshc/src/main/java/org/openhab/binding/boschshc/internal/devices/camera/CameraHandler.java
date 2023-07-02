@@ -76,14 +76,14 @@ public class CameraHandler extends BoschSHCDeviceHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_PRIVACY_MODE:
-                if (command instanceof OnOffType onOffType) {
-                    updatePrivacyModeState(onOffType);
+                if (command instanceof OnOffType onOffCommand) {
+                    updatePrivacyModeState(onOffCommand);
                 }
                 break;
 
             case CHANNEL_CAMERA_NOTIFICATION:
-                if (command instanceof OnOffType onOffType) {
-                    updateCameraNotificationState(onOffType);
+                if (command instanceof OnOffType onOffCommand) {
+                    updateCameraNotificationState(onOffCommand);
                 }
                 break;
         }

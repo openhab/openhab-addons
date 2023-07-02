@@ -69,38 +69,38 @@ public class SmartBulbHandler extends BoschSHCDeviceHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_POWER_SWITCH:
-                if (command instanceof OnOffType onOffType) {
-                    updateBinarySwitchState(onOffType);
+                if (command instanceof OnOffType onOffCommand) {
+                    updateBinarySwitchState(onOffCommand);
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
-                if (command instanceof PercentType percentType) {
-                    updateMultiLevelSwitchState(percentType);
+                if (command instanceof PercentType percentCommand) {
+                    updateMultiLevelSwitchState(percentCommand);
                 }
                 break;
             case CHANNEL_COLOR:
-                if (command instanceof HSBType hsbType) {
-                    updateColorState(hsbType);
+                if (command instanceof HSBType hsbCommand) {
+                    updateColorState(hsbCommand);
                 }
                 break;
         }
     }
 
-    private void updateBinarySwitchState(OnOffType command) {
+    private void updateBinarySwitchState(OnOffType onOffCommand) {
         BinarySwitchServiceState serviceState = new BinarySwitchServiceState();
-        serviceState.on = command == OnOffType.ON;
+        serviceState.on = onOffCommand == OnOffType.ON;
         this.updateServiceState(binarySwitchService, serviceState);
     }
 
-    private void updateMultiLevelSwitchState(PercentType command) {
+    private void updateMultiLevelSwitchState(PercentType percentCommand) {
         MultiLevelSwitchServiceState serviceState = new MultiLevelSwitchServiceState();
-        serviceState.level = command.intValue();
+        serviceState.level = percentCommand.intValue();
         this.updateServiceState(multiLevelSwitchService, serviceState);
     }
 
-    private void updateColorState(HSBType command) {
+    private void updateColorState(HSBType hsbCommand) {
         HSBColorActuatorServiceState serviceState = new HSBColorActuatorServiceState();
-        serviceState.rgb = ColorUtil.hsbTosRgb(command);
+        serviceState.rgb = ColorUtil.hsbTosRgb(hsbCommand);
         this.updateServiceState(hsbColorActuatorService, serviceState);
     }
 
