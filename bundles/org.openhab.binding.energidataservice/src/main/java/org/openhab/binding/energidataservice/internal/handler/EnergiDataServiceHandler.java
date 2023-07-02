@@ -367,7 +367,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         Map<Instant, BigDecimal> spotPriceMap = cacheManager.getSpotPrices();
         Price[] targetPrices = new Price[spotPriceMap.size()];
         List<Entry<Instant, BigDecimal>> sourcePrices = spotPriceMap.entrySet().stream()
-                .sorted(Map.Entry.<Instant, BigDecimal> comparingByKey()).toList();
+                .sorted(Map.Entry.comparingByKey()).toList();
 
         int i = 0;
         for (Entry<Instant, BigDecimal> sourcePrice : sourcePrices) {
@@ -401,7 +401,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         try {
             downloadSpotPrices();
         } catch (DataServiceException e) {
-            logger.warn("Error retrieving spot prices");
+            if (logger.isDebugEnabled()) {
+                logger.warn("Error retrieving spot prices", e);
+            } else {
+                logger.warn("Error retrieving spot prices: {}", e.getMessage());
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -419,7 +423,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         try {
             downloadNetTariffs();
         } catch (DataServiceException e) {
-            logger.warn("Error retrieving net tariffs");
+            if (logger.isDebugEnabled()) {
+                logger.warn("Error retrieving net tariffs", e);
+            } else {
+                logger.warn("Error retrieving net tariffs: {}", e.getMessage());
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -437,7 +445,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         try {
             downloadSystemTariffs();
         } catch (DataServiceException e) {
-            logger.warn("Error retrieving system tariffs");
+            if (logger.isDebugEnabled()) {
+                logger.warn("Error retrieving system tariffs", e);
+            } else {
+                logger.warn("Error retrieving system tariffs: {}", e.getMessage());
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -455,7 +467,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         try {
             downloadElectricityTaxes();
         } catch (DataServiceException e) {
-            logger.warn("Error retrieving electricity taxes");
+            if (logger.isDebugEnabled()) {
+                logger.warn("Error retrieving electricity taxes", e);
+            } else {
+                logger.warn("Error retrieving electricity taxes: {}", e.getMessage());
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -473,7 +489,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         try {
             downloadTransmissionNetTariffs();
         } catch (DataServiceException e) {
-            logger.warn("Error retrieving transmission net tariffs");
+            if (logger.isDebugEnabled()) {
+                logger.warn("Error retrieving transmission net tariffs", e);
+            } else {
+                logger.warn("Error retrieving transmission net tariffs: {}", e.getMessage());
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
