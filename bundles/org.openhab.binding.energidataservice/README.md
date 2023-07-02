@@ -139,7 +139,7 @@ Actions use cached data for performing operations.
 Since data is only fetched when an item is linked to a channel, there might not be any cached data available.
 In this case the data will be fetched on demand and cached afterwards.
 The first action triggered on a given day may therefore be a bit slower, and is also prone to failing if the server call fails for any reason.
-This potential problem can be prevented by linking the indivial channels to items, or by linking the `hourly-prices` channel to an item.
+This potential problem can be prevented by linking the individual channels to items, or by linking the `hourly-prices` channel to an item.
 
 ### `calculateCheapestPeriod`
 
@@ -182,7 +182,7 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 | duration           | `Duration`                  | The duration to fit within the timeslot                |
 | power              | `QuantityType<Power>`       | Linear power consumption                               |
 
-This action is identical the the variant above, but with a known linear power consumption.
+This action is identical to the variant above, but with a known linear power consumption.
 As a result the price is also included in the result.
 
 Example:
