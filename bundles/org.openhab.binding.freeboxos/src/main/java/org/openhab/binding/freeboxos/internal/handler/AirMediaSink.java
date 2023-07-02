@@ -126,20 +126,24 @@ public class AirMediaSink extends AudioSinkAsync {
                     return;
                 }
                 // we serve it on our own HTTP server
-                StreamServed streamServed = audioHTTPServer.serve(audioStream, 20, true);
+                StreamServed streamServed;
+                try {
+                    streamServed = audioHTTPServer.serve(audioStream, 5, true);
+                } catch (IOException e) {
+                    try {
+                        audioStream.close();
+                    } catch (IOException ex) {
+                        logger.debug("Exception while closing audioStream");
+                    }
+                    throw new UnsupportedAudioStreamException(
+                            "AirPlay device was not able to handle the audio stream (cache on disk failed).",
+                            audioStream.getClass(), e);
+                }
                 streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
                 logger.debug("AirPlay audio sink: process url {}", callbackUrl + streamServed.url());
                 playMedia(manager, callbackUrl + streamServed.url());
-                try {
-                    audioStream.close();
-                } catch (IOException e) {
-                    logger.debug("Exception while closing audioStream", e);
-                }
             } catch (FreeboxException e) {
                 logger.warn("Audio stream playback failed: {}", e.getMessage());
-            } catch (IOException e) {
-                throw new UnsupportedAudioStreamException("AirPlay device can only handle clonable audio streams.",
-                        audioStream.getClass(), e);
             }
         }
     }
