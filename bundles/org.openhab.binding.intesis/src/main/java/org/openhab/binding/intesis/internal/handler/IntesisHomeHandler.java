@@ -137,7 +137,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
         int value = 0;
         String channelId = channelUID.getId();
         if (command instanceof RefreshType) {
-            // Refresh command is not supported as the binding polls all values every 30 seconds
+            getAllUidValues();
         } else {
             switch (channelId) {
                 case CHANNEL_TYPE_POWER:
@@ -466,7 +466,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         logger.trace("Start Refresh Job");
-        refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, INTESIS_REFRESH_INTERVAL_SEC,
+        refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, config.pollingInterval,
                 TimeUnit.SECONDS);
     }
 
