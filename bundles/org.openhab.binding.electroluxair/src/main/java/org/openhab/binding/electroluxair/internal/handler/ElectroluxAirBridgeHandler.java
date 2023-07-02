@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.electroluxair.internal.handler;
 
-import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +39,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 
 import com.google.gson.Gson;
 
@@ -147,6 +150,15 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        return;
+        if (CHANNEL_STATUS.equals(channelUID.getId()) || command instanceof RefreshType) {
+            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+            Runnable task = () -> {
+                refreshAndUpdateStatus();
+            };
+
+            executor.schedule(task, 1, TimeUnit.SECONDS);
+            executor.shutdown();
+        }
     }
 }
