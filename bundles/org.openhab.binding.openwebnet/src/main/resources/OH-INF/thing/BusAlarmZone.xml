@@ -17,12 +17,14 @@
 			<!-- read only -->
 			<channel id="state" typeId="alarmZoneState"/>
 			<channel id="alarm" typeId="zoneAlarm"/>
+			<channel id="timestamp" typeId="zoneAlarmTimestamp"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">Alarm zone as configured in the Alarm System Unit</property>
 			<property name="ownDeviceType">5200</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>ownId</representation-property>

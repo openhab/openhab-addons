@@ -461,6 +461,15 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="zoneAlarmTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Zone Alarm Timestamp</label>
+		<description>Current alarm's timestamp for the zone (read only).</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+
 	<channel-type id="alarmZoneState">
 		<item-type>Switch</item-type>
 		<label>Alarm Zone State</label>

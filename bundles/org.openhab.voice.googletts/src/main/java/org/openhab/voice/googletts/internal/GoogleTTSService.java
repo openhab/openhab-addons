@@ -41,6 +41,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -137,6 +138,13 @@ public class GoogleTTSService implements TTSService {
 
         apiImpl = new GoogleCloudAPI(configAdmin, oAuthFactory, cacheFolder);
         updateConfig(config);
+    }
+
+    @Deactivate
+    protected void dispose() {
+        apiImpl.dispose();
+        audioFormats.clear();
+        allVoices.clear();
     }
 
     /**

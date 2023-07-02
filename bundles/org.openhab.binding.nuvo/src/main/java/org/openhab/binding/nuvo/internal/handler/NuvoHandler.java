@@ -692,7 +692,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 // Publish the ALLOFF event to all button channels for awareness in source rules
                 updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, ZERO + COMMA + ALLOFF);
                 NuvoEnum.VALID_SOURCES.forEach(source -> {
-                    updateChannelState(NuvoEnum.valueOf(source), CHANNEL_TYPE_BUTTONPRESS, ALLOFF);
+                    updateChannelState(NuvoEnum.valueOf(source), CHANNEL_BUTTON_PRESS, ALLOFF);
                 });
 
                 break;

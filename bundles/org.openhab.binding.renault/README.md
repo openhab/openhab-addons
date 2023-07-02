@@ -7,7 +7,7 @@ The binding translates the [python based renault-api](https://renault-api.readth
 
 ## Supported Things
 
-Supports MyRenault registered cars with an active Connected-Services account.
+Supports MyRenault (and MyDacia) registered cars with an active Connected-Services account.
 
 This binding can only retrieve information that is available in the MyRenault App.
 
@@ -21,6 +21,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 
 | Parameter         | Description                                                                | Default                          |
 |-------------------|----------------------------------------------------------------------------|----------------------------------|
+| accountType       | Account Type. (MYDACIA,MYRENAULT)                                          | MYRENAULT                        |
 | myRenaultUsername | MyRenault Username.                                                        |                                  |
 | myRenaultPassword | MyRenault Password.                                                        |                                  |
 | locale            | MyRenault Location (language_country).                                     |                                  |

@@ -16,14 +16,20 @@ import static org.openhab.binding.somneo.internal.SomneoBindingConstants.*;
 
 import java.io.EOFException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.somneo.internal.model.AlarmSchedulesData;
+import org.openhab.binding.somneo.internal.model.AlarmSettingsData;
+import org.openhab.binding.somneo.internal.model.AlarmStateData;
 import org.openhab.binding.somneo.internal.model.AudioData;
 import org.openhab.binding.somneo.internal.model.DeviceData;
 import org.openhab.binding.somneo.internal.model.FirmwareData;
@@ -35,6 +41,7 @@ import org.openhab.binding.somneo.internal.model.SensorData;
 import org.openhab.binding.somneo.internal.model.SunsetData;
 import org.openhab.binding.somneo.internal.model.TimerData;
 import org.openhab.binding.somneo.internal.model.WifiData;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
@@ -52,6 +59,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,10 +78,13 @@ public class SomneoHandler extends BaseThingHandler {
 
     private final SomneoPresetStateDescriptionProvider provider;
 
+    private final Pattern alarmPattern;
+
     /**
      * Job to poll data from the device.
      */
     private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJobExtended;
 
     /**
      * Job to count down the remaining program time.
@@ -97,6 +108,7 @@ public class SomneoHandler extends BaseThingHandler {
         super(thing);
         this.httpClientProvider = httpClientProvider;
         this.provider = provider;
+        this.alarmPattern = Objects.requireNonNull(Pattern.compile(CHANNEL_ALARM_PREFIX_REGEX));
     }
 
     @Override
@@ -104,20 +116,51 @@ public class SomneoHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
 
-        if (command instanceof RefreshType) {
-            this.poll();
-            return;
-        }
-
-        final SomneoHttpConnector connector = this.connector;
-        if (connector == null) {
-            return;
-        }
-
         try {
+            final SomneoHttpConnector connector = this.connector;
+            if (connector == null) {
+                return;
+            }
+
+            final Matcher matcher = alarmPattern.matcher(channelId);
+            int alarmPosition = 0;
+            if (matcher.matches()) {
+                // Replace alarm channel index with string format placeholder to match
+                // constants.
+                alarmPosition = Integer.parseInt(matcher.group(1));
+                channelId = channelId.replace(alarmPosition + "#", "%d#");
+            }
+
+            if (command instanceof RefreshType) {
+                if (channelId.equals(CHANNEL_ALARM_SNOOZE)) {
+                    final State snooze = connector.fetchSnoozeDuration();
+                    updateState(CHANNEL_ALARM_SNOOZE, snooze);
+                } else if (channelId.startsWith("alarm")) {
+                    updateAlarmExtended(alarmPosition);
+                } else if (channelId.startsWith("sensor")) {
+                    updateSensors();
+                } else if (channelId.startsWith("light")) {
+                    updateLights();
+                } else if (channelId.equals(CHANNEL_RELAX_REMAINING_TIME)
+                        || channelId.equals(CHANNEL_SUNSET_REMAINING_TIME)) {
+                    updateRemainingTimer();
+                } else if (channelId.equals(CHANNEL_AUDIO_FREQUENCY)) {
+                    updateFrequency();
+                } else if (channelId.startsWith("audio")) {
+                    updateLights();
+                } else if (channelId.startsWith("sunset")) {
+                    updateSunset();
+                } else if (channelId.startsWith("relax")) {
+                    updateRelax();
+                } else {
+                    this.poll();
+                }
+                return;
+            }
+
             switch (channelId) {
                 case CHANNEL_AUDIO_AUX:
-                    if (command instanceof OnOffType) {
+                    if (command instanceof OnOffType onOff) {
                         boolean isOn = OnOffType.ON.equals(command);
                         connector.switchAux(isOn);
 
@@ -141,7 +184,7 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_AUDIO_RADIO:
-                    if (command instanceof PlayPauseType) {
+                    if (command instanceof PlayPauseType playPause) {
                         boolean isPlaying = PlayPauseType.PLAY.equals(command);
                         connector.switchRadio(isPlaying);
 
@@ -161,8 +204,8 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_AUDIO_VOLUME:
-                    if (command instanceof PercentType) {
-                        connector.setAudioVolume(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setAudioVolume(percent.intValue());
                     }
                     break;
                 case CHANNEL_LIGHT_MAIN:
@@ -177,8 +220,8 @@ public class SomneoHandler extends BaseThingHandler {
                             updateState(CHANNEL_SUNSET_SWITCH, OnOffType.OFF);
                         }
                     }
-                    if (command instanceof PercentType) {
-                        int level = Integer.parseInt(command.toFullString());
+                    if (command instanceof PercentType percent) {
+                        int level = percent.intValue();
 
                         if (level > 0) {
                             connector.setMainLightDimmer(level);
@@ -205,23 +248,23 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_RELAX_BREATHING_RATE:
-                    if (command instanceof DecimalType) {
-                        connector.setRelaxBreathingRate(Integer.parseInt(command.toFullString()));
+                    if (command instanceof DecimalType decimal) {
+                        connector.setRelaxBreathingRate(decimal.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_DURATION:
-                    if (command instanceof DecimalType) {
-                        connector.setRelaxDuration(Integer.parseInt(command.toFullString()));
+                    if (command instanceof QuantityType quantity) {
+                        connector.setRelaxDuration(quantity.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_GUIDANCE_TYPE:
-                    if (command instanceof DecimalType) {
-                        connector.setRelaxGuidanceType(Integer.parseInt(command.toFullString()));
+                    if (command instanceof DecimalType decimal) {
+                        connector.setRelaxGuidanceType(decimal.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_LIGHT_INTENSITY:
-                    if (command instanceof PercentType) {
-                        connector.setRelaxLightIntensity(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setRelaxLightIntensity(percent.intValue());
                     }
                     break;
                 case CHANNEL_RELAX_SWITCH:
@@ -241,8 +284,8 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_RELAX_VOLUME:
-                    if (command instanceof PercentType) {
-                        connector.setRelaxVolume(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setRelaxVolume(percent.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_AMBIENT_NOISE:
@@ -251,18 +294,18 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_SUNSET_COLOR_SCHEMA:
-                    if (command instanceof DecimalType) {
-                        connector.setSunsetColorSchema(Integer.parseInt(command.toFullString()));
+                    if (command instanceof DecimalType decimal) {
+                        connector.setSunsetColorSchema(decimal.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_DURATION:
-                    if (command instanceof DecimalType) {
-                        connector.setSunsetDuration(Integer.parseInt(command.toFullString()));
+                    if (command instanceof QuantityType quantity) {
+                        connector.setSunsetDuration(quantity.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_LIGHT_INTENSITY:
-                    if (command instanceof PercentType) {
-                        connector.setSunsetLightIntensity(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setSunsetLightIntensity(percent.intValue());
                     }
                     break;
                 case CHANNEL_SUNSET_SWITCH:
@@ -282,8 +325,84 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_SUNSET_VOLUME:
-                    if (command instanceof PercentType) {
-                        connector.setSunsetVolume(Integer.parseInt(command.toFullString()));
+                    if (command instanceof PercentType percent) {
+                        connector.setSunsetVolume(percent.intValue());
+                    }
+                    break;
+                case CHANNEL_ALARM_SNOOZE:
+                    if (command instanceof QuantityType quantity) {
+                        connector.setAlarmSnooze(quantity.intValue());
+                    }
+                    break;
+                case CHANNEL_ALARM_CONFIGURED:
+                    if (alarmPosition > 2) {
+                        if (command instanceof OnOffType onOff) {
+                            connector.toggleAlarmConfiguration(alarmPosition, onOff);
+
+                            if (OnOffType.ON.equals(command)) {
+                                updateAlarmExtended(alarmPosition);
+                            } else {
+                                resetAlarm(alarmPosition);
+                            }
+                        }
+                    } else {
+                        logger.info("Alarm 1 and 2 can not be unset");
+                    }
+                    break;
+                case CHANNEL_ALARM_SWITCH:
+                    if (command instanceof OnOffType onOff) {
+                        connector.toggleAlarm(alarmPosition, onOff);
+                        updateAlarmExtended(alarmPosition);
+                    }
+                    break;
+                case CHANNEL_ALARM_TIME:
+                    if (command instanceof DateTimeType decimal) {
+                        connector.setAlarmTime(alarmPosition, decimal);
+                    }
+                    break;
+                case CHANNEL_ALARM_REPEAT_DAY:
+                    if (command instanceof DecimalType decimal) {
+                        connector.setAlarmRepeatDay(alarmPosition, decimal);
+                    }
+                    break;
+                case CHANNEL_ALARM_POWER_WAKE:
+                    if (command instanceof OnOffType onOff) {
+                        connector.toggleAlarmPowerWake(alarmPosition, onOff);
+                        if (OnOffType.OFF.equals(command)) {
+                            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, alarmPosition),
+                                    QuantityType.valueOf(0, Units.MINUTE));
+                        }
+                    }
+                    break;
+                case CHANNEL_ALARM_POWER_WAKE_DELAY:
+                    if (command instanceof QuantityType quantity) {
+                        connector.setAlarmPowerWakeDelay(alarmPosition, quantity);
+                        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, alarmPosition), OnOffType.ON);
+                    }
+                    break;
+                case CHANNEL_ALARM_SUNRISE_DURATION:
+                    if (command instanceof QuantityType quantity) {
+                        connector.setAlarmSunriseDuration(alarmPosition, quantity);
+                    }
+                    break;
+                case CHANNEL_ALARM_SUNRISE_BRIGHTNESS:
+                    if (command instanceof PercentType percent) {
+                        connector.setAlarmSunriseBrightness(alarmPosition, percent);
+                    }
+                    break;
+                case CHANNEL_ALARM_SUNRISE_SCHEMA:
+                    if (command instanceof DecimalType decimal) {
+                        connector.setAlarmSunriseSchema(alarmPosition, decimal);
+                    }
+                    break;
+                case CHANNEL_ALARM_SOUND:
+                    if (command instanceof StringType) {
+                        connector.setAlarmSound(alarmPosition, (StringType) command);
+                    }
+                    break;
+                case CHANNEL_ALARM_VOLUME:
+                    if (command instanceof PercentType percent) {
+                        connector.setAlarmVolume(alarmPosition, percent);
                     }
                     break;
                 default:
@@ -391,19 +510,30 @@ public class SomneoHandler extends BaseThingHandler {
             return;
         }
 
-        int refreshInterval = getConfigAs(SomneoConfiguration.class).refreshInterval;
-        logger.debug("Start polling job at interval {}s", refreshInterval);
+        final SomneoConfiguration config = getConfigAs(SomneoConfiguration.class);
+        final int refreshInterval = config.refreshInterval;
+        logger.debug("Start default polling job at interval {}s", refreshInterval);
         this.pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
+
+        final int refreshIntervalAlarmExtended = config.refreshIntervalAlarmExtended;
+        logger.debug("Start extended alarm polling job at interval {}s", refreshIntervalAlarmExtended);
+        this.pollingJobExtended = scheduler.scheduleWithFixedDelay(this::pollAlarmExtended, 0,
+                refreshIntervalAlarmExtended, TimeUnit.SECONDS);
     }
 
     private void stopPolling() {
         final ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            return;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            this.pollingJob = null;
         }
 
-        pollingJob.cancel(true);
-        this.pollingJob = null;
+        final ScheduledFuture<?> pollingJobExtended = this.pollingJobExtended;
+        if (pollingJobExtended != null) {
+            pollingJobExtended.cancel(true);
+            this.pollingJobExtended = null;
+        }
+
         logger.debug("HTTP polling stopped.");
     }
 
@@ -414,40 +544,19 @@ public class SomneoHandler extends BaseThingHandler {
         }
 
         try {
-            final SensorData sensorData = connector.fetchSensorData();
-            updateState(CHANNEL_SENSOR_HUMIDITY, sensorData.getCurrentHumidity());
-            updateState(CHANNEL_SENSOR_ILLUMINANCE, sensorData.getCurrentIlluminance());
-            updateState(CHANNEL_SENSOR_NOISE, sensorData.getCurrentNoise());
-            updateState(CHANNEL_SENSOR_TEMPERATURE, sensorData.getCurrentTemperature());
+            updateSensors();
 
-            final LightData lightData = connector.fetchLightData();
-            updateState(CHANNEL_LIGHT_MAIN, lightData.getMainLightState());
-            updateState(CHANNEL_LIGHT_NIGHT, lightData.getNightLightState());
-            lastLightBrightness = lightData.getMainLightLevel();
+            updateLights();
 
-            final SunsetData sunsetData = connector.fetchSunsetData();
-            updateState(CHANNEL_SUNSET_SWITCH, sunsetData.getSwitchState());
-            updateState(CHANNEL_SUNSET_LIGHT_INTENSITY, sunsetData.getLightIntensity());
-            updateState(CHANNEL_SUNSET_DURATION, sunsetData.getDurationInMin());
-            updateState(CHANNEL_SUNSET_COLOR_SCHEMA, sunsetData.getColorSchema());
-            updateState(CHANNEL_SUNSET_AMBIENT_NOISE, sunsetData.getAmbientNoise());
-            updateState(CHANNEL_SUNSET_VOLUME, sunsetData.getSoundVolume());
+            updateSunset();
 
-            final RelaxData relaxData = connector.fetchRelaxData();
-            updateState(CHANNEL_RELAX_SWITCH, relaxData.getSwitchState());
-            updateState(CHANNEL_RELAX_BREATHING_RATE, relaxData.getBreathingRate());
-            updateState(CHANNEL_RELAX_DURATION, relaxData.getDurationInMin());
-            updateState(CHANNEL_RELAX_GUIDANCE_TYPE, relaxData.getGuidanceType());
-            updateState(CHANNEL_RELAX_LIGHT_INTENSITY, relaxData.getLightIntensity());
-            updateState(CHANNEL_RELAX_VOLUME, relaxData.getSoundVolume());
+            updateRelax();
 
-            final AudioData audioData = connector.fetchAudioData();
-            updateState(CHANNEL_AUDIO_RADIO, audioData.getRadioState());
-            updateState(CHANNEL_AUDIO_AUX, audioData.getAuxState());
-            updateState(CHANNEL_AUDIO_VOLUME, audioData.getVolumeState());
-            updateState(CHANNEL_AUDIO_PRESET, audioData.getPresetState());
+            updateAudio();
 
             updateFrequency();
+
+            updateAlarm();
 
             updateRemainingTimer();
 
@@ -463,6 +572,70 @@ public class SomneoHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
+    }
+
+    private void updateAudio() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+        final AudioData audioData = connector.fetchAudioData();
+        updateState(CHANNEL_AUDIO_RADIO, audioData.getRadioState());
+        updateState(CHANNEL_AUDIO_AUX, audioData.getAuxState());
+        updateState(CHANNEL_AUDIO_VOLUME, audioData.getVolumeState());
+        updateState(CHANNEL_AUDIO_PRESET, audioData.getPresetState());
+    }
+
+    private void updateRelax() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+        final RelaxData relaxData = connector.fetchRelaxData();
+        updateState(CHANNEL_RELAX_SWITCH, relaxData.getSwitchState());
+        updateState(CHANNEL_RELAX_BREATHING_RATE, relaxData.getBreathingRate());
+        updateState(CHANNEL_RELAX_DURATION, relaxData.getDurationInMin());
+        updateState(CHANNEL_RELAX_GUIDANCE_TYPE, relaxData.getGuidanceType());
+        updateState(CHANNEL_RELAX_LIGHT_INTENSITY, relaxData.getLightIntensity());
+        updateState(CHANNEL_RELAX_VOLUME, relaxData.getSoundVolume());
+    }
+
+    private void updateSunset() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+        final SunsetData sunsetData = connector.fetchSunsetData();
+        updateState(CHANNEL_SUNSET_SWITCH, sunsetData.getSwitchState());
+        updateState(CHANNEL_SUNSET_LIGHT_INTENSITY, sunsetData.getLightIntensity());
+        updateState(CHANNEL_SUNSET_DURATION, sunsetData.getDurationInMin());
+        updateState(CHANNEL_SUNSET_COLOR_SCHEMA, sunsetData.getColorSchema());
+        updateState(CHANNEL_SUNSET_AMBIENT_NOISE, sunsetData.getAmbientNoise());
+        updateState(CHANNEL_SUNSET_VOLUME, sunsetData.getSoundVolume());
+    }
+
+    private void updateLights() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+        final LightData lightData = connector.fetchLightData();
+        updateState(CHANNEL_LIGHT_MAIN, lightData.getMainLightState());
+        updateState(CHANNEL_LIGHT_NIGHT, lightData.getNightLightState());
+        lastLightBrightness = lightData.getMainLightLevel();
+    }
+
+    private void updateSensors() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+
+        final SensorData sensorData = connector.fetchSensorData();
+        updateState(CHANNEL_SENSOR_HUMIDITY, sensorData.getCurrentHumidity());
+        updateState(CHANNEL_SENSOR_ILLUMINANCE, sensorData.getCurrentIlluminance());
+        updateState(CHANNEL_SENSOR_NOISE, sensorData.getCurrentNoise());
+        updateState(CHANNEL_SENSOR_TEMPERATURE, sensorData.getCurrentTemperature());
     }
 
     private void updateFrequency() throws TimeoutException, InterruptedException, ExecutionException {
@@ -540,5 +713,118 @@ public class SomneoHandler extends BaseThingHandler {
         if (remainingTimeRelax <= 0 && remainingTimeSunset <= 0) {
             stopRemainingTimer();
         }
+    }
+
+    private void updateAlarm() throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+
+        final State snooze = connector.fetchSnoozeDuration();
+        updateState(CHANNEL_ALARM_SNOOZE, snooze);
+
+        final AlarmStateData alarmState = connector.fetchAlarmStateData();
+        final AlarmSchedulesData alarmSchedulesData = connector.fetchAlarmScheduleData();
+
+        for (int i = 1; i <= alarmState.getAlarmCount(); i++) {
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_CONFIGURED, i), alarmState.getConfiguredState(i));
+
+            if (OnOffType.ON.equals(alarmState.getConfiguredState(i))) {
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SWITCH, i), alarmState.getEnabledState(i));
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, i),
+                        alarmSchedulesData.getAlarmTimeState(i));
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEAT_DAY, i),
+                        alarmSchedulesData.getRepeatDayState(i));
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, i), alarmState.getPowerWakeState(i));
+                updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, i),
+                        alarmState.getPowerWakeDelayState(i, alarmSchedulesData.getAlarmTime(i)));
+            } else {
+                resetAlarm(i);
+            }
+        }
+    }
+
+    private void pollAlarmExtended() {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+
+        try {
+            final AlarmStateData alarmState = connector.fetchAlarmStateData();
+
+            for (int i = 1; i <= alarmState.getAlarmCount(); i++) {
+                if (OnOffType.ON.equals(alarmState.getConfiguredState(i))) {
+                    updateAlarmExtended(i);
+                } else {
+                    resetAlarm(i);
+                }
+            }
+        } catch (InterruptedException e) {
+            logger.debug("Polling extended alarm data interrupted");
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException | ExecutionException e) {
+            if (e.getCause() instanceof EOFException) {
+                // Occurs on parallel mobile app access
+                logger.debug("EOF: {}", e.getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+    }
+
+    private void updateAlarmExtended(int position) throws TimeoutException, InterruptedException, ExecutionException {
+        final SomneoHttpConnector connector = this.connector;
+        if (connector == null) {
+            return;
+        }
+
+        final AlarmSettingsData alarmSettings = connector.fetchAlarmSettingsData(position);
+
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_CONFIGURED, position),
+                alarmSettings.getConfiguredState());
+
+        if (OnOffType.ON.equals(alarmSettings.getConfiguredState())) {
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SWITCH, position), alarmSettings.getEnabledState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, position),
+                    alarmSettings.getPowerWakeState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, position),
+                    alarmSettings.getPowerWakeDelayState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, position), alarmSettings.getAlarmTimeState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEAT_DAY, position),
+                    alarmSettings.getRepeatDayState());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_DURATION, position),
+                    alarmSettings.getSunriseDurationInMin());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_BRIGHTNESS, position),
+                    alarmSettings.getSunriseBrightness());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_SCHEMA, position),
+                    alarmSettings.getSunriseSchema());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SOUND, position), alarmSettings.getSound());
+            updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_VOLUME, position), alarmSettings.getSoundVolume());
+        } else {
+            resetAlarm(position);
+        }
+    }
+
+    private void resetAlarm(int position) throws TimeoutException, InterruptedException, ExecutionException {
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SWITCH, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_POWER_WAKE_DELAY, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_TIME, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_REPEAT_DAY, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_DURATION, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_BRIGHTNESS, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SUNRISE_SCHEMA, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_SOUND, position), UnDefType.UNDEF);
+        updateState(formatAlarmChannelIdByIndex(CHANNEL_ALARM_VOLUME, position), UnDefType.UNDEF);
+    }
+
+    private String formatAlarmChannelIdByIndex(String channelId, int index) {
+        final String channelIdFormated = String.format(channelId, index);
+        if (channelIdFormated == null) {
+            return "";
+        }
+        return channelIdFormated;
     }
 }

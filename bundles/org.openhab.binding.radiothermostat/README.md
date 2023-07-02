@@ -40,13 +40,15 @@ Click the 'Show advanced' checkbox on the Thing configuration page to display th
 For both the heating and cooling programs, the 7-day repeating schedule has 4 setpoint periods per day (Morning, Day, Evening, Night).
 In order for the heating or cooling program to be valid, all time and setpoint fields must be populated.
 The time is expressed in 24-hour (HH:mm) format and the time value for each successive period within a day must be greater than the previous period.
-Once the schedule is populated and the configuration saved, the new schedule will be sent to the thermostat during binding initialization, overwriting its existing schedule.
+Once the schedule is populated and the configuration saved, the new schedule will be sent to the thermostat each time the binding is initialized, overwriting its existing schedule.
+If the thermostat's current setpoint was overridden, it will be reset to the applicable program setpoint.
 
 If one or more time or setpoint fields are left blank in a given schedule and the configuration saved, the Thing will display a configuration error until the entries are corrected.
 A heating or cooling schedule with all fields left blank will be ignored by the binding.
 In that case, the existing schedule on the thermostat will remain untouched.
 
-If the thermostat schedule is to be managed by openHAB, the thermostat should be de-provisioned from the MyRadioThermostat/EnergyHub cloud service to prevent the openHAB schedule from being overridden.
+The MyRadioThermostat/EnergyHub cloud service that previously enabled remote control and scheduling of the thermostat is now defunct.
+As such, disabling cloud connectivity on a thermostat that was previously connected to the cloud service may slightly improve the speed and reliability of accessing the local API.
 
 The thermostat can de-provisioned from the cloud by issuing the following `curl` commands:
 
@@ -60,6 +62,8 @@ curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}' -X POST
 - The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it with excessive amounts of simultaneous commands.
 - When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
 - Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
+- Clock sync will not occur if `override` flag is on (i.e. the program setpoint has been manually overridden) because syncing time will reset the temperature back to the program setpoint.
+- The `override` flag is not reported correctly on older thermostat versions (i.e. /tstat/model reports v1.09)
 - The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
 - Humidity information is available only when using a CT80 thermostat.
 

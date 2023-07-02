@@ -115,7 +115,7 @@ public class S3Actions {
         List<String> returnList = new ArrayList<>();
 
         if (nameNodesList.getLength() == 0) {
-            throw new Exception("No files deceted in the bucket");
+            return returnList;
         }
 
         for (int i = 0; i < nameNodesList.getLength(); i++) {
