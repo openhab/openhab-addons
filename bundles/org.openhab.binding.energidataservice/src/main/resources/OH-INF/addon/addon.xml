@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Energi Data Service Binding</name>
-	<description>This is the binding for Energi Data Service.</description>
+	<description>This is the binding for Energi Data Service providing open energy data from Energinet.</description>
 	<connection>cloud</connection>
 	<countries>dk,no,se</countries>
 </addon:addon>

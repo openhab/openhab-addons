@@ -7,7 +7,7 @@
 	<thing-type id="service">
 
 		<label>Energi Data Service</label>
-		<description>This thing represents the Energi Data Service API.</description>
+		<description>This Thing represents the Energi Data Service API.</description>
 
 		<channel-groups>
 			<channel-group id="electricity" typeId="electricity"/>
