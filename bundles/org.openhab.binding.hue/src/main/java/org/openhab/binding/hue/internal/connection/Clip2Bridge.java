@@ -481,14 +481,20 @@ public class Clip2Bridge implements Closeable {
      * @param bridgeHandler the bridge handler.
      * @param hostName the host name (ip address) of the Hue bridge
      * @param applicationKey the application key.
+     * @throws ApiException if unable to open Jetty HTTP/2 client.
      */
     public Clip2Bridge(HttpClientFactory httpClientFactory, Clip2BridgeHandler bridgeHandler, String hostName,
-            String applicationKey) {
+            String applicationKey) throws ApiException {
         LOGGER.debug("Clip2Bridge()");
         httpClient = httpClientFactory.getCommonHttpClient();
         http2Client = httpClientFactory.createHttp2Client("hue-clip2", httpClient.getSslContextFactory());
         http2Client.setConnectTimeout(Clip2Bridge.TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
+        try {
+            http2Client.start();
+        } catch (Exception e) {
+            throw new ApiException("Error starting HTTP/2 client", e);
+        }
         this.bridgeHandler = bridgeHandler;
         this.hostName = hostName;
         this.applicationKey = applicationKey;
@@ -544,6 +550,10 @@ public class Clip2Bridge implements Closeable {
         externalRestartScheduled = false;
         internalRestartScheduled = false;
         close2();
+        try {
+            http2Client.stop();
+        } catch (Exception e) {
+        }
     }
 
     /**
@@ -567,11 +577,6 @@ public class Clip2Bridge implements Closeable {
             cancelTask(checkAliveTask, true);
             checkAliveTask = null;
             closeSession();
-            try {
-                http2Client.stop();
-            } catch (Exception e) {
-                // ignore
-            }
             if (notifyHandler) {
                 bridgeHandler.onConnectionOffline();
             }
@@ -584,7 +589,7 @@ public class Clip2Bridge implements Closeable {
     private void closeSession() {
         LOGGER.debug("closeSession()");
         Session session = http2Session;
-        if (Objects.nonNull(session)) {
+        if (Objects.nonNull(session) && !session.isClosed()) {
             session.close(0, null, Callback.NOOP);
         }
         http2Session = null;
@@ -609,14 +614,15 @@ public class Clip2Bridge implements Closeable {
         } else if (cause.error == Http2Error.GO_AWAY) {
             LOGGER.debug("fatalError() {} {} scheduling reconnect", causeId, cause.error);
 
-            // schedule task to open again
             internalRestartScheduled = true;
-            cancelTask(internalRestartTask, false);
-            internalRestartTask = bridgeHandler.getScheduler().schedule(
-                    () -> internalRestart(onlineState == State.ACTIVE), RESTART_AFTER_SECONDS, TimeUnit.SECONDS);
 
             // force close immediately to be clean when internalRestart() starts
             close2();
+
+            // schedule task to open again
+            cancelTask(internalRestartTask, false);
+            internalRestartTask = bridgeHandler.getScheduler().schedule(
+                    () -> internalRestart(onlineState == State.ACTIVE), RESTART_AFTER_SECONDS, TimeUnit.SECONDS);
         } else {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("fatalError() {} {} closing", causeId, cause.error, cause);
@@ -741,6 +747,7 @@ public class Clip2Bridge implements Closeable {
      * @param active boolean that selects whether to restart in active or passive mode.
      */
     private void internalRestart(boolean active) {
+        LOGGER.debug("internalRestart({})", active);
         try {
             openPassive();
             if (active) {
@@ -892,11 +899,6 @@ public class Clip2Bridge implements Closeable {
         synchronized (this) {
             LOGGER.debug("openPassive()");
             onlineState = State.CLOSED;
-            try {
-                http2Client.start();
-            } catch (Exception e) {
-                throw new ApiException("Error starting HTTP/2 client", e);
-            }
             openSession();
             openCheckAliveTask();
             onlineState = State.PASSIVE;

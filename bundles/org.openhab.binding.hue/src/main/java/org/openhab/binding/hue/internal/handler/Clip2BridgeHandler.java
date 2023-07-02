@@ -486,7 +486,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             String applicationKey = config.applicationKey;
             applicationKey = Objects.nonNull(applicationKey) ? applicationKey : "";
-            clip2Bridge = new Clip2Bridge(httpClientFactory, this, ipAddress, applicationKey);
+
+            try {
+                clip2Bridge = new Clip2Bridge(httpClientFactory, this, ipAddress, applicationKey);
+            } catch (ApiException e) {
+                logger.trace("initializeAssets() communication error on '{}'", ipAddress, e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
+                return;
+            }
 
             assetsLoaded = true;
         }
