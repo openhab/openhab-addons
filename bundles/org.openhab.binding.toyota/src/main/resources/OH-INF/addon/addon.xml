@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Toyota Binding</name>
-    <description>This binding enables the access to Toyota MyT services.</description>
-    <connection>cloud</connection>
+	<description>This binding enables the access to Toyota MyT services.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

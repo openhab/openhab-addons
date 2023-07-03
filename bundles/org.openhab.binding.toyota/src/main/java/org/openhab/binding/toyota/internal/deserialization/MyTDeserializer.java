@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.toyota.internal.deserialization;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.toyota.internal.ToyotaException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -21,6 +26,7 @@ import org.osgi.service.component.annotations.Reference;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link MyTDeserializer} is responsible to instantiate suitable Gson (de)serializer
@@ -34,6 +40,36 @@ public class MyTDeserializer {
 
     @Activate
     public MyTDeserializer(@Reference TimeZoneProvider timeZoneProvider) {
-        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
+    }
+
+    public String toJson(Object object) {
+        return gson.toJson(object);
+    }
+
+    public <T> T deserialize(Class<T> clazz, String json) throws ToyotaException {
+        try {
+            @Nullable
+            T result = gson.fromJson(json, clazz);
+            if (result != null) {
+                return result;
+            }
+            throw new ToyotaException("Deserialization of '%s' resulted in null value", json);
+        } catch (JsonSyntaxException e) {
+            throw new ToyotaException(e, "Unexpected error deserializing '%s'", json);
+        }
+    }
+
+    public <T> List<T> deserialize(Type type, String json) throws ToyotaException {
+        try {
+            @Nullable
+            List<T> result = gson.fromJson(json, type);
+            if (result != null) {
+                return result;
+            }
+            return List.of();
+        } catch (JsonSyntaxException e) {
+            throw new ToyotaException(e, "Unexpected error deserializing '%s'", json);
+        }
     }
 }
