@@ -462,7 +462,6 @@ public class Clip2Bridge implements Closeable {
     private final Semaphore streamMutex = new Semaphore(MAX_CONCURRENT_STREAMS, true);
 
     private boolean closing;
-    private boolean externalRestartScheduled;
     private State onlineState = State.CLOSED;
     private Optional<Instant> lastRequestTime = Optional.empty();
     private Instant sessionExpireTime = Instant.MAX;
@@ -544,7 +543,6 @@ public class Clip2Bridge implements Closeable {
     @Override
     public void close() {
         closing = true;
-        externalRestartScheduled = false;
         close2();
         try {
             http2Client.stop();
@@ -558,7 +556,7 @@ public class Clip2Bridge implements Closeable {
     private void close2() {
         synchronized (this) {
             LOGGER.debug("close2()");
-            boolean notifyHandler = onlineState == State.ACTIVE && !externalRestartScheduled && !closing;
+            boolean notifyHandler = onlineState == State.ACTIVE && !closing;
             onlineState = State.CLOSED;
             synchronized (fatalErrorTasks) {
                 fatalErrorTasks.values().forEach(task -> cancelTask(task, true));
@@ -594,7 +592,7 @@ public class Clip2Bridge implements Closeable {
      * @param cause the exception that caused the error.
      */
     private synchronized void fatalError(Object listener, Http2Exception cause) {
-        if (externalRestartScheduled || onlineState == State.CLOSED || closing) {
+        if (onlineState == State.CLOSED || closing) {
             return;
         }
         String causeId = listener.getClass().getSimpleName();
@@ -1018,11 +1016,6 @@ public class Clip2Bridge implements Closeable {
             LOGGER.debug("registerApplicationKey() parsing error json:{}", json, e);
         }
         throw new HttpUnauthorizedException("Application key registration failed");
-    }
-
-    public void setExternalRestartScheduled() {
-        externalRestartScheduled = true;
-        close2();
     }
 
     /**

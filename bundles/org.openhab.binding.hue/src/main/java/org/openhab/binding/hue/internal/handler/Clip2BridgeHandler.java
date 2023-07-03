@@ -507,14 +507,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public void onConnectionOffline() {
         if (assetsLoaded) {
-            try {
-                getClip2Bridge().setExternalRestartScheduled();
-                cancelTask(checkConnectionTask, false);
-                checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
-                        TimeUnit.SECONDS);
-            } catch (AssetNotLoadedException e) {
-                // should never occur
-            }
+            cancelTask(checkConnectionTask, false);
+            checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
+                    TimeUnit.SECONDS);
         }
     }
 
