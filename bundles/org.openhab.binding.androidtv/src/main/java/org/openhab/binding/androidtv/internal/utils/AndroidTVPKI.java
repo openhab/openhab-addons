@@ -251,7 +251,7 @@ public class AndroidTVPKI {
         setCert(keystore.getCertificate(this.alias));
         Certificate caCert = keystore.getCertificate("trustedCa");
         if (caCert != null) {
-            setCaCert(keystore.getCertificate("trustedCa"));
+            setCaCert(caCert);
         }
     }
 
