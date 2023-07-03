@@ -1,0 +1,142 @@
+[
+	{
+		"hourStart": "2023-02-04T12:00:00Z",
+		"spotPrice": 0.992840027
+	},
+	{
+		"hourStart": "2023-02-04T13:00:00Z",
+		"spotPrice": 0.998200012
+	},
+	{
+		"hourStart": "2023-02-04T14:00:00Z",
+		"spotPrice": 1.054180054
+	},
+	{
+		"hourStart": "2023-02-04T15:00:00Z",
+		"spotPrice": 1.156540039
+	},
+	{
+		"hourStart": "2023-02-04T16:00:00Z",
+		"spotPrice": 1.267680054
+	},
+	{
+		"hourStart": "2023-02-04T17:00:00Z",
+		"spotPrice": 1.370939941
+	},
+	{
+		"hourStart": "2023-02-04T18:00:00Z",
+		"spotPrice": 1.339670044
+	},
+	{
+		"hourStart": "2023-02-04T19:00:00Z",
+		"spotPrice": 1.24973999
+	},
+	{
+		"hourStart": "2023-02-04T20:00:00Z",
+		"spotPrice": 1.177160034
+	},
+	{
+		"hourStart": "2023-02-04T21:00:00Z",
+		"spotPrice": 0.979809998
+	},
+	{
+		"hourStart": "2023-02-04T22:00:00Z",
+		"spotPrice": 0.804200012
+	},
+	{
+		"hourStart": "2023-02-04T23:00:00Z",
+		"spotPrice": 0.82826001
+	},
+	{
+		"hourStart": "2023-02-05T00:00:00Z",
+		"spotPrice": 0.777280029
+	},
+	{
+		"hourStart": "2023-02-05T01:00:00Z",
+		"spotPrice": 0.771549988
+	},
+	{
+		"hourStart": "2023-02-05T02:00:00Z",
+		"spotPrice": 0.757559998
+	},
+	{
+		"hourStart": "2023-02-05T03:00:00Z",
+		"spotPrice": 0.751599976
+	},
+	{
+		"hourStart": "2023-02-05T04:00:00Z",
+		"spotPrice": 0.76373999
+	},
+	{
+		"hourStart": "2023-02-05T05:00:00Z",
+		"spotPrice": 0.764700012
+	},
+	{
+		"hourStart": "2023-02-05T06:00:00Z",
+		"spotPrice": 0.784650024
+	},
+	{
+		"hourStart": "2023-02-05T07:00:00Z",
+		"spotPrice": 0.79551001
+	},
+	{
+		"hourStart": "2023-02-05T08:00:00Z",
+		"spotPrice": 0.805789978
+	},
+	{
+		"hourStart": "2023-02-05T09:00:00Z",
+		"spotPrice": 0.807789978
+	},
+	{
+		"hourStart": "2023-02-05T10:00:00Z",
+		"spotPrice": 0.796849976
+	},
+	{
+		"hourStart": "2023-02-05T11:00:00Z",
+		"spotPrice": 0.756289978
+	},
+	{
+		"hourStart": "2023-02-05T12:00:00Z",
+		"spotPrice": 0.749369995
+	},
+	{
+		"hourStart": "2023-02-05T13:00:00Z",
+		"spotPrice": 0.7915
+	},
+	{
+		"hourStart": "2023-02-05T14:00:00Z",
+		"spotPrice": 0.838830017
+	},
+	{
+		"hourStart": "2023-02-05T15:00:00Z",
+		"spotPrice": 0.892859985
+	},
+	{
+		"hourStart": "2023-02-05T16:00:00Z",
+		"spotPrice": 1.01997998
+	},
+	{
+		"hourStart": "2023-02-05T17:00:00Z",
+		"spotPrice": 0.99452002
+	},
+	{
+		"hourStart": "2023-02-05T18:00:00Z",
+		"spotPrice": 0.976140015
+	},
+	{
+		"hourStart": "2023-02-05T19:00:00Z",
+		"spotPrice": 0.923669983
+	},
+	{
+		"hourStart": "2023-02-05T20:00:00Z",
+		"spotPrice": 0.906700012
+	},
+	{
+		"hourStart": "2023-02-05T21:00:00Z",
+		"spotPrice": 0.931859985
+	},
+	{
+		"hourStart": "2023-02-05T22:00:00Z",
+		"spotPrice": 0.941159973
+	}
+]
