@@ -15,6 +15,17 @@
 				<type>system:electrical-voltage</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy">
+				<type>system:electric-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electric-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electric-voltage</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="avmfritz:FRITZ_DECT_210">
@@ -27,6 +38,17 @@
 			</update-channel>
 			<update-channel id="voltage">
 				<type>system:electrical-voltage</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy">
+				<type>system:electric-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electric-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electric-voltage</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -43,6 +65,17 @@
 				<type>system:electrical-voltage</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy">
+				<type>system:electric-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electric-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electric-voltage</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="avmfritz:FRITZ_Powerline_546E">
@@ -55,6 +88,17 @@
 			</update-channel>
 			<update-channel id="voltage">
 				<type>system:electrical-voltage</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy">
+				<type>system:electric-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electric-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electric-voltage</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
