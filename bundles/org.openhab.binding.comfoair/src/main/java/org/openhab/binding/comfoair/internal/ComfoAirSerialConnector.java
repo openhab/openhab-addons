@@ -79,9 +79,19 @@ public class ComfoAirSerialConnector {
                 SerialPort serialPort = portIdentifier.open(this.getClass().getName(), 3000);
                 serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
-                serialPort.enableReceiveThreshold(1);
-                serialPort.enableReceiveTimeout(1000);
                 serialPort.notifyOnDataAvailable(true);
+
+                try {
+                    serialPort.enableReceiveThreshold(1);
+                } catch (UnsupportedCommOperationException e) {
+                    logger.debug("Enable receive threshold is unsupported");
+                }
+                try {
+                    serialPort.enableReceiveTimeout(1000);
+                } catch (UnsupportedCommOperationException e) {
+                    logger.debug("Enable receive timeout is unsupported");
+                }
+
                 this.serialPort = serialPort;
 
                 inputStream = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));

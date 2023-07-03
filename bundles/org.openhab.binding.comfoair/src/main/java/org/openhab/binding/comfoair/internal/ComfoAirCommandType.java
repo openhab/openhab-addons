@@ -30,10 +30,8 @@ import org.openhab.binding.comfoair.internal.datatypes.DataTypeTemperature;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeTime;
 import org.openhab.binding.comfoair.internal.datatypes.DataTypeVolt;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Represents all valid commands which could be processed by this binding
@@ -107,28 +105,28 @@ public enum ComfoAirCommandType {
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 7 },
             0x02),
     BATHROOM_START_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_BR_START_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 0, new ComfoAirCommandType[] { MENU21_MODE },
+            DataTypeTime.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 0, new ComfoAirCommandType[] { MENU21_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 0 }),
     BATHROOM_END_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_BR_END_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 1, new ComfoAirCommandType[] { MENU22_MODE },
+            DataTypeTime.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 1, new ComfoAirCommandType[] { MENU22_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 1 }),
     L1_END_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_L1_END_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 2, new ComfoAirCommandType[] { MENU27_MODE },
+            DataTypeTime.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 2, new ComfoAirCommandType[] { MENU27_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 2 }),
     PULSE_VENTILATION(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_PULSE_VENTILATION,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 3, new ComfoAirCommandType[] { MENU23_MODE },
+            DataTypeTime.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 3, new ComfoAirCommandType[] { MENU23_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 3 }),
     FILTER_WEEKS(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_FILTER_WEEKS,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 4, new ComfoAirCommandType[] { MENU24_MODE },
+            DataTypeTime.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 4, new ComfoAirCommandType[] { MENU24_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 4 }),
     RF_SHORT_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_SHORT_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 5, new ComfoAirCommandType[] { MENU25_MODE },
+            DataTypeTime.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 5, new ComfoAirCommandType[] { MENU25_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 5 }),
     RF_LONG_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_LONG_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 6, new ComfoAirCommandType[] { MENU26_MODE },
+            DataTypeTime.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 6, new ComfoAirCommandType[] { MENU26_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 6 }),
     COOKERHOOD_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_COOKERHOOD_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 7, new ComfoAirCommandType[] { MENU20_MODE },
+            DataTypeTime.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 7, new ComfoAirCommandType[] { MENU20_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 7 }),
     CHIMNEY_STATE(ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_CHIMNEY_STATE,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 8 },
@@ -229,7 +227,7 @@ public enum ComfoAirCommandType {
     ENTHALPY_LEVEL(ComfoAirBindingConstants.CG_ENTHALPY_PREFIX + ComfoAirBindingConstants.CHANNEL_ENTHALPY_LEVEL,
             DataTypeNumber.getInstance(), Constants.REQUEST_GET_SENSORS, Constants.REPLY_GET_SENSORS, new int[] { 4 }),
     ENTHALPY_TIME(ComfoAirBindingConstants.CG_ENTHALPY_PREFIX + ComfoAirBindingConstants.CHANNEL_ENTHALPY_TIME,
-            DataTypeNumber.getInstance(), Constants.REQUEST_GET_SENSORS, Constants.REPLY_GET_SENSORS, new int[] { 5 }),
+            DataTypeTime.getInstance(), Constants.REQUEST_GET_SENSORS, Constants.REPLY_GET_SENSORS, new int[] { 5 }),
     PREHEATER_VALVE(ComfoAirBindingConstants.CG_PREHEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_PREHEATER_VALVE,
             DataTypeNumber.getInstance(), Constants.REQUEST_GET_PREHEATER, Constants.REPLY_GET_PREHEATER,
             new int[] { 0 }),
@@ -242,7 +240,7 @@ public enum ComfoAirCommandType {
             new int[] { 2 }),
     PREHEATER_FROST_TIME(
             ComfoAirBindingConstants.CG_PREHEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_PREHEATER_FROST_TIME,
-            DataTypeNumber.getInstance(), Constants.REQUEST_GET_PREHEATER, Constants.REPLY_GET_PREHEATER,
+            DataTypeTime.getInstance(), Constants.REQUEST_GET_PREHEATER, Constants.REPLY_GET_PREHEATER,
             new int[] { 3, 4 }),
     PREHEATER_OPTION(ComfoAirBindingConstants.CG_PREHEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_PREHEATER_SAFETY,
             DataTypeNumber.getInstance(), Constants.REQUEST_GET_PREHEATER, Constants.REPLY_GET_PREHEATER,
@@ -786,29 +784,22 @@ public enum ComfoAirCommandType {
      *            new state
      * @return initialized ComfoAirCommand
      */
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public static @Nullable ComfoAirCommand getChangeCommand(String key, Command command) {
         ComfoAirCommandType commandType = getCommandTypeByKey(key);
-        State value = UnDefType.NULL;
 
         if (commandType != null) {
             ComfoAirDataType dataType = commandType.getDataType();
-            if (dataType == DataTypeBoolean.getInstance() || dataType == DataTypeNumber.getInstance()
-                    || dataType == DataTypeRPM.getInstance() || command instanceof QuantityType<?>) {
-                value = (State) command;
-            }
-            if (value instanceof UnDefType) {
-                return null;
-            } else {
-                int[] data = dataType.convertFromState(value, commandType);
-                DecimalType decimalValue = value.as(DecimalType.class);
-                if (decimalValue != null) {
-                    int intValue = decimalValue.intValue();
 
-                    if (data != null) {
-                        int dataPosition = commandType.getChangeDataPos();
-                        return new ComfoAirCommand(key, commandType.changeCommand, null, data, dataPosition, intValue);
-                    }
+            State value = (State) command;
+
+            int[] data = dataType.convertFromState(value, commandType);
+            DecimalType decimalValue = value.as(DecimalType.class);
+            if (decimalValue != null) {
+                int intValue = decimalValue.intValue();
+
+                if (data != null) {
+                    int dataPosition = commandType.getChangeDataPos();
+                    return new ComfoAirCommand(key, commandType.changeCommand, null, data, dataPosition, intValue);
                 }
             }
         }
