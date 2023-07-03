@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="toyota"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="mytapi"/>
+		</supported-bridge-type-refs>
+
+		<label>Toyota Vehicle</label>
+		<description>Provides all data available on a Toyota vehicle</description>
+
+		<representation-property>vin</representation-property>
+
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>Vehicle Identification Number</label>
+				<description>VIN of the vehicle associated with this Thing</description>
+			</parameter>
+
+			<parameter name="refresh" type="integer" min="5" required="true">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in minutes.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
