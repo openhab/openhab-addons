@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mail;
+package org.openhab.binding.mail.internal;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,15 +29,15 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
 import org.apache.commons.mail.SimpleEmail;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mail.internal.MailBuilder;
 
 /**
  * The {@link MailBuilderTest} class defines tests for the {@link MailBuilder} class
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public class MailBuilderTest {
 
     private static final String TEST_STRING = "test";

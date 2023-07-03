@@ -14,18 +14,18 @@ package org.openhab.binding.mail.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mail.internal.ServerSecurity;
 
 /**
- * The {@link BaseConfig} class contains fields mapping thing configuration parameters.
+ * The {@link POP3IMAPContentChannelConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class BaseConfig {
-    public @Nullable String hostname;
-    public Integer port = 0;
-    public String username = "";
-    public String password = "";
-    public ServerSecurity security = ServerSecurity.PLAIN;
+public class POP3IMAPContentChannelConfig {
+    public @Nullable String folder;
+    public String subject = "";
+    public String sender = "";
+    public @Nullable String transformation;
+
+    public boolean markAsRead = false;
 }
