@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
 @NonNullByDefault
 public class POP3IMAPConfig extends BaseConfig {
     public int refresh = 60;

@@ -38,4 +38,5 @@ public class MailBindingConstants {
             Arrays.asList(THING_TYPE_SMTPSERVER, THING_TYPE_IMAPSERVER, THING_TYPE_POP3SERVER));
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_FOLDER_MAILCOUNT = new ChannelTypeUID(BINDING_ID, "mailcount");
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_MAIL_CONTENT = new ChannelTypeUID(BINDING_ID, "content");
 }
