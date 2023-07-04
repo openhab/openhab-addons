@@ -492,20 +492,24 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     private void handlePowerChange(@Nullable DevicePowerState previous, DevicePowerState current) {
         // isThingReconfigured is true when configurations has been updated or thing has just initialized
         // this will force to analyse polling periods and starts
-        if (!isThingReconfigured && (pollingPeriodOffSeconds == pollingPeriodOnSeconds || previous == current)) {
+        if (!isThingReconfigured && previous == current) {
             // no changes needed
             return;
         }
+        
         // change from OFF to ON / OFF to ON
         boolean isEnableToStartCollector = isExtraInfoCollectorEnabled() && isExtraInfoCollectorSupported();
+        
         if (current == DevicePowerState.DV_POWER_ON) {
             currentPeriodSeconds = pollingPeriodOnSeconds;
+            
             // if extendedInfo collector is enabled, then force do start to prevent previous stop
             if (isEnableToStartCollector) {
                 startExtraInfoCollectorPolling();
             }
         } else {
             currentPeriodSeconds = pollingPeriodOffSeconds;
+            
             // if it's configured to stop extra-info collection on PowerOff, then stop the job
             if (!pollExtraInfoOnPowerOff) {
                 stopExtraInfoCollectorPolling();
@@ -513,8 +517,12 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
                 startExtraInfoCollectorPolling();
             }
         }
+        
         // restart thing state polling for the new poolingPeriod configuration
-        stopThingStatePolling();
+        if (pollingPeriodOffSeconds != pollingPeriodOnSeconds) {
+            stopThingStatePolling();
+        }
+        
         startThingStatePolling();
     }
 
