@@ -60,7 +60,7 @@ public class DeviceTest {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         assertEquals(
                 "Type device; RootDeviceId: 64-da-a0-02-14-9b; Id: hdm:HomeMaticIP:3014F711A00004953859F31B; Device Service Ids: PowerMeter, PowerSwitch, PowerSwitchProgram, Routing; Manufacturer: BOSCH; Room Id: hz_3; Device Model: PSM; Serial: 3014F711A00004953859F31B; Profile: GENERIC; Name: Coffee Machine; Status: AVAILABLE; Child Device Ids: null ",
                 fixture.toString());

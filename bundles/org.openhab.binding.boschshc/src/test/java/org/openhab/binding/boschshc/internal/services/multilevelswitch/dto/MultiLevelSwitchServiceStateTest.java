@@ -23,7 +23,7 @@ import org.openhab.core.library.types.PercentType;
  * @author David Pace - Initial contribution
  *
  */
-public class MultiLevelSwitchServiceStateTest {
+class MultiLevelSwitchServiceStateTest {
 
     @Test
     void testToPercentType() {

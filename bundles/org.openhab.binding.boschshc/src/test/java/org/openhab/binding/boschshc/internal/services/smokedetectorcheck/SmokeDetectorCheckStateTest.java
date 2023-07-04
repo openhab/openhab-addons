@@ -19,12 +19,12 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link SmokeDetectorCheckState}.
- * 
+ *
  * @author David Pace - Initial contribution
  *
  */
 @NonNullByDefault
-public class SmokeDetectorCheckStateTest {
+class SmokeDetectorCheckStateTest {
 
     @Test
     void testFrom() {

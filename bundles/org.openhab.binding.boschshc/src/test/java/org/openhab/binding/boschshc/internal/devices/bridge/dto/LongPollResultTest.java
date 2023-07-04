@@ -24,7 +24,7 @@ import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public class LongPollResultTest {
+class LongPollResultTest {
 
     @Test
     void noResultsForErrorResult() {

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  * @author David Pace - Initial contribution
  *
  */
-public class DeviceServiceDataTest {
+class DeviceServiceDataTest {
 
     private DeviceServiceData fixture;
 
@@ -34,7 +34,7 @@ public class DeviceServiceDataTest {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         assertEquals("64-da-a0-02-14-9b state: DeviceServiceData", fixture.toString());
     }
 }

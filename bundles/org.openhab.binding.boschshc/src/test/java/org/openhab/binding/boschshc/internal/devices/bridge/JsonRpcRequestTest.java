@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  *
  */
 @NonNullByDefault
-public class JsonRpcRequestTest {
+class JsonRpcRequestTest {
 
     private @NonNullByDefault({}) JsonRpcRequest fixture;
 
@@ -35,14 +35,14 @@ public class JsonRpcRequestTest {
     }
 
     @Test
-    public void testConstructor() {
+    void testConstructor() {
         assertEquals("2.0", fixture.getJsonrpc());
         assertEquals("RE/longPoll", fixture.getMethod());
         assertArrayEquals(new String[] { "subscriptionId", "20" }, fixture.getParams());
     }
 
     @Test
-    public void testNoArgConstructor() {
+    void testNoArgConstructor() {
         fixture = new JsonRpcRequest();
         assertEquals("", fixture.getJsonrpc());
         assertEquals("", fixture.getMethod());
@@ -50,19 +50,19 @@ public class JsonRpcRequestTest {
     }
 
     @Test
-    public void testSetJsonrpc() {
+    void testSetJsonrpc() {
         fixture.setJsonrpc("test");
         assertEquals("test", fixture.getJsonrpc());
     }
 
     @Test
-    public void testSetMethod() {
+    void testSetMethod() {
         fixture.setMethod("RE/subscribe");
         assertEquals("RE/subscribe", fixture.getMethod());
     }
 
     @Test
-    public void testSetParams() {
+    void testSetParams() {
         fixture.setParams(new String[] { "com/bosch/sh/remote/*", null });
         assertArrayEquals(new String[] { "com/bosch/sh/remote/*", null }, fixture.getParams());
     }

@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  *
  */
 @NonNullByDefault
-public class BridgeConfigurationTest {
+class BridgeConfigurationTest {
 
     @Test
     void testConstructor() {

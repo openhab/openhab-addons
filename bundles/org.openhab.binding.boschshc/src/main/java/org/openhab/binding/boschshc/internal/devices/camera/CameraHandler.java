@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.camera;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CAMERA_NOTIFICATION;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_PRIVACY_MODE;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
 
@@ -35,18 +34,18 @@ import org.openhab.core.types.Command;
  * Handler for security cameras.
  * <p>
  * This implementation handles services and commands that are common to all cameras, which are currently:
- * 
+ *
  * <ul>
  * <li><code>PrivacyMode</code> - Controls whether the camera records images</li>
  * <li><code>CameraNotification</code> - Enables or disables notifications for the camera</li>
  * </ul>
- * 
+ *
  * <p>
  * The Eyes outdoor camera advertises a <code>CameraLight</code> service, which unfortunately does not work properly.
  * Valid states are <code>ON</code> and <code>OFF</code>.
  * One of my two cameras returns <code>HTTP 204 (No Content)</code> when requesting the state.
  * Once Bosch supports this service properly, a new subclass may be introduced for the Eyes outdoor camera.
- * 
+ *
  * @author David Pace - Initial contribution
  *
  */
@@ -77,14 +76,14 @@ public class CameraHandler extends BoschSHCDeviceHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_PRIVACY_MODE:
-                if (command instanceof OnOffType) {
-                    updatePrivacyModeState((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    updatePrivacyModeState(onOffCommand);
                 }
                 break;
 
             case CHANNEL_CAMERA_NOTIFICATION:
-                if (command instanceof OnOffType) {
-                    updateCameraNotificationState((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    updateCameraNotificationState(onOffCommand);
                 }
                 break;
         }

@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.boschshc.internal.discovery;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ import org.openhab.core.thing.ThingUID;
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
-public class ThingDiscoveryServiceTest {
+class ThingDiscoveryServiceTest {
 
     private @NonNullByDefault({}) ThingDiscoveryService fixture;
 
@@ -69,7 +70,7 @@ public class ThingDiscoveryServiceTest {
     }
 
     @Test
-    public void testStartScan() throws InterruptedException {
+    void testStartScan() throws InterruptedException {
         mockBridgeCalls();
 
         fixture.activate();
@@ -83,7 +84,7 @@ public class ThingDiscoveryServiceTest {
     }
 
     @Test
-    public void testStartScanWithoutBridgeHandler() {
+    void testStartScanWithoutBridgeHandler() {
         mockBridgeCalls();
 
         // No fixture.setThingHandler(bridgeHandler);
@@ -96,13 +97,13 @@ public class ThingDiscoveryServiceTest {
     }
 
     @Test
-    public void testSetGetThingHandler() {
+    void testSetGetThingHandler() {
         fixture.setThingHandler(bridgeHandler);
         assertThat(fixture.getThingHandler(), is(bridgeHandler));
     }
 
     @Test
-    public void testAddDevices() {
+    void testAddDevices() {
         mockBridgeCalls();
 
         ArrayList<Device> devices = new ArrayList<>();
@@ -128,7 +129,7 @@ public class ThingDiscoveryServiceTest {
     }
 
     @Test
-    public void testAddDevicesWithNoDevices() {
+    void testAddDevicesWithNoDevices() {
         ArrayList<Device> emptyDevices = new ArrayList<>();
         ArrayList<Room> emptyRooms = new ArrayList<>();
 
@@ -141,7 +142,7 @@ public class ThingDiscoveryServiceTest {
     }
 
     @Test
-    public void testAddDevice() {
+    void testAddDevice() {
         mockBridgeCalls();
 
         Device device = new Device();
@@ -159,26 +160,26 @@ public class ThingDiscoveryServiceTest {
         assertThat(result.getThingUID().getId(), is("testDevice_ID"));
         assertThat(result.getBridgeUID().getId(), is("testSHC"));
         assertThat(result.getLabel(), is("Test Name"));
-        assertThat(result.getProperties().get("Location").toString(), is("TestRoom"));
+        assertThat(String.valueOf(result.getProperties().get("Location")), is("TestRoom"));
     }
 
     @Test
-    public void testAddDeviceWithNiceNameAndAppendedRoomName() {
+    void testAddDeviceWithNiceNameAndAppendedRoomName() {
         assertDeviceNiceName("-RoomClimateControl-", "TestRoom", "Room Climate Control TestRoom");
     }
 
     @Test
-    public void testAddDeviceWithNiceNameWithEmtpyRoomName() {
+    void testAddDeviceWithNiceNameWithEmtpyRoomName() {
         assertDeviceNiceName("-RoomClimateControl-", "", "Room Climate Control");
     }
 
     @Test
-    public void testAddDeviceWithNiceNameWithoutAppendingRoomName() {
+    void testAddDeviceWithNiceNameWithoutAppendingRoomName() {
         assertDeviceNiceName("-SmokeDetectionSystem-", "TestRoom", "Smoke Detection System");
     }
 
     @Test
-    public void testAddDeviceWithNiceNameWithoutUsualName() {
+    void testAddDeviceWithNiceNameWithoutUsualName() {
         assertDeviceNiceName("My other device", "TestRoom", "My other device");
     }
 
@@ -197,7 +198,7 @@ public class ThingDiscoveryServiceTest {
     }
 
     @Test
-    public void testGetRoomForDevice() {
+    void testGetRoomForDevice() {
         Device device = new Device();
 
         ArrayList<Room> rooms = new ArrayList<>();
@@ -221,7 +222,7 @@ public class ThingDiscoveryServiceTest {
     }
 
     @Test
-    public void testGetThingTypeUID() {
+    void testGetThingTypeUID() {
         Device device = new Device();
 
         device.deviceModel = "invalid";

@@ -32,7 +32,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class WindowContactHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<WindowContactHandler> {
+class WindowContactHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<WindowContactHandler> {
 
     @Override
     protected WindowContactHandler createFixture() {
@@ -50,7 +50,7 @@ public class WindowContactHandlerTest extends AbstractBatteryPoweredDeviceHandle
     }
 
     @Test
-    public void testUpdateChannelsShutterContactService() {
+    void testUpdateChannelsShutterContactService() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "   \"@type\": \"shutterContactState\",\n" + "   \"value\": \"OPEN\"\n" + " }");
         getFixture().processUpdate("ShutterContact", jsonObject);
