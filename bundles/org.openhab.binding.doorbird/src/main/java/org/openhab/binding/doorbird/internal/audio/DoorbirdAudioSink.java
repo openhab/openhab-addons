@@ -23,9 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
 import org.openhab.core.audio.AudioFormat;
-import org.openhab.core.audio.AudioSink;
+import org.openhab.core.audio.AudioSinkSync;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.FixedLengthAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
@@ -37,7 +36,7 @@ import org.openhab.core.library.types.PercentType;
  *
  */
 @NonNullByDefault
-public class DoorbirdAudioSink implements AudioSink {
+public class DoorbirdAudioSink extends AudioSinkSync {
 
     private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
     private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
@@ -46,7 +45,7 @@ public class DoorbirdAudioSink implements AudioSink {
 
     static {
         SUPPORTED_FORMATS.add(AudioFormat.WAV);
-        SUPPORTED_STREAMS.add(FixedLengthAudioStream.class);
+        SUPPORTED_STREAMS.add(AudioStream.class);
     }
 
     public DoorbirdAudioSink(DoorbellHandler doorbellHandler) {
@@ -64,7 +63,7 @@ public class DoorbirdAudioSink implements AudioSink {
     }
 
     @Override
-    public void process(@Nullable AudioStream audioStream)
+    protected void processSynchronously(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (audioStream == null) {
             return;
