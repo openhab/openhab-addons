@@ -1372,7 +1372,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 state = new QuantityType<Time>(Integer.parseInt(value) / 10, NuvoHandler.API_SECOND_UNIT);
                 break;
             case CHANNEL_ALBUM_ART:
-                state = new RawType(bytes, RawType.DEFAULT_MIME_TYPE);
+                state = new RawType(bytes, "image/jpeg");
                 break;
             default:
                 break;
