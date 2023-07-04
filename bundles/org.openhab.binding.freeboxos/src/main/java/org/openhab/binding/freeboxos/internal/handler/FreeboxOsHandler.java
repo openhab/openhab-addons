@@ -148,5 +148,4 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
     public AudioHTTPServer getAudioHTTPServer() {
         return audioHTTPServer;
     }
-
 }
