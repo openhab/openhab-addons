@@ -59,6 +59,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 /**
  *
@@ -107,15 +108,18 @@ public class HydrawiseGraphQLClient {
      */
     public @Nullable QueryResponse queryControllers()
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
-        QueryRequest query;
         try {
-            query = new QueryRequest(getQueryString());
+            QueryRequest query = new QueryRequest(getQueryString());
+            String queryJson = gson.toJson(query);
+            String response = sendGraphQLQuery(queryJson);
+            try {
+                return gson.fromJson(response, QueryResponse.class);
+            } catch (JsonSyntaxException e) {
+                throw new HydrawiseConnectionException("Invalid Response: " + response);
+            }
         } catch (IOException e) {
             throw new HydrawiseConnectionException(e);
         }
-        String queryJson = gson.toJson(query);
-        String response = sendGraphQLQuery(queryJson);
-        return gson.fromJson(response, QueryResponse.class);
     }
 
     /***
@@ -262,16 +266,20 @@ public class HydrawiseGraphQLClient {
         logger.debug("Sending Mutation {}", gson.toJson(mutation).toString());
         String response = sendGraphQLRequest(gson.toJson(mutation).toString());
         logger.debug("Mutation response {}", response);
-        MutationResponse mResponse = gson.fromJson(response, MutationResponse.class);
-        if (mResponse == null) {
-            throw new HydrawiseCommandException("Malformed response: " + response);
-        }
-        Optional<MutationResponseStatus> status = mResponse.data.values().stream().findFirst();
-        if (!status.isPresent()) {
-            throw new HydrawiseCommandException("Unknown response: " + response);
-        }
-        if (status.get().status != StatusCode.OK) {
-            throw new HydrawiseCommandException("Command Status: " + status.get().status.name());
+        try {
+            MutationResponse mResponse = gson.fromJson(response, MutationResponse.class);
+            if (mResponse == null) {
+                throw new HydrawiseCommandException("Malformed response: " + response);
+            }
+            Optional<MutationResponseStatus> status = mResponse.data.values().stream().findFirst();
+            if (!status.isPresent()) {
+                throw new HydrawiseCommandException("Unknown response: " + response);
+            }
+            if (status.get().status != StatusCode.OK) {
+                throw new HydrawiseCommandException("Command Status: " + status.get().status.name());
+            }
+        } catch (JsonSyntaxException e) {
+            throw new HydrawiseConnectionException("Invalid Response: " + response);
         }
     }
 
