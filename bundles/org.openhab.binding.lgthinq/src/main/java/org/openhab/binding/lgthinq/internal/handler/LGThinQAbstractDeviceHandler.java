@@ -171,6 +171,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         if (commandExecutorQueueJob != null) {
             commandExecutorQueueJob.cancel(true);
         }
+        commandExecutorQueueJob = null;
     }
 
     protected void handleStatusChanged(ThingStatus newStatus, ThingStatusDetail statusDetail) {
@@ -740,19 +741,15 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             account.unRegistryListenerThing(this);
         }
         
-        if (thingStatePollingJob != null) {
-            thingStatePollingJob.cancel(true);
-            stopThingStatePolling();
-            stopExtraInfoCollectorPolling();
-            stopCommandExecutorQueueJob();
-            try {
-                if (LGAPIVerion.V1_0.equals(getCapabilities().getDeviceVersion())) {
-                    stopDeviceV1Monitor(getDeviceId());
-                }
-            } catch (Exception e) {
-                logger.warn("Can't stop active monitor. It's can be normally ignored. Cause:{}", e.getMessage());
+        stopThingStatePolling();
+        stopExtraInfoCollectorPolling();
+        stopCommandExecutorQueueJob();
+        try {
+            if (LGAPIVerion.V1_0.equals(getCapabilities().getDeviceVersion())) {
+                stopDeviceV1Monitor(getDeviceId());
             }
-            thingStatePollingJob = null;
+        } catch (Exception e) {
+            logger.warn("Can't stop active monitor. It's can be normally ignored. Cause:{}", e.getMessage());
         }
     }
 
