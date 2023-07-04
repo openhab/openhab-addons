@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -50,6 +51,7 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
     private final AudioHTTPServer audioHTTPServer;
 
     private Optional<Future<?>> openConnectionJob = Optional.empty();
+    private Optional<Future<?>> grantingJob = Optional.empty();
 
     public FreeboxOsHandler(Bridge thing, FreeboxOsSession session, String callbackURL, BundleContext bundleContext,
             AudioHTTPServer audioHTTPServer) {
@@ -64,27 +66,19 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
     public void initialize() {
         freeConnectionJob();
 
+        FreeboxOsConfiguration config = getConfiguration();
         openConnectionJob = Optional.of(scheduler.submit(() -> {
             try {
-                FreeboxOsConfiguration config = getConfiguration();
-
+                session.initialize(config);
                 if (config.appToken.isBlank()) {
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "@text/info-conf-pending");
+                    grantingJob = Optional.of(scheduler.schedule(this::processGranting, 2, TimeUnit.SECONDS));
+                    return;
                 } else {
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+                    session.openSession(config.appToken);
                 }
-
-                String currentAppToken = session.initialize(config);
-
-                if (!currentAppToken.equals(config.appToken)) {
-                    Configuration thingConfig = editConfiguration();
-                    thingConfig.put(FreeboxOsConfiguration.APP_TOKEN, currentAppToken);
-                    updateConfiguration(thingConfig);
-                    logger.info(
-                            "App token updated in Configuration, please ensure expected permissions are given openHAB in your Freebox management console");
-                }
-
                 updateStatus(ThingStatus.ONLINE);
             } catch (FreeboxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -94,6 +88,23 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
         }));
     }
 
+    private void processGranting() {
+        try {
+            String appToken = session.grant();
+            if (appToken.isBlank()) {
+                grantingJob = Optional.of(scheduler.schedule(this::processGranting, 2, TimeUnit.SECONDS));
+            } else {
+                Configuration thingConfig = editConfiguration();
+                thingConfig.put(FreeboxOsConfiguration.APP_TOKEN, appToken);
+                updateConfiguration(thingConfig);
+                logger.info("AppToken updated, ensure giving permissions in the Freebox management console");
+                initialize();
+            }
+        } catch (FreeboxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+    }
+
     public <T extends RestManager> T getManager(Class<T> clazz) throws FreeboxException {
         return session.getManager(clazz);
     }
@@ -101,6 +112,8 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
     private void freeConnectionJob() {
         openConnectionJob.ifPresent(job -> job.cancel(true));
         openConnectionJob = Optional.empty();
+        grantingJob.ifPresent(job -> job.cancel(true));
+        grantingJob = Optional.empty();
     }
 
     @Override
@@ -135,4 +148,5 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
     public AudioHTTPServer getAudioHTTPServer() {
         return audioHTTPServer;
     }
+
 }

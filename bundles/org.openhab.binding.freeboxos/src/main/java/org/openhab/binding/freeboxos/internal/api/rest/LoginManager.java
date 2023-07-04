@@ -16,8 +16,8 @@ import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -43,12 +43,6 @@ public class LoginManager extends RestManager {
     private static final String SESSION = "session";
     private static final String AUTHORIZE_ACTION = "authorize";
     private static final String LOGOUT = "logout";
-    private static final int GRANT_DELAY_SEC = 180;
-
-    private final Mac mac;
-
-    private static class AuthStatus extends Response<AuthorizationStatus> {
-    }
 
     private static enum Status {
         PENDING, // the user has not confirmed the autorization request yet
@@ -62,13 +56,13 @@ public class LoginManager extends RestManager {
             @Nullable String passwordSalt, boolean passwordSet) {
     }
 
-    private static class AuthResponse extends Response<Authorization> {
+    private static class AuthStatus extends Response<AuthorizationStatus> {
     }
 
     private static record Authorization(String appToken, String trackId) {
     }
 
-    private static class SessionResponse extends Response<Session> {
+    private static class AuthResponse extends Response<Authorization> {
     }
 
     public static enum Permission {
@@ -92,22 +86,26 @@ public class LoginManager extends RestManager {
 
     public static record Session(Map<LoginManager.Permission, @Nullable Boolean> permissions,
             @Nullable String sessionToken) {
-
         protected boolean hasPermission(LoginManager.Permission checked) {
             return Boolean.TRUE.equals(permissions.get(checked));
+        }
+    }
+
+    private static class SessionResponse extends Response<Session> {
+    }
+
+    private static record AuthorizeData(String appId, String appName, String appVersion, String deviceName) {
+        AuthorizeData(String appId, Bundle bundle) {
+            this(appId, bundle.getHeaders().get("Bundle-Name"), bundle.getVersion().toString(),
+                    bundle.getHeaders().get("Bundle-Vendor"));
         }
     }
 
     private static record OpenSessionData(String appId, String password) {
     }
 
-    private static record AuthorizeData(String appId, String appName, String appVersion, String deviceName) {
-
-        AuthorizeData(String appId, Bundle bundle) {
-            this(appId, bundle.getHeaders().get("Bundle-Name"), bundle.getVersion().toString(),
-                    bundle.getHeaders().get("Bundle-Vendor"));
-        }
-    }
+    private final Mac mac;
+    private Optional<Authorization> authorize = Optional.empty();
 
     public LoginManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(PATH));
@@ -138,27 +136,21 @@ public class LoginManager extends RestManager {
         post(LOGOUT);
     }
 
-    public String grant() throws FreeboxException {
-        ZonedDateTime timeLimit = ZonedDateTime.now().plusSeconds(GRANT_DELAY_SEC);
-        Authorization authorize = post(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION);
-        Status track = Status.PENDING;
-        try {
-            while (Status.PENDING.equals(track) && ZonedDateTime.now().isBefore(timeLimit)) {
-                Thread.sleep(2000);
-                track = getSingle(AuthStatus.class, AUTHORIZE_ACTION, authorize.trackId).status();
-            }
-            switch (track) {
-                case GRANTED:
-                    return authorize.appToken();
-                case TIMEOUT, PENDING:
-                    throw new FreeboxException("Unable to grant session, delay expired");
-                case DENIED:
-                    throw new FreeboxException("Unable to grant session, access was denied");
-                default:
-                    throw new FreeboxException("Unable to grant session");
-            }
-        } catch (InterruptedException e) {
-            throw new FreeboxException(e, "Granting process interrupted");
+    public String checkGrantStatus() throws FreeboxException {
+        if (authorize.isEmpty()) {
+            authorize = Optional.of(post(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION));
         }
+
+        return switch (getSingle(AuthStatus.class, AUTHORIZE_ACTION, authorize.get().trackId).status()) {
+            case PENDING -> "";
+            case GRANTED -> {
+                String appToken = authorize.get().appToken;
+                authorize = Optional.empty();
+                yield appToken;
+            }
+            case TIMEOUT -> throw new FreeboxException("Unable to grant session, delay expired");
+            case DENIED -> throw new FreeboxException("Unable to grant session, access was denied");
+            case UNKNOWN -> throw new FreeboxException("Unable to grant session");
+        };
     }
 }

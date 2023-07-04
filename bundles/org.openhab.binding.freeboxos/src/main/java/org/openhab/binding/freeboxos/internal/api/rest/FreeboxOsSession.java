@@ -79,44 +79,27 @@ public class FreeboxOsSession {
         this.apiHandler = apiHandler;
     }
 
-    /**
-     * @param config
-     * @return the app token used to open the session (can have changed if newly granted)
-     * @throws FreeboxException
-     * @throws InterruptedException
-     */
-    public String initialize(FreeboxOsConfiguration config) throws FreeboxException, InterruptedException {
+    public void initialize(FreeboxOsConfiguration config) throws FreeboxException, InterruptedException {
         ApiVersion version = apiHandler.executeUri(config.getUriBuilder(API_VERSION_PATH).build(), HttpMethod.GET,
                 ApiVersion.class, null, null);
         this.uriBuilder = config.getUriBuilder(version.baseUrl());
-        this.appToken = config.appToken;
-        String result = initiateConnection();
-
+        getManager(LoginManager.class);
         getManager(NetShareManager.class);
         getManager(LanManager.class);
         getManager(WifiManager.class);
         getManager(FreeplugManager.class);
         getManager(AirMediaManager.class);
-
-        return result;
     }
 
-    private String initiateConnection() throws FreeboxException {
-        try {
-            if (!appToken.isBlank()) {
-                Session newSession = getManager(LoginManager.class).openSession(appToken);
-                getManager(WebSocketManager.class).openSession(newSession.sessionToken());
-                session = newSession;
-                return appToken;
-            }
-            throw new FreeboxException(ErrorCode.INVALID_TOKEN, "Token is invalid");
-        } catch (FreeboxException e) {
-            if (ErrorCode.INVALID_TOKEN.equals(e.getErrorCode())) {
-                appToken = getManager(LoginManager.class).grant();
-                return initiateConnection();
-            }
-            throw e;
-        }
+    public void openSession(String appToken) throws FreeboxException {
+        Session newSession = getManager(LoginManager.class).openSession(appToken);
+        getManager(WebSocketManager.class).openSession(newSession.sessionToken());
+        session = newSession;
+        this.appToken = appToken;
+    }
+
+    public String grant() throws FreeboxException {
+        return getManager(LoginManager.class).checkGrantStatus();
     }
 
     public void closeSession() {
@@ -141,7 +124,7 @@ public class FreeboxOsSession {
             if (response.getErrorCode() == ErrorCode.INTERNAL_ERROR && retryCount > 0) {
                 return execute(uri, method, clazz, false, retryCount - 1, aPayload);
             } else if (retryAuth && response.getErrorCode() == ErrorCode.AUTH_REQUIRED) {
-                initiateConnection();
+                openSession(appToken);
                 return execute(uri, method, clazz, false, retryCount, aPayload);
             }
             if (!response.isSuccess()) {
@@ -150,7 +133,7 @@ public class FreeboxOsSession {
             return response.getResult();
         } catch (FreeboxException e) {
             if (ErrorCode.AUTH_REQUIRED.equals(e.getErrorCode())) {
-                initiateConnection();
+                openSession(appToken);
                 return execute(uri, method, clazz, false, retryCount, aPayload);
             }
             throw e;
