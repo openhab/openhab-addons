@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseAuthenticationException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseCommandException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseConnectionException;
@@ -309,6 +310,11 @@ public class HydrawiseGraphQLClient {
                     }).send();
             String stringResponse = response.getContentAsString();
             logger.trace("Received Response: {}", stringResponse);
+            int statusCode = response.getStatus();
+            if (!HttpStatus.isSuccess(statusCode)) {
+                throw new HydrawiseConnectionException(
+                        "Request failed with HTTP status code: " + statusCode + " response: " + stringResponse);
+            }
             return stringResponse;
         } catch (InterruptedException | TimeoutException | OAuthException | IOException e) {
             logger.debug("Could not send request", e);
