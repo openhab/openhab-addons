@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.toyota.internal.dto;
 
-public class Climate {
-    public String status;
-    public String type;
+/**
+ * This class describes the current status of lamp
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+public class Lamp extends ThingStatus {
+    public boolean off;
 }

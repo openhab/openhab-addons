@@ -12,6 +12,14 @@
 		<label>Toyota Vehicle</label>
 		<description>Provides all data available on a Toyota vehicle</description>
 
+		<channel-groups>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="lamps" typeId="lamps"/>
+			<channel-group id="locks" typeId="locks"/>
+			<channel-group id="key" typeId="key"/>
+		</channel-groups>
+
 		<representation-property>vin</representation-property>
 
 		<config-description>

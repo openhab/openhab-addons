@@ -18,12 +18,14 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.toyota.internal.ToyotaException;
 import org.openhab.binding.toyota.internal.api.MyTHttpApi;
 import org.openhab.binding.toyota.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.toyota.internal.deserialization.MyTDeserializer;
 import org.openhab.binding.toyota.internal.discovery.ToyotaDiscoveryService;
 import org.openhab.binding.toyota.internal.dto.CustomerProfile;
+import org.openhab.binding.toyota.internal.dto.StatusResponse;
 import org.openhab.binding.toyota.internal.dto.Vehicle;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -103,6 +105,14 @@ public class MyTBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    public @Nullable Vehicle getVehicle(String vin) {
+        return getVehicles().stream().filter(v -> vin.equals(v.vin)).findFirst().orElse(null);
+    }
+
+    public @Nullable StatusResponse getVehicleStatus(String vin) throws ToyotaException {
+        return api.getVehicleStatus(uuid.get(), vin);
+    }
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(ToyotaDiscoveryService.class);
@@ -112,5 +122,4 @@ public class MyTBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
     }
-
 }

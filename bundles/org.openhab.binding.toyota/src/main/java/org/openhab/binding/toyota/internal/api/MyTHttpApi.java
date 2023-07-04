@@ -34,6 +34,7 @@ import org.openhab.binding.toyota.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.toyota.internal.deserialization.MyTDeserializer;
 import org.openhab.binding.toyota.internal.dto.CredentialResponse;
 import org.openhab.binding.toyota.internal.dto.CustomerProfile;
+import org.openhab.binding.toyota.internal.dto.StatusResponse;
 import org.openhab.binding.toyota.internal.dto.Vehicle;
 import org.openhab.core.io.net.http.HttpClientFactory;
 
@@ -100,13 +101,14 @@ public class MyTHttpApi {
         return getResponse(HttpMethod.GET, VEHICLE_LIST_URL.formatted(uuid), Vehicle.LIST_CLASS, null);
     }
 
+    public StatusResponse getVehicleStatus(String uuid, String vin) throws ToyotaException {
+        return getResponse(HttpMethod.GET, VEHICLE_STATUS_URL.formatted(uuid, vin), StatusResponse.ANSWER_CLASS, null);
+    }
+
     // private void backup() throws ToyotaException {
-    // String result = getResponse(HttpMethod.GET, VEHICLE_LIST_URL.formatted(uuid.get()), null);
-    // List<Vehicle> vehicles = deserializer.deserialize(Vehicle.LIST_CLASS, result);
-    //
     // vin = Optional.of(vehicles.get(0).vin);
     //
-    // result = getResponse(HttpMethod.GET, VEHICLE_STATUS_URL.formatted(uuid.get(), vin.get()), null);
+    // result = ;
     // StatusResponse status = deserializer.deserialize(StatusResponse.class, result);
     //
     // result = getResponse(HttpMethod.GET, VEHICLE_INFO_URL.formatted(vin.get()), null);

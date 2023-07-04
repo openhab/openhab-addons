@@ -12,7 +12,15 @@
  */
 package org.openhab.binding.toyota.internal.dto;
 
-public class Climate {
-    public String status;
-    public String type;
+/**
+ * This class describes the current status of a car window
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+public class Window extends ThingStatus {
+    public String state;
+
+    public boolean isClosed() {
+        return "close".equals(state);
+    }
 }

@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.toyota.internal.dto;
 
-public class Climate {
-    public String status;
-    public String type;
+/**
+ * Base class for all things reporting their status
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+public abstract class ThingStatus {
+    public boolean warning;
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="toyota"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="warning">
+		<item-type>Switch</item-type>
+		<label>Warning</label>
+		<category>Siren</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="door">
+		<item-type>Contact</item-type>
+		<label>Door</label>
+		<description>Indicates if the door is opened</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="window">
+		<item-type>Contact</item-type>
+		<label>Window</label>
+		<description>Indicates if the window is opened</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Lock status</description>
+		<category>Lock</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lamp">
+		<item-type>Switch</item-type>
+		<label>Lamp</label>
+		<description>Lamp Status</description>
+		<category>Lightbulb</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="string-ro">
+		<item-type>String</item-type>
+		<label>A String</label>
+		<category>Text</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="switch-ro">
+		<item-type>Switch</item-type>
+		<label>A Switch</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="toyota"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="key">
+		<label>Car key report</label>
+		<channels>
+			<channel id="in-car" typeId="switch-ro">
+				<label>Key stayed in the car</label>
+			</channel>
+			<channel id="warning" typeId="warning">
+				<label>Key Warning</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="windows">
+		<label>Windows Opening Status</label>
+		<channels>
+			<channel id="driver" typeId="window">
+				<label>Driver's Window</label>
+			</channel>
+			<channel id="passenger" typeId="window">
+				<label>Passenger's Window</label>
+			</channel>
+			<channel id="rear-right" typeId="window">
+				<label>Rear Left Window</label>
+			</channel>
+			<channel id="rear-left" typeId="window">
+				<label>Rear Right Window</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="doors">
+		<label>Doors Opening Status</label>
+		<channels>
+			<channel id="driver" typeId="door">
+				<label>Driver's seat Door</label>
+			</channel>
+			<channel id="passenger" typeId="door">
+				<label>Passenger's seat Door</label>
+			</channel>
+			<channel id="rear-right" typeId="door">
+				<label>Rear Right Door</label>
+			</channel>
+			<channel id="rear-left" typeId="door">
+				<label>Rear Left Door</label>
+			</channel>
+			<channel id="tailgate" typeId="door">
+				<label>Tailgate</label>
+			</channel>
+			<channel id="hood" typeId="door">
+				<label>Hood</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="locks">
+		<label>Car Locking Status</label>
+		<channels>
+			<channel id="status" typeId="string-ro">
+				<label>Car Lock State</label>
+			</channel>
+			<channel id="source" typeId="string-ro">
+				<label>Lock Source</label>
+			</channel>
+			<channel id="driver" typeId="locked">
+				<label>Driver's Door Locked</label>
+			</channel>
+			<channel id="passenger" typeId="locked">
+				<label>Passenger's Door Locked</label>
+			</channel>
+			<channel id="rear-right" typeId="locked">
+				<label>Rear Right Door Locked</label>
+			</channel>
+			<channel id="rear-left" typeId="locked">
+				<label>Rear Left Door Locked</label>
+			</channel>
+			<channel id="tailgate" typeId="locked">
+				<label>Tailgate Locked</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="lamps">
+		<label>Car lamps Status</label>
+		<channels>
+			<channel id="head" typeId="lamp">
+				<label>Head Lights</label>
+			</channel>
+			<channel id="tail" typeId="lamp">
+				<label>Tail Lights</label>
+			</channel>
+			<channel id="hazard" typeId="lamp">
+				<label>Hazard Light</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
