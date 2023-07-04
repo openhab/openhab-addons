@@ -44,7 +44,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraHandler> {
+class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<PrivacyModeServiceState> privacyModeServiceStateCaptor;
 
@@ -66,7 +66,7 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testHandleCommandPrivacyMode()
+    void testHandleCommandPrivacyMode()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_PRIVACY_MODE),
                 OnOffType.ON);
@@ -84,7 +84,7 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testHandleCommandCameraNotification()
+    void testHandleCommandCameraNotification()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CAMERA_NOTIFICATION),
@@ -104,7 +104,7 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testUpdateChannelsPrivacyModeState() {
+    void testUpdateChannelsPrivacyModeState() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"privacyModeState\",\"value\":\"ENABLED\"}");
         getFixture().processUpdate("PrivacyMode", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -117,7 +117,7 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testUpdateChannelsCameraNotificationState() {
+    void testUpdateChannelsCameraNotificationState() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\"@type\":\"cameraNotificationState\",\"value\":\"ENABLED\"}");
         getFixture().processUpdate("CameraNotification", jsonObject);
