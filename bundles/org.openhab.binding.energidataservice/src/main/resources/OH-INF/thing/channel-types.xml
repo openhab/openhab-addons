@@ -24,7 +24,7 @@
 	<channel-type id="hourly-prices" advanced="true">
 		<item-type>String</item-type>
 		<label>Hourly Prices</label>
-		<description>JSON array with hourly prices from 12 hours ago and onward.</description>
+		<description>JSON array with hourly prices from 24 hours ago and onward.</description>
 		<category>Price</category>
 		<state readOnly="true"></state>
 	</channel-type>
