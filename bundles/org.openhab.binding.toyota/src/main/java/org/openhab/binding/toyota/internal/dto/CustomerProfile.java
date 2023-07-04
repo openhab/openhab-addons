@@ -3,6 +3,9 @@ package org.openhab.binding.toyota.internal.dto;
 import java.util.ArrayList;
 
 public class CustomerProfile {
+    public static String UUID = "uuid";
+    public static String MY_TOYOTA_ID = "myToyotaId";
+
     public ArrayList<Address> addresses;
     public String username;
     public String email;

@@ -12,17 +12,26 @@
  */
 package org.openhab.binding.toyota.internal.handler;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.toyota.internal.ToyotaException;
 import org.openhab.binding.toyota.internal.api.MyTHttpApi;
 import org.openhab.binding.toyota.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.toyota.internal.deserialization.MyTDeserializer;
+import org.openhab.binding.toyota.internal.discovery.ToyotaDiscoveryService;
+import org.openhab.binding.toyota.internal.dto.CustomerProfile;
+import org.openhab.binding.toyota.internal.dto.Vehicle;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -37,14 +46,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MyTBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MyTBridgeHandler.class);
-    // private final HttpClientFactory httpClientFactory;
-    // private final MyTDeserializer deserializer;
-    private final MyTHttpApi api;;
+    private final MyTHttpApi api;
+
+    private Optional<String> uuid = Optional.empty();
 
     public MyTBridgeHandler(Bridge bridge, MyTDeserializer deserializer, HttpClientFactory httpClientFactory) {
         super(bridge);
-        // this.httpClientFactory = httpClientFactory;
-        // this.deserializer = deserializer;
         String clientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
         try {
             this.api = new MyTHttpApi(clientName, deserializer, httpClientFactory);
@@ -58,8 +65,20 @@ public class MyTBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing MyT API bridge handler.");
         ApiBridgeConfiguration configuration = getConfigAs(ApiBridgeConfiguration.class);
+        scheduler.submit(() -> login(configuration));
+    }
+
+    private void login(ApiBridgeConfiguration configuration) {
         try {
-            api.initialize(configuration);
+            CustomerProfile profile = api.initialize(configuration);
+            getThing().setProperty(CustomerProfile.UUID, profile.uuid);
+            getThing().setProperty(CustomerProfile.MY_TOYOTA_ID, profile.myToyotaId);
+            if (profile.active) {
+                uuid = Optional.of(profile.uuid);
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/err-inactive-account");
+            }
         } catch (ToyotaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -69,13 +88,29 @@ public class MyTBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         try {
             api.dispose();
+            uuid = Optional.empty();
         } catch (Exception e) {
             logger.warn("Unable to stop myTApi : {}", e.getMessage());
         }
+    }
+
+    public List<Vehicle> getVehicles() {
+        try {
+            return api.getVehicles(uuid.get());
+        } catch (ToyotaException e) {
+            logger.warn("Error getting vehicle list : {}", e.getMessage());
+            return List.of();
+        }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(ToyotaDiscoveryService.class);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
     }
+
 }

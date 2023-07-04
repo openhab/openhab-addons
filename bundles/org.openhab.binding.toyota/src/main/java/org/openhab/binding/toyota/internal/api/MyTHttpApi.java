@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.toyota.internal.api;
 
-import java.nio.charset.StandardCharsets;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -28,17 +28,16 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.toyota.internal.ToyotaException;
 import org.openhab.binding.toyota.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.toyota.internal.deserialization.MyTDeserializer;
 import org.openhab.binding.toyota.internal.dto.CredentialResponse;
-import org.openhab.binding.toyota.internal.dto.LocationResponse;
-import org.openhab.binding.toyota.internal.dto.Metrics;
-import org.openhab.binding.toyota.internal.dto.StatusResponse;
+import org.openhab.binding.toyota.internal.dto.CustomerProfile;
 import org.openhab.binding.toyota.internal.dto.Vehicle;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.google.gson.reflect.TypeToken;
 
 /**
  * {@link MyTHttpApi} wraps the VolvoOnCall REST API.
@@ -47,6 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MyTHttpApi {
+    private static final int TIMEOUT_MS = 10000;
     // https://github.com/TA2k/ioBroker.toyota/blob/master/main.js
     // Pas mal de endpoints à tester ici :
     // https://github.com/DurgNomis-drol/mytoyota/blob/master/mytoyota/api.py
@@ -64,21 +64,14 @@ public class MyTHttpApi {
     // private static final String REMOTE_CONTROL_URL = "/vehicles/%s/remoteControl/status";
 
     private record Credentials(String password, String username) {
-
+        public static Type ANSWER_CLASS = new TypeToken<CredentialResponse>() {
+        }.getType();
     }
 
-    // The URL to use to connect to VocAPI.
-    // For North America and China syntax changes to vocapi-cn.xxx
-    private static final int TIMEOUT_MS = 10000;
-    private static final String JSON_CONTENT_TYPE = "application/json";
-
-    private final Logger logger = LoggerFactory.getLogger(MyTHttpApi.class);
     private final MyTDeserializer deserializer;
     private final HttpClient httpClient;
 
     private Optional<String> token = Optional.empty();
-    private Optional<String> uuid = Optional.empty();
-    private Optional<String> vin = Optional.empty();
 
     public MyTHttpApi(String clientName, MyTDeserializer deserializer, HttpClientFactory httpClientFactory)
             throws ToyotaException {
@@ -89,69 +82,76 @@ public class MyTHttpApi {
         } catch (Exception e) {
             throw new ToyotaException("Unable to start Jetty HttpClient", e);
         }
-
-        // httpClient.setUserAgentField(new HttpField(HttpHeader.USER_AGENT, "openhab/voc_binding/" +
-        // InstanceUUID.get()));
     }
 
     public void dispose() throws Exception {
         httpClient.stop();
         token = Optional.empty();
-        uuid = Optional.empty();
-        vin = Optional.empty();
     }
 
-    public void initialize(ApiBridgeConfiguration configuration) throws ToyotaException {
+    public CustomerProfile initialize(ApiBridgeConfiguration configuration) throws ToyotaException {
         Credentials credentials = new Credentials(configuration.password, configuration.username);
-        String result = getResponse(HttpMethod.POST, LOGIN_URL, credentials);
-        CredentialResponse response = deserializer.deserialize(CredentialResponse.class, result);
-
+        CredentialResponse response = getResponse(HttpMethod.POST, LOGIN_URL, Credentials.ANSWER_CLASS, credentials);
         token = Optional.of(response.token);
-        uuid = Optional.of(response.customerProfile.uuid);
-
-        result = getResponse(HttpMethod.GET, VEHICLE_LIST_URL.formatted(uuid.get()), null);
-        List<Vehicle> vehicles = deserializer.deserialize(Vehicle.LIST_CLASS, result);
-
-        vin = Optional.of(vehicles.get(0).vin);
-
-        result = getResponse(HttpMethod.GET, VEHICLE_STATUS_URL.formatted(uuid.get(), vin.get()), null);
-        StatusResponse status = deserializer.deserialize(StatusResponse.class, result);
-
-        result = getResponse(HttpMethod.GET, VEHICLE_INFO_URL.formatted(vin.get()), null);
-        List<Metrics> metrics = deserializer.deserialize(Metrics.LIST_CLASS, result);
-
-        result = getResponse(HttpMethod.GET, VEHICLE_LOCATION_URL.formatted(uuid.get()), null); //
-        LocationResponse location = deserializer.deserialize(LocationResponse.class, result);
-
-        result = getResponse(HttpMethod.GET, VEHICLE_PARKING_URL.formatted(uuid.get(), vin.get()), null);
-        result = getResponse(HttpMethod.GET, STATISTICS_URL, null);
-        // result = getResponse(HttpMethod.GET, REMOTE_CONTROL_URL.formatted(vin.get()), null);
-        //
-        // {"timestamp":1688395628720,"status":400,"error":"Bad Request","message":"Missing request header 'VIN' for
-        // method parameter of type String","errorCode":"CMA400"}
-        logger.debug(metrics.toString());
+        return response.customerProfile;
     }
 
-    private String getResponse(HttpMethod method, String url, @Nullable Object jsonObject) throws ToyotaException {
-        Request request = httpClient.newRequest(url).header(HttpHeader.ACCEPT, "*/*").header("x-tme-locale", "en-gb")
-                .header("x-tme-brand", "TOYOTA").header("x-tme-app-version", "4.10.0")
-                .header("user-agent", "MyT/4.10.0 iPhone10,5 iOS/14.8 CFNetwork/1240.0.4 Darwin/20.6.0")
-                .header(HttpHeader.ACCEPT_LANGUAGE, "de-DE").timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    public List<Vehicle> getVehicles(String uuid) throws ToyotaException {
+        return getResponse(HttpMethod.GET, VEHICLE_LIST_URL.formatted(uuid), Vehicle.LIST_CLASS, null);
+    }
+
+    // private void backup() throws ToyotaException {
+    // String result = getResponse(HttpMethod.GET, VEHICLE_LIST_URL.formatted(uuid.get()), null);
+    // List<Vehicle> vehicles = deserializer.deserialize(Vehicle.LIST_CLASS, result);
+    //
+    // vin = Optional.of(vehicles.get(0).vin);
+    //
+    // result = getResponse(HttpMethod.GET, VEHICLE_STATUS_URL.formatted(uuid.get(), vin.get()), null);
+    // StatusResponse status = deserializer.deserialize(StatusResponse.class, result);
+    //
+    // result = getResponse(HttpMethod.GET, VEHICLE_INFO_URL.formatted(vin.get()), null);
+    // List<Metrics> metrics = deserializer.deserialize(Metrics.LIST_CLASS, result);
+    //
+    // result = getResponse(HttpMethod.GET, VEHICLE_LOCATION_URL.formatted(uuid.get()), null); //
+    // LocationResponse location = deserializer.deserialize(LocationResponse.class, result);
+    //
+    // result = getResponse(HttpMethod.GET, VEHICLE_PARKING_URL.formatted(uuid.get(), vin.get()), null);
+    // result = getResponse(HttpMethod.GET, STATISTICS_URL, null);
+    // // result = getResponse(HttpMethod.GET, REMOTE_CONTROL_URL.formatted(vin.get()), null);
+    // //
+    // // {"timestamp":1688395628720,"status":400,"error":"Bad Request","message":"Missing request header 'VIN' for
+    // // method parameter of type String","errorCode":"CMA400"}
+    // logger.debug(metrics.toString());
+    // }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getResponse(HttpMethod method, String url, Type answerClazz, @Nullable Object jsonObject)
+            throws ToyotaException {
+        Request request = httpClient.newRequest(url) //
+                .header(HttpHeader.ACCEPT_LANGUAGE, "de-DE") //
+                .header(HttpHeader.ACCEPT, "*/*") //
+                .header(HttpHeader.USER_AGENT, "MyT/4.10.0 iPhone10,5 iOS/14.8 CFNetwork/1240.0.4 Darwin/20.6.0")
+                .header("x-tme-brand", "TOYOTA") //
+                .header("x-tme-app-version", "4.10.0") //
+                .header("x-tme-locale", "en-gb").timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         token.ifPresent(cookie -> request.header(HttpHeader.COOKIE, "iPlanetDirectoryPro=" + cookie));
-        uuid.ifPresent(id -> request.header("uuid", id));
-        vin.ifPresent(id -> request.header("VIN", id));
+        // uuid.ifPresent(id -> request.header("uuid", id));
+        // vin.ifPresent(id -> request.header("VIN", id));
 
         if (jsonObject != null) {
-            request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+            MimeTypes.Type jsonMimeType = MimeTypes.Type.APPLICATION_JSON;
+            request.header(HttpHeader.CONTENT_TYPE, jsonMimeType.asString());
             String json = deserializer.toJson(jsonObject);
-            ContentProvider content = new StringContentProvider(JSON_CONTENT_TYPE, json, StandardCharsets.UTF_8);
+            ContentProvider content = new StringContentProvider(jsonMimeType.asString(), json,
+                    jsonMimeType.getCharset());
             request.content(content);
         }
 
         try {
             ContentResponse contentResponse = request.method(method).send();
-            return contentResponse.getContentAsString();
+            String stringContent = contentResponse.getContentAsString();
+            return (T) deserializer.deserializeSingle(answerClazz, stringContent);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new ToyotaException(e, "Error requesting %s", url);
         }

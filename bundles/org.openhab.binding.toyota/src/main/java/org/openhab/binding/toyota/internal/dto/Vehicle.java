@@ -12,7 +12,7 @@ public class Vehicle {
 
     public boolean isEntitled;
     public boolean hasAutomaticMMRegistration;
-    public int vehicleId;
+    public String vehicleId;
     public String vin;
     public String modelName;
     public String modelCode;

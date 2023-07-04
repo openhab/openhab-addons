@@ -31,9 +31,6 @@ public class ToyotaBindingConstants {
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "mytapi");
     public static final ThingTypeUID VEHICLE_THING_TYPE = new ThingTypeUID(BINDING_ID, "vehicle");
 
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
-
     // List of all adressable things
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE, VEHICLE_THING_TYPE);
 }

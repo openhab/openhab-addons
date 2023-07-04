@@ -13,7 +13,6 @@
 package org.openhab.binding.toyota.internal.deserialization;
 
 import java.lang.reflect.Type;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,27 +46,14 @@ public class MyTDeserializer {
         return gson.toJson(object);
     }
 
-    public <T> T deserialize(Class<T> clazz, String json) throws ToyotaException {
+    public <T> T deserializeSingle(Type type, String json) throws ToyotaException {
         try {
             @Nullable
-            T result = gson.fromJson(json, clazz);
+            T result = gson.fromJson(json, type);
             if (result != null) {
                 return result;
             }
             throw new ToyotaException("Deserialization of '%s' resulted in null value", json);
-        } catch (JsonSyntaxException e) {
-            throw new ToyotaException(e, "Unexpected error deserializing '%s'", json);
-        }
-    }
-
-    public <T> List<T> deserialize(Type type, String json) throws ToyotaException {
-        try {
-            @Nullable
-            List<T> result = gson.fromJson(json, type);
-            if (result != null) {
-                return result;
-            }
-            return List.of();
         } catch (JsonSyntaxException e) {
             throw new ToyotaException(e, "Unexpected error deserializing '%s'", json);
         }
