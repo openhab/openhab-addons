@@ -119,21 +119,17 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         if (googletvConnectionManager != null) {
             if (!googletvConnectionManager.getLoggedIn()) {
-                statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
                 failed = true;
-            } else {
-                statusMessage = "GoogleTV: ONLINE";
             }
+            statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
         }
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             if (shieldtvConnectionManager != null) {
                 if (!shieldtvConnectionManager.getLoggedIn()) {
-                    statusMessage = statusMessage + " | ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
                     failed = true;
-                } else {
-                    statusMessage = statusMessage + " | ShieldTV: ONLINE";
                 }
+                statusMessage = statusMessage + " | ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
             }
         }
 
