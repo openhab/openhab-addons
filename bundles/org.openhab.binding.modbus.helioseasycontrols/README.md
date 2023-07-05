@@ -118,16 +118,16 @@ The following channels are supported:
 | operatingHoursNhz                | general         | Operating hours afterheater (in minutes) (0 - 2^32-1 min)                                                                        | Number:Time              | R  |
 | outputPowerVhz                   | general         | Output power of preheater (in percent) (0 - 2^32-1 %)                                                                            | Number:Dimensionless     | R  |
 | outputPowerNhz                   | general         | Output power of afterheater (in percent) (0 - 2^32-1 %)                                                                          | Number:Dimensionless     | R  |
-| errors                           | general         | Errors as integer value (see [Errors / Warnings / Infos](#errors--warnings--infos)) (0 - 2^32-1)                                   | Number                   | R  |
-| warnings                         | general         | Warnings as integer value (see [Errors / Warnings / Infos](#errors--warnings--infos)) (0 - 2^32-1)                                 | Number                   | R  |
-| infos                            | general         | Infos as integer value (see [Errors / Warnings / Infos](#errors--warnings--infos)) (0 - 2^32-1)                                    | Number                   | R  |
-| noOfErrors                       | general         | Number of bit-coded errors (see [Errors / Warnings / Infos](#errors--warnings--infos)) (0 - 32)                                    | Number                   | R  |
-| noOfWarnings                     | general         | Number of bit-coded warnings (see [Errors / Warnings / Infos](#errors--warnings--infos)) (0 - 8)                                   | Number                   | R  |
-| noOfInfos                        | general         | Number of bit-coded infos (see [Errors / Warnings / Infos](#errors--warnings--infos)) (0 - 8)                                      | Number                   | R  |
-| errorsMsg                        | general         | Errors as string (see [Errors / Warnings / Infos](#errors--warnings--infos))                                                       | String                   | R  |
-| warningsMsg                      | general         | Warnings as string (see [Errors / Warnings / Infos](#errors--warnings--infos))                                                     | String                   | R  |
-| infosMsg                         | general         | Infos as string (see [Errors / Warnings / Infos](#errors--warnings--infos))                                                        | String                   | R  |
-| statusFlags                      | general         | Status flags (see [Errors / Warnings / Infos](#errors--warnings--infos))                                                           | String                   | R  |
+| errors                           | general         | Errors as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                   | Number                   | R  |
+| warnings                         | general         | Warnings as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                 | Number                   | R  |
+| infos                            | general         | Infos as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                    | Number                   | R  |
+| noOfErrors                       | general         | Number of bit-coded errors (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 32)                                    | Number                   | R  |
+| noOfWarnings                     | general         | Number of bit-coded warnings (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 8)                                   | Number                   | R  |
+| noOfInfos                        | general         | Number of bit-coded infos (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 8)                                      | Number                   | R  |
+| errorsMsg                        | general         | Errors as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                       | String                   | R  |
+| warningsMsg                      | general         | Warnings as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                     | String                   | R  |
+| infosMsg                         | general         | Infos as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                        | String                   | R  |
+| statusFlags                      | general         | Status flags (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                           | String                   | R  |
 | bypassStatus                     | general         | Status of the bypass (OFF = closed, ON = open)                                                                                   | Switch                   | R  |
 | bypassFrom                       | unitConfig      | Bypass active from                                                                                                               | DateTime                 | RW |
 | bypassTo                         | unitConfig      | Bypass active to                                                                                                                 | DateTime                 | RW |
@@ -353,15 +353,15 @@ Number:Dimensionless KWL_Stage_Percent   "KWL fan stage [%d %unit%]"            
 
 // Party mode
 Switch KWL_Party_Mode                    "Party mode"                                <parents>     (gKWL) ["Control"]                    {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeStatus"}
-Number:Time KWL_Party_Mode_Duration      "Party mode duration [%d %unit%]"           <clock>       (gKWL) ["Setpoint", "Duration"]       {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeDuration"}
+Number:Time KWL_Party_Mode_Duration      "Party mode duration [%d %unit%]"           <clock>       (gKWL) ["Setpoint", "Duration"]       {unit="min", channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeDuration"}
 Number KWL_Party_Mode_Stage              "Party mode fan stage"                      <fan>         (gKWL) ["Setpoint", "Level"]          {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeFanStage"}
-Number:Time KWL_Party_Mode_Remaining     "Party mode remaining time [%d %unit%]"     <clock>       (gKWL) ["Status", "Duration"]         {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeRemainingTime"}
+Number:Time KWL_Party_Mode_Remaining     "Party mode remaining time [%d %unit%]"     <clock>       (gKWL) ["Status", "Duration"]         {unit="min", channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeRemainingTime"}
 
 // Standby mode
 Switch KWL_Standby_Mode                  "Standby mode"                              <fan_off>     (gKWL) ["Control"]                    {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeStatus"}
-Number:Time KWL_Standby_Mode_Duration    "Standby mode duration [%d %unit%]"         <clock>       (gKWL) ["Setpoint", "Duration"]       {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeDuration"}
+Number:Time KWL_Standby_Mode_Duration    "Standby mode duration [%d %unit%]"         <clock>       (gKWL) ["Setpoint", "Duration"]       {unit="min", channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeDuration"}
 Number KWL_Standby_Mode_Stage            "Standby mode fan stage"                    <fan>         (gKWL) ["Setpoint", "Level"]          {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeFanStage"}
-Number:Time KWL_Standby_Mode_Remaining   "Standby mode remaining time [%d %unit%]"   <clock>       (gKWL) ["Status", "Duration"]         {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeRemainingTime"}
+Number:Time KWL_Standby_Mode_Remaining   "Standby mode remaining time [%d %unit%]"   <clock>       (gKWL) ["Status", "Duration"]         {unit="min", channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeRemainingTime"}
 
 // Status infos
 Number:Temperature KWL_Temp_Outide_Air   "Temperature outside air [%.1f °C]"         <temperature> (gKWL) ["Measurement", "Temperature"] {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureOutsideAir"}
