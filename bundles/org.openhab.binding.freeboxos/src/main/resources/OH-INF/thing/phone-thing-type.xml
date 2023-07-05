@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="fxs">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Landline</label>
+		<description>Provides various informations regarding the landline state</description>
+
+		<channels>
+			<channel id="telephony-service" typeId="telephony-service"/>
+			<channel id="onhook" typeId="onhook"/>
+			<channel id="ringing" typeId="ringing"/>
+			<channel id="hardware-status" typeId="hardware-status"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:phone"/>
+	</thing-type>
+
+	<thing-type id="dect">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>DECT</label>
+		<description>Provides various informations regarding the DECT state and configuration</description>
+
+		<channels>
+			<channel id="telephony-service" typeId="telephony-service"/>
+			<channel id="dect-active" typeId="dect-active"/>
+			<channel id="alternate-ring" typeId="alternate-ring"/>
+			<channel id="ringing" typeId="ringing"/>
+			<channel id="hardware-status" typeId="hardware-status"/>
+			<channel id="gain-rx" typeId="gain">
+				<label>Gain RX</label>
+			</channel>
+			<channel id="gain-tx" typeId="gain">
+				<label>Gain TX</label>
+			</channel>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:phone"/>
+	</thing-type>
+
+	<thing-type id="call">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Calls</label>
+		<description>Provides various informations regarding the phone calls</description>
+
+		<channel-groups>
+			<channel-group typeId="incoming" id="incoming"/>
+			<channel-group typeId="accepted" id="accepted"/>
+			<channel-group typeId="missed" id="missed"/>
+			<channel-group typeId="outgoing" id="outgoing"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:freeboxos:call"/>
+	</thing-type>
+
+</thing:thing-descriptions>

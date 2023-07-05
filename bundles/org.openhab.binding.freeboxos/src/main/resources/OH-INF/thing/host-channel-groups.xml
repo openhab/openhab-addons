@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="connectivity">
+		<label>Network Connectivity</label>
+		<channels>
+			<channel id="reachable" typeId="reachable"/>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Activity</label>
+			</channel>
+			<channel id="ip-address" typeId="ip-address">
+				<label>IP Address</label>
+				<description>IPv4 Address of the host</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

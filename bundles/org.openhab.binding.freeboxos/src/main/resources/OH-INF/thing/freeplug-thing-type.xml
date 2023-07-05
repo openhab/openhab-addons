@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="freeplug">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freeplug</label>
+		<description>Ethernet / CPL gateway</description>
+
+		<channels>
+			<channel id="line-status" typeId="line-status"/>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Activity</label>
+			</channel>
+			<channel id="reachable" typeId="reachable"/>
+			<channel id="rate-up" typeId="transfer-rate">
+				<label>Tx Rate</label>
+				<description>Current TX Rate</description>
+			</channel>
+			<channel id="rate-down" typeId="transfer-rate">
+				<label>Rx Rate</label>
+				<description>Current RX rate</description>
+			</channel>
+		</channels>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:host"/>
+	</thing-type>
+
+</thing:thing-descriptions>

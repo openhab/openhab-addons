@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="player">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Player</label>
+		<description>The player is the device connected to your TV</description>
+
+		<channel-groups>
+			<channel-group typeId="player-actions" id="player-actions"/>
+			<channel-group typeId="sysinfo" id="sysinfo"/>
+			<channel-group typeId="connectivity" id="connectivity"/>
+		</channel-groups>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:player"/>
+	</thing-type>
+
+	<thing-type id="active-player">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Player</label>
+		<description>The player is the device connected to your TV with API capabilities</description>
+
+		<channel-groups>
+			<channel-group typeId="player-actions" id="player-actions"/>
+			<channel-group typeId="player-status" id="player-status"/>
+			<channel-group typeId="sysinfo" id="sysinfo"/>
+			<channel-group typeId="connectivity" id="connectivity"/>
+		</channel-groups>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:player"/>
+	</thing-type>
+
+</thing:thing-descriptions>
