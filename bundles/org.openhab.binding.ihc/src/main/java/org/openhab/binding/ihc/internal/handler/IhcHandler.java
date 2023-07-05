@@ -174,6 +174,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                "Initializing communication to the IHC / ELKO controller");
+
         conf = getConfigAs(IhcConfiguration.class);
         logger.debug("Using configuration: {}", conf);
 
@@ -543,7 +546,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             ihc = new IhcClient(conf.hostname, conf.username, conf.password, conf.timeout, conf.tlsVersion);
             ihc.openConnection();
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                    "Initializing communication to the IHC / ELKO controller");
+                    "Synchronizing information from IHC / ELKO controller");
             loadProject();
             createChannels();
             updateControllerProperties();
