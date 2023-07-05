@@ -14,14 +14,23 @@ package org.openhab.binding.toyota.internal.dto;
 
 import java.lang.reflect.Type;
 
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 public class StatusResponse {
     public static Type ANSWER_CLASS = new TypeToken<StatusResponse>() {
     }.getType();
 
-    public Event event;
-    public String tripStatus;
+    public enum TripStatus {
+        @SerializedName("0")
+        STOPPED,
+        @SerializedName("1")
+        STARTED,
+        UNKNOWN;
+    }
+
     public ProtectionState protectionState;
+    public Event event;
+    public TripStatus tripStatus;
     public Climate climate;
 }

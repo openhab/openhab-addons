@@ -37,6 +37,7 @@ public class ToyotaBindingConstants {
     public static final String GROUP_WINDOWS = "windows";
     public static final String GROUP_LOCKS = "locks";
     public static final String GROUP_KEY = "key";
+    public static final String GROUP_POSITION = "position";
 
     // List of channel ids
     public static final String DRIVER = "driver";
@@ -55,6 +56,9 @@ public class ToyotaBindingConstants {
 
     public static final String IN_CAR = "in-car";
     public static final String WARNING = "warning";
+
+    public static final String LOCATION = "location";
+    public static final String TIMESTAMP = "timestamp";
 
     // List of all adressable things
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE, VEHICLE_THING_TYPE);

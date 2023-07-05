@@ -12,8 +12,19 @@
  */
 package org.openhab.binding.toyota.internal.dto;
 
+import java.time.Instant;
+
+/**
+ * This class holds the position of the car
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 public class Event {
-    public String lat;
-    public String lon;
-    public long timestamp;
+    public double lat;
+    public double lon;
+    private long timestamp;
+
+    public Instant getInstant() {
+        return Instant.ofEpochMilli(timestamp);
+    }
 }

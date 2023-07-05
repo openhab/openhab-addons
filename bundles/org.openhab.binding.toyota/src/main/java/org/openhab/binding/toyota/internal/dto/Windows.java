@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.toyota.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This class holds the status of all the car windows
  *
@@ -19,8 +21,12 @@ package org.openhab.binding.toyota.internal.dto;
  */
 public class Windows {
     public boolean warning;
-    public Window driverSeatWindow;
-    public Window passengerSeatWindow;
-    public Window rearRightSeatWindow;
-    public Window rearLeftSeatWindow;
+    @SerializedName("driverSeatWindow")
+    public Window driver;
+    @SerializedName("passengerSeatWindow")
+    public Window passenger;
+    @SerializedName("rearRightSeatWindow")
+    public Window rearRight;
+    @SerializedName("rearLeftSeatWindow")
+    public Window rearLeft;
 }

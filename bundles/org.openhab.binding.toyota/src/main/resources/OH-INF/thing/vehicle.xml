@@ -18,6 +18,7 @@
 			<channel-group id="lamps" typeId="lamps"/>
 			<channel-group id="locks" typeId="locks"/>
 			<channel-group id="key" typeId="key"/>
+			<channel-group id="position" typeId="position"/>
 		</channel-groups>
 
 		<representation-property>vin</representation-property>

@@ -3,7 +3,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-
+   
+    <channel-group-type id="position">
+        <label>Location Info</label>
+        <channels>
+            <channel id="location" typeId="location">
+                <label>Current Location</label>
+                <description>The position of the vehicle</description>
+            </channel>
+            <channel id="timestamp" typeId="timestamp">
+                <label>Location Timestamp</label>
+                <description>Timestamp of location value update</description>
+            </channel>
+        </channels>
+    </channel-group-type>
+    
 	<channel-group-type id="key">
 		<label>Car key report</label>
 		<channels>

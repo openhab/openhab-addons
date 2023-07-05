@@ -12,7 +12,15 @@
  */
 package org.openhab.binding.toyota.internal.dto;
 
+import java.time.ZonedDateTime;
+
 public class ProtectionState {
+    public enum OverallStatus {
+        NOK,
+        OK,
+        UNKNOWN;
+    }
+
     public Doors doors;
     public Hood hood;
     public Lamps lamps;
@@ -20,6 +28,6 @@ public class ProtectionState {
     public Lock lock;
     public Key key;
 
-    public String overallStatus;
-    public String timestamp;
+    public OverallStatus overallStatus;
+    public ZonedDateTime timestamp;
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.toyota.internal.handler;
 
 import static org.openhab.binding.toyota.internal.ToyotaBindingConstants.*;
 
+import java.time.ZonedDateTime;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -23,15 +25,20 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.toyota.internal.ToyotaException;
 import org.openhab.binding.toyota.internal.config.VehicleConfiguration;
 import org.openhab.binding.toyota.internal.dto.Doors;
+import org.openhab.binding.toyota.internal.dto.Event;
 import org.openhab.binding.toyota.internal.dto.Hood;
 import org.openhab.binding.toyota.internal.dto.Key;
 import org.openhab.binding.toyota.internal.dto.Lamps;
 import org.openhab.binding.toyota.internal.dto.Lock;
 import org.openhab.binding.toyota.internal.dto.StatusResponse;
 import org.openhab.binding.toyota.internal.dto.Vehicle;
+import org.openhab.binding.toyota.internal.dto.Window.WindowClosingState;
 import org.openhab.binding.toyota.internal.dto.Windows;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -56,14 +63,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
+
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
 
     private @NonNullByDefault({}) VehicleConfiguration configuration;
     private @NonNullByDefault({}) MyTBridgeHandler bridgeHandler;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
-    public VehicleHandler(Thing thing) {
+    public VehicleHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -125,25 +135,20 @@ public class VehicleHandler extends BaseThingHandler {
             updateWindowStatus(status.protectionState.windows);
             updateLockStatus(status.protectionState.doors, status.protectionState.lock);
             updateKeyStatus(status.protectionState.key);
-            // Status newVehicleStatus = service.getURL(vehicle.statusURL, Status.class);
-            // vehiclePosition = new VehiclePositionWrapper(service.getURL(Position.class, configuration.vin));
-            // // Update all channels from the updated data
-            // if (newVehicleStatus.odometer != vehicleStatus.odometer) {
-            // triggerChannel(GROUP_OTHER + "#" + CAR_EVENT, EVENT_CAR_MOVED);
-            // // We will update trips only if car position has changed to save server queries
-            // updateTrips(service);
-            // }
-            // if (!vehicleStatus.getEngineRunning().equals(newVehicleStatus.getEngineRunning())
-            // && newVehicleStatus.getEngineRunning().get() == OnOffType.ON) {
-            // triggerChannel(GROUP_OTHER + "#" + CAR_EVENT, EVENT_CAR_STARTED);
-            // }
-            // vehicleStatus = newVehicleStatus;
+            updatePositionStatus(status.event);
+
         } catch (ToyotaException e) {
             logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             freeRefreshJob();
             startAutomaticRefresh(configuration.refresh, mytBridgeHandler);
         }
+    }
+
+    private void updatePositionStatus(Event event) {
+        updateChannelLocation(GROUP_POSITION, LOCATION, event.lat, event.lon);
+        updateChannelDateTime(GROUP_POSITION, TIMESTAMP,
+                ZonedDateTime.ofInstant(event.getInstant(), timeZoneProvider.getTimeZone()));
     }
 
     private void updateKeyStatus(Key key) {
@@ -162,10 +167,10 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void updateWindowStatus(Windows windows) {
-        updateChannelOpenClosed(GROUP_WINDOWS, DRIVER, windows.driverSeatWindow.isClosed());
-        updateChannelOpenClosed(GROUP_WINDOWS, PASSENGER, windows.passengerSeatWindow.isClosed());
-        updateChannelOpenClosed(GROUP_WINDOWS, REAR_RIGHT, windows.rearRightSeatWindow.isClosed());
-        updateChannelOpenClosed(GROUP_WINDOWS, REAR_LEFT, windows.rearLeftSeatWindow.isClosed());
+        updateChannelOpenClosed(GROUP_WINDOWS, DRIVER, windows.driver.state);
+        updateChannelOpenClosed(GROUP_WINDOWS, PASSENGER, windows.passenger.state);
+        updateChannelOpenClosed(GROUP_WINDOWS, REAR_RIGHT, windows.rearRight.state);
+        updateChannelOpenClosed(GROUP_WINDOWS, REAR_LEFT, windows.rearLeft.state);
     }
 
     private void updateLampStatus(Lamps lamps) {
@@ -208,6 +213,10 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
+    private void updateChannelOpenClosed(String group, String channelId, WindowClosingState closingState) {
+        updateIfActive(group, channelId, closingState.state);
+    }
+
     protected void updateChannelOpenClosed(String group, String channelId, boolean closed) {
         updateIfActive(group, channelId, closed ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
     }
@@ -218,5 +227,13 @@ public class VehicleHandler extends BaseThingHandler {
 
     protected void updateChannelString(String group, String channelId, @Nullable String value) {
         updateIfActive(group, channelId, value == null || value.isEmpty() ? UnDefType.NULL : new StringType(value));
+    }
+
+    protected void updateChannelDateTime(String group, String channelId, @Nullable ZonedDateTime timestamp) {
+        updateIfActive(group, channelId, timestamp == null ? UnDefType.NULL : new DateTimeType(timestamp));
+    }
+
+    protected void updateChannelLocation(String group, String channelId, double lat, double lon) {
+        updateIfActive(group, channelId, new PointType(String.format(Locale.US, "%.6f,%.6f", lat, lon)));
     }
 }

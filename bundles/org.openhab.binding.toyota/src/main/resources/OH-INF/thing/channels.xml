@@ -4,6 +4,21 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+    <channel-type id="timestamp">
+        <item-type>DateTime</item-type>
+        <label>Timestamp</label>
+        <description>Data timestamp</description>
+        <category>time</category>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="location">
+        <item-type>Location</item-type>
+        <label>Location</label>
+        <category>Location</category>
+        <state readOnly="true"></state>
+    </channel-type>
+    
 	<channel-type id="warning">
 		<item-type>Switch</item-type>
 		<label>Warning</label>

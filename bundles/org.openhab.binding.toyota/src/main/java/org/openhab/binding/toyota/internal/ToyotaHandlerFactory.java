@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.toyota.internal.deserialization.MyTDeserializer;
 import org.openhab.binding.toyota.internal.handler.MyTBridgeHandler;
 import org.openhab.binding.toyota.internal.handler.VehicleHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -43,11 +44,13 @@ public class ToyotaHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ToyotaHandlerFactory.class);
     private final MyTDeserializer deserializer;
     private final HttpClientFactory httpClientFactory;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public ToyotaHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference MyTDeserializer deserializer) {
+            @Reference TimeZoneProvider timeZoneProvider, @Reference MyTDeserializer deserializer) {
         this.httpClientFactory = httpClientFactory;
+        this.timeZoneProvider = timeZoneProvider;
         this.deserializer = deserializer;
     }
 
@@ -62,7 +65,7 @@ public class ToyotaHandlerFactory extends BaseThingHandlerFactory {
         if (APIBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             return new MyTBridgeHandler((Bridge) thing, deserializer, httpClientFactory);
         } else if (VEHICLE_THING_TYPE.equals(thingTypeUID)) {
-            return new VehicleHandler(thing);
+            return new VehicleHandler(thing, timeZoneProvider);
         }
         logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
         return null;

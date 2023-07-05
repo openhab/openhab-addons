@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.toyota.internal.dto;
 
+/**
+ * This class holds answer to a login request with username / password
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 public class CredentialResponse {
     public String token;
     public CustomerProfile customerProfile;

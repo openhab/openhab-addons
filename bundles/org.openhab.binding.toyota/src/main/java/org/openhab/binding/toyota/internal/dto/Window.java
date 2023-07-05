@@ -12,15 +12,31 @@
  */
 package org.openhab.binding.toyota.internal.dto;
 
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This class describes the current status of a car window
  *
  * @author Gaël L'hopital - Initial contribution
  */
 public class Window extends ThingStatus {
-    public String state;
+    public enum WindowClosingState {
+        @SerializedName("close")
+        CLOSED(OpenClosedType.CLOSED),
+        @SerializedName("open")
+        OPENED(OpenClosedType.OPEN),
+        UNKNOWN(UnDefType.NULL);
 
-    public boolean isClosed() {
-        return "close".equals(state);
+        public final State state;
+
+        WindowClosingState(State state) {
+            this.state = state;
+        }
     }
+
+    public WindowClosingState state;
 }

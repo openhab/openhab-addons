@@ -13,6 +13,7 @@
 package org.openhab.binding.toyota.internal.deserialization;
 
 import java.lang.reflect.Type;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,6 +26,7 @@ import org.osgi.service.component.annotations.Reference;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -39,7 +41,11 @@ public class MyTDeserializer {
 
     @Activate
     public MyTDeserializer(@Reference TimeZoneProvider timeZoneProvider) {
-        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
+        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+                .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
+                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
+                        jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
+                .create();
     }
 
     public String toJson(Object object) {
