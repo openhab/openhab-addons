@@ -58,6 +58,7 @@ import javax.net.ssl.X509TrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.AndroidTVHandler;
+import org.openhab.binding.androidtv.internal.AndroidTVTranslationProvider;
 import org.openhab.binding.androidtv.internal.utils.AndroidTVPKI;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.StringType;
@@ -87,6 +88,7 @@ public class ShieldTVConnectionManager {
 
     private final AndroidTVHandler handler;
     private ShieldTVConfiguration config;
+    private final AndroidTVTranslationProvider translationProvider;
 
     private @NonNullByDefault({}) SSLSocketFactory sslSocketFactory;
     private @Nullable SSLSocket sslSocket;
@@ -148,6 +150,7 @@ public class ShieldTVConnectionManager {
         messageParser = new ShieldTVMessageParser(this);
         this.config = config;
         this.handler = handler;
+        this.translationProvider = handler.getTranslationProvider();
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
         initialize();
@@ -215,16 +218,17 @@ public class ShieldTVConnectionManager {
 
     private void setStatus(boolean isLoggedIn) {
         if (isLoggedIn) {
-            setStatus(isLoggedIn, "ONLINE");
+            setStatus(isLoggedIn, "online.online");
         } else {
-            setStatus(isLoggedIn, "UNKNOWN");
+            setStatus(isLoggedIn, "offline.unknown");
         }
     }
 
     private void setStatus(boolean isLoggedIn, String statusMessage) {
-        if ((this.isLoggedIn != isLoggedIn) || (!this.statusMessage.equals(statusMessage))) {
+        String translatedMessage = translationProvider.getText(statusMessage);
+        if ((this.isLoggedIn != isLoggedIn) || (!this.statusMessage.equals(translatedMessage))) {
             this.isLoggedIn = isLoggedIn;
-            this.statusMessage = statusMessage;
+            this.statusMessage = translatedMessage;
             handler.checkThingStatus();
         }
     }
@@ -399,10 +403,10 @@ public class ShieldTVConnectionManager {
                 shimAsyncInitializeTask = scheduler.submit(this::shimInitialize);
             }
         } catch (NoSuchAlgorithmException | IOException e) {
-            setStatus(false, "Error initializing keystore");
+            setStatus(false, "offline.error-initalizing-keystore");
             logger.debug("Error initializing keystore", e);
         } catch (UnrecoverableKeyException e) {
-            setStatus(false, "Key unrecoverable with supplied password");
+            setStatus(false, "offline.key-unrecoverable-with-supplied-password");
         } catch (GeneralSecurityException e) {
             logger.debug("General security exception", e);
         } catch (Exception e) {
@@ -424,26 +428,26 @@ public class ShieldTVConnectionManager {
                             new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
                     this.sslSocket = sslSocket;
                 } catch (UnknownHostException e) {
-                    setStatus(false, "Unknown host");
+                    setStatus(false, "offline.unknown-host");
                     return;
                 } catch (IllegalArgumentException e) {
                     // port out of valid range
-                    setStatus(false, "Invalid port number");
+                    setStatus(false, "offline.invalid-port-number");
                     return;
                 } catch (InterruptedIOException e) {
                     logger.debug("Interrupted while establishing ShieldTV connection");
                     Thread.currentThread().interrupt();
                     return;
                 } catch (IOException e) {
-                    setStatus(false, "Error opening ShieldTV SSL connection. Check log.");
-                    logger.info("{} - Error opening ShieldTV SSL connection to {}:{} {}", handler.getThingID(),
-                            config.ipAddress, config.port, e.getMessage());
+                    setStatus(false, "offline.error-opening-ssl-connection-check-log");
+                    logger.info("{} - Error opening SSL connection to {}:{} {}", handler.getThingID(), config.ipAddress,
+                            config.port, e.getMessage());
                     disconnect(false);
                     scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
                     return;
                 }
 
-                setStatus(false, "Initializing");
+                setStatus(false, "offline.initializing");
 
                 Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader " + handler.getThingID());
                 readerThread.setDaemon(true);
@@ -640,7 +644,7 @@ public class ShieldTVConnectionManager {
         synchronized (connectionLock) {
             if (!this.disposing) {
                 logger.debug("{} - Attempting to reconnect to the ShieldTV", handler.getThingID());
-                setStatus(false, "reconnecting");
+                setStatus(false, "offline.reconnecting");
                 disconnect(false);
                 connect();
             }
@@ -666,12 +670,12 @@ public class ShieldTVConnectionManager {
                     }
                 } catch (InterruptedIOException e) {
                     logger.debug("Interrupted while sending to ShieldTV");
-                    setStatus(false, "Interrupted");
+                    setStatus(false, "offline.interrupted");
                     break; // exit loop and terminate thread
                 } catch (IOException e) {
                     logger.warn("{} - Communication error, will try to reconnect ShieldTV. Error: {}",
                             handler.getThingID(), e.getMessage());
-                    setStatus(false, "Communication error, will try to reconnect");
+                    setStatus(false, "offline.communication-error-will-try-to-reconnect");
                     sendQueue.add(command); // Requeue command
                     this.isLoggedIn = false;
                     reconnect();
@@ -785,13 +789,13 @@ public class ShieldTVConnectionManager {
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
-            setStatus(false, "Interrupted");
+            setStatus(false, "offline.interrupted");
         } catch (IOException e) {
             logger.debug("I/O error while reading from stream: {}", e.getMessage());
-            setStatus(false, "I/O Error");
+            setStatus(false, "offline.io-error");
         } catch (RuntimeException e) {
             logger.warn("Runtime exception in reader thread", e);
-            setStatus(false, "Runtime exception");
+            setStatus(false, "offline.runtime-exception");
         } finally {
             logger.debug("{} - Message reader thread exiting", handler.getThingID());
         }
@@ -886,13 +890,13 @@ public class ShieldTVConnectionManager {
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
-            setStatus(false, "Interrupted");
+            setStatus(false, "offline.interrupted");
         } catch (IOException e) {
             logger.debug("I/O error while reading from stream: {}", e.getMessage());
-            setStatus(false, "I/O Error");
+            setStatus(false, "offline.io-error");
         } catch (RuntimeException e) {
             logger.warn("Runtime exception in reader thread", e);
-            setStatus(false, "Runtime exception");
+            setStatus(false, "offline.runtime-exception");
         } finally {
             logger.debug("Message reader thread exiting");
         }

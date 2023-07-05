@@ -61,19 +61,25 @@ public class AndroidTVHandler extends BaseThingHandler {
     private static final int THING_STATUS_FREQUENCY = 250;
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final AndroidTVTranslationProvider translationProvider;
     private final ThingTypeUID thingTypeUID;
     private final String thingID;
 
     public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
-            ThingTypeUID thingTypeUID) {
+            AndroidTVTranslationProvider translationProvider, ThingTypeUID thingTypeUID) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.translationProvider = translationProvider;
         this.thingTypeUID = thingTypeUID;
         this.thingID = this.getThing().getUID().getId();
     }
 
     public void setThingProperty(String property, String value) {
         thing.setProperty(property, value);
+    }
+
+    public AndroidTVTranslationProvider getTranslationProvider() {
+        return translationProvider;
     }
 
     public String getThingID() {
