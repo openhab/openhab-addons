@@ -542,7 +542,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     conf.username);
             ihc = new IhcClient(conf.hostname, conf.username, conf.password, conf.timeout, conf.tlsVersion);
             ihc.openConnection();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                     "Initializing communication to the IHC / ELKO controller");
             loadProject();
             createChannels();
