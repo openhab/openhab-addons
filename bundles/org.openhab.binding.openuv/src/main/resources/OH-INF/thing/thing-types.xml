@@ -74,7 +74,7 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV Index</description>
-        <category>openuv:uvindex</category>
+		<category>oh:openuv:uv-index</category>
 		<state readOnly="true" pattern="%.0f/16" min="0" max="16"/>
 	</channel-type>
 
@@ -82,7 +82,7 @@
 		<item-type>Number</item-type>
 		<label>UV Max</label>
 		<description>Max UV Index for the day (at solar noon)</description>
-        <category>openuv:uvindex</category>
+		<category>oh:openuv:uv-index</category>
 		<state readOnly="true" pattern="%.0f/16" min="0" max="16"/>
 	</channel-type>
 
@@ -90,7 +90,7 @@
 		<item-type>Number:ArealDensity</item-type>
 		<label>Ozone</label>
 		<description>Ozone level from OMI data</description>
-        <category>openuv:ozone</category>
+		<category>oh:openuv:ozone</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -150,7 +150,7 @@
 	<channel-type id="Alert">
 		<item-type>Number</item-type>
 		<label>UV Alert</label>
-		<category>openuv:uv-sun</category>
+		<category>oh:openuv:uv-alarm</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">Low</option>

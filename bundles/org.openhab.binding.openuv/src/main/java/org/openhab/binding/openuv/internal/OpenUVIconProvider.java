@@ -25,7 +25,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.ui.icon.IconProvider;
 import org.openhab.core.ui.icon.IconSet;
 import org.openhab.core.ui.icon.IconSet.Format;
@@ -44,9 +43,11 @@ import org.slf4j.LoggerFactory;
 @Component(service = { IconProvider.class })
 @NonNullByDefault
 public class OpenUVIconProvider implements IconProvider {
-    private static final String DEFAULT_LABEL = "Météo Alerte Icons";
-    private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather events provided by Météo Alerte";
-    private static final Set<String> ICONS = Set.of("ozone", "uvindex", "uv-sun");
+    private static final String UV_ALARM = "uv-alarm";
+    private static final String UV_INDEX = "uv-index";
+    private static final String DEFAULT_LABEL = "OpenUV Icons";
+    private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather events provided by OpenUV";
+    private static final Set<String> ICONS = Set.of("ozone", UV_INDEX, UV_ALARM);
 
     private final Logger logger = LoggerFactory.getLogger(OpenUVIconProvider.class);
     private final BundleContext context;
@@ -82,14 +83,13 @@ public class OpenUVIconProvider implements IconProvider {
 
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
-        return ((ICONS.contains(category) && iconSetId.equals(BINDING_ID))
-                || (ICONS.contains(category.replace(BINDING_ID + ":", "")))) && format == Format.SVG ? 7 : null;
+        return ICONS.contains(category) && iconSetId.equals(BINDING_ID) && format == Format.SVG ? 0 : null;
     }
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
         String iconName = category;
-        if ("uvindex".equals(category) && state != null) {
+        if (UV_INDEX.equals(category) && state != null) {
             try {
                 Double numeric = Double.valueOf(state);
                 iconName = "%s-%d".formatted(category, numeric.intValue());
@@ -98,14 +98,12 @@ public class OpenUVIconProvider implements IconProvider {
             }
         }
         String icon = getResource(iconName);
-        if ("uv-alarm".equals(category) && state != null) {
+        if (UV_ALARM.equals(category) && state != null) {
             try {
-                DecimalType decimal = DecimalType.valueOf(state);
-                for (AlertLevel level : AlertLevel.values()) {
-                    if (level.state.equals(decimal)) {
-                        icon = icon.replaceAll("3d3c3c", "rgb(" + level.color.format("%rgb%") + ")");
-                    }
-                }
+                Integer ordinal = Integer.valueOf(state);
+                AlertLevel alertLevel = ordinal < AlertLevel.values().length ? AlertLevel.values()[ordinal]
+                        : AlertLevel.UNKNOWN;
+                icon = icon.replaceAll(AlertLevel.UNKNOWN.color, alertLevel.color);
             } catch (NumberFormatException e) {
                 logger.debug("Unable to parse {} to a numeric value", state);
             }
@@ -116,8 +114,7 @@ public class OpenUVIconProvider implements IconProvider {
     private String getResource(String iconName) {
         String result = "";
 
-        URL iconResource = context.getBundle()
-                .getEntry("icon/%s.svg".formatted(iconName.replace(BINDING_ID + ":", "")));
+        URL iconResource = context.getBundle().getEntry("icon/%s.svg".formatted(iconName));
         try (InputStream stream = iconResource.openStream()) {
             result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -125,5 +122,4 @@ public class OpenUVIconProvider implements IconProvider {
         }
         return result;
     }
-
 }

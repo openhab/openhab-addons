@@ -12,23 +12,29 @@
  */
 package org.openhab.binding.openuv.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
+/**
+ * The {@link AlertLevel} enum defines alert level in regard of the UV Index
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
 public enum AlertLevel {
-    GREEN(DecimalType.ZERO, HSBType.fromRGB(85, 139, 47)),
-    YELLOW(new DecimalType(1), HSBType.fromRGB(249, 168, 37)),
-    ORANGE(new DecimalType(2), HSBType.fromRGB(239, 108, 0)),
-    RED(new DecimalType(3), HSBType.fromRGB(183, 28, 28)),
-    PURPLE(new DecimalType(4), HSBType.fromRGB(106, 27, 154)),
-    UNKNOWN(UnDefType.NULL, HSBType.fromRGB(179, 179, 179));
+    GREEN(DecimalType.ZERO, "3a8b2f"),
+    YELLOW(new DecimalType(1), "f9a825"),
+    ORANGE(new DecimalType(2), "ef6c00"),
+    RED(new DecimalType(3), "b71c1c"),
+    PURPLE(new DecimalType(4), "6a1b9a"),
+    UNKNOWN(UnDefType.NULL, "b3b3b3");
 
     public final State state;
-    public final HSBType color;
+    public final String color;
 
-    AlertLevel(State state, HSBType color) {
+    AlertLevel(State state, String color) {
         this.state = state;
         this.color = color;
     }

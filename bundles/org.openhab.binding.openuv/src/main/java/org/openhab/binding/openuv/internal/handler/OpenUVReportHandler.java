@@ -29,6 +29,7 @@ import org.openhab.binding.openuv.internal.config.SafeExposureConfiguration;
 import org.openhab.binding.openuv.internal.json.OpenUVResult;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -185,7 +186,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
             case ALERT_LEVEL:
                 return AlertLevel.fromUVIndex(openUVData.getUv()).state;
             case UV_COLOR:
-                return AlertLevel.fromUVIndex(openUVData.getUv()).color;
+                return hexToHSB(AlertLevel.fromUVIndex(openUVData.getUv()).color);
             case UV_MAX:
                 return new DecimalType(openUVData.getUvMax());
             case OZONE:
@@ -209,5 +210,12 @@ public class OpenUVReportHandler extends BaseThingHandler {
         }
 
         return UnDefType.NULL;
+    }
+
+    private State hexToHSB(String hexValue) {
+        int resultRed = Integer.valueOf(hexValue.substring(0, 2), 16);
+        int resultGreen = Integer.valueOf(hexValue.substring(2, 4), 16);
+        int resultBlue = Integer.valueOf(hexValue.substring(4, 6), 16);
+        return HSBType.fromRGB(resultRed, resultGreen, resultBlue);
     }
 }
