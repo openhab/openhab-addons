@@ -90,6 +90,7 @@ public class SqueezeBoxAudioSink extends AudioSinkSync {
         String url;
         if (audioStream instanceof URLAudioStream) {
             url = ((URLAudioStream) audioStream).getURL();
+            tryClose(audioStream);
         } else {
             try {
                 // Since Squeezebox will make multiple requests for the stream, set multiple to true
@@ -108,6 +109,7 @@ public class SqueezeBoxAudioSink extends AudioSinkSync {
                         : callbackUrl;
                 if (host == null) {
                     logger.warn("Unable to get host/port from which to stream notification");
+                    tryClose(audioStream);
                     return;
                 }
                 url = host + url;
