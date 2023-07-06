@@ -13,7 +13,6 @@
 package org.openhab.binding.doorbird.internal.audio;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -38,15 +37,10 @@ import org.openhab.core.library.types.PercentType;
 @NonNullByDefault
 public class DoorbirdAudioSink extends AudioSinkSync {
 
-    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = Set.of(AudioFormat.WAV);
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
 
     private DoorbellHandler doorbellHandler;
-
-    static {
-        SUPPORTED_FORMATS.add(AudioFormat.WAV);
-        SUPPORTED_STREAMS.add(AudioStream.class);
-    }
 
     public DoorbirdAudioSink(DoorbellHandler doorbellHandler) {
         this.doorbellHandler = doorbellHandler;
@@ -92,6 +86,6 @@ public class DoorbirdAudioSink extends AudioSinkSync {
 
     @Override
     public void setVolume(PercentType volume) {
-        // NOT IMPLEMENTED
+        throw new UnsupportedOperationException("Volume can not be set");
     }
 }
