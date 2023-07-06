@@ -80,6 +80,7 @@ public class ChromecastAudioSink extends AudioSinkAsync {
                 // it is an external URL, the speaker can access it itself and play it.
                 URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
                 url = urlAudioStream.getURL();
+                tryClose(audioStream);
             } else {
                 if (callbackUrl != null) {
                     // we serve it on our own HTTP server
