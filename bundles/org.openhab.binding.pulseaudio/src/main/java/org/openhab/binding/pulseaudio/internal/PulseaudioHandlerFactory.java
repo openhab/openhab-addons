@@ -63,16 +63,16 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
 
     private PulseAudioBindingConfiguration configuration = new PulseAudioBindingConfiguration();
 
-    private @Nullable AudioSinkUtils audioSinkUtils;
+    private AudioSinkUtils audioSinkUtils;
+
+    @Activate
+    public PulseaudioHandlerFactory(@Reference AudioSinkUtils audioSinkUtils) {
+        this.audioSinkUtils = audioSinkUtils;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
-
-    @Reference
-    public void setAudioSinkUtils(AudioSinkUtils audioSinkUtils) {
-        this.audioSinkUtils = audioSinkUtils;
     }
 
     @Override

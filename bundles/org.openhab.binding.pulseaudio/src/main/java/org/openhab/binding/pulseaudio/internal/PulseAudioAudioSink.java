@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,21 +50,15 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
 
     private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSink.class);
 
-    private @Nullable AudioSinkUtils audioSinkUtils;
+    private AudioSinkUtils audioSinkUtils;
 
-    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = Set.of(AudioFormat.WAV, AudioFormat.MP3);
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
     private static final AudioFormat TARGET_FORMAT = new AudioFormat(AudioFormat.CONTAINER_WAVE,
             AudioFormat.CODEC_PCM_SIGNED, false, 16, 4 * 44100, 44100L, 2);
 
-    static {
-        SUPPORTED_FORMATS.add(AudioFormat.WAV);
-        SUPPORTED_FORMATS.add(AudioFormat.MP3);
-        SUPPORTED_STREAMS.add(AudioStream.class);
-    }
-
     public PulseAudioAudioSink(PulseaudioHandler pulseaudioHandler, ScheduledExecutorService scheduler,
-            @Nullable AudioSinkUtils audioSinkUtils) {
+            AudioSinkUtils audioSinkUtils) {
         super(pulseaudioHandler, scheduler);
         this.audioSinkUtils = audioSinkUtils;
     }
@@ -87,7 +80,6 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                 try {
                     connectIfNeeded();
                     final Socket clientSocketLocal = clientSocket;
-                    final AudioSinkUtils audioSinkUtilsLocal = audioSinkUtils;
                     if (clientSocketLocal != null) {
                         // send raw audio to the socket and to pulse audio
                         Instant start = Instant.now();
@@ -106,9 +98,9 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                             } else {
                                 return CompletableFuture.completedFuture(null);
                             }
-                        } else if (audioSinkUtilsLocal != null) {
+                        } else {
                             // We have a second method available to guess the duration, and it is during transfer
-                            Long timeStampEnd = audioSinkUtilsLocal.transferAndAnalyzeLength(normalizedPCMStream,
+                            Long timeStampEnd = audioSinkUtils.transferAndAnalyzeLength(normalizedPCMStream,
                                     clientSocketLocal.getOutputStream(), TARGET_FORMAT);
                             CompletableFuture<@Nullable Void> soundPlayed = new CompletableFuture<>();
                             if (timeStampEnd != null) {
@@ -122,9 +114,6 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                             } else {
                                 return CompletableFuture.completedFuture(null);
                             }
-                        } else {
-                            normalizedPCMStream.transferTo(clientSocketLocal.getOutputStream());
-                            return CompletableFuture.completedFuture(null);
                         }
                     }
                 } catch (IOException e) {

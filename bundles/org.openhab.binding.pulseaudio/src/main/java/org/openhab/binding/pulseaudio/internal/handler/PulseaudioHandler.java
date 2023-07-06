@@ -90,9 +90,9 @@ public class PulseaudioHandler extends BaseThingHandler {
 
     private final BundleContext bundleContext;
 
-    private @Nullable AudioSinkUtils audioSinkUtils;
+    private AudioSinkUtils audioSinkUtils;
 
-    public PulseaudioHandler(Thing thing, BundleContext bundleContext, @Nullable AudioSinkUtils audioSinkUtils) {
+    public PulseaudioHandler(Thing thing, BundleContext bundleContext, AudioSinkUtils audioSinkUtils) {
         super(thing);
         this.bundleContext = bundleContext;
         this.audioSinkUtils = audioSinkUtils;
