@@ -14,13 +14,31 @@ package org.openhab.binding.toyota.internal.dto;
 
 import java.util.ArrayList;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * This class describes the car locking status
  *
  * @author Gaël L'hopital - Initial contribution
  */
 public class Lock {
-    public String lockState;
-    public String source;
+    public enum LockSource {
+        @SerializedName("app")
+        APP,
+        @SerializedName("key")
+        KEY,
+        UNKNOWN;
+    }
+
+    public enum LockState {
+        @SerializedName("unlocked")
+        UNLOCKED,
+        @SerializedName("locked")
+        LOCKED,
+        UNKNOWN;
+    }
+
+    public LockState lockState;
+    public LockSource source;
     public ArrayList<String> failedUnlockPreconditions;
 }

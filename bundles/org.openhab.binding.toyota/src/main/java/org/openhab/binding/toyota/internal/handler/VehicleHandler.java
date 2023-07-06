@@ -13,12 +13,16 @@
 package org.openhab.binding.toyota.internal.handler;
 
 import static org.openhab.binding.toyota.internal.ToyotaBindingConstants.*;
+import static org.openhab.core.library.unit.MetricPrefix.KILO;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +34,7 @@ import org.openhab.binding.toyota.internal.dto.Hood;
 import org.openhab.binding.toyota.internal.dto.Key;
 import org.openhab.binding.toyota.internal.dto.Lamps;
 import org.openhab.binding.toyota.internal.dto.Lock;
+import org.openhab.binding.toyota.internal.dto.Metrics;
 import org.openhab.binding.toyota.internal.dto.StatusResponse;
 import org.openhab.binding.toyota.internal.dto.Vehicle;
 import org.openhab.binding.toyota.internal.dto.Window.WindowClosingState;
@@ -39,7 +44,10 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -102,6 +110,7 @@ public class VehicleHandler extends BaseThingHandler {
                 Vehicle me = mytBridgeHandler.getVehicle(configuration.vin);
                 if (me != null) {
                     updateStatus(ThingStatus.ONLINE);
+                    getThing().setProperty(Vehicle.PRODUCTION_DATE, me.productionDate);
                     startAutomaticRefresh(configuration.refresh, mytBridgeHandler);
                     return;
                 }
@@ -130,12 +139,36 @@ public class VehicleHandler extends BaseThingHandler {
     private void queryApiAndUpdateChannels(MyTBridgeHandler mytBridgeHandler) {
         try {
             StatusResponse status = mytBridgeHandler.getVehicleStatus(configuration.vin);
+
+            updateChannelString(GROUP_GENERAL, OVERALL, status.protectionState.overallStatus.name());
+            updateChannelDateTime(GROUP_GENERAL, TIMESTAMP, status.protectionState.timestamp);
+            updateChannelString(GROUP_GENERAL, STATUS, status.tripStatus.name());
+
+            updateChannelString(GROUP_CLIMATE, STATUS, status.climate.status);
+            updateChannelString(GROUP_CLIMATE, TYPE, status.climate.type);
+
             updateDoorStatus(status.protectionState.doors, status.protectionState.hood);
             updateLampStatus(status.protectionState.lamps);
             updateWindowStatus(status.protectionState.windows);
             updateLockStatus(status.protectionState.doors, status.protectionState.lock);
             updateKeyStatus(status.protectionState.key);
             updatePositionStatus(status.event);
+
+            List<Metrics> metrics = mytBridgeHandler.getMetrics(configuration.vin);
+            metrics.forEach(metric -> {
+                switch (metric.type) {
+                    case FUEL:
+                        updateChannelQuantity(GROUP_METRICS, FUEL, Double.valueOf(metric.value).intValue(),
+                                Units.PERCENT);
+                        break;
+                    case MILEAGE:
+                        updateChannelQuantity(GROUP_METRICS, ODOMETER, metric.value, KILO(SIUnits.METRE));
+                        break;
+                    case UNKNOWN:
+                        logger.warn("Unknown metric received : {},{}", metric.value, metric.unit);
+                        break;
+                }
+            });
 
         } catch (ToyotaException e) {
             logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
@@ -148,7 +181,7 @@ public class VehicleHandler extends BaseThingHandler {
     private void updatePositionStatus(Event event) {
         updateChannelLocation(GROUP_POSITION, LOCATION, event.lat, event.lon);
         updateChannelDateTime(GROUP_POSITION, TIMESTAMP,
-                ZonedDateTime.ofInstant(event.getInstant(), timeZoneProvider.getTimeZone()));
+                ZonedDateTime.ofInstant(event.timestamp, timeZoneProvider.getTimeZone()));
     }
 
     private void updateKeyStatus(Key key) {
@@ -157,35 +190,35 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void updateLockStatus(Doors doors, Lock lock) {
-        updateChannelOnOff(GROUP_LOCKS, DRIVER, doors.driverSeatDoor.locked);
-        updateChannelOnOff(GROUP_LOCKS, PASSENGER, doors.passengerSeatDoor.locked);
-        updateChannelOnOff(GROUP_LOCKS, REAR_RIGHT, doors.rearRightSeatDoor.locked);
-        updateChannelOnOff(GROUP_LOCKS, REAR_LEFT, doors.rearLeftSeatDoor.locked);
-        updateChannelOnOff(GROUP_LOCKS, TAILGATE, doors.backDoor.locked);
-        updateChannelString(GROUP_LOCKS, STATUS, lock.lockState);
-        updateChannelString(GROUP_LOCKS, SOURCE, lock.source);
+        updateChannelOnOff(GROUP_LOCK, DRIVER, doors.driverSeatDoor.locked);
+        updateChannelOnOff(GROUP_LOCK, PASSENGER, doors.passengerSeatDoor.locked);
+        updateChannelOnOff(GROUP_LOCK, REAR_RIGHT, doors.rearRightSeatDoor.locked);
+        updateChannelOnOff(GROUP_LOCK, REAR_LEFT, doors.rearLeftSeatDoor.locked);
+        updateChannelOnOff(GROUP_LOCK, TAILGATE, doors.backDoor.locked);
+        updateChannelString(GROUP_LOCK, STATUS, lock.lockState.name());
+        updateChannelString(GROUP_LOCK, SOURCE, lock.source.name());
     }
 
     private void updateWindowStatus(Windows windows) {
-        updateChannelOpenClosed(GROUP_WINDOWS, DRIVER, windows.driver.state);
-        updateChannelOpenClosed(GROUP_WINDOWS, PASSENGER, windows.passenger.state);
-        updateChannelOpenClosed(GROUP_WINDOWS, REAR_RIGHT, windows.rearRight.state);
-        updateChannelOpenClosed(GROUP_WINDOWS, REAR_LEFT, windows.rearLeft.state);
+        updateChannelOpenClosed(GROUP_WINDOW, DRIVER, windows.driver.state);
+        updateChannelOpenClosed(GROUP_WINDOW, PASSENGER, windows.passenger.state);
+        updateChannelOpenClosed(GROUP_WINDOW, REAR_RIGHT, windows.rearRight.state);
+        updateChannelOpenClosed(GROUP_WINDOW, REAR_LEFT, windows.rearLeft.state);
     }
 
     private void updateLampStatus(Lamps lamps) {
-        updateChannelOnOff(GROUP_LAMPS, HEAD, !lamps.headLamp.off);
-        updateChannelOnOff(GROUP_LAMPS, TAIL, !lamps.tailLamp.off);
-        updateChannelOnOff(GROUP_LAMPS, HAZARD, !lamps.hazardLamp.off);
+        updateChannelOnOff(GROUP_LAMP, HEAD, !lamps.headLamp.off);
+        updateChannelOnOff(GROUP_LAMP, TAIL, !lamps.tailLamp.off);
+        updateChannelOnOff(GROUP_LAMP, HAZARD, !lamps.hazardLamp.off);
     }
 
     private void updateDoorStatus(Doors doors, Hood hood) {
-        updateChannelOpenClosed(GROUP_DOORS, DRIVER, doors.driverSeatDoor.closed);
-        updateChannelOpenClosed(GROUP_DOORS, PASSENGER, doors.passengerSeatDoor.closed);
-        updateChannelOpenClosed(GROUP_DOORS, REAR_RIGHT, doors.rearRightSeatDoor.closed);
-        updateChannelOpenClosed(GROUP_DOORS, REAR_LEFT, doors.rearLeftSeatDoor.closed);
-        updateChannelOpenClosed(GROUP_DOORS, TAILGATE, doors.backDoor.closed);
-        updateChannelOpenClosed(GROUP_DOORS, HOOD, hood.closed);
+        updateChannelOpenClosed(GROUP_DOOR, DRIVER, doors.driverSeatDoor.closed);
+        updateChannelOpenClosed(GROUP_DOOR, PASSENGER, doors.passengerSeatDoor.closed);
+        updateChannelOpenClosed(GROUP_DOOR, REAR_RIGHT, doors.rearRightSeatDoor.closed);
+        updateChannelOpenClosed(GROUP_DOOR, REAR_LEFT, doors.rearLeftSeatDoor.closed);
+        updateChannelOpenClosed(GROUP_DOOR, TAILGATE, doors.backDoor.closed);
+        updateChannelOpenClosed(GROUP_DOOR, HOOD, hood.closed);
     }
 
     private void freeRefreshJob() {
@@ -235,5 +268,17 @@ public class VehicleHandler extends BaseThingHandler {
 
     protected void updateChannelLocation(String group, String channelId, double lat, double lon) {
         updateIfActive(group, channelId, new PointType(String.format(Locale.US, "%.6f,%.6f", lat, lon)));
+    }
+
+    protected void updateChannelQuantity(String group, String channelId, @Nullable QuantityType<?> quantity) {
+        updateIfActive(group, channelId, quantity != null ? quantity : UnDefType.NULL);
+    }
+
+    protected void updateChannelQuantity(String group, String channelId, @Nullable Number d, Unit<?> unit) {
+        if (d == null) {
+            updateIfActive(group, channelId, UnDefType.NULL);
+        } else {
+            updateChannelQuantity(group, channelId, new QuantityType<>(d, unit));
+        }
     }
 }

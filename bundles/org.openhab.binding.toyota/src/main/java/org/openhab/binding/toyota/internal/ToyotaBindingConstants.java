@@ -32,14 +32,19 @@ public class ToyotaBindingConstants {
     public static final ThingTypeUID VEHICLE_THING_TYPE = new ThingTypeUID(BINDING_ID, "vehicle");
 
     // List of channel groups
-    public static final String GROUP_DOORS = "doors";
-    public static final String GROUP_LAMPS = "lamps";
-    public static final String GROUP_WINDOWS = "windows";
-    public static final String GROUP_LOCKS = "locks";
+    public static final String GROUP_GENERAL = "general";
+    public static final String GROUP_DOOR = "door";
+    public static final String GROUP_LAMP = "lamp";
+    public static final String GROUP_WINDOW = "window";
+    public static final String GROUP_LOCK = "lock";
     public static final String GROUP_KEY = "key";
     public static final String GROUP_POSITION = "position";
+    public static final String GROUP_METRICS = "metrics";
+    public static final String GROUP_CLIMATE = "climate";
 
     // List of channel ids
+    public static final String OVERALL = "overall";
+
     public static final String DRIVER = "driver";
     public static final String PASSENGER = "passenger";
     public static final String REAR_RIGHT = "rear-right";
@@ -59,6 +64,11 @@ public class ToyotaBindingConstants {
 
     public static final String LOCATION = "location";
     public static final String TIMESTAMP = "timestamp";
+
+    public static final String ODOMETER = "odometer";
+    public static final String FUEL = "fuel-level";
+
+    public static final String TYPE = "type";
 
     // List of all adressable things
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE, VEHICLE_THING_TYPE);

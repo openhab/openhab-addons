@@ -19,6 +19,8 @@ import java.util.List;
 import com.google.gson.reflect.TypeToken;
 
 public class Vehicle {
+    public static String PRODUCTION_DATE = "productionDate";
+
     public static Type LIST_CLASS = new TypeToken<List<Vehicle>>() {
     }.getType();
 

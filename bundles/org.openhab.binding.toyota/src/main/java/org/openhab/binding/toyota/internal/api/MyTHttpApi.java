@@ -34,6 +34,7 @@ import org.openhab.binding.toyota.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.toyota.internal.deserialization.MyTDeserializer;
 import org.openhab.binding.toyota.internal.dto.CredentialResponse;
 import org.openhab.binding.toyota.internal.dto.CustomerProfile;
+import org.openhab.binding.toyota.internal.dto.Metrics;
 import org.openhab.binding.toyota.internal.dto.StatusResponse;
 import org.openhab.binding.toyota.internal.dto.Vehicle;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -54,12 +55,12 @@ public class MyTHttpApi {
     // https://github.com/calmjm/tojota/blob/master/tojota.py
     private static final String BASE_URL = "https://myt-agg.toyota-europe.com/cma/api";
     private static final String LOGIN_URL = BASE_URL + "/user/login";
-    private static final String VEHICLE_LIST_URL = BASE_URL + "/user/%s/vehicle/details";
-    private static final String VEHICLE_STATUS_URL = BASE_URL + "/users/%s/vehicles/%s/vehicleStatus";
-    private static final String VEHICLE_LOCATION_URL = BASE_URL + "/users/%s/vehicle/location";
-    private static final String VEHICLE_PARKING_URL = BASE_URL + "/users/%s/vehicles/%s/parking";
-    private static final String VEHICLE_INFO_URL = BASE_URL + "/vehicle/%s/addtionalInfo";
+    private static final String VEHICLE_LIST_URL = BASE_URL + "/user/%uuid%/vehicle/details";
+    private static final String VEHICLE_STATUS_URL = BASE_URL + "/users/%uuid%/vehicles/%vin%/vehicleStatus";
+    private static final String VEHICLE_INFO_URL = BASE_URL + "/vehicle/%vin%/addtionalInfo";
     private static final String STATISTICS_URL = BASE_URL + "/v2/trips/summarize&from=2020-11-01&calendarInterval=week"; // ou
+    private static final String VEHICLE_LOCATION_URL = BASE_URL + "/users/%uuid%/vehicle/location";
+    private static final String VEHICLE_PARKING_URL = BASE_URL + "/users/%uuid%/vehicles/%vin%/parking";
     // day
 
     // private static final String REMOTE_CONTROL_URL = "/vehicles/%s/remoteControl/status";
@@ -92,17 +93,22 @@ public class MyTHttpApi {
 
     public CustomerProfile initialize(ApiBridgeConfiguration configuration) throws ToyotaException {
         Credentials credentials = new Credentials(configuration.password, configuration.username);
-        CredentialResponse response = getResponse(HttpMethod.POST, LOGIN_URL, Credentials.ANSWER_CLASS, credentials);
+        CredentialResponse response = getResponse(HttpMethod.POST, LOGIN_URL, Credentials.ANSWER_CLASS, null, null,
+                credentials);
         token = Optional.of(response.token);
         return response.customerProfile;
     }
 
     public List<Vehicle> getVehicles(String uuid) throws ToyotaException {
-        return getResponse(HttpMethod.GET, VEHICLE_LIST_URL.formatted(uuid), Vehicle.LIST_CLASS, null);
+        return getResponse(HttpMethod.GET, VEHICLE_LIST_URL, Vehicle.LIST_CLASS, uuid, null, null);
     }
 
     public StatusResponse getVehicleStatus(String uuid, String vin) throws ToyotaException {
-        return getResponse(HttpMethod.GET, VEHICLE_STATUS_URL.formatted(uuid, vin), StatusResponse.ANSWER_CLASS, null);
+        return getResponse(HttpMethod.GET, VEHICLE_STATUS_URL, StatusResponse.ANSWER_CLASS, uuid, vin, null);
+    }
+
+    public List<Metrics> getMetrics(String uuid, String vin) throws ToyotaException {
+        return getResponse(HttpMethod.GET, VEHICLE_INFO_URL, Metrics.LIST_CLASS, uuid, vin, null);
     }
 
     // private void backup() throws ToyotaException {
@@ -111,7 +117,7 @@ public class MyTHttpApi {
     // result = ;
     // StatusResponse status = deserializer.deserialize(StatusResponse.class, result);
     //
-    // result = getResponse(HttpMethod.GET, VEHICLE_INFO_URL.formatted(vin.get()), null);
+    // result =
     // List<Metrics> metrics = deserializer.deserialize(Metrics.LIST_CLASS, result);
     //
     // result = getResponse(HttpMethod.GET, VEHICLE_LOCATION_URL.formatted(uuid.get()), null); //
@@ -127,9 +133,15 @@ public class MyTHttpApi {
     // }
 
     @SuppressWarnings("unchecked")
-    private <T> T getResponse(HttpMethod method, String url, Type answerClazz, @Nullable Object jsonObject)
-            throws ToyotaException {
-        Request request = httpClient.newRequest(url) //
+    private <T> T getResponse(HttpMethod method, String url, Type answerClazz, @Nullable String uuid,
+            @Nullable String vin, @Nullable Object jsonObject) throws ToyotaException {
+
+        String finalUrl = uuid != null ? url.replace("%uuid%", uuid) : url;
+        if (vin != null) {
+            finalUrl = finalUrl.replace("%vin%", vin);
+        }
+
+        Request request = httpClient.newRequest(finalUrl) //
                 .header(HttpHeader.ACCEPT_LANGUAGE, "de-DE") //
                 .header(HttpHeader.ACCEPT, "*/*") //
                 .header(HttpHeader.USER_AGENT, "MyT/4.10.0 iPhone10,5 iOS/14.8 CFNetwork/1240.0.4 Darwin/20.6.0")
@@ -137,9 +149,13 @@ public class MyTHttpApi {
                 .header("x-tme-app-version", "4.10.0") //
                 .header("x-tme-locale", "en-gb").timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
+        if (uuid != null) {
+            request.header("uuid", uuid);
+            if (vin != null) {
+                request.header("VIN", vin);
+            }
+        }
         token.ifPresent(cookie -> request.header(HttpHeader.COOKIE, "iPlanetDirectoryPro=" + cookie));
-        // uuid.ifPresent(id -> request.header("uuid", id));
-        // vin.ifPresent(id -> request.header("VIN", id));
 
         if (jsonObject != null) {
             MimeTypes.Type jsonMimeType = MimeTypes.Type.APPLICATION_JSON;

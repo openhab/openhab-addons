@@ -17,13 +17,27 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * This class holds metrics related to the car
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 public class Metrics {
     public static Type LIST_CLASS = new TypeToken<List<Metrics>>() {
     }.getType();
 
-    public String type;
+    public enum MetricType {
+        @SerializedName("mileage")
+        MILEAGE,
+        @SerializedName("Fuel")
+        FUEL,
+        UNKNOWN;
+    }
+
+    public MetricType type;
     public double value;
     public @Nullable String unit;
 }

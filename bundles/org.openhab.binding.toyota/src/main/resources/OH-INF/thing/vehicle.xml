@@ -13,12 +13,15 @@
 		<description>Provides all data available on a Toyota vehicle</description>
 
 		<channel-groups>
-			<channel-group id="windows" typeId="windows"/>
-			<channel-group id="doors" typeId="doors"/>
-			<channel-group id="lamps" typeId="lamps"/>
-			<channel-group id="locks" typeId="locks"/>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="window" typeId="windows"/>
+			<channel-group id="door" typeId="doors"/>
+			<channel-group id="lamp" typeId="lamps"/>
+			<channel-group id="lock" typeId="locks"/>
 			<channel-group id="key" typeId="key"/>
 			<channel-group id="position" typeId="position"/>
+			<channel-group id="metrics" typeId="metrics"/>
+			<channel-group id="climate" typeId="climate"/>
 		</channel-groups>
 
 		<representation-property>vin</representation-property>
@@ -33,7 +36,6 @@
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in minutes.</description>
 				<default>10</default>
-				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

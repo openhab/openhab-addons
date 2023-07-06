@@ -13,6 +13,7 @@
 package org.openhab.binding.toyota.internal.deserialization;
 
 import java.lang.reflect.Type;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,8 +44,11 @@ public class MyTDeserializer {
     public MyTDeserializer(@Reference TimeZoneProvider timeZoneProvider) {
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
+                .registerTypeAdapter(Instant.class,
+                        (JsonDeserializer<Instant>) (json, type, context) -> Instant
+                                .ofEpochMilli(json.getAsJsonPrimitive().getAsLong()))
                 .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
-                        jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
+                        context) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
                 .create();
     }
 

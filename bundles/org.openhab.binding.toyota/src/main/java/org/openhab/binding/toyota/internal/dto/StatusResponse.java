@@ -17,6 +17,11 @@ import java.lang.reflect.Type;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * This class holds all objects describing the status of the car
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 public class StatusResponse {
     public static Type ANSWER_CLASS = new TypeToken<StatusResponse>() {
     }.getType();

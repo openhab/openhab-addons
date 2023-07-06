@@ -3,21 +3,51 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-   
-    <channel-group-type id="position">
-        <label>Location Info</label>
-        <channels>
-            <channel id="location" typeId="location">
-                <label>Current Location</label>
-                <description>The position of the vehicle</description>
-            </channel>
-            <channel id="timestamp" typeId="timestamp">
-                <label>Location Timestamp</label>
-                <description>Timestamp of location value update</description>
-            </channel>
-        </channels>
-    </channel-group-type>
-    
+
+	<channel-group-type id="general">
+		<label>General Info</label>
+		<channels>
+			<channel id="overall" typeId="string-ro">
+				<label>Overall Status</label>
+				<description>Overall car protection status</description>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Timestamp</label>
+				<description>Timestamp of status update</description>
+			</channel>
+			<channel id="status" typeId="string-ro">
+				<label>Engine Status</label>
+				<description>Status of the car's engine</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="climate">
+		<label>Temperature Control</label>
+		<channels>
+			<channel id="status" typeId="string-ro">
+				<label>Status</label>
+			</channel>
+			<channel id="type" typeId="string-ro">
+				<label>Type</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="position">
+		<label>Location Info</label>
+		<channels>
+			<channel id="location" typeId="location">
+				<label>Current Location</label>
+				<description>The position of the vehicle</description>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Location Timestamp</label>
+				<description>Timestamp of location value update</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="key">
 		<label>Car key report</label>
 		<channels>
@@ -75,12 +105,8 @@
 	<channel-group-type id="locks">
 		<label>Car Locking Status</label>
 		<channels>
-			<channel id="status" typeId="string-ro">
-				<label>Car Lock State</label>
-			</channel>
-			<channel id="source" typeId="string-ro">
-				<label>Lock Source</label>
-			</channel>
+			<channel id="status" typeId="lock-status"/>
+			<channel id="source" typeId="lock-source"/>
 			<channel id="driver" typeId="locked">
 				<label>Driver's Door Locked</label>
 			</channel>
@@ -111,6 +137,14 @@
 			<channel id="hazard" typeId="lamp">
 				<label>Hazard Light</label>
 			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="metrics">
+		<label>Car Metrics</label>
+		<channels>
+			<channel id="odometer" typeId="odometer"/>
+			<channel id="fuel-level" typeId="fuel-level"/>
 		</channels>
 	</channel-group-type>
 

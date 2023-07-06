@@ -22,9 +22,5 @@ import java.time.Instant;
 public class Event {
     public double lat;
     public double lon;
-    private long timestamp;
-
-    public Instant getInstant() {
-        return Instant.ofEpochMilli(timestamp);
-    }
+    public Instant timestamp;
 }

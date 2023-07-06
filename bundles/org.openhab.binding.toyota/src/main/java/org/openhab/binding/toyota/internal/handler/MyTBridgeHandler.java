@@ -25,6 +25,7 @@ import org.openhab.binding.toyota.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.toyota.internal.deserialization.MyTDeserializer;
 import org.openhab.binding.toyota.internal.discovery.ToyotaDiscoveryService;
 import org.openhab.binding.toyota.internal.dto.CustomerProfile;
+import org.openhab.binding.toyota.internal.dto.Metrics;
 import org.openhab.binding.toyota.internal.dto.StatusResponse;
 import org.openhab.binding.toyota.internal.dto.Vehicle;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -111,6 +112,10 @@ public class MyTBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable StatusResponse getVehicleStatus(String vin) throws ToyotaException {
         return api.getVehicleStatus(uuid.get(), vin);
+    }
+
+    public List<Metrics> getMetrics(String vin) throws ToyotaException {
+        return api.getMetrics(uuid.get(), vin);
     }
 
     @Override

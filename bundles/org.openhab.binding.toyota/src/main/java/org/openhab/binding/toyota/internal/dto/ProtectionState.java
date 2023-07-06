@@ -14,6 +14,11 @@ package org.openhab.binding.toyota.internal.dto;
 
 import java.time.ZonedDateTime;
 
+/**
+ * This class holds various data regarding car protection status
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 public class ProtectionState {
     public enum OverallStatus {
         NOK,
