@@ -71,13 +71,13 @@ public class AndroidTVCommandExtension extends AbstractConsoleCommandExtension {
                 }
             }
             if (thing == null) {
-                console.println("Bad thing id '" + args[0] + "'");
+                console.println("Bad thing uid '" + args[0] + "'");
                 printUsage(console);
             } else if (thingHandler == null) {
-                console.println("No handler initialized for the thing id '" + args[0] + "'");
+                console.println("No handler initialized for the thing uid '" + args[0] + "'");
                 printUsage(console);
             } else if (handler == null) {
-                console.println("'" + args[0] + "' is not a AndroidTV thing id");
+                console.println("'" + args[0] + "' is not an AndroidTV thing uid");
                 printUsage(console);
             } else {
                 String channel = args[0] + ":" + args[1];
