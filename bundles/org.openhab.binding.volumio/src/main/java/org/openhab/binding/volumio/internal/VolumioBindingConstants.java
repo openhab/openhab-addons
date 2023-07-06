@@ -37,17 +37,17 @@ public class VolumioBindingConstants {
     public static final String CHANNEL_ALBUM = "album";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_PLAYER = "player";
-    public static final String CHANNEL_COVER_ART = "albumArt";
+    public static final String CHANNEL_COVER_ART = "album-art";
     public static final String CHANNEL_TRACK_TYPE = "track-type";
-    public static final String CHANNEL_PLAY_RADIO_STREAM = "playRadioStream";
-    public static final String CHANNEL_PLAY_PLAYLIST = "playPlaylist";
-    public static final String CHANNEL_CLEAR_QUEUE = "clearQueue";
+    public static final String CHANNEL_PLAY_RADIO_STREAM = "play-radiostream";
+    public static final String CHANNEL_PLAY_PLAYLIST = "play-playlist";
+    public static final String CHANNEL_CLEAR_QUEUE = "clear-queue";
     public static final String CHANNEL_PLAY_RANDOM = "random";
     public static final String CHANNEL_PLAY_REPEAT = "repeat";
-    public static final String CHANNEL_PLAY_URI = "playURI";
-    public static final String CHANNEL_PLAY_FILE = "playFile";
-    public static final String CHANNEL_SYSTEM_COMMAND = "systemCommand";
-    public static final String CHANNEL_STOP = "stopCommand";
+    public static final String CHANNEL_PLAY_URI = "play-uri";
+    public static final String CHANNEL_PLAY_FILE = "play-file";
+    public static final String CHANNEL_SYSTEM_COMMAND = "system-command";
+    public static final String CHANNEL_STOP = "stop-command";
 
     // discovery properties
     public static final String DISCOVERY_SERVICE_TYPE = "_Volumio._tcp.local.";

@@ -15,15 +15,15 @@
 			<channel id="volume" typeId="volume"/>
 			<channel id="player" typeId="player"/>
 			<channel id="track-type" typeId="track-type"/>
-			<channel id="play-radio-stream" typeId="play-radio-stream"/>
-			<channel id="playPlaylist" typeId="playPlaylist"/>
-			<channel id="clearQueue" typeId="clearQueue"/>
-			<channel id="playURI" typeId="playURI"/>
-			<channel id="playFile" typeId="playFile"/>
-			<channel id="random" typeId="playRandom"/>
-			<channel id="repeat" typeId="playRepeat"/>
-			<channel id="systemCommand" typeId="systemCommand"/>
-			<channel id="stopCommand" typeId="stopCommand"/>
+			<channel id="play-radiostream" typeId="play-radiostream"/>
+			<channel id="play-playlist" typeId="play-playlist"/>
+			<channel id="clear-queue" typeId="clear-queue"/>
+			<channel id="play-uri" typeId="play-uri"/>
+			<channel id="play-file" typeId="play-file"/>
+			<channel id="random" typeId="play-random"/>
+			<channel id="repeat" typeId="play-repeat"/>
+			<channel id="system-command" typeId="system-command"/>
+			<channel id="stop-command" typeId="stop-command"/>
 		</channels>
 
 		<config-description>
@@ -55,7 +55,7 @@
 
 	</thing-type>
 
-	<channel-type id="systemCommand" advanced="true">
+	<channel-type id="system-command" advanced="true">
 		<item-type>String</item-type>
 		<label>Send system command</label>
 		<description>Sends a system command to Volumio. This allows to shutdown/reboot Volumio</description>
@@ -67,7 +67,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="stopCommand" advanced="true">
+	<channel-type id="stop-command" advanced="true">
 		<item-type>String</item-type>
 		<label>Stop</label>
 		<description>Sends a Stop Command to Volumio. This allows to stop the player. Use "stop" as string command.
@@ -115,7 +115,7 @@
 		<category>Player</category>
 	</channel-type>
 
-	<channel-type id="albumArt" advanced="true">
+	<channel-type id="album-art" advanced="true">
 		<item-type>Image</item-type>
 		<label>Cover Art</label>
 		<description>Cover Art for the currently played track</description>
@@ -129,43 +129,43 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="play-radio-stream" advanced="true">
+	<channel-type id="play-radiostream" advanced="true">
 		<item-type>String</item-type>
 		<label>Play radio stream</label>
 		<description>Play the given radio stream</description>
 	</channel-type>
 
-	<channel-type id="playPlaylist" advanced="true">
+	<channel-type id="play-playlist" advanced="true">
 		<item-type>String</item-type>
 		<label>Play playlist</label>
 		<description>Playback a playlist identifed by its name</description>
 	</channel-type>
 
-	<channel-type id="clearQueue" advanced="true">
+	<channel-type id="clear-queue" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Clear queue</label>
 		<description>Clear the current queue</description>
 	</channel-type>
 
-	<channel-type id="playRandom" advanced="true">
+	<channel-type id="play-random" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Random</label>
 		<description>Activate random mode</description>
 	</channel-type>
 
-	<channel-type id="playRepeat" advanced="true">
+	<channel-type id="play-repeat" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Repeat</label>
 		<description>Activate repeat mode</description>
 	</channel-type>
 
-	<channel-type id="playURI" advanced="true">
+	<channel-type id="play-uri" advanced="true">
 		<item-type>String</item-type>
 		<label>Play URI</label>
 		<description>Play the stream at given uri</description>
 	</channel-type>
 
-	<channel-type id="playFile" advanced="true">
+	<channel-type id="play-file" advanced="true">
 		<item-type>String</item-type>
 		<label>Play file</label>
 		<description>Play a file, located on your Volumio device at the given absolute path, e.g.

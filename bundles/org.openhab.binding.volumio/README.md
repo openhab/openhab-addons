@@ -57,15 +57,15 @@ The devices support the following channels:
 | player            | Player | RW         | The State channel contains state of the Volumio Player.                                                              |
 | albumArt          | Image  | R          | Cover Art for the currently played track.                                                                            |
 | track-type        | String | R          | Tracktype of the currently played track.                                                                             |
-| play-radio-stream | String | RW         | Play the given radio stream.                                                                                         |
+| play-radiostream  | String | RW         | Play the given radio stream.                                                                                         |
 | play-playlist     | String | RW         | Playback a playlist identifed by its name.                                                                           |
 | clear-queue       | Switch | RW         | Clear the current queue.                                                                                             | 
 | play-uri          | Switch | RW         | Play the stream at given uri.                                                                                        |
 | play-file         | Switch | RW         | Play a file, located on your Volumio device at the given absolute path, e.g."mnt/INTERNAL/song.mp3"                  |
 | random            | Switch | RW         | Activate random mode.                                                                                                |
 | repeat            | Switch | RW         | Activate repeat mode.                                                                                                |
-| systemCommand     | Switch | RW         | Sends a system command to Volumio. This allows to shutdown/reboot Volumio. Use "Shutdown"/"Reboot" as String command.|
-| stopCommand       | Switch | RW         | Sends a Stop Command to Volumio. This allows to stop the player. Use "stop" as string command.                       |
+| system-command    | Switch | RW         | Sends a system command to Volumio. This allows to shutdown/reboot Volumio. Use "Shutdown"/"Reboot" as String command.|
+| stop-command      | Switch | RW         | Sends a Stop Command to Volumio. This allows to stop the player. Use "stop" as string command.                       |
 
 
 ## Full Example
