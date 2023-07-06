@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.audio.SizeableAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +58,8 @@ public class ConvertedInputStream extends InputStream {
             throws UnsupportedAudioFormatException, UnsupportedAudioFileException, IOException {
         this.audioFormat = innerInputStream.getFormat();
 
-        if (innerInputStream instanceof FixedLengthAudioStream) {
-            length = ((FixedLengthAudioStream) innerInputStream).length();
+        if (innerInputStream instanceof SizeableAudioStream sizeableAudioStream) {
+            length = sizeableAudioStream.length();
         }
 
         pcmNormalizedInputStream = getPCMStreamNormalized(getPCMStream(new BufferedInputStream(innerInputStream)));
