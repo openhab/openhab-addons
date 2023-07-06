@@ -50,7 +50,7 @@ public class ChromecastActions implements ThingActions {
             logger.warn("Handler is null, cannot play.");
             return false;
         } else {
-            return handler.playURL(url, null);
+            return handler.playURL(null, url, null);
         }
     }
 
@@ -68,7 +68,7 @@ public class ChromecastActions implements ThingActions {
             logger.warn("Handler is null, cannot tweet.");
             return false;
         } else {
-            return handler.playURL(url, mediaType);
+            return handler.playURL(null, url, mediaType);
         }
     }
 
