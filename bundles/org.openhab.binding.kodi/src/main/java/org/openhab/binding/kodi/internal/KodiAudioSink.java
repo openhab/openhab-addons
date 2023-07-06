@@ -13,14 +13,16 @@
 package org.openhab.binding.kodi.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.kodi.internal.handler.KodiHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
-import org.openhab.core.audio.AudioSinkAsync;
+import org.openhab.core.audio.AudioSinkSync;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.StreamServed;
 import org.openhab.core.audio.URLAudioStream;
@@ -38,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank - Adapted for Kodi
  * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
-public class KodiAudioSink extends AudioSinkAsync {
+public class KodiAudioSink extends AudioSinkSync {
 
     private final Logger logger = LoggerFactory.getLogger(KodiAudioSink.class);
 
@@ -68,7 +70,7 @@ public class KodiAudioSink extends AudioSinkAsync {
     }
 
     @Override
-    public void processAsynchronously(AudioStream audioStream)
+    public void processSynchronously(AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (audioStream == null) {
             // in case the audioStream is null, this should be interpreted as a request to end any currently playing
@@ -78,6 +80,7 @@ public class KodiAudioSink extends AudioSinkAsync {
         } else {
             AudioFormat format = audioStream.getFormat();
             if (!AudioFormat.MP3.isCompatible(format) && !AudioFormat.WAV.isCompatible(format)) {
+                tryClose(audioStream);
                 throw new UnsupportedAudioFormatException("Currently only MP3 and WAV formats are supported.", format);
             }
 
@@ -86,22 +89,31 @@ public class KodiAudioSink extends AudioSinkAsync {
                 String url = ((URLAudioStream) audioStream).getURL();
                 logger.trace("Processing audioStream URL {} of format {}.", url, format);
                 handler.playURI(new StringType(url));
+                tryClose(audioStream);
             } else if (callbackUrl != null) {
                 // we serve it on our own HTTP server for 10 seconds as Kodi requests the stream several times
                 // Form the URL for streaming the notification from the OH web server
                 try {
                     StreamServed streamServed = audioHTTPServer.serve(audioStream, STREAM_TIMEOUT, true);
-                    // note : KODI is not very compatible with our HTTP server. It keeps requesting the URL again and
-                    // again, resetting the time we label as the "start". Our server cannot reliably detect duration.
-                    streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
                     String url = callbackUrl + streamServed.url();
                     logger.trace("Processing audioStream URL {} of format {}.", url, format);
                     handler.playNotificationSoundURI(new StringType(url), false);
                 } catch (IOException e) {
+                    tryClose(audioStream);
                     logger.warn("Kodi binding was not able to handle the audio stream (cache on disk failed)", e);
                 }
             } else {
+                tryClose(audioStream);
                 logger.warn("We do not have any callback url, so Kodi cannot play the audio stream!");
+            }
+        }
+    }
+
+    private void tryClose(@Nullable InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException ignored) {
             }
         }
     }

@@ -558,10 +558,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
      */
     private boolean waitForState(KodiState state) {
         int timeoutMaxCount = getConfigAs(KodiConfig.class).getNotificationTimeout().intValue(), timeoutCount = 0;
-        logger.trace("Waiting up to {} ms for state '{}' to be set ...", timeoutMaxCount * 100, state);
+        logger.trace("Waiting up to {} ms for state '{}' to be set ...", timeoutMaxCount * 1000, state);
         while (!state.equals(connection.getState()) && timeoutCount < timeoutMaxCount) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 break;
             }
