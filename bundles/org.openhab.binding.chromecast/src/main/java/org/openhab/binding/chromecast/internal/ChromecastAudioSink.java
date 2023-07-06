@@ -13,6 +13,7 @@
 package org.openhab.binding.chromecast.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
@@ -91,16 +92,27 @@ public class ChromecastAudioSink extends AudioSinkAsync {
                     } catch (IOException e) {
                         logger.warn("Chromecast binding was not able to handle the audio stream (cache on disk failed)",
                                 e);
+                        tryClose(audioStream);
                         return;
                     }
                     url = callbackUrl + relativeUrl;
                 } else {
                     logger.warn("We do not have any callback url, so Chromecast cannot play the audio stream!");
+                    tryClose(audioStream);
                     return;
                 }
             }
             handler.playURL("Notification", url,
                     AudioFormat.MP3.isCompatible(audioStream.getFormat()) ? MIME_TYPE_AUDIO_MPEG : MIME_TYPE_AUDIO_WAV);
+        }
+    }
+
+    private void tryClose(@Nullable InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 
