@@ -100,20 +100,6 @@ public class ThreadsafeTimers {
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
     public long setTimeout(Runnable callback, Long delay) {
-        return setTimeout(callback, delay, new Object());
-    }
-
-    /**
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/API/setTimeout"><code>setTimeout()</code></a> polyfill.
-     * Sets a timer which executes a given function once the timer expires.
-     *
-     * @param callback function to run after the given delay
-     * @param delay time in milliseconds that the timer should wait before the callback is executed
-     * @param args
-     * @return Positive integer value which identifies the timer created; this value can be passed to
-     *         <code>clearTimeout()</code> to cancel the timeout.
-     */
-    public long setTimeout(Runnable callback, Long delay, @Nullable Object... args) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
@@ -153,20 +139,6 @@ public class ThreadsafeTimers {
      *         <code>clearInterval()</code> to cancel the interval.
      */
     public long setInterval(Runnable callback, Long delay) {
-        return setInterval(callback, delay, new Object());
-    }
-
-    /**
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/API/setInterval"><code>setInterval()</code></a> polyfill.
-     * Repeatedly calls a function with a fixed time delay between each call.
-     *
-     * @param callback function to run
-     * @param delay time in milliseconds that the timer should delay in between executions of the callback
-     * @param args
-     * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
-     *         <code>clearInterval()</code> to cancel the interval.
-     */
-    public long setInterval(Runnable callback, Long delay, @Nullable Object... args) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
