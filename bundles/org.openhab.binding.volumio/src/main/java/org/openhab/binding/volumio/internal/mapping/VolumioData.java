@@ -172,7 +172,7 @@ public class VolumioData {
 
     public void setArtist(String artist) {
         if ("null".equals(artist)) {
-            artist = "";
+            this.artist = "";
         }
 
         if (!artist.equals(this.artist)) {

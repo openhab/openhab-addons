@@ -58,7 +58,7 @@ The devices support the following channels:
 | albumArt          | Image  | R          | Cover Art for the currently played track.                                                                            |
 | track-type        | String | R          | Tracktype of the currently played track.                                                                             |
 | play-radiostream  | String | RW         | Play the given radio stream.                                                                                         |
-| play-playlist     | String | RW         | Playback a playlist identifed by its name.                                                                           |
+| play-playlist     | String | RW         | Playback a playlist identified  by its name.                                                                           |
 | clear-queue       | Switch | RW         | Clear the current queue.                                                                                             | 
 | play-uri          | Switch | RW         | Play the stream at given uri.                                                                                        |
 | play-file         | Switch | RW         | Play a file, located on your Volumio device at the given absolute path, e.g."mnt/INTERNAL/song.mp3"                  |

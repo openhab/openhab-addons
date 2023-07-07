@@ -94,7 +94,7 @@ public class VolumioHandler extends BaseThingHandler {
                 case VolumioBindingConstants.CHANNEL_PLAY_RADIO_STREAM:
                     if (command instanceof StringType) {
                         final String uri = command.toFullString();
-                        volumio.replacePlay(uri, "Radio", VolumioServiceTypes.WEBRADIO);
+                            volumio.replacePlay(uri, "Radio", VolumioServiceTypes.WEBRADIO);
                     }
 
                     break;
@@ -123,12 +123,10 @@ public class VolumioHandler extends BaseThingHandler {
 
                     break;
                 case VolumioBindingConstants.CHANNEL_CLEAR_QUEUE:
-                    if (command instanceof OnOffType) {
-                        if (command == OnOffType.ON) {
-                            volumio.clearQueue();
-                            // Make it feel like a toggle button ...
-                            updateState(channelUID, OnOffType.OFF);
-                        }
+                    if ((command instanceof OnOffType) && (command == OnOffType.ON)) {
+                        volumio.clearQueue();
+                        // Make it feel like a toggle button ...
+                        updateState(channelUID, OnOffType.OFF);
                     }
                     break;
                 case VolumioBindingConstants.CHANNEL_PLAY_RANDOM:
@@ -209,8 +207,7 @@ public class VolumioHandler extends BaseThingHandler {
     }
 
     private void handlePlaybackCommands(Command command) {
-        if (command instanceof PlayPauseType) {
-            PlayPauseType playPauseCmd = (PlayPauseType) command;
+        if (command instanceof PlayPauseType playPauseCmd) {
             switch (playPauseCmd) {
                 case PLAY:
                     volumio.play();
@@ -219,8 +216,7 @@ public class VolumioHandler extends BaseThingHandler {
                     volumio.pause();
                     break;
             }
-        } else if (command instanceof NextPreviousType) {
-            NextPreviousType nextPreviousType = (NextPreviousType) command;
+        } else if (command instanceof NextPreviousType nextPreviousType) {
             switch (nextPreviousType) {
                 case PREVIOUS:
                     volumio.previous();
@@ -229,8 +225,7 @@ public class VolumioHandler extends BaseThingHandler {
                     volumio.next();
                     break;
             }
-        } else if (command instanceof RewindFastforwardType) {
-            RewindFastforwardType fastForwardType = (RewindFastforwardType) command;
+        } else if (command instanceof RewindFastforwardType fastForwardType) {
             switch (fastForwardType) {
                 case FASTFORWARD:
                 case REWIND:
@@ -302,17 +297,7 @@ public class VolumioHandler extends BaseThingHandler {
             }, 30, TimeUnit.SECONDS);
 
             volumio.disconnect();
-
         }
-    }
-
-    public void playURI(StringType url) {
-        logger.debug("Play uri sound: {}", url.toFullString());
-        this.volumio.playURI(url.toFullString());
-    }
-
-    public void playNotificationSoundURI(StringType url) {
-        logger.debug("Play notification sound: {}", url.toFullString());
     }
 
     /** Listener **/
@@ -375,7 +360,6 @@ public class VolumioHandler extends BaseThingHandler {
                  */
             } catch (JSONException e) {
                 logger.error("Could not refresh channel: {}", e.getMessage());
-
             }
         };
     }

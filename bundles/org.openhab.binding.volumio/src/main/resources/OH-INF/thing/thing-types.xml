@@ -57,7 +57,7 @@
 
 	<channel-type id="system-command" advanced="true">
 		<item-type>String</item-type>
-		<label>Send system command</label>
+		<label>Send System Command</label>
 		<description>Sends a system command to Volumio. This allows to shutdown/reboot Volumio</description>
 		<state>
 			<options>
@@ -124,26 +124,26 @@
 
 	<channel-type id="track-type" advanced="true">
 		<item-type>String</item-type>
-		<label>track-type</label>
+		<label>Track Type</label>
 		<description>Tracktype of the currently played track</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="play-radiostream" advanced="true">
 		<item-type>String</item-type>
-		<label>Play radio stream</label>
+		<label>Play Radio Stream</label>
 		<description>Play the given radio stream</description>
 	</channel-type>
 
 	<channel-type id="play-playlist" advanced="true">
 		<item-type>String</item-type>
-		<label>Play playlist</label>
-		<description>Playback a playlist identifed by its name</description>
+		<label>Play Playlist</label>
+		<description>Playback a playlist identified by its name</description>
 	</channel-type>
 
 	<channel-type id="clear-queue" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Clear queue</label>
+		<label>Clear Queue</label>
 		<description>Clear the current queue</description>
 	</channel-type>
 
@@ -162,12 +162,12 @@
 	<channel-type id="play-uri" advanced="true">
 		<item-type>String</item-type>
 		<label>Play URI</label>
-		<description>Play the stream at given uri</description>
+		<description>Play the stream at given URI</description>
 	</channel-type>
 
 	<channel-type id="play-file" advanced="true">
 		<item-type>String</item-type>
-		<label>Play file</label>
+		<label>Play File</label>
 		<description>Play a file, located on your Volumio device at the given absolute path, e.g.
 			"mnt/INTERNAL/song.mp3"
 		</description>
