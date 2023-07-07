@@ -94,7 +94,7 @@ public class VolumioHandler extends BaseThingHandler {
                 case VolumioBindingConstants.CHANNEL_PLAY_RADIO_STREAM:
                     if (command instanceof StringType) {
                         final String uri = command.toFullString();
-                            volumio.replacePlay(uri, "Radio", VolumioServiceTypes.WEBRADIO);
+                        volumio.replacePlay(uri, "Radio", VolumioServiceTypes.WEBRADIO);
                     }
 
                     break;
