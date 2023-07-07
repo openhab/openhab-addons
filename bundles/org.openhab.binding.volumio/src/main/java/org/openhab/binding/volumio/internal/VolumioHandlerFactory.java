@@ -22,8 +22,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link VolumioHandlerFactory} is responsible for creating things and thing
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.volumio", service = ThingHandlerFactory.class)
 public class VolumioHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(VolumioHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
             .of(VolumioBindingConstants.THING_TYPE_VOLUMIO);
