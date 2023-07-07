@@ -58,6 +58,7 @@
 
 		<properties>
 			<property name="vendor">Electrolux</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>

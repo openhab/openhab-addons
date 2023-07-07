@@ -19,8 +19,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -151,14 +149,7 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (CHANNEL_STATUS.equals(channelUID.getId()) || command instanceof RefreshType) {
-            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-
-            Runnable task = () -> {
-                refreshAndUpdateStatus();
-            };
-
-            executor.schedule(task, 1, TimeUnit.SECONDS);
-            executor.shutdown();
+            scheduler.schedule(this::refreshAndUpdateStatus, 1, TimeUnit.SECONDS);
         }
     }
 }

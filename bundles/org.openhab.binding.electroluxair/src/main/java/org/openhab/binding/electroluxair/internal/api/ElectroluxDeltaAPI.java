@@ -61,7 +61,7 @@ public class ElectroluxDeltaAPI {
     private final HttpClient httpClient;
     private final ElectroluxAirBridgeConfiguration configuration;
     private String authToken = "";
-    private Instant tokenExpiry = Instant.now();
+    private Instant tokenExpiry = Instant.MIN;
 
     public ElectroluxDeltaAPI(ElectroluxAirBridgeConfiguration configuration, Gson gson, HttpClient httpClient) {
         this.gson = gson;
@@ -86,7 +86,7 @@ public class ElectroluxDeltaAPI {
                     ElectroluxPureA9DTO.ApplianceInfo applianceInfo = gson.fromJson(jsonApplianceInfo,
                             ElectroluxPureA9DTO.ApplianceInfo.class);
                     if (applianceInfo != null) {
-                        if (applianceInfo.getDeviceType().equals("AIR_PURIFIER")) {
+                        if ("AIR_PURIFIER".equals(applianceInfo.getDeviceType())) {
                             dto.setApplianceInfo(applianceInfo);
                             electroluxAirThings.put(dto.getProperties().getReported().getDeviceId(), dto);
                         }
@@ -94,7 +94,7 @@ public class ElectroluxDeltaAPI {
                 }
                 return true;
             }
-        } catch (ElectroluxAirException e) {
+        } catch (JsonSyntaxException | ElectroluxAirException e) {
             logger.warn("Failed to refresh! {}", e.getMessage());
 
         }
