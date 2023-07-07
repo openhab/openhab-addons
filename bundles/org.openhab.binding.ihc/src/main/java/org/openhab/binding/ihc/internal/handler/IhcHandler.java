@@ -181,13 +181,13 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         linkedResourceIds.addAll(getAllLinkedChannelsResourceIds());
         logger.debug("Linked resources {}: {}", linkedResourceIds.size(), linkedResourceIds);
 
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                "Initializing communication to the IHC / ELKO controller");
+
         if (controlJob == null || controlJob.isCancelled()) {
             logger.debug("Start control task, interval={}sec", 1);
             controlJob = scheduler.scheduleWithFixedDelay(this::reconnectCheck, 0, 1, TimeUnit.SECONDS);
         }
-
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                "Initializing communication to the IHC / ELKO controller");
     }
 
     @Override
