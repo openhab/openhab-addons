@@ -90,6 +90,8 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
+| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
+| shellypluswalldisplay| Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
 
 ### Generation 2 Pro series
 
@@ -175,6 +177,7 @@ The binding can't communicate directly with the device, but the Plus/Pro series 
 The binding automatically installs a script on the Shelly Device (oh-blu-scanner), which forwards the BLU events to the binding using the WebSocket channel.
 
 Follow these steps to add the Shelly BLU Device to openHAB
+
 - Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (the Bluetooth Gateway mode is not required)
 - Add this thing to openHAB, make sure thing gets online
 - Enable "BLU Gateway Support" in the thing configuration of the Shelly device acting as gateway.
@@ -1202,6 +1205,16 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
+### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
+
+|Group  | Channel     |Type     |read-only |Description                                                                         |
+|-------|-------------|---------|----------|------------------------------------------------------------------------------------|
+| relay | brightness  | Dimmer  | r/w       | Currently selected brightness.                                                    |
+|       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| 
 
 ## Shelly Pro Series
 
@@ -1404,6 +1417,22 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+## Shelly Wall Displays
+
+| Group   | Channel     | Type     | read-only | Description                                                                       |
+| ------- | ----------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay   | output      | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|         | outputName  | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|         | input       | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|         | autoOn      | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff     | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|         | button      | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| sensors | temperature | Number   | yes       | Temperature reported by the integrated sensor                                     |
+|         | humidity    | Number   | yes       | Relative Humidity in percent reported by the integrated sensor                    |
+|         | lux         | Number   | yes       | Brightness in Lux reported by the integrated sensor                               |
+|         | lastUpdate  | DateTime | yes       | Timestamp of the last update (any sensor value changed)                           |
 
 ## Full Example
 

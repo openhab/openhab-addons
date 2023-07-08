@@ -1,6 +1,7 @@
 /*
  * This script uses the BLE scan functionality in scripting to pass scan reults to openHAB
  * Supported BLU Devices: SBBT , SBDW
+ * Version 0.2
  */
 
 let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW"];
@@ -147,21 +148,11 @@ function scanCB(ev, res) {
   }
 }
 
-// retry several times to start the scanner if script was started before
-// BLE infrastructure was up in the Shelly
-function startBLEScan() {
-  let bleScanSuccess = BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
-  if( bleScanSuccess === false ) {
-    Timer.set(1000, false, startBLEScan);
-  } else {
-    console.log('Success: OH-BLU Event Gateway running');
-  }
-}
-
 let BLEConfig = Shelly.getComponentConfig('ble');
 if(BLEConfig.enable === false) {
-  console.log('Error: BLE not enabled');
+  console.log('Error: BLE not enabled, unable to start OH-BLU Scanner');
 } else {
-  Timer.set(1000, false, startBLEScan);
+    BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
+    console.log('OH-BLU Event Gateway running');
 }
-  
+ 
