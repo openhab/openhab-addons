@@ -148,7 +148,7 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_STATUS.equals(channelUID.getId()) || command instanceof RefreshType) {
+        if (CHANNEL_STATUS.equals(channelUID.getId()) && command instanceof RefreshType) {
             scheduler.schedule(this::refreshAndUpdateStatus, 1, TimeUnit.SECONDS);
         }
     }
