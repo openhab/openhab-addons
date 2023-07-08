@@ -169,6 +169,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
 
         ShellySettingsRelay rsettings = new ShellySettingsRelay();
+        rsettings.id = cs.id;
+        rsettings.isValid = cs.id != null;
         rsettings.name = cs.name;
         rsettings.ison = false;
         rsettings.autoOn = getBool(cs.autoOn) ? cs.autoOnDelay : 0;
@@ -236,6 +238,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             status.tmp = new ShellySensorTmp();
         }
         if (rs.temperature != null) {
+            if (status.tmp == null) {
+                status.tmp = new ShellySensorTmp();
+            }
             status.tmp.isValid = true;
             status.tmp.tC = rs.temperature.tC;
             status.tmp.tF = rs.temperature.tF;
@@ -244,8 +249,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             if (status.temperature == null || getDouble(rs.temperature.tC) > status.temperature) {
                 status.temperature = sr.temperature;
             }
-        } else {
-            status.tmp.isValid = false;
         }
         if (rs.voltage != null) {
             if (status.voltage == null || rs.voltage > status.voltage) {
@@ -291,7 +294,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
     private void updateMeter(ShellySettingsStatus status, int id, ShellySettingsMeter sm, ShellySettingsEMeter emeter,
             boolean channelUpdate) throws ShellyApiException {
+        if (getProfile().numMeters == 0) {
+            return;
+        }
         sm.isValid = sm.power != null || sm.total != null;
+        emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null;
         emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null;
         status.meters.set(id, sm);
         status.emeters.set(id, emeter);
@@ -336,7 +343,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         sm = new ShellySettingsMeter();
         emeter = status.emeters.get(1);
-        sm.isValid = emeter.isValid = true;
         if (em.bActPower != null) {
             sm.power = emeter.power = em.bActPower;
         }

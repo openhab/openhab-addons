@@ -160,7 +160,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYPLUSPLUGS_STR = "shellyplusplug";
     public static final String THING_TYPE_SHELLYPLUSPLUGUS_STR = "shellyplusplugus";
     public static final String THING_TYPE_SHELLYPLUSDIMMERUS_STR = "shellypluswdus";
-    public static final String THING_TYPE_SHELLYPLUSWALLDISPLAY_STR = "shellypluswalldisplay";
+    public static final String THING_TYPE_SHELLYPLUSWALLDISPLAY_STR = "shellywalldisplay";
 
     // Shelly Pro Series
     public static final String THING_TYPE_SHELLYPRO1_STR = "shellypro1";
