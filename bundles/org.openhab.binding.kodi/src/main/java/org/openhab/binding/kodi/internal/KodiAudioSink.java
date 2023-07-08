@@ -118,7 +118,9 @@ public class KodiAudioSink extends AudioSinkSync {
                     handler.playNotificationSoundURI(new StringType(url), false);
                 } catch (IOException e) {
                     tryClose(audioStream);
-                    logger.warn("Kodi binding was not able to handle the audio stream (cache on disk failed)", e);
+                    throw new UnsupportedAudioStreamException(
+                            "Kodi binding was not able to handle the audio stream (cache on disk failed)",
+                            audioStream.getClass(), e);
                 }
             } else {
                 tryClose(audioStream);
