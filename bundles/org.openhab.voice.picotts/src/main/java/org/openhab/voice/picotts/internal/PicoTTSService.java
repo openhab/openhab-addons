@@ -35,9 +35,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Florian Schmidt - Initial Contribution
  */
-@Component
+@Component(service = TTSService.class)
 @NonNullByDefault
-public class PicoTTSService extends AbstractCachedTTSService implements TTSService {
+public class PicoTTSService extends AbstractCachedTTSService {
 
     @Activate
     public PicoTTSService(@Reference TTSCache ttsCache) {
