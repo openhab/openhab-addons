@@ -78,7 +78,7 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_POWER = "Number:Power";
     public static final String ITEMT_ENERGY = "Number:Energy";
     public static final String ITEMT_VOLT = "Number:ElectricPotential";
-    public static final String ITEMT_AMP = "Number:ElectricPotential";
+    public static final String ITEMT_AMP = "Number:ElectricCurrent";
     public static final String ITEMT_ANGLE = "Number:Angle";
     public static final String ITEMT_DISTANCE = "Number:Length";
     public static final String ITEMT_SPEED = "Number:Speed";
@@ -129,8 +129,8 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "deviceTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_POWER))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEMT_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEMT_ENERGY))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_VOLTAGE, "supplyVoltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CHARGER, "charger", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEMT_SWITCH))
@@ -191,7 +191,7 @@ public class ShellyChannelDefinitions {
                 // Power Meter
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "meterTotal", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // EMeter
@@ -215,7 +215,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION_TS, "motionTimestamp", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION_ACT, "motionActive", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VIBRATION, "vibration", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VIBRATION, "sensorVibration", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_FLOOD, "sensorFlood", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SMOKE, "sensorSmoke", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MUTE, "sensorMute", ITEMT_SWITCH))
@@ -304,13 +304,14 @@ public class ShellyChannelDefinitions {
                 && ((status.temperature != null && getDouble(status.temperature) != SHELLY_API_INVTEMP)
                         || (status.tmp != null && getDouble(status.tmp.tC) != SHELLY_API_INVTEMP))) {
             // Only some devices report the internal device temp
-            addChannel(thing, add, status.tmp != null || status.temperature != null, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
+            addChannel(thing, add,
+                    !profile.isLight && (status.temperature != null || (status.tmp != null && !profile.isSensor)),
+                    CHGR_DEVST, CHANNEL_DEVST_ITEMP);
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
-        boolean accuChannel = (((status.meters != null) && (status.meters.size() > 1) && !profile.isRoller
-                && !profile.isRGBW2) || ((status.emeters != null && status.emeters.size() > 1)));
+        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         addChannel(thing, add, accuChannel && (status.emeters != null), CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
@@ -350,9 +351,11 @@ public class ShellyChannelDefinitions {
         }
 
         // Shelly 1/1PM and Plus 1/1PM Addon
-        if (profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
-                && idx == getInteger(profile.settings.extSwitch.input0.relayNum)) {
-            addChannel(thing, add, true, CHGR_SENSOR, CHANNEL_ESENSOR_INPUT + (idx + 1));
+        boolean addon = profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
+                && idx == getInteger(profile.settings.extSwitch.input0.relayNum);
+        if (addon) {
+            addChannel(thing, add, addon, CHGR_SENSOR,
+                    CHANNEL_ESENSOR_INPUT + (profile.settings.extSwitch.input0.relayNum + 1));
         }
         if (profile.status.extTemperature != null) {
             addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1);
@@ -361,7 +364,8 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, profile.status.extTemperature.sensor4 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP4);
             addChannel(thing, add, profile.status.extTemperature.sensor5 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP5);
         }
-        addChannel(thing, add, profile.status.extHumidity != null, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
+        addChannel(thing, add, profile.status.extHumidity != null && profile.status.extHumidity.sensor1 != null,
+                CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY);
         addChannel(thing, add, profile.status.extVoltage != null, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE);
         addChannel(thing, add, profile.status.extDigitalInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT);
         addChannel(thing, add, profile.status.extAnalogInput != null, CHGR_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT);
@@ -379,6 +383,7 @@ public class ShellyChannelDefinitions {
 
         if (profile.settings.dimmers != null) {
             ShellySettingsDimmer ds = profile.settings.dimmers.get(idx);
+            addChannel(thing, add, ds.name != null, group, CHANNEL_OUTPUT_NAME);
             addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
@@ -473,7 +478,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, emeter.current != null, group, CHANNEL_EMETER_CURRENT);
         addChannel(thing, newChannels, emeter.pf != null, group, CHANNEL_EMETER_PFACTOR); // EM has no PF. but power
-        addChannel(thing, newChannels, emeter.total != null && profile.numMeters > 1, group, CHANNEL_EMETER_RESETTOTAL); // 3EM
+        addChannel(thing, newChannels, profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL); // 3EM
         addChannel(thing, newChannels, true, group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
@@ -505,7 +510,8 @@ public class ShellyChannelDefinitions {
             addChannel(thing, newChannels, sdata.sensor.vibration != null, CHANNEL_GROUP_SENSOR,
                     CHANNEL_SENSOR_VIBRATION);
         }
-        if (sdata.accel != null) { // DW2
+        // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
+        if (sdata.accel != null || (profile.isBlu && sdata.lux != null)) {
             addChannel(thing, newChannels, sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT);
         }
 
