@@ -32,4 +32,16 @@
 		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
 	</thing-type>
 
+	<thing-type id="shellywalldisplay">
+		<label>Shelly Wall Display</label>
+		<description>@text/thing-type.shelly.shellywalldisplay.description</description>
+		<category>Sensor</category>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
 </thing:thing-descriptions>

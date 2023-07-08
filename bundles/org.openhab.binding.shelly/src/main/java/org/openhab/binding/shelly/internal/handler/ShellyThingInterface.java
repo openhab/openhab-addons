@@ -39,85 +39,86 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public interface ShellyThingInterface {
 
-    public ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException;
+    ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException;
 
-    public @Nullable List<StateOption> getStateOptions(ChannelTypeUID uid);
+    @Nullable
+    List<StateOption> getStateOptions(ChannelTypeUID uid);
 
-    public double getChannelDouble(String group, String channel);
+    double getChannelDouble(String group, String channel);
 
-    public boolean updateChannel(String group, String channel, State value);
+    boolean updateChannel(String group, String channel, State value);
 
-    public boolean updateChannel(String channelId, State value, boolean force);
+    boolean updateChannel(String channelId, State value, boolean force);
 
-    public void setThingOnline();
+    void setThingOnline();
 
-    public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
+    void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
 
-    public boolean isStopping();
+    boolean isStopping();
 
-    public String getThingType();
+    String getThingType();
 
-    public ThingStatus getThingStatus();
+    ThingStatus getThingStatus();
 
-    public ThingStatusDetail getThingStatusDetail();
+    ThingStatusDetail getThingStatusDetail();
 
-    public boolean isThingOnline();
+    boolean isThingOnline();
 
-    public boolean requestUpdates(int requestCount, boolean refreshSettings);
+    boolean requestUpdates(int requestCount, boolean refreshSettings);
 
-    public void triggerUpdateFromCoap();
+    void triggerUpdateFromCoap();
 
-    public void reinitializeThing();
+    void reinitializeThing();
 
-    public void restartWatchdog();
+    void restartWatchdog();
 
-    public void publishState(String channelId, State value);
+    void publishState(String channelId, State value);
 
-    public boolean areChannelsCreated();
+    boolean areChannelsCreated();
 
-    public State getChannelValue(String group, String channel);
+    State getChannelValue(String group, String channel);
 
-    public boolean updateInputs(ShellySettingsStatus status);
+    boolean updateInputs(ShellySettingsStatus status);
 
-    public void updateChannelDefinitions(Map<String, Channel> dynChannels);
+    void updateChannelDefinitions(Map<String, Channel> dynChannels);
 
-    public void postEvent(String event, boolean force);
+    void postEvent(String event, boolean force);
 
-    public void triggerChannel(String group, String channelID, String event);
+    void triggerChannel(String group, String channelID, String event);
 
-    public void triggerButton(String group, int idx, String value);
+    void triggerButton(String group, int idx, String value);
 
-    public ShellyDeviceStats getStats();
+    ShellyDeviceStats getStats();
 
-    public void resetStats();
+    void resetStats();
 
-    public Thing getThing();
+    Thing getThing();
 
-    public String getThingName();
+    String getThingName();
 
-    public ShellyThingConfiguration getThingConfig();
+    ShellyThingConfiguration getThingConfig();
 
-    public HttpClient getHttpClient();
+    HttpClient getHttpClient();
 
-    public String getProperty(String key);
+    String getProperty(String key);
 
-    public void updateProperties(String key, String value);
+    void updateProperties(String key, String value);
 
-    public boolean updateWakeupReason(@Nullable List<Object> valueArray);
+    boolean updateWakeupReason(@Nullable List<Object> valueArray);
 
-    public ShellyApiInterface getApi();
+    ShellyApiInterface getApi();
 
-    public ShellyDeviceProfile getProfile();
+    ShellyDeviceProfile getProfile();
 
-    public long getScheduledUpdates();
+    long getScheduledUpdates();
 
-    public void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
+    void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
 
-    public boolean checkRepresentation(String key);
+    boolean checkRepresentation(String key);
 
-    public void incProtMessages();
+    void incProtMessages();
 
-    public void incProtErrors();
+    void incProtErrors();
 
-    public void startScan();
+    void startScan();
 }

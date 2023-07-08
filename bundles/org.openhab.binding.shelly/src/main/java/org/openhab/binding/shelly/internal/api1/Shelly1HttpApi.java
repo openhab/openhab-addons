@@ -90,7 +90,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
-        return callApi(SHELLY_URL_DEVINFO, ShellySettingsDevice.class);
+        ShellySettingsDevice info = callApi(SHELLY_URL_DEVINFO, ShellySettingsDevice.class);
+        info.gen = 1;
+        return info;
     }
 
     @Override
