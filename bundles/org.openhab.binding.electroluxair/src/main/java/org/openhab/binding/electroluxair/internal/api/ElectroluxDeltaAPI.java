@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.electroluxair.internal.api;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -27,17 +28,13 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirBridgeConfiguration;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirException;
 import org.openhab.binding.electroluxair.internal.dto.ElectroluxPureA9DTO;
-import org.openhab.binding.electroluxair.internal.dto.ElectroluxPureA9DTO.AppliancesInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link ElectroluxDeltaAPI} class defines the Elextrolux Delta API
@@ -46,10 +43,17 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ElectroluxDeltaAPI {
-    private static final String CLIENT_URL = "https://electrolux-wellbeing-client.vercel.app/api/mu52m5PR9X";
-    private static final String SERVICE_URL = "https://api.delta.electrolux.com/api/";
+    private static final String CLIENT_ID = "ElxOneApp";
+    private static final String CLIENT_SECRET = "8UKrsKD7jH9zvTV7rz5HeCLkit67Mmj68FvRVTlYygwJYy4dW6KF2cVLPKeWzUQUd6KJMtTifFf4NkDnjI7ZLdfnwcPtTSNtYvbP7OzEkmQD9IjhMOf5e1zeAQYtt2yN";
+    private static final String X_API_KEY = "2AMqwEV5MqVhTKrRCyYfVF8gmKrd2rAmp7cUsfky";
+
+    private static final String BASE_URL = "https://api.ocp.electrolux.one";
+    private static final String TOKEN_URL = BASE_URL + "/one-account-authorization/api/v1/token";
+    private static final String AUTHENTICATION_URL = BASE_URL + "/one-account-authentication/api/v1/authenticate";
+    private static final String API_URL = BASE_URL + "/appliance/api/v2";
+    private static final String APPLIANCES_URL = API_URL + "/appliances";
+
     private static final String JSON_CONTENT_TYPE = "application/json";
-    private static final String LOGIN = "Users/Login";
     private static final int MAX_RETRIES = 3;
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxDeltaAPI.class);
@@ -57,6 +61,7 @@ public class ElectroluxDeltaAPI {
     private final HttpClient httpClient;
     private final ElectroluxAirBridgeConfiguration configuration;
     private String authToken = "";
+    private Instant tokenExpiry = Instant.MIN;
 
     public ElectroluxDeltaAPI(ElectroluxAirBridgeConfiguration configuration, Gson gson, HttpClient httpClient) {
         this.gson = gson;
@@ -66,70 +71,73 @@ public class ElectroluxDeltaAPI {
 
     public boolean refresh(Map<String, ElectroluxPureA9DTO> electroluxAirThings) {
         try {
-            // Login
-            login();
+            if (Instant.now().isAfter(this.tokenExpiry)) {
+                // Login again since token is expired
+                login();
+            }
             // Get all appliances
             String json = getAppliances();
-            JsonArray jsonArray = JsonParser.parseString(json).getAsJsonArray();
-
-            for (JsonElement jsonElement : jsonArray) {
-                String pncId = jsonElement.getAsJsonObject().get("pncId").getAsString();
-
-                // Get appliance info
-                String jsonApplianceInfo = getAppliancesInfo(pncId);
-                AppliancesInfo appliancesInfo = gson.fromJson(jsonApplianceInfo, AppliancesInfo.class);
-
-                // Get applicance data
-                ElectroluxPureA9DTO dto = getAppliancesData(pncId, ElectroluxPureA9DTO.class);
-                if (appliancesInfo != null) {
-                    dto.setApplicancesInfo(appliancesInfo);
+            ElectroluxPureA9DTO[] dtos = gson.fromJson(json, ElectroluxPureA9DTO[].class);
+            if (dtos != null) {
+                for (ElectroluxPureA9DTO dto : dtos) {
+                    String applianceId = dto.getApplianceId();
+                    // Get appliance info
+                    String jsonApplianceInfo = getAppliancesInfo(applianceId);
+                    ElectroluxPureA9DTO.ApplianceInfo applianceInfo = gson.fromJson(jsonApplianceInfo,
+                            ElectroluxPureA9DTO.ApplianceInfo.class);
+                    if (applianceInfo != null) {
+                        if ("AIR_PURIFIER".equals(applianceInfo.getDeviceType())) {
+                            dto.setApplianceInfo(applianceInfo);
+                            electroluxAirThings.put(dto.getProperties().getReported().getDeviceId(), dto);
+                        }
+                    }
                 }
-                electroluxAirThings.put(dto.getTwin().getProperties().getReported().deviceId, dto);
+                return true;
             }
-            return true;
-        } catch (ElectroluxAirException e) {
+        } catch (JsonSyntaxException | ElectroluxAirException e) {
             logger.warn("Failed to refresh! {}", e.getMessage());
+
         }
         return false;
     }
 
-    public boolean workModePowerOff(String pncId) {
+    public boolean workModePowerOff(String applianceId) {
         String commandJSON = "{ \"WorkMode\": \"PowerOff\" }";
         try {
-            return sendCommand(commandJSON, pncId);
+            return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxAirException e) {
             logger.warn("Work mode powerOff failed {}", e.getMessage());
         }
         return false;
     }
 
-    public boolean workModeAuto(String pncId) {
+    public boolean workModeAuto(String applianceId) {
         String commandJSON = "{ \"WorkMode\": \"Auto\" }";
         try {
-            return sendCommand(commandJSON, pncId);
+            return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxAirException e) {
             logger.warn("Work mode auto failed {}", e.getMessage());
         }
         return false;
     }
 
-    public boolean workModeManual(String pncId) {
+    public boolean workModeManual(String applianceId) {
         String commandJSON = "{ \"WorkMode\": \"Manual\" }";
         try {
-            return sendCommand(commandJSON, pncId);
+            return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxAirException e) {
             logger.warn("Work mode manual failed {}", e.getMessage());
         }
         return false;
     }
 
-    public boolean setFanSpeedLevel(String pncId, int fanSpeedLevel) {
+    public boolean setFanSpeedLevel(String applianceId, int fanSpeedLevel) {
         if (fanSpeedLevel < 1 && fanSpeedLevel > 10) {
             return false;
         } else {
             String commandJSON = "{ \"Fanspeed\": " + fanSpeedLevel + "}";
             try {
-                return sendCommand(commandJSON, pncId);
+                return sendCommand(commandJSON, applianceId);
             } catch (ElectroluxAirException e) {
                 logger.warn("Work mode manual failed {}", e.getMessage());
             }
@@ -137,40 +145,74 @@ public class ElectroluxDeltaAPI {
         return false;
     }
 
-    public boolean setIonizer(String pncId, String ionizerStatus) {
+    public boolean setIonizer(String applianceId, String ionizerStatus) {
         String commandJSON = "{ \"Ionizer\": " + ionizerStatus + "}";
         try {
-            return sendCommand(commandJSON, pncId);
+            return sendCommand(commandJSON, applianceId);
         } catch (ElectroluxAirException e) {
             logger.warn("Work mode manual failed {}", e.getMessage());
         }
         return false;
     }
 
-    private void login() throws ElectroluxAirException {
-        // Fetch ClientToken
-        Request request = httpClient.newRequest(CLIENT_URL).method(HttpMethod.GET);
+    public boolean setUILight(String applianceId, String uiLightStatus) {
+        String commandJSON = "{ \"UILight\": " + uiLightStatus + "}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxAirException e) {
+            logger.warn("Work mode manual failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean setSafetyLock(String applianceId, String safetyLockStatus) {
+        String commandJSON = "{ \"SafetyLock\": " + safetyLockStatus + "}";
+        try {
+            return sendCommand(commandJSON, applianceId);
+        } catch (ElectroluxAirException e) {
+            logger.warn("Work mode manual failed {}", e.getMessage());
+        }
+        return false;
+    }
+
+    private Request createRequest(String uri, HttpMethod httpMethod) {
+        Request request = httpClient.newRequest(uri).method(httpMethod);
 
         request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
         request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
 
-        logger.debug("HTTP GET Request {}.", request.toString());
+        logger.debug("HTTP POST Request {}.", request.toString());
+
+        return request;
+    }
+
+    private void login() throws ElectroluxAirException {
         try {
+            String json = "{\"clientId\": \"" + CLIENT_ID + "\", \"clientSecret\": \"" + CLIENT_SECRET
+                    + "\", \"grantType\": \"client_credentials\"}";
+
+            // Fetch ClientToken
+            Request request = createRequest(TOKEN_URL, HttpMethod.POST);
+            request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
+
+            logger.debug("HTTP POST Request {}.", request.toString());
+
             ContentResponse httpResponse = request.send();
             if (httpResponse.getStatus() != HttpStatus.OK_200) {
-                throw new ElectroluxAirException("Failed to login " + httpResponse.getContentAsString());
+                throw new ElectroluxAirException("Failed to get token 1" + httpResponse.getContentAsString());
             }
-            String json = httpResponse.getContentAsString();
+            json = httpResponse.getContentAsString();
+            logger.trace("Token 1: {}", json);
             JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
             String clientToken = jsonObject.get("accessToken").getAsString();
 
-            // Login using ClientToken
-            json = "{ \"Username\": \"" + configuration.username + "\",  \"Password\": \"" + configuration.password
+            // Login using access token 1
+            json = "{ \"username\": \"" + configuration.username + "\",  \"password\": \"" + configuration.password
                     + "\" }";
-            request = httpClient.newRequest(SERVICE_URL + LOGIN).method(HttpMethod.POST);
-            request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
-            request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+            request = createRequest(AUTHENTICATION_URL, HttpMethod.POST);
             request.header(HttpHeader.AUTHORIZATION, "Bearer " + clientToken);
+            request.header("x-api-key", X_API_KEY);
+
             request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
 
             logger.debug("HTTP POST Request {}.", request.toString());
@@ -179,10 +221,33 @@ public class ElectroluxDeltaAPI {
             if (httpResponse.getStatus() != HttpStatus.OK_200) {
                 throw new ElectroluxAirException("Failed to login " + httpResponse.getContentAsString());
             }
+            json = httpResponse.getContentAsString();
+            logger.trace("Token 2: {}", json);
+            jsonObject = JsonParser.parseString(json).getAsJsonObject();
+            String idToken = jsonObject.get("idToken").getAsString();
+            String countryCode = jsonObject.get("countryCode").getAsString();
+            String credentials = "{\"clientId\": \"" + CLIENT_ID + "\", \"idToken\": \"" + idToken
+                    + "\", \"grantType\": \"urn:ietf:params:oauth:grant-type:token-exchange\"}";
+
+            // Fetch access token 2
+            request = createRequest(TOKEN_URL, HttpMethod.POST);
+            request.header("Origin-Country-Code", countryCode);
+            request.content(new StringContentProvider(credentials), JSON_CONTENT_TYPE);
+
+            logger.debug("HTTP POST Request {}.", request.toString());
+
+            httpResponse = request.send();
+            if (httpResponse.getStatus() != HttpStatus.OK_200) {
+                throw new ElectroluxAirException("Failed to get token 1" + httpResponse.getContentAsString());
+            }
+
             // Fetch AccessToken
             json = httpResponse.getContentAsString();
+            logger.trace("AccessToken: {}", json);
             jsonObject = JsonParser.parseString(json).getAsJsonObject();
             this.authToken = jsonObject.get("accessToken").getAsString();
+            int expiresIn = jsonObject.get("expiresIn").getAsInt();
+            this.tokenExpiry = Instant.now().plusSeconds(expiresIn);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new ElectroluxAirException(e);
         }
@@ -192,10 +257,9 @@ public class ElectroluxDeltaAPI {
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
-                    Request request = httpClient.newRequest(SERVICE_URL + uri).method(HttpMethod.GET);
+                    Request request = createRequest(uri, HttpMethod.GET);
                     request.header(HttpHeader.AUTHORIZATION, "Bearer " + authToken);
-                    request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
-                    request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+                    request.header("x-api-key", X_API_KEY);
 
                     ContentResponse response = request.send();
                     String content = response.getContentAsString();
@@ -218,44 +282,28 @@ public class ElectroluxDeltaAPI {
     }
 
     private String getAppliances() throws ElectroluxAirException {
-        String uri = "Domains/Appliances";
         try {
-            return getFromApi(uri);
+            return getFromApi(APPLIANCES_URL);
         } catch (ElectroluxAirException | InterruptedException e) {
             throw new ElectroluxAirException(e);
         }
     }
 
-    private String getAppliancesInfo(String pncId) throws ElectroluxAirException {
-        String uri = "AppliancesInfo/" + pncId;
+    private String getAppliancesInfo(String applianceId) throws ElectroluxAirException {
         try {
-            return getFromApi(uri);
+            return getFromApi(APPLIANCES_URL + "/" + applianceId + "/info");
         } catch (ElectroluxAirException | InterruptedException e) {
             throw new ElectroluxAirException(e);
         }
     }
 
-    private <T> T getAppliancesData(String pncId, Class<T> dto) throws ElectroluxAirException {
-        String uri = "Appliances/" + pncId;
-        String json;
-
-        try {
-            json = getFromApi(uri);
-        } catch (ElectroluxAirException | InterruptedException e) {
-            throw new ElectroluxAirException(e);
-        }
-        return gson.fromJson(json, dto);
-    }
-
-    private boolean sendCommand(String commandJSON, String pncId) throws ElectroluxAirException {
-        String uri = "Appliances/" + pncId + "/Commands";
+    private boolean sendCommand(String commandJSON, String applianceId) throws ElectroluxAirException {
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
-                    Request request = httpClient.newRequest(SERVICE_URL + uri).method(HttpMethod.PUT);
+                    Request request = createRequest(APPLIANCES_URL + "/" + applianceId + "/command", HttpMethod.PUT);
                     request.header(HttpHeader.AUTHORIZATION, "Bearer " + authToken);
-                    request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
-                    request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+                    request.header("x-api-key", X_API_KEY);
                     request.content(new StringContentProvider(commandJSON), JSON_CONTENT_TYPE);
 
                     ContentResponse response = request.send();
@@ -266,19 +314,7 @@ public class ElectroluxDeltaAPI {
                         logger.debug("sendCommand failed, HTTP status: {}", response.getStatus());
                         login();
                     } else {
-                        CommandResponseDTO commandResponse = gson.fromJson(content, CommandResponseDTO.class);
-                        if (commandResponse != null) {
-                            if (commandResponse.code == 200000) {
-                                return true;
-                            } else {
-                                logger.warn("Failed to send command, error code: {}, description: {}",
-                                        commandResponse.code, commandResponse.codeDescription);
-                                return false;
-                            }
-                        } else {
-                            logger.warn("Failed to send command, commandResponse is null!");
-                            return false;
-                        }
+                        return true;
                     }
                 } catch (TimeoutException | InterruptedException e) {
                     logger.warn("TimeoutException error in get");
@@ -288,27 +324,5 @@ public class ElectroluxDeltaAPI {
             throw new ElectroluxAirException(e);
         }
         return false;
-    }
-
-    @SuppressWarnings("unused")
-    private static class CommandResponseDTO {
-        public int code;
-        public String codeDescription = "";
-        public String information = "";
-        public String message = "";
-        public PayloadDTO payload = new PayloadDTO();
-        public int status;
-    }
-
-    private static class PayloadDTO {
-        @SerializedName("Ok")
-        public boolean ok;
-        @SerializedName("Response")
-        public ResponseDTO response = new ResponseDTO();
-    }
-
-    private static class ResponseDTO {
-        @SerializedName("Workmode")
-        public String workmode = "";
     }
 }

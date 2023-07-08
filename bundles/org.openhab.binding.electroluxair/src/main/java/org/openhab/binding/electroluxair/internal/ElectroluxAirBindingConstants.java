@@ -46,6 +46,8 @@ public class ElectroluxAirBindingConstants {
     public static final String CHANNEL_FAN_SPEED = "fanSpeed";
     public static final String CHANNEL_WORK_MODE = "workMode";
     public static final String CHANNEL_IONIZER = "ionizer";
+    public static final String CHANNEL_UI_LIGHT = "uiLight";
+    public static final String CHANNEL_SAFETY_LOCK = "safetyLock";
 
     // List of all Properties ids
     public static final String PROPERTY_BRAND = "brand";
