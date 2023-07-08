@@ -70,6 +70,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
@@ -234,6 +235,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         } else {
             rstatus = new ShellySettingsRelay();
             sr = new ShellyShortStatusRelay();
+            rIdx = rs.id;
         }
 
         sr.isValid = rstatus.isValid = true;
@@ -336,6 +338,36 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         relayStatus.meters.set(id, sm);
     }
 
+    private boolean updateEmStatus(ShellySettingsStatus status, @Nullable Shelly2StatusEm1 em, boolean channelUpdate)
+            throws ShellyApiException {
+        if (em == null) {
+            return false;
+        }
+
+        ShellySettingsMeter sm = new ShellySettingsMeter();
+        ShellySettingsEMeter emeter = status.emeters.get(em.id);
+        if (em.actPower != null) {
+            sm.power = emeter.power = em.actPower;
+        }
+        if (em.aptrPower != null) {
+            emeter.totalReturned = em.aptrPower;
+        }
+        if (em.voltage != null) {
+            emeter.voltage = em.voltage;
+        }
+        if (em.current != null) {
+            emeter.current = em.current;
+        }
+        if (em.pf != null) {
+            emeter.pf = em.pf;
+        }
+        // Update internal structures
+        updateMeter(status, em.id, sm, emeter, channelUpdate);
+
+        postAlarms(em.errors);
+        return channelUpdate ? ShellyComponents.updateMeters(getThing(), status) : false;
+    }
+
     private boolean updateEmStatus(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusEm em,
             boolean channelUpdate) throws ShellyApiException {
         if (em == null) {
@@ -372,46 +404,51 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         // Update internal structures
         updateMeter(status, 0, sm, emeter, channelUpdate);
 
-        sm = new ShellySettingsMeter();
-        emeter = status.emeters.get(1);
-        if (em.bActPower != null) {
-            sm.power = emeter.power = em.bActPower;
+        if (status.emeters.size() > 1) {
+            sm = new ShellySettingsMeter();
+            emeter = status.emeters.get(1);
+            sm.isValid = emeter.isValid = true;
+            if (em.bActPower != null) {
+                sm.power = emeter.power = em.bActPower;
+            }
+            if (em.bAprtPower != null) {
+                emeter.totalReturned = em.bAprtPower;
+            }
+            if (em.bVoltage != null) {
+                emeter.voltage = em.bVoltage;
+            }
+            if (em.bCurrent != null) {
+                emeter.current = em.bCurrent;
+            }
+            if (em.bPF != null) {
+                emeter.pf = em.bPF;
+            }
+            // Update internal structures
+            updateMeter(status, 1, sm, emeter, channelUpdate);
         }
-        if (em.bAprtPower != null) {
-            emeter.totalReturned = em.bAprtPower;
-        }
-        if (em.bVoltage != null) {
-            emeter.voltage = em.bVoltage;
-        }
-        if (em.bCurrent != null) {
-            emeter.current = em.bCurrent;
-        }
-        if (em.bPF != null) {
-            emeter.pf = em.bPF;
-        }
-        // Update internal structures
-        updateMeter(status, 1, sm, emeter, channelUpdate);
 
-        sm = new ShellySettingsMeter();
-        emeter = status.emeters.get(2);
-        sm.isValid = emeter.isValid = true;
-        if (em.cActPower != null) {
-            sm.power = emeter.power = em.cActPower;
+        if (status.emeters.size() > 2) {
+            sm = new ShellySettingsMeter();
+            emeter = status.emeters.get(2);
+            sm.isValid = emeter.isValid = true;
+            if (em.cActPower != null) {
+                sm.power = emeter.power = em.cActPower;
+            }
+            if (em.cAprtPower != null) {
+                emeter.totalReturned = em.cAprtPower;
+            }
+            if (em.cVoltage != null) {
+                emeter.voltage = em.cVoltage;
+            }
+            if (em.cCurrent != null) {
+                emeter.current = em.cCurrent;
+            }
+            if (em.cPF != null) {
+                emeter.pf = em.cPF;
+            }
+            // Update internal structures
+            updateMeter(status, 2, sm, emeter, channelUpdate);
         }
-        if (em.cAprtPower != null) {
-            emeter.totalReturned = em.cAprtPower;
-        }
-        if (em.cVoltage != null) {
-            emeter.voltage = em.cVoltage;
-        }
-        if (em.cCurrent != null) {
-            emeter.current = em.cCurrent;
-        }
-        if (em.cPF != null) {
-            emeter.pf = em.cPF;
-        }
-        // Update internal structures
-        updateMeter(status, 2, sm, emeter, channelUpdate);
 
         return channelUpdate ? ShellyComponents.updateMeters(getThing(), status) : false;
     }

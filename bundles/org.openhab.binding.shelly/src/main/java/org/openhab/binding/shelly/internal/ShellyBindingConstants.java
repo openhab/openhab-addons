@@ -95,6 +95,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPRO2PM_ROLLER, //
             THING_TYPE_SHELLYPRO3, //
             THING_TYPE_SHELLYPRO3EM, //
+            THING_TYPE_SHELLYPRO3EM50, //
             THING_TYPE_SHELLYPRO4PM, //
 
             // Shelly BLU

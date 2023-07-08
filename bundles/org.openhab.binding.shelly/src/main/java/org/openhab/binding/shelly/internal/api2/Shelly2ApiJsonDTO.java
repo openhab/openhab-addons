@@ -697,15 +697,15 @@ public class Shelly2ApiJsonDTO {
             public Shelly2RelayStatus pm10;
 
             @SerializedName("em:0")
-            Shelly2DeviceStatusEm em0;
+            public Shelly2DeviceStatusEm em0;
             @SerializedName("emdata:0")
-            Shelly2DeviceStatusEmData emdata0;
+            public Shelly2DeviceStatusEmData emdata0;
             @SerializedName("em1:0")
-            Shelly2DeviceStatusEm em10;
-            @SerializedName("em1:11")
-            Shelly2DeviceStatusEm em11;
+            public Shelly2StatusEm1 em10;
+            @SerializedName("em1:1")
+            public Shelly2StatusEm1 em11;
             @SerializedName("em1data:0")
-            Shelly2DeviceStatusEmData em1data0;
+            public Shelly2DeviceStatusEmData em1data0;
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
@@ -832,6 +832,19 @@ public class Shelly2ApiJsonDTO {
         public Shelly2Energy aenergy;
         public Shelly2DeviceStatusTemp temperature;
         public String[] errors;
+    }
+
+    public static class Shelly2StatusEm1 {
+        public Integer id;
+        public Double current;
+        public Double voltage;
+        @SerializedName("act_power")
+        public Double actPower;
+        @SerializedName("aprt_power")
+        public Double aptrPower;
+        public Double pf;
+        public String calibration;
+        public ArrayList<String> errors;
     }
 
     public static class Shelly2DeviceStatusTemp {
