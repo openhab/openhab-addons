@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.kodi.internal.handler.KodiHandler;
 import org.openhab.core.audio.AudioFormat;
@@ -70,8 +72,30 @@ public class KodiAudioSink extends AudioSinkSync {
     }
 
     @Override
+    public @NonNull CompletableFuture<@Nullable Void> processAndComplete(@Nullable AudioStream audioStream) {
+        // we override this method to intercept URLAudioStream and handle it asynchronously. We won't wait for it to
+        // play through the end as it can be very long
+        if (audioStream instanceof URLAudioStream) {
+            // Asynchronous handling for URLAudioStream. Id it is an external URL, the speaker can access it itself and
+            // play it. There will be no volume restoration or call to dispose / complete, but there is no need to.
+            String url = ((URLAudioStream) audioStream).getURL();
+            AudioFormat format = audioStream.getFormat();
+            logger.trace("Processing audioStream URL {} of format {}.", url, format);
+            handler.playURI(new StringType(url));
+            tryClose(audioStream);
+            return new CompletableFuture<@Nullable Void>();
+        } else {
+            return super.processAndComplete(audioStream);
+        }
+    }
+
+    @Override
     public void processSynchronously(AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
+        if (audioStream instanceof URLAudioStream) {
+            return;
+        }
+
         if (audioStream == null) {
             // in case the audioStream is null, this should be interpreted as a request to end any currently playing
             // stream.
@@ -84,13 +108,7 @@ public class KodiAudioSink extends AudioSinkSync {
                 throw new UnsupportedAudioFormatException("Currently only MP3 and WAV formats are supported.", format);
             }
 
-            if (audioStream instanceof URLAudioStream) {
-                // it is an external URL, the speaker can access it itself and play it
-                String url = ((URLAudioStream) audioStream).getURL();
-                logger.trace("Processing audioStream URL {} of format {}.", url, format);
-                handler.playURI(new StringType(url));
-                tryClose(audioStream);
-            } else if (callbackUrl != null) {
+            if (callbackUrl != null) {
                 // we serve it on our own HTTP server for 10 seconds as Kodi requests the stream several times
                 // Form the URL for streaming the notification from the OH web server
                 try {
