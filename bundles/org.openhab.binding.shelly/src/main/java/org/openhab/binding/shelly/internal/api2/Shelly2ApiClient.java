@@ -271,7 +271,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
         if (rs.aenergy != null) {
             // Gen2 reports Watt, needs to be converted to W/h
-            sm.total = emeter.total = rs.aenergy.total / 3600;
+            sm.total = emeter.total = rs.aenergy.total;
             sm.counters = rs.aenergy.byMinute;
             sm.timestamp = rs.aenergy.minuteTs;
         }
@@ -475,7 +475,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             rs.power = sm.power = emeter.power = cs.apower;
         }
         if (cs.aenergy != null) {
-            sm.total = emeter.total = cs.aenergy.total / 3600;
+            sm.total = emeter.total = cs.aenergy.total;
             sm.counters = cs.aenergy.byMinute;
             if (cs.aenergy.minuteTs != null) {
                 sm.timestamp = (long) cs.aenergy.minuteTs;
