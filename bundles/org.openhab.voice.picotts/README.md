@@ -49,3 +49,7 @@ org.openhab.voice:defaultVoice=picotts:frFR
 ## Supported Audio Formats
 
 The Pico service produces audio streams using WAV containers and PCM (signed) codec with 16bit depth.
+
+## Caching
+
+The Pico TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.
