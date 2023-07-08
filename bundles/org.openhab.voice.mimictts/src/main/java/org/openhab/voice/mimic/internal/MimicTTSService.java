@@ -222,7 +222,6 @@ public class MimicTTSService extends AbstractCachedTTSService {
      */
     @Override
     public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-
         if (!availableVoices.contains(voice)) {
             // let a chance for the service to update :
             refreshVoices();
