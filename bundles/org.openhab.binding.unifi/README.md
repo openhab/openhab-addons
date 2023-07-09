@@ -92,7 +92,7 @@ Additionally, you may use friendly site names as they appear in the controller U
 #### `considerHome`
 
 The `considerHome` parameter allows you to control how quickly the binding marks a client as away.
-For example, using the default of `180` (seconds), the binding will report a client away as soon as `lastSeen` + `180` (seconds) < `now`.
+For example, using the default of `180` (seconds), the binding will report a client away as soon as `lastSeen` + `180` (seconds) > `now`.
 
 ### `poePort`
 
