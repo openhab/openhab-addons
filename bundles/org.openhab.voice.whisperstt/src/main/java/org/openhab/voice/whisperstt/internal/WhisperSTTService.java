@@ -290,7 +290,9 @@ public class WhisperSTTService implements STTService {
             String transcription = "";
             String tempTranscription = "";
             try {
-                try (state; audioStream; vad) {
+                try (state; //
+                        audioStream; //
+                        vad) {
                     final ByteBuffer captureBuffer = ByteBuffer.allocate(nSamplesStep * 2)
                             .order(ByteOrder.LITTLE_ENDIAN);
                     // init remaining to full capacity
