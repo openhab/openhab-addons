@@ -528,7 +528,7 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellySettingsMeter {
         @SerializedName("is_valid")
-        public Boolean isValid = false;
+        public Boolean isValid;
         public Double power;
         public Double[] counters = { 0.0, 0.0, 0.0 };
         public Double total;
@@ -537,7 +537,7 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellySettingsEMeter { // ShellyEM meter
         @SerializedName("is_valid")
-        public Boolean isValid = false; // Whether the associated meter is functioning properly
+        public Boolean isValid; // Whether the associated meter is functioning properly
         public Double power; // Instantaneous power, Watts
         public Double reactive; // Instantaneous reactive power, Watts
         public Double voltage; // RMS voltage, Volts
