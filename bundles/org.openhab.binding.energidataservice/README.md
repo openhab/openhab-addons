@@ -46,7 +46,7 @@ To obtain the Global Location Number of your grid company:
 | system-tariff           | Number | Current system tariff in DKK per kWh                                                  | no       |
 | electricity-tax         | Number | Current electricity tax in DKK per kWh                                                | no       |
 | transmission-net-tariff | Number | Current transmission net tariff in DKK per kWh                                        | no       |
-| hourly-prices           | String | JSON array with hourly prices from 12 hours ago and onward                            | yes      |
+| hourly-prices           | String | JSON array with hourly prices from 24 hours ago and onward                            | yes      |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
@@ -128,7 +128,7 @@ The format of the `hourly-prices` JSON array is as follows:
 ```
 
 Future spot prices for the next day are usually available around 13:00 CET and are fetched around that time.
-Historic prices older than 12 hours are removed from the JSON array each hour.
+Historic prices older than 24 hours are removed from the JSON array each hour.
 
 ## Thing Actions
 
