@@ -36,9 +36,21 @@
 			<description>When enabled recognition stops listening after a single utterance.</description>
 			<default>true</default>
 		</parameter>
+		<parameter name="step" type="decimal" groupName="stt">
+			<label>Audio Step</label>
+			<description>Audio processing step in seconds. </description>
+			<default>0.5</default>
+			<options>
+				<option value="0.1">0.1</option>
+				<option value="0.2">0.2</option>
+				<option value="0.5">0.5</option>
+				<option value="1.0">1</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="maxSeconds" type="integer" unit="s" groupName="stt">
 			<label>Max Transcription Seconds</label>
-			<description>Max seconds to wait to force stop the transcription.</description>
+			<description>Max seconds to force stop the transcription.</description>
 			<default>20</default>
 		</parameter>
 		<parameter name="vadMode" type="text" groupName="stt">
@@ -63,24 +75,24 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="vadSensitivity" type="decimal" groupName="stt" min="0.1" max="1" step="0.01">
+		<parameter name="vadSensitivity" type="decimal" groupName="stt" min="0" max="1" step="0.01">
 			<label>Voice Activity Detection Sensitivity</label>
-			<description>Percentage in range 0-1 of voice activity in one second to consider it as voice.</description>
+			<description>Percentage in range 0-1 of voice activity in one audio step to consider it as voice.</description>
 			<default>0.25</default>
 		</parameter>
-		<parameter name="initSilenceSeconds" type="integer" unit="s" groupName="stt">
+		<parameter name="initSilenceSeconds" type="decimal" min="0.1" step="0.1" unit="s" groupName="stt">
 			<label>Initial Silence Seconds</label>
 			<description>Initial seconds of silence to discard transcription.</description>
 			<default>3</default>
 		</parameter>
-		<parameter name="maxSilenceSeconds" type="integer" unit="s" groupName="stt">
+		<parameter name="maxSilenceSeconds" type="decimal" min="0.1" step="0.1" unit="s" groupName="stt">
 			<label>Max Silence Seconds</label>
 			<description>Seconds of silence to trigger transcription.</description>
 			<default>2</default>
 		</parameter>
 		<parameter name="removeSilence" type="boolean" groupName="stt">
 			<label>Remove Silence</label>
-			<description>Remove silence frames.</description>
+			<description>Remove silence frames from the begining and end of the audio.</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="removeSpecials" type="boolean" groupName="stt">

@@ -54,18 +54,19 @@ Use your favorite configuration UI to edit the Whisper settings:
 
 ### Speech to Text Configuration
 
-* **Model Name** - Model name, 'ggml-' prefix and '.bin' extension are added by the binding if missing, so they are required on the filename (transformation example: tiny.en -> ggml-tiny.en.bin).
+* **Model Name** - Model name. The 'ggml-' prefix and '.bin' extension are optional here but required on the filename. (ex: tiny.en -> ggml-tiny.en.bin)
 * **Preload Model** - Keep whisper model loaded.
+* **Audio Step** - Audio processing step in seconds. Defines the time precision in seconds, allows: 0.1, 0.2, 0.5 and 1.
 * **Single Utterance Mode** - When enabled recognition stops listening after a single utterance.
 * **Voice Activity Detection Mode** - Selected VAD Mode.
 * **Voice Activity Detection Sensitivity** - Percentage in range 0-1 of voice activity in one second to consider it as voice.
 * **Voice Activity Detection Step** - VAD detector internal step in ms (only allows 10, 20 or 30).
 * **Max Transcription Seconds** - Max seconds to wait to force stop the transcription.
-* **Initial Silence Seconds** - Max seconds to wait to force stop the transcription.
-* **Max Silence Seconds** - Max seconds to wait to force stop the transcription.
-* **Remove Silence** - Remove silence frames before passing the audio to Whisper.
+* **Initial Silence Seconds** - Max seconds of silence before voice activity to abort the transcription.
+* **Max Silence Seconds** - Max seconds to wait to stop the audio caching and run the transcription.
+* **Remove Silence** - Remove start and end silence frames before transcribe the audio.
 * **Remove Specials** - Remove some characters from the transcription: ",", ".", "¿", "?", "¡", "!".
-* **Create WAV File** - Create wav audio file on each transcription call, useful for debugging purposes or collecting samples.
+* **Create WAV File** - Create wav audio file on each transcription call. Useful for checking the audio quality or collecting private samples.
 
 ### Whisper Configuration
 
@@ -84,12 +85,13 @@ Use your favorite configuration UI to edit the Whisper settings:
 
 ### Configuration via a text file
 
-In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `whisperstt.cfg`
+In case you would like to set up the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `whisperstt.cfg`
 
 Its contents should look similar to:
 
 ```
 org.openhab.voice.whisperstt:modelName=tiny
+org.openhab.voice.whisperstt:step=0.5
 org.openhab.voice.whisperstt:singleUtteranceMode=true
 org.openhab.voice.whisperstt:preloadModel=false
 org.openhab.voice.whisperstt:vadMode=LOW_BITRATE

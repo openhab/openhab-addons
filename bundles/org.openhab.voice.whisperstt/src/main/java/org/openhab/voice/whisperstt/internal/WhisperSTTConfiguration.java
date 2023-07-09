@@ -33,6 +33,10 @@ public class WhisperSTTConfiguration {
      */
     public boolean preloadModel;
     /**
+     * Defines the audio step.
+     */
+    public float stepSeconds = 1f;
+    /**
      * Max seconds to wait to force stop the transcription.
      */
     public int maxSeconds = 20;
@@ -51,11 +55,11 @@ public class WhisperSTTConfiguration {
     /**
      * Initial silence seconds for discard transcription.
      */
-    public int initSilenceSeconds = 3;
+    public float initSilenceSeconds = 3;
     /**
      * Max silence seconds for triggering transcription.
      */
-    public int maxSilenceSeconds = 2;
+    public float maxSilenceSeconds = 2;
     /**
      * Remove silence frames.
      */
