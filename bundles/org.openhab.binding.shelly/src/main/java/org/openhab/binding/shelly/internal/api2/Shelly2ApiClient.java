@@ -317,7 +317,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (id != null && profile.settings.relays != null) {
             int idx = 0;
             for (ShellySettingsRelay relay : profile.settings.relays) {
-                if (relay.isValid && relay.id == id) {
+                if (relay.isValid && relay.id != null && relay.id.intValue() == id.intValue()) {
                     return idx;
                 }
             }

@@ -370,7 +370,6 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsRelay {
-        public int id = -1;
         public String name;
         @SerializedName("default_state")
         public String defaultState; // Accepted values: off, on, last, switch
