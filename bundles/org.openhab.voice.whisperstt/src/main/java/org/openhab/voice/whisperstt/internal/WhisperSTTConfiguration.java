@@ -14,6 +14,8 @@ package org.openhab.voice.whisperstt.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import io.github.givimad.libfvadjni.VoiceActivityDetector;
+
 /**
  * The {@link WhisperSTTConfiguration} class contains fields mapping thing configuration parameters.
  *
@@ -31,33 +33,33 @@ public class WhisperSTTConfiguration {
      */
     public boolean preloadModel;
     /**
-     * Audio process keep ms.
-     */
-    public int keepMs = 0;
-    /**
-     * Audio process step seconds.
-     */
-    public int stepSeconds = 5;
-    /**
-     * Audio process length seconds.
-     */
-    public int lengthSeconds = 10;
-    /**
      * Max seconds to wait to force stop the transcription.
      */
     public int maxSeconds = 20;
     /**
-     * Use voice activity detection.
+     * Voice activity detection mode.
      */
-    public boolean useVAD = true;
+    public String vadMode = VoiceActivityDetector.Mode.AGGRESSIVE.toString();
     /**
-     * Voice activity detection auto-correlation threshold.
+     * Voice activity detection sensitivity.
      */
-    public float vadThreshold = 0.01f;
+    public float vadSensitivity = 0.25f;
+    /**
+     * Voice activity detection step in ms (vad dependency only allows 10, 20 or 30 ms steps).
+     */
+    public int vadStep = 20;
+    /**
+     * Initial silence seconds for discard transcription.
+     */
+    public int initSilenceSeconds = 3;
     /**
      * Max silence seconds for triggering transcription.
      */
-    public int vadMaxSilenceSeconds = 2;
+    public int maxSilenceSeconds = 2;
+    /**
+     * Remove silence frames.
+     */
+    public boolean removeSilence = true;
     /**
      * Number of threads used by whisper.
      */

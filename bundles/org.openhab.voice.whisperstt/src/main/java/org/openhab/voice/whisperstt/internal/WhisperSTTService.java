@@ -54,7 +54,7 @@ import org.openhab.core.voice.STTService;
 import org.openhab.core.voice.STTServiceHandle;
 import org.openhab.core.voice.SpeechRecognitionErrorEvent;
 import org.openhab.core.voice.SpeechRecognitionEvent;
-import org.openhab.voice.whisperstt.internal.utils.VoiceActivityDetector;
+import org.openhab.voice.whisperstt.internal.utils.VAD;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -64,6 +64,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.givimad.libfvadjni.VoiceActivityDetector;
 import io.github.givimad.whisperjni.WhisperContext;
 import io.github.givimad.whisperjni.WhisperFullParams;
 import io.github.givimad.whisperjni.WhisperJNI;
@@ -121,6 +122,7 @@ public class WhisperSTTService implements STTService {
     protected void activate(Map<String, Object> config) {
         try {
             WhisperJNI.loadLibrary();
+            VoiceActivityDetector.loadLibrary();
             whisper = new WhisperJNI();
         } catch (IOException | RuntimeException e) {
             logger.warn("Unable to register native library: {}", e.getMessage());
@@ -188,15 +190,27 @@ public class WhisperSTTService implements STTService {
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
             throws STTException {
         AtomicBoolean aborted = new AtomicBoolean(false);
+        WhisperContext ctx = null;
+        WhisperState state = null;
         try {
             var whisper = getWhisper();
-            WhisperContext ctx = getContext();
+            ctx = getContext();
             logger.debug("Creating whisper state...");
-            WhisperState state = whisper.initState(ctx);
+            state = whisper.initState(ctx);
             logger.debug("Whisper state created");
-            backgroundRecognize(whisper, ctx, state, locale, sttListener, audioStream, aborted);
+            logger.debug("Creating VAD instance...");
+            VAD vad = new VAD(VoiceActivityDetector.Mode.valueOf(config.vadMode), WHISPER_SAMPLE_RATE, config.vadStep,
+                    config.vadSensitivity);
+            logger.debug("VAD instance created");
+            backgroundRecognize(whisper, ctx, state, locale, sttListener, audioStream, vad, aborted);
         } catch (IOException e) {
-            throw new STTException("Unable to load model", e);
+            if (ctx != null && !config.preloadModel) {
+                ctx.close();
+            }
+            if (state != null) {
+                state.close();
+            }
+            throw new STTException("Exception during initialization", e);
         }
         return () -> {
             aborted.set(true);
@@ -257,47 +271,32 @@ public class WhisperSTTService implements STTService {
     }
 
     private Future<?> backgroundRecognize(WhisperJNI whisper, WhisperContext ctx, WhisperState state, Locale locale,
-            STTListener sttListener, InputStream audioStream, AtomicBoolean aborted) {
+            STTListener sttListener, InputStream audioStream, VAD vad, AtomicBoolean aborted) {
         var releaseContext = !config.preloadModel;
-        int stepMs;
-        int keepMs;
-        int lengthMs;
-        var vadDetector = new VoiceActivityDetector(config.vadThreshold);
-        if (config.useVAD) {
-            stepMs = 1000;
-            keepMs = 0;
-        } else {
-            stepMs = config.stepSeconds * 1000;
-            keepMs = Integer.min(config.keepMs, stepMs);
-        }
-        var maxMs = config.maxSeconds * 1000;
-        lengthMs = Integer.min(Integer.max(config.lengthSeconds * 1000, stepMs + keepMs), maxMs);
-        int nSamplesStep = stepMs * WHISPER_SAMPLE_RATE / 1000;
-        int nSamplesKeep = keepMs * WHISPER_SAMPLE_RATE / 1000;
-        int nSamplesLength = lengthMs * WHISPER_SAMPLE_RATE / 1000;
-        int nSamplesMax = maxMs * WHISPER_SAMPLE_RATE / 1000;
-        logger.debug("Step samples {}", nSamplesStep);
-        logger.debug("Keep samples {}", nSamplesKeep);
-        logger.debug("Length samples {}", nSamplesLength);
-        logger.debug("Max samples {}", nSamplesMax);
-        ByteBuffer captureBuffer = ByteBuffer.allocate(nSamplesStep * 2).order(ByteOrder.LITTLE_ENDIAN);
-        float[] audioSamples = new float[nSamplesLength];
+        final int nSamplesStep = WHISPER_SAMPLE_RATE;
+        final int nSamplesMax = config.maxSeconds * WHISPER_SAMPLE_RATE;
+        logger.debug("Samples per second {}", nSamplesStep);
+        logger.debug("Max transcription samples {}", nSamplesMax);
+        // store the step samples in the libfvad wanted format 16-bit int
+        final short[] stepAudioSamples = new short[nSamplesStep];
+        // store the full samples in whisper wanted format 32-bit float
+        final float[] audioSamples = new float[nSamplesMax];
         return executor.submit(() -> {
             int audioSamplesOffset = 0;
             int silenceDetections = 0;
             int nProcessedSamples = 0;
             int numBytesRead;
-            int remaining = captureBuffer.capacity();
-            WhisperFullParams params = getWhisperFullParams(ctx, locale);
+            boolean voiceDetected = false;
             String transcription = "";
             String tempTranscription = "";
             try {
-                try (state; audioStream) {
+                try (state; audioStream; vad) {
+                    final ByteBuffer captureBuffer = ByteBuffer.allocate(nSamplesStep * 2)
+                            .order(ByteOrder.LITTLE_ENDIAN);
+                    // init remaining to full capacity
+                    int remaining = captureBuffer.capacity();
+                    WhisperFullParams params = getWhisperFullParams(ctx, locale);
                     while (!aborted.get()) {
-                        if (nProcessedSamples + nSamplesStep > nSamplesMax) {
-                            logger.debug("Max transcription time reached");
-                            break;
-                        }
                         numBytesRead = audioStream.read(captureBuffer.array(), captureBuffer.capacity() - remaining,
                                 remaining);
                         if (aborted.get() || numBytesRead == -1) {
@@ -307,54 +306,53 @@ public class WhisperSTTService implements STTService {
                             remaining = remaining - numBytesRead;
                             continue;
                         }
+                        // reset remaining to full capacity
                         remaining = captureBuffer.capacity();
-                        if (audioSamplesOffset + nSamplesStep > nSamplesLength) {
-                            logger.debug("Transcription segment: {}", tempTranscription);
-                            transcription += tempTranscription;
-                            tempTranscription = "";
-                            params.initialPrompt = transcription;
-                            int keepOffset = audioSamplesOffset - nSamplesKeep;
-                            System.arraycopy(audioSamples, keepOffset, audioSamples, 0,
-                                    audioSamplesOffset - keepOffset);
-                            audioSamplesOffset = nSamplesKeep;
-                        }
                         var shortBuffer = captureBuffer.asShortBuffer();
+                        // encode step samples and move them to the audio buffers
                         while (shortBuffer.hasRemaining()) {
-                            float f32Sample = Float.min(1f,
-                                    Float.max((float) shortBuffer.get() / ((float) Short.MAX_VALUE), -1f));
+                            var position = shortBuffer.position();
+                            short i16BitSample = shortBuffer.get();
+                            float f32BitSample = Float.min(1f,
+                                    Float.max((float) i16BitSample / ((float) Short.MAX_VALUE), -1f));
+                            stepAudioSamples[position] = i16BitSample;
+                            audioSamples[audioSamplesOffset++] = f32BitSample;
                             nProcessedSamples++;
-                            audioSamples[audioSamplesOffset++] = f32Sample;
                         }
-                        if (config.useVAD) {
-                            if (audioSamplesOffset + nSamplesStep > nSamplesLength) {
-                                logger.debug("VAD: Skipping, max length reached");
+                        if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
+                            logger.debug("VAD: Skipping, max length reached");
+                        } else {
+                            if (vad.isVoice(stepAudioSamples)) {
+                                voiceDetected = true;
+                                logger.debug("VAD: voice detected");
+                                silenceDetections = 0;
+                                continue;
                             } else {
-                                boolean isVoice = vadDetector.runDetection(audioSamples,
-                                        audioSamplesOffset - nSamplesStep, audioSamplesOffset);
-                                if (isVoice) {
-                                    logger.debug("VAD: voice detected");
-                                    silenceDetections = 0;
+                                silenceDetections++;
+                                int maxSilenceSecs = voiceDetected ? config.maxSilenceSeconds
+                                        : config.initSilenceSeconds;
+                                if (silenceDetections < maxSilenceSecs) {
+                                    logger.debug("VAD: silence detected {}/{}", silenceDetections, maxSilenceSecs);
+                                    if (!voiceDetected && config.removeSilence) {
+                                        logger.debug("removing start silence");
+                                        audioSamplesOffset = 0;
+                                    }
                                     continue;
                                 } else {
-                                    silenceDetections++;
-                                    if (silenceDetections < config.vadMaxSilenceSeconds) {
-                                        logger.debug("VAD: silence detected {}/{}", silenceDetections,
-                                                config.vadMaxSilenceSeconds);
-                                        continue;
-                                    } else {
-                                        logger.debug("VAD: silence detected");
-                                        if (config.singleUtteranceMode) {
-                                            // close the audio stream to avoid keep getting audio we don't need
-                                            try {
-                                                audioStream.close();
-                                            } catch (IOException ignored) {
-                                            }
+                                    logger.debug("VAD: silence detected");
+                                    if (config.singleUtteranceMode) {
+                                        // close the audio stream to avoid keep getting audio we don't need
+                                        try {
+                                            audioStream.close();
+                                        } catch (IOException ignored) {
                                         }
                                     }
                                 }
                             }
-                            logger.debug("removing end silence");
-                            audioSamplesOffset -= nSamplesStep * silenceDetections;
+                            if (config.removeSilence) {
+                                logger.debug("removing end silence");
+                                audioSamplesOffset -= nSamplesStep * silenceDetections;
+                            }
                             if (audioSamplesOffset == 0) {
                                 if (config.singleUtteranceMode) {
                                     logger.debug("no audio to transcribe, ending");
@@ -384,23 +382,14 @@ public class WhisperSTTService implements STTService {
                             if (config.createWAVFile) {
                                 createAudioFile(audioSamples, audioSamplesOffset, tempTranscription);
                             }
-                            if (config.useVAD) {
-                                if (config.singleUtteranceMode) {
-                                    logger.debug("VAD: single utterance mode, ending transcription");
-                                    transcription = tempTranscription;
-                                    break;
-                                } else {
-                                    // start a new transcription segment
-                                    transcription += tempTranscription;
-                                    tempTranscription = "";
-                                    audioSamplesOffset = 0;
-                                }
+                            if (config.singleUtteranceMode) {
+                                logger.debug("single utterance mode, ending transcription");
+                                transcription = tempTranscription;
+                                break;
                             } else {
-                                if (config.singleUtteranceMode && tempTranscription.contains(".")) {
-                                    logger.debug("Single utterance mode, dot detected, ending transcription");
-                                    transcription += tempTranscription.split("\\.")[0];
-                                    break;
-                                }
+                                // start a new transcription segment
+                                transcription += tempTranscription;
+                                tempTranscription = "";
                             }
                         } else if (nSegments == 0 && config.singleUtteranceMode) {
                             logger.debug("Single utterance mode and no results, ending transcription");
@@ -410,6 +399,7 @@ public class WhisperSTTService implements STTService {
                             logger.error("Whisper should be configured in single segment mode {}", nSegments);
                             break;
                         }
+                        audioSamplesOffset = 0;
                         logger.debug("Partial transcription: {}", tempTranscription);
                         logger.debug("Transcription: {}", transcription);
                     }

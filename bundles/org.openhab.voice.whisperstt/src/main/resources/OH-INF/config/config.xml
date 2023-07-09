@@ -41,35 +41,47 @@
 			<description>Max seconds to wait to force stop the transcription.</description>
 			<default>20</default>
 		</parameter>
-		<parameter name="stepSeconds" type="integer" unit="s" groupName="stt">
-			<label>Step Seconds</label>
-			<description>Transcription step seconds. Does not apply when using VAD.</description>
-			<default>5</default>
+		<parameter name="vadMode" type="text" groupName="stt">
+			<label>Voice Activity Detection Mode</label>
+			<description>Available VAD modes. Quality is the most likely to detect voice.</description>
+			<default>QUALITY</default>
+			<options>
+				<option value="QUALITY">Quality</option>
+				<option value="LOW_BITRATE">Low Bitrate</option>
+				<option value="AGGRESSIVE">Aggressive</option>
+				<option value="VERY_AGGRESSIVE">Very Aggressive</option>
+			</options>
 		</parameter>
-		<parameter name="lengthSeconds" type="integer" unit="s" groupName="stt">
-			<label>Length Seconds</label>
-			<description>Transcription length seconds. Max audio to feed whisper with.</description>
-			<default>10</default>
+		<parameter name="vadStep" type="integer" groupName="stt">
+			<label>Voice Activity Detection Step</label>
+			<description>VAD step in milliseconds.</description>
+			<default>20</default>
+			<options>
+				<option value="10">10</option>
+				<option value="20">20</option>
+				<option value="30">30</option>
+			</options>
+			<advanced>true</advanced>
 		</parameter>
-		<parameter name="keepMs" type="integer" unit="ms" groupName="stt">
-			<label>Keep Milliseconds</label>
-			<description>Audio to keep after length seconds is reached and a new segment starts. Does not apply when using VAD.</description>
-			<default>0</default>
+		<parameter name="vadSensitivity" type="decimal" groupName="stt" min="0.1" max="1" step="0.01">
+			<label>Voice Activity Detection Sensitivity</label>
+			<description>Percentage in range 0-1 of voice activity in one second to consider it as voice.</description>
+			<default>0.25</default>
 		</parameter>
-		<parameter name="useVAD" type="boolean" groupName="stt">
-			<label>Use VAD</label>
-			<description>Use a voice activity detector to trigger transcription on silence.</description>
-			<default>true</default>
+		<parameter name="initSilenceSeconds" type="integer" unit="s" groupName="stt">
+			<label>Initial Silence Seconds</label>
+			<description>Initial seconds of silence to discard transcription.</description>
+			<default>3</default>
 		</parameter>
-		<parameter name="vadThreshold" type="decimal" groupName="stt">
-			<label>VAD Threshold</label>
-			<description>Threshold for voice activity detection.</description>
-			<default>0.01</default>
-		</parameter>
-		<parameter name="vadMaxSilenceSeconds" type="integer" unit="s" groupName="stt">
-			<label>VAD Max Silence Seconds</label>
+		<parameter name="maxSilenceSeconds" type="integer" unit="s" groupName="stt">
+			<label>Max Silence Seconds</label>
 			<description>Seconds of silence to trigger transcription.</description>
 			<default>2</default>
+		</parameter>
+		<parameter name="removeSilence" type="boolean" groupName="stt">
+			<label>Remove Silence</label>
+			<description>Remove silence frames.</description>
+			<default>true</default>
 		</parameter>
 		<parameter name="removeSpecials" type="boolean" groupName="stt">
 			<label>Remove Specials</label>
