@@ -1,11 +1,10 @@
 # ABB/Busch-free@home Smart Home binding
 
-openHAB ABB/Busch-free@home binding based on the offical free@home local api
+openHAB ABB/Busch-free@home binding based on the offical free@home local API.
 
-![alt text](doc/freeathome.png)
 # Description
 
-This openHAB binding allows you to connect your free@home Smart Home system from ABB / Busch-Jaeger to openHAB and to control and observe most of the components.
+This binding allows you to connect your free@home Smart Home system from ABB / Busch-Jaeger to openHAB and to control and observe most of the components.
 It requires a System Access Point with version 2.6.1 or higher.
 
 # Supported Devices
@@ -58,28 +57,30 @@ Virtual device in the free@home smart-home system needs continuous keep-alive si
 
 ## Prerequisites
 
-To make use of this Binding first the local free@home API has to be activated. The API is disabled by default!
+To make use of this Binding first the local free@home API has to be activated.
+The API is disabled by default.
 
 1. Open the free@home next app
 2. Browse to "Settings ⇨ free@home settings ⇨ local API and activate the checkbox
 
 ## Setup and Discovery
 
-The free@home bridge shall be added manually. Once it is added as a Thing with correct credentials, the scan of free@home devices will be possible.
+The free@home bridge shall be added manually.
+Once it is added as a Thing with correct credentials, the scan of free@home devices will be possible.
 
 ## free@home components as openHAB Things
 
 The ABB/Busch free@home system is calling its smart home components as free@home devices.
 The free@home system devices can have one or multiple channels depending the device's features.
 During the scanning process the openHAB binding will detect only the devices IDs, the device features will be detected at the point in time, when a openHAB Thing is created.
-At the of the creation the free@home binding will generate automatically the relevant channels without and further configuration.
+At the of the creation the free@home binding will generate automatically the relevant channels without any further configuration.
 If a free@home system device has multiple smart-home  channels (e.g. 4x DIN/rail Actuator), the newly created Thing will get all relevant channels to operate all actuators existing inside the free@home device.
 
 ## Sensors and Actuators of free@home Devices as Things in openHAB
 
 The free@home system is supporting sensors and actuators.
-The connenction of sensors and actuatators are done on the free@home system dashboard.
-If a Thing channel is a free@home device sensor channel, this channel is only read only
+The connection of sensors and actuators are done on the free@home system dashboard.
+If a Thing channel is a free@home device sensor channel, this channel is read only.
 
 ## Bridge Configuration
 
@@ -91,20 +92,6 @@ There are several settings for a bridge:
 | **username** (required) | Valid user name for the free@home SysAP |
 | **password** (required) | Password of the user |
 
-The syntax for a bridge is:
-
-```java
-freeathomesystem:bridge:NAME
-```
-
-### Example
-
-Bridge configuration
-
-```java
-Bridge freeathomesystem:bridge:mysysap [ ipaddress="...", username="...", password="..." ]
-```
-
 ## Examples for .things
 
 Things are all discovered automatically and visible on the openHAB dashboard after pushing the scan button
@@ -114,12 +101,12 @@ If you really like to manually configure a thing:
 ```java
 Bridge freeathomesystem:bridge:mysysap [ ipaddress="...", username="...", password="..." ]
 {
-  Thing free-at-home-device    ABB700997F0A
+    Thing free-at-home-device    ABB700997F0A
 }
 ```
 
-The only parameter needed to creta a Thing is the free@home device ID, which you can find as sticker on the device.
-The creation of the openHAB channels to operate the free@home device is happening automaticlly based on the device features detected on-line.
+The only parameter needed to create a Thing is the free@home device ID, which you can find as sticker on the device.
+The creation of the openHAB channels to operate the free@home device is happening automatically based on the device features detected on-line.
 
 ## Examples for .items
 

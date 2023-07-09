@@ -76,7 +76,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_SWITCH_SENSOR: {
                 this.channelId = channelId;
 
-                logger.info("Switch sensor channel found - Channel FID: {}", channelFunctionID);
+                logger.debug("Switch sensor channel found - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1, channelId, channelObject);
@@ -89,7 +89,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_DIMMING_SENSOR: {
                 this.channelId = channelId;
 
-                logger.info("Dimming sensor channel found - Channel FID: {}", channelFunctionID);
+                logger.debug("Dimming sensor channel found - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 272, channelId, channelObject);
@@ -102,7 +102,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_SWITCH_ACTUATOR: {
                 this.channelId = channelId;
 
-                logger.info("Switch actuator channel created - Channel FID: {}", channelFunctionID);
+                logger.debug("Switch actuator channel created - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 256, channelId, channelObject);
@@ -116,7 +116,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_MOVEMENT_DETECTOR: {
                 this.channelId = channelId;
 
-                logger.info("Movement detector channel found - Channel FID: {}", channelFunctionID);
+                logger.debug("Movement detector channel found - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 6, channelId, channelObject);
@@ -146,9 +146,9 @@ public class FreeAtHomeDeviceChannel {
                 this.channelId = channelId;
 
                 if (HexUtils.getIntegerFromHex(channelFunctionID) == FID_RADIATOR_ACTUATOR_MASTER) {
-                    logger.info("Radiator actuator channel - Channel FID: {}", channelFunctionID);
+                    logger.debug("Radiator actuator channel - Channel FID: {}", channelFunctionID);
                 } else {
-                    logger.info("Room temperature actuator channel - Channel FID: {}", channelFunctionID);
+                    logger.debug("Room temperature actuator channel - Channel FID: {}", channelFunctionID);
                 }
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
@@ -196,7 +196,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_WINDOW_DOOR_SENSOR: {
                 this.channelId = channelId;
 
-                logger.info("Window/Door position sensor channel created - Channel FID: {}", channelFunctionID);
+                logger.debug("Window/Door position sensor channel created - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 53, channelId, channelObject);
@@ -211,7 +211,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_SCENE_TRIGGER: {
                 this.channelId = channelId;
 
-                logger.info("Scene trigger channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Scene trigger channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 4, channelId, channelObject);
@@ -223,7 +223,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_RULE_SWITCH: {
                 this.channelId = channelId;
 
-                logger.info("Rule channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Rule channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 61698, channelId, channelObject);
@@ -236,7 +236,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_DES_DOOR_OPENER_ACTUATOR: {
                 this.channelId = channelId;
 
-                logger.info("Door opener actuator channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Door opener actuator channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 256, channelId, channelObject);
@@ -250,7 +250,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_DES_DOOR_RINGING_SENSOR: {
                 this.channelId = channelId;
 
-                logger.info("Door ring sensor channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Door ring sensor channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 2, channelId, channelObject);
@@ -262,7 +262,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_DES_LIGHT_SWITCH_ACTUATOR: {
                 this.channelId = channelId;
 
-                logger.info("DES light switch channel - Channel FID: {}", channelFunctionID);
+                logger.debug("DES light switch channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 256, channelId, channelObject);
@@ -276,7 +276,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_DIMMING_ACTUATOR: {
                 this.channelId = channelId;
 
-                logger.info("Dimming actuator channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Dimming actuator channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 272, channelId, channelObject);
@@ -298,7 +298,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_SHUTTER_ACTUATOR: {
                 this.channelId = channelId;
 
-                logger.info("Shutter actuator channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Shutter actuator channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_INPUT, 32, channelId, channelObject);
@@ -321,7 +321,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_BRIGHTNESS_SENSOR: {
                 this.channelId = channelId;
 
-                logger.info("Brightnes sensor channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Brightnes sensor channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1026, channelId, channelObject);
@@ -336,7 +336,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_RAIN_SENSOR: {
                 this.channelId = channelId;
 
-                logger.info("Rain sensor channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Rain sensor channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 39, channelId, channelObject);
@@ -355,7 +355,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_TEMPERATURE_SENSOR: {
                 this.channelId = channelId;
 
-                logger.info("Temperature sensor channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Temperature sensor channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 if (newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 38, channelId, channelObject)) {
@@ -377,7 +377,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_WIND_SENSOR: {
                 this.channelId = channelId;
 
-                logger.info("Wind sensor channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Wind sensor channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 37, channelId, channelObject);
@@ -396,7 +396,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_CO: {
                 this.channelId = channelId;
 
-                logger.info("AQS CO channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS CO channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1564, channelId, channelObject);
@@ -407,7 +407,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_CO2: {
                 this.channelId = channelId;
 
-                logger.info("AQS CO2 channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS CO2 channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1563, channelId, channelObject);
@@ -418,7 +418,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_HUMIDITY: {
                 this.channelId = channelId;
 
-                logger.info("AQS Humidity channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS Humidity channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 337, channelId, channelObject);
@@ -429,7 +429,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_PRESSURE: {
                 this.channelId = channelId;
 
-                logger.info("AQS Pressure channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS Pressure channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1562, channelId, channelObject);
@@ -440,7 +440,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_NO2: {
                 this.channelId = channelId;
 
-                logger.info("AQS NO2 channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS NO2 channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1565, channelId, channelObject);
@@ -451,7 +451,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_O3: {
                 this.channelId = channelId;
 
-                logger.info("AQS O3 channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS O3 channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1566, channelId, channelObject);
@@ -462,7 +462,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_PM10: {
                 this.channelId = channelId;
 
-                logger.info("AQS PM10 channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS PM10 channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1567, channelId, channelObject);
@@ -473,7 +473,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_VOC: {
                 this.channelId = channelId;
 
-                logger.info("AQS VOC channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS VOC channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1569, channelId, channelObject);
@@ -484,7 +484,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_AIRQUALITYSENSOR_PM25: {
                 this.channelId = channelId;
 
-                logger.info("AQS PM25 channel - Channel FID: {}", channelFunctionID);
+                logger.debug("AQS PM25 channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1568, channelId, channelObject);
@@ -493,7 +493,7 @@ public class FreeAtHomeDeviceChannel {
                 break;
             }
             default: {
-                logger.info("Unknown channel found - Channel FID: {}", channelFunctionID);
+                logger.debug("Unknown channel found - Channel FID: {}", channelFunctionID);
 
                 return false;
             }

@@ -84,7 +84,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     private @Nullable QueuedThreadPool jettyThreadPool = null;
 
     private String sysApUID = "00000000-0000-0000-0000-000000000000";
-    private String ipAddress = "192.168.1.1";
+    private String ipAddress = "";
     private String username = "";
     private String password = "";
 

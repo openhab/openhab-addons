@@ -56,7 +56,7 @@ public class UidUtils {
     public static ChannelUID generateChannelUID(ThingUID thingUID, String deviceId, String channelID, String label) {
         String localLabel = label.replaceAll("[^a-zA-Z\\d\\s:]", "_").replace(" ", "_").toLowerCase();
 
-        ChannelUID channelUID = new ChannelUID(thingUID, String.format("%s_%s", channelID, localLabel));
+        ChannelUID channelUID = new ChannelUID(thingUID, String.format("%s-%s", channelID, localLabel));
         return channelUID;
     }
 

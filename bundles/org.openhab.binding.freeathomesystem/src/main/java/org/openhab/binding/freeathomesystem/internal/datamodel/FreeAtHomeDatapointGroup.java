@@ -14,6 +14,8 @@ package org.openhab.binding.freeathomesystem.internal.datamodel;
 
 import static org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapoint.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.util.PidTranslationUtils;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverter.BooleanValueStateConverter;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverter.DecimalValueStateConverter;
@@ -30,6 +32,7 @@ import com.google.gson.JsonObject;
  * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public class FreeAtHomeDatapointGroup {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDatapointGroup.class);
@@ -42,16 +45,15 @@ public class FreeAtHomeDatapointGroup {
     private int datapointGroupDirection;
     private int pairingId;
 
-    private String functionString;
-    private FreeAtHomeDatapoint inputDatapoint;
-    private FreeAtHomeDatapoint outputDatapoint;
-    private ValueStateConverter valueStateConverter;
+    private String functionString = "";
+    private @Nullable FreeAtHomeDatapoint inputDatapoint;
+    private @Nullable FreeAtHomeDatapoint outputDatapoint;
 
+    @SuppressWarnings("null")
     FreeAtHomeDatapointGroup() {
         datapointGroupDirection = DATAPOINTGROUP_DIRECTION_UNDEFINED;
         inputDatapoint = null;
         outputDatapoint = null;
-        functionString = null;
     }
 
     boolean addDatapointToGroup(int direction, int neededPairingId, String channelId, JsonObject jsonObjectOfChannel) {
@@ -98,9 +100,11 @@ public class FreeAtHomeDatapointGroup {
         return (resultingDirection != DATAPOINT_DIRECTION_UNKNOWN) ? true : false;
     }
 
+    @SuppressWarnings("null")
     public void applyChangesForVirtualDevice() {
         // The input and output datapoints are ment from the device point of view. Because the virtual dvices are
         // outside of the free@home system the input and output datapoint must be switched
+        @Nullable
         FreeAtHomeDatapoint localDatapoint = inputDatapoint;
 
         inputDatapoint = outputDatapoint;
@@ -123,11 +127,11 @@ public class FreeAtHomeDatapointGroup {
         return;
     }
 
-    public FreeAtHomeDatapoint getInputDatapoint() {
+    public @Nullable FreeAtHomeDatapoint getInputDatapoint() {
         return inputDatapoint;
     }
 
-    public FreeAtHomeDatapoint getOutputDatapoint() {
+    public @Nullable FreeAtHomeDatapoint getOutputDatapoint() {
         return outputDatapoint;
     }
 
@@ -138,13 +142,7 @@ public class FreeAtHomeDatapointGroup {
     public boolean isDecimal() {
         boolean ret = false;
 
-        if (functionString == null) {
-            functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
-
-            if (functionString == null) {
-                functionString = "";
-            }
-        }
+        functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
 
         switch (functionString) {
             case PidTranslationUtils.PID_VALUETYPE_DECIMAL:
@@ -161,13 +159,7 @@ public class FreeAtHomeDatapointGroup {
     public boolean isInteger() {
         boolean ret = false;
 
-        if (functionString == null) {
-            functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
-
-            if (functionString == null) {
-                functionString = "";
-            }
-        }
+        functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
 
         switch (functionString) {
             case PidTranslationUtils.PID_VALUETYPE_INTEGER:
@@ -218,13 +210,7 @@ public class FreeAtHomeDatapointGroup {
     public String getTypePattern() {
         String pattern = "";
 
-        if (functionString == null) {
-            functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
-
-            if (functionString == null) {
-                functionString = "";
-            }
-        }
+        functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
 
         switch (functionString) {
             case PidTranslationUtils.PID_VALUETYPE_DECIMAL:
@@ -241,35 +227,30 @@ public class FreeAtHomeDatapointGroup {
         return pattern;
     }
 
+    @SuppressWarnings("null")
     public ValueStateConverter getValueStateConverter() {
-        if (valueStateConverter == null) {
-            if (functionString == null) {
-                functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
+        ValueStateConverter valueStateConverter = new BooleanValueStateConverter();
 
-                if (functionString == null) {
-                    functionString = "";
-                }
-            }
+        functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
 
-            switch (functionString) {
-                case PidTranslationUtils.PID_VALUETYPE_BOOLEAN:
-                    valueStateConverter = new BooleanValueStateConverter();
-                    break;
-                case PidTranslationUtils.PID_VALUETYPE_DECIMAL:
-                    valueStateConverter = new DecimalValueStateConverter();
-                    break;
-                case PidTranslationUtils.PID_VALUETYPE_INTEGER:
-                    valueStateConverter = new DecimalValueStateConverter();
-                    break;
-                case PidTranslationUtils.PID_VALUETYPE_STRING:
-                    break;
-                case PidTranslationUtils.PID_VALUETYPE_SHUTTERMOVEMENT:
-                    valueStateConverter = new ShuttercontrolValueStateConverter();
-                    break;
-                default:
-                    valueStateConverter = new BooleanValueStateConverter();
-                    break;
-            }
+        switch (functionString) {
+            case PidTranslationUtils.PID_VALUETYPE_BOOLEAN:
+                valueStateConverter = new BooleanValueStateConverter();
+                break;
+            case PidTranslationUtils.PID_VALUETYPE_DECIMAL:
+                valueStateConverter = new DecimalValueStateConverter();
+                break;
+            case PidTranslationUtils.PID_VALUETYPE_INTEGER:
+                valueStateConverter = new DecimalValueStateConverter();
+                break;
+            case PidTranslationUtils.PID_VALUETYPE_STRING:
+                break;
+            case PidTranslationUtils.PID_VALUETYPE_SHUTTERMOVEMENT:
+                valueStateConverter = new ShuttercontrolValueStateConverter();
+                break;
+            default:
+                valueStateConverter = new BooleanValueStateConverter();
+                break;
         }
 
         return valueStateConverter;
@@ -278,13 +259,7 @@ public class FreeAtHomeDatapointGroup {
     public String getOpenHabItemType() {
         String itemTypeString = "";
 
-        if (functionString == null) {
-            functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
-
-            if (functionString == null) {
-                functionString = "";
-            }
-        }
+        functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
 
         switch (functionString) {
             case PidTranslationUtils.PID_VALUETYPE_BOOLEAN:
@@ -299,8 +274,6 @@ public class FreeAtHomeDatapointGroup {
             case PidTranslationUtils.PID_VALUETYPE_SHUTTERMOVEMENT:
                 itemTypeString = CoreItemFactory.ROLLERSHUTTER;
                 break;
-            // case FreeAtHomeUtils.PID_VALUETYPE_STRING:
-            // break;
             default:
                 logger.info("wrong datapoint {}", String.format("0x%04X", pairingId));
                 break;

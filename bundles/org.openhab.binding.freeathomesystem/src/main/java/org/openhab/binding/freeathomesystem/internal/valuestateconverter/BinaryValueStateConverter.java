@@ -18,7 +18,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link DecimalValueStateConverter} is a value converter for integer values with a specific mask
+ * The {@link BinaryValueStateConverter} is a value converter for integer values with a specific mask
  *
  * @author Andras Uhrin - Initial contribution
  *

@@ -61,7 +61,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
     private final FreeAtHomeChannelTypeProvider channelTypeProvider;
     private final FreeAtHomeChannelGroupTypeProvider channelGroupsTypeProvider;
 
-    private void generteThingTypes() {
+    private void generateThingTypes() {
         String label = "free-at-home-device";
         String description = String.format("Generic free@home device");
 
@@ -97,7 +97,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         this.channelTypeProvider = channelTypeProvider;
         this.channelGroupsTypeProvider = channelGroupsTypeProvider;
 
-        generteThingTypes();
+        generateThingTypes();
     }
 
     @Override

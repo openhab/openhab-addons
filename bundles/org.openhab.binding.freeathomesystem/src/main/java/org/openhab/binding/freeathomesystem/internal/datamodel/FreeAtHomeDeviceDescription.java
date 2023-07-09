@@ -106,7 +106,7 @@ public class FreeAtHomeDeviceDescription {
 
         JsonObject jsonObjectOfChannels = jsonObjectOfId.getAsJsonObject("channels");
 
-        logger.info("Detecting device features - device id: {} - device label: {}", this.deviceId, this.deviceLabel);
+        logger.debug("Detecting device features - device id: {} - device label: {}", this.deviceId, this.deviceLabel);
 
         if (jsonObjectOfChannels != null) {
             // Scan channels for functions

@@ -36,7 +36,7 @@ public class EventSocket extends WebSocketAdapter {
 
     private @Nullable FreeAtHomeBridgeHandler freeAtHomeBridge;
 
-    private CountDownLatch closureLatch = null;
+    private @Nullable CountDownLatch closureLatch = null;
 
     @Override
     public void onWebSocketConnect(Session session) {
@@ -65,7 +65,7 @@ public class EventSocket extends WebSocketAdapter {
             if (freeAtHomeBridge != null) {
                 freeAtHomeBridge.processSocketEvent(message);
             } else {
-                logger.debug("No brigde available to handle the event");
+                logger.debug("No bridge available to handle the event");
             }
         }
     }
@@ -117,12 +117,12 @@ public class EventSocket extends WebSocketAdapter {
     }
 
     public void setBridge(FreeAtHomeBridgeHandler bridge) {
-        logger.debug("Set brigde to handle the events");
+        logger.debug("Set bridge to handle the events");
 
         freeAtHomeBridge = bridge;
 
         if (freeAtHomeBridge == null) {
-            logger.debug("Incorrect brigde for event handling");
+            logger.debug("Incorrect bridge for event handling");
         }
     }
 }

@@ -84,7 +84,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
     };
 
     public FreeAtHomeSystemDiscoveryService(int timeout) {
-        super(FreeAtHomeSystemBindingConstants.SUPPORTED_THING_TYPES_UIDS, 90, false);
+        super(FreeAtHomeSystemBindingConstants.SUPPORTED_THING_TYPES_UIDS, timeout, false);
     }
 
     public FreeAtHomeSystemDiscoveryService() {

@@ -43,7 +43,7 @@ public class FreeAtHomeDatapoint {
     int searchForDatapoint(int direction, int neededPairingIDFunction, String channelId,
             JsonObject jsonObjectOfChannel) {
         int resultingDirection = DATAPOINT_DIRECTION_UNKNOWN;
-        boolean foundedId = false;
+        boolean foundId = false;
         JsonObject localDataponits = null;
 
         switch (direction) {
@@ -74,7 +74,7 @@ public class FreeAtHomeDatapoint {
         Iterator<String> iter = keys.iterator();
 
         // Scan datapoints for pairingID IDs
-        while (iter.hasNext() && (!foundedId)) {
+        while (iter.hasNext() && (!foundId)) {
             String datapointId = iter.next();
 
             JsonObject datapointJsonObject = localDataponits.getAsJsonObject(datapointId);
@@ -87,12 +87,12 @@ public class FreeAtHomeDatapoint {
 
                 logger.debug("Datapoint is found - channel {} - datapoint {}", this.channelId, this.datapointId);
 
-                foundedId = true;
+                foundId = true;
             }
         }
 
         // not founded id add dummy
-        if (!foundedId) {
+        if (!foundId) {
             this.channelId = "";
             this.datapointId = "";
             resultingDirection = DATAPOINT_DIRECTION_UNKNOWN;

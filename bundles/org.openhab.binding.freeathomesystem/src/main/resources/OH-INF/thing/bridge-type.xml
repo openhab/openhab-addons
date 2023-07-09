@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>Free@Home Bridge</label>
-		<description>This bridge represents the Free@Home Gateway</description>
+		<label>Free@Home Gateway</label>
+		<description>This gateway represents the Free@Home Gateway</description>
 
 		<config-description>
 			<parameter-group name="identification">
@@ -19,7 +19,7 @@
 				<context>network-address</context>
 				<label>Sysap IP Address</label>
 				<description>IP Address of the Busch-Jaeger Gateway</description>
-				<default>192.168.178.20</default>
+				<default>192.168.1.2</default>
 			</parameter>
 			<parameter name="username" type="text" required="true" groupName="identification">
 				<label>User name</label>
