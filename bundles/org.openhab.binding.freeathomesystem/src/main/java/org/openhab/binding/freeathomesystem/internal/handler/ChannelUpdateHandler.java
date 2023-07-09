@@ -34,11 +34,11 @@ public class ChannelUpdateHandler {
 
     // assignmet sub-class between datapoints and OpenHAB channels
     public class DatapointChannelAssignment {
-        FreeAtHomeSystemBaseHandler thingHandler;
+        FreeAtHomeDeviceHandler thingHandler;
         ValueStateConverter valueStateConverter;
         ChannelUID channelUID;
 
-        public DatapointChannelAssignment(FreeAtHomeSystemBaseHandler handler, ValueStateConverter converter,
+        public DatapointChannelAssignment(FreeAtHomeDeviceHandler handler, ValueStateConverter converter,
                 ChannelUID uid) {
             thingHandler = handler;
             valueStateConverter = converter;
@@ -52,8 +52,8 @@ public class ChannelUpdateHandler {
         datapoints = new HashMap<String, DatapointChannelAssignment>();
     }
 
-    public boolean registerChannel(String eventDatapointID, FreeAtHomeSystemBaseHandler thingHandler,
-            ChannelUID channelUID, ValueStateConverter valueConverter) {
+    public boolean registerChannel(String eventDatapointID, FreeAtHomeDeviceHandler thingHandler, ChannelUID channelUID,
+            ValueStateConverter valueConverter) {
         DatapointChannelAssignment datapointElement = new DatapointChannelAssignment(thingHandler, valueConverter,
                 channelUID);
 
@@ -69,7 +69,7 @@ public class ChannelUpdateHandler {
     }
 
     public boolean registerChannel(@Nullable String deviceID, @Nullable String deviceChannel,
-            @Nullable String deviceDatapoint, FreeAtHomeSystemBaseHandler thingHandler, ChannelUID channelUID,
+            @Nullable String deviceDatapoint, FreeAtHomeDeviceHandler thingHandler, ChannelUID channelUID,
             ValueStateConverter valueConverter) {
         String eventDatapointID = new String(deviceID + "/" + deviceChannel + "/" + deviceDatapoint);
 
@@ -92,7 +92,7 @@ public class ChannelUpdateHandler {
         if (datapointElement != null) {
             State state = datapointElement.valueStateConverter.convertToState(valueString);
 
-            FreeAtHomeDeviceHandler deviceHandler = (FreeAtHomeDeviceHandler) datapointElement.thingHandler;
+            FreeAtHomeDeviceHandler deviceHandler = datapointElement.thingHandler;
 
             // Handle state change
             deviceHandler.handleEventBasedUpdate(datapointElement.channelUID, state);

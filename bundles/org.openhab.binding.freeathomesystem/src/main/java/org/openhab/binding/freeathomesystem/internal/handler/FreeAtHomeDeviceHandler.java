@@ -37,6 +37,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Andras Uhrin - Initial contribution
  *
  */
-public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
+public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
     private static final String CHANNEL_URI = "channel-type:freeathomesystem:config";
 

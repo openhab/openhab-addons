@@ -5,7 +5,6 @@
 
 	<type>Binding</type>
 	<name>FreeAtHomeSystem Binding</name>
-	<connection>local</connection>
 	<description>This is the binding for free@home system.</description>
-
+	<connection>local</connection>
 </addon:addon>
