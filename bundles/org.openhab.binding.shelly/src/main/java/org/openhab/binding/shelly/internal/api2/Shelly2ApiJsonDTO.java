@@ -61,6 +61,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
     public static final String SHELLYRPC_METHOD_EMDATARESET = "EMData.DeleteAllData";
+    public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.DeleteAllData";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";

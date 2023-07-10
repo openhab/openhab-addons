@@ -909,7 +909,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_EMDATARESET).withId(id));
+        apiRequest(new Shelly2RpcRequest()
+                .withMethod(getProfile().is3EM ? SHELLYRPC_METHOD_EMDATARESET : SHELLYRPC_METHOD_EM1DATARESET)
+                .withId(id));
     }
 
     @Override

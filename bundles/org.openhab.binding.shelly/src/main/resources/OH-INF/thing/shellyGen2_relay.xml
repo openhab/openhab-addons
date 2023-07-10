@@ -292,9 +292,9 @@
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
-	<thing-type id="shellypro3em50">
-		<label>Shelly Pro 3EM-50</label>
-		<description>@text/thing-type.shelly.shellypro3em50.description</description>
+	<thing-type id="shellyproem50">
+		<label>Shelly Pro EM-50</label>
+		<description>@text/thing-type.shelly.shellyproem50.description</description>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter1.label</label>

@@ -104,6 +104,7 @@ public class ShellyDeviceProfile {
     public boolean isSmoke = false; // true for Shelly Smoke
     public boolean isWall = false; // true: Shelly Wall Display
     public boolean is3EM = false; // true for Shelly 3EM and Pro 3EM
+    public boolean isEM50 = false; // true for Shelly Pro EM50
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -223,6 +224,7 @@ public class ShellyDeviceProfile {
         isTRV = thingType.equals(THING_TYPE_SHELLYTRV_STR);
         isWall = thingType.equals(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);
         is3EM = thingType.equals(THING_TYPE_SHELLY3EM_STR) || thingType.startsWith(THING_TYPE_SHELLYPRO3EM_STR);
+        isEM50 = thingType.startsWith(THING_TYPE_SHELLYPROEM50_STR);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
                 || isWall;
