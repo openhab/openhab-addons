@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link asuswrtHandlerFactory} is responsible for creating things and thing
+ * The {@link AsuswrtHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Christian Wild - Initial contribution

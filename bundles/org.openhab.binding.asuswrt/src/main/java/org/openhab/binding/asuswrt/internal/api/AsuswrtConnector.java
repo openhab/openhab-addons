@@ -96,10 +96,10 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     }
 
     /**
-     * Query SysInfo (synchronous)
+     * Query SysInfo
      * get System Information from device
      */
-    public void querySysInfo(Boolean asyncRequest) {
+    public void querySysInfo(boolean asyncRequest) {
         queryDeviceData(CMD_GET_SYSINFO, asyncRequest);
     }
 
@@ -107,9 +107,9 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
      * Query Data From Device asynchron
      * 
      * @param command command constant to sent
-     * @param asyncRequest Boolean True if request should be sent asynchron, false if synchron
+     * @param asyncRequest True if request should be sent asynchron, false if synchron
      */
-    public void queryDeviceData(String command, Boolean asyncRequest) {
+    public void queryDeviceData(String command, boolean asyncRequest) {
         logger.trace("({}) queryDeviceData", uid);
         Long now = System.currentTimeMillis();
 
@@ -128,7 +128,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
             url = url.replace(";", "%3B");
 
             /* send asynchron or synchron http-request */
-            if (asyncRequest.equals(true)) {
+            if (asyncRequest) {
                 sendAsyncRequest(url, payload, command);
             } else {
                 sendSyncRequest(url, payload, command);
@@ -207,9 +207,4 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         return url + "/" + site;
     }
 
-    /***********************************
-     *
-     * PUBLIC STUFF
-     *
-     ************************************/
 }

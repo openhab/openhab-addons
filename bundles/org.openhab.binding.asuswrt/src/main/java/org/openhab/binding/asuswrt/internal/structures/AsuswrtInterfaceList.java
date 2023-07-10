@@ -27,7 +27,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
-    private List<AsuswrtIpInfo> ipInfoList = new ArrayList<AsuswrtIpInfo>();
+    private List<AsuswrtIpInfo> ipInfoList = new ArrayList<>();
 
     /**
      * INIT CLASS
@@ -65,7 +65,7 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
      * @param jsonObject with interface data
      */
     public void setData(String ifName, JsonObject jsonObject) {
-        if (hasInterface(ifName).equals(true)) {
+        if (hasInterface(ifName)) {
             getByName(ifName).setData(jsonObject);
         } else {
             addInterface(new AsuswrtIpInfo(ifName, jsonObject));
@@ -129,7 +129,7 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
      * @param ifName InterfaceName
      * @return true if data was set
      */
-    public Boolean hasInterface(String ifName) {
+    public boolean hasInterface(String ifName) {
         for (AsuswrtIpInfo ipInfo : this.ipInfoList) {
             if (ipInfo.getName().equals(ifName)) {
                 return true;

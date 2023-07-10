@@ -64,26 +64,26 @@
 	</channel-type>
 	<channel-type id="dns-server-type">
 		<item-type>String</item-type>
-		<label>DNS-Server</label>
-		<description>Used DNS-Servers</description>
+		<label>DNS Server</label>
+		<description>Used DNS Servers</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ip-address-type">
 		<item-type>String</item-type>
-		<label>IP-Address</label>
-		<description>IP-Address of Interface</description>
+		<label>IP Address</label>
+		<description>IP Address of Interface</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ip-proto-type">
 		<item-type>String</item-type>
-		<label>IP-Protocol</label>
-		<description>IP-Address Protocol (DHCP/Static)</description>
+		<label>IP Protocol</label>
+		<description>IP Address Protocol (DHCP/Static)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="mac-address-type">
 		<item-type>String</item-type>
-		<label>MAC-Address</label>
-		<description>MAC-Address of Device (LAN)</description>
+		<label>MAC Address</label>
+		<description>MAC Address of Device (LAN)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ip-netmask-type">

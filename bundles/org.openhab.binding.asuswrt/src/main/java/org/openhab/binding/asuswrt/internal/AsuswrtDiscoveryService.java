@@ -69,8 +69,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof AsuswrtRouter) {
-            AsuswrtRouter router = (AsuswrtRouter) handler;
+        if (handler instanceof AsuswrtRouter router) {
             router.setDiscoveryService(this);
             this.router = router;
             this.uid = router.getUID().getAsString();
@@ -115,7 +114,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
     /**
      * Remove all scan results
      */
-    public void removeAllResults() {
+    private void removeAllResults() {
         removeOlderResults(new Date().getTime());
     }
 
@@ -123,14 +122,14 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
      * Work with result from get interfaces from router
      * Create DiscoveryResult from interfaceList
      */
-    public void handleInterfaceScan(AsuswrtInterfaceList ifList) {
+    private void handleInterfaceScan(AsuswrtInterfaceList ifList) {
         try {
             for (AsuswrtIpInfo ifInfo : ifList) {
                 DiscoveryResult discoveryResult = createInterfaceResult(ifInfo);
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception e) {
-            logger.debug("error handling scan reults", e);
+            logger.debug("error handling interface scan reults", e);
         }
     }
 
@@ -145,7 +144,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception e) {
-            logger.debug("error handling scan results", e);
+            logger.debug("error handling client scan results", e);
         }
     }
 
@@ -154,10 +153,11 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
      * CREATE DISCOVERY RESULTS
      *
      ************************************/
+
     /**
      * Create DiscoveryResult from single interfaceInfo
      */
-    public DiscoveryResult createInterfaceResult(AsuswrtIpInfo interfaceInfo) {
+    private DiscoveryResult createInterfaceResult(AsuswrtIpInfo interfaceInfo) {
         String ifName = interfaceInfo.getName();
         String macAddress = interfaceInfo.getMAC();
         String label = "AwrtInterface_" + ifName;
@@ -183,7 +183,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
     /**
      * Create DiscoveryResult from single clientInfo
      */
-    public DiscoveryResult createClientResult(AsuswrtClientInfo clientInfo) {
+    private DiscoveryResult createClientResult(AsuswrtClientInfo clientInfo) {
         String macAddress = clientInfo.getMac();
         String unformatedMac = unformatMac(macAddress);
         String clientName;

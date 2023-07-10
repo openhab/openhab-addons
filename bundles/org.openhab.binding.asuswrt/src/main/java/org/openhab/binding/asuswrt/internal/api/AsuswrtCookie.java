@@ -45,9 +45,9 @@ public class AsuswrtCookie {
      * reset cookie
      */
     public void resetCookie() {
-        this.cookie = "";
-        this.token = "";
-        this.cookieTimeStamp = 0L;
+        cookie = "";
+        token = "";
+        cookieTimeStamp = 0L;
     }
 
     /***********************************

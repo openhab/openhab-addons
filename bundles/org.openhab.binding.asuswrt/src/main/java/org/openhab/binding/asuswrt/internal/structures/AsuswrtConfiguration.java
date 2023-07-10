@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AsuswrtConfiguration {
 
-    /* THING CONFIGUTATION PROPERTYS */
+    /* Thing configuration properties */
     public static final String CONFIG_USER = "username";
     public static final String CONFIG_PASS = "password";
     public static final String CONFIG_HOSTNAME = "hostname";

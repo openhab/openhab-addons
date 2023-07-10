@@ -34,7 +34,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     private final Logger logger = LoggerFactory.getLogger(AsuswrtClientList.class);
-    private List<AsuswrtClientInfo> clientList = new ArrayList<AsuswrtClientInfo>();
+    private List<AsuswrtClientInfo> clientList = new ArrayList<>();
 
     /**
      * INIT CLASS
@@ -146,7 +146,7 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     }
 
     /*
-     * Return ; seperated list with clientNames and macAddresses
+     * Return ; separated list with clientNames and macAddresses
      */
     public String getClientList() {
         StringBuilder clients = new StringBuilder();
@@ -157,14 +157,10 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     }
 
     /*
-     * Return ; seperated list with clientNames
+     * Return ; separated list with clientNames
      */
     public String getClientNames() {
-        StringBuilder clients = new StringBuilder();
-        for (AsuswrtClientInfo client : this.clientList) {
-            clients.append(client.getName() + "; ");
-        }
-        return clients.toString();
+        return clientList.stream().map(AsuswrtClientInfo::getName).collect(Collectors.joining("; "));
     }
 
     /**
@@ -175,7 +171,7 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     }
 
     /*
-     * Return ; seperated list with macAddresses
+     * Return ; separated list with macAddresses
      */
     public String getMacAddresses() {
         StringBuilder clients = new StringBuilder();
