@@ -44,15 +44,10 @@ class GoogleTTSConfig {
      */
     public Double speakingRate = 1d;
 
-    /**
-     * Purge cache after configuration changes.
-     */
-    public Boolean purgeCache = Boolean.FALSE;
-
     @Override
     public String toString() {
         return "GoogleTTSConfig{pitch=" + pitch + ", speakingRate=" + speakingRate + ", volumeGainDb=" + volumeGainDb
-                + ", purgeCache=" + purgeCache + '}';
+                + '}';
     }
 
     String toConfigString() {
