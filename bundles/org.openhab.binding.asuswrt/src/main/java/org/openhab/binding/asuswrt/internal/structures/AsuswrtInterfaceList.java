@@ -55,7 +55,7 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
      * ADD INTERFACE TO LIST
      */
     private void addInterface(AsuswrtIpInfo ipInfo) {
-        this.ipInfoList.add(ipInfo);
+        ipInfoList.add(ipInfo);
     }
 
     /**
@@ -85,7 +85,7 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
      * @return AsuswrtIpInfo
      */
     public AsuswrtIpInfo getByName(String ifName) {
-        for (AsuswrtIpInfo ipInfo : this.ipInfoList) {
+        for (AsuswrtIpInfo ipInfo : ipInfoList) {
             if (ipInfo.getName().equals(ifName)) {
                 return ipInfo;
             }
@@ -100,7 +100,7 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
      * @return AsuswrtIpInfo
      */
     public AsuswrtIpInfo getByMAC(String ipInfoMAC) {
-        for (AsuswrtIpInfo ipInfo : this.ipInfoList) {
+        for (AsuswrtIpInfo ipInfo : ipInfoList) {
             if (ipInfo.getMAC().equals(ipInfoMAC)) {
                 return ipInfo;
             }
@@ -115,7 +115,7 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
      * @return AsuswrtIpInfo
      */
     public AsuswrtIpInfo getByIP(String ipAddress) {
-        for (AsuswrtIpInfo ipInfo : this.ipInfoList) {
+        for (AsuswrtIpInfo ipInfo : ipInfoList) {
             if (ipInfo.getIpAddress().equals(ipAddress)) {
                 return ipInfo;
             }
@@ -130,7 +130,7 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
      * @return true if data was set
      */
     public boolean hasInterface(String ifName) {
-        for (AsuswrtIpInfo ipInfo : this.ipInfoList) {
+        for (AsuswrtIpInfo ipInfo : ipInfoList) {
             if (ipInfo.getName().equals(ifName)) {
                 return true;
             }

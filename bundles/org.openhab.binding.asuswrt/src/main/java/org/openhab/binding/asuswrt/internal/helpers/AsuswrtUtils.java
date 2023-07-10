@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.asuswrt.internal.helpers;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.regex.Pattern;
 
 import javax.measure.Unit;
@@ -36,15 +34,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
- * {@link AsuswrtUtils} TapoUtils -
+ * {@link AsuswrtUtils} AsuswrtUtils -
  * Utility Helper Functions
  *
  * @author Christian Wild - Initial Initial contribution
  */
 @NonNullByDefault
 public class AsuswrtUtils {
-    private static Pattern patternMacPairs = Pattern.compile("^([a-fA-F0-9]{2}[:\\.-]?){5}[a-fA-F0-9]{2}$");
-    private static Pattern patternMacTriples = Pattern.compile("^([a-fA-F0-9]{3}[:\\.-]?){3}[a-fA-F0-9]{3}$");
+    private static final Pattern PATTERN_MAC_PAIRS = Pattern.compile("^([a-fA-F0-9]{2}[:\\.-]?){5}[a-fA-F0-9]{2}$");
+    private static final Pattern PATTERN_MAC_TRIPLES = Pattern.compile("^([a-fA-F0-9]{3}[:\\.-]?){3}[a-fA-F0-9]{3}$");
 
     /************************************
      * CALCULATION UTILS
@@ -52,12 +50,11 @@ public class AsuswrtUtils {
     /**
      * Limit Value between limits
      * 
-     * @param value Integer
-     * @param lowerLimit
-     * @param upperLimit
-     * @return limited value
+     * @param value Integer value should be limited
+     * @param lowerLimit will be returned if value is below
+     * @param upperLimit will be returned if value is higher
      */
-    public static Integer limitVal(@Nullable Integer value, Integer lowerLimit, Integer upperLimit) {
+    public static int limitVal(@Nullable Integer value, int lowerLimit, int upperLimit) {
         if (value == null || value < lowerLimit) {
             return lowerLimit;
         } else if (value > upperLimit) {
@@ -73,9 +70,8 @@ public class AsuswrtUtils {
      * return value or default val if it's null
      * 
      * @param <T> Type of value
-     * @param value value
-     * @param defaultValue defaut value
-     * @return value or default
+     * @param value value which should be checked
+     * @param defaultValue default value will be returned if value is null
      */
     public static <T> T getValueOrDefault(@Nullable T value, T defaultValue) {
         return value == null ? defaultValue : value;
@@ -86,7 +82,6 @@ public class AsuswrtUtils {
      * 
      * @param mac unformated mac-Address
      * @param newDivisionChar new division char (e.g. ":","-" )
-     * @return new formated mac-Address
      */
     public static String formatMac(String mac, char newDivisionChar) {
         String unformatedMac = unformatMac(mac);
@@ -102,7 +97,8 @@ public class AsuswrtUtils {
     /**
      * unformat MAC-Address replace all division chars
      */
-    public static String unformatMac(String mac) {
+    public static String unformatMac(String rawMac) {
+        String mac = rawMac;
         mac = mac.replace("-", "");
         mac = mac.replace(":", "");
         mac = mac.replace(".", "");
@@ -117,7 +113,7 @@ public class AsuswrtUtils {
         // MAC-Addresses usually are 6 * 2 hex nibbles separated by colons,
         // but apparently it is legal to have 4 * 3 hex nibbles as well,
         // and the separators can be any of : or - or . or nothing.
-        return (patternMacPairs.matcher(mac).find() || patternMacTriples.matcher(mac).find());
+        return (PATTERN_MAC_PAIRS.matcher(mac).find() || PATTERN_MAC_TRIPLES.matcher(mac).find());
     }
 
     /**
@@ -138,10 +134,10 @@ public class AsuswrtUtils {
     /**
      * Return Boolean from string
      * 
-     * @param s - string to be converted
-     * @param defVal - Default Value
+     * @param s string to be converted ('0', '1', '-1', 'true', 'false')
+     * @param defVal default value if no match was found
      */
-    public static Boolean stringToBool(@Nullable String s, boolean defVal) {
+    public static boolean stringToBool(@Nullable String s, boolean defVal) {
         if (s == null) {
             return defVal;
         } else if ("1".equals(s) || "-1".equals(s)) {
@@ -161,9 +157,9 @@ public class AsuswrtUtils {
      * Return Integer from string
      * 
      * @param s - string to be converted
-     * @param defVal - Default Value
+     * @param defVal - default value if it is not a number
      */
-    public static Integer stringToInteger(@Nullable String s, Integer defVal) {
+    public static int stringToInteger(@Nullable String s, int defVal) {
         if (s == null) {
             return defVal;
         }
@@ -175,6 +171,7 @@ public class AsuswrtUtils {
     }
 
     /**
+     * Get String if not null or empty
      * 
      * @param s - string to get value
      * @param defVal - default if is blank or null
@@ -206,9 +203,9 @@ public class AsuswrtUtils {
     /**
      * JSON Object to String
      * 
-     * @param name parameter name
-     * @param defVal - default value;
-     * @return string value
+     * @param jsonObject where will be searched for key
+     * @param name name of key will be returned if found
+     * @param defVal - default value if key was not found
      */
     public static String jsonObjectToString(@Nullable JsonObject jsonObject, String name, String defVal) {
         if (jsonObject != null && jsonObject.has(name)) {
@@ -221,20 +218,21 @@ public class AsuswrtUtils {
     /**
      * JSON Object to String
      * 
-     * @param name parameter name
-     * @return string value
+     * @param jsonObject where will be searched for key
+     * @param name name of key will be returned if found
      */
     public static String jsonObjectToString(@Nullable JsonObject jsonObject, String name) {
         return jsonObjectToString(jsonObject, name, "");
     }
 
     /**
+     * JSON Object to boolean
      * 
-     * @param name parameter name
-     * @param defVal - default value;
-     * @return boolean value
+     * @param jsonObject where will be searched for key
+     * @param name name of key will be returned if found
+     * @param defVal - default value if key was not found
      */
-    public static Boolean jsonObjectToBool(@Nullable JsonObject jsonObject, String name, Boolean defVal) {
+    public static boolean jsonObjectToBool(@Nullable JsonObject jsonObject, String name, boolean defVal) {
         if (jsonObject != null && jsonObject.has(name)) {
             JsonPrimitive o = jsonObject.getAsJsonPrimitive(name);
             if (o.isBoolean()) {
@@ -251,23 +249,23 @@ public class AsuswrtUtils {
     }
 
     /**
-     * JSON Object to Boolean
+     * JSON Object to boolean
      * 
-     * @param name parameter name
-     * @return boolean value
+     * @param jsonObject where will be searched for key
+     * @param name name of key will be returned if found
      */
-    public static Boolean jsonObjectToBool(@Nullable JsonObject jsonObject, String name) {
+    public static boolean jsonObjectToBool(@Nullable JsonObject jsonObject, String name) {
         return jsonObjectToBool(jsonObject, name, false);
     }
 
     /**
      * JSON Object to Integer
      * 
-     * @param name parameter name
-     * @param defVal - default value;
-     * @return integer value
+     * @param jsonObject where will be searched for key
+     * @param name name of key will be returned if found
+     * @param defVal - default value if key was not found
      */
-    public static Integer jsonObjectToInt(@Nullable JsonObject jsonObject, String name, Integer defVal) {
+    public static int jsonObjectToInt(@Nullable JsonObject jsonObject, String name, int defVal) {
         if (jsonObject != null && jsonObject.has(name)) {
             JsonPrimitive o = jsonObject.getAsJsonPrimitive(name);
             if (o.isNumber()) {
@@ -283,19 +281,19 @@ public class AsuswrtUtils {
     /**
      * JSON Object to Integer
      * 
-     * @param name parameter name
-     * @return integer value
+     * @param jsonObject where will be searched for key
+     * @param name name of key will be returned if found
      */
-    public static Integer jsonObjectToInt(@Nullable JsonObject jsonObject, String name) {
+    public static int jsonObjectToInt(@Nullable JsonObject jsonObject, String name) {
         return jsonObjectToInt(jsonObject, name, 0);
     }
 
     /**
      * JSON Object to Number
      * 
-     * @param name parameter name
-     * @param defVal - default value;
-     * @return number value
+     * @param jsonObject where will be searched for key
+     * @param name name of key will be returned if found
+     * @param defVal - default value if key was not found
      */
     public static Number jsonObjectToNumber(@Nullable JsonObject jsonObject, String name, Number defVal) {
         if (jsonObject != null && jsonObject.has(name)) {
@@ -308,8 +306,8 @@ public class AsuswrtUtils {
     /**
      * JSON Object to Number
      * 
-     * @param name parameter name
-     * @return number value
+     * @param jsonObject where will be searched for key
+     * @param name name of key will be returned if found
      */
     public static Number jsonObjectToNumber(@Nullable JsonObject jsonObject, String name) {
         return jsonObjectToNumber(jsonObject, name, 0);
@@ -321,8 +319,6 @@ public class AsuswrtUtils {
 
     /**
      * Return OnOffType from bool
-     * 
-     * @param boolVal
      */
     public static OnOffType getOnOffType(@Nullable Boolean boolVal) {
         return (boolVal != null ? boolVal ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
@@ -330,8 +326,6 @@ public class AsuswrtUtils {
 
     /**
      * Return OnOffType from bool
-     * 
-     * @param boolVal
      */
     public static OnOffType getOnOffType(Integer intVal) {
         return intVal == 0 ? OnOffType.OFF : OnOffType.ON;
@@ -339,8 +333,6 @@ public class AsuswrtUtils {
 
     /**
      * Return StringType from String
-     * 
-     * @param strVal
      */
     public static StringType getStringType(@Nullable String strVal) {
         return new StringType(strVal != null ? strVal : "");
@@ -348,8 +340,6 @@ public class AsuswrtUtils {
 
     /**
      * Return DecimalType from Double
-     * 
-     * @param numVal
      */
     public static DecimalType getDecimalType(@Nullable Double numVal) {
         return new DecimalType((numVal != null ? numVal : 0));
@@ -357,8 +347,6 @@ public class AsuswrtUtils {
 
     /**
      * Return DecimalType from Integer
-     * 
-     * @param numVal
      */
     public static DecimalType getDecimalType(@Nullable Integer numVal) {
         return new DecimalType((numVal != null ? numVal : 0));
@@ -366,18 +354,13 @@ public class AsuswrtUtils {
 
     /**
      * Return DecimalType from Long
-     * 
-     * @param numVal
      */
     public static DecimalType getDecimalType(@Nullable Long numVal) {
         return new DecimalType((numVal != null ? numVal : 0));
     }
 
     /**
-     * JSON Object to PercentType
-     * 
-     * @param numVal value 0-100
-     * @return PercentType
+     * Return PercentType from Integer
      */
     public static PercentType getPercentType(@Nullable Integer numVal) {
         Integer val = limitVal(numVal, 0, 100);
@@ -388,9 +371,8 @@ public class AsuswrtUtils {
      * Return HSBType from integers
      * 
      * @param hue integer hue-color
-     * @param saturation integer saturation
-     * @param brightness integer brightness
-     * @return HSBType
+     * @param saturation integer saturation 0-100
+     * @param brightness integer brightness 0-100
      */
     public static HSBType getHSBType(Integer hue, Integer saturation, Integer brightness) {
         DecimalType h = new DecimalType(hue);
@@ -401,10 +383,6 @@ public class AsuswrtUtils {
 
     /**
      * Return QuantityType with Time
-     * 
-     * @param numVal Number with value
-     * @param unit TimeUnit (Unit<Time>)
-     * @return QuantityType<Time>
      */
     public static QuantityType<Time> getTimeType(@Nullable Number numVal, Unit<Time> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -412,10 +390,6 @@ public class AsuswrtUtils {
 
     /**
      * Return QuantityType with Power
-     * 
-     * @param numVal Number with value
-     * @param unit PowerUnit (Unit<Power>)
-     * @return QuantityType<Power>
      */
     public static QuantityType<Power> getPowerType(@Nullable Number numVal, Unit<Power> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -423,10 +397,6 @@ public class AsuswrtUtils {
 
     /**
      * Return QuantityType with Energy
-     * 
-     * @param numVal Number with value
-     * @param unit PowerUnit (Unit<Power>)
-     * @return QuantityType<Energy>
      */
     public static QuantityType<Energy> getEnergyType(@Nullable Number numVal, Unit<Energy> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -434,31 +404,8 @@ public class AsuswrtUtils {
 
     /**
      * Return QuantityType with variable Unit
-     * 
-     * @param numVal Number with value
-     * @param unit Unit
-     * @return OH core StateType
      */
     public static State getQuantityType(@Nullable Number numVal, Unit<?> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
-    }
-
-    /************************************
-     * DATE UTILS
-     ***********************************/
-    /**
-     * Checks if two date objects are on the same day ignoring time.
-     *
-     * @param date1 the first date, not altered, not null
-     * @param date2 the second date, not altered, not null
-     * @return true if they represent the same day
-     */
-    public static boolean isSameDay(final Date date1, final Date date2) {
-        final Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(date1);
-        final Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(date2);
-        return cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
-                && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 }

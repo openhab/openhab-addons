@@ -60,7 +60,7 @@ public class AsuswrtCredentials {
     private void setCredentials(String username, String password) {
         this.username = username;
         this.password = password;
-        this.encodedCredentials = b64encode(username + ":" + password);
+        encodedCredentials = b64encode(username + ":" + password);
     }
 
     /**

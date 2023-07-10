@@ -55,7 +55,7 @@ public class AsuswrtIpInfo {
      */
     public AsuswrtIpInfo(String ifName, JsonObject jsonObject) {
         this.ifName = ifName;
-        this.traffic = new AsuswrtTraffic(ifName);
+        traffic = new AsuswrtTraffic(ifName);
         setData(jsonObject);
     }
 
@@ -74,20 +74,20 @@ public class AsuswrtIpInfo {
     public void setData(JsonObject jsonObject) {
         if (ifName.startsWith(INTERFACE_LAN)) {
             logger.trace("(AsuswrtIpInfo) setData for interface {}", INTERFACE_LAN);
-            this.hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, this.hwAddress);
-            this.ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_IP, this.ipAddress);
-            this.subnet = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_NETMASK, this.subnet);
-            this.gateway = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_GATEWAY, this.gateway);
-            this.ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_PROTO, this.ipProto);
+            hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, hwAddress);
+            ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_IP, ipAddress);
+            subnet = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_NETMASK, subnet);
+            gateway = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_GATEWAY, gateway);
+            ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_LAN_PROTO, ipProto);
         } else if (ifName.startsWith(INTERFACE_WAN)) {
             logger.trace("(AsuswrtIpInfo) setData for interface {}", INTERFACE_WAN);
-            this.hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, this.hwAddress);
-            this.ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_IP, this.ipAddress);
-            this.subnet = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_NETMASK, this.subnet);
-            this.gateway = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_GATEWAY, this.gateway);
-            this.ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_PROTO, this.ipProto);
-            this.dnsServer = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_DNS_SERVER, this.dnsServer);
-            this.connected = (jsonObjectToInt(jsonObject, JSON_MEMBER_WAN_CONNECTED).equals(1));
+            hwAddress = jsonObjectToString(jsonObject, JSON_MEMBER_MAC, hwAddress);
+            ipAddress = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_IP, ipAddress);
+            subnet = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_NETMASK, subnet);
+            gateway = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_GATEWAY, gateway);
+            ipProto = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_PROTO, ipProto);
+            dnsServer = jsonObjectToString(jsonObject, JSON_MEMBER_WAN_DNS_SERVER, dnsServer);
+            connected = (jsonObjectToInt(jsonObject, JSON_MEMBER_WAN_CONNECTED) == 1);
         }
         if (jsonObject.has(JSON_MEMBER_TRAFFIC)) {
             traffic.setData(jsonObject.getAsJsonObject(JSON_MEMBER_TRAFFIC));

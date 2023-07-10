@@ -53,38 +53,38 @@ All devices support some of the following properties:
 
 All devices support some of the following channels:
 
-| group            | channel            |type                    | description                                | things supporting this channel    |
-|------------------|--------------------|------------------------|--------------------------------------------|-----------------------------------|
-| networkInfo      | macAddress         | text (RO)              | HW-Address                                 | interface, client                 |
-|                  | ipAddress          | text (RO)              | IP-Address                                 | interface                         |
-|                  | ipMethod           | text (RO)              | Ip-Method (static/dhcp)                    | interface, client                 |
-|                  | subnet             | text (RO)              | Subnetmask                                 | interface                         |
-|                  | gateway            | text (RO)              | Default-Gateway                            | interface                         |
-|                  | dnsServers         | text (RO)              | DNS-Servers                                | interface                         |
-|                  | networkState       | Switch (RO)            | Client is online                           | interface, client                 |
-|                  | internetState      | Switch (RO)            | Client connected to Internet               | client                            |
-| sysInfoGroup     | memTotal           | Number:DataAmountype   | Total memory in MB                         | router                            |
-|                  | memUsed            | Number:DataAmountype   | Used memory in MB                          | router                            |
-|                  | memFree            | Number:DataAmountype   | Free memory in MB                          | router                            |
-|                  | memUsedPercent     | Number:Dimensionles    | Used memory in %                           | router                            |
-|                  | cpuUsedPercent     | Number:Dimensionles    | Total CPU usage in percent over all cores  | router                            |
-| clientListGroup  | knownClients       | text (RO)              | Known clients with name and MAC-Addresses  | router                            |
-|                  | onlineClients      | text (RO)              | Online clients with name and MAC-Addresses | router                            |
-|                  | onlineMACs         | text (RO)              | List with mac-addresses of online clients  | router                            |    
-|                  | onlineClientsCount | Number:Dimensionless   | Count of online clients                    | router                            |
-| traffic          | curRX              | Number:DataTransferRate| Current DataTransferRate MBits/s (receive) | interface, client                 |
-|                  | curTX              | Number:DataTransferRate| Current DataTransferRate MBits/s (send)    | interface, client                 |
-|                  | todayRX            | Number:DataAmount      | Data received since 0:00 a clock in MB     | interface, client                 |
-|                  | todayTX            | Number:DataAmount      | Data sent since 0:00 a clock in MB         | interface, client                 |
-|                  | totalRX            | Number:DataAmount      | Data received since reboot in MB           | interface, client                 |
-|                  | totalTX            | Number:DataAmount      | Data sent since reboot in MB               | interface, client                 |
+| group            | channel              |type                    | description                                | things supporting this channel    |
+|------------------|----------------------|------------------------|--------------------------------------------|-----------------------------------|
+| network-info     | mac-address          | text (RO)              | HW-Address                                 | interface, client                 |
+|                  | ip-address           | text (RO)              | IP-Address                                 | interface                         |
+|                  | ip-method            | text (RO)              | Ip-Method (static/dhcp)                    | interface, client                 |
+|                  | subnet               | text (RO)              | Subnetmask                                 | interface                         |
+|                  | gateway              | text (RO)              | Default-Gateway                            | interface                         |
+|                  | dns-servers          | text (RO)              | DNS-Servers                                | interface                         |
+|                  | network-state        | Switch (RO)            | Client is online                           | interface, client                 |
+|                  | internet-state       | Switch (RO)            | Client connected to Internet               | client                            |
+| sys-info         | mem-total            | Number:DataAmountype   | Total memory in MB                         | router                            |
+|                  | mem-used             | Number:DataAmountype   | Used memory in MB                          | router                            |
+|                  | mem-free             | Number:DataAmountype   | Free memory in MB                          | router                            |
+|                  | mem-used-percent     | Number:Dimensionles    | Used memory in %                           | router                            |
+|                  | cpu-used-percent     | Number:Dimensionles    | Total CPU usage in percent over all cores  | router                            |
+| client-list      | known-clients        | text (RO)              | Known clients with name and MAC-Addresses  | router                            |
+|                  | online-clients       | text (RO)              | Online clients with name and MAC-Addresses | router                            |
+|                  | online-macs          | text (RO)              | List with mac-addresses of online clients  | router                            |    
+|                  | online-clients-count | Number:Dimensionless   | Count of online clients                    | router                            |
+| traffic          | current-rx           | Number:DataTransferRate| Current DataTransferRate MBits/s (receive) | interface, client                 |
+|                  | current-tx           | Number:DataTransferRate| Current DataTransferRate MBits/s (send)    | interface, client                 |
+|                  | today-rx             | Number:DataAmount      | Data received since 0:00 a clock in MB     | interface, client                 |
+|                  | today-tx             | Number:DataAmount      | Data sent since 0:00 a clock in MB         | interface, client                 |
+|                  | total-rx             | Number:DataAmount      | Data received since reboot in MB           | interface, client                 |
+|                  | total-tx             | Number:DataAmount      | Data sent since reboot in MB               | interface, client                 |
 
 
 ## Events
 
 All devices support some of the following Events:
-| group            | event             |kind        | description                                                            | things supporting this event    |
-|------------------|-------------------|------------|------------------------------------------------------------------------|---------------------------------|
-| networkInfo      | connectionEvent   | Trigger    | Fired if connection is established ('connected') or ('disconnected')   | interface                       |
-|                  | clientOnlineEvent | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | client                          |
-| clientListGroup  | clientOnlineEvent | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | router                          |
+| group            | event               |kind        | description                                                            | things supporting this event    |
+|------------------|---------------------|------------|------------------------------------------------------------------------|---------------------------------|
+| network-info     | connection-event    | Trigger    | Fired if connection is established ('connected') or ('disconnected')   | interface                       |
+|                  | client-online-event | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | client                          |
+| client-list      | client-online-event | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | router                          |

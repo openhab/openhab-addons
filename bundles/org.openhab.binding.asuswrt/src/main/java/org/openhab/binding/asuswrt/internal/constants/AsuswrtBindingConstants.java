@@ -95,8 +95,8 @@ public class AsuswrtBindingConstants {
     public static final String CHANNEL_TRAFFIC_TOTAL_TX = "total-tx";
     public static final String CHANNEL_TRAFFIC_TODAY_RX = "today-rx";
     public static final String CHANNEL_TRAFFIC_TODAY_TX = "today-tx";
-    public static final String CHANNEL_TRAFFIC_CURRENT_RX = "cur-rx";
-    public static final String CHANNEL_TRAFFIC_CURRENT_TX = "cur-tx";
+    public static final String CHANNEL_TRAFFIC_CURRENT_RX = "current-rx";
+    public static final String CHANNEL_TRAFFIC_CURRENT_TX = "current-tx";
 
     /**
      * PROPERTIES

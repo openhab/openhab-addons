@@ -81,37 +81,37 @@ public class AsuswrtClientInfo {
      * from jsonData
      */
     public void setData(JsonObject jsonObject) {
-        this.traffic.setData(jsonObject);
-        this.defaultType = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_DEFTYPE, defaultType);
-        this.dpiDevice = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPIDEVICE, dpiDevice);
-        this.dpiType = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPITYPE, dpiType);
-        this.from = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IPFROM, from);
-        this.group = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_GROUP, group);
-        this.internetMode = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_INETMODE, internetMode);
-        this.internetState = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_INETSTATE, internetState);
-        this.ip = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IP, ip);
-        this.ipMethod = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IPMETHOD, ipMethod);
-        this.isGateway = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_IPGATEWAY, isGateway);
-        this.isGN = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_GN, isGN);
-        this.isITunes = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_ITUNES, isITunes);
-        this.isLogin = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_LOGIN, isLogin);
-        this.isOnline = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_ONLINE, isOnline);
-        this.isPrinter = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_PRINTER, isPrinter);
-        this.isWebServer = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_WEBSRV, isWebServer);
-        this.isWL = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WIFI, isWL);
-        this.keeparp = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_KEEPARP, keeparp);
-        this.mac = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_MAC, mac);
-        this.macRepeat = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_MACREPEAT, macRepeat);
-        this.name = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NAME, name);
-        this.nickName = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NICK, nickName);
-        this.opMode = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_MODE, opMode);
-        this.qosLevel = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_QOSLVL, qosLevel);
-        this.rog = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_ROG, rog);
-        this.rssi = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RSSI, rssi);
-        this.ssid = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_SSID, ssid);
-        this.vendor = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_VENDOR, vendor);
-        this.wlConnectTime = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_CONNECTTIME, wlConnectTime);
-        this.wtfast = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WTFAST, wtfast);
+        traffic.setData(jsonObject);
+        defaultType = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_DEFTYPE, defaultType);
+        dpiDevice = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPIDEVICE, dpiDevice);
+        dpiType = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_DPITYPE, dpiType);
+        from = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IPFROM, from);
+        group = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_GROUP, group);
+        internetMode = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_INETMODE, internetMode);
+        internetState = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_INETSTATE, internetState);
+        ip = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IP, ip);
+        ipMethod = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_IPMETHOD, ipMethod);
+        isGateway = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_IPGATEWAY, isGateway);
+        isGN = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_GN, isGN);
+        isITunes = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_ITUNES, isITunes);
+        isLogin = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_LOGIN, isLogin);
+        isOnline = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_ONLINE, isOnline);
+        isPrinter = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_PRINTER, isPrinter);
+        isWebServer = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_WEBSRV, isWebServer);
+        isWL = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WIFI, isWL);
+        keeparp = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_KEEPARP, keeparp);
+        mac = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_MAC, mac);
+        macRepeat = jsonObjectToBool(jsonObject, JSON_MEMBER_CLIENT_MACREPEAT, macRepeat);
+        name = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NAME, name);
+        nickName = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_NICK, nickName);
+        opMode = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_MODE, opMode);
+        qosLevel = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_QOSLVL, qosLevel);
+        rog = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_ROG, rog);
+        rssi = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RSSI, rssi);
+        ssid = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_SSID, ssid);
+        vendor = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_VENDOR, vendor);
+        wlConnectTime = jsonObjectToString(jsonObject, JSON_MEMBER_CLIENT_CONNECTTIME, wlConnectTime);
+        wtfast = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WTFAST, wtfast);
     }
 
     /***********************************

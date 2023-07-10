@@ -104,7 +104,7 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     }
 
     /**
-     * Query Data From Device asynchron
+     * Query Data From Device
      * 
      * @param command command constant to sent
      * @param asyncRequest True if request should be sent asynchron, false if synchron
@@ -206,5 +206,4 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         }
         return url + "/" + site;
     }
-
 }

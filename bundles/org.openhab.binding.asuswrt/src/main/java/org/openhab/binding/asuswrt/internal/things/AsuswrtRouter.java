@@ -17,7 +17,6 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSetti
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -55,7 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link asuswrtRouter} is responsible for handling commands, which are
+ * The {@link AsuswrtRouter} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Christian Wild - Initial contribution
@@ -87,11 +86,11 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     public AsuswrtRouter(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         Thing thing = getThing();
-        this.uid = thing.getUID().toString();
-        this.errorHandler = new AsuswrtErrorHandler();
+        uid = thing.getUID().toString();
+        errorHandler = new AsuswrtErrorHandler();
         this.httpClient = httpClient;
-        this.deviceInfo = new AsuswrtRouterInfo();
-        this.config = new AsuswrtConfiguration();
+        deviceInfo = new AsuswrtRouterInfo();
+        config = new AsuswrtConfiguration();
     }
 
     /***********************************
@@ -101,22 +100,22 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      ************************************/
     @Override
     public void initialize() {
-        this.config = getConfigAs(AsuswrtConfiguration.class);
-        this.connector = new AsuswrtConnector(this);
+        config = getConfigAs(AsuswrtConfiguration.class);
+        connector = new AsuswrtConnector(this);
 
         // Initialize the handler.
         setState(ThingStatus.UNKNOWN);
 
         // background initialization (delay it a little bit):
-        this.startupJob = scheduler.schedule(this::delayedStartUp, 1000, TimeUnit.MILLISECONDS);
+        startupJob = scheduler.schedule(this::delayedStartUp, 1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void dispose() {
-        stopScheduler(this.startupJob);
-        stopScheduler(this.pollingJob);
-        stopScheduler(this.discoveryJob);
-        stopScheduler(this.reconnectJob);
+        stopScheduler(startupJob);
+        stopScheduler(pollingJob);
+        stopScheduler(discoveryJob);
+        stopScheduler(reconnectJob);
     }
 
     /**
@@ -124,7 +123,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(AsuswrtDiscoveryService.class);
+        return List.of(AsuswrtDiscoveryService.class);
     }
 
     /**
@@ -157,11 +156,11 @@ public class AsuswrtRouter extends BaseBridgeHandler {
             if (pollingInterval < POLLING_INTERVAL_S_MIN) {
                 pollingInterval = POLLING_INTERVAL_S_MIN;
             }
-            logger.trace("({}) start polling scheduler with interval {} {}", this.getUID(), pollingInterval, timeUnit);
-            this.pollingJob = scheduler.scheduleWithFixedDelay(this::pollingJobAction, pollingInterval, pollingInterval,
+            logger.trace("({}) start polling scheduler with interval {} {}", getUID(), pollingInterval, timeUnit);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingJobAction, pollingInterval, pollingInterval,
                     timeUnit);
         } else {
-            stopScheduler(this.pollingJob);
+            stopScheduler(pollingJob);
         }
     }
 
@@ -183,8 +182,8 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         if (pollingInterval < RECONNECT_INTERVAL_S) {
             pollingInterval = RECONNECT_INTERVAL_S;
         }
-        logger.trace("({}) start reconnect scheduler in {} {}", this.getUID(), pollingInterval, timeUnit);
-        this.reconnectJob = scheduler.schedule(this::reconnectJobAction, pollingInterval, timeUnit);
+        logger.trace("({}) start reconnect scheduler in {} {}", getUID(), pollingInterval, timeUnit);
+        reconnectJob = scheduler.schedule(this::reconnectJobAction, pollingInterval, timeUnit);
     }
 
     /**
@@ -201,12 +200,11 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         int pollingInterval = config.discoveryInterval;
         TimeUnit timeUnit = TimeUnit.SECONDS;
         if (config.autoDiscoveryEnabled && pollingInterval > 0) {
-            logger.trace("{} starting bridge discovery sheduler with interval {} {}", this.getUID(), pollingInterval,
+            logger.trace("{} starting bridge discovery sheduler with interval {} {}", getUID(), pollingInterval,
                     timeUnit);
-            this.discoveryJob = scheduler.scheduleWithFixedDelay(discoveryService::startScan, 0, pollingInterval,
-                    timeUnit);
+            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryService::startScan, 0, pollingInterval, timeUnit);
         } else {
-            stopScheduler(this.discoveryJob);
+            stopScheduler(discoveryJob);
         }
     }
 
@@ -217,7 +215,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
         if (scheduler != null) {
-            logger.trace("{} stopping sheduler {}", this.uid, scheduler.toString());
+            logger.trace("{} stopping sheduler {}", uid, scheduler);
             scheduler.cancel(true);
             scheduler = null;
         }
@@ -238,7 +236,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         if (connector.cookieStore.cookieIsSet()) {
             stopScheduler(reconnectJob);
             queryDeviceData(false);
-            devicePropertiesChanged(this.deviceInfo);
+            devicePropertiesChanged(deviceInfo);
             setState(ThingStatus.ONLINE);
             startPollingJob();
         } else {
@@ -288,20 +286,20 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         }
         if (command.contains(CMD_GET_USAGE) || command.contains(CMD_GET_MEMUSAGE)
                 || command.contains(CMD_GET_CPUUSAGE)) {
-            this.deviceInfo.setUsageStats(jsonObject);
+            deviceInfo.setUsageStats(jsonObject);
         }
-        updateChannels(deviceInfo);
+        updateChannels(deviceInfo, clientList);
     }
 
     /**
-     * Upate RouterStatus
+     * Update RouterStatus
      */
     public void setState(ThingStatus thingStatus, ThingStatusDetail statusDetail, String text) {
         if (!thingStatus.equals(getThing().getStatus())) {
             updateStatus(thingStatus, statusDetail, text);
             updateChildStates(thingStatus);
             if (thingStatus.equals(ThingStatus.OFFLINE)) {
-                stopScheduler(this.pollingJob);
+                stopScheduler(pollingJob);
                 /* set channels to undef */
                 getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
                 startReconnectScheduler();
@@ -323,15 +321,15 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      ************************************/
 
     public HttpClient getHttpClient() {
-        return this.httpClient;
+        return httpClient;
     }
 
     public AsuswrtConfiguration getConfiguration() {
-        return this.config;
+        return config;
     }
 
     public AsuswrtErrorHandler getErrorHandler() {
-        return this.errorHandler;
+        return errorHandler;
     }
 
     public ThingUID getUID() {
@@ -339,15 +337,15 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     }
 
     public AsuswrtRouterInfo getDeviceInfo() {
-        return this.deviceInfo;
+        return deviceInfo;
     }
 
     public AsuswrtClientList getClients() {
-        return this.clientList;
+        return clientList;
     }
 
     public AsuswrtInterfaceList getInterfaces() {
-        return this.interfaceList;
+        return interfaceList;
     }
 
     public ThingStatus getState() {
@@ -396,8 +394,8 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     /**
      * Update all Channels
      */
-    public void updateChannels(AsuswrtRouterInfo deviceInfo) {
-        updateClientChannels(deviceInfo);
+    public void updateChannels(AsuswrtRouterInfo deviceInfo, AsuswrtClientList clientList) {
+        updateClientChannels(clientList);
         updateUsageChannels(deviceInfo);
     }
 
@@ -422,7 +420,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     /**
      * Update Client Channel
      */
-    public void updateClientChannels(AsuswrtRouterInfo deviceInfo) {
+    public void updateClientChannels(AsuswrtClientList clientList) {
         updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENTS_KNOWN),
                 getStringType(clientList.getClientList()));
         updateState(getChannelID(CHANNEL_GROUP_CLIENTS, CHANNEL_CLIENTS_ONLINE),

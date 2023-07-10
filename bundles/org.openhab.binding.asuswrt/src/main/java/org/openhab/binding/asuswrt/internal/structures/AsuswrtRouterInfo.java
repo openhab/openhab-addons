@@ -77,10 +77,10 @@ public class AsuswrtRouterInfo {
      */
     public void setSysInfo(JsonObject jsonObject) {
         try {
-            this.productId = jsonObject.get(JSON_MEMBER_PRODUCTID).toString();
-            this.fwVersion = jsonObject.get(JSON_MEMBER_FIRMWARE).toString();
-            this.fwBuild = jsonObject.get(JSON_MEMBER_BUILD).toString();
-            this.macAddress = jsonObject.get(JSON_MEMBER_MAC).toString();
+            productId = jsonObject.get(JSON_MEMBER_PRODUCTID).toString();
+            fwVersion = jsonObject.get(JSON_MEMBER_FIRMWARE).toString();
+            fwBuild = jsonObject.get(JSON_MEMBER_BUILD).toString();
+            macAddress = jsonObject.get(JSON_MEMBER_MAC).toString();
         } catch (Exception e) {
             logger.trace("incomplete SysInfo");
         }
@@ -96,7 +96,7 @@ public class AsuswrtRouterInfo {
         JsonObject jsnCpuUsage = jsonObject.getAsJsonObject(JSON_MEMBER_CPU_USAGE);
         /* get memory usage */
         if (jsnMemUsage != null) {
-            this.usageStats.put(JSON_MEMBER_MEM_USAGE,
+            usageStats.put(JSON_MEMBER_MEM_USAGE,
                     new AsuswrtUsage(jsnMemUsage, JSON_MEMBER_MEM_TOTAL, JSON_MEMBER_MEM_USED));
         }
         /* loop cpu usages */
@@ -106,7 +106,7 @@ public class AsuswrtRouterInfo {
                 String total = JSON_MEMBER_CPU_TOTAL.replace("{x}", "" + i);
                 String used = JSON_MEMBER_CPU_USED.replace("{x}", "" + i);
                 if (jsnCpuUsage.has(total) && jsnCpuUsage.has(used)) {
-                    this.usageStats.put(member, new AsuswrtUsage(jsnCpuUsage, total, used));
+                    usageStats.put(member, new AsuswrtUsage(jsnCpuUsage, total, used));
                 }
             }
         }
@@ -123,7 +123,7 @@ public class AsuswrtRouterInfo {
     }
 
     public String getFirmwareVersion() {
-        return fwVersion + " (" + this.fwBuild + ")";
+        return fwVersion + " (" + fwBuild + ")";
     }
 
     public String getMAC() {
@@ -133,7 +133,7 @@ public class AsuswrtRouterInfo {
     public AsuswrtUsage getMemUsage() {
         if (usageStats.containsKey(JSON_MEMBER_MEM_USAGE)) {
             @Nullable
-            AsuswrtUsage usage = this.usageStats.get(JSON_MEMBER_MEM_USAGE);
+            AsuswrtUsage usage = usageStats.get(JSON_MEMBER_MEM_USAGE);
             if (usage != null) {
                 return usage;
             }
@@ -151,7 +151,7 @@ public class AsuswrtRouterInfo {
         String coreKey = JSON_MEMBER_CPU_USAGE + "_" + coreNum;
         if (usageStats.containsKey(coreKey)) {
             @Nullable
-            AsuswrtUsage usage = this.usageStats.get(coreKey);
+            AsuswrtUsage usage = usageStats.get(coreKey);
             if (usage != null) {
                 return usage;
             }
@@ -170,7 +170,7 @@ public class AsuswrtRouterInfo {
         Integer total = 0, used = 0, coreNum;
         for (coreNum = 1; coreNum <= USAGE_CPU_COUNT; coreNum++) {
             coreKey = JSON_MEMBER_CPU_USAGE + "_" + coreNum;
-            coreStatsX = this.usageStats.get(coreKey);
+            coreStatsX = usageStats.get(coreKey);
             if (coreStatsX != null) {
                 total += coreStatsX.getTotal();
                 used += coreStatsX.getUsed();

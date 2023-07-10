@@ -71,9 +71,9 @@ public class AsuswrtUsage {
      * @param usedKey neme of key used is stored
      */
     public void setData(JsonObject jsonObject, String totalKey, String usedKey) {
-        this.total = jsonObjectToInt(jsonObject, totalKey, 0);
-        this.used = jsonObjectToInt(jsonObject, usedKey, 0);
-        this.free = total - used;
+        total = jsonObjectToInt(jsonObject, totalKey, 0);
+        used = jsonObjectToInt(jsonObject, usedKey, 0);
+        free = total - used;
     }
 
     /**
@@ -83,9 +83,9 @@ public class AsuswrtUsage {
      * @param used Integer used
      */
     public void setData(Integer totalUsage, Integer used) {
-        this.total = totalUsage;
+        total = totalUsage;
         this.used = used;
-        this.free = total - used;
+        free = total - used;
     }
 
     /***********************************
@@ -108,14 +108,14 @@ public class AsuswrtUsage {
 
     public Integer getUsedPercent() {
         if (total > 0) {
-            return ((this.used * 100) / this.total);
+            return ((used * 100) / total);
         }
         return 0;
     }
 
     public Integer getFreePercent() {
         if (total > 0) {
-            return ((this.free * 100) / this.total);
+            return ((free * 100) / total);
         }
         return 0;
     }

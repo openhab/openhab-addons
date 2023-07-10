@@ -80,8 +80,8 @@ public class AsuswrtErrorHandler {
      * Reset Error
      */
     public void reset() {
-        this.errorMessage = "";
-        this.infoMessage = "";
+        errorMessage = "";
+        infoMessage = "";
     }
 
     /***********************************
@@ -94,13 +94,13 @@ public class AsuswrtErrorHandler {
      * Get Error Message
      */
     public String getErrorMessage() {
-        return this.errorMessage;
+        return errorMessage;
     }
 
     /**
      * Get Error Message
      */
     public String getInfoMessage() {
-        return this.infoMessage;
+        return infoMessage;
     }
 }

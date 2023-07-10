@@ -19,6 +19,7 @@ import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
