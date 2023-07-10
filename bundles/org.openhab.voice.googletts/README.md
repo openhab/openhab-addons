@@ -2,8 +2,7 @@
 
 Google Cloud TTS Service uses the non-free Google Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language (SSML) input into audio data of natural human speech. 
 It provides multiple voices, available in different languages and variants and applies DeepMind’s groundbreaking research in WaveNet and Google’s powerful neural networks. 
-The implementation caches the converted texts to reduce the load on the API and make the conversion faster.
-You can find them in the `$OPENHAB_USERDATA/cache/org.openhab.voice.googletts` folder.
+The Google Cloud TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.
 Be aware, that using this service may incur cost on your Google Cloud account.
 You can find pricing information on the [documentation page](https://cloud.google.com/text-to-speech/#pricing-summary).
 
@@ -47,10 +46,6 @@ It is recommended to clear this configuration parameter afterwards.
 * **Pitch** - The pitch of selected voice, up to 20 semitones.
 * **Volume Gain** - The volume of the output between 16dB and -96dB.
 * **Speaking Rate** - The speaking rate can be 4x faster or slower than the normal rate.
-* **Purge Cache** - Purges the cache e.g. after testing different voice configuration parameters.
-
-When enabled the cache is purged once.
-Make sure to disable this setting again so the cache is maintained after restarts.
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `googletts.cfg`
 
@@ -63,7 +58,6 @@ org.openhab.voice.googletts:authcode=XXXXX
 org.openhab.voice.googletts:pitch=0
 org.openhab.voice.googletts:volumeGain=0
 org.openhab.voice.googletts:speakingRate=1
-org.openhab.voice.googletts:purgeCache=false
 ```
 
 ### Default Text-to-Speech and Voice Configuration
