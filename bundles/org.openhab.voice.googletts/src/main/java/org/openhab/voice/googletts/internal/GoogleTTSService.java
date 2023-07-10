@@ -358,7 +358,7 @@ public class GoogleTTSService extends AbstractCachedTTSService {
             return ((GoogleTTSVoice) voice).getTechnicalName() + "_" + hash;
         } catch (NoSuchAlgorithmException e) {
             // should not happen
-            logger.error("Could not create MD5 hash for '{}'", text, e);
+            logger.warn("Could not create MD5 hash for '{}'", text, e);
             return "nomd5algorithm";
         }
     }
