@@ -548,6 +548,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             }
         }
         if (cs.voltage != null) {
+            if (status.voltage == null || cs.voltage > status.voltage) {
+                status.voltage = cs.voltage;
+            }
             emeter.voltage = cs.voltage;
         }
         if (cs.current != null) {
