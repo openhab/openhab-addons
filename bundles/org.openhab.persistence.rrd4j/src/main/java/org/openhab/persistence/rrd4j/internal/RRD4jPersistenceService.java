@@ -20,13 +20,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -71,6 +71,7 @@ import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.rrd4j.ConsolFun;
@@ -108,10 +109,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private static final Set<String> SUPPORTED_TYPES = Set.of(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT,
             CoreItemFactory.DIMMER, CoreItemFactory.NUMBER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.COLOR);
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3,
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
             new NamedThreadFactory("RRD4j"));
 
     private final Map<String, RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
+
+    private final ConcurrentSkipListMap<Long, Map<String, Double>> storageMap = new ConcurrentSkipListMap<>();
 
     private static final String DATASOURCE_STATE = "state";
 
@@ -120,10 +123,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private static final RrdDbPool DATABASE_POOL = new RrdDbPool();
 
     private final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceService.class);
-
-    private final Map<String, ScheduledFuture<?>> scheduledJobs = new HashMap<>();
-
     private final ItemRegistry itemRegistry;
+    private boolean active = false;
 
     public static Path getDatabasePath(String name) {
         return DB_FOLDER.resolve(name + ".rrd");
@@ -133,9 +134,21 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         return DATABASE_POOL;
     }
 
+    private final ScheduledFuture<?> storeJob;
+
     @Activate
     public RRD4jPersistenceService(final @Reference ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
+        storeJob = scheduler.scheduleWithFixedDelay(() -> doStore(false), 1, 1, TimeUnit.SECONDS);
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        active = false;
+        storeJob.cancel(false);
+
+        // make sure we really store everything
+        doStore(true);
     }
 
     @Override
@@ -150,6 +163,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(final Item item, @Nullable final String alias) {
+        logger.debug("foo {} ", item);
+        if (!active) {
+            logger.warn("Tried to store {} but service is not yet ready.", item);
+            return;
+        }
+
         if (!isSupportedItemType(item)) {
             logger.trace("Ignoring item '{}' since its type {} is not supported", item.getName(), item.getType());
             return;
@@ -158,9 +177,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         Double value;
 
-        if (item instanceof NumberItem && item.getState() instanceof QuantityType) {
-            NumberItem nItem = (NumberItem) item;
-            QuantityType<?> qState = (QuantityType<?>) item.getState();
+        if (item instanceof NumberItem nItem && item.getState() instanceof QuantityType<?> qState) {
             Unit<? extends Quantity<?>> unit = nItem.getUnit();
             if (unit != null) {
                 QuantityType<?> convertedState = qState.toUnit(unit);
@@ -190,11 +207,25 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         long now = System.currentTimeMillis() / 1000;
-
-        scheduler.schedule(() -> internalStore(name, value, now, true), 0, TimeUnit.SECONDS);
+        storageMap.computeIfAbsent(now, t -> new ConcurrentHashMap<>()).put(name, value);
     }
 
-    private synchronized void internalStore(String name, double value, long now, boolean retry) {
+    private void doStore(boolean force) {
+        while (!storageMap.isEmpty()) {
+            long timestamp = storageMap.firstKey();
+            long now = System.currentTimeMillis() / 1000;
+            if (now > timestamp || force) {
+                // no new elements can be added for this timestamp because we are already past that time or the service
+                // requires forced storing
+                Map<String, Double> values = storageMap.pollFirstEntry().getValue();
+                values.forEach((name, value) -> writePointToDatabase(name, value, timestamp));
+            } else {
+                return;
+            }
+        }
+    }
+
+    private synchronized void writePointToDatabase(String name, double value, long timestamp) {
         RrdDb db = null;
         try {
             db = getDB(name, true);
@@ -205,41 +236,31 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             return;
         }
 
-        try {
-            if (now < db.getLastUpdateTime()) {
-                logger.warn("RRD4J does not support adding past value this={}, last update={}. Discarding {} - {}", now,
-                        db.getLastUpdateTime(), name, value);
-                return;
-            }
-        } catch (IOException ignored) {
-            // we can ignore that here, we'll fail again later.
-        }
-
         ConsolFun function = getConsolidationFunction(db);
         if (function != ConsolFun.AVERAGE) {
             try {
                 // we store the last value again, so that the value change
                 // in the database is not interpolated, but
                 // happens right at this spot
-                if (now - 1 > db.getLastUpdateTime()) {
+                if (timestamp - 1 > db.getLastUpdateTime()) {
                     // only do it if there is not already a value
                     double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                     if (!Double.isNaN(lastValue)) {
                         Sample sample = db.createSample();
-                        sample.setTime(now - 1);
+                        sample.setTime(timestamp - 1);
                         sample.setValue(DATASOURCE_STATE, lastValue);
                         sample.update();
                         logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database (again)", name,
-                                lastValue, now - 1);
+                                lastValue, timestamp - 1);
                     }
                 }
             } catch (IOException e) {
-                logger.debug("Error storing last value (again): {}", e.getMessage());
+                logger.debug("Error storing last value (again) for {}: {}", e.getMessage(), name);
             }
         }
         try {
             Sample sample = db.createSample();
-            sample.setTime(now);
+            sample.setTime(timestamp);
             double storeValue = value;
             if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) {
                 // counter values must be adjusted by stepsize
@@ -247,20 +268,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             }
             sample.setValue(DATASOURCE_STATE, storeValue);
             sample.update();
-            logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database", name, storeValue, now);
-        } catch (IllegalArgumentException e) {
-            String message = e.getMessage();
-            if (message != null && message.contains("at least one second step is required") && retry) {
-                // we try to store the value one second later
-                ScheduledFuture<?> job = scheduledJobs.get(name);
-                if (job != null) {
-                    job.cancel(true);
-                    scheduledJobs.remove(name);
-                }
-                internalStore(name, value, now + 1, false);
-            } else {
-                logger.warn("Could not persist '{}' to rrd4j database: {}", name, e.getMessage());
-            }
+            logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database", name, storeValue, timestamp);
         } catch (Exception e) {
             logger.warn("Could not persist '{}' to rrd4j database: {}", name, e.getMessage());
         }
@@ -527,6 +535,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     @Activate
     protected void activate(final Map<String, Object> config) {
         modified(config);
+        active = true;
     }
 
     @Modified
@@ -780,5 +789,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE,
                 new PersistenceCronStrategy("everyMinute", "0 * * * * ?"));
+    }
+
+    private record DataPoint(String itemName, double value) {
     }
 }
