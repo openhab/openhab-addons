@@ -70,7 +70,6 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private static final int DISCOVERY_TIME_SECONDS = 10;
-    private static final int BACKGROUND_SCAN_REFRESH_MINUTES = 1;
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsDiscoveryService.class);
 
@@ -89,8 +88,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof FreeboxOsHandler) {
-            bridgeHandler = (FreeboxOsHandler) handler;
+        if (handler instanceof FreeboxOsHandler freeboxosHandler) {
+            bridgeHandler = freeboxosHandler;
             activate(null);
         }
     }
@@ -103,8 +102,14 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     @Override
     protected void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
-        backgroundFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::startScan,
-                BACKGROUND_SCAN_REFRESH_MINUTES, BACKGROUND_SCAN_REFRESH_MINUTES, TimeUnit.MINUTES));
+        FreeboxOsHandler handler = bridgeHandler;
+        if (handler != null) {
+            int interval = handler.getConfiguration().discoveryInterval;
+            if (interval > 0) {
+                backgroundFuture = Optional
+                        .of(scheduler.scheduleWithFixedDelay(this::startScan, 1, interval, TimeUnit.MINUTES));
+            }
+        }
     }
 
     @Override
@@ -116,23 +121,23 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        FreeboxOsHandler localHandler = bridgeHandler;
-        if (localHandler != null && localHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+        FreeboxOsHandler handler = bridgeHandler;
+        if (handler != null && handler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                ThingUID bridgeUID = localHandler.getThing().getUID();
+                ThingUID bridgeUID = handler.getThing().getUID();
 
-                List<LanHost> lanHosts = localHandler.getManager(LanBrowserManager.class).getHosts().stream()
-                        .filter(LanHost::reachable).collect(Collectors.toList());
+                List<LanHost> lanHosts = handler.getManager(LanBrowserManager.class).getHosts().stream()
+                        .filter(LanHost::reachable).toList();
 
-                discoverServer(localHandler.getManager(SystemManager.class), bridgeUID);
-                discoverPhone(localHandler.getManager(PhoneManager.class), bridgeUID);
-                discoverPlugs(localHandler.getManager(FreeplugManager.class), bridgeUID);
-                discoverRepeater(localHandler.getManager(RepeaterManager.class), bridgeUID, lanHosts);
-                discoverPlayer(localHandler.getManager(PlayerManager.class), bridgeUID, lanHosts);
-                discoverVM(localHandler.getManager(VmManager.class), bridgeUID, lanHosts);
-                discoverHome(localHandler.getManager(HomeManager.class), bridgeUID);
-                if (localHandler.getConfiguration().discoverNetDevice) {
-                    discoverHosts(localHandler, bridgeUID, lanHosts);
+                discoverServer(handler.getManager(SystemManager.class), bridgeUID);
+                discoverPhone(handler.getManager(PhoneManager.class), bridgeUID);
+                discoverPlugs(handler.getManager(FreeplugManager.class), bridgeUID);
+                discoverRepeater(handler.getManager(RepeaterManager.class), bridgeUID, lanHosts);
+                discoverPlayer(handler.getManager(PlayerManager.class), bridgeUID, lanHosts);
+                discoverVM(handler.getManager(VmManager.class), bridgeUID, lanHosts);
+                discoverHome(handler.getManager(HomeManager.class), bridgeUID);
+                if (handler.getConfiguration().discoverNetDevice) {
+                    discoverHosts(handler, bridgeUID, lanHosts);
                 }
             } catch (FreeboxException e) {
                 logger.warn("Error while requesting data for things discovery: {}", e.getMessage());
@@ -181,10 +186,9 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
             throws FreeboxException {
         try {
             List<MACAddress> wifiMacs = new ArrayList<>();
-            wifiMacs.addAll(localHandler.getManager(APManager.class).getStations().stream().map(Station::mac)
-                    .collect(Collectors.toList()));
-            wifiMacs.addAll(localHandler.getManager(RepeaterManager.class).getHosts().stream().map(LanHost::getMac)
-                    .collect(Collectors.toList()));
+            wifiMacs.addAll(localHandler.getManager(APManager.class).getStations().stream().map(Station::mac).toList());
+            wifiMacs.addAll(
+                    localHandler.getManager(RepeaterManager.class).getHosts().stream().map(LanHost::getMac).toList());
 
             lanHosts.forEach(lanHost -> {
                 MACAddress mac = lanHost.getMac();
@@ -253,9 +257,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
             logger.debug("Adding new Freebox Server {} to inbox", thingUID);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withProperty(Thing.PROPERTY_MAC_ADDRESS, config.mac())
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withLabel(config.modelInfo().prettyName())
-                    .build();
+                    .withProperty(Thing.PROPERTY_MAC_ADDRESS, config.mac()).build();
             thingDiscovered(discoveryResult);
         } catch (PermissionException e) {
             logger.warn("Missing permission to discover Server {}", e.getPermission());
@@ -270,9 +273,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 ThingUID thingUID = new ThingUID(player.apiAvailable() ? THING_TYPE_ACTIVE_PLAYER : THING_TYPE_PLAYER,
                         bridgeUID, Integer.toString(player.id()));
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                        .withLabel(player.deviceName())
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, player.mac().toColonDelimitedString())
-                        .withProperty(ClientConfiguration.ID, player.id())
+                        .withProperty(ClientConfiguration.ID, player.id()).withLabel(player.deviceName())
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
                 thingDiscovered(discoveryResult);
             }
