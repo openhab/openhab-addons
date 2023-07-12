@@ -28,6 +28,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.audio.AudioFormat;
+import org.openhab.voice.voicerss.internal.VoiceRSSRawAudioStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,8 +217,8 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
      * dependencies.
      */
     @Override
-    public InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioCodec,
-            String audioFormat) throws IOException {
+    public VoiceRSSRawAudioStream getTextToSpeech(String apiKey, String text, String locale, String voice,
+            String audioCodec, String audioFormat) throws IOException {
         String url = createURL(apiKey, text, locale, voice, audioCodec, audioFormat);
         if (logging) {
             LoggerFactory.getLogger(VoiceRSSCloudImpl.class).debug("Call {}", url.replace(apiKey, "***"));
@@ -259,7 +261,8 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
             throw new IOException(
                     "Could not read audio content, service returned an error: " + new String(bytes, "UTF-8"));
         } else {
-            return is;
+            // Set any audio format
+            return new VoiceRSSRawAudioStream(is, AudioFormat.MP3, connection.getContentLengthLong());
         }
     }
 
