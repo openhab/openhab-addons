@@ -33,6 +33,7 @@ public class FreeboxOsConfiguration {
     private String apiDomain = FreeboxTlsCertificateProvider.DEFAULT_NAME;
     public String appToken = "";
     public boolean discoverNetDevice;
+    public int discoveryInterval = 10;
 
     private int httpsPort = 15682;
     private boolean httpsAvailable;
