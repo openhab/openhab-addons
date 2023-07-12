@@ -28,20 +28,10 @@ The following settings can be edited in UI (**Settings / Other Services - Polly 
 * **Access Key** - The AWS credentials access key (required).
 * **Secret Key** - The AWS credentials secret key (required).
 * **Service Region** - The service region used for accessing Polly (required). To reduce latency select the region closest to you. E.g. "eu-west-1" (see [regions](https://docs.aws.amazon.com/general/latest/gr/rande.html#pol_region))
-
-* **Cache Expiration** - Cache expiration in days.
-
-The PollyTTS service caches audio files from previous requests.
-This reduces traffic, improves performance, reduces the number of requests and provides offline functionality.
-When cache files are used their time stamps are updated, unused files are purged if their time stamp exceeds the specified age.
-The default value of 0 disables this functionality.
-A value of 365 removes files that have been unused for a year.
-
 * **Audio Format** - Allows for overriding the system default audio format.
  
 Use "default" to select the system default audio format.
 The default audio format can be overriden with the value "mp3" or "ogg".
-
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `pollytts.cfg`
 
@@ -51,7 +41,6 @@ Its contents should look similar to:
 org.openhab.voice.pollytts:accessKey=ACCESS_KEY
 org.openhab.voice.pollytts:secretKey=SECRET_KEY
 org.openhab.voice.pollytts:serviceRegion=eu-west-1
-org.openhab.voice.pollytts:cacheExpiration=0
 org.openhab.voice.pollytts:audioFormat=default
 ```
 
@@ -70,6 +59,10 @@ In case you would like to setup these settings via a text file, you can edit the
 org.openhab.voice:defaultTTS=pollytts
 org.openhab.voice:defaultVoice=pollytts:Joanne
 ```
+
+## Caching
+
+The PolyTTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.
 
 ## Rule Examples
 
