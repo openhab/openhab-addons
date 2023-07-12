@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.core.audio.AudioFormat.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -47,7 +48,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AirMediaSink extends AudioSinkAsync {
     private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
-    private static final Set<AudioFormat> BASIC_FORMATS = Set.of(WAV, OGG);
+    // OGG seems to not be properly supported (tested with a file produced by VoiceRSS)
+    private static final Set<AudioFormat> BASIC_FORMATS = Set.of(WAV/* , OGG */);
     private static final Set<AudioFormat> ALL_MP3_FORMATS = Set.of(
             new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 96000, null),
             new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 112000, null),
@@ -111,46 +113,69 @@ public class AirMediaSink extends AudioSinkAsync {
     @Override
     protected void processAsynchronously(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
-        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
-            try {
-                MediaReceiverManager manager = thingHandler.getManager(MediaReceiverManager.class);
-                if (audioStream == null) {
-                    manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
-                    return;
-                }
+        if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+            tryClose(audioStream);
+            return;
+        }
 
-                if (audioStream instanceof URLAudioStream urlAudioStream) {
-                    // it is an external URL, we can access it directly
-                    logger.debug("AirPlay audio sink: process url {}", urlAudioStream.getURL());
-                    playMedia(manager, urlAudioStream.getURL());
-                    return;
-                }
-                // we serve it on our own HTTP server
-                StreamServed streamServed;
-                try {
-                    streamServed = audioHTTPServer.serve(audioStream, 5, true);
-                } catch (IOException e) {
-                    try {
-                        audioStream.close();
-                    } catch (IOException ex) {
-                        logger.debug("Exception while closing audioStream");
-                    }
-                    throw new UnsupportedAudioStreamException(
-                            "AirPlay device was not able to handle the audio stream (cache on disk failed).",
-                            audioStream.getClass(), e);
-                }
-                streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
-                logger.debug("AirPlay audio sink: process url {}", callbackUrl + streamServed.url());
-                playMedia(manager, callbackUrl + streamServed.url());
-            } catch (FreeboxException e) {
-                logger.warn("Audio stream playback failed: {}", e.getMessage());
+        if (audioStream == null) {
+            stopMedia();
+            return;
+        }
+
+        String url;
+        if (audioStream instanceof URLAudioStream urlAudioStream) {
+            // it is an external URL, we can access it directly
+            url = urlAudioStream.getURL();
+            tryClose(audioStream);
+        } else {
+            // we serve it on our own HTTP server
+            logger.debug("audioStream {} {}", audioStream.getClass().getSimpleName(), audioStream.getFormat());
+            StreamServed streamServed;
+            try {
+                streamServed = audioHTTPServer.serve(audioStream, 5, true);
+            } catch (IOException e) {
+                tryClose(audioStream);
+                throw new UnsupportedAudioStreamException(
+                        "AirPlay device was not able to handle the audio stream (cache on disk failed).",
+                        audioStream.getClass(), e);
+            }
+            url = callbackUrl + streamServed.url();
+            streamServed.playEnd().thenRun(() -> {
+                stopMedia();
+                this.playbackFinished(audioStream);
+            });
+        }
+        logger.debug("AirPlay audio sink: process url {}", url);
+        playMedia(url);
+    }
+
+    private void tryClose(@Nullable InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException ignored) {
             }
         }
     }
 
-    private void playMedia(MediaReceiverManager manager, String url) throws FreeboxException {
-        manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
-        manager.sendToReceiver(playerName, password, Action.START, MediaType.VIDEO, url);
+    private void playMedia(String url) {
+        try {
+            MediaReceiverManager manager = thingHandler.getManager(MediaReceiverManager.class);
+            manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
+            manager.sendToReceiver(playerName, password, Action.START, MediaType.VIDEO, url);
+        } catch (FreeboxException e) {
+            logger.warn("Playing media failed: {}", e.getMessage());
+        }
+    }
+
+    private void stopMedia() {
+        try {
+            MediaReceiverManager manager = thingHandler.getManager(MediaReceiverManager.class);
+            manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
+        } catch (FreeboxException e) {
+            logger.warn("Stopping media failed: {}", e.getMessage());
+        }
     }
 
     @Override
