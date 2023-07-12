@@ -18,9 +18,9 @@ import java.io.OutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
-import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.SizeableAudioStream;
 
 /**
  * An AudioStream with an {@link InputStream} inside
@@ -28,7 +28,7 @@ import org.openhab.core.audio.FixedLengthAudioStream;
  * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
-public class InputStreamAudioStream extends FixedLengthAudioStream {
+public class InputStreamAudioStream extends AudioStream implements SizeableAudioStream {
 
     public InputStream innerInputStream;
     public AudioFormat audioFormat;
@@ -114,10 +114,5 @@ public class InputStreamAudioStream extends FixedLengthAudioStream {
     @Override
     public long length() {
         return length;
-    }
-
-    @Override
-    public InputStream getClonedStream() throws AudioException {
-        throw new AudioException("Operation not supported");
     }
 }
