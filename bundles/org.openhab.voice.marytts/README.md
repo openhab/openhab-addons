@@ -43,3 +43,8 @@ The sample frequency depends on the chosen voice and ranges from 16kHz to 48kHz.
 ## Log files
 
 The log messages of Mary TTS are not bundled with the openHAB log messages in the `openhab.log` file of your log directory but are stored in their own log file at `server.log` of your log directory.
+
+## Caching
+
+The MaryTTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.
+
