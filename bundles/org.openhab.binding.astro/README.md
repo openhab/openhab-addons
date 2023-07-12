@@ -57,7 +57,7 @@ This is done by setting `useMeteorologicalSeason` to true in the advanced settin
       - `totalElevation, partialElevation, ringElevation` (Number:Angle)
   - **group** `phase`
     - **channel**
-      - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NIGHT`
+      - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NOON, NIGHT`
 - **thing** `moon`
   - **group** `rise, set`
     - **channel**
