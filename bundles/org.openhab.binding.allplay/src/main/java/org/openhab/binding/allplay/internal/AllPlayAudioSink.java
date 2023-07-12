@@ -101,7 +101,11 @@ public class AllPlayAudioSink extends AudioSinkAsync {
         try {
             handler.playUrl(url);
         } catch (SpeakerException e) {
-            logger.warn("Unable to play audio stream on speaker {}", getId(), e);
+            if (logger.isDebugEnabled()) {
+                logger.warn("Unable to play audio stream on speaker {}", getId(), e);
+            } else {
+                logger.warn("Unable to play audio stream on speaker {}: {}", getId(), e.getMessage());
+            }
         }
     }
 
