@@ -352,7 +352,13 @@ public class TelegramActions implements ThingActions {
                         byte[] fileContent = contentResponse.getContent();
                         sendPhoto = new SendPhoto(chatId, fileContent);
                     } else {
-                        logger.warn("Download from {} failed with status: {}", photoURL, contentResponse.getStatus());
+                        if (contentResponse.getStatus() == 401
+                                && contentResponse.getHeaders().get(HttpHeader.WWW_AUTHENTICATE).contains("igest")) {
+                            logger.warn("Download from {} failed due to no BASIC http auth support.", photoURL);
+                        } else {
+                            logger.warn("Download from {} failed with status: {}", photoURL,
+                                    contentResponse.getStatus());
+                        }
                         sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
                         return false;
                     }
@@ -555,7 +561,13 @@ public class TelegramActions implements ThingActions {
                         byte[] fileContent = contentResponse.getContent();
                         sendVideo = new SendVideo(chatId, fileContent);
                     } else {
-                        logger.warn("Download from {} failed with status: {}", videoURL, contentResponse.getStatus());
+                        if (contentResponse.getStatus() == 401
+                                && contentResponse.getHeaders().get(HttpHeader.WWW_AUTHENTICATE).contains("igest")) {
+                            logger.warn("Download from {} failed due to no BASIC http auth support.", videoURL);
+                        } else {
+                            logger.warn("Download from {} failed with status: {}", videoURL,
+                                    contentResponse.getStatus());
+                        }
                         sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
                         return false;
                     }
