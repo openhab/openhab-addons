@@ -13,21 +13,9 @@
 package org.openhab.binding.onkyo.internal.handler;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onkyo.internal.OnkyoBindingConstants;
-import org.openhab.core.audio.AudioFormat;
-import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSink;
-import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.FixedLengthAudioStream;
-import org.openhab.core.audio.URLAudioStream;
-import org.openhab.core.audio.UnsupportedAudioFormatException;
-import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
@@ -38,38 +26,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * * The {@link UpnpAudioSinkHandler} is a base class for ThingHandlers for devices which support UPnP playback. It
- * implements the AudioSink interface.
- * This will allow to register the derived ThingHandler to be registered as an AudioSink in the framework.
+ * The {@link OnkyoUpnpHandler} is a base class for ThingHandlers for devices which support UPnP playback.
  *
  * @author Paul Frank - Initial contribution
+ * @author Laurent Garnier - Separated into OnkyoUpnpHandler and OnkyoAudioSink
  */
-public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements AudioSink, UpnpIOParticipant {
+public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpIOParticipant {
 
-    private static final Set<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
+    private final Logger logger = LoggerFactory.getLogger(OnkyoUpnpHandler.class);
 
-    static {
-        SUPPORTED_FORMATS.add(AudioFormat.WAV);
-        SUPPORTED_FORMATS.add(AudioFormat.MP3);
-
-        SUPPORTED_STREAMS.add(AudioStream.class);
-    }
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private AudioHTTPServer audioHTTPServer;
-    private String callbackUrl;
     private UpnpIOService service;
 
-    public UpnpAudioSinkHandler(Thing thing, UpnpIOService upnpIOService, AudioHTTPServer audioHTTPServer,
-            String callbackUrl) {
+    public OnkyoUpnpHandler(Thing thing, UpnpIOService upnpIOService) {
         super(thing);
-        this.audioHTTPServer = audioHTTPServer;
-        this.callbackUrl = callbackUrl;
-        if (upnpIOService != null) {
-            this.service = upnpIOService;
-        }
+        this.service = upnpIOService;
     }
 
     protected void handlePlayUri(Command command) {
@@ -83,7 +53,7 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
         }
     }
 
-    private void playMedia(String url) {
+    public void playMedia(String url) {
         stop();
         removeAllTracksFromQueue();
 
@@ -96,17 +66,7 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
         play();
     }
 
-    @Override
-    public Set<AudioFormat> getSupportedFormats() {
-        return SUPPORTED_FORMATS;
-    }
-
-    @Override
-    public Set<Class<? extends AudioStream>> getSupportedStreams() {
-        return SUPPORTED_STREAMS;
-    }
-
-    private void stop() {
+    public void stop() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
 
@@ -157,48 +117,6 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
                 this.onValueReceived(variable, result.get(variable), "AVTransport");
             }
         }
-    }
-
-    @Override
-    public String getId() {
-        return getThing().getUID().toString();
-    }
-
-    @Override
-    public String getLabel(Locale locale) {
-        return getThing().getLabel();
-    }
-
-    @Override
-    public void process(@Nullable AudioStream audioStream)
-            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
-        if (audioStream == null) {
-            stop();
-            return;
-        }
-
-        String url = null;
-        if (audioStream instanceof URLAudioStream) {
-            // it is an external URL, the speaker can access it itself and play it.
-            URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
-            url = urlAudioStream.getURL();
-        } else {
-            if (callbackUrl != null) {
-                String relativeUrl;
-                if (audioStream instanceof FixedLengthAudioStream) {
-                    // we serve it on our own HTTP server
-                    relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 20);
-                } else {
-                    relativeUrl = audioHTTPServer.serve(audioStream);
-                }
-                url = callbackUrl + relativeUrl;
-            } else {
-                logger.warn("We do not have any callback url, so onkyo cannot play the audio stream!");
-                return;
-            }
-        }
-
-        playMedia(url);
     }
 
     @Override

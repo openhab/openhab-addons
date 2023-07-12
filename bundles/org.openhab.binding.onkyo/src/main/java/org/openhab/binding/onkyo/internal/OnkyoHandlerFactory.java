@@ -19,6 +19,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.openhab.binding.onkyo.internal.handler.OnkyoAudioSink;
 import org.openhab.binding.onkyo.internal.handler.OnkyoHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
@@ -77,14 +78,12 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             String callbackUrl = createCallbackUrl();
-            OnkyoHandler handler = new OnkyoHandler(thing, upnpIOService, audioHTTPServer, callbackUrl,
-                    stateDescriptionProvider);
-            if (callbackUrl != null) {
-                @SuppressWarnings("unchecked")
-                ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                        .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
-                audioSinkRegistrations.put(thing.getUID().toString(), reg);
-            }
+            OnkyoHandler handler = new OnkyoHandler(thing, upnpIOService, stateDescriptionProvider);
+            OnkyoAudioSink audioSink = new OnkyoAudioSink(handler, audioHTTPServer, callbackUrl);
+            @SuppressWarnings("unchecked")
+            ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
+            audioSinkRegistrations.put(thing.getUID().toString(), reg);
             return handler;
         }
 
