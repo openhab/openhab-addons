@@ -27,6 +27,7 @@ import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.StreamServed;
 import org.openhab.core.audio.URLAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
+import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,8 @@ public class ChromecastAudioSink extends AudioSinkAsync {
     }
 
     @Override
-    public void processAsynchronously(@Nullable AudioStream audioStream) throws UnsupportedAudioFormatException {
+    public void processAsynchronously(@Nullable AudioStream audioStream)
+            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (audioStream == null) {
             // in case the audioStream is null, this should be interpreted as a request to end any currently playing
             // stream.
@@ -91,10 +93,10 @@ public class ChromecastAudioSink extends AudioSinkAsync {
                         // we have to run the delayed task when the server has completely played the stream
                         streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
                     } catch (IOException e) {
-                        logger.warn("Chromecast binding was not able to handle the audio stream (cache on disk failed)",
-                                e);
                         tryClose(audioStream);
-                        return;
+                        throw new UnsupportedAudioStreamException(
+                                "Chromecast binding was not able to handle the audio stream (cache on disk failed)",
+                                audioStream.getClass(), e);
                     }
                     url = callbackUrl + relativeUrl;
                 } else {
