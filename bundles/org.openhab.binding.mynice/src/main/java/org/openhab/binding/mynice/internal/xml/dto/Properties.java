@@ -20,10 +20,32 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("Properties")
 public class Properties {
+    public static enum DoorStatus {
+        OPEN(false),
+        CLOSED(false),
+        OPENING(true),
+        CLOSING(true),
+        STOPPED(false);
+
+        public final boolean moving;
+
+        DoorStatus(boolean moving) {
+            this.moving = moving;
+        }
+    }
+
     @XStreamAlias("DoorStatus")
-    public String doorStatus;
+    private String doorStatus;
     @XStreamAlias("Obstruct")
-    public String obstruct;
+    private String obstruct;
     @XStreamAlias("T4_allowed")
     public Property t4allowed;
+
+    public boolean obstructed() {
+        return "1".equals(obstruct);
+    }
+
+    public DoorStatus status() {
+        return DoorStatus.valueOf(doorStatus.toUpperCase());
+    }
 }

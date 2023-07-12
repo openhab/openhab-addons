@@ -47,7 +47,12 @@
 			<channel id="moving" typeId="moving"/>
 			<channel id="command" typeId="command"/>
 			<channel id="t4command" typeId="t4command"/>
+			<channel id="courtesy" typeId="courtesy"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -73,7 +78,12 @@
 			<channel id="moving" typeId="moving"/>
 			<channel id="command" typeId="command"/>
 			<channel id="t4command" typeId="t4command"/>
+			<channel id="courtesy" typeId="courtesy"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>id</representation-property>
 
@@ -90,15 +100,23 @@
 		<item-type>String</item-type>
 		<label>Gate Status</label>
 		<description>Position of the gate or state if moving</description>
-		<state readOnly="true">
+		<category>door</category>
+		<state>
 			<options>
-				<option value="open">Open</option>
-				<option value="closed">Closed</option>
-				<option value="opening">Opening</option>
-				<option value="closing">Closing</option>
-				<option value="stopped">Stopped</option>
+				<option value="OPEN">Open</option>
+				<option value="CLOSED">Closed</option>
+				<option value="OPENING">Opening</option>
+				<option value="CLOSING">Closing</option>
+				<option value="STOPPED">Stopped</option>
 			</options>
 		</state>
+		<command>
+			<options>
+				<option value="STOP">Stop</option>
+				<option value="MOVE">Move</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="moving">
@@ -115,17 +133,17 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="command">
+	<channel-type id="command" advanced="true">
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>Send a given command to the gate</description>
-		<state readOnly="false">
+		<command>
 			<options>
 				<option value="stop">Stop</option>
 				<option value="open">Open</option>
 				<option value="close">Close</option>
 			</options>
-		</state>
+		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -133,7 +151,7 @@
 		<item-type>String</item-type>
 		<label>T4 Command</label>
 		<description>Send a T4 Command to the gate</description>
-		<state readOnly="false">
+		<command>
 			<options>
 				<option value="MDAx">Step by Step</option>
 				<option value="MDAy">Stop (as remote control)</option>
@@ -159,8 +177,22 @@
 				<option value="MDE5">Release and Open</option>
 				<option value="MDFh">Release and Close</option>
 			</options>
-		</state>
+		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="courtesy">
+		<item-type>Switch</item-type>
+		<label>Courtesy Light</label>
+		<description>Courtesy Light illuminates the area around your gates.</description>
+		<category>lightbulb</category>
+		<config-description>
+			<parameter name="duration" type="integer" min="0" unit="s" step="1">
+				<label>Duration</label>
+				<description>Duration the lamp stays on</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 </thing:thing-descriptions>
