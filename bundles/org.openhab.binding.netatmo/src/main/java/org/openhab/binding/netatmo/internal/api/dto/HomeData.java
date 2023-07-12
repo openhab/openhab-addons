@@ -39,14 +39,17 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
     }
 
     public class Security extends HomeData {
-        private NAObjectMap<HomeDataPerson> persons = new NAObjectMap<>();
+        private @Nullable NAObjectMap<HomeDataPerson> persons;
 
         public NAObjectMap<HomeDataPerson> getPersons() {
-            return persons;
+            NAObjectMap<HomeDataPerson> localPersons = persons;
+            return localPersons != null ? localPersons : new NAObjectMap<>();
         }
 
         public List<HomeDataPerson> getKnownPersons() {
-            return persons.values().stream().filter(HomeDataPerson::isKnown).toList();
+            NAObjectMap<HomeDataPerson> localPersons = persons;
+            return localPersons != null ? localPersons.values().stream().filter(HomeDataPerson::isKnown).toList()
+                    : List.of();
         }
     }
 
