@@ -103,6 +103,9 @@ public enum EventType {
     @SerializedName("alim") // When Camera power supply status changes
     ALIM(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+    @SerializedName("siren_tampered") // When the siren has been tampered
+    SIREN_TAMPERED(ModuleType.WELCOME),
+
     @SerializedName("accepted_call") // When a call is incoming
     ACCEPTED_CALL(ModuleType.DOORBELL),
 
