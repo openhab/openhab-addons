@@ -29,6 +29,10 @@ public class OpenUVException extends Exception {
         super(message);
     }
 
+    public OpenUVException(String fitzPatrickIndex, Throwable e) {
+        super("Unexpected Fitzpatrick index value '%s'".formatted(fitzPatrickIndex), e);
+    }
+
     private boolean checkMatches(String message) {
         String currentMessage = getMessage();
         return currentMessage != null && currentMessage.startsWith(message);
