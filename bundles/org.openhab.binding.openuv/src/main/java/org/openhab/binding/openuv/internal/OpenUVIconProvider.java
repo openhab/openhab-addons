@@ -46,7 +46,7 @@ public class OpenUVIconProvider implements IconProvider {
     private static final String UV_ALARM = "uv-alarm";
     private static final String UV_INDEX = "uv-index";
     private static final String DEFAULT_LABEL = "OpenUV Icons";
-    private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather events provided by OpenUV";
+    private static final String DEFAULT_DESCRIPTION = "Icons illustrating UV conditions provided by OpenUV";
     private static final Set<String> ICONS = Set.of("ozone", UV_INDEX, UV_ALARM);
 
     private final Logger logger = LoggerFactory.getLogger(OpenUVIconProvider.class);

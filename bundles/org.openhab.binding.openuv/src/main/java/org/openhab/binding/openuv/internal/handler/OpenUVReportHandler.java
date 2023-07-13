@@ -150,14 +150,16 @@ public class OpenUVReportHandler extends BaseThingHandler {
         logger.debug("Disposing the OpenUV handler.");
 
         cancelFuture(refreshJob);
+        refreshJob = null;
+
         cancelFuture(uvMaxJob);
+        uvMaxJob = null;
     }
 
     private void cancelFuture(@Nullable ScheduledFuture<?> job) {
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
         }
-        job = null;
     }
 
     @Override
