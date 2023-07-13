@@ -55,7 +55,7 @@
     <dependency>
       <artifactId>okio</artifactId>
       <groupId>com.squareup.okio</groupId>
-      <version>1.17.3</version>
+      <version>3.4.0</version>
     </dependency>
     <dependency>
       <artifactId>commons-csv</artifactId>
