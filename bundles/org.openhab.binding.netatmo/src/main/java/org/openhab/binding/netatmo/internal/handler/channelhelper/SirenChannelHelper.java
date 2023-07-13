@@ -13,15 +13,16 @@
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -32,7 +33,7 @@ import org.openhab.core.types.UnDefType;
  *
  */
 @NonNullByDefault
-public class SirenChannelHelper extends ChannelHelper {
+public class SirenChannelHelper extends EventChannelHelper {
 
     public SirenChannelHelper(Set<String> providedGroups) {
         super(providedGroups);
@@ -40,14 +41,14 @@ public class SirenChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof HomeStatusModule) {
-            HomeStatusModule homeStatus = (HomeStatusModule) naThing;
-            switch (channelId) {
-                case CHANNEL_MONITORING:
-                    return homeStatus.getMonitoring();
-                case CHANNEL_STATUS:
-                    return homeStatus.getStatus().map(status -> toStringType(status)).orElse(UnDefType.UNDEF);
-            }
+        if (naThing instanceof HomeStatusModule homeStatus) {
+            return switch (channelId) {
+                case CHANNEL_MONITORING -> homeStatus.getMonitoring();
+                case CHANNEL_STATUS -> homeStatus.getStatus().map(SirenStatus::get)
+                        .map(status -> SirenStatus.SOUND == status ? OnOffType.ON : OnOffType.OFF)
+                        .map(State.class::cast).orElse(UnDefType.UNDEF);
+                default -> null;
+            };
         }
         return null;
     }

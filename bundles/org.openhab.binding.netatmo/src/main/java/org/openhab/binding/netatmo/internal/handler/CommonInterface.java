@@ -180,7 +180,7 @@ public interface CommonInterface {
             String channelName = channelUID.getIdWithoutGroup();
             getCapabilities().values().forEach(cap -> cap.handleCommand(channelName, command));
         } else {
-            getLogger().debug("Command {}, on channel {} dropped - thing is not ONLINE", command, channelUID);
+            getLogger().debug("Command {} on channel {} dropped - thing is not ONLINE", command, channelUID);
         }
     }
 

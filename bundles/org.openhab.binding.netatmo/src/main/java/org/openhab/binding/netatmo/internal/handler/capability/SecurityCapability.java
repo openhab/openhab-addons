@@ -25,6 +25,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
@@ -235,6 +236,17 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 handler.expireData();
             } catch (NetatmoException e) {
                 logger.warn("Error changing Presence floodlight mode '{}' : {}", mode, e.getMessage());
+            }
+        });
+    }
+
+    public void changeSirenStatus(String moduleId, SirenStatus status) {
+        getApi().ifPresent(api -> {
+            try {
+                api.changeSirenStatus(handler.getId(), moduleId, status);
+                handler.expireData();
+            } catch (NetatmoException e) {
+                logger.warn("Error changing siren status '{}' : {}", status, e.getMessage());
             }
         });
     }

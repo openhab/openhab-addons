@@ -21,6 +21,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Alimentati
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.BatteryState;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SdCardStatus;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.types.State;
@@ -42,7 +43,7 @@ public class HomeStatusModule extends NAThing {
     private FloodLightMode floodlight = FloodLightMode.UNKNOWN;
     private SdCardStatus sdStatus = SdCardStatus.UNKNOWN;
     private AlimentationStatus alimStatus = AlimentationStatus.UNKNOWN;
-    private @Nullable String sirenStatus;
+    private SirenStatus sirenStatus = SirenStatus.UNKNOWN;
     private @Nullable String vpnUrl;
     private boolean isLocal;
     private BatteryState batteryState = BatteryState.UNKNOWN;
@@ -90,8 +91,8 @@ public class HomeStatusModule extends NAThing {
         return alimStatus;
     }
 
-    public Optional<String> getSirenStatus() {
-        return Optional.ofNullable(sirenStatus);
+    public SirenStatus getSirenStatus() {
+        return sirenStatus;
     }
 
     public @Nullable String getVpnUrl() {

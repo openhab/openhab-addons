@@ -317,6 +317,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
                 try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
                     request.content(inputStreamContentProvider, contentType);
+                    request.header(HttpHeader.ACCEPT, "application/json");
                 }
                 logger.trace(" -with payload : {} ", payload);
             }
@@ -404,10 +405,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                                 home.getRooms().values().stream().forEach(room -> {
                                     room.getModuleIds().stream().map(id -> home.getModules().get(id))
                                             .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
-                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny().ifPresent(f -> {
-                                                action.apply(room, homeUID)
-                                                        .ifPresent(roomUID -> bridgesUids.put(room.getId(), roomUID));
-                                            });
+                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
+                                            .ifPresent(f -> action.apply(room, homeUID)
+                                                    .ifPresent(roomUID -> bridgesUids.put(room.getId(), roomUID)));
                                 });
 
                                 // Creating modules that have no bridge first, avoiding weather station itself
