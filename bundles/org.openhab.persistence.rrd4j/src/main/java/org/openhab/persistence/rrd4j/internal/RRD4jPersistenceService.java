@@ -142,7 +142,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         storeJob = scheduler.scheduleWithFixedDelay(() -> doStore(false), 1, 1, TimeUnit.SECONDS);
     }
 
-
     @Activate
     protected void activate(final Map<String, Object> config) {
         modified(config);
