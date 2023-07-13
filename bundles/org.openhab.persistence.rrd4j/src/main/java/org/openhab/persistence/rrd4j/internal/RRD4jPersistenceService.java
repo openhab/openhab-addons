@@ -137,13 +137,9 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private final ScheduledFuture<?> storeJob;
 
     @Activate
-    public RRD4jPersistenceService(final @Reference ItemRegistry itemRegistry) {
+    public RRD4jPersistenceService(final @Reference ItemRegistry itemRegistry, Map<String, Object> config) {
         this.itemRegistry = itemRegistry;
         storeJob = scheduler.scheduleWithFixedDelay(() -> doStore(false), 1, 1, TimeUnit.SECONDS);
-    }
-
-    @Activate
-    protected void activate(final Map<String, Object> config) {
         modified(config);
         active = true;
     }
@@ -321,7 +317,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         long now = System.currentTimeMillis() / 1000;
-        storageMap.computeIfAbsent(now, t -> new ConcurrentHashMap<>()).put(name, value);
+        Double oldValue = storageMap.computeIfAbsent(now, t -> new ConcurrentHashMap<>()).put(name, value);
+        if (oldValue != null && !oldValue.equals(value)) {
+            logger.debug(
+                    "Discarding value {} for item {} with timestamp {} because a new value ({}) arrived with the same timestamp.",
+                    oldValue, name, now, value);
+        }
     }
 
     private void doStore(boolean force) {
