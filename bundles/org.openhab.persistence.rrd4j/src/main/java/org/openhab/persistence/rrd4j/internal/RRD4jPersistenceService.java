@@ -142,6 +142,122 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         storeJob = scheduler.scheduleWithFixedDelay(() -> doStore(false), 1, 1, TimeUnit.SECONDS);
     }
 
+
+    @Activate
+    protected void activate(final Map<String, Object> config) {
+        modified(config);
+        active = true;
+    }
+
+    @Modified
+    protected void modified(final Map<String, Object> config) {
+        // clean existing definitions
+        rrdDefs.clear();
+
+        // add default configurations
+
+        RrdDefConfig defaultNumeric = new RrdDefConfig(DEFAULT_NUMERIC);
+        // use 10 seconds as a step size for numeric values and allow a 10 minute silence between updates
+        defaultNumeric.setDef("GAUGE,600,U,U,10");
+        // define 5 different boxes:
+        // 1. granularity of 10s for the last hour
+        // 2. granularity of 1m for the last week
+        // 3. granularity of 15m for the last year
+        // 4. granularity of 1h for the last 5 years
+        // 5. granularity of 1d for the last 10 years
+        defaultNumeric
+                .addArchives("LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,360,43800:LAST,0.5,8640,3650");
+        rrdDefs.put(DEFAULT_NUMERIC, defaultNumeric);
+
+        RrdDefConfig defaultQuantifiable = new RrdDefConfig(DEFAULT_QUANTIFIABLE);
+        // use 10 seconds as a step size for numeric values and allow a 10 minute silence between updates
+        defaultQuantifiable.setDef("GAUGE,600,U,U,10");
+        // define 5 different boxes:
+        // 1. granularity of 10s for the last hour
+        // 2. granularity of 1m for the last week
+        // 3. granularity of 15m for the last year
+        // 4. granularity of 1h for the last 5 years
+        // 5. granularity of 1d for the last 10 years
+        defaultQuantifiable.addArchives(
+                "AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:AVERAGE,0.5,90,36500:AVERAGE,0.5,360,43800:AVERAGE,0.5,8640,3650");
+        rrdDefs.put(DEFAULT_QUANTIFIABLE, defaultQuantifiable);
+
+        RrdDefConfig defaultOther = new RrdDefConfig(DEFAULT_OTHER);
+        // use 5 seconds as a step size for discrete values and allow a 1h silence between updates
+        defaultOther.setDef("GAUGE,3600,U,U,5");
+        // define 4 different boxes:
+        // 1. granularity of 5s for the last hour
+        // 2. granularity of 1m for the last week
+        // 3. granularity of 15m for the last year
+        // 4. granularity of 4h for the last 10 years
+        defaultOther.addArchives("LAST,0.5,1,720:LAST,0.5,12,10080:LAST,0.5,180,35040:LAST,0.5,2880,21900");
+        rrdDefs.put(DEFAULT_OTHER, defaultOther);
+
+        if (config.isEmpty()) {
+            logger.debug("using default configuration only");
+            return;
+        }
+
+        Iterator<String> keys = config.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = keys.next();
+
+            if ("service.pid".equals(key) || "component.name".equals(key)) {
+                // ignore service.pid and name
+                continue;
+            }
+
+            String[] subkeys = key.split("\\.");
+            if (subkeys.length != 2) {
+                logger.debug("config '{}' should have the format 'name.configkey'", key);
+                continue;
+            }
+
+            Object v = config.get(key);
+            if (v instanceof String) {
+                String value = (String) v;
+                String name = subkeys[0].toLowerCase();
+                String property = subkeys[1].toLowerCase();
+
+                if (value.isBlank()) {
+                    logger.trace("Config is empty: {}", property);
+                    continue;
+                } else {
+                    logger.trace("Processing config: {} = {}", property, value);
+                }
+
+                RrdDefConfig rrdDef = rrdDefs.get(name);
+                if (rrdDef == null) {
+                    rrdDef = new RrdDefConfig(name);
+                    rrdDefs.put(name, rrdDef);
+                }
+
+                try {
+                    if ("def".equals(property)) {
+                        rrdDef.setDef(value);
+                    } else if ("archives".equals(property)) {
+                        rrdDef.addArchives(value);
+                    } else if ("items".equals(property)) {
+                        rrdDef.addItems(value);
+                    } else {
+                        logger.debug("Unknown property {} : {}", property, value);
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Ignoring illegal configuration: {}", e.getMessage());
+                }
+            }
+        }
+
+        for (RrdDefConfig rrdDef : rrdDefs.values()) {
+            if (rrdDef.isValid()) {
+                logger.debug("Created {}", rrdDef);
+            } else {
+                logger.info("Removing invalid definition {}", rrdDef);
+                rrdDefs.remove(rrdDef.name);
+            }
+        }
+    }
+
     @Deactivate
     protected void deactivate() {
         active = false;
@@ -531,121 +647,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    @Activate
-    protected void activate(final Map<String, Object> config) {
-        modified(config);
-        active = true;
-    }
-
-    @Modified
-    protected void modified(final Map<String, Object> config) {
-        // clean existing definitions
-        rrdDefs.clear();
-
-        // add default configurations
-
-        RrdDefConfig defaultNumeric = new RrdDefConfig(DEFAULT_NUMERIC);
-        // use 10 seconds as a step size for numeric values and allow a 10 minute silence between updates
-        defaultNumeric.setDef("GAUGE,600,U,U,10");
-        // define 5 different boxes:
-        // 1. granularity of 10s for the last hour
-        // 2. granularity of 1m for the last week
-        // 3. granularity of 15m for the last year
-        // 4. granularity of 1h for the last 5 years
-        // 5. granularity of 1d for the last 10 years
-        defaultNumeric
-                .addArchives("LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,360,43800:LAST,0.5,8640,3650");
-        rrdDefs.put(DEFAULT_NUMERIC, defaultNumeric);
-
-        RrdDefConfig defaultQuantifiable = new RrdDefConfig(DEFAULT_QUANTIFIABLE);
-        // use 10 seconds as a step size for numeric values and allow a 10 minute silence between updates
-        defaultQuantifiable.setDef("GAUGE,600,U,U,10");
-        // define 5 different boxes:
-        // 1. granularity of 10s for the last hour
-        // 2. granularity of 1m for the last week
-        // 3. granularity of 15m for the last year
-        // 4. granularity of 1h for the last 5 years
-        // 5. granularity of 1d for the last 10 years
-        defaultQuantifiable.addArchives(
-                "AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:AVERAGE,0.5,90,36500:AVERAGE,0.5,360,43800:AVERAGE,0.5,8640,3650");
-        rrdDefs.put(DEFAULT_QUANTIFIABLE, defaultQuantifiable);
-
-        RrdDefConfig defaultOther = new RrdDefConfig(DEFAULT_OTHER);
-        // use 5 seconds as a step size for discrete values and allow a 1h silence between updates
-        defaultOther.setDef("GAUGE,3600,U,U,5");
-        // define 4 different boxes:
-        // 1. granularity of 5s for the last hour
-        // 2. granularity of 1m for the last week
-        // 3. granularity of 15m for the last year
-        // 4. granularity of 4h for the last 10 years
-        defaultOther.addArchives("LAST,0.5,1,720:LAST,0.5,12,10080:LAST,0.5,180,35040:LAST,0.5,2880,21900");
-        rrdDefs.put(DEFAULT_OTHER, defaultOther);
-
-        if (config.isEmpty()) {
-            logger.debug("using default configuration only");
-            return;
-        }
-
-        Iterator<String> keys = config.keySet().iterator();
-        while (keys.hasNext()) {
-            String key = keys.next();
-
-            if ("service.pid".equals(key) || "component.name".equals(key)) {
-                // ignore service.pid and name
-                continue;
-            }
-
-            String[] subkeys = key.split("\\.");
-            if (subkeys.length != 2) {
-                logger.debug("config '{}' should have the format 'name.configkey'", key);
-                continue;
-            }
-
-            Object v = config.get(key);
-            if (v instanceof String) {
-                String value = (String) v;
-                String name = subkeys[0].toLowerCase();
-                String property = subkeys[1].toLowerCase();
-
-                if (value.isBlank()) {
-                    logger.trace("Config is empty: {}", property);
-                    continue;
-                } else {
-                    logger.trace("Processing config: {} = {}", property, value);
-                }
-
-                RrdDefConfig rrdDef = rrdDefs.get(name);
-                if (rrdDef == null) {
-                    rrdDef = new RrdDefConfig(name);
-                    rrdDefs.put(name, rrdDef);
-                }
-
-                try {
-                    if ("def".equals(property)) {
-                        rrdDef.setDef(value);
-                    } else if ("archives".equals(property)) {
-                        rrdDef.addArchives(value);
-                    } else if ("items".equals(property)) {
-                        rrdDef.addItems(value);
-                    } else {
-                        logger.debug("Unknown property {} : {}", property, value);
-                    }
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Ignoring illegal configuration: {}", e.getMessage());
-                }
-            }
-        }
-
-        for (RrdDefConfig rrdDef : rrdDefs.values()) {
-            if (rrdDef.isValid()) {
-                logger.debug("Created {}", rrdDef);
-            } else {
-                logger.info("Removing invalid definition {}", rrdDef);
-                rrdDefs.remove(rrdDef.name);
-            }
-        }
-    }
-
     private static class RrdArchiveDef {
         public @Nullable ConsolFun fcn;
         public double xff;
@@ -788,8 +789,5 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE,
                 new PersistenceCronStrategy("everyMinute", "0 * * * * ?"));
-    }
-
-    private record DataPoint(String itemName, double value) {
     }
 }
