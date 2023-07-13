@@ -125,17 +125,19 @@ public class EaseeBindingConstants {
     public static final String WEB_REQUEST_BEARER_TOKEN_PREFIX = "Bearer ";
 
     // URLs
-    public static final String LOGIN_URL = "https://api.easee.cloud/api/accounts/login";
-    public static final String REFRESH_TOKEN_URL = "https://api.easee.cloud/api/accounts/refresh_token";
-    public static final String GET_SITE_URL = "https://api.easee.cloud/api/sites/{siteId}";
-    public static final String CHARGER_URL = "https://api.easee.cloud/api/chargers/{id}";
-    public static final String STATE_URL = "https://api.easee.cloud/api/chargers/{id}/state";
-    public static final String GET_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/config";
-    public static final String CHANGE_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/settings";
-    public static final String COMMANDS_URL = "https://api.easee.cloud/api/chargers/{id}/commands/{command}";
-    public static final String LATEST_CHARGING_SESSION_URL = "https://api.easee.cloud/api/chargers/{id}/sessions/latest";
-    public static final String DYNAMIC_CIRCUIT_CURRENT_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
-    public static final String CIRCUIT_SETTINGS_URL = "https://api.easee.cloud/api/sites/{siteId}/circuits/{circuitId}/settings";
+    private static final String API_BASE_URL = "https://api.easee.com/api";
+    public static final String LOGIN_URL = API_BASE_URL + "/accounts/login";
+    public static final String REFRESH_TOKEN_URL = API_BASE_URL + "/accounts/refresh_token";
+    public static final String GET_SITE_URL = API_BASE_URL + "/sites/{siteId}";
+    public static final String CHARGER_URL = API_BASE_URL + "/chargers/{id}";
+    public static final String STATE_URL = API_BASE_URL + "/chargers/{id}/state";
+    public static final String GET_CONFIGURATION_URL = API_BASE_URL + "/chargers/{id}/config";
+    public static final String CHANGE_CONFIGURATION_URL = API_BASE_URL + "/chargers/{id}/settings";
+    public static final String COMMANDS_URL = API_BASE_URL + "/chargers/{id}/commands/{command}";
+    public static final String LATEST_CHARGING_SESSION_URL = API_BASE_URL + "/chargers/{id}/sessions/latest";
+    public static final String DYNAMIC_CIRCUIT_CURRENT_URL = API_BASE_URL
+            + "/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
+    public static final String CIRCUIT_SETTINGS_URL = API_BASE_URL + "/sites/{siteId}/circuits/{circuitId}/settings";
 
     // Status Keys
     public static final String STATUS_TOKEN_VALIDATED = "@text/status.token.validated";
