@@ -163,9 +163,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(final Item item, @Nullable final String alias) {
-        logger.debug("foo {} ", item);
         if (!active) {
-            logger.warn("Tried to store {} but service is not yet ready.", item);
+            logger.warn("Tried to store {} but service is not yet ready (or shutting down).", item);
             return;
         }
 
