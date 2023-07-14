@@ -18,12 +18,12 @@
     <dependency>
       <groupId>io.github.givimad</groupId>
       <artifactId>whisper-jni</artifactId>
-      <version>1.4.2-4</version>
+      <version>1.4.2-6</version>
     </dependency>
     <dependency>
       <groupId>io.github.givimad</groupId>
       <artifactId>libfvad-jni</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.0-0</version>
     </dependency>
   </dependencies>
 </project>
