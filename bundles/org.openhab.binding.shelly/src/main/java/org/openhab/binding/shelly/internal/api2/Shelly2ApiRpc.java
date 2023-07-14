@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.THING_TYPE_SHELLYPRO2_RELAY_STR;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
@@ -251,8 +252,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
 
-        if (dc.em0 != null) {
+        // handle special cases, because there is no indicator for a meter in GetConfig
+        // Pro 3EM has 3 meters
+        // Pro 2 has 2 relays, but no meters
+        // Mini PM has 1 meter, but no relay
+        if (thingType.equals(THING_TYPE_SHELLYPRO2_RELAY_STR)) {
+            profile.numMeters = 0;
+        } else if (dc.pm10 != null) {
+            profile.numMeters = 1;
+        } else if (dc.em0 != null) {
             profile.numMeters = 3;
+        } else if (dc.em10 != null) {
+            profile.numMeters = 2;
         }
 
         if (profile.numMeters > 0) {
@@ -565,15 +576,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             toQuantityType(getDouble(status.tmp.tC), DIGITS_NONE, SIUnits.CELSIUS));
                 }
 
-                if (status.meters.size() > 0) {
-                    boolean validMeter = false;
-                    for (ShellySettingsMeter meter : status.meters) {
-                        validMeter |= meter.isValid;
-                    }
-                    if (!validMeter) {
-                        profile.numMeters = 0;
-                    }
-                }
                 profile.status = status;
                 if (updated) {
                     getThing().restartWatchdog();
@@ -780,10 +782,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return relayStatus;
     }
 
+    @SuppressWarnings("null")
     @Override
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        int rIdx = id;
+        if (profile.settings.relays != null) {
+            Integer rid = profile.settings.relays.get(id).id;
+            if (rid != null) {
+                rIdx = rid;
+            }
+        }
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        params.id = id;
+        params.id = rIdx;
         params.on = SHELLY_API_ON.equals(turnMode);
         apiRequest(SHELLYRPC_METHOD_SWITCH_SET, params, String.class);
     }
@@ -898,7 +909,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_EMDATARESET).withId(id));
+        apiRequest(new Shelly2RpcRequest()
+                .withMethod(getProfile().is3EM ? SHELLYRPC_METHOD_EMDATARESET : SHELLYRPC_METHOD_EM1DATARESET)
+                .withId(id));
     }
 
     @Override

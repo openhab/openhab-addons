@@ -91,7 +91,15 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
-| shellypluswalldisplay| Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
+| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
+
+### Generation 2 Plus Mini series
+| thing-type           | Model                                                    | Vendor ID                    |
+| -------------------- | -------------------------------------------------------- | ---------------------------- |
+| shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X16EU                |
+| shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNPM-001PCEU16               |
+| shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNSW-001P8EU                 |
+
 
 ### Generation 2 Pro series
 
@@ -1207,14 +1215,54 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
-|Group  | Channel     |Type     |read-only |Description                                                                         |
-|-------|-------------|---------|----------|------------------------------------------------------------------------------------|
+|Group  | Channel     |Type     |read-only  |Description                                                                        |
+|-------|-------------|---------|-----------|-----------------------------------------------------------------------------------|
 | relay | brightness  | Dimmer  | r/w       | Currently selected brightness.                                                    |
 |       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
 |       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-| 
+
+## Shelly Plus Mini Series
+
+### Shelly Plus 1 Mini (thing-type: shellymini1)
+
+| Group | Channel     | Type    | read-only | Description                                                                       |
+| ----- | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
+| relay | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|       | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
+
+### Shelly Plus 1PM Mini (thing-type: shellymini1pm)
+
+| Group | Channel      | Type     | read-only | Description                                                                       |
+| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
+|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+
+### Shelly Plus PM Mini (thing-type: shellyminipm)
+
+| Group | Channel      | Type     | read-only | Description                                                                       |
+| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
+|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
 
 ## Shelly Pro Series
 

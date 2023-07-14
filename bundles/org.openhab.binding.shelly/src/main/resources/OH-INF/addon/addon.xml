@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>@text/addon.shelly.name</name>
 	<description>@text/addon.shelly.description</description>
+	<connection>local</connection>
 
 	<config-description>
 		<parameter name="defaultUserId" type="text">

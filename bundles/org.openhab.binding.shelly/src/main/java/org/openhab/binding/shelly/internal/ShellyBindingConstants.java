@@ -80,7 +80,14 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSPLUGS, //
             THING_TYPE_SHELLYPLUSPLUGUS, //
             THING_TYPE_SHELLYPLUSDIMMERUS, //
+
+            // Shelly Wall Display
             THING_TYPE_SHELLYPLUSWALLDISPLAY, //
+
+            // Shelly Plus Mini
+            THING_TYPE_SHELLYMINI1, //
+            THING_TYPE_SHELLYMINIPM, //
+            THING_TYPE_SHELLYMINI1PM, //
 
             // Shelly Pro
             THING_TYPE_SHELLYPRO1, //
@@ -90,6 +97,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPRO2PM_ROLLER, //
             THING_TYPE_SHELLYPRO3, //
             THING_TYPE_SHELLYPRO3EM, //
+            THING_TYPE_SHELLYPROEM50, //
             THING_TYPE_SHELLYPRO4PM, //
 
             // Shelly BLU
@@ -165,7 +173,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_VOLTAGE = "voltage";
     public static final String CHANNEL_EMETER_CURRENT = "current";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
-    public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
 
     public static final String CHANNEL_GROUP_SENSOR = "sensors";
     public static final String CHANNEL_SENSOR_TEMP = "temperature";
@@ -253,6 +260,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
     public static final String CHANNEL_DEVST_ACCUTOTAL = "accumulatedWTotal";
     public static final String CHANNEL_DEVST_ACCURETURNED = "accumulatedReturned";
+    public static final String CHANNEL_DEVST_RESETTOTAL = "resetTotals";
     public static final String CHANNEL_DEVST_CHARGER = "charger";
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
