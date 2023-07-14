@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.shelly.internal;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,8 +58,6 @@ import io.reactivex.annotations.NonNull;
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class, ShellyHandlerFactory.class }, configurationPid = "binding.shelly")
 public class ShellyHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-
     private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
     private final HttpClient httpClient;
     private final ShellyTranslationProvider messages;

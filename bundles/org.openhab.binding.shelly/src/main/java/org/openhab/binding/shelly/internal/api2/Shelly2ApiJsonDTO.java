@@ -61,6 +61,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
     public static final String SHELLYRPC_METHOD_EMDATARESET = "EMData.DeleteAllData";
+    public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.DeleteAllData";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
@@ -322,6 +323,11 @@ public class Shelly2ApiJsonDTO {
             public Boolean monitorPhaseSequence;
         }
 
+        public class Shelly2DevConfigPm1 {
+            public Integer id;
+            public String name;
+        }
+
         public class Shelly2DevConfigCover {
             public class Shelly2DeviceConfigCoverMotor {
                 @SerializedName("idle_power_thr")
@@ -458,9 +464,17 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DevConfigSwitch switch2;
             @SerializedName("switch:3")
             public Shelly2DevConfigSwitch switch3;
+            @SerializedName("switch:100")
+            public Shelly2DevConfigSwitch switch100; // Pro 3EM Add-On
 
             @SerializedName("em:0")
             public Shelly2DevConfigEm em0;
+            @SerializedName("em1:0")
+            public Shelly2DevConfigEm em10;
+            @SerializedName("em1:1")
+            public Shelly2DevConfigEm em11;
+            @SerializedName("pm1:0")
+            public Shelly2DevConfigPm1 pm10;
 
             @SerializedName("cover:0")
             public Shelly2DevConfigCover cover0;
@@ -677,11 +691,22 @@ public class Shelly2ApiJsonDTO {
             public Shelly2RelayStatus switch2;
             @SerializedName("switch:3")
             public Shelly2RelayStatus switch3;
+            @SerializedName("switch:100")
+            public Shelly2RelayStatus switch100; // Pro 3EM Add-On
+
+            @SerializedName("pm1:0")
+            public Shelly2RelayStatus pm10;
 
             @SerializedName("em:0")
-            Shelly2DeviceStatusEm em0;
+            public Shelly2DeviceStatusEm em0;
             @SerializedName("emdata:0")
-            Shelly2DeviceStatusEmData emdata0;
+            public Shelly2DeviceStatusEmData emdata0;
+            @SerializedName("em1:0")
+            public Shelly2StatusEm1 em10;
+            @SerializedName("em1:1")
+            public Shelly2StatusEm1 em11;
+            @SerializedName("em1data:0")
+            public Shelly2DeviceStatusEmData em1data0;
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
@@ -791,6 +816,36 @@ public class Shelly2ApiJsonDTO {
         public Shelly2Energy aenergy;
         public Shelly2DeviceStatusTemp temperature;
         public String[] errors;
+    }
+
+    public static class Shelly2Pm1Status {
+        public Integer id;
+        public String source;
+        public Boolean output;
+        @SerializedName("timer_started_at")
+        public Double timerStartetAt;
+        @SerializedName("timer_duration")
+        public Integer timerDuration;
+        public Double apower;
+        public Double voltage;
+        public Double current;
+        public Double pf;
+        public Shelly2Energy aenergy;
+        public Shelly2DeviceStatusTemp temperature;
+        public String[] errors;
+    }
+
+    public static class Shelly2StatusEm1 {
+        public Integer id;
+        public Double current;
+        public Double voltage;
+        @SerializedName("act_power")
+        public Double actPower;
+        @SerializedName("aprt_power")
+        public Double aptrPower;
+        public Double pf;
+        public String calibration;
+        public ArrayList<String> errors;
     }
 
     public static class Shelly2DeviceStatusTemp {
