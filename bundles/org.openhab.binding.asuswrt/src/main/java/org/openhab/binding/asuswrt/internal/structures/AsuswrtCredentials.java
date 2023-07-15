@@ -17,9 +17,8 @@ import java.util.Base64;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Asuswrt Credentials
- * structure-class for login informations
- * 
+ * This class is used for storing Asuswrt credentials.
+ *
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
@@ -28,34 +27,23 @@ public class AsuswrtCredentials {
     private String password = "";
     private String encodedCredentials = "";
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtCredentials() {
     }
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtCredentials(AsuswrtConfiguration routerConfig) {
         setCredentials(routerConfig.username, routerConfig.password);
     }
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtCredentials(String username, String password) {
         setCredentials(username, password);
     }
 
-    /***********************************
-     *
-     * PRIVATE STUFF
-     *
-     ************************************/
+    /*
+     * Private methods
+     */
 
     /**
-     * store credentials
+     * Stores the given credentials.
      */
     private void setCredentials(String username, String password) {
         this.username = username;
@@ -64,41 +52,29 @@ public class AsuswrtCredentials {
     }
 
     /**
-     * b64 encode string
+     * Encodes a String using Base64.
      */
     private String b64encode(String string) {
         return Base64.getEncoder().encodeToString((string).getBytes());
     }
 
-    /***********************************
-     *
-     * PUBLIC STUFF
-     *
-     ************************************/
+    /*
+     * Public methods
+     */
 
     /**
-     * RETURN ENCODED CREDENTIALS
-     * 
-     * @return b64 encoded string 'username:password'
+     * Returns Base64 encoded credentials.
+     *
+     * @return 'username:password' as Base64 encoded string
      */
     public String getEncodedCredentials() {
         return encodedCredentials;
     }
 
-    /**
-     * RETURN PASSWORD
-     * 
-     * @return unencrypted password
-     */
     public String getPassword() {
         return password;
     }
 
-    /**
-     * RETURN USERNAME
-     * 
-     * @return username
-     */
     public String getUsername() {
         return username;
     }

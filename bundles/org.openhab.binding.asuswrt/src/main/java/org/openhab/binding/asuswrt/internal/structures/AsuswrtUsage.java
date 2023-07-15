@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.asuswrt.internal.structures;
 
-import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
+import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.jsonObjectToInt;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -29,46 +29,40 @@ public class AsuswrtUsage {
     private Integer used = 0;
     private Integer total = 0;
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtUsage() {
     }
 
     /**
-     * 
-     * INIT CLASS
-     * 
+     * Constructor.
+     *
      * @param jsonObject jsonObject data is stored
      * @param totalKey name of key total available is stored
-     * @param usedKey neme of key used is stored
+     * @param usedKey name of key used is stored
      */
     public AsuswrtUsage(JsonObject jsonObject, String totalKey, String usedKey) {
         setData(jsonObject, totalKey, usedKey);
     }
 
     /**
-     * INIT CLASS
-     * 
-     * @param totalUsage Integer total available
-     * @param used Integer used
+     * Constructor.
+     *
+     * @param totalUsage the total usage
+     * @param used the usage
      */
     public AsuswrtUsage(Integer totalUsage, Integer used) {
         setData(totalUsage, used);
     }
 
-    /***********************************
-     *
-     * SET VALUES
-     *
-     ************************************/
+    /*
+     * Setters
+     */
 
     /**
-     * set usage data from json object
-     * 
-     * @param jsonObject jsonObject data is stored
-     * @param totalKey name of key total available is stored
-     * @param usedKey neme of key used is stored
+     * Sets the usage data from a JSON object.
+     *
+     * @param jsonObject the JSON object containing the data
+     * @param totalKey the key name with the 'total available' value
+     * @param usedKey the key name with the 'used' value
      */
     public void setData(JsonObject jsonObject, String totalKey, String usedKey) {
         total = jsonObjectToInt(jsonObject, totalKey, 0);
@@ -77,10 +71,10 @@ public class AsuswrtUsage {
     }
 
     /**
-     * set usage data from integer values
-     * 
-     * @param totalUsage Integer total available
-     * @param used Integer used
+     * Sets usage data from integer values.
+     *
+     * @param totalUsage the total available value
+     * @param used the used value
      */
     public void setData(Integer totalUsage, Integer used) {
         total = totalUsage;
@@ -88,11 +82,9 @@ public class AsuswrtUsage {
         free = total - used;
     }
 
-    /***********************************
-     *
-     * GET VALUES
-     *
-     ************************************/
+    /*
+     * Getters
+     */
 
     public Integer getTotal() {
         return total;

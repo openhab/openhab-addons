@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.asuswrt.internal.api;
 
-import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConstants.*;
+import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConstants.JSON_MEMBER_TOKEN;
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtErrorConstants.*;
-import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
+import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.getValueOrDefault;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -38,8 +38,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * ASUSWRT HTTP CLIENT
- * 
+ * The {@link AsuswrtHttpClient} is used for (a)synchronous HTTP requests.
+ *
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
@@ -50,30 +50,26 @@ public class AsuswrtHttpClient {
     protected final String uid;
     public AsuswrtCookie cookieStore = new AsuswrtCookie();
 
-    /**
-     * INIT CLASS
-     * 
-     * @param router asuswrt router thing
-     */
     public AsuswrtHttpClient(AsuswrtRouter router) {
         this.router = router;
-        this.uid = router.getUID().toString();
+        uid = router.getUID().toString();
     }
 
-    /***********************************
-     *
-     * HTTP-ACTIONS
-     *
-     ************************************/
+    /*
+     * HTTP actions
+     */
 
     /**
-     * SEND SYNCHRON HTTP-REQUEST
-     * result will be handled in 'handleHttpSuccessResponse' or 'handleHttpResultError'
-     * If response should be returned use 'getSyncRequest' instead
-     * 
-     * @param url url request is sent to
-     * @param payload payload (String) to send
-     * @param command command to perform
+     * Sends a synchronous HTTP request.
+     *
+     * The result will be handled in {@link #handleHttpSuccessResponse(String, String) or
+     * {@link #handleHttpResultError(Throwable)}.
+     *
+     * If the response should be returned use {@link #getSyncRequest(String, String)} instead.
+     *
+     * @param url the URL the request is sent to
+     * @param payload the payload to send
+     * @param command the command to perform
      */
     protected void sendSyncRequest(String url, String payload, String command) {
         ContentResponse response = getSyncRequest(url, payload);
@@ -83,22 +79,21 @@ public class AsuswrtHttpClient {
     }
 
     /**
-     * SEND SYNCHRON HTTP-REQUEST
-     * 
-     * @param url url request is sent to
-     * @param payload payload (String) to send
-     * @return ContentResponse of request
+     * Sends a synchronous HTTP request.
+     *
+     * @param url the URL the request is sent to
+     * @param payload the payload to send
+     * @return {@link ContentResponse} of the request
      */
-    @Nullable
-    protected ContentResponse getSyncRequest(String url, String payload) {
+    protected @Nullable ContentResponse getSyncRequest(String url, String payload) {
         logger.trace("({}) sendRequest '{}' to '{}' with cookie '{}'", uid, payload, url, cookieStore.getCookie());
         Request httpRequest = this.router.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
 
-        /* set header */
+        // Set header
         httpRequest = setHeaders(httpRequest);
         httpRequest.timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-        /* add request body */
+        // Add request body
         httpRequest.content(new StringContentProvider(payload, HTTP_CONTENT_CHARSET), HTTP_CONTENT_TYPE);
         try {
             return httpRequest.send();
@@ -109,23 +104,24 @@ public class AsuswrtHttpClient {
     }
 
     /**
-     * SEND ASYNCHRONOUS HTTP-REQUEST
-     * (don't wait for awnser with programm code)
-     * result will be handled in 'handleHttpSuccessResponse' or 'handleHttpResultError'
-     * 
-     * @param url string url request is sent to
-     * @param payload data-payload
-     * @param command command executed - this will handle RepsonseType
+     * Sends an asynchronous HTTP request so it does not wait for an answer.
+     *
+     * The result will be handled in {@link #handleHttpSuccessResponse(String, String) or
+     * {@link #handleHttpResultError(Throwable)}.
+     *
+     * @param url the URL to which the request is sent to
+     * @param payload the payload data
+     * @param command command to execute, this will handle ResponseType
      */
     protected void sendAsyncRequest(String url, String payload, String command) {
-        logger.trace("({}) sendAsncRequest to '{}' with cookie '{}'", uid, url, cookieStore.getCookie());
+        logger.trace("({}) sendAsyncRequest to '{}' with cookie '{}'", uid, url, cookieStore.getCookie());
         try {
             Request httpRequest = router.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
 
-            /* set header */
+            // Set header
             httpRequest = setHeaders(httpRequest);
 
-            /* add request body */
+            // Add request body
             httpRequest.content(new StringContentProvider(payload, HTTP_CONTENT_CHARSET), HTTP_CONTENT_TYPE);
 
             httpRequest.timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
@@ -134,16 +130,16 @@ public class AsuswrtHttpClient {
                 public void onComplete(Result result) {
                     final HttpResponse response = (HttpResponse) result.getResponse();
                     if (result.getFailure() != null) {
-                        /* handle result errors */
+                        // Handle result errors
                         handleHttpResultError(result.getFailure());
                     } else if (response.getStatus() != 200) {
-                        logger.debug("({}) sendAsyncRequest response error'{}'", uid, response.getStatus());
+                        logger.debug("({}) sendAsyncRequest response error '{}'", uid, response.getStatus());
                         router.errorHandler.raiseError(ERR_RESPONSE, getContentAsString());
                     } else {
-                        /* request succesfull */
+                        // Request successful
                         String rBody = getContentAsString();
                         logger.trace("({}) requestCompleted '{}'", uid, rBody);
-                        /* handle result */
+                        // Handle result
                         handleHttpSuccessResponse(rBody, command);
                     }
                 }
@@ -154,10 +150,10 @@ public class AsuswrtHttpClient {
     }
 
     /**
-     * SET HTTP-HEADERS
+     * Sets HTTP headers.
      */
     private Request setHeaders(Request httpRequest) {
-        /* set header */
+        // Set header
         httpRequest.header("content-type", HTTP_CONTENT_TYPE);
         httpRequest.header("user-agent", HTTP_USER_AGENT);
         if (cookieStore.isValid()) {
@@ -166,16 +162,14 @@ public class AsuswrtHttpClient {
         return httpRequest;
     }
 
-    /***********************************
-     * 
-     * RESPONSE HANDLING
-     *
-     ************************************/
+    /*
+     * Response handling
+     */
 
     /**
-     * Handle HTTP-Result Failures
-     * 
-     * @param e Throwable exception
+     * Handles HTTP result failures.
+     *
+     * @param e the exception
      * @param payload full payload for debugging
      */
     protected void handleHttpResultError(Throwable e, String payload) {
@@ -195,9 +189,8 @@ public class AsuswrtHttpClient {
     }
 
     /**
-     * Handle Sucessfull HTTP Response
-     * delegated to connector-class
-     * 
+     * Handles a successful HTTP response.
+     *
      * @param responseBody response body as string
      * @param command command constant which was sent
      */
@@ -205,9 +198,7 @@ public class AsuswrtHttpClient {
     }
 
     /**
-     * GET COOKIE FROM RESPONSE
-     * 
-     * @param response
+     * Sets a cookie from a response.
      */
     protected void setCookieFromResponse(ContentResponse response) {
         cookieStore.resetCookie();
@@ -232,31 +223,25 @@ public class AsuswrtHttpClient {
     }
 
     /**
-     * get Json from response
-     * 
-     * @param responseBody
-     * @return JsonObject with result
+     * Gets JSON from a response.
      */
     protected JsonObject getJsonFromResponse(ContentResponse response) {
         return getJsonFromString(response.getContentAsString());
     }
 
     /**
-     * get Json from response
-     * 
-     * @param responseBody
-     * @return JsonObject with result
+     * Gets JSON from a response.
      */
     protected JsonObject getJsonFromString(String responseBody) {
         try {
             JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
             logger.trace("({}) received result: {}", uid, responseBody);
-            /* get errocode (0=success) */
+            /* get error code (0=success) */
             if (jsonObject != null) {
                 return jsonObject;
             }
         } catch (Exception e) {
-            logger.debug("({}) {} {}", uid, ERR_JSON_FOMRAT, responseBody);
+            logger.debug("({}) {} {}", uid, ERR_JSON_FORMAT, responseBody);
             router.getErrorHandler().raiseError(e);
         }
         return new JsonObject();

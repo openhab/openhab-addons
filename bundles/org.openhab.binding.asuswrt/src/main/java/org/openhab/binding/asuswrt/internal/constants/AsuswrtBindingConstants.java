@@ -21,8 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link AsuswrtBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link AsuswrtBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -39,24 +38,24 @@ public class AsuswrtBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ROUTER, THING_TYPE_CLIENT,
             THING_TYPE_INTERFACE);
 
-    /*** THINGS WITH CHANNEL GROUPS ***/
+    // Things with channel groups
     public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
             .unmodifiableSet(Stream.of(SUPPORTED_THING_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()));
 
-    /***
-     * CHANNEL LISTS
-     * item channel names
-     ***/
+    /*
+     * Channel lists
+     * Item channel names
+     */
 
-    // general event constats
+    // General event constants
     public static final String EVENT_STATE_CONNECTED = "connected";
     public static final String EVENT_STATE_GONE = "gone";
     public static final String EVENT_STATE_DISCONNECTED = "disconnected";
 
-    // global channels
+    // Global channels
     public static final String CHANNELS_ALL = "any-channel";
 
-    // channel group system info
+    // Channel group system info
     public static final String CHANNEL_GROUP_SYSINFO = "sys-info";
     public static final String CHANNEL_MEM_FREE = "mem-free";
     public static final String CHANNEL_MEM_FREE_PERCENT = "mem-free-percent";
@@ -65,7 +64,7 @@ public class AsuswrtBindingConstants {
     public static final String CHANNEL_MEM_USED_PERCENT = "mem-used-percent";
     public static final String CHANNEL_CPU_USED_PERCENT = "cpu-used-percent";
 
-    // channel group interface information
+    // Channel group interface information
     public static final String CHANNEL_GROUP_NETWORK = "network-info";
     public static final String CHANNEL_NETWORK_IP = "ip-address";
     public static final String CHANNEL_NETWORK_MAC = "mac-address";
@@ -77,7 +76,7 @@ public class AsuswrtBindingConstants {
     public static final String CHANNEL_NETWORK_INTERNET = "internet-state";
     public static final String EVENT_CONNECTION = "connection-event";
 
-    // channel group clientList information
+    // Channel group clientList information
     public static final String CHANNEL_GROUP_CLIENTS = "client-list";
     public static final String CHANNEL_CLIENTS_KNOWN = "known-clients";
     public static final String CHANNEL_CLIENTS_ONLINE = "online-clients";
@@ -85,11 +84,11 @@ public class AsuswrtBindingConstants {
     public static final String CHANNEL_CLIENTS_ONLINE_MAC = "online-macs";
     public static final String EVENT_CLIENT_CONNECTION = "client-online-event";
 
-    // channel group client information
+    // Channel group client information
     public static final String CHANNEL_GROUP_CLIENT = "client";
     public static final String CHANNEL_CLIENT_NICKNAME = "client-name";
 
-    // channel group traffic
+    // Channel group traffic
     public static final String CHANNEL_GROUP_TRAFFIC = "traffic";
     public static final String CHANNEL_TRAFFIC_TOTAL_RX = "total-rx";
     public static final String CHANNEL_TRAFFIC_TOTAL_TX = "total-tx";
@@ -98,21 +97,21 @@ public class AsuswrtBindingConstants {
     public static final String CHANNEL_TRAFFIC_CURRENT_RX = "current-rx";
     public static final String CHANNEL_TRAFFIC_CURRENT_TX = "current-tx";
 
-    /**
-     * PROPERTIES
+    /*
+     * Properties
      */
 
-    // interface
+    // Interface
     public static final String PROPERTY_INTERFACE_NAME = "interfaceName";
     public static final String NETWORK_REPRESENTATION_PROPERTY = "interfaceName";
     // client
     public static final String PROPERTY_CLIENT_NAME = "dnsName";
     public static final String CLIENT_REPRESENTATION_PROPERTY = "macAddress";
 
-    /***
-     * JSON REQUEST MEMBERNAMES
-     * member-names of JSON response
-     ***/
+    /*
+     * JSON request member names
+     * Member names of JSON response
+     */
     public static final String JSON_MEMBER_TOKEN = "asus_token";
     // sysInfo
     public static final String JSON_MEMBER_PRODUCTID = "productid";
@@ -182,7 +181,7 @@ public class AsuswrtBindingConstants {
     public static final String JSON_MEMBER_MEM_TOTAL = "mem_total";
     public static final String JSON_MEMBER_MEM_USED = "mem_used";
     public static final String JSON_MEMBER_MEM_FREE = "mem_free";
-    public static final Integer USAGE_CPU_COUNT = 4; // max count of cpu-cores
+    public static final Integer USAGE_CPU_COUNT = 4; // max count of CPU cores
 
     // traffic
     public static final String JSON_MEMBER_TRAFFIC = "netdev";

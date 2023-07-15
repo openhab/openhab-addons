@@ -13,7 +13,7 @@
 package org.openhab.binding.asuswrt.internal.structures;
 
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConstants.*;
-import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
+import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.INTERFACE_CLIENT;
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link AsuswrtClientInfo} class stores client data
+ * The {@link AsuswrtClientInfo} class stores client data.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -59,27 +59,14 @@ public class AsuswrtClientInfo {
     private String wlConnectTime = "";
     private Integer wtfast = 0;
 
-    /*
-     * INIT CLASS
-     */
     public AsuswrtClientInfo() {
     }
 
-    /**
-     * 
-     * INIT CLASS
-     * 
-     * @param jsonObject with clientinfo
-     */
     public AsuswrtClientInfo(JsonObject jsonObject) {
         traffic = new AsuswrtTraffic(INTERFACE_CLIENT);
         setData(jsonObject);
     }
 
-    /**
-     * SET DATA
-     * from jsonData
-     */
     public void setData(JsonObject jsonObject) {
         traffic.setData(jsonObject);
         defaultType = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_DEFTYPE, defaultType);
@@ -114,11 +101,9 @@ public class AsuswrtClientInfo {
         wtfast = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_WTFAST, wtfast);
     }
 
-    /***********************************
-     *
-     * GET VALUES
-     *
-     ************************************/
+    /*
+     * Getters
+     */
 
     public AsuswrtTraffic getTraffic() {
         return traffic;

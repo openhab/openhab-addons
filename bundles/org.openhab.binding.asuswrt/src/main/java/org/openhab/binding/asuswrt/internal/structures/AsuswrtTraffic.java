@@ -19,6 +19,7 @@ import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 import java.time.LocalDate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.jose4j.json.internal.json_simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,31 +43,29 @@ public class AsuswrtTraffic {
     private Long lastUpdate = 0L;
     private String representationProperty = "";
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtTraffic() {
     }
 
+    /**
+     * Constructor.
+     *
+     * @param representationProperty representationProperty of the device (i.e. interfaceName)
+     */
     public AsuswrtTraffic(String representationProperty) {
         this.representationProperty = representationProperty.toLowerCase();
     }
 
     /**
-     * 
-     * INIT CLASS
-     * 
-     * @param jsonObject jsonObject data is stored
-     * @param representationProperty representationProperty of DEvice (i.E. interfaceName)
+     * Constructor.
+     *
+     * @param jsonObject stores the data
+     * @param representationProperty representationProperty of the device (i.e. interfaceName)
      */
     public AsuswrtTraffic(JsonObject jsonObject, String representationProperty) {
         this.representationProperty = representationProperty;
         setData(jsonObject);
     }
 
-    /**
-     * SetData from jsonObject
-     */
     public void setData(JsonObject jsonObject) {
         Integer intRX;
         Integer intTX;
@@ -93,7 +92,7 @@ public class AsuswrtTraffic {
                 totalRX = getTrafficFromHex(jsonObject, JSON_MEMBER_INET_RX);
                 totalTX = getTrafficFromHex(jsonObject, JSON_MEMBER_INET_TX);
             }
-        } else if (representationProperty.equals(INTERFACE_CLIENT)) {
+        } else if (INTERFACE_CLIENT.equals(representationProperty)) {
             curRX = Double.valueOf(jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RXCUR, -1));
             curTX = Double.valueOf(jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_TXCUR, -1));
             totalRX = jsonObjectToInt(jsonObject, JSON_MEMBER_CLIENT_RXTOTAL, -1);
@@ -106,8 +105,7 @@ public class AsuswrtTraffic {
     }
 
     /**
-     * Set Zero Hour Traffic.
-     * Save traffic value at new day
+     * Saves the traffic values at the start of a new day.
      */
     private void setZeroHourTraffic(Integer totalRX, Integer totalTX) {
         LocalDate today = LocalDate.now();
@@ -119,11 +117,11 @@ public class AsuswrtTraffic {
     }
 
     /**
-     * Get value from HEXvalue
-     * 
-     * @param jsonObject jsonObejct has values
-     * @param jsonMember name of jsonMember value is stored
-     * @return (Long) traffic
+     * Gets the traffic as {@link Integer} value from a hexadecimal value in a {@link JSONObject}.
+     *
+     * @param jsonObject the object containing the values
+     * @param jsonMember the name of the key that stores the value
+     * @return the traffic value
      */
     private Integer getTrafficFromHex(JsonObject jsonObject, String jsonMember) {
         Long lngVal;
@@ -141,11 +139,11 @@ public class AsuswrtTraffic {
     }
 
     /**
-     * Calculate Traffic from Total Traffic and Time
-     * 
-     * @param actVal actual Value to calculate
-     * @param oldVal old Value to calculate
-     * @return (Double) current traffic
+     * Calculates the traffic from the actual and old total traffic using the time span.
+     *
+     * @param actVal the actual value
+     * @param oldVal the old value
+     * @return the current traffic value
      */
     private Double calculateCurrentTraffic(Integer actVal, Integer oldVal) {
         if (lastUpdate > 0) {
@@ -164,11 +162,9 @@ public class AsuswrtTraffic {
         return -1.0;
     }
 
-    /***********************************
-     *
-     * GET VALUES
-     *
-     ************************************/
+    /*
+     * Getters
+     */
 
     public Double getCurrentRX() {
         return curRX;

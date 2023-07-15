@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AsuswrtDiscoveryService} is responsible for discover clients
+ * The {@link AsuswrtDiscoveryService} is responsible for discovering clients.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -48,11 +48,6 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
     private String uid = "";
     protected @NonNullByDefault({}) AsuswrtRouter router;
 
-    /***********************************
-     *
-     * INITIALIZATION
-     * 
-     ************************************/
     public AsuswrtDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_S, false);
     }
@@ -81,14 +76,12 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
         return this.router;
     }
 
-    /***********************************
-     *
-     * SCAN HANDLING
-     *
-     ************************************/
+    /*
+     * Scan handling
+     */
 
     /**
-     * Start scan manually
+     * Starts a manual scan.
      */
     @Override
     public void startScan() {
@@ -112,15 +105,14 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
     }
 
     /**
-     * Remove all scan results
+     * Removes all scan results.
      */
     private void removeAllResults() {
         removeOlderResults(new Date().getTime());
     }
 
     /**
-     * Work with result from get interfaces from router
-     * Create DiscoveryResult from interfaceList
+     * Creates {@link DiscoveryResult}s from the provided {@link AsuswrtInterfaceList}.
      */
     private void handleInterfaceScan(AsuswrtInterfaceList ifList) {
         try {
@@ -129,13 +121,12 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception e) {
-            logger.debug("error handling interface scan reults", e);
+            logger.debug("Error while handling interface scan reults", e);
         }
     }
 
     /**
-     * Work with result from get clients from router
-     * Create DiscoveryResult from clientList
+     * Creates {@link DiscoveryResult}s from the provided {@link AsuswrtClientList}.
      */
     public void handleClientScan(AsuswrtClientList clientList) {
         try {
@@ -144,18 +135,16 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception e) {
-            logger.debug("error handling client scan results", e);
+            logger.debug("Error while handling client scan results", e);
         }
     }
 
-    /***********************************
-     *
-     * CREATE DISCOVERY RESULTS
-     *
-     ************************************/
+    /*
+     * Discovery result creation
+     */
 
     /**
-     * Create DiscoveryResult from single interfaceInfo
+     * Creates a {@link DiscoveryResult} from the provided {@link AsuswrtIpInfo}.
      */
     private DiscoveryResult createInterfaceResult(AsuswrtIpInfo interfaceInfo) {
         String ifName = interfaceInfo.getName();
@@ -181,7 +170,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
     }
 
     /**
-     * Create DiscoveryResult from single clientInfo
+     * Creates a {@link DiscoveryResult} from the provided {@link AsuswrtClientInfo}.
      */
     private DiscoveryResult createClientResult(AsuswrtClientInfo clientInfo) {
         String macAddress = clientInfo.getMac();
@@ -190,7 +179,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
         String nickName;
         String label = "AwrtClient_";
 
-        /* create label and thing names */
+        // Create label and thing names
         clientName = stringOrDefault(clientInfo.getName(), "client_" + unformatedMac);
         nickName = stringOrDefault(clientInfo.getNickName(), clientName);
         if (nickName.equals(clientName)) {
@@ -199,7 +188,7 @@ public class AsuswrtDiscoveryService extends AbstractDiscoveryService implements
             label += nickName + " (" + clientName + ")";
         }
 
-        /* create properties */
+        // Create properties
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
         properties.put(Thing.PROPERTY_VENDOR, clientInfo.getVendor());

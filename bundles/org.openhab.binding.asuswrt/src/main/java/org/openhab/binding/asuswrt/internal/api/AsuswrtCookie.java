@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.asuswrt.internal.api;
 
-import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
+import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.COOKIE_LIFETIME_S;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * CLASS FOR COOKIE HANDLING
+ * The {@link AsuswrtCookie} is used for storing cookie details.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -27,22 +27,20 @@ public class AsuswrtCookie {
     protected String token = "";
     protected Long cookieTimeStamp = 0L;
 
-    /***********************************
-     *
-     * SET AND RESET FUNCTIONS
-     *
-     ************************************/
+    /*
+     * Set and reset functions
+     */
 
     /**
-     * Set new cookie
+     * Sets a new cookie.
      */
     public void setCookie(String cookie) {
         this.cookie = cookie;
-        this.cookieTimeStamp = System.currentTimeMillis();
+        cookieTimeStamp = System.currentTimeMillis();
     }
 
     /**
-     * reset cookie
+     * Resets a cookie.
      */
     public void resetCookie() {
         cookie = "";
@@ -50,46 +48,40 @@ public class AsuswrtCookie {
         cookieTimeStamp = 0L;
     }
 
-    /***********************************
-     *
-     * CHECK COOKIE
-     *
-     ************************************/
+    /*
+     * Cookie checks
+     */
 
     /**
-     * check if cookie is set
+     * Checks if a cookie is set.
      */
-    public Boolean cookieIsSet() {
-        return !this.cookie.isBlank();
+    public boolean cookieIsSet() {
+        return !cookie.isBlank();
     }
 
     /**
-     * check if cookie is expired
-     * 
-     * @return true if cookie is set and expired
+     * Checks if a cookie is expired.
+     *
+     * @return <code>true</code> if cookie is set and expired
      */
-    public Boolean cookieIsExpired() {
-        if (this.cookieTimeStamp > 0L
-                && System.currentTimeMillis() > this.cookieTimeStamp + (COOKIE_LIFETIME_S * 1000)) {
+    public boolean cookieIsExpired() {
+        if (cookieTimeStamp > 0L && System.currentTimeMillis() > cookieTimeStamp + (COOKIE_LIFETIME_S * 1000)) {
             return true;
         }
         return false;
     }
 
     /**
-     * Check if cookie is set and not expired
+     * Checks if a cookie is set and not expired.
      */
-    public Boolean isValid() {
+    public boolean isValid() {
         return !cookieIsExpired() && cookieIsSet();
     }
 
-    /***********************************
-     *
-     * GET VALUES
-     *
-     ************************************/
-
+    /**
+     * Gets the cookie.
+     */
     public String getCookie() {
-        return this.cookie;
+        return cookie;
     }
 }

@@ -54,8 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link AsuswrtRouter} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link AsuswrtRouter} is responsible for handling commands, which are sent to one of the channels.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -78,11 +77,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     public AsuswrtErrorHandler errorHandler;
 
-    /**
-     * INIT CLASS
-     * 
-     * @param bridge Supported AssuswrtRouterThing
-     */
     public AsuswrtRouter(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         Thing thing = getThing();
@@ -93,11 +87,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         config = new AsuswrtConfiguration();
     }
 
-    /***********************************
-     *
-     * INITIALIZATION
-     *
-     ************************************/
     @Override
     public void initialize() {
         config = getConfigAs(AsuswrtConfiguration.class);
@@ -118,37 +107,26 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         stopScheduler(reconnectJob);
     }
 
-    /**
-     * ACTIVATE DISCOVERY SERVICE
-     */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(AsuswrtDiscoveryService.class);
     }
 
-    /**
-     * Set DiscoveryService
-     */
     public void setDiscoveryService(AsuswrtDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
     }
 
-    /***********************************
-     *
-     * SCHEDULER
-     *
-     ************************************/
+    /*
+     * Scheduler
+     */
 
     /**
-     * delayed OneTime StartupJob
+     * Delayed one-time startup job.
      */
     private void delayedStartUp() {
         connect();
     }
 
-    /**
-     * Start Polling Job Scheduler
-     */
     public void startPollingJob() {
         int pollingInterval = AsuswrtUtils.getValueOrDefault(config.pollingInterval, POLLING_INTERVAL_S_DEFAULT);
         TimeUnit timeUnit = TimeUnit.SECONDS;
@@ -164,18 +142,12 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * Polling Job Action
-     */
     protected void pollingJobAction() {
         if (ThingStatus.ONLINE.equals(getState())) {
             queryDeviceData();
         }
     }
 
-    /**
-     * Start Reconnect Scheduler
-     */
     protected void startReconnectScheduler() {
         int pollingInterval = config.reconnectInterval;
         TimeUnit timeUnit = TimeUnit.SECONDS;
@@ -186,16 +158,10 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         reconnectJob = scheduler.schedule(this::reconnectJobAction, pollingInterval, timeUnit);
     }
 
-    /**
-     * reconnect job action
-     */
     protected void reconnectJobAction() {
         connect();
     }
 
-    /**
-     * Start DeviceDiscovery Scheduler
-     */
     protected void startDiscoveryScheduler() {
         int pollingInterval = config.discoveryInterval;
         TimeUnit timeUnit = TimeUnit.SECONDS;
@@ -209,26 +175,23 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     }
 
     /**
-     * Stop scheduler
-     * 
-     * @param scheduler ScheduledFeature<?> which schould be stopped
+     * Stops a scheduler.
+     *
+     * @param scheduler ScheduledFeature<?> which should be stopped
      */
     protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
         if (scheduler != null) {
-            logger.trace("{} stopping sheduler {}", uid, scheduler);
+            logger.trace("{} stopping scheduler {}", uid, scheduler);
             scheduler.cancel(true);
-            scheduler = null;
         }
     }
 
-    /***********************************
-     *
-     * FUNCTIONS
-     *
-     ************************************/
+    /*
+     * Functions
+     */
 
     /**
-     * Connect to router and set states
+     * Connects to the router and sets the states.
      */
     @SuppressWarnings("null")
     protected void connect() {
@@ -244,9 +207,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * QUERY DEVICE DATA
-     */
     @SuppressWarnings("null")
     public void queryDeviceData(Boolean asyncRequest) {
         connector.queryDeviceData(CMD_GET_SYSINFO + CMD_GET_USAGE + CMD_GET_LANINFO + CMD_GET_WANINFO
@@ -254,18 +214,17 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     }
 
     /**
-     * QUERY DEVICE DATA
-     * do asynchronous request
+     * Queries device data asynchronously.
      */
     public void queryDeviceData() {
         queryDeviceData(true);
     }
 
     /**
-     * Set routerInfo-Data and update channels on receiving new data with the associated command
-     * 
-     * @param jsonObject jsonObject received
-     * @param command command was sent
+     * Sets routerInfo data and updates channels on receiving new data with the associated command.
+     *
+     * @param jsonObject contains the received data
+     * @param command the command that was sent
      */
     public void dataReceived(JsonObject jsonObject, String command) {
         if (command.contains(CMD_GET_SYSINFO)) {
@@ -292,15 +251,15 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     }
 
     /**
-     * Update RouterStatus
+     * Updates the router status.
      */
     public void setState(ThingStatus thingStatus, ThingStatusDetail statusDetail, String text) {
         if (!thingStatus.equals(getThing().getStatus())) {
             updateStatus(thingStatus, statusDetail, text);
             updateChildStates(thingStatus);
-            if (thingStatus.equals(ThingStatus.OFFLINE)) {
+            if (ThingStatus.OFFLINE.equals(thingStatus)) {
                 stopScheduler(pollingJob);
-                /* set channels to undef */
+                // Set channels to undef
                 getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
                 startReconnectScheduler();
             }
@@ -372,7 +331,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * UPDATE PROPERTIES
-     * 
+     *
      * If only one property must be changed, there is also a convenient method
      * updateProperty(String name, String value).
      */
@@ -433,7 +392,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Fire Event
-     * 
+     *
      * @param channelUID chanelUID event belongs to
      * @param event event-name is fired
      */
@@ -476,7 +435,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Update Child single child with special representationProperty
-     * 
+     *
      * @param thingTypeToUpdate ThingTypeUID of Thing to update
      * @param representationProperty Name of representationProperty
      * @param propertyValue Value of representationProperty
@@ -496,7 +455,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Update Child-Thing (send refreshCommand)
-     * 
+     *
      * @param thing - Thing to update
      */
     public void updateChild(Thing thing) {
@@ -509,7 +468,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Set State of all clients
-     * 
+     *
      * @param thingStatus new ThingStatus
      */
     public void updateChildStates(ThingStatus thingStatus) {
@@ -521,7 +480,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Set State of a Thing
-     * 
+     *
      * @param thing Thing to update
      * @param thingStatus new ThingStatus
      */
@@ -544,7 +503,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Get ChannelID including group
-     * 
+     *
      * @param group String channel-group
      * @param channel String channel-name
      * @return String channelID
@@ -559,7 +518,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
     /**
      * Get Channel from ChannelID
-     * 
+     *
      * @param channelID String channelID
      * @return String channel-name
      */

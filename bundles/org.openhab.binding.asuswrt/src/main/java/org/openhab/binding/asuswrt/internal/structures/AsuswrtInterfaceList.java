@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link AsuswrtInterfaceList} class stores ipInfo list
+ * The {@link AsuswrtInterfaceList} class stores a list of {@link AsuswrtIpInfo}.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -29,40 +29,27 @@ import com.google.gson.JsonObject;
 public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
     private List<AsuswrtIpInfo> ipInfoList = new ArrayList<>();
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtInterfaceList() {
     }
 
-    /**
-     * ITERATOR
-     * 
-     * @return ipInfoInfo
-     */
     @Override
     public Iterator<AsuswrtIpInfo> iterator() {
         return ipInfoList.iterator();
     }
 
-    /***********************************
-     *
-     * SET VALUES
-     *
-     ************************************/
+    /*
+     * Setters
+     */
 
     /**
-     * ADD INTERFACE TO LIST
+     * Adds an {@link AsuswrtIpInfo} to the list.
      */
     private void addInterface(AsuswrtIpInfo ipInfo) {
         ipInfoList.add(ipInfo);
     }
 
     /**
-     * Set InterfaceData from jsonObject / create new if not exists
-     * 
-     * @param ifName name of interface
-     * @param jsonObject with interface data
+     * Sets the {@link AsuswrtInterfaceList} using a {@link JsonObject}.
      */
     public void setData(String ifName, JsonObject jsonObject) {
         if (hasInterface(ifName)) {
@@ -72,17 +59,14 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
         }
     }
 
-    /***********************************
-     *
-     * GET VALUES
-     *
-     ************************************/
+    /*
+     * Getters
+     */
 
     /**
-     * GET INTERFACE BY NAME
-     * 
-     * @param ipInfoName String interface
-     * @return AsuswrtIpInfo
+     * Gets {@link AsuswrtIpInfo} from the list for an interface based on its name.
+     *
+     * @param ifName the name of the interface for which the info is returned
      */
     public AsuswrtIpInfo getByName(String ifName) {
         for (AsuswrtIpInfo ipInfo : ipInfoList) {
@@ -94,10 +78,9 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
     }
 
     /**
-     * GET INTERFACE BY MAC
-     * 
-     * @param ipInfoMAC String ipInfo MAC-Address
-     * @return AsuswrtIpInfo
+     * Gets {@link AsuswrtIpInfo} from the list for an interface based on its MAC address.
+     *
+     * @param ipInfoMAC the MAC address of the interface for which the info is returned
      */
     public AsuswrtIpInfo getByMAC(String ipInfoMAC) {
         for (AsuswrtIpInfo ipInfo : ipInfoList) {
@@ -109,10 +92,9 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
     }
 
     /**
-     * GET INTERFACE BY IP
-     * 
-     * @param ipAddress String IP-Address
-     * @return AsuswrtIpInfo
+     * Gets {@link AsuswrtIpInfo} from the list for an interface based on its IP address.
+     *
+     * @param ipAddress the IP address of the interface for which the info is returned
      */
     public AsuswrtIpInfo getByIP(String ipAddress) {
         for (AsuswrtIpInfo ipInfo : ipInfoList) {
@@ -124,10 +106,9 @@ public class AsuswrtInterfaceList implements Iterable<AsuswrtIpInfo> {
     }
 
     /**
-     * Check if interface is in list
-     * 
-     * @param ifName InterfaceName
-     * @return true if data was set
+     * Checks if an interface with the given name is in the list.
+     *
+     * @param ifName the name of the interface
      */
     public boolean hasInterface(String ifName) {
         for (AsuswrtIpInfo ipInfo : ipInfoList) {

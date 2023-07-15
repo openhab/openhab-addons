@@ -40,8 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AsuswrtHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link AsuswrtHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -53,13 +52,13 @@ public class AsuswrtHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
 
     public AsuswrtHandlerFactory() {
-        // set SslContextfactory
+        // Set SslContextfactory
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
         if (HTTP_SSL_TRUST_ALL) {
             sslContextFactory.setTrustAll(true);
             sslContextFactory.setEndpointIdentificationAlgorithm(null);
         }
-        // create new httpClient
+        // Create new httpClient
         httpClient = new HttpClient(sslContextFactory);
         httpClient.setFollowRedirects(false);
         httpClient.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
@@ -78,7 +77,7 @@ public class AsuswrtHandlerFactory extends BaseThingHandlerFactory {
         try {
             httpClient.stop();
         } catch (Exception e) {
-            logger.debug("unable to stop httpClient");
+            logger.debug("Unable to stop httpClient");
         }
     }
 
@@ -110,13 +109,9 @@ public class AsuswrtHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /**
-     * Get RouterHandler (Bridge) from thing
-     * 
-     * @param thing
-     * @return AsuswrtRouterHandler
+     * Gets the {@link AsuswrtRouter} handler (Bridge) from a Thing.
      */
-    @Nullable
-    protected AsuswrtRouter getRouter(Thing thing) {
+    protected @Nullable AsuswrtRouter getRouter(Thing thing) {
         ThingUID bridgeUID = thing.getBridgeUID();
         if (bridgeUID != null) {
             for (AsuswrtRouter router : routerHandlers) {

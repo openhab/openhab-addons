@@ -28,13 +28,14 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CLASS HANDLING ROUTER CLIENTS
+ * The {@link AsuswrtInterface} is used as {@link ThingHandler} for router interfaces.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -46,27 +47,12 @@ public class AsuswrtInterface extends BaseThingHandler {
     private Map<String, Object> oldStates = new HashMap<>();
     protected final String uid;
 
-    /**
-     * Constructor
-     *
-     * @param thing Thing object representing client
-     * @param router Router (Bridge) Thing
-     */
     public AsuswrtInterface(Thing thing, AsuswrtRouter router) {
         super(thing);
         this.router = router;
         this.uid = getThing().getUID().getAsString();
     }
 
-    /***********************************
-     *
-     * INIT AND SETTINGS
-     *
-     ************************************/
-
-    /**
-     * INITIALIZE DEVICE
-     */
     @Override
     public void initialize() {
         logger.trace("({}) Initializing thing ", uid);
@@ -81,14 +67,10 @@ public class AsuswrtInterface extends BaseThingHandler {
         }
     }
 
-    /***********************************
-     *
-     * COMMAND AND EVENTS
-     *
-     ************************************/
-    /**
-     * handle Commands
+    /*
+     * Commands and events
      */
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -101,15 +83,12 @@ public class AsuswrtInterface extends BaseThingHandler {
             AsuswrtIpInfo interfaceInfo = router.getInterfaces().getByName(ifName);
             fireEvents(interfaceInfo);
             updateInterfaceChannels(interfaceInfo);
-            updateTrafficChannels(interfaceInfo.geTraffic());
+            updateTrafficChannels(interfaceInfo.getTraffic());
         } catch (Exception e) {
             logger.debug("({}) unable to refresh data - property interfaceName not found ", uid);
         }
     }
 
-    /**
-     * Update Network Channels
-     */
     private void updateInterfaceChannels(AsuswrtIpInfo interfaceInfo) {
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_MAC), getStringType(interfaceInfo.getMAC()));
         updateState(getChannelID(CHANNEL_GROUP_NETWORK, CHANNEL_NETWORK_IP),
@@ -126,9 +105,6 @@ public class AsuswrtInterface extends BaseThingHandler {
                 getOnOffType(interfaceInfo.isConnected()));
     }
 
-    /**
-     * Update Traffic Channels
-     */
     private void updateTrafficChannels(AsuswrtTraffic traffic) {
         updateState(getChannelID(CHANNEL_GROUP_TRAFFIC, CHANNEL_TRAFFIC_CURRENT_RX),
                 getQuantityType(traffic.getCurrentRX(), Units.MEGABIT_PER_SECOND));
@@ -145,7 +121,7 @@ public class AsuswrtInterface extends BaseThingHandler {
     }
 
     /**
-     * fire events when new informations changed
+     * Fires events on {@link AsuswrtIpInfo} changes.
      */
     public void fireEvents(AsuswrtIpInfo interfaceInfo) {
         Boolean isConnected = interfaceInfo.isConnected();
@@ -158,18 +134,12 @@ public class AsuswrtInterface extends BaseThingHandler {
         }
     }
 
-    /***********************************
-     *
-     * FUNCTIONS
-     *
-     ************************************/
+    /*
+     * Functions
+     */
 
     /**
-     * Get ChannelID including group
-     * 
-     * @param group String channel-group
-     * @param channel String channel-name
-     * @return String channelID
+     * Gets the channel ID including the group.
      */
     protected String getChannelID(String group, String channel) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -180,10 +150,7 @@ public class AsuswrtInterface extends BaseThingHandler {
     }
 
     /**
-     * Get Channel from ChannelID
-     * 
-     * @param channelID String channelID
-     * @return String channel-name
+     * Gets a channel name from a channel ID.
      */
     protected String getChannelFromID(ChannelUID channelID) {
         String channel = channelID.getIdWithoutGroup();
@@ -192,11 +159,11 @@ public class AsuswrtInterface extends BaseThingHandler {
     }
 
     /**
-     * Check if state changed since last channel update
-     * 
-     * @param stateName name of state (channel)
-     * @param comparator comparation value
-     * @return true if changed, false if not or no old value existds
+     * Checks if the state changed since the last channel update.
+     *
+     * @param stateName the name of the state (channel)
+     * @param comparator comparison value
+     * @return <code>true</code> if changed, <code>false</code> if not or no old value exists
      */
     private Boolean checkForStateChange(String stateName, Object comparator) {
         if (oldStates.get(stateName) == null) {

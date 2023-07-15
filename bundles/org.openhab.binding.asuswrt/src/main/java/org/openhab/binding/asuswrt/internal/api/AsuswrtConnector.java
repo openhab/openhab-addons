@@ -14,7 +14,7 @@ package org.openhab.binding.asuswrt.internal.api;
 
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtErrorConstants.*;
-import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
+import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.getValueOrDefault;
 
 import java.net.NoRouteToHostException;
 import java.util.concurrent.TimeoutException;
@@ -36,8 +36,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * ASUSWRT HTTP CLIENT
- * 
+ * The {@link AsuswrtConnector} is a {@link AsuswrtHttpClient} that also keeps track of router configuration and
+ * credentials.
+ *
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
@@ -47,23 +48,18 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     private AsuswrtConfiguration routerConfig;
     protected Long lastQuery = 0L;
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtConnector(AsuswrtRouter router) {
         super(router);
         routerConfig = router.getConfiguration();
         this.credentials = new AsuswrtCredentials(routerConfig);
     }
 
-    /***********************************
-     *
-     * CONNECTOR COMMANDS
-     *
-     ************************************/
+    /*
+     * Connector commands
+     */
 
     /**
-     * Login to router
+     * Login to the router.
      */
     public Boolean login() {
         String url = getURL("login.cgi");
@@ -88,26 +84,24 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     }
 
     /**
-     * Logout
-     * unset cookie
+     * Logout and unsets the cookie.
      */
     public void logout() {
         this.cookieStore.resetCookie();
     }
 
     /**
-     * Query SysInfo
-     * get System Information from device
+     * Gets system information from the device.
      */
     public void querySysInfo(boolean asyncRequest) {
         queryDeviceData(CMD_GET_SYSINFO, asyncRequest);
     }
 
     /**
-     * Query Data From Device
-     * 
+     * Queries data from the device.
+     *
      * @param command command constant to sent
-     * @param asyncRequest True if request should be sent asynchron, false if synchron
+     * @param asyncRequest <code>true</code> if request should be sent asynchronous, <code>false</code> if synchronous
      */
     public void queryDeviceData(String command, boolean asyncRequest) {
         logger.trace("({}) queryDeviceData", uid);
@@ -123,11 +117,11 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
             String payload = "hook=" + command;
             this.lastQuery = now;
 
-            /* send payload as url parameter */
+            // Send payload as url parameter
             url = url + "?" + payload;
             url = url.replace(";", "%3B");
 
-            /* send asynchron or synchron http-request */
+            // Send asynchronous or synchronous HTTP request
             if (asyncRequest) {
                 sendAsyncRequest(url, payload, command);
             } else {
@@ -138,17 +132,14 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         }
     }
 
-    /***********************************
-     *
-     * HANDLE RESPONSES
-     *
-     ************************************/
+    /*
+     * Response handling
+     */
 
     /**
-     * Handle Sucessfull HTTP Response
-     * delegated to connector-class
-     * 
-     * @param rBody response body as string
+     * Handle successful HTTP response by delegating to the connector class.
+     *
+     * @param responseBody response body as string
      * @param command command constant which was sent
      */
     @Override
@@ -158,8 +149,8 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
     }
 
     /**
-     * Handle HTTP-Result Failures
-     * 
+     * Handles HTTP result failures.
+     *
      * @param e Throwable exception
      * @param payload full payload for debugging
      */
@@ -183,13 +174,12 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
         }
     }
 
-    /***********************************
-     *
-     * PRIVATE STUFF
-     *
-     ************************************/
+    /*
+     * Other
+     */
+
     /**
-     * Get Target URL
+     * Gets the target URL.
      */
     protected String getURL(String site) {
         String url = routerConfig.hostname;

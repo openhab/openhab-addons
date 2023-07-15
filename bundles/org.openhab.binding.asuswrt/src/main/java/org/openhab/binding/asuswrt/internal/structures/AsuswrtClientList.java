@@ -14,7 +14,7 @@ package org.openhab.binding.asuswrt.internal.structures;
 
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConstants.*;
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtErrorConstants.*;
-import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
+import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.isValidMacAddress;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link AsuswrtClientList} class stores client list
+ * The {@link AsuswrtClientList} class stores a list of {@link AsuswrtClientInfo}.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -37,42 +37,29 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     private final Logger logger = LoggerFactory.getLogger(AsuswrtClientList.class);
     private List<AsuswrtClientInfo> clientList = new ArrayList<>();
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtClientList() {
     }
 
-    /**
-     * INIT CLASS
-     * 
-     * @param jsonObject with clientinfo
-     */
     public AsuswrtClientList(JsonObject jsonObject) {
         setData(jsonObject);
     }
 
-    /**
-     * ITERATOR
-     * 
-     * @return clientInfo
-     */
     @Override
     public Iterator<AsuswrtClientInfo> iterator() {
         return clientList.iterator();
     }
 
     /**
-     * Generate new AsuswrtClientlist from jsonData
+     * Sets the {@link AsuswrtClientList} using a {@link JsonObject}.
      */
     public void setData(JsonObject jsonObject) {
-        this.clientList.clear();
+        clientList.clear();
         try {
             JsonObject jsonList = jsonObject.getAsJsonObject(JSON_MEMBER_CLIENTS);
-            /* remove member maclist - only online clients in there */
+            // Remove the member MAC list, it contains only online clients
             jsonList.remove(JSON_MEMBER_MACLIST);
             jsonList.remove(JSON_MEMBER_API_LEVEL);
-            /* iterate MAC-Addresslist */
+            // Iterate over the MAC addresses
             jsonList.keySet().forEach(macAddress -> {
                 if (isValidMacAddress(macAddress)) {
                     AsuswrtClientInfo clientInfo = new AsuswrtClientInfo(jsonList.getAsJsonObject(macAddress));
@@ -82,30 +69,25 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
                 }
             });
         } catch (Exception e) {
-            logger.debug("getClientlist: {} - {}'", ERR_JSON_FOMRAT, e.getMessage());
+            logger.debug("getClientlist: {} - {}'", ERR_JSON_FORMAT, e.getMessage());
         }
     }
 
     /**
-     * ADD CLIENT TO LIST
-     * 
-     * @param clientInfo AsuswrtClientInfo
+     * Adds {@link AsuswrtClientInfo} to the list.
      */
     private void addClient(AsuswrtClientInfo clientInfo) {
-        this.clientList.add(clientInfo);
+        clientList.add(clientInfo);
     }
 
-    /***********************************
-     *
-     * GET VALUES
-     *
-     ************************************/
+    /*
+     * Getters
+     */
 
     /**
-     * GET CLIENT BY NAME
-     * 
-     * @param clientName String clientName
-     * @return AsuswrtClientInfo
+     * Gets {@link AsuswrtClientInfo} from the list for a client based on its name.
+     *
+     * @param clientName the name of the client for which the info is returned
      */
     public AsuswrtClientInfo getClientByName(String clientName) {
         for (AsuswrtClientInfo client : this.clientList) {
@@ -117,10 +99,9 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     }
 
     /**
-     * GET CLIENT BY MAC
-     * 
-     * @param clientMAC String client MAC-Address
-     * @return AsuswrtClientInfo
+     * Gets {@link AsuswrtClientInfo} from the list for a client based on its MAC address.
+     *
+     * @param clientMAC the MAC address of the client for which the info is returned
      */
     public AsuswrtClientInfo getClientByMAC(String clientMAC) {
         for (AsuswrtClientInfo client : this.clientList) {
@@ -132,10 +113,9 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     }
 
     /**
-     * GET CLIENT BY IP
-     * 
-     * @param clientMAC String client IP-Address
-     * @return AsuswrtClientInfo
+     * Gets {@link AsuswrtClientInfo} from the list for a client based on its IP address.
+     *
+     * @param clientIP the IP address of the client for which the info is returned
      */
     public AsuswrtClientInfo getClientByIP(String clientIP) {
         for (AsuswrtClientInfo client : this.clientList) {
@@ -147,7 +127,7 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     }
 
     /*
-     * Return ; separated list with clientNames and macAddresses
+     * Returns a <code>;</code> separated list with client names and MAC addresses.
      */
     public String getClientList() {
         StringBuilder clients = new StringBuilder();
@@ -158,21 +138,21 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     }
 
     /*
-     * Return ; separated list with clientNames
+     * Returns a <code>;</code> separated list with client names.
      */
     public String getClientNames() {
         return clientList.stream().map(AsuswrtClientInfo::getName).collect(Collectors.joining("; "));
     }
 
     /**
-     * Return count of clients in list
+     * Returns the number of clients in the list.
      */
     public Integer getCount() {
         return clientList.size();
     }
 
     /*
-     * Return ; separated list with macAddresses
+     * Returns a <code>;</code> separated list with MAC addresses.
      */
     public String getMacAddresses() {
         StringBuilder clients = new StringBuilder();
@@ -183,7 +163,7 @@ public class AsuswrtClientList implements Iterable<AsuswrtClientInfo> {
     }
 
     /**
-     * Get online clients
+     * Returns a {@link AsuswrtClientList} of online clients.
      */
     public AsuswrtClientList getOnlineClients() {
         AsuswrtClientList clients = new AsuswrtClientList();

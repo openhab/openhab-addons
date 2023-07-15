@@ -40,16 +40,12 @@ public class AsuswrtIpInfo {
     private String dnsServer = "";
     private Boolean connected = false;
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtIpInfo() {
     }
 
     /**
-     * 
-     * INIT CLASS
-     * 
+     * Constructor.
+     *
      * @param interfaceName name of interface
      * @param jsonObject with ipInfo
      */
@@ -59,18 +55,10 @@ public class AsuswrtIpInfo {
         setData(jsonObject);
     }
 
-    /***********************************
-     *
-     * SET VALUES
-     *
-     ************************************/
-
-    /**
-     * Set Data from jsonObject
-     * 
-     * @param jsonObject jsonObject data is stored
-     * @param channelGroup channelGroup data belongs to
+    /*
+     * Setters
      */
+
     public void setData(JsonObject jsonObject) {
         if (ifName.startsWith(INTERFACE_LAN)) {
             logger.trace("(AsuswrtIpInfo) setData for interface {}", INTERFACE_LAN);
@@ -94,13 +82,11 @@ public class AsuswrtIpInfo {
         }
     }
 
-    /***********************************
-     *
-     * GET VALUES
-     *
-     ************************************/
+    /*
+     * Getters
+     */
 
-    public AsuswrtTraffic geTraffic() {
+    public AsuswrtTraffic getTraffic() {
         return traffic;
     }
 

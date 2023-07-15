@@ -17,15 +17,14 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AsuswrtBindingSettings} class defines common constants, which are
- * used across the whole binding.
+ * The {@link AsuswrtBindingSettings} class defines common settings constants, which are used across the whole binding.
  *
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
 public class AsuswrtBindingSettings {
 
-    // Binding Settings
+    // Binding settings
     public static final Integer HTTP_MAX_CONNECTIONS = 10; // setMaxConnectionsPerDestination for HTTP-Client
     public static final Integer HTTP_MAX_QUEUED_REQUESTS = 10; // setMaxRequestsQueuedPerDestination for HTTP-Client
     public static final Integer HTTP_TIMEOUT_MS = 5000; // http request timeout
@@ -55,7 +54,7 @@ public class AsuswrtBindingSettings {
     public static final String CMD_GET_MEMUSAGE = "memory_usage(appobj);";
     public static final String CMD_GET_CPUUSAGE = "cpu_usage(appobj);";
 
-    // List of Interfaces
+    // List of interfaces
     public static final String INTERFACE_WAN = "wan";
     public static final String INTERFACE_LAN = "lan";
     public static final String INTERFACE_WLAN = "wlan";

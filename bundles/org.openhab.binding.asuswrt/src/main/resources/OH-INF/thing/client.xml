@@ -18,19 +18,19 @@
 		</channel-groups>
 		<properties>
 			<property name="vendor">Vendor</property>
-			<property name="dnsName">DNS-Name</property>
+			<property name="dnsName">DNS Name</property>
 		</properties>
 		<representation-property>macAddress</representation-property>
 
 		<config-description>
 			<parameter name="macAddress" type="text" required="true">
-				<label>MAC-Address</label>
-				<description>MAC-Address of the device</description>
+				<label>MAC Address</label>
+				<description>MAC address of the device</description>
 				<default>00:00:00:00:00:00</default>
 			</parameter>
 			<parameter name="clientNick" type="text" required="false">
 				<label>Nickname</label>
-				<description>Nickname of device</description>
+				<description>Nickname of the device</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -43,7 +43,7 @@
 		<channels>
 			<channel id="network-state" typeId="is-online-type"></channel>
 			<channel id="ip-address" typeId="ip-address-type">
-				<description>Client IP-Address</description>
+				<description>Client IP address</description>
 			</channel>
 			<channel id="ip-method" typeId="ip-proto-type"></channel>
 			<channel id="internet-state" typeId="interne-state-type"></channel>

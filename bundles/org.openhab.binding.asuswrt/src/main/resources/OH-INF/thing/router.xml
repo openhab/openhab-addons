@@ -7,7 +7,7 @@
 	<!-- Router Thing Type -->
 	<bridge-type id="router">
 		<label>Asuswrt Router</label>
-		<description>Router with asuswrt or asuswrt-merlin OS</description>
+		<description>Router with Asuswrt or Asuswrt-Merlin OS</description>
 		<channel-groups>
 			<channel-group id="sys-info" typeId="sys-info-group"></channel-group>
 			<channel-group id="client-list" typeId="client-list-group"></channel-group>
@@ -31,18 +31,18 @@
 			</parameter>
 			<parameter name="useSSL" type="boolean">
 				<label>Use SSL</label>
-				<description>Use SSL to authenticate. If not use http</description>
+				<description>Use SSL to authenticate. If not use HTTP</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="httpPort" type="integer">
-				<label>HTTP-Port</label>
-				<description>Port used for HTTP-connection</description>
+				<label>HTTP Port</label>
+				<description>Port used for HTTP connection</description>
 				<default>80</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="httpsPort" type="integer">
-				<label>HTTPS-Port</label>
-				<description>Port used for HTTPS-connection</description>
+				<label>HTTPS Port</label>
+				<description>Port used for HTTPS connection</description>
 				<default>443</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -59,27 +59,27 @@
 	<!-- System Information -->
 	<channel-group-type id="sys-info-group">
 		<label>System Info</label>
-		<description>System-Information about the device</description>
+		<description>System information about the device</description>
 		<channels>
 			<channel id="mem-total" typeId="usage-data-type">
 				<label>Total Memory</label>
-				<description>Total Memory in MB</description>
+				<description>Total memory in MB</description>
 			</channel>
 			<channel id="mem-used" typeId="usage-data-type">
 				<label>Used Memory</label>
-				<description>Used Memory in MB</description>
+				<description>Used memory in MB</description>
 			</channel>
 			<channel id="mem-free" typeId="usage-data-type">
 				<label>Free Memory</label>
-				<description>Free Memory in MB</description>
+				<description>Free memory in MB</description>
 			</channel>
 			<channel id="mem-free-percent" typeId="usage-type-percent">
 				<label>Free Memory</label>
-				<description>Free Memory in %</description>
+				<description>Free memory in %</description>
 			</channel>
 			<channel id="mem-used-percent" typeId="usage-type-percent">
 				<label>Used Memory</label>
-				<description>Used Memory in %</description>
+				<description>Used memory in %</description>
 			</channel>
 			<channel id="cpu-used-percent" typeId="usage-type-percent">
 				<label>Total CPU Usage</label>
@@ -88,17 +88,17 @@
 		</channels>
 	</channel-group-type>
 
-	<!--CLIENTS -->
+	<!-- Clients -->
 	<channel-group-type id="client-list-group">
 		<label>Clients</label>
 		<description>Clients connected to router</description>
 		<channels>
 			<channel id="known-clients" typeId="clients-online-type">
 				<label>Known Clients</label>
-				<description>Known Clients with Name and MAC-Addresses</description>
+				<description>Known clients with name and MAC addresses</description>
 			</channel>
 			<channel id="online-clients" typeId="clients-online-type">
-				<description>Online Clients with Name and MAC-Addresses</description>
+				<description>Online clients with name and MAC addresses</description>
 			</channel>
 			<channel id="online-macs" typeId="clients-online-mac-type"></channel>
 			<channel id="online-clients-count" typeId="clients-online-count-type"></channel>

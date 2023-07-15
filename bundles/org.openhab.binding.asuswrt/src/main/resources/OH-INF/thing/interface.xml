@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Router Interface</label>
-		<description>Interface of Router</description>
+		<description>Interface of router</description>
 		<channel-groups>
 			<channel-group id="network-info" typeId="if-info-group"></channel-group>
 			<channel-group id="traffic" typeId="traffic-group"></channel-group>
@@ -33,9 +33,9 @@
 
 	<!-- ############################### CHANNEL-GROUPS ############################### -->
 
-	<!-- INterface Information -->
+	<!-- Interface Information -->
 	<channel-group-type id="if-info-group">
-		<label>LAN-Status</label>
+		<label>LAN Status</label>
 		<description>LAN connection state</description>
 		<channels>
 			<channel id="mac-address" typeId="mac-address-type"></channel>

@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Class Handling Errors
- * 
+ * This class is used for handling errors.
+ *
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
@@ -25,40 +25,31 @@ public class AsuswrtErrorHandler {
     private String errorMessage = "";
     private String infoMessage = "";
 
-    /**
-     * Constructor
-     *
-     */
     public AsuswrtErrorHandler() {
     }
 
-    /**
-     * Constructor
-     */
     public AsuswrtErrorHandler(Exception ex) {
         raiseError(ex);
     }
 
-    /***********************************
-     *
-     * Public Functions
-     *
-     ************************************/
+    /*
+     * Public functions
+     */
 
     /**
-     * Raises new error
-     * 
-     * @param exception Exception
+     * Raises a new error.
+     *
+     * @param exception the exception
      */
     public void raiseError(Exception ex) {
         raiseError(ex, "");
     }
 
     /**
-     * Raises new error
-     * 
-     * @param exception Exception
-     * @param infoMessage optional info-message
+     * Raises a new error.
+     *
+     * @param exception the exception
+     * @param infoMessage optional info message
      */
     public void raiseError(Exception ex, @Nullable String infoMessage) {
         this.errorMessage = AsuswrtUtils.getValueOrDefault(ex.getMessage(), "");
@@ -66,10 +57,10 @@ public class AsuswrtErrorHandler {
     }
 
     /**
-     * Raises new error
-     * 
-     * @param errorMessage error message
-     * @param infoMessage optional info-message
+     * Raises a new error.
+     *
+     * @param errorMessage the error message
+     * @param infoMessage optional info message
      */
     public void raiseError(String errorMessage, @Nullable String infoMessage) {
         this.errorMessage = errorMessage;
@@ -77,28 +68,26 @@ public class AsuswrtErrorHandler {
     }
 
     /**
-     * Reset Error
+     * Resets the error.
      */
     public void reset() {
         errorMessage = "";
         infoMessage = "";
     }
 
-    /***********************************
-     *
-     * GETs
-     *
-     ************************************/
+    /*
+     * Getters
+     */
 
     /**
-     * Get Error Message
+     * Get the error message.
      */
     public String getErrorMessage() {
         return errorMessage;
     }
 
     /**
-     * Get Error Message
+     * Get the info message.
      */
     public String getInfoMessage() {
         return infoMessage;

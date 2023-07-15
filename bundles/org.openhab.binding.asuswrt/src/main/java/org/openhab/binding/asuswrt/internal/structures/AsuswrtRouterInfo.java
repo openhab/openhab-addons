@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,43 +37,22 @@ public class AsuswrtRouterInfo {
     private String macAddress = "";
     private Map<String, AsuswrtUsage> usageStats = new HashMap<>();
 
-    /**
-     * INIT CLASS
-     */
     public AsuswrtRouterInfo() {
     }
 
-    /**
-     * 
-     * INIT CLASS
-     * 
-     * @param jsonObject with sysvar
-     */
     public AsuswrtRouterInfo(JsonObject jsonObject) {
         setSysInfo(jsonObject);
     }
 
-    /***********************************
-     *
-     * SET VALUES
-     *
-     ************************************/
-
-    /**
-     * Set all data from jsonObject
-     * 
-     * @param jsonObject whit any data
+    /*
+     * Setters
      */
+
     public void setAllData(JsonObject jsonObject) {
         setSysInfo(jsonObject);
         setUsageStats(jsonObject);
     }
 
-    /**
-     * Set SysInfo from jsonObject
-     * 
-     * @param jsonObject with sysvar
-     */
     public void setSysInfo(JsonObject jsonObject) {
         try {
             productId = jsonObject.get(JSON_MEMBER_PRODUCTID).toString();
@@ -86,20 +64,15 @@ public class AsuswrtRouterInfo {
         }
     }
 
-    /**
-     * Set UsageStats from jsonObject
-     * 
-     * @param jsonObject
-     */
     public void setUsageStats(JsonObject jsonObject) {
         JsonObject jsnMemUsage = jsonObject.getAsJsonObject(JSON_MEMBER_MEM_USAGE);
         JsonObject jsnCpuUsage = jsonObject.getAsJsonObject(JSON_MEMBER_CPU_USAGE);
-        /* get memory usage */
+        // Get memory usage
         if (jsnMemUsage != null) {
             usageStats.put(JSON_MEMBER_MEM_USAGE,
                     new AsuswrtUsage(jsnMemUsage, JSON_MEMBER_MEM_TOTAL, JSON_MEMBER_MEM_USED));
         }
-        /* loop cpu usages */
+        // Loop cpu usages
         if (jsnCpuUsage != null) {
             for (Integer i = 1; i <= USAGE_CPU_COUNT; i++) {
                 String member = JSON_MEMBER_CPU_USAGE + "_" + i;
@@ -112,11 +85,9 @@ public class AsuswrtRouterInfo {
         }
     }
 
-    /***********************************
-     *
-     * GET VALUES
-     *
-     ************************************/
+    /*
+     * Getters
+     */
 
     public String getProductId() {
         return productId;
@@ -132,7 +103,6 @@ public class AsuswrtRouterInfo {
 
     public AsuswrtUsage getMemUsage() {
         if (usageStats.containsKey(JSON_MEMBER_MEM_USAGE)) {
-            @Nullable
             AsuswrtUsage usage = usageStats.get(JSON_MEMBER_MEM_USAGE);
             if (usage != null) {
                 return usage;
@@ -142,15 +112,14 @@ public class AsuswrtRouterInfo {
     }
 
     /**
-     * get CPU-Usage for core number x
-     * 
-     * @param coreNum Number of core
-     * @return AsuswrtUsage-Object for core x
+     * Gets the CPU usage for a core.
+     *
+     * @param coreNum the core number
+     * @return the {@link AsuswrtUsage} for the given core
      */
     public AsuswrtUsage getCpuUsage(Integer coreNum) {
         String coreKey = JSON_MEMBER_CPU_USAGE + "_" + coreNum;
         if (usageStats.containsKey(coreKey)) {
-            @Nullable
             AsuswrtUsage usage = usageStats.get(coreKey);
             if (usage != null) {
                 return usage;
@@ -160,9 +129,9 @@ public class AsuswrtRouterInfo {
     }
 
     /**
-     * get CPU-Usage average over all cores
-     * 
-     * @return AsuswrtUsage-Object
+     * Get CPU usage average over all cores.
+     *
+     * @return the {@link AsuswrtUsage} with CPU usage average over all cores
      */
     public AsuswrtUsage getCpuAverage() {
         String coreKey;
