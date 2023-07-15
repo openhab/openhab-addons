@@ -61,19 +61,25 @@ public class AndroidTVHandler extends BaseThingHandler {
     private static final int THING_STATUS_FREQUENCY = 250;
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final AndroidTVTranslationProvider translationProvider;
     private final ThingTypeUID thingTypeUID;
     private final String thingID;
 
     public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
-            ThingTypeUID thingTypeUID) {
+            AndroidTVTranslationProvider translationProvider, ThingTypeUID thingTypeUID) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.translationProvider = translationProvider;
         this.thingTypeUID = thingTypeUID;
         this.thingID = this.getThing().getUID().getId();
     }
 
     public void setThingProperty(String property, String value) {
         thing.setProperty(property, value);
+    }
+
+    public AndroidTVTranslationProvider getTranslationProvider() {
+        return translationProvider;
     }
 
     public String getThingID() {
@@ -113,21 +119,17 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         if (googletvConnectionManager != null) {
             if (!googletvConnectionManager.getLoggedIn()) {
-                statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
                 failed = true;
-            } else {
-                statusMessage = "GoogleTV: ONLINE";
             }
+            statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
         }
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             if (shieldtvConnectionManager != null) {
                 if (!shieldtvConnectionManager.getLoggedIn()) {
-                    statusMessage = statusMessage + " | ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
                     failed = true;
-                } else {
-                    statusMessage = statusMessage + " | ShieldTV: ONLINE";
                 }
+                statusMessage = statusMessage + " | ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
             }
         }
 

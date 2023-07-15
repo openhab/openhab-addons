@@ -18,6 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -41,11 +43,14 @@ public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_SHIELDTV);
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final AndroidTVTranslationProvider translationProvider;
 
     @Activate
     public AndroidTVHandlerFactory(
-            final @Reference AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider) {
+            final @Reference AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.translationProvider = new AndroidTVTranslationProvider(i18nProvider, localeProvider);
     }
 
     @Override
@@ -56,6 +61,6 @@ public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        return new AndroidTVHandler(thing, commandDescriptionProvider, thingTypeUID);
+        return new AndroidTVHandler(thing, commandDescriptionProvider, translationProvider, thingTypeUID);
     }
 }

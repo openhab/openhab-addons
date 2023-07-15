@@ -60,6 +60,7 @@ import javax.net.ssl.X509TrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.AndroidTVHandler;
+import org.openhab.binding.androidtv.internal.AndroidTVTranslationProvider;
 import org.openhab.binding.androidtv.internal.utils.AndroidTVPKI;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.NextPreviousType;
@@ -97,6 +98,7 @@ public class GoogleTVConnectionManager {
 
     private final AndroidTVHandler handler;
     private GoogleTVConfiguration config;
+    private final AndroidTVTranslationProvider translationProvider;
 
     private @NonNullByDefault({}) SSLSocketFactory sslSocketFactory;
     private @Nullable SSLSocket sslSocket;
@@ -166,6 +168,7 @@ public class GoogleTVConnectionManager {
         messageParser = new GoogleTVMessageParser(this);
         this.config = config;
         this.handler = handler;
+        this.translationProvider = handler.getTranslationProvider();
         this.connectionManager = this;
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
@@ -177,6 +180,7 @@ public class GoogleTVConnectionManager {
         messageParser = new GoogleTVMessageParser(this);
         this.config = config;
         this.handler = handler;
+        this.translationProvider = handler.getTranslationProvider();
         this.connectionManager = connectionManager;
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
@@ -298,16 +302,17 @@ public class GoogleTVConnectionManager {
 
     private void setStatus(boolean isLoggedIn) {
         if (isLoggedIn) {
-            setStatus(isLoggedIn, "ONLINE");
+            setStatus(isLoggedIn, "online.online");
         } else {
-            setStatus(isLoggedIn, "UNKNOWN");
+            setStatus(isLoggedIn, "offline.unknown");
         }
     }
 
     private void setStatus(boolean isLoggedIn, String statusMessage) {
-        if ((this.isLoggedIn != isLoggedIn) || (!this.statusMessage.equals(statusMessage))) {
+        String translatedMessage = translationProvider.getText(statusMessage);
+        if ((this.isLoggedIn != isLoggedIn) || (!this.statusMessage.equals(translatedMessage))) {
             this.isLoggedIn = isLoggedIn;
-            this.statusMessage = statusMessage;
+            this.statusMessage = translatedMessage;
             handler.checkThingStatus();
         }
     }
@@ -501,10 +506,10 @@ public class GoogleTVConnectionManager {
                 shimAsyncInitializeTask = scheduler.submit(this::shimInitialize);
             }
         } catch (NoSuchAlgorithmException | IOException e) {
-            setStatus(false, "Error initializing keystore");
+            setStatus(false, "offline.error-initalizing-keystore");
             logger.debug("Error initializing keystore", e);
         } catch (UnrecoverableKeyException e) {
-            setStatus(false, "Key unrecoverable with supplied password");
+            setStatus(false, "offline.key-unrecoverable-with-supplied-password");
         } catch (GeneralSecurityException e) {
             logger.debug("General security exception", e);
         } catch (Exception e) {
@@ -530,12 +535,12 @@ public class GoogleTVConnectionManager {
                     logger.debug("{} - Connection to {}:{} {} successful", handler.getThingID(), config.ipAddress,
                             config.port, config.mode);
                 } catch (UnknownHostException e) {
-                    setStatus(false, "Unknown host");
+                    setStatus(false, "offline.unknown-host");
                     logger.debug("{} - Unknown host {}", handler.getThingID(), config.ipAddress);
                     return;
                 } catch (IllegalArgumentException e) {
                     // port out of valid range
-                    setStatus(false, "Invalid port number");
+                    setStatus(false, "offline.invalid-port-number");
                     logger.debug("{} - Invalid port number {}:{}", handler.getThingID(), config.ipAddress, config.port);
                     return;
                 } catch (InterruptedIOException e) {
@@ -546,7 +551,7 @@ public class GoogleTVConnectionManager {
                     String message = e.getMessage();
                     if ((message != null) && (message.contains("certificate_unknown"))
                             && (!config.mode.equals(PIN_MODE)) && (!config.shim)) {
-                        setStatus(false, "PIN Process Incomplete");
+                        setStatus(false, "offline.pin-process-incomplete");
                         logger.debug("{} - GoogleTV PIN Process Incomplete", handler.getThingID());
                         reconnectTaskCancel(true);
                         startChildConnectionManager(this.config.port + 1, PIN_MODE);
@@ -562,8 +567,8 @@ public class GoogleTVConnectionManager {
                             this.shimServerSocket = null;
                         }
                     } else {
-                        setStatus(false, "Error opening GoogleTV SSL connection. Check log.");
-                        logger.info("{} - Error opening GoogleTV SSL connection to {}:{} {}", handler.getThingID(),
+                        setStatus(false, "offline.error-opening-ssl-connection-check-log");
+                        logger.info("{} - Error opening SSL connection to {}:{} {}", handler.getThingID(),
                                 config.ipAddress, config.port, e.getMessage());
                         disconnect(false);
                         scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
@@ -571,7 +576,7 @@ public class GoogleTVConnectionManager {
                     return;
                 }
 
-                setStatus(false, "Initializing");
+                setStatus(false, "offline.initializing");
 
                 logger.trace("{} - Starting Reader Thread for {}:{}", handler.getThingID(), config.ipAddress,
                         config.port);
@@ -826,7 +831,7 @@ public class GoogleTVConnectionManager {
         synchronized (connectionLock) {
             if (!this.disposing) {
                 logger.debug("{} - Attempting to reconnect to the GoogleTV", handler.getThingID());
-                setStatus(false, "reconnecting");
+                setStatus(false, "offline.reconnecting");
                 disconnect(false);
                 connect();
             }
@@ -852,12 +857,12 @@ public class GoogleTVConnectionManager {
                     }
                 } catch (InterruptedIOException e) {
                     logger.debug("Interrupted while sending to GoogleTV");
-                    setStatus(false, "Interrupted");
+                    setStatus(false, "offline.interrupted");
                     break; // exit loop and terminate thread
                 } catch (IOException e) {
                     logger.warn("{} - Communication error, will try to reconnect GoogleTV. Error: {}",
                             handler.getThingID(), e.getMessage());
-                    setStatus(false, "Communication error, will try to reconnect");
+                    setStatus(false, "offline.communication-error-will-try-to-reconnect");
                     sendQueue.add(command); // Requeue command
                     this.isLoggedIn = false;
                     reconnect();
@@ -944,12 +949,12 @@ public class GoogleTVConnectionManager {
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
-            setStatus(false, "Interrupted");
+            setStatus(false, "offline.interrupted");
         } catch (IOException e) {
             String message = e.getMessage();
             if ((message != null) && (message.contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE))
                     && (!config.shim)) {
-                setStatus(false, "PIN Process Incomplete");
+                setStatus(false, "offline.pin-process-incomplete");
                 logger.debug("{} - GoogleTV PIN Process Incomplete", handler.getThingID());
                 reconnectTaskCancel(true);
                 startChildConnectionManager(this.config.port + 1, PIN_MODE);
@@ -966,11 +971,11 @@ public class GoogleTVConnectionManager {
                 }
             } else {
                 logger.debug("I/O error while reading from stream: {}", e.getMessage());
-                setStatus(false, "I/O Error");
+                setStatus(false, "offline.io-error");
             }
         } catch (RuntimeException e) {
             logger.warn("Runtime exception in reader thread", e);
-            setStatus(false, "Runtime exception");
+            setStatus(false, "offline.runtime-exception");
         } finally {
             logger.debug("{} - Message reader thread exiting {}", handler.getThingID(), config.port);
         }
@@ -1038,13 +1043,13 @@ public class GoogleTVConnectionManager {
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
-            setStatus(false, "Interrupted");
+            setStatus(false, "offline.interrupted");
         } catch (IOException e) {
             logger.debug("I/O error while reading from stream: {}", e.getMessage());
-            setStatus(false, "I/O Error");
+            setStatus(false, "offline.io-error");
         } catch (RuntimeException e) {
             logger.warn("Runtime exception in reader thread", e);
-            setStatus(false, "Runtime exception");
+            setStatus(false, "offline.runtime-exception");
         } finally {
             logger.debug("Shim message reader thread exiting {}", config.port);
         }
@@ -1263,7 +1268,7 @@ public class GoogleTVConnectionManager {
                     if (config.mode.equals(DEFAULT_MODE)) {
                         if ((!isLoggedIn) && (command.toString().equals("REQUEST"))
                                 && (childConnectionManager == null)) {
-                            setStatus(false, "User Forced PIN Process");
+                            setStatus(false, "offline.user-forced-pin-process");
                             logger.debug("{} - User Forced PIN Process", handler.getThingID());
                             disconnect(true);
                             startChildConnectionManager(config.port + 1, PIN_MODE);
