@@ -1486,7 +1486,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     codec = "PCM51";
                     break;
                 case "89434721":
-                    codec = "DTSSurround51";
+                    codec = "DTS51";
                     break;
                 default:
                     codec = "Unknown - " + codec;
