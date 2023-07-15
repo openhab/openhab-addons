@@ -18,7 +18,6 @@ import static org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVC
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
@@ -33,11 +32,9 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.BlockingQueue;
@@ -369,17 +366,20 @@ public class GoogleTVConnectionManager {
         try {
             this.shimX509ClientChain = shimX509ClientChain;
             logger.trace("Setting shimX509ClientChain {}", config.port);
-            if (shimX509ClientChain != null && logger.isTraceEnabled()) {
-                for (int cert = 0; cert < shimX509ClientChain.length; cert++) {
-                    logger.trace("Subject DN: {}", shimX509ClientChain[cert].getSubjectX500Principal());
-                    logger.trace("Issuer DN: {}", shimX509ClientChain[cert].getIssuerX500Principal());
-                    logger.trace("Serial number: {}", shimX509ClientChain[cert].getSerialNumber());
+            if (shimX509ClientChain != null) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Subject DN: {}", shimX509ClientChain[0].getSubjectX500Principal());
+                    logger.trace("Issuer DN: {}", shimX509ClientChain[0].getIssuerX500Principal());
+                    logger.trace("Serial number: {}", shimX509ClientChain[0].getSerialNumber());
                     logger.trace("Cert: {}", GoogleTVRequest
-                            .decodeMessage(GoogleTVUtils.byteArrayToString(shimX509ClientChain[cert].getEncoded())));
+                            .decodeMessage(GoogleTVUtils.byteArrayToString(shimX509ClientChain[0].getEncoded())));
                 }
+                androidtvPKI.setCaCert(shimX509ClientChain[0]);
+                androidtvPKI.saveKeyStore(config.keystorePassword, this.encryptionKey);
+
             }
-        } catch (CertificateEncodingException e) {
-            logger.trace("setShimX509ClientChain CertificateEncodingException", e);
+        } catch (Exception e) {
+            logger.trace("setShimX509ClientChain Exception", e);
         }
     }
 
@@ -617,19 +617,13 @@ public class GoogleTVConnectionManager {
 
     public void shimInitialize() {
         synchronized (connectionLock) {
-            AndroidTVPKI shimPKI = new AndroidTVPKI();
-            byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
             SSLContext sslContext;
 
             try {
-                shimPKI.generateNewKeyPair(shimEncryptionKey);
-                // Move this to PKI. Shim requires a trusted cert chain in the keystore.
-                KeyStore keystore = KeyStore.getInstance("JKS");
-                FileInputStream keystoreInputStream = new FileInputStream(config.keystoreFileName);
-                keystore.load(keystoreInputStream, config.keystorePassword.toCharArray());
-
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                kmf.init(keystore, config.keystorePassword.toCharArray());
+                kmf.init(androidtvPKI.getKeyStore(config.keystorePassword, this.encryptionKey),
+                        config.keystorePassword.toCharArray());
+
                 TrustManager[] trustManagers = defineNoOpTrustManager();
 
                 sslContext = SSLContext.getInstance("TLS");
@@ -671,6 +665,10 @@ public class GoogleTVConnectionManager {
                             logger.trace("Connection from: {}",
                                     ((X509Certificate) cchain2[i]).getSubjectX500Principal());
                             shimX509ClientChain[i] = ((X509Certificate) cchain2[i]);
+                            if (this.config.mode.equals(DEFAULT_MODE) && logger.isTraceEnabled()) {
+                                logger.trace("Cert: {}", GoogleTVRequest.decodeMessage(
+                                        GoogleTVUtils.byteArrayToString(((X509Certificate) cchain2[i]).getEncoded())));
+                            }
                         }
 
                         if (this.config.mode.equals(PIN_MODE)) {

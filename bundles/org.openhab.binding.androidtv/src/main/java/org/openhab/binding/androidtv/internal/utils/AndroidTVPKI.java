@@ -74,6 +74,7 @@ public class AndroidTVPKI {
 
     private String privKey = "";
     private String cert = "";
+    private String caCert = "";
     private String keystoreFileName = "";
     private String keystoreAlgorithm = "RSA";
     private int keyLength = 2048;
@@ -170,6 +171,20 @@ public class AndroidTVPKI {
         return cert;
     }
 
+    public void setCaCert(String caCert) {
+        this.caCert = caCert;
+    }
+
+    public void setCaCert(Certificate caCert) throws CertificateEncodingException {
+        this.caCert = new String(Base64.getEncoder().encode(caCert.getEncoded()));
+    }
+
+    public Certificate getCaCert() throws CertificateException {
+        Certificate caCert = CertificateFactory.getInstance("X.509")
+                .generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(this.caCert.getBytes())));
+        return caCert;
+    }
+
     public void setAlias(String alias) {
         this.alias = alias;
     }
@@ -234,6 +249,10 @@ public class AndroidTVPKI {
         byte[] byteKey = keystore.getKey(this.alias, keystorePassword.toCharArray()).getEncoded();
         this.privKey = encrypt(new String(Base64.getEncoder().encode(byteKey)), key);
         setCert(keystore.getCertificate(this.alias));
+        Certificate caCert = keystore.getCertificate("trustedCa");
+        if (caCert != null) {
+            setCaCert(caCert);
+        }
     }
 
     public KeyStore getKeyStore(String keystorePassword, byte[] keyString)
@@ -245,6 +264,9 @@ public class AndroidTVPKI {
         KeyFactory kf = KeyFactory.getInstance(this.keystoreAlgorithm);
         keystore.setKeyEntry(this.alias, kf.generatePrivate(keySpec), keystorePassword.toCharArray(),
                 new java.security.cert.Certificate[] { getCert() });
+        if (!caCert.isEmpty()) {
+            keystore.setCertificateEntry("trustedCa", getCaCert());
+        }
         return keystore;
     }
 
