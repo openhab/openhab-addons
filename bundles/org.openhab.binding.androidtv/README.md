@@ -123,15 +123,45 @@ You may also send it a command of the app package name (e.g. com.google.android.
 KEYCODE values are listed at the bottom of this README.
 NOTE: Not all KEYCODES work on all devices.  Keycodes above 255 have not been tested.
 
+## Command Line Access
+
+All String type channels may receive commands from inside the karaf cli, even if there are no items configured.
+
+This can be particularly useful for the Pin Code Process as well as for testing.
+
+Syntax:
+
+```shell
+openhab> openhab:androidtv <thingUID> <channel> <command>
+```
+
+Example usage:
+
+```shell
+openhab> openhab:androidtv androidtv:googletv:theater keypress KEY_POWER
+```
+
 ## Pin Code Process
 
 For the AndroidTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
 
 To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your AndroidTV.
 
+CLI Example Usage: 
+
+```shell
+openhab> openhab:androidtv androidtv:googletv:theater pincode REQUEST
+```
+
 A 6 digit PIN should be displayed on the screen.
 
 To complete the PIN process, send the PIN displayed to the pincode channel.
+
+CLI Example Usage:
+
+```shell
+openhab> openhab:androidtv androidtv:googletv:theater pincode abc123
+```
 
 The display should return back to where it was originally.
 
