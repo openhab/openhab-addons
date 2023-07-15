@@ -19,7 +19,6 @@ import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 import java.time.LocalDate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jose4j.json.internal.json_simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +116,7 @@ public class AsuswrtTraffic {
     }
 
     /**
-     * Gets the traffic as {@link Integer} value from a hexadecimal value in a {@link JSONObject}.
+     * Gets the traffic as {@link Integer} value from a hexadecimal value in a {@link JsonObject}.
      *
      * @param jsonObject the object containing the values
      * @param jsonMember the name of the key that stores the value

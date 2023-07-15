@@ -29,14 +29,14 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AsuswrtClient} is used as {@link ThingHandler} for router clients.
+ * The {@link AsuswrtClient} is used as {@link org.openhab.core.thing.binding.ThingHandler ThingHandler} for router
+ * clients.
  *
  * @author Christian Wild - Initial contribution
  */

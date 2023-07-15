@@ -7,11 +7,11 @@ This binding adds support to read information from ASUS-Routers (Copyright © AS
 This binding supports ASUS routers with Asuswrt or [Asuswrt-Merlin](https://www.asuswrt-merlin.net/) firmware.
 Firmware 5.x.x (some DSL models) is NOT supported (not Asuswrt).
 
-| ThingType     | Name       | Descripion                              |
-|---------------|------------|-----------------------------------------|
-| bridge        | router     | router binding is connecting            |
-| -             | interface  | network interface of router             |
-| -             | client     | client is connected to the bridge       |
+| ThingType     | Name       | Descripion                           |
+|---------------|------------|--------------------------------------|
+| bridge        | router     | Router to which the binding connects |
+| -             | interface  | Network interface of the router      |
+| -             | client     | Client is connected to the bridge    |
 
 ### `router` Thing Configuration
 
@@ -35,7 +35,7 @@ Firmware 5.x.x (some DSL models) is NOT supported (not Asuswrt).
 
 | Name            | Type    | Description                           | Default             | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------------------|----------|----------|
-| macAddress      | text    | Unique MAC-Address of the device      | N/A                 | yes      | no       |
+| macAddress      | text    | Unique MAC address of the device      | N/A                 | yes      | no       |
 | clientNick      | text    | Nickname used by OH                   | N/A                 | no       | no       |
 
 
@@ -46,7 +46,7 @@ All devices support some of the following properties:
 | property         | description                  | things supporting this channel        |
 |------------------|------------------------------|---------------------------------------|
 | vendor           | Vendor of device             | router, client                        |
-| dnsName          | DNS-Name of device           | router, client                        |
+| dnsName          | DNS name of device           | router, client                        |
 
 
 ## Channels
@@ -55,12 +55,12 @@ All devices support some of the following channels:
 
 | group            | channel              |type                    | description                                | things supporting this channel    |
 |------------------|----------------------|------------------------|--------------------------------------------|-----------------------------------|
-| network-info     | mac-address          | text (RO)              | HW-Address                                 | interface, client                 |
-|                  | ip-address           | text (RO)              | IP-Address                                 | interface                         |
-|                  | ip-method            | text (RO)              | Ip-Method (static/dhcp)                    | interface, client                 |
+| network-info     | mac-address          | text (RO)              | HW address                                 | interface, client                 |
+|                  | ip-address           | text (RO)              | IP address                                 | interface                         |
+|                  | ip-method            | text (RO)              | IP method (static/dhcp)                    | interface, client                 |
 |                  | subnet               | text (RO)              | Subnetmask                                 | interface                         |
-|                  | gateway              | text (RO)              | Default-Gateway                            | interface                         |
-|                  | dns-servers          | text (RO)              | DNS-Servers                                | interface                         |
+|                  | gateway              | text (RO)              | Default gateway                            | interface                         |
+|                  | dns-servers          | text (RO)              | DNS servers                                | interface                         |
 |                  | network-state        | Switch (RO)            | Client is online                           | interface, client                 |
 |                  | internet-state       | Switch (RO)            | Client connected to Internet               | client                            |
 | sys-info         | mem-total            | Number:DataAmountype   | Total memory in MB                         | router                            |
@@ -68,9 +68,9 @@ All devices support some of the following channels:
 |                  | mem-free             | Number:DataAmountype   | Free memory in MB                          | router                            |
 |                  | mem-used-percent     | Number:Dimensionles    | Used memory in %                           | router                            |
 |                  | cpu-used-percent     | Number:Dimensionles    | Total CPU usage in percent over all cores  | router                            |
-| client-list      | known-clients        | text (RO)              | Known clients with name and MAC-Addresses  | router                            |
-|                  | online-clients       | text (RO)              | Online clients with name and MAC-Addresses | router                            |
-|                  | online-macs          | text (RO)              | List with mac-addresses of online clients  | router                            |    
+| client-list      | known-clients        | text (RO)              | Known clients with name and MAC addresses  | router                            |
+|                  | online-clients       | text (RO)              | Online clients with name and MAC addresses | router                            |
+|                  | online-macs          | text (RO)              | List with MAC addresses of online clients  | router                            |
 |                  | online-clients-count | Number:Dimensionless   | Count of online clients                    | router                            |
 | traffic          | current-rx           | Number:DataTransferRate| Current DataTransferRate MBits/s (receive) | interface, client                 |
 |                  | current-tx           | Number:DataTransferRate| Current DataTransferRate MBits/s (send)    | interface, client                 |
@@ -83,8 +83,9 @@ All devices support some of the following channels:
 ## Events
 
 All devices support some of the following Events:
+
 | group            | event               |kind        | description                                                            | things supporting this event    |
 |------------------|---------------------|------------|------------------------------------------------------------------------|---------------------------------|
 | network-info     | connection-event    | Trigger    | Fired if connection is established ('connected') or ('disconnected')   | interface                       |
-|                  | client-online-event | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | client                          |
-| client-list      | client-online-event | Trigger    | Fired if Client leaves ('gone') or enters ('connected') the network    | router                          |
+|                  | client-online-event | Trigger    | Fired if client leaves ('gone') or enters ('connected') the network    | client                          |
+| client-list      | client-online-event | Trigger    | Fired if client leaves ('gone') or enters ('connected') the network    | router                          |

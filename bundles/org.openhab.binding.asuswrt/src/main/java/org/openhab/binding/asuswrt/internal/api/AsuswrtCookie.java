@@ -65,10 +65,7 @@ public class AsuswrtCookie {
      * @return <code>true</code> if cookie is set and expired
      */
     public boolean cookieIsExpired() {
-        if (cookieTimeStamp > 0L && System.currentTimeMillis() > cookieTimeStamp + (COOKIE_LIFETIME_S * 1000)) {
-            return true;
-        }
-        return false;
+        return cookieTimeStamp > 0L && System.currentTimeMillis() > cookieTimeStamp + (COOKIE_LIFETIME_S * 1000);
     }
 
     /**
