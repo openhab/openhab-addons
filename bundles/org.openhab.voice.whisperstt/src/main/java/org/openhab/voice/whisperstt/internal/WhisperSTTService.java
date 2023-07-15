@@ -353,7 +353,11 @@ public class WhisperSTTService implements STTService {
                             }
                             if (config.removeSilence) {
                                 logger.debug("removing end silence");
-                                audioSamplesOffset -= silenceSamplesCounter;
+                                if (voiceDetected) {
+                                    audioSamplesOffset -= silenceSamplesCounter;
+                                } else {
+                                    audioSamplesOffset = 0;
+                                }
                             }
                             if (audioSamplesOffset == 0) {
                                 if (config.singleUtteranceMode) {
@@ -404,6 +408,7 @@ public class WhisperSTTService implements STTService {
                             break;
                         }
                         // reset state to start with next segment
+                        voiceDetected = false;
                         silenceSamplesCounter = 0;
                         audioSamplesOffset = 0;
                         logger.debug("Partial transcription: {}", tempTranscription);
