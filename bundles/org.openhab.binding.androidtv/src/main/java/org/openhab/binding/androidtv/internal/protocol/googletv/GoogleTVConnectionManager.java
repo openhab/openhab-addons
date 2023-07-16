@@ -37,6 +37,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Hashtable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -60,6 +61,8 @@ import org.openhab.binding.androidtv.internal.AndroidTVHandler;
 import org.openhab.binding.androidtv.internal.AndroidTVTranslationProvider;
 import org.openhab.binding.androidtv.internal.utils.AndroidTVPKI;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.io.transport.mdns.MDNSService;
+import org.openhab.core.io.transport.mdns.ServiceDescription;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -134,6 +137,9 @@ public class GoogleTVConnectionManager {
     private StringBuffer sbReader = new StringBuffer();
     private StringBuffer sbShimReader = new StringBuffer();
     private String thisMsg = "";
+
+    private @Nullable MDNSService mdnsService;
+    private String ohAddress = "";
 
     private X509Certificate @Nullable [] shimX509ClientChain;
     private Certificate @Nullable [] shimClientChain;
@@ -615,11 +621,19 @@ public class GoogleTVConnectionManager {
         }
     }
 
+    private ServiceDescription getDefaultServiceDescription() {
+        Hashtable<String, String> serviceProperties = new Hashtable<>();
+        serviceProperties.put("host-name", ohAddress);
+        serviceProperties.put("bt", "1C:69:7A:AA:AA:46");
+        return new ServiceDescription("_androidtvremote2._tcp.local.", "OH GoogleTV SHIM", 6646, serviceProperties);
+    }
+
     public void shimInitialize() {
         synchronized (connectionLock) {
             SSLContext sslContext;
 
             try {
+                mdnsService.registerService(getDefaultServiceDescription());
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
                 kmf.init(androidtvPKI.getKeyStore(config.keystorePassword, this.encryptionKey),
                         config.keystorePassword.toCharArray());
@@ -717,7 +731,7 @@ public class GoogleTVConnectionManager {
             } catch (Exception e) {
                 logger.trace("Shim initalization exception {}", config.port);
                 logger.trace("Shim initalization exception", e);
-
+                mdnsService.unregisterService(getDefaultServiceDescription());
                 return;
             }
         }
