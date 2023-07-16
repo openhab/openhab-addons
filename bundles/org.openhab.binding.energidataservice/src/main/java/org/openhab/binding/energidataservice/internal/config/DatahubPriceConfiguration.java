@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.energidataservice.internal.config;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
@@ -46,6 +47,11 @@ public class DatahubPriceConfiguration {
      * Query start date parameter expressed as either yyyy-mm-dd or one of StartOfDay, StartOfMonth or StartOfYear.
      */
     public String start = "";
+
+    /**
+     * Query start date offset expressed as an ISO 8601 duration.
+     */
+    public String offset = "";
 
     /**
      * Check if any filter values are provided.
@@ -85,14 +91,22 @@ public class DatahubPriceConfiguration {
         if (start.isBlank()) {
             return DateQueryParameter.EMPTY;
         }
+        Duration durationOffset = Duration.ZERO;
+        if (!offset.isBlank()) {
+            try {
+                durationOffset = Duration.parse(offset);
+            } catch (DateTimeParseException e) {
+                return null;
+            }
+        }
         if (start.equals(DateQueryParameterType.START_OF_DAY.toString())) {
-            return DateQueryParameter.of(DateQueryParameterType.START_OF_DAY);
+            return DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, durationOffset);
         }
         if (start.equals(DateQueryParameterType.START_OF_MONTH.toString())) {
-            return DateQueryParameter.of(DateQueryParameterType.START_OF_MONTH);
+            return DateQueryParameter.of(DateQueryParameterType.START_OF_MONTH, durationOffset);
         }
         if (start.equals(DateQueryParameterType.START_OF_YEAR.toString())) {
-            return DateQueryParameter.of(DateQueryParameterType.START_OF_YEAR);
+            return DateQueryParameter.of(DateQueryParameterType.START_OF_YEAR, durationOffset);
         }
         try {
             return DateQueryParameter.of(LocalDate.parse(start));

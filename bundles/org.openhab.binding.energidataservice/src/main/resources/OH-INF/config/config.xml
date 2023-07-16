@@ -89,6 +89,11 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="offset" type="text">
+			<label>Date Offset</label>
+			<description>Query start date offset expressed as an ISO 8601 duration.</description>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

@@ -14,7 +14,6 @@ package org.openhab.binding.energidataservice.internal.api;
 
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -78,21 +77,21 @@ public class DatahubTariffFilterFactory {
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TCL>100_02")), Set.of(NOTE_NET_TARIFF_C_HOUR));
             case GLN_ELEKTRUS:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("6000091")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_ELINORD:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("43300")),
                         Set.of("Transportbetaling, eget net C"));
             case GLN_ELNET_MIDT:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("T3002")), Set.of(NOTE_NET_TARIFF_C),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_ELNET_KONGERSLEV:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("K_22100")), Set.of(NOTE_NET_TARIFF_C));
             case GLN_FLOW_ELNET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("FE2 NT-01")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_HAMMEL_ELFORSYNING_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("50001")), Set.of("Overliggende net"),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_HURUP_ELVAERK_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("HEV-NT-01")), Set.of(NOTE_NET_TARIFF));
             case GLN_IKAST_E1_NET:
@@ -105,19 +104,19 @@ public class DatahubTariffFilterFactory {
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("4010")), Set.of(NOTE_NET_TARIFF_C_HOUR));
             case GLN_MIDTFYNS_ELFORSYNING:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TNT15000")), Set.of(NOTE_NET_TARIFF_C_FLEX),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_N1:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("CD"), ChargeTypeCode.of("CD R")), Set.of(),
                         DateQueryParameter.of(N1_CUTOFF_DATE));
             case GLN_NETSELSKABET_ELVAERK:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("0NCFF")), Set.of(NOTE_NET_TARIFF_C + " Flex"),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_NKE_ELNET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("94TR_C_ET")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_NORD_ENERGI_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TAC")), Set.of(NOTE_NET_TARIFF_C),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_NORDVESTJYSK_ELFORSYNING_NOE_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("Net C")), Set.of(NOTE_NET_TARIFF_C));
             case GLN_RADIUS:
@@ -125,31 +124,31 @@ public class DatahubTariffFilterFactory {
                         DateQueryParameter.of(RADIUS_CUTOFF_DATE));
             case GLN_RAH_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("RAH-C")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_RAVDEX:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("NT-C")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_SUNDS_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("SEF-NT-05")),
                         Set.of(NOTE_NET_TARIFF_C_FLEX_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_TARM_ELVAERK_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TEV-NT-01")), Set.of(NOTE_NET_TARIFF_C));
             case GLN_TREFOR_EL_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("C")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_TREFOR_EL_NET_OEST:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("46")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_VEKSEL:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("NT-10")),
                         Set.of(NOTE_NET_TARIFF_C_HOUR + "  NT-10"));
             case GLN_VORES_ELNET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TNT1009")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_ZEANET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("43110")), Set.of(NOTE_NET_TARIFF_C_HOUR),
-                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             default:
                 return new DatahubTariffFilter(Set.of(), Set.of(NOTE_NET_TARIFF_C),
                         DateQueryParameter.of(DateQueryParameterType.START_OF_YEAR));
