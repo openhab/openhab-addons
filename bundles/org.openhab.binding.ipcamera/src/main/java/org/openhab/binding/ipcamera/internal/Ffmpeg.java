@@ -176,6 +176,8 @@ public class Ffmpeg {
                             case SNAPSHOT:
                                 notFrozen = true;// RTSP_ALARMS, MJPEG and SNAPSHOT all set this to true, no break.
                                 break;
+                            default:
+                                break;
                         }
                     }
                 }

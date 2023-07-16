@@ -384,7 +384,9 @@ public class InstarHandler extends ChannelDuplexHandler {
         ArrayList<String> lowPriorityRequests = new ArrayList<String>(7);
         lowPriorityRequests.add("/param.cgi?cmd=getaudioalarmattr");
         lowPriorityRequests.add("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
-        lowPriorityRequests.add("/param.cgi?cmd=getalarmattr");
+        if (ipCameraHandler.newInstarApi) {// old API cameras get a error 404 response to this
+            lowPriorityRequests.add("/param.cgi?cmd=getalarmattr");
+        }
         lowPriorityRequests.add("/param.cgi?cmd=getinfrared");
         lowPriorityRequests.add("/param.cgi?cmd=getoverlayattr&-region=1");
         lowPriorityRequests.add("/param.cgi?cmd=getpirattr");

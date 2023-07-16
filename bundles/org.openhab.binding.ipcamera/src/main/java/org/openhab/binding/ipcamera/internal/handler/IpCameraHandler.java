@@ -364,7 +364,6 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         @Override
-        @SuppressWarnings("PMD.CompareObjectsWithEquals")
         public void userEventTriggered(@Nullable ChannelHandlerContext ctx, @Nullable Object evt) throws Exception {
             if (ctx == null) {
                 return;
@@ -384,7 +383,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     ChannelTracking channelTracking = channelTrackingMap.get(urlToKeepOpen);
                     if (channelTracking != null) {
-                        if (channelTracking.getChannel() == ctx.channel()) {
+                        if (channelTracking.getChannel().equals(ctx.channel())) {
                             return; // don't auto close this as it is for the alarms.
                         }
                     }
@@ -745,7 +744,6 @@ public class IpCameraHandler extends BaseThingHandler {
      * open large amounts of channels. This may help to keep it under control and WARN the user every 8 seconds this is
      * still occurring.
      */
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private void cleanChannels() {
         for (Channel channel : openChannels) {
             boolean oldChannel = true;
@@ -753,7 +751,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (!channelTracking.getChannel().isOpen() && channelTracking.getReply().isEmpty()) {
                     channelTrackingMap.remove(channelTracking.getRequestUrl());
                 }
-                if (channelTracking.getChannel() == channel) {
+                if (channelTracking.getChannel().equals(channel)) {
                     logger.debug("Open channel to camera is used for URL:{}", channelTracking.getRequestUrl());
                     oldChannel = false;
                 }
