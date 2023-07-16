@@ -116,7 +116,8 @@ public class DatahubTariffFilterFactory {
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("94TR_C_ET")), Set.of(NOTE_NET_TARIFF_C_HOUR),
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
             case GLN_NORD_ENERGI_NET:
-                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TA031U200")), Set.of(NOTE_NET_TARIFF_C));
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TAC")), Set.of(NOTE_NET_TARIFF_C),
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY, Duration.ofDays(-1)));
             case GLN_NORDVESTJYSK_ELFORSYNING_NOE_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("Net C")), Set.of(NOTE_NET_TARIFF_C));
             case GLN_RADIUS:
