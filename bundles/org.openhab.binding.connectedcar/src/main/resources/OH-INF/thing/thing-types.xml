@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="connectedcar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cnvehicle">
+		<label>@text/thing-type.connectedcar.cnvehicle.label</label>
+		<description>@text/thing-type.connectedcar.cnvehicle.description</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="control" typeId="control"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="location" typeId="location"/>
+			<channel-group id="charger" typeId="charger"/>
+			<channel-group id="range" typeId="range"/>
+			<channel-group id="climater" typeId="climater"/>
+			<channel-group id="maintenance" typeId="maintenance"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="tires" typeId="tires"/>
+			<channel-group id="tripShort1" typeId="tripShort"/>
+			<channel-group id="tripShort2" typeId="tripShort"/>
+			<channel-group id="tripShort3" typeId="tripShort"/>
+			<channel-group id="tripShort4" typeId="tripShort"/>
+			<channel-group id="tripShort5" typeId="tripShort"/>
+			<channel-group id="tripLong1" typeId="tripLong"/>
+			<channel-group id="tripLong2" typeId="tripLong"/>
+			<channel-group id="tripLong3" typeId="tripLong"/>
+			<channel-group id="tripLong4" typeId="tripLong"/>
+			<channel-group id="tripLong5" typeId="tripLong"/>
+			<channel-group id="rluHistory1" typeId="rluHistory"/>
+			<channel-group id="rluHistory2" typeId="rluHistory"/>
+			<channel-group id="rluHistory3" typeId="rluHistory"/>
+			<channel-group id="rluHistory4" typeId="rluHistory"/>
+			<channel-group id="rluHistory5" typeId="rluHistory"/>
+			<channel-group id="speedAlerts1" typeId="speedAlerts"/>
+			<channel-group id="speedAlerts2" typeId="speedAlerts"/>
+			<channel-group id="speedAlerts3" typeId="speedAlerts"/>
+			<channel-group id="speedAlerts4" typeId="speedAlerts"/>
+			<channel-group id="speedAlerts5" typeId="speedAlerts"/>
+			<channel-group id="geoFenceAlerts1" typeId="geoFenceAlerts"/>
+			<channel-group id="geoFenceAlerts2" typeId="geoFenceAlerts"/>
+			<channel-group id="geoFenceAlerts3" typeId="geoFenceAlerts"/>
+			<channel-group id="geoFenceAlerts4" typeId="geoFenceAlerts"/>
+			<channel-group id="geoFenceAlerts5" typeId="geoFenceAlerts"/>
+			<channel-group id="destination1" typeId="destination"/>
+			<channel-group id="destination2" typeId="destination"/>
+			<channel-group id="destination3" typeId="destination"/>
+			<channel-group id="destination4" typeId="destination"/>
+			<channel-group id="destination5" typeId="destination"/>
+			<channel-group id="pictures" typeId="pictures"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:connectedcar:cnvehicle"/>
+	</thing-type>
+
+	<thing-type id="idvehicle">
+		<label>@text/thing-type.connectedcar.idvehicle.label</label>
+		<description>@text/thing-type.connectedcar.idvehicle.description</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="control" typeId="control"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="location" typeId="location"/>
+			<channel-group id="charger" typeId="charger"/>
+			<channel-group id="range" typeId="range"/>
+			<channel-group id="climater" typeId="climater"/>
+			<channel-group id="maintenance" typeId="maintenance"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="tires" typeId="tires"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:connectedcar:idvehicle"/>
+	</thing-type>
+
+	<thing-type id="sevehicle">
+		<label>@text/thing-type.connectedcar.sevehicle.label</label>
+		<description>@text/thing-type.connectedcar.sevehicle.description</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="control" typeId="control"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="location" typeId="location"/>
+			<channel-group id="charger" typeId="charger"/>
+			<channel-group id="range" typeId="range"/>
+			<channel-group id="climater" typeId="climater"/>
+			<channel-group id="maintenance" typeId="maintenance"/>
+			<channel-group id="doors" typeId="doors"/>
+			<channel-group id="windows" typeId="windows"/>
+			<channel-group id="tires" typeId="tires"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:connectedcar:sevehicle"/>
+	</thing-type>
+
+	<thing-type id="fordvehicle">
+		<label>@text/thing-type.connectedcar.fordvehicle.label</label>
+		<description>@text/thing-type.connectedcar.fordvehicle.description</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:connectedcar:fordvehicle"/>
+	</thing-type>
+
+	<thing-type id="mmevehicle">
+		<label>@text/thing-type.connectedcar.mmevehicle.label</label>
+		<description>@text/thing-type.connectedcar.mmevehicle.description</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:connectedcar:mmevehicle"/>
+	</thing-type>
+
+
+	<thing-type id="wcwallbox">
+		<label>@text/thing-type.connectedcar.wcwallbox.label</label>
+		<description>@text/thing-type.connectedcar.wcwallbox.description</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:connectedcar:wcwallbox"/>
+	</thing-type>
+
+	<channel-group-type id="general">
+		<label>@text/thing-type.connectedcar.vehicle.group.general.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.general.description</description>
+	</channel-group-type>
+	<channel-group-type id="control">
+		<label>@text/thing-type.connectedcar.vehicle.group.control.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.control.description</description>
+	</channel-group-type>
+	<channel-group-type id="status">
+		<label>@text/thing-type.connectedcar.vehicle.group.status.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.status.description</description>
+	</channel-group-type>
+	<channel-group-type id="location">
+		<label>@text/thing-type.connectedcar.vehicle.group.location.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.location.description</description>
+	</channel-group-type>
+	<channel-group-type id="range">
+		<label>@text/thing-type.connectedcar.vehicle.group.range.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.range.description</description>
+	</channel-group-type>
+	<channel-group-type id="maintenance">
+		<label>@text/thing-type.connectedcar.vehicle.group.maintenance.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.maintenance.description</description>
+	</channel-group-type>
+	<channel-group-type id="climater">
+		<label>@text/thing-type.connectedcar.vehicle.group.climater.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.climater.description</description>
+	</channel-group-type>
+	<channel-group-type id="charger">
+		<label>@text/thing-type.connectedcar.vehicle.group.charger.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.charger.description</description>
+	</channel-group-type>
+	<channel-group-type id="rluHistory">
+		<label>@text/thing-type.connectedcar.vehicle.group.rluHistory.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.rluHistory.description</description>
+	</channel-group-type>
+	<channel-group-type id="speedAlerts">
+		<label>@text/thing-type.connectedcar.vehicle.group.speedAlerts.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.speedAlerts.description</description>
+	</channel-group-type>
+	<channel-group-type id="geoFenceAlerts">
+		<label>@text/thing-type.connectedcar.vehicle.group.geoFenceAlerts.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.geoFenceAlerts.description</description>
+	</channel-group-type>
+	<channel-group-type id="tripShort">
+		<label>@text/thing-type.connectedcar.vehicle.group.tripShort.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.tripShort.description</description>
+	</channel-group-type>
+	<channel-group-type id="tripLong">
+		<label>@text/thing-type.connectedcar.vehicle.group.tripLong.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.tripLong.description</description>
+	</channel-group-type>
+	<channel-group-type id="destination">
+		<label>@text/thing-type.connectedcar.vehicle.group.destination.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.destination.description</description>
+	</channel-group-type>
+	<channel-group-type id="windows">
+		<label>@text/thing-type.connectedcar.vehicle.group.windows.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.windows.description</description>
+	</channel-group-type>
+	<channel-group-type id="doors">
+		<label>@text/thing-type.connectedcar.vehicle.group.doors.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.doors.description</description>
+	</channel-group-type>
+	<channel-group-type id="tires">
+		<label>@text/thing-type.connectedcar.vehicle.group.tires.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.tires.description</description>
+	</channel-group-type>
+	<channel-group-type id="pictures">
+		<label>@text/thing-type.connectedcar.vehicle.group.pictures.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.pictures.description</description>
+	</channel-group-type>
+	<channel-group-type id="subscription">
+		<label>@text/thing-type.connectedcar.vehicle.group.subscription.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.subscription.description</description>
+	</channel-group-type>
+	<channel-group-type id="rfid">
+		<label>@text/thing-type.connectedcar.vehicle.group.rfid.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.rfid.description</description>
+	</channel-group-type>
+	<channel-group-type id="transaction">
+		<label>@text/thing-type.connectedcar.vehicle.group.transaction.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.transaction.description</description>
+	</channel-group-type>
+
+</thing:thing-descriptions>

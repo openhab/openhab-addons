@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="connectedcar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="myaudi">
+		<label>myAudi Account (CarNet)</label>
+		<description>This thing represents a myAudi CarNet Account.</description>
+
+		<config-description-ref uri="bridge-type:connectedcar:cnaccount"/>
+	</bridge-type>
+
+	<bridge-type id="volkswagen">
+		<label>Volkswagen Account (CarNet)</label>
+		<description>This thing represents a VW CarNet Account.</description>
+
+		<config-description-ref uri="bridge-type:connectedcar:cnaccount"/>
+	</bridge-type>
+
+	<bridge-type id="vwid">
+		<label>Volkswagen ID. Account (WeConnect)</label>
+		<description>This thing represents a WeConnect Account.</description>
+		<config-description-ref uri="bridge-type:connectedcar:idaccount"/>
+	</bridge-type>
+
+	<bridge-type id="wecharge">
+		<label>Volkswagen ID.Charge Account (WeCharge)</label>
+		<description>This thing represents a WeCharge Account.</description>
+		<config-description-ref uri="bridge-type:connectedcar:wcaccount"/>
+	</bridge-type>
+
+
+	<bridge-type id="skoda">
+		<label>Skoda Connect Account (CarNet)</label>
+		<description>This thing represents a Skoda CarNet Account.</description>
+		<config-description-ref uri="bridge-type:connectedcar:cnaccount"/>
+	</bridge-type>
+
+	<bridge-type id="skoda-e">
+		<label>Skoda Enyaq Account (Skoda-E)</label>
+		<description>This thing represents an account for Skoda electrical vehicles.</description>
+		<config-description-ref uri="bridge-type:connectedcar:seaccount"/>
+	</bridge-type>
+
+	<bridge-type id="seat">
+		<label>SEAT Connect Account (CarNet)</label>
+		<description>This thing represents a Skoda CarNet Account.</description>
+
+		<config-description-ref uri="bridge-type:connectedcar:cnaccount"/>
+	</bridge-type>
+
+	<bridge-type id="ford">
+		<label>Ford Account (FordPass)</label>
+		<description>This thing represents a FordPass Account.</description>
+
+		<config-description-ref uri="bridge-type:connectedcar:fordaccount"/>
+	</bridge-type>
+</thing:thing-descriptions>
