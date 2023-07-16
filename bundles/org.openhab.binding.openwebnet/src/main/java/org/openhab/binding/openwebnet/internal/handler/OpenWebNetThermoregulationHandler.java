@@ -267,7 +267,11 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private String getWhere(String where) {
         if (isCentralUnit) {
-            return where;
+            if (where.charAt(0) == '#') {
+                return where;
+            } else { // to support old configurations for CU with where="0"
+                return "#" + where;
+            }
         } else {
             return isStandAlone ? where : "#" + where;
         }
@@ -580,10 +584,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             String w = deviceWhere.value();
 
             if (isCentralUnit) {
-                // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with
-                // 99-zones central no! let's assume it's a 99 zone
                 try {
-                    send(Thermoregulation.requestStatus(w));
+                    send(Thermoregulation.requestStatus(getWhere(w)));
                 } catch (OWNException e) {
                     logger.warn("refreshDevice() central unit returned OWNException {}", e.getMessage());
                 }
