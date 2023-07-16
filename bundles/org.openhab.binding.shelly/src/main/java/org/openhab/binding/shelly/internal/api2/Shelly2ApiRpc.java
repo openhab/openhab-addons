@@ -365,122 +365,133 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     protected void installScript(String script, boolean install) throws ShellyApiException {
-        ShellyScriptListResponse scriptList = apiRequest(
-                new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_LIST), ShellyScriptListResponse.class);
-        Integer ourId = -1;
-        String code = "";
+        try {
+            ShellyScriptListResponse scriptList = apiRequest(
+                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_LIST), ShellyScriptListResponse.class);
+            Integer ourId = -1;
+            String code = "";
 
-        if (install) {
-            logger.debug("{}: Install or restart script {} on Shelly Device", thingName, script);
-        }
-        boolean running = false, upload = false;
-        for (ShellyScriptListEntry s : scriptList.scripts) {
-            if (s.name.startsWith(script)) {
-                ourId = s.id;
-                running = s.running;
-                logger.debug("{}: Script {} is already installed, id={}", thingName, script, ourId);
-                break;
+            if (install) {
+                logger.debug("{}: Install or restart script {} on Shelly Device", thingName, script);
             }
-        }
-
-        if (!install) {
-            if (ourId != -1) {
-                startScript(ourId, false);
-                enableScript(script, false);
-                logger.debug("{}: Script {} was disabledd, id={}", thingName, script, ourId);
-            }
-            return;
-        }
-
-        // get script code from bundle resources
-        String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
-        ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
-        if (cl != null) {
-            try (InputStream inputStream = cl.getResourceAsStream(file)) {
-                if (inputStream != null) {
-                    code = new BufferedReader(new InputStreamReader(inputStream)).lines()
-                            .collect(Collectors.joining("\n"));
+            boolean running = false, upload = false;
+            for (ShellyScriptListEntry s : scriptList.scripts) {
+                if (s.name.startsWith(script)) {
+                    ourId = s.id;
+                    running = s.running;
+                    logger.debug("{}: Script {} is already installed, id={}", thingName, script, ourId);
+                    break;
                 }
-            } catch (IOException | UncheckedIOException e) {
-                logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
-                        thingName, script, file, e);
             }
-        }
 
-        boolean restart = false;
-        if (ourId == -1) {
-            // script not installed -> install it
-            upload = true;
-        } else {
-            try {
-                // verify that the same code version is active (avoid unnesesary flash updates)
-                ShellyScriptResponse rsp = apiRequest(
-                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_GETCODE).withId(ourId),
-                        ShellyScriptResponse.class);
-                if (!rsp.data.trim().equals(code.trim())) {
-                    logger.debug("{}: A script version was found, update to newest one", thingName);
+            if (!install) {
+                if (ourId != -1) {
+                    startScript(ourId, false);
+                    enableScript(script, false);
+                    logger.debug("{}: Script {} was disabledd, id={}", thingName, script, ourId);
+                }
+                return;
+            }
+
+            // get script code from bundle resources
+            String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
+            ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
+            if (cl != null) {
+                try (InputStream inputStream = cl.getResourceAsStream(file)) {
+                    if (inputStream != null) {
+                        code = new BufferedReader(new InputStreamReader(inputStream)).lines()
+                                .collect(Collectors.joining("\n"));
+                    }
+                } catch (IOException | UncheckedIOException e) {
+                    logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
+                            thingName, script, file, e);
+                }
+            }
+
+            boolean restart = false;
+            if (ourId == -1) {
+                // script not installed -> install it
+                upload = true;
+            } else {
+                try {
+                    // verify that the same code version is active (avoid unnesesary flash updates)
+                    ShellyScriptResponse rsp = apiRequest(
+                            new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_GETCODE).withId(ourId),
+                            ShellyScriptResponse.class);
+                    if (!rsp.data.trim().equals(code.trim())) {
+                        logger.debug("{}: A script version was found, update to newest one", thingName);
+                        upload = true;
+                    } else {
+                        logger.debug("{}: Same script version was found, restart", thingName);
+                        restart = true;
+                    }
+                } catch (ShellyApiException e) {
+                    logger.debug("{}: Unable to read current script code -> force update (deviced returned: {})",
+                            thingName, e.getMessage());
                     upload = true;
-                } else {
-                    logger.debug("{}: Same script version was found, restart", thingName);
-                    restart = true;
                 }
-            } catch (ShellyApiException e) {
-                logger.debug("{}: Unable to read current script code -> force update (deviced returned: {})", thingName,
-                        e.getMessage());
+            }
+
+            if (restart || (running && upload)) {
+                // first stop running script
+                startScript(ourId, false);
+                running = false;
+            }
+            if (upload && ourId != -1) {
+                // Delete existing script
+                logger.debug("{}: Delete existing script", thingName);
+                apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_DELETE).withId(ourId));
+            }
+
+            if (upload) {
+                logger.debug("{}: Script will be installed...", thingName);
+
+                // Create new script, get id
+                ShellyScriptResponse rsp = apiRequest(
+                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script),
+                        ShellyScriptResponse.class);
+                ourId = rsp.id;
+                logger.debug("{}: Script has been created, id={}", thingName, ourId);
                 upload = true;
             }
-        }
 
-        if (restart || (running && upload)) {
-            // first stop running script
-            startScript(ourId, false);
-            running = false;
-        }
-        if (upload && ourId != -1) {
-            // Delete existing script
-            logger.debug("{}: Delete existing script", thingName);
-            apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_DELETE).withId(ourId));
-        }
+            if (upload) {
+                // Put script code for generated id
+                ShellyScriptPutCodeParams parms = new ShellyScriptPutCodeParams();
+                parms.id = ourId;
+                parms.append = false;
+                int length = code.length(), processed = 0, chunk = 1;
+                do {
+                    int nextlen = Math.min(1024, length - processed);
+                    parms.code = code.substring(processed, processed + nextlen);
+                    logger.debug("{}: Uploading chunk {} of script (total {} chars, {} processed)", thingName, chunk,
+                            length, processed);
+                    apiRequest(SHELLYRPC_METHOD_SCRIPT_PUTCODE, parms, String.class);
+                    processed += nextlen;
+                    chunk++;
+                    parms.append = true;
+                } while (processed < length);
+                running = false;
+            }
+            if (enableScript(script, true) && upload) {
+                logger.info("{}: Script {} was {} installed successful", thingName, thingName, script);
+            }
 
-        if (upload) {
-            logger.debug("{}: Script will be installed...", thingName);
-
-            // Create new script, get id
-            ShellyScriptResponse rsp = apiRequest(
-                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withName(script),
-                    ShellyScriptResponse.class);
-            ourId = rsp.id;
-            logger.debug("{}: Script has been created, id={}", thingName, ourId);
-            upload = true;
+            if (!running) {
+                running = startScript(ourId, true);
+            }
+            if (!discovery) {
+                logger.info("{}: Script {} {}", thingName, script,
+                        running ? "was successfully (re)started" : "failed to start");
+            }
+        } catch (ShellyApiException e) {
+            ShellyApiResult res = e.getApiResult();
+            if (res.httpCode == HttpStatus.NOT_FOUND_404) { // Shely 4Pro
+                logger.debug("{}: Script {} was not installed, device doesn't support scripts", thingName, script);
+            } else {
+                logger.debug("{}: Unable to install script {}: {}", thingName, script, res.toString());
+            }
         }
-
-        if (upload) {
-            // Put script code for generated id
-            ShellyScriptPutCodeParams parms = new ShellyScriptPutCodeParams();
-            parms.id = ourId;
-            parms.append = false;
-            int length = code.length(), processed = 0, chunk = 1;
-            do {
-                int nextlen = Math.min(1024, length - processed);
-                parms.code = code.substring(processed, processed + nextlen);
-                logger.debug("{}: Uploading chunk {} of script (total {} chars, {} processed)", thingName, chunk,
-                        length, processed);
-                apiRequest(SHELLYRPC_METHOD_SCRIPT_PUTCODE, parms, String.class);
-                processed += nextlen;
-                chunk++;
-                parms.append = true;
-            } while (processed < length);
-            running = false;
-        }
-        if (enableScript(script, true)) {
-            logger.info("{}: Script {} was {} installed successful", thingName, thingName, script);
-        }
-
-        if (!running) {
-            running = startScript(ourId, true);
-        }
-        logger.info("{}: Script {} {}", thingName, script,
-                running ? "was successfully (re)started" : "failed to start");
     }
 
     private boolean startScript(int ourId, boolean start) {
