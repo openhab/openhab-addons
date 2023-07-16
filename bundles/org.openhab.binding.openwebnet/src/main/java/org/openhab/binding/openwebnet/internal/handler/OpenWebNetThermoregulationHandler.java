@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * commands/messages for Thermoregulation
  * Things. It extends the abstract {@link OpenWebNetThingHandler}.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution. Added support for 4-zone CU
  * @author Andrea Conte - Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
  */
@@ -64,7 +64,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private Thermoregulation.Function currentFunction = Thermoregulation.Function.GENERIC;
     private Thermoregulation.OperationMode currentMode = Thermoregulation.OperationMode.MANUAL;
 
-    private boolean isStandAlone = false;
+    private boolean isStandAlone = true; // true if zone is not associated to a CU
 
     private boolean isCentralUnit = false;
 
@@ -95,18 +95,19 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         if (!isCentralUnit) {
             Object standAloneConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE);
             if (standAloneConfig != null) {
-                // null in case of thermo_sensor
                 isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
             }
+            logger.debug("@@@@  THERMO ZONE INITIALIZE isStandAlone={}", isStandAlone);
         } else {
-            // central unit must have WHERE=0
-            if (!deviceWhere.value().equals("0")) {
-                logger.warn("initialize() Invalid WHERE={} for Central Unit.", deviceWhere.value());
 
+            // central unit must have WHERE=#0 or WHERE=0 or WHERE=#0#n
+            String w = deviceWhere.value();
+            if (w == null || !("0".equals(w) || "#0".equals(w) || w.startsWith("#0#"))) {
+                logger.warn("initialize() Invalid WHERE={} for Central Unit.", deviceWhere.value());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-where");
+                return;
             }
-
             // reset state of signal channels (they will be setted when specific messages
             // are received)
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL, OnOffType.OFF);
@@ -266,7 +267,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private String getWhere(String where) {
         if (isCentralUnit) {
-            return "#0";
+            return where;
         } else {
             return isStandAlone ? where : "#" + where;
         }
@@ -294,6 +295,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
+
+        logger.debug("@@@@ Thermo.handleMessage(): {}", msg.toStringVerbose());
 
         if (isCentralUnit) {
             if (msg.getWhat() == null) {
@@ -572,21 +575,21 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     @Override
     protected void refreshDevice(boolean refreshAll) {
         logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
-        if (isCentralUnit) {
-            // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with
-            // 99-zones central no! let's assume it's a 99 zone
-            try {
-                send(Thermoregulation.requestStatus("#0"));
-            } catch (OWNException e) {
-                logger.warn("refreshDevice() central unit returned OWNException {}", e.getMessage());
-            }
-
-            return;
-        }
 
         if (deviceWhere != null) {
-
             String w = deviceWhere.value();
+
+            if (isCentralUnit) {
+                // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with
+                // 99-zones central no! let's assume it's a 99 zone
+                try {
+                    send(Thermoregulation.requestStatus(w));
+                } catch (OWNException e) {
+                    logger.warn("refreshDevice() central unit returned OWNException {}", e.getMessage());
+                }
+                return;
+            }
+
             try {
                 send(Thermoregulation.requestTemperature(w));
 
@@ -615,6 +618,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             } catch (OWNException e) {
                 logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
             }
+        } else {
+            logger.debug("refreshDevice() where is null");
         }
     }
 }
