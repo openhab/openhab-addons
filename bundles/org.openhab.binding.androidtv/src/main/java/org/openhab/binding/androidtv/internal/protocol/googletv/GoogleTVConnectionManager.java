@@ -172,6 +172,7 @@ public class GoogleTVConnectionManager {
         this.config = config;
         this.handler = handler;
         this.translationProvider = handler.getTranslationProvider();
+        this.mdnsService = handler.getMDNSService();
         this.connectionManager = this;
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
