@@ -148,7 +148,7 @@ Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone 
 
 - the `where` configuration parameter (`OpenWebNet Address`):
   - example BUS/SCS zone `1` --> `where="1"`
-- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
+- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4- or 99-zones). `standAlone=true` means no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
 
@@ -156,19 +156,18 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
   - example sensor `5` of external zone `00` --> `where="500"`
   - example: slave sensor `3` of zone `2` --> `where="302"`
 
-The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="0"`.
+The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="#0"` for a 99-zone Central Unit or `where="#0#1"` for a 4-zone Central Unit.
 
 ##### Thermo Central Unit integration missing points
 
 - Read setPoint temperature and current mode
-- Holiday activation command (all zones)
-- Discovery
+- Holiday/Vacation activation command
 
 #### Configuring Alarm and Auxiliary (AUX)
 
 **NOTE 1** Receiving AUX messages originating from the BUS is not supported yet, only sending messages to the BUS is supported
 
-**NOTE 2** Alarm messages on BUS are not sent by MyHOMEServer1, therfore this gateway cannot be used to integrate the BTicino Alarm system
+**NOTE 2** Alarm messages on BUS are not sent by MyHOMEServer1, therefore this gateway cannot be used to integrate the BTicino Alarm system
 
 BUS Auxiliary commands (WHO=9) can be used to send on the BUS commands to control, for example, external devices or a BTicino Alarm system.
 
@@ -327,7 +326,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"          [ where="51" ]
       bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"          [ where="52" ]
 
-      bus_thermo_cu                 CU_3550              "99 zones central unit"    [ where="0" ]
+      bus_thermo_cu                 CU_3550              "99 zones Central Unit"    [ where="#0" ]
       bus_thermo_zone               LR_zone              "Living Room Zone"         [ where="2"]
       bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
 
@@ -531,6 +530,7 @@ Special thanks for helping on testing this binding go to:
 [@rubenfuser](https://community.openhab.org/u/rubenfuser),
 [@stamate_viorel](https://community.openhab.org/u/stamate_viorel),
 [@marchino](https://community.openhab.org/u/marchino),
-[@the-ninth](https://community.openhab.org/u/the-ninth)
+[@the-ninth](https://community.openhab.org/u/the-ninth),
+[@giacob](https://community.openhab.org/u/giacob)
 
 and many others at the fantastic openHAB community!
