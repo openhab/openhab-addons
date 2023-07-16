@@ -16,40 +16,48 @@ import static java.util.stream.Collectors.toSet;
 import static org.openhab.core.audio.AudioFormat.*;
 import static org.openhab.voice.pollytts.internal.PollyTTSService.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.openhab.core.OpenHAB;
-import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.voice.AbstractCachedTTSService;
+import org.openhab.core.voice.TTSCache;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
-import org.openhab.voice.pollytts.internal.cloudapi.CachedPollyTTSCloudImpl;
+import org.openhab.voice.pollytts.internal.cloudapi.PollyTTSCloudImpl;
 import org.openhab.voice.pollytts.internal.cloudapi.PollyTTSConfig;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.amazonaws.services.polly.model.AmazonPollyException;
 
 /**
  * This is a TTS service implementation for using Polly Text-to-Speech.
  *
  * @author Robert Hillman - Initial contribution
  */
-@Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "=" + SERVICE_PID)
+@Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "="
+        + SERVICE_PID, service = TTSService.class)
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
-public class PollyTTSService implements TTSService {
+public class PollyTTSService extends AbstractCachedTTSService {
+
+    @Activate
+    public PollyTTSService(final @Reference TTSCache ttsCache) {
+        super(ttsCache);
+    }
 
     /**
      * Service name
@@ -71,17 +79,9 @@ public class PollyTTSService implements TTSService {
      */
     static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 
-    /**
-     * Cache folder under $userdata
-     */
-    private static final String CACHE_FOLDER_NAME = "cache";
-
     private final Logger logger = LoggerFactory.getLogger(PollyTTSService.class);
 
-    /**
-     * We need the cached implementation to allow for FixedLengthAudioStream.
-     */
-    private CachedPollyTTSCloudImpl pollyTTSImpl;
+    private PollyTTSCloudImpl pollyTTSImpl;
 
     /**
      * Set of supported voices
@@ -106,14 +106,7 @@ public class PollyTTSService implements TTSService {
             pollyTTSConfig = new PollyTTSConfig(config);
             logger.debug("Using configuration {}", config);
 
-            // create cache folder
-            File cacheFolder = new File(new File(OpenHAB.getUserDataFolder(), CACHE_FOLDER_NAME), SERVICE_PID);
-            if (!cacheFolder.exists()) {
-                cacheFolder.mkdirs();
-            }
-            logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
-
-            pollyTTSImpl = new CachedPollyTTSCloudImpl(pollyTTSConfig, cacheFolder);
+            pollyTTSImpl = new PollyTTSCloudImpl(pollyTTSConfig);
 
             audioFormats.clear();
             audioFormats.addAll(initAudioFormats());
@@ -143,7 +136,7 @@ public class PollyTTSService implements TTSService {
      * obtain audio stream from cache or Amazon Polly service and return it to play the audio
      */
     @Override
-    public AudioStream synthesize(String inText, Voice voice, AudioFormat requestedFormat) throws TTSException {
+    public AudioStream synthesizeForCache(String inText, Voice voice, AudioFormat requestedFormat) throws TTSException {
         logger.debug("Synthesize '{}' in format {}", inText, requestedFormat);
         logger.debug("voice UID: '{}' voice label: '{}' voice Locale: {}", voice.getUID(), voice.getLabel(),
                 voice.getLocale());
@@ -151,8 +144,8 @@ public class PollyTTSService implements TTSService {
         // Validate arguments
         // trim text
         String text = inText.trim();
-        if (text == null || text.isEmpty()) {
-            throw new TTSException("The passed text is null or empty");
+        if (text.isEmpty()) {
+            throw new TTSException("The passed text is empty");
         }
         if (!voices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
@@ -167,17 +160,15 @@ public class PollyTTSService implements TTSService {
         // now create the input stream for given text, locale, format. There is
         // only a default voice
         try {
-            File cacheAudioFile = pollyTTSImpl.getTextToSpeechAsFile(text, voice.getLabel(),
+            InputStream pollyAudioStream = pollyTTSImpl.getTextToSpeech(text, voice.getLabel(),
                     getApiAudioFormat(requestedFormat));
-            if (cacheAudioFile == null) {
+            if (pollyAudioStream == null) {
                 throw new TTSException("Could not read from PollyTTS service");
             }
             logger.debug("Audio Stream for '{}' in format {}", text, requestedFormat);
-            AudioStream audioStream = new PollyTTSAudioStream(cacheAudioFile, requestedFormat);
+            AudioStream audioStream = new PollyTTSAudioStream(pollyAudioStream, requestedFormat);
             return audioStream;
-        } catch (AudioException ex) {
-            throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
-        } catch (IOException ex) {
+        } catch (AmazonPollyException ex) {
             throw new TTSException("Could not read from PollyTTS service: " + ex.getMessage(), ex);
         }
     }
