@@ -246,7 +246,10 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             logger.debug("Cached net tariffs still valid, skipping download.");
             cacheManager.updateNetTariffs();
         } else {
-            cacheManager.putNetTariffs(downloadPriceLists(config.getGridCompanyGLN(), getNetTariffFilter()));
+            DatahubTariffFilter filter = getNetTariffFilter();
+            cacheManager.putNetTariffs(downloadPriceLists(config.getGridCompanyGLN(),
+                    new DatahubTariffFilter(filter, DateQueryParameter.of(filter.getDateQueryParameter(),
+                            Duration.ofHours(-CacheManager.NUMBER_OF_HISTORIC_HOURS)))));
         }
     }
 
@@ -317,7 +320,8 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
         DateQueryParameter start = datahubPriceConfiguration.getStart();
         if (start == null) {
-            logger.warn("Invalid channel configuration parameter 'start': {}", datahubPriceConfiguration.start);
+            logger.warn("Invalid channel configuration parameter 'start' or 'offset': {} (offset: {})",
+                    datahubPriceConfiguration.start, datahubPriceConfiguration.offset);
             return DatahubTariffFilterFactory.getNetTariffByGLN(config.gridCompanyGLN);
         }
 

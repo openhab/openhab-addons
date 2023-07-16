@@ -58,7 +58,7 @@ public class DateQueryParameter {
         DateQueryParameterType dateType = this.dateType;
         if (dateType != null) {
             Duration offset = this.offset;
-            if (offset == null) {
+            if (offset == null || offset.isZero()) {
                 return dateType.toString();
             } else {
                 return dateType.toString()
@@ -82,6 +82,18 @@ public class DateQueryParameter {
         } else {
             return new DateQueryParameter(dateType, offset);
         }
+    }
+
+    public static DateQueryParameter of(DateQueryParameter parameter, Duration offset) {
+        DateQueryParameterType parameterType = parameter.dateType;
+        if (parameterType == null) {
+            return parameter;
+        }
+        Duration parameterOffset = parameter.offset;
+        if (parameterOffset == null || parameterOffset.isZero()) {
+            return of(parameterType, offset);
+        }
+        return of(parameterType, parameterOffset.plus(offset));
     }
 
     public static DateQueryParameter of(DateQueryParameterType dateType) {
