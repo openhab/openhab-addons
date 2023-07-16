@@ -264,11 +264,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             }
         }
 
-        if (rs.voltage != null) {
-            if (status.voltage == null || rs.voltage > status.voltage) {
-                status.voltage = rs.voltage;
-            }
-        }
         if (rs.errors != null) {
             for (String error : rs.errors) {
                 sr.overpower = rstatus.overpower = SHELLY2_ERROR_OVERPOWER.equals(error);
@@ -318,8 +313,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
                 if (relay.isValid && relay.id != null && relay.id.intValue() == id.intValue()) {
                     return idx;
                 }
+                idx++;
             }
-            idx++;
         }
         return -1;
     }
@@ -330,7 +325,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return;
         }
         sm.isValid = sm.power != null || sm.total != null;
-        emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null;
+        emeter.isValid = emeter.current != null || emeter.voltage != null || emeter.power != null
+                || emeter.total != null;
         status.meters.set(id, sm);
         status.emeters.set(id, emeter);
         relayStatus.meters.set(id, sm);
@@ -548,9 +544,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             }
         }
         if (cs.voltage != null) {
-            if (status.voltage == null || cs.voltage > status.voltage) {
-                status.voltage = cs.voltage;
-            }
             emeter.voltage = cs.voltage;
         }
         if (cs.current != null) {

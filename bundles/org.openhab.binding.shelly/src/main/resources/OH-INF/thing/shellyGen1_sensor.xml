@@ -243,18 +243,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="sensorOpen">
-		<item-type>Contact</item-type>
-		<label>@text/channel-type.shelly.sensorOpen.label</label>
-		<description>@text/channel-type.shelly.sensorOpen.description</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="OPEN">@text/channel-type.shelly.sensorOpen.state.option.OPEN</option>
-				<option value="CLOSED">@text/channel-type.shelly.sensorOpen.state.option.CLOSED</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="sensorState">
 		<item-type>String</item-type>
 		<label>@text/channel-type.shelly.sensorState.label</label>
