@@ -56,6 +56,7 @@ public class GoogleTVMessageParser {
         try {
             if (msg.startsWith(DELIMITER_1A)) {
                 logger.warn("{} - GoogleTV Error Message: {}", thingId, msg);
+                callback.getHandler().dispose();
             } else if (msg.startsWith(DELIMITER_0A)) {
                 // First message on connection from GTV
                 //
