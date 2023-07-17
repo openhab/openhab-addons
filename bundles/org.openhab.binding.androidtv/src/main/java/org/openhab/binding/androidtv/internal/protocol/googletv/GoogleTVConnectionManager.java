@@ -173,6 +173,7 @@ public class GoogleTVConnectionManager {
         this.handler = handler;
         this.translationProvider = handler.getTranslationProvider();
         this.mdnsService = handler.getMDNSService();
+        this.ohAddress = handler.getOHAddress();
         this.connectionManager = this;
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
@@ -185,6 +186,8 @@ public class GoogleTVConnectionManager {
         this.config = config;
         this.handler = handler;
         this.translationProvider = handler.getTranslationProvider();
+        this.mdnsService = handler.getMDNSService();
+        this.ohAddress = handler.getOHAddress();
         this.connectionManager = connectionManager;
         this.scheduler = handler.getScheduler();
         this.encryptionKey = androidtvPKI.generateEncryptionKey();
@@ -470,6 +473,7 @@ public class GoogleTVConnectionManager {
         config.delay = (config.delay < 0) ? 0 : config.delay;
         config.shim = (config.shim) ? true : false;
         config.shimNewKeys = (config.shimNewKeys) ? true : false;
+        config.shimAddress = (!config.shimAddress.equals("")) ? config.shimAddress : ohAddress;
         config.mode = (!config.mode.equals("")) ? config.mode : DEFAULT_MODE;
 
         config.keystoreFileName = (!config.keystoreFileName.equals("")) ? config.keystoreFileName
@@ -484,6 +488,9 @@ public class GoogleTVConnectionManager {
         if (config.mode.equals(DEFAULT_MODE)) {
             deviceHealthJob = scheduler.scheduleWithFixedDelay(this::checkHealth, config.heartbeat, config.heartbeat,
                     TimeUnit.SECONDS);
+            if (config.shim) {
+                mdnsService.registerService(getDefaultServiceDescription());
+            }
         }
 
         try {
@@ -624,8 +631,8 @@ public class GoogleTVConnectionManager {
 
     private ServiceDescription getDefaultServiceDescription() {
         Hashtable<String, String> serviceProperties = new Hashtable<>();
-        serviceProperties.put("host-name", ohAddress);
-        serviceProperties.put("bt", "1C:69:7A:AA:AA:46");
+        // serviceProperties.put("ipAddress", config.shimAddress);
+        serviceProperties.put("bt", "1C:69:7A:AB:CD:EF");
         return new ServiceDescription("_androidtvremote2._tcp.local.", "OH GoogleTV SHIM", 6646, serviceProperties);
     }
 
@@ -634,7 +641,6 @@ public class GoogleTVConnectionManager {
             SSLContext sslContext;
 
             try {
-                mdnsService.registerService(getDefaultServiceDescription());
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
                 kmf.init(androidtvPKI.getKeyStore(config.keystorePassword, this.encryptionKey),
                         config.keystorePassword.toCharArray());
@@ -732,7 +738,7 @@ public class GoogleTVConnectionManager {
             } catch (Exception e) {
                 logger.trace("Shim initalization exception {}", config.port);
                 logger.trace("Shim initalization exception", e);
-                mdnsService.unregisterService(getDefaultServiceDescription());
+
                 return;
             }
         }
@@ -1381,7 +1387,9 @@ public class GoogleTVConnectionManager {
 
     public void dispose() {
         this.disposing = true;
-
+        if (config.shim) {
+            mdnsService.unregisterService(getDefaultServiceDescription());
+        }
         Future<?> asyncInitializeTask = this.asyncInitializeTask;
         if (asyncInitializeTask != null) {
             asyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
