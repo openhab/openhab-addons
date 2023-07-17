@@ -196,7 +196,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode
                             .valueOf(currentMode.mode() + "_" + programNumber);
                     logger.debug("handleSetProgramNumber() new mode {}", new_mode);
-                    send(Thermoregulation.requestWriteMode(getWhere(""), new_mode, currentFunction,
+                    send(Thermoregulation.requestWriteMode(getWhere(deviceWhere.value()), new_mode, currentFunction,
                             currentSetPointTemp));
                 } catch (OWNException e) {
                     logger.warn("handleSetProgramNumber() {}", e.getMessage());
