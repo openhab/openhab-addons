@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants.*;
+import static org.openhab.core.library.unit.MetricPrefix.HECTO;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,10 +52,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants;
 import org.openhab.binding.mqtt.ruuvigateway.internal.discovery.RuuviGatewayDiscoveryService;
@@ -97,6 +102,8 @@ import org.openhab.core.types.UnDefType;
  * @author Sami Salonen - Adapted and extended to Ruuvi Gateway tests
  */
 @NonNullByDefault
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class RuuviGatewayTest extends MqttOSGiTest {
     protected @Mock @NonNullByDefault({}) UnitProvider mockedUnitProvider;
     private static final String BASE_TOPIC_RUUVI = "ruuvi";
@@ -135,6 +142,28 @@ public class RuuviGatewayTest extends MqttOSGiTest {
     @SuppressWarnings("unused") // used indirectly with Inbox
     private @NonNullByDefault({}) RuuviGatewayDiscoveryService ruuviDiscoveryService;
     private Set<Thing> things = new HashSet<>();
+
+    @BeforeEach
+    public void setup() {
+        when(mockedUnitProvider.getUnit(any())).then(i -> {
+            Class clazz = i.getArgument(0);
+            if (Temperature.class.equals(clazz)) {
+                return SIUnits.CELSIUS;
+            } else if (Acceleration.class.equals(clazz)) {
+                return Units.METRE_PER_SQUARE_SECOND;
+            } else if (Dimensionless.class.equals(clazz)) {
+                return Units.ONE;
+            } else if (ElectricPotential.class.equals(clazz)) {
+                return Units.VOLT;
+            } else if(Pressure.class.equals(clazz)) {
+                return HECTO(SIUnits.PASCAL);
+            } else if (Power.class.equals(clazz)) {
+                return Units.WATT;
+            }
+            return null;
+                }
+        );
+    }
 
     private Bridge createMqttBrokerBridge() {
         Configuration configuration = new Configuration();

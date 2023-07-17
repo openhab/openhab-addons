@@ -108,4 +108,6 @@ Import-Package: \
 	net.bytebuddy.byte-buddy;version='[1.12.19,1.12.20)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.12.19,1.12.20)',\
 	org.mockito.mockito-core;version='[4.11.0,4.11.1)',\
-	org.objenesis;version='[3.3.0,3.3.1)'
+	org.objenesis;version='[3.3.0,3.3.1)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
+	org.mockito.junit-jupiter;version='[4.11.0,4.11.1)'
