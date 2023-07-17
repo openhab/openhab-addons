@@ -136,10 +136,12 @@ public class AndroidTVHandler extends BaseThingHandler {
             }
         }
 
-        if (failed && !currentThingStatus.equals(statusMessage)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
-        } else {
-            updateStatus(ThingStatus.ONLINE);
+        if (!currentThingStatus.equals(statusMessage)) {
+            if (failed) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
 
         this.currentThingStatus = statusMessage;
