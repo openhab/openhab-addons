@@ -40,7 +40,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>For Thermo Central Unit 99-zones --> where=#0, for 4-zones --> where=#0#1</description>
+				<description>For Thermo Central Unit 99-zones --> where="#0", for 4-zones --> where="#0#1"</description>
 			</parameter>
 
 		</config-description>

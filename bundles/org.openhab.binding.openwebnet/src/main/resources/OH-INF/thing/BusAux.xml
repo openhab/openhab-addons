@@ -26,7 +26,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Example: Where=1</description>
+				<description>Example: AUX 1 --> where="1"</description>
 			</parameter>
 		</config-description>
 

@@ -116,12 +116,13 @@
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
-		<description>Set mode of the thermostat (read/write)</description>
+		<description>Set mode of the zone (read/write)</description>
 		<state>
 			<options>
 				<option value="MANUAL">Manual</option>
-				<option value="PROTECTION">Protection</option>
+				<option value="PROTECTION">Antifreeze / Heat Protection</option>
 				<option value="OFF">Off</option>
+				<option value="AUTO">Automatic</option>
 			</options>
 		</state>
 	</channel-type>
@@ -132,6 +133,7 @@
 		<description>Set speed of the Fan Coil (read/write)</description>
 		<state>
 			<options>
+				<option value="OFF">Off</option>
 				<option value="AUTO">Auto</option>
 				<option value="SPEED_1">Fan speed 1</option>
 				<option value="SPEED_2">Fan speed 2</option>
@@ -146,18 +148,18 @@
 		<description>Conditioning Valves status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="OFF">OFF</option>
-				<option value="ON">ON</option>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
 				<option value="OPENED">Opened</option>
 				<option value="CLOSED">Closed</option>
 				<option value="STOP">Stop</option>
-				<option value="OFF_FAN_COIL">OFF Fan Coil</option>
-				<option value="ON_SPEED_1">ON speed 1</option>
-				<option value="ON_SPEED_2">ON speed 2</option>
-				<option value="ON_SPEED_3">ON speed 3</option>
-				<option value="OFF_SPEED_1">OFF speed 1</option>
-				<option value="OFF_SPEED_2">OFF speed 2</option>
-				<option value="OFF_SPEED_3">OFF speed 3</option>
+				<option value="OFF_FAN_COIL">Off Fan Coil</option>
+				<option value="ON_SPEED_1">On speed 1</option>
+				<option value="ON_SPEED_2">On speed 2</option>
+				<option value="ON_SPEED_3">On speed 3</option>
+				<option value="OFF_SPEED_1">Off speed 1</option>
+				<option value="OFF_SPEED_2">Off speed 2</option>
+				<option value="OFF_SPEED_3">Off speed 3</option>
 			</options>
 		</state>
 	</channel-type>
@@ -168,18 +170,18 @@
 		<description>Heating Valves status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="OFF">OFF</option>
-				<option value="ON">ON</option>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
 				<option value="OPENED">Opened</option>
 				<option value="CLOSED">Closed</option>
 				<option value="STOP">Stop</option>
-				<option value="OFF_FAN_COIL">OFF Fan Coil</option>
-				<option value="ON_SPEED_1">ON speed 1</option>
-				<option value="ON_SPEED_2">ON speed 2</option>
-				<option value="ON_SPEED_3">ON speed 3</option>
-				<option value="OFF_SPEED_1">OFF speed 1</option>
-				<option value="OFF_SPEED_2">OFF speed 2</option>
-				<option value="OFF_SPEED_3">OFF speed 3</option>
+				<option value="OFF_FAN_COIL">Off Fan Coil</option>
+				<option value="ON_SPEED_1">On speed 1</option>
+				<option value="ON_SPEED_2">On speed 2</option>
+				<option value="ON_SPEED_3">On speed 3</option>
+				<option value="OFF_SPEED_1">Off speed 1</option>
+				<option value="OFF_SPEED_2">Off speed 2</option>
+				<option value="OFF_SPEED_3">Off speed 3</option>
 			</options>
 		</state>
 	</channel-type>
@@ -190,18 +192,18 @@
 		<description>Actuators status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="OFF">OFF</option>
-				<option value="ON">ON</option>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
 				<option value="OPENED">Opened</option>
 				<option value="CLOSED">Closed</option>
 				<option value="STOP">Stop</option>
-				<option value="OFF_FAN_COIL">OFF Fan Coil</option>
-				<option value="ON_SPEED_1">ON speed 1</option>
-				<option value="ON_SPEED_2">ON speed 2</option>
-				<option value="ON_SPEED_3">ON speed 3</option>
-				<option value="OFF_SPEED_1">OFF speed 1</option>
-				<option value="OFF_SPEED_2">OFF speed 2</option>
-				<option value="OFF_SPEED_3">OFF speed 3</option>
+				<option value="OFF_FAN_COIL">Off Fan Coil</option>
+				<option value="ON_SPEED_1">On speed 1</option>
+				<option value="ON_SPEED_2">On speed 2</option>
+				<option value="ON_SPEED_3">On speed 3</option>
+				<option value="OFF_SPEED_1">Off speed 1</option>
+				<option value="OFF_SPEED_2">Off speed 2</option>
+				<option value="OFF_SPEED_3">Off speed 3</option>
 			</options>
 		</state>
 	</channel-type>
@@ -212,8 +214,8 @@
 		<description>Local knob status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="OFF">OFF</option>
-				<option value="PROTECTION">PROTECTION</option>
+				<option value="OFF">Off</option>
+				<option value="PROTECTION">Antifreeze / Heat Protection</option>
 				<option value="PLUS_3">+3</option>
 				<option value="PLUS_2">+2</option>
 				<option value="PLUS_1">+1</option>
@@ -232,7 +234,7 @@
 		<state>
 			<options>
 				<option value="MANUAL">Manual</option>
-				<option value="PROTECTION">Protection</option>
+				<option value="PROTECTION">Antifreeze / Heat Protection</option>
 				<option value="OFF">Off</option>
 				<option value="WEEKLY">Weekly</option>
 				<option value="SCENARIO">Scenario</option>
@@ -286,8 +288,8 @@
 		<description>Central Unit Remote Control status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="DISABLED">DISABLED</option>
-				<option value="ENABLED">ENABLED</option>
+				<option value="DISABLED">Disabled</option>
+				<option value="ENABLED">Enabled</option>
 			</options>
 		</state>
 	</channel-type>
@@ -298,8 +300,8 @@
 		<description>Central Unit Battery status (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="OK">OK</option>
-				<option value="KO">KO</option>
+				<option value="OK">Ok</option>
+				<option value="KO">Ko</option>
 			</options>
 		</state>
 	</channel-type>
@@ -321,7 +323,7 @@
 	<channel-type id="atLeastOneProbeProtection" advanced="true">
 		<item-type>Switch</item-type>
 		<label>At least one probe in PROTECTION</label>
-		<description>At least one probe in PROTECTION (Anti Freeze/Thermal Protection) indicator in Central Unit (read only)</description>
+		<description>At least one probe in PROTECTION (Antifreeze / Heat Protection) indicator in Central Unit (read only)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

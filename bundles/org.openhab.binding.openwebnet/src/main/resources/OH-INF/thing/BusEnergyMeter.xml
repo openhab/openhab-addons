@@ -28,7 +28,8 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Example: 5N with N=[1-255]</description>
+				<description>A "5" must be added before the energy meter address: 5N with N=[1-255]. Example energy meter "42" -->
+					where="542"</description>
 			</parameter>
 		</config-description>
 

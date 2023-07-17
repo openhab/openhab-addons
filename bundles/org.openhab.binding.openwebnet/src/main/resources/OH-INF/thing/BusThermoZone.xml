@@ -38,7 +38,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Example: zone 2 --> where=2.</description>
+				<description>Example: zone 2 --> where="2".</description>
 			</parameter>
 
 			<parameter name="standAlone" type="boolean">
