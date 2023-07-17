@@ -155,14 +155,13 @@ public class RuuviGatewayTest extends MqttOSGiTest {
                 return Units.ONE;
             } else if (ElectricPotential.class.equals(clazz)) {
                 return Units.VOLT;
-            } else if(Pressure.class.equals(clazz)) {
+            } else if (Pressure.class.equals(clazz)) {
                 return HECTO(SIUnits.PASCAL);
             } else if (Power.class.equals(clazz)) {
                 return Units.WATT;
             }
             return null;
-                }
-        );
+        });
     }
 
     private Bridge createMqttBrokerBridge() {
