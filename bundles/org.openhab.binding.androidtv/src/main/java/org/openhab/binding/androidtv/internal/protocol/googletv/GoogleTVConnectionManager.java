@@ -184,6 +184,10 @@ public class GoogleTVConnectionManager {
         initialize();
     }
 
+    public AndroidTVHandler getHandler() {
+        return handler;
+    }
+
     public String getThingID() {
         return handler.getThingID();
     }
