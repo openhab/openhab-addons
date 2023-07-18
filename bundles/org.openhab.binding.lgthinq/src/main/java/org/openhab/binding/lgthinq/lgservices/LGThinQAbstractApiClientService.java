@@ -27,6 +27,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.LGThinQBindingConstants;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.api.RestUtils;
@@ -56,9 +57,11 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     protected final TokenManager tokenManager;
     protected Class<C> capabilityClass;
     protected Class<S> snapshotClass;
+    protected HttpClient httpClient;
 
-    protected LGThinQAbstractApiClientService(Class<C> capabilityClass, Class<S> snapshotClass) {
-        this.tokenManager = TokenManager.getInstance();
+    protected LGThinQAbstractApiClientService(Class<C> capabilityClass, Class<S> snapshotClass, HttpClient httpClient) {
+        this.httpClient = httpClient;
+        this.tokenManager = new TokenManager(httpClient);
         this.capabilityClass = capabilityClass;
         this.snapshotClass = snapshotClass;
     }
@@ -100,7 +103,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(V2_LS_PATH);
             Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-            RestResult resp = RestUtils.getCall(builder.build().toURL().toString(), headers, null);
+            RestResult resp = RestUtils.getCall(httpClient, builder.build().toURL().toString(), headers, null);
             return handleListAccountDevicesResult(resp);
         } catch (Exception e) {
             throw new LGThinqApiException("Erros list account devices from LG Server API", e);
@@ -139,7 +142,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                     .path(String.format("%s/%s", V2_DEVICE_CONFIG_PATH, deviceId));
             Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-            RestResult resp = RestUtils.getCall(builder.build().toURL().toString(), headers, null);
+            RestResult resp = RestUtils.getCall(httpClient, builder.build().toURL().toString(), headers, null);
             return handleDeviceSettingsResult(resp);
         } catch (Exception e) {
             throw new LGThinqApiException("Errors list account devices from LG Server API", e);
@@ -157,6 +160,10 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         Map<String, String> respMap = Collections.EMPTY_MAP;
         String resultCode = "???";
         if (resp.getStatusCode() != 200) {
+            if (resp.getStatusCode() == 400) {
+                logger.warn("Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
+                return Collections.emptyMap();
+            }
             try {
                 if (resp.getStatusCode() == 400) {
                     logger.warn("Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
@@ -167,7 +174,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 resultCode = respMap.get("resultCode");
                 if (resultCode != null) {
                     logger.error(
-                            "Error calling device settings from LG Server API. The code is:{} and The reason is:{}",
+                            "Error calling device settings from LG Server API. The code is: {} and The reason is: {}",
                             resultCode, ResultCodes.fromCode(resultCode));
                     throw new LGThinqApiException("Error calling device settings from LG Server API.");
                 }
@@ -208,9 +215,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 logger.warn("Error calling device list from LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
                 return Collections.emptyList();
             }
-            logger.error("Error calling device list from LG Server API. The reason is:{}", resp.getJsonResponse());
+            logger.error("Error calling device list from LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(), resp.getJsonResponse());
             throw new LGThinqApiException(String
-                    .format("Error calling device list from LG Server API. The reason is:%s", resp.getJsonResponse()));
+                    .format("Error calling device list from LG Server API. The reason is: %s", resp.getJsonResponse()));
         } else {
             try {
                 devicesResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
@@ -288,7 +295,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         String jsonData = String.format("{\n" + "   \"lgedmRoot\":{\n" + "      \"workList\":[\n" + "         {\n"
                 + "            \"deviceId\":\"%s\",\n" + "            \"workId\":\"%s\"\n" + "         }\n"
                 + "      ]\n" + "   }\n" + "}", deviceId, workId);
-        RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, jsonData);
+        RestResult resp = RestUtils.postCall(httpClient, builder.build().toURL().toString(), headers, jsonData);
         Map<String, Object> envelop;
         // to unify the same behaviour then V2, this method handle Offline Exception and return a dummy shot with
         // offline flag.
@@ -418,7 +425,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         String workerId = UUID.randomUUID().toString();
         String jsonData = String.format(" { \"lgedmRoot\" : {" + "\"cmd\": \"Mon\"," + "\"cmdOpt\": \"Start\","
                 + "\"deviceId\": \"%s\"," + "\"workId\": \"%s\"" + "} }", deviceId, workerId);
-        RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, jsonData);
+        RestResult resp = RestUtils.postCall(httpClient, builder.build().toURL().toString(), headers, jsonData);
         return Objects.requireNonNull((String) handleGenericErrorResult(resp).get("workId"),
                 "Unexpected StartMonitor json result. Node 'workId' not present");
     }
@@ -432,7 +439,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         String jsonData = String.format(" { \"lgedmRoot\" : {" + "\"cmd\": \"Mon\"," + "\"cmdOpt\": \"Stop\","
                 + "\"deviceId\": \"%s\"," + "\"workId\": \"%s\"" + "} }", deviceId, workId);
-        RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, jsonData);
+        RestResult resp = RestUtils.postCall(httpClient, builder.build().toURL().toString(), headers, jsonData);
         handleGenericErrorResult(resp);
     }
 

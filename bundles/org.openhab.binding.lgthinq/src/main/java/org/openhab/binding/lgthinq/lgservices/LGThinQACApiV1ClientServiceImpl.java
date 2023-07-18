@@ -21,6 +21,7 @@ import java.util.Base64;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
@@ -42,25 +43,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 @NonNullByDefault
 public class LGThinQACApiV1ClientServiceImpl extends
         LGThinQAbstractApiV1ClientService<ACCapability, ACCanonicalSnapshot> implements LGThinQACApiClientService {
-    private static final LGThinQACApiClientService instance;
-    private static final Logger logger = LoggerFactory.getLogger(LGThinQACApiV1ClientServiceImpl.class);
 
-    static {
-        instance = new LGThinQACApiV1ClientServiceImpl(ACCapability.class, ACCanonicalSnapshot.class);
-    }
+	private static final Logger logger = LoggerFactory.getLogger(LGThinQACApiV1ClientServiceImpl.class);
 
-    protected LGThinQACApiV1ClientServiceImpl(Class<ACCapability> capabilityClass,
-            Class<ACCanonicalSnapshot> snapshotClass) {
-        super(capabilityClass, snapshotClass);
+    protected LGThinQACApiV1ClientServiceImpl(HttpClient httpClient) {
+        super(ACCapability.class, ACCanonicalSnapshot.class, httpClient);
     }
 
     @Override
     protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
         // Nothing to do on V1 ACCapability here
-    }
-
-    public static LGThinQACApiClientService getInstance() {
-        return instance;
     }
 
     /**

@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
@@ -38,23 +39,13 @@ public class LGThinQWMApiV2ClientServiceImpl
         extends LGThinQAbstractApiV2ClientService<WasherDryerCapability, WasherDryerSnapshot>
         implements LGThinQWMApiClientService {
 
-    private static final LGThinQWMApiClientService instance;
-    static {
-        instance = new LGThinQWMApiV2ClientServiceImpl(WasherDryerCapability.class, WasherDryerSnapshot.class);
-    }
-
-    protected LGThinQWMApiV2ClientServiceImpl(Class<WasherDryerCapability> capabilityClass,
-            Class<WasherDryerSnapshot> snapshotClass) {
-        super(capabilityClass, snapshotClass);
+    protected LGThinQWMApiV2ClientServiceImpl(HttpClient httpClient) {
+        super(WasherDryerCapability.class, WasherDryerSnapshot.class, httpClient);
     }
 
     @Override
     protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
         // TODO - Analise what to do here
-    }
-
-    public static LGThinQWMApiClientService getInstance() {
-        return instance;
     }
 
     @Override

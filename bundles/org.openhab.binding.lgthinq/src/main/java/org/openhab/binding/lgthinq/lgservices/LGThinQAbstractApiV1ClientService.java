@@ -22,6 +22,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.api.RestUtils;
 import org.openhab.binding.lgthinq.internal.api.TokenResult;
@@ -48,8 +49,8 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
         extends LGThinQAbstractApiClientService<C, S> {
     private static final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiV1ClientService.class);
 
-    protected LGThinQAbstractApiV1ClientService(Class<C> capabilityClass, Class<S> snapshotClass) {
-        super(capabilityClass, snapshotClass);
+    protected LGThinQAbstractApiV1ClientService(Class<C> capabilityClass, Class<S> snapshotClass, HttpClient httpClient) {
+        super(capabilityClass, snapshotClass, httpClient);
     }
 
     @Override
@@ -99,7 +100,7 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
         rootNode.set("lgedmRoot", bodyNode);
         String url = builder.build().toURL().toString();
         logger.debug("URL: {}, Post Payload:[{}]", url, rootNode.toPrettyString());
-        RestResult resp = RestUtils.postCall(url, headers, rootNode.toPrettyString());
+        RestResult resp = RestUtils.postCall(httpClient, url, headers, rootNode.toPrettyString());
         if (resp == null) {
             logger.warn("Null result returned sending command to LG API V1");
             throw new LGThinqApiException("Null result returned sending command to LG API V1");

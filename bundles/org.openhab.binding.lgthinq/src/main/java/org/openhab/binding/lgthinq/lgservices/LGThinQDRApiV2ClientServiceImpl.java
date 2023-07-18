@@ -14,6 +14,7 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
@@ -30,23 +31,13 @@ public class LGThinQDRApiV2ClientServiceImpl
         extends LGThinQAbstractApiV2ClientService<WasherDryerCapability, WasherDryerSnapshot>
         implements LGThinQDRApiClientService {
 
-    private static final LGThinQDRApiV2ClientServiceImpl instance;
-    static {
-        instance = new LGThinQDRApiV2ClientServiceImpl(WasherDryerCapability.class, WasherDryerSnapshot.class);
-    }
-
-    protected LGThinQDRApiV2ClientServiceImpl(Class<WasherDryerCapability> capabilityClass,
-            Class<WasherDryerSnapshot> snapshotClass) {
-        super(capabilityClass, snapshotClass);
+    protected LGThinQDRApiV2ClientServiceImpl(HttpClient httpClient) {
+        super(WasherDryerCapability.class, WasherDryerSnapshot.class, httpClient);
     }
 
     @Override
     protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
         // TODO - Analise what to do here
-    }
-
-    public static LGThinQDRApiV2ClientServiceImpl getInstance() {
-        return instance;
     }
 
     @Override

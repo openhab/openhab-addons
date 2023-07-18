@@ -27,6 +27,7 @@ import java.util.*;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +39,7 @@ import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
 import org.openhab.binding.lgthinq.lgservices.*;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -85,8 +87,8 @@ class LGThinqBridgeTests {
     @Test
     public void testDiscoveryACThings() {
         setupAuthenticationMock();
-        LGThinQApiClientService service1 = LGThinQACApiV1ClientServiceImpl.getInstance();
-        LGThinQApiClientService service2 = LGThinQACApiV2ClientServiceImpl.getInstance();
+        LGThinQApiClientService service1 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
+        LGThinQApiClientService service2 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V2, mock(HttpClientFactory.class));
         try {
             List<LGDevice> devices = service2.listAccountDevices("bridgeTest");
             assertEquals(devices.size(), 2);
@@ -128,12 +130,12 @@ class LGThinqBridgeTests {
         String tempDir = System.getProperty("java.io.tmpdir");
         LGThinQBindingConstants.THINQ_CONNECTION_DATA_FILE = tempDir + File.separator + "token.json";
         LGThinQBindingConstants.BASE_CAP_CONFIG_DATA_FILE = tempDir + File.separator + "thinq-cap.json";
-        LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing);
+        LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
         LGThinQBridgeHandler spyBridge = spy(b);
         doReturn(new LGThinQBridgeConfiguration(fakeUserName, fakePassword, fakeCountry, fakeLanguage, 60,
                 "http://localhost:8880")).when(spyBridge).getConfigAs(any(Class.class));
         spyBridge.initialize();
-        TokenManager tokenManager = TokenManager.getInstance();
+        TokenManager tokenManager = new TokenManager(mock(HttpClient.class));
         try {
             if (!tokenManager.isOauthTokenRegistered(fakeBridgeName)) {
                 tokenManager.oauthFirstRegistration(fakeBridgeName, fakeLanguage, fakeCountry, fakeUserNameEncoded,
@@ -187,10 +189,10 @@ class LGThinqBridgeTests {
         LGThinQBindingConstants.THINQ_USER_DATA_FOLDER = "" + tempDir;
         LGThinQBindingConstants.THINQ_CONNECTION_DATA_FILE = tempDir + File.separator + "token.json";
         LGThinQBindingConstants.BASE_CAP_CONFIG_DATA_FILE = tempDir + File.separator + "thinq-cap.json";
-        LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing);
+        LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
 
-        final LGThinQWMApiClientService service2 = LGThinQWMApiV2ClientServiceImpl.getInstance();
-        TokenManager tokenManager = TokenManager.getInstance();
+        final LGThinQWMApiClientService service2 = LGThinQApiClientServiceFactory.newWMApiClientService(PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
+        TokenManager tokenManager = new TokenManager(mock(HttpClient.class));
         try {
             if (!tokenManager.isOauthTokenRegistered(fakeBridgeName)) {
                 tokenManager.oauthFirstRegistration(fakeBridgeName, fakeLanguage, fakeCountry, fakeUserName,

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
@@ -41,23 +42,14 @@ public class LGThinQWMApiV1ClientServiceImpl
         extends LGThinQAbstractApiV1ClientService<WasherDryerCapability, WasherDryerSnapshot>
         implements LGThinQWMApiClientService {
     private final Logger logger = LoggerFactory.getLogger(LGThinQWMApiV1ClientServiceImpl.class);
-    private static final LGThinQWMApiClientService instance;
-    static {
-        instance = new LGThinQWMApiV1ClientServiceImpl(WasherDryerCapability.class, WasherDryerSnapshot.class);
-    }
 
-    protected LGThinQWMApiV1ClientServiceImpl(Class<WasherDryerCapability> capabilityClass,
-            Class<WasherDryerSnapshot> snapshotClass) {
-        super(capabilityClass, snapshotClass);
+    protected LGThinQWMApiV1ClientServiceImpl(HttpClient httpClient) {
+        super(WasherDryerCapability.class, WasherDryerSnapshot.class, httpClient);
     }
 
     @Override
     protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
         // Nothing to do for V1 thinq
-    }
-
-    public static LGThinQWMApiClientService getInstance() {
-        return instance;
     }
 
     @Override

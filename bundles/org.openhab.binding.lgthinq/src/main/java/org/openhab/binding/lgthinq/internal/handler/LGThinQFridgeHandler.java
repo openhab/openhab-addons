@@ -26,13 +26,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
+import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQFridgeApiClientService;
-import org.openhab.binding.lgthinq.lgservices.LGThinQFridgeApiV1ClientServiceImpl;
-import org.openhab.binding.lgthinq.lgservices.LGThinQFridgeApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapability;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -69,11 +69,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     private @Nullable ScheduledFuture<?> thingStatePollingJob;
 
     public LGThinQFridgeHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
-            ItemChannelLinkRegistry itemChannelLinkRegistry) {
+            ItemChannelLinkRegistry itemChannelLinkRegistry, HttpClientFactory httpClientFactory) {
         super(thing, stateDescriptionProvider, itemChannelLinkRegistry);
-        lgThinqFridgeApiClientService = lgPlatformType.equals(PLATFORM_TYPE_V1)
-                ? LGThinQFridgeApiV1ClientServiceImpl.getInstance()
-                : LGThinQFridgeApiV2ClientServiceImpl.getInstance();
+        lgThinqFridgeApiClientService = LGThinQApiClientServiceFactory.newFridgeApiClientService(lgPlatformType, httpClientFactory);
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
         channelGroupExtendedInfoUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_EXTENDED_INFO_GRP_ID);
         fridgeTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_FRIDGE_TEMP_ID);

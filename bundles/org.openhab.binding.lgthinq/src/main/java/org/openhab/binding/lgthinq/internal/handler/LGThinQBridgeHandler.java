@@ -23,16 +23,18 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQBridgeConfiguration;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.errors.RefreshTokenException;
-import org.openhab.binding.lgthinq.lgservices.LGThinQACApiV1ClientServiceImpl;
-import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
+import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
+import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory.LGThinQGeneralApiClientService;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -68,15 +70,21 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     private LGThinQBridgeConfiguration lgthinqConfig;
     private TokenManager tokenManager;
     private LGThinqDiscoveryService discoveryService;
-    private LGThinQApiClientService lgApiClient;
+    private LGThinQGeneralApiClientService lgApiClient;
     private @Nullable Future<?> initJob;
     private @Nullable ScheduledFuture<?> devicePollingJob;
+    private @NonNull HttpClientFactory httpClientFactory;
 
-    public LGThinQBridgeHandler(Bridge bridge) {
+    public LGThinQBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
-        tokenManager = TokenManager.getInstance();
-        lgApiClient = LGThinQACApiV1ClientServiceImpl.getInstance();
+        this.httpClientFactory = httpClientFactory;
+        tokenManager = new TokenManager(httpClientFactory.getCommonHttpClient());
+        lgApiClient = LGThinQApiClientServiceFactory.newGeneralApiClientService(httpClientFactory);
         lgDevicePollingRunnable = new LGDevicePollingRunnable(bridge.getUID().getId());
+    }
+    
+    public HttpClientFactory getHttpClientFactory() {
+        return httpClientFactory;
     }
 
     final ReentrantLock pollingLock = new ReentrantLock();
@@ -168,7 +176,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(LGThinqDiscoveryService.class);
     }
-
+    
     @Override
     public void registryListenerThing(LGThinQAbstractDeviceHandler thing) {
         if (lGDeviceRegister.get(thing.getDeviceId()) == null) {

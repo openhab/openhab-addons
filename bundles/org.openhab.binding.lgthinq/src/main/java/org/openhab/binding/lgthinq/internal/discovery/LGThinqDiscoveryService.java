@@ -15,21 +15,17 @@ package org.openhab.binding.lgthinq.internal.discovery;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
-import org.openhab.binding.lgthinq.lgservices.LGThinQAbstractApiClientService;
-import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
+import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory.LGThinQGeneralApiClientService;
+import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -40,8 +36,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinqDiscoveryService}
@@ -54,42 +48,10 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
     private final Logger logger = LoggerFactory.getLogger(LGThinqDiscoveryService.class);
     private @Nullable LGThinQBridgeHandler bridgeHandler;
     private @Nullable ThingUID bridgeHandlerUID;
-    private final LGThinQApiClientService<AbstractCapability, AbstractSnapshotDefinition> lgApiClientService;
+    private @Nullable LGThinQGeneralApiClientService lgApiClientService;
 
     public LGThinqDiscoveryService() {
         super(SUPPORTED_THING_TYPES, SEARCH_TIME);
-        lgApiClientService = new LGThinQAbstractApiClientService<>(AbstractCapability.class,
-                AbstractSnapshotDefinition.class) {
-            @Override
-            protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId)
-                    throws LGThinqApiException {
-            }
-
-            @Override
-            protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
-                    String command, String keyName, String value) throws Exception {
-                throw new UnsupportedOperationException("Not to use");
-            }
-
-            @Override
-            protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
-                    String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
-                    throws Exception {
-                throw new UnsupportedOperationException("Not to use");
-            }
-
-            @Override
-            protected Map<String, Object> handleGenericErrorResult(@Nullable RestResult resp)
-                    throws LGThinqApiException {
-                throw new UnsupportedOperationException("Not to use");
-            }
-
-            @Override
-            public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
-                    throws LGThinqApiException {
-                throw new UnsupportedOperationException("Not to use");
-            }
-        };
     }
 
     @Override
@@ -101,6 +63,7 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
         if (handler instanceof LGThinQBridgeHandler) {
             bridgeHandler = (LGThinQBridgeHandler) handler;
             bridgeHandlerUID = handler.getThing().getUID();
+            lgApiClientService = LGThinQApiClientServiceFactory.newGeneralApiClientService(bridgeHandler.getHttpClientFactory());
         }
     }
 
@@ -142,9 +105,6 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
         } catch (LGThinqException e) {
             logger.debug("Discovered unsupported LG device of type '{}'({}) and model '{}' with id {}",
                     device.getDeviceType(), device.getDeviceTypeId(), modelId, device.getDeviceId());
-            return;
-        } catch (IOException e) {
-            logger.error("Error getting device capabilities", e);
             return;
         }
 
