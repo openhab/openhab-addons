@@ -31,10 +31,14 @@
 			<channel id="today_cool_runtime" typeId="today_cool_runtime"/>
 			<channel id="yesterday_heat_runtime" typeId="yesterday_heat_runtime"/>
 			<channel id="yesterday_cool_runtime" typeId="yesterday_cool_runtime"/>
+			<channel id="message" typeId="message"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:radiothermostat:thermostatconfig"/>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
+		<config-description-ref uri="thing-type:radiothermostat:thermostatconfig"/>
 	</thing-type>
 
 	<channel-type id="temp-temperature">
@@ -185,6 +189,12 @@
 		<label>Yesterday's Cooling Runtime</label>
 		<description>The Number of Minutes of Cooling Run-time Yesterday</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="message" advanced="true">
+		<item-type>String</item-type>
+		<label>Message</label>
+		<description>Use this channel to display a number in the price message area</description>
 	</channel-type>
 
 </thing:thing-descriptions>

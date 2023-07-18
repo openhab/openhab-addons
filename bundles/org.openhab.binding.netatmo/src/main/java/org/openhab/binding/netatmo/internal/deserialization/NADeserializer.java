@@ -19,6 +19,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.dto.HomeData;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -49,22 +52,26 @@ public class NADeserializer {
                 .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
                 .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
                 .registerTypeAdapter(ModuleType.class, new ModuleTypeDeserializer())
-                .registerTypeAdapter(ZonedDateTime.class,
-                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
-                            long netatmoTS = json.getAsJsonPrimitive().getAsLong();
-                            Instant i = Instant.ofEpochSecond(netatmoTS);
-                            return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
-                        })
+                .registerTypeAdapter(HomeStatus.class,
+                        (JsonDeserializer<HomeStatus>) (json, type, context) -> context.deserialize(json,
+                                json.getAsJsonObject().has("persons") ? NAHomeStatus.Security.class
+                                        : NAHomeStatus.Energy.class))
+                .registerTypeAdapter(HomeData.class,
+                        (JsonDeserializer<HomeData>) (json, type, context) -> context.deserialize(json,
+                                json.getAsJsonObject().has("therm_mode") ? HomeData.Energy.class
+                                        : HomeData.Security.class))
+                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type, context) -> {
+                    long netatmoTS = json.getAsJsonPrimitive().getAsLong();
+                    Instant i = Instant.ofEpochSecond(netatmoTS);
+                    return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
+                })
                 .registerTypeAdapter(OnOffType.class,
-                        (JsonDeserializer<OnOffType>) (json, type, jsonDeserializationContext) -> OnOffType
+                        (JsonDeserializer<OnOffType>) (json, type, context) -> OnOffType
                                 .from(json.getAsJsonPrimitive().getAsString()))
-                .registerTypeAdapter(OpenClosedType.class,
-                        (JsonDeserializer<OpenClosedType>) (json, type, jsonDeserializationContext) -> {
-                            String value = json.getAsJsonPrimitive().getAsString().toUpperCase();
-                            return "TRUE".equals(value) || "1".equals(value) ? OpenClosedType.CLOSED
-                                    : OpenClosedType.OPEN;
-                        })
-                .create();
+                .registerTypeAdapter(OpenClosedType.class, (JsonDeserializer<OpenClosedType>) (json, type, context) -> {
+                    String value = json.getAsJsonPrimitive().getAsString().toUpperCase();
+                    return "TRUE".equals(value) || "1".equals(value) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                }).create();
     }
 
     public <T> T deserialize(Class<T> clazz, String json) throws NetatmoException {

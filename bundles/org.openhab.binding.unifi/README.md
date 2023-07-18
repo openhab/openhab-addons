@@ -2,15 +2,14 @@
 
 This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/products/#unifi) allowing for presence detection of network clients.
 
-
 ## Supported Things
 
-* `controller` - An instance of the UniFi controller software
-* `site` - A site thing with connection statistics
-* `wlan` - A wireless network thing. Control Wi-Fi network and easy access to access.
-* `wirelessClient` - Any wireless client connected to a UniFi wireless network
-* `wiredClient` - A wired client connected to the UniFi network
-* `poePort` - A PoE (Power over Ethernet) port on a UniFi switch
+- `controller` - An instance of the UniFi controller software
+- `site` - A site thing with connection statistics
+- `wlan` - A wireless network thing. Control Wi-Fi network and easy access to access.
+- `wirelessClient` - Any wireless client connected to a UniFi wireless network
+- `wiredClient` - A wired client connected to the UniFi network
+- `poePort` - A PoE (Power over Ethernet) port on a UniFi switch
 
 ## Discovery
 
@@ -61,7 +60,6 @@ The following table describes the `wlan` configuration parameters:
 
 The following table describes the `wirelessClient` & `wiredClient` configuration parameters:
 
-
 | Parameter    | Description                                                  | Config   | Default |
 | ------------ | -------------------------------------------------------------|--------- | ------- |
 | cid          | The MAC address, IP address, hostname or alias of the client | Required | -       |
@@ -70,7 +68,7 @@ The following table describes the `wirelessClient` & `wiredClient` configuration
 
 Here's some additional notes regarding the thing configuration parameters:
 
-##### `cid`
+#### `cid`
 
 The `cid` parameter is a universal "client identifier". It accepts the following values:
 
@@ -83,15 +81,15 @@ The priority essentially means the binding attempts to lookup by MAC address, th
 Once it finds a matching client, it short circuits and stops searching.
 Most of the time, you will simply use the  MAC address.
 
-##### `site`
+#### `site`
 
-The `site` parameter is optional. If you leave it blank, the client will appear `ONLINE` if found in *any* site defined on the controller.
+The `site` parameter is optional. If you leave it blank, the client will appear `ONLINE` if found in _any_ site defined on the controller.
 
 You may use the `site` parameter as a filter if you only want the client to appear home if it is found in the site defined in the `site` parameter.
 
 Additionally, you may use friendly site names as they appear in the controller UI.
 
-##### `considerHome`
+#### `considerHome`
 
 The `considerHome` parameter allows you to control how quickly the binding marks a client as away.
 For example, using the default of `180` (seconds), the binding will report a client away as soon as `lastSeen` + `180` (seconds) < `now`.
@@ -100,12 +98,10 @@ For example, using the default of `180` (seconds), the binding will report a cli
 
 The following table describes the `poePort` configuration parameters:
 
-
 | Parameter  | Description                                               | Config   |
 |------------|-----------------------------------------------------------|----------|
 | portNumber | The port number as reported by the switch (starts with 1) | Required |
 | macAddress | The MAC address of the switch device the port is part of  | Required |
-
 
 ## Channels
 
@@ -184,7 +180,6 @@ The `wirelessClient` information that is retrieved is available as these channel
 | cmd        | String               | Command channel: `reconnect` to force the client to reconnect        | Write       |
 | reconnect  | Switch               | Force the client to reconnect                                        | Write       |
 
-
 _Note: All channels with the Write permission require administrator credentials as defined in the controller._
 
 ### `wiredClient`
@@ -204,11 +199,11 @@ The `wiredClient` information that is retrieved is available as these channels:
 | experience | Number:Dimensionless | Overall health indication of the client (in percentage)              | Read        |
 | blocked    | Switch               | Blocked status of the client                                         | Read, Write |
 
-##### `blocked`
+#### `blocked`
 
 The `blocked` channel allows you to block / unblock a client via the controller.
 
-##### `reconnect`
+#### `reconnect`
 
 The `reconnect` channel allows you to force a client to reconnect.
 Sending `ON` to this channel will trigger a reconnect via the controller.
@@ -301,20 +296,22 @@ The structure of the returned json is (depending on content, some fields may be 
 
 ### `things/unifi.things`
 
-```
+```java
 Bridge unifi:controller:home "UniFi Controller" [ host="unifi", port=8443, unifios=false, username="$username", password="$password", refresh=10 ] {
-	Thing wirelessClient matthewsPhone "Matthew's iPhone" [ cid="$cid", site="default", considerHome=180 ]
-	Thing site mysite "My Site" [ sid="$sid" ]
+    Thing wirelessClient matthewsPhone "Matthew's iPhone" [ cid="$cid", site="default", considerHome=180 ]
+    Thing site mysite "My Site" [ sid="$sid" ]
 }
 ```
 
-_Note: Usually on Unifi OS, the default port is 443_
+:::tip Note
+Usually on Unifi OS, the default port is 443
+:::
 
 Replace `$user`, `$password`, `$cid` and `$sid` accordingly.
 
 ### `items/unifi.items`
 
-```
+```java
 Switch       MatthewsPhone           "Matthew's iPhone [MAP(unifi.map):%s]"             { channel="unifi:wirelessClient:home:matthewsPhone:online" }
 String       MatthewsPhoneSite       "Matthew's iPhone: Site [%s]"                      { channel="unifi:wirelessClient:home:matthewsPhone:site" }
 String       MatthewsPhoneMAC        "Matthew's iPhone: MAC [%s]"                       { channel="unifi:wirelessClient:home:matthewsPhone:macAddress" }
@@ -330,29 +327,29 @@ Switch       MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"              
 
 ### `transform/unifi.map`
 
-```
+```text
 ON=Home
 OFF=Away
 ```
 
 ### `sitemaps/unifi.sitemap`
 
-```
+```perl
 sitemap unifi label="UniFi Binding"
 {
-	Frame {
-		Text item=MatthewsPhone
-		Text item=MatthewsPhoneSite
-		Text item=MatthewsPhoneMAC
-		Text item=MatthewsPhoneIP
-		Text item=MatthewsPhoneAP
-		Text item=MatthewsPhoneESSID
-		Text item=MatthewsPhoneRSSI
-		Text item=MatthewsPhoneUptime
-		Text item=MatthewsPhoneLastSeen
-		Switch item=MatthewsPhoneBlocked
-		Switch item=MatthewsPhoneReconnect
-	}
+    Frame {
+        Text item=MatthewsPhone
+        Text item=MatthewsPhoneSite
+        Text item=MatthewsPhoneMAC
+        Text item=MatthewsPhoneIP
+        Text item=MatthewsPhoneAP
+        Text item=MatthewsPhoneESSID
+        Text item=MatthewsPhoneRSSI
+        Text item=MatthewsPhoneUptime
+        Text item=MatthewsPhoneLastSeen
+        Switch item=MatthewsPhoneBlocked
+        Switch item=MatthewsPhoneReconnect
+    }
 }
 ```
 

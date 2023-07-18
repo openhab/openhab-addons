@@ -228,7 +228,7 @@ public class DeviceInspector {
                 byte[] count = getClient().readDeviceProperties(address, ROUTER_OBJECT, PID.FRIENDLY_NAME, 0, 1, false,
                         OPERATION_TIMEOUT);
                 if ((count != null) && (toUnsigned(count) == 30)) {
-                    StringBuffer buf = new StringBuffer(30);
+                    StringBuilder buf = new StringBuilder(30);
                     for (int i = 1; i <= 30; i++) {
                         Thread.sleep(OPERATION_INTERVAL);
                         // for some reason, reading more than one character per message fails

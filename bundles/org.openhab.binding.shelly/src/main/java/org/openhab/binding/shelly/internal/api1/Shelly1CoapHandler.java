@@ -176,7 +176,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
         List<Option> options = response.getOptions().asSortedList();
         String ip = response.getSourceContext().getPeerAddress().toString();
-        boolean match = ip.contains(config.deviceIp);
+        boolean match = ip.contains("/" + config.deviceIp + ":");
         if (!match) {
             // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
             for (Option opt : options) {
@@ -208,6 +208,11 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
                         response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
             }
+            if (thingHandler.isStopping()) {
+                logger.debug("{}: Thing is shutting down, ignore CoIOT message", thingName);
+                return;
+            }
+
             if (response.isCanceled() || response.isDuplicate() || response.isRejected()) {
                 logger.debug("{} ({}): Packet was canceled, rejected or is a duplicate -> discard", thingName, devId);
                 thingHandler.incProtErrors();

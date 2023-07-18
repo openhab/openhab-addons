@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.net.URI;
@@ -185,7 +185,12 @@ public class WebthingChannelLinkTest {
         message.data = Map.of(propertyName, initialValue);
         websocketConnectionFactory.webSocketRef.get().sendToClient(message);
 
-        assertEquals(initialState, testWebthingThingHandler.itemState.get(channelUID));
+        Command actualState = testWebthingThingHandler.itemState.get(channelUID);
+        if ((actualState instanceof HSBType actualHsb) && (initialState instanceof HSBType initialStateHsb)) {
+            assertTrue(actualHsb.closeTo(initialStateHsb, 0.01));
+        } else {
+            assertEquals(initialState, actualState);
+        }
 
         ChannelToPropertyLink.establish(testWebthingThingHandler, channel, webthing, propertyName);
         testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, updatedState);

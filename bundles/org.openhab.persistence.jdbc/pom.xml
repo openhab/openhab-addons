@@ -29,7 +29,7 @@
     <h2.version>1.4.191</h2.version>
     <hsqldb.version>2.3.3</hsqldb.version>
     <mariadb.version>3.0.8</mariadb.version>
-    <mysql.version>8.0.31</mysql.version>
+    <mysql.version>8.0.33</mysql.version>
     <postgresql.version>42.4.3</postgresql.version>
     <sqlite.version>3.40.0.0</sqlite.version>
   </properties>

@@ -65,7 +65,7 @@ The Account bridge has the following configuration elements:
 1. The bridge thing will go _OFFLINE_ / _CONFIGURATION_ERROR_ - this is fine. You have to authorize this bridge with Netatmo Connect.
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/netatmo/connect/<_CLIENT_ID_>`. Your newly added bridge should be listed there (no need for you to expose your openHAB server outside your local network for this).
 1. Press the _"Authorize Thing"_ button. This will take you either to the login page of Netatmo Connect or directly to the authorization screen. Login and/or authorize the application. You will be returned and the entry should go green.
-1. The bridge configuration will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Netatmo Connect Web API whenever required. So you can consult this token by opening the Thing page in MainUI, this is the value of the advanced parameter named “Refresh Token”.
+1. The bridge will go _ONLINE_.
 
 Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your things.
 
@@ -460,6 +460,7 @@ The Home thing has the following configuration elements:
 | securityId | String | No       | Id of a home holding security monitoring devices                                    |
 
 At least one of these parameter must be filled - at most two : 
+
 * id or securityId
 * id or energyId
 * securityId and energyId
@@ -562,6 +563,7 @@ Warnings:
 | signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
 | signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
 | presence       | floodlight           | String       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
+| presence       | siren                | Switch       | Read-write | Status of the siren, if silent or emitting an alarm                                                                                         |
 | last-event     | type                 | String       | Read-only  | Type of event                                                                                                                               |
 | last-event     | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
 | last-event     | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
@@ -613,7 +615,7 @@ Note: live feeds either locally or via VPN are not available in Netatmo API.
 
 | Channel Group | Channel ID  | Item Type    | Read/Write | Description                                         |
 | ------------- | ----------- | ------------ | ---------- | --------------------------------------------------- |
-| siren         | status      | String       | Read-only  | Status of the siren, if silent or emitting an alarm |
+| siren         | status      | Switch       | Read-only  | Status of the siren, if silent or emitting an alarm |
 | siren         | monitoring  | Switch       | Read-only  | State of the siren device                           |
 | signal        | strength    | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)    |
 | signal        | value       | Number:Power | Read-only  | Signal strength in dBm                              |

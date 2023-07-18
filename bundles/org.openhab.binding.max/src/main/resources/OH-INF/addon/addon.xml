@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>MAX! Binding</name>
 	<description>This is the binding for the eQ-3 MAX! Home Solution.</description>
+	<connection>local</connection>
 
 </addon:addon>

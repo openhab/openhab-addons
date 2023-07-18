@@ -11,5 +11,7 @@
   </parent>
 
   <artifactId>org.openhab.binding.tapocontrol</artifactId>
+
   <name>openHAB Add-ons :: Bundles :: TapoControl Binding</name>
+
 </project>

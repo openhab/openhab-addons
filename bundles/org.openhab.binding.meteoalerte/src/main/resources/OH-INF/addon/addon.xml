@@ -6,5 +6,7 @@
 	<type>binding</type>
 	<name>Meteo Alerte Binding</name>
 	<description>Retrieves Meteo Alert levels in France</description>
+	<connection>cloud</connection>
+	<countries>fr</countries>
 
 </addon:addon>

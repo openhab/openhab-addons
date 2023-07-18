@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>LIVISI SmartHome Binding</name>
 	<description>The LIVISI SmartHome binding integrates your LIVISI SmartHome system.</description>
+	<connection>local</connection>
 
 </addon:addon>

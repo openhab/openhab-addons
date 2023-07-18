@@ -392,8 +392,8 @@ public class HomekitCharacteristicFactory {
     // supporting methods
 
     public static boolean useFahrenheit() {
-        return FrameworkUtil.getBundle(HomekitImpl.class).getBundleContext()
-                .getServiceReference(Homekit.class.getName()).getProperty("useFahrenheitTemperature") == Boolean.TRUE;
+        return Boolean.TRUE.equals(FrameworkUtil.getBundle(HomekitImpl.class).getBundleContext()
+                .getServiceReference(Homekit.class.getName()).getProperty("useFahrenheitTemperature"));
     }
 
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
