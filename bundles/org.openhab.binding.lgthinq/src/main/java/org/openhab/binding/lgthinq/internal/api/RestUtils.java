@@ -100,7 +100,12 @@ public class RestUtils {
             @Nullable Map<String, String> params) throws IOException {
 
         Request request = httpClient.newRequest(encodedUrl).method("GET");
-        headers.forEach(request::header);
+        if (params != null) {
+            params.forEach(request::param);
+        }
+        if (headers != null) {
+            headers.forEach(request::header);
+        }
         ContentResponse response;
         try {
             response = request.send();
@@ -151,7 +156,9 @@ public class RestUtils {
                     .method("POST")
                     .content(contentProvider)
                     .timeout(10, TimeUnit.SECONDS);
-            headers.forEach(request::header);
+            if (headers != null) {
+                headers.forEach(request::header);
+            }
             ContentResponse response = request.content(contentProvider).timeout(10, TimeUnit.SECONDS)
                     .send();
             return new RestResult(response.getContentAsString(), response.getStatus());
