@@ -56,6 +56,8 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     protected void startScan() {
+        logger.debug("Scan started");
+        bridgeHandler.runDiscovery();
     }
 
     @Override
@@ -85,6 +87,7 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void removeLgDeviceDiscovery(LGDevice device) {
+        logger.debug("Thing removed from discovery: {}", device.getDeviceId());
         try {
             ThingUID thingUID = getThingUID(device);
             thingRemoved(thingUID);
@@ -94,6 +97,7 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void addLgDeviceDiscovery(LGDevice device) {
+        logger.debug("Thing added to discovery: {}", device.getDeviceId());
         String modelId = device.getModelName();
         ThingUID thingUID;
         ThingTypeUID thingTypeUID;
