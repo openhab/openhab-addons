@@ -213,10 +213,15 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
             // if not registered yet, and not discovered before, then add to discovery list.
             devices.forEach(device -> {
                 String deviceId = device.getDeviceId();
+                logger.debug("Device found: {}", deviceId);
                 if (lGDeviceRegister.get(deviceId) == null && !lastDevicesDiscovered.containsKey(deviceId)) {
                     logger.debug("Adding new LG Device to things registry with id:{}", deviceId);
                     if (discoveryService != null) {
                         discoveryService.addLgDeviceDiscovery(device);
+                    }
+                } else {
+                    if (discoveryService != null && lGDeviceRegister.get(deviceId) != null) {
+                        discoveryService.removeLgDeviceDiscovery(device);
                     }
                 }
                 lastDevicesDiscovered.put(deviceId, device);
@@ -224,7 +229,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
             });
             // the rest in lastDevicesDiscoveredCopy is not more registered in LG API. Remove from discovery
             lastDevicesDiscoveredCopy.forEach((deviceId, device) -> {
-                logger.trace("LG Device '{}' removed.", deviceId);
+                logger.debug("LG Device '{}' removed.", deviceId);
                 lastDevicesDiscovered.remove(deviceId);
 
                 LGThinQAbstractDeviceHandler deviceThing = lGDeviceRegister.get(deviceId);
@@ -331,9 +336,13 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
             poolingInterval = configPollingInterval;
         }
         // submit instantlly and schedule for the next polling interval.
-        scheduler.submit(lgDevicePollingRunnable);
+        runDiscovery();
         devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, 2, poolingInterval,
                 TimeUnit.SECONDS);
+    }
+    
+    public void runDiscovery() {
+        scheduler.submit(lgDevicePollingRunnable);        
     }
 
     @Override
