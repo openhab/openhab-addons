@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
@@ -192,7 +191,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 updateOpMode = currentMode.isWeekly();
                 currentWeeklyPrgNum = programNumber;
                 logger.debug("handleSetProgramNumber() currentWeeklyPrgNum changed to: {}", programNumber);
-
             } else {
                 updateOpMode = currentMode.isScenario();
                 currentScenarioPrgNum = programNumber;
@@ -202,10 +200,10 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             // force OperationMode update if we are already in SCENARIO or WEEKLY mode
             if (updateOpMode) {
                 try {
-                    Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode
+                    Thermoregulation.OperationMode newMode = Thermoregulation.OperationMode
                             .valueOf(currentMode.mode() + "_" + programNumber);
-                    logger.debug("handleSetProgramNumber() new mode {}", new_mode);
-                    send(Thermoregulation.requestWriteMode(getWhere(deviceWhere.value()), new_mode, currentFunction,
+                    logger.debug("handleSetProgramNumber() new mode {}", newMode);
+                    send(Thermoregulation.requestWriteMode(getWhere(deviceWhere.value()), newMode, currentFunction,
                             currentSetPointTemp));
                 } catch (OWNException e) {
                     logger.warn("handleSetProgramNumber() {}", e.getMessage());
@@ -216,7 +214,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             } else { // just update channel
                 updateState(channel, new DecimalType(programNumber));
             }
-
         } else {
             logger.warn("handleSetProgramNumber() Unsupported command {} for thing {}", command, getThing().getUID());
         }
@@ -252,7 +249,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             Where w = deviceWhere;
             if (w != null) {
                 try {
-                    Thermoregulation.OperationMode new_mode = Thermoregulation.OperationMode.OFF;
+                    Thermoregulation.OperationMode newMode = Thermoregulation.OperationMode.OFF;
 
                     if (isCentralUnit && WhatThermo.isComplex(command.toString())) {
                         int programNumber = 0;
@@ -261,12 +258,12 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                         } else {
                             programNumber = currentScenarioPrgNum;
                         }
-                        new_mode = Thermoregulation.OperationMode.valueOf(command.toString() + "_" + programNumber);
-                        currentMode = new_mode;
+                        newMode = Thermoregulation.OperationMode.valueOf(command.toString() + "_" + programNumber);
+                        currentMode = newMode;
                     } else {
-                        new_mode = Thermoregulation.OperationMode.valueOf(command.toString());
+                        newMode = Thermoregulation.OperationMode.valueOf(command.toString());
                     }
-                    send(Thermoregulation.requestWriteMode(getWhere(w.value()), new_mode, currentFunction,
+                    send(Thermoregulation.requestWriteMode(getWhere(w.value()), newMode, currentFunction,
                             currentSetPointTemp));
                 } catch (OWNException e) {
                     logger.warn("handleMode() {}", e.getMessage());
@@ -422,8 +419,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         // must convert from OperationMode to Mode and set ProgramNumber when necessary
         if (operationMode != null) {
             updateState(CHANNEL_MODE, new StringType(operationMode.mode()));
-
-            @NonNull
             Integer programN = 0;
             try {
                 @Nullable
@@ -633,5 +628,4 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         }
         super.dispose();
     }
-
 }
