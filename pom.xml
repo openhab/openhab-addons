@@ -77,8 +77,9 @@
     <netty.version>4.1.92.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
     <sat.version>0.15.0</sat.version>
-    <spotless.version>2.35.0</spotless.version>
-    <spotless.eclipse.version>4.26</spotless.eclipse.version>
+    <spotless.version>2.37.0</spotless.version>
+    <!-- Eclipse Java formatter version 4.26+ does not check test files -->
+    <spotless.eclipse.version>4.25</spotless.eclipse.version>
     <spotless.eclipse.wtp.version>4.21.0</spotless.eclipse.wtp.version>
 
     <bnd.importpackage/>
