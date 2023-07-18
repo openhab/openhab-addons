@@ -9,9 +9,9 @@
 			<update-channel id="colorTemperature">
 				<type>system.color-temperature</type>
 			</update-channel>
-			<update-channel id="colourTemperatureAbs">
+			<add-channel id="colourTemperatureAbs">
 				<type>system.color-temperature-abs</type>
-			</update-channel>
+			</add-channel>
 			<update-channel id="colour">
 				<type>system.color</type>
 			</update-channel>
@@ -24,9 +24,9 @@
 			<update-channel id="colorTemperature">
 				<type>system.color-temperature</type>
 			</update-channel>
-			<update-channel id="colourTemperatureAbs">
+			<add-channel id="colourTemperatureAbs">
 				<type>system.color-temperature-abs</type>
-			</update-channel>
+			</add-channel>
 			<update-channel id="colour">
 				<type>system.color</type>
 			</update-channel>
@@ -41,9 +41,9 @@
 			<update-channel id="colorTemperature">
 				<type>system.color-temperature</type>
 			</update-channel>
-			<update-channel id="colourTemperatureAbs">
+			<add-channel id="colourTemperatureAbs">
 				<type>system.color-temperature-abs</type>
-			</update-channel>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
@@ -55,9 +55,9 @@
 			<update-channel id="colorTemperature">
 				<type>system.color-temperature</type>
 			</update-channel>
-			<update-channel id="colourTemperatureAbs">
+			<add-channel id="colourTemperatureAbs">
 				<type>system.color-temperature-abs</type>
-			</update-channel>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
