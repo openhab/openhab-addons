@@ -456,7 +456,8 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     
     Frame label="Alarm"
     {
-         Selection item=iAlarm_Control            label="Arm/Disarm alarm"   icon="shield" mappings=[OFF="Disarm", ON="Arm"] 
+         Switch    item=iAlarm_System_State       label="Alarm state"
+         Switch    item=iAlarm_Control            label="Arm/Disarm alarm"   icon="shield" mappings=[OFF="Disarmed",ON="Armed"]
          Switch    item=iAlarm_System_Armed       label="Armed"              icon="shield"
          Switch    item=iAlarm_System_Network     label="Network"            icon="network"
          Default   item=iAlarm_System_Battery     label="Battery"            icon="battery"
