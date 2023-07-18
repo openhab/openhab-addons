@@ -192,7 +192,7 @@ Thing mqtt:rgb_cct:myBroker:0xE6C4 "Hallway" (mqtt:broker:myBroker) @ "MQTT"
 ```java
 Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:myBroker:0xE6C4:colour"}
 Dimmer Hallway_ColourTemperature "White Color Temp" {channel="mqtt:rgb_cct:myBroker:0xE6C4:colourTemperature"}
-Number:Temeprature Hallway_ColourTemperatureK "White Color Temp [%d K]" {channel="mqtt:rgb_cct:myBroker:0xE6C4:colourTemperatureAbs"}
+Number:Temperature Hallway_ColourTemperatureK "White Color Temp [%d %unit%]" {channel="mqtt:rgb_cct:myBroker:0xE6C4:colourTemperatureAbs", unit="K"}
 Color  Hallway_Colour "Front Hall" ["Lighting"] {channel="mqtt:rgb_cct:myBroker:0xE6C4:colour"}
 String Hallway_DiscoMode "Disco Mode" {channel="mqtt:rgb_cct:myBroker:0xE6C4:discoMode"}
 String Hallway_BulbCommand "Send Command" {channel="mqtt:rgb_cct:myBroker:0xE6C4:command"}
