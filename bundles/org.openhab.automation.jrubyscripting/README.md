@@ -99,7 +99,7 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
    following the [openHAB instructions](https://www.openhab.org/docs/configuration/addons.html).
    In openHAB 4.0+ the defaults are set so the next step can be skipped.
 1. Go to `Settings -> Other Services -> JRuby Scripting`:
-   - **Ruby Gems**: `openhab-scripting=~>5.0.0`
+   - **Ruby Gems**: `openhab-scripting=~>5.0`
    - **Require Scripts**: `openhab/dsl` (not required, but recommended)
 
 ### Using Files
@@ -112,7 +112,7 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
    Create a file called `jruby.cfg` in `<OPENHAB_CONF>/services/` with the following content:
 
    ```ini
-   org.openhab.automation.jrubyscripting:gems=openhab-scripting=~>5.0.0
+   org.openhab.automation.jrubyscripting:gems=openhab-scripting=~>5.0
    org.openhab.automation.jrubyscripting:require=openhab/dsl
    ```
 
@@ -129,7 +129,7 @@ Simply change the `gems` and `require` configuration settings.
 | Parameter             | Description                                                                                              |
 | --------------------- | -------------------------------------------------------------------------------------------------------- |
 | `gem_home`            | The path to store Ruby Gems. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/.gem/RUBY_ENGINE_VERSION` |
-| `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0.0`                                |
+| `gems`                | A list of gems to install. <br/><br/>Default: `openhab-scripting=~>5.0`                                  |
 | `check_update`        | Check for updated version of `gems` on start up or settings change. <br/><br/>Default: `true`            |
 | `require`             | List of scripts to be required automatically. <br/><br/>Default: `openhab/dsl`                           |
 | `rubylib`             | Search path for user libraries. <br/><br/>Default: `$OPENHAB_CONF/automation/ruby/lib`                   |
