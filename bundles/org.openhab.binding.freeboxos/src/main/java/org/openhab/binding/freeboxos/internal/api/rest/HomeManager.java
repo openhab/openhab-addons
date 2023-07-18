@@ -60,7 +60,7 @@ public class HomeManager extends RestManager {
         UNKNOWN;
     }
 
-    private static record EndpointValue<T>(T value) {
+    private static record EndpointValue<T> (T value) {
     }
 
     private static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
