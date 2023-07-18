@@ -141,28 +141,33 @@ public class VelbusSensorHandler extends VelbusThingHandler {
             byte command = packet[4];
 
             if (command == COMMAND_PUSH_BUTTON_STATUS && packet.length >= 6) {
-                byte channelJustPressed = packet[5];
-                if (channelJustPressed != 0) {
-                    VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
-                            channelJustPressed);
-                    triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
-                            CommonTriggerEvents.PRESSED);
-                }
 
-                byte channelJustReleased = packet[6];
-                if (channelJustReleased != 0) {
-                    VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
-                            channelJustReleased);
-                    triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
-                            CommonTriggerEvents.RELEASED);
-                }
+                for (int channel = 0; channel < 8; channel++) {
+                    byte channelMask = (byte) Math.pow(2, channel);
 
-                byte channelLongPressed = packet[7];
-                if (channelLongPressed != 0) {
-                    VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
-                            channelLongPressed);
-                    triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
-                            CommonTriggerEvents.LONG_PRESSED);
+                    byte channelJustPressed = (byte) (packet[5] & channelMask);
+                    if (channelJustPressed != 0) {
+                        VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
+                                channelJustPressed);
+                        triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
+                                CommonTriggerEvents.PRESSED);
+                    }
+
+                    byte channelJustReleased = (byte) (packet[6] & channelMask);
+                    if (channelJustReleased != 0) {
+                        VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
+                                channelJustReleased);
+                        triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
+                                CommonTriggerEvents.RELEASED);
+                    }
+
+                    byte channelLongPressed = (byte) (packet[7] & channelMask);
+                    if (channelLongPressed != 0) {
+                        VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
+                                channelLongPressed);
+                        triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
+                                CommonTriggerEvents.LONG_PRESSED);
+                    }
                 }
             }
         }
