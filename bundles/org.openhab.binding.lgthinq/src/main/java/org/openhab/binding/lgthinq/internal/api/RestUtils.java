@@ -20,26 +20,26 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Base64;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentProvider;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.util.Fields;
+import org.openhab.core.i18n.CommunicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +50,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RestUtils {
+
     private static final Logger logger = LoggerFactory.getLogger(RestUtils.class);
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
-    private static final RequestConfig requestConfig;
-    private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10 * 1000;
-    static {
-        requestConfig = RequestConfig.custom().setConnectTimeout(DEFAULT_TIMEOUT_MILLISECONDS)
-                .setConnectionRequestTimeout(DEFAULT_TIMEOUT_MILLISECONDS).setSocketTimeout(DEFAULT_TIMEOUT_MILLISECONDS).build();
-    }
 
     public static String getPreLoginEncPwd(String pwdToEnc) {
         MessageDigest digest;
@@ -96,36 +91,31 @@ public class RestUtils {
         empData.forEach(builder::queryParam);
 
         URI reqUri = builder.build();
-        String signUrl = (empData.size() > 0) ? reqUri.getPath() + "?" + reqUri.getRawQuery() : reqUri.getPath();
+        String signUrl = empData.size() > 0 ? reqUri.getPath() + "?" + reqUri.getRawQuery() : reqUri.getPath();
         String messageToSign = String.format("%s\n%s", signUrl, timestamp);
         return getOauth2Sig(messageToSign, secretKey);
     }
 
-    public static RestResult getCall(String encodedUrl, @Nullable Map<String, String> headers,
+    public static RestResult getCall(HttpClient httpClient, String encodedUrl, @Nullable Map<String, String> headers,
             @Nullable Map<String, String> params) throws IOException {
-        UriBuilder builder = UriBuilder.fromUri(encodedUrl);
-        if (params != null) {
-            params.forEach(builder::queryParam);
-        }
-        URI encodedUri = builder.build();
 
-        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
-            HttpGet request = new HttpGet(encodedUri);
-            if (headers != null) {
-                headers.forEach(request::setHeader);
-            }
-            HttpResponse resp = client.execute(request);
-            return new RestResult(EntityUtils.toString(resp.getEntity(), "UTF-8"),
-                    resp.getStatusLine().getStatusCode());
+        Request request = httpClient.newRequest(encodedUrl).method("GET");
+        headers.forEach(request::header);
+        ContentResponse response;
+        try {
+            response = request.send();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.error("Exception occurred during GET execution: {}", e.getMessage(), e);
+            throw new CommunicationException(e);
         }
+        return new RestResult(response.getContentAsString(), response.getStatus());
     }
 
     @Nullable
-    public static RestResult postCall(String encodedUrl, Map<String, String> headers, String jsonData)
+    public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers, String jsonData)
             throws IOException {
         try {
-            StringEntity entity = new StringEntity(jsonData);
-            return postCall(encodedUrl, headers, entity);
+            return postCall(httpClient, encodedUrl, headers, new StringContentProvider(jsonData));
         } catch (UnsupportedEncodingException e) {
             logger.error(
                     "Unexpected error. Character encoding from json informed not supported by this platform. Payload:{}",
@@ -136,19 +126,16 @@ public class RestUtils {
     }
 
     @Nullable
-    public static RestResult postCall(String encodedUrl, Map<String, String> headers, Map<String, String> formParams)
+    public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers, Map<String, String> formParams)
             throws IOException {
-        List<NameValuePair> pairs = new ArrayList<>();
-
-        formParams.forEach((k, v) -> pairs.add(new BasicNameValuePair(k, v)));
-
+        Fields fields = new Fields();
+        formParams.forEach(fields::put);
         try {
-            UrlEncodedFormEntity fe = new UrlEncodedFormEntity(pairs);
-            return postCall(encodedUrl, headers, fe);
+            return postCall(httpClient, encodedUrl, headers, new FormContentProvider(fields));
         } catch (UnsupportedEncodingException e) {
             logger.error(
                     "Unexpected error. Character encoding received from Form Parameters not supported by this platform. Form Parameters:{}",
-                    pairs, e);
+                    formParams, e);
             throw new IllegalStateException(
                     "Unexpected error. Character encoding received from Form Parameters not supported by this platform.",
                     e);
@@ -156,27 +143,19 @@ public class RestUtils {
     }
 
     @Nullable
-    private static RestResult postCall(String encodedUrl, Map<String, String> headers, HttpEntity entity)
+    private static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers, ContentProvider contentProvider)
             throws IOException {
-        try (CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build()) {
-            HttpPost request = new HttpPost(encodedUrl);
-            headers.forEach(request::setHeader);
-            request.setEntity(entity);
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    if (request.expectContinue())
-                        request.abort();
-                }
-            };
-            new Timer(true).schedule(task, DEFAULT_TIMEOUT_MILLISECONDS);
-            HttpResponse resp = client.execute(request);
-            if (request.isAborted()) {
-                logger.warn("POST to LG API was aborted due to timeout waiting for connection or data");
-            }
-            return new RestResult(EntityUtils.toString(resp.getEntity(), "UTF-8"),
-                    resp.getStatusLine().getStatusCode());
-        } catch (java.net.SocketTimeoutException e) {
+
+        try {
+            Request request = httpClient.newRequest(encodedUrl)
+                    .method("POST")
+                    .content(contentProvider)
+                    .timeout(10, TimeUnit.SECONDS);
+            headers.forEach(request::header);
+            ContentResponse response = request.content(contentProvider).timeout(10, TimeUnit.SECONDS)
+                    .send();
+            return new RestResult(response.getContentAsString(), response.getStatus());
+        } catch (TimeoutException e) {
             if (logger.isDebugEnabled()) {
                 logger.warn("Timeout reading post call result from LG API", e);
             } else {
@@ -185,6 +164,14 @@ public class RestUtils {
             // In SocketTimeout cases I'm considering that I have no response on time. Then, I return null data
             // forcing caller to retry.
             return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("InterruptedException occurred during POST execution: {}", e.getMessage(), e);
+            throw new CommunicationException(e);
+        } catch (ExecutionException e) {
+            logger.error("ExecutionException occurred during POST execution: {}", e.getMessage(), e);
+            throw new CommunicationException(e);
         }
     }
+
 }

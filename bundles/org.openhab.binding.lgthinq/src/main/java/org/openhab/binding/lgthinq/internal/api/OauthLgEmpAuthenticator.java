@@ -25,6 +25,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.api.model.GatewayResult;
 import org.openhab.binding.lgthinq.internal.errors.RefreshTokenException;
 import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
@@ -41,21 +42,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class OauthLgEmpAuthenticator {
-    private static final Logger logger = LoggerFactory.getLogger(OauthLgEmpAuthenticator.class);
-    private static final OauthLgEmpAuthenticator instance;
+    
+	private static final Logger logger = LoggerFactory.getLogger(OauthLgEmpAuthenticator.class);
     private static final Map<String, String> oauthSearchKeyQueryParams = new LinkedHashMap<>();
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    
     static {
-        instance = new OauthLgEmpAuthenticator();
         oauthSearchKeyQueryParams.put("key_name", "OAUTH_SECRETKEY");
         oauthSearchKeyQueryParams.put("sever_type", "OP");
     }
 
-    public static OauthLgEmpAuthenticator getInstance() {
-        return instance;
-    }
+    private HttpClient httpClient;
 
-    private OauthLgEmpAuthenticator() {
+    public OauthLgEmpAuthenticator(HttpClient httpClient) {
+		this.httpClient = httpClient;
     }
 
     static class PreLoginResult {
@@ -158,7 +158,7 @@ public class OauthLgEmpAuthenticator {
             String alternativeEmpServer) throws IOException {
         Map<String, String> header = getGatewayRestHeader(language, country);
         RestResult result;
-        result = RestUtils.getCall(gwUrl, header, null);
+        result = RestUtils.getCall(httpClient, gwUrl, header, null);
 
         if (result.getStatusCode() != 200) {
             throw new IllegalStateException(
@@ -184,7 +184,7 @@ public class OauthLgEmpAuthenticator {
         Map<String, String> formData = Map.of("user_auth2", encPwd, "log_param", String.format(
                 "login request / user_id : %s / " + "third_party : null / svc_list : SVC202,SVC710 / 3rd_service : ",
                 username));
-        RestResult resp = RestUtils.postCall(preLoginUrl, headers, formData);
+        RestResult resp = RestUtils.postCall(httpClient, preLoginUrl, headers, formData);
         if (resp == null) {
             logger.error("Error preLogin into account. Null data returned");
             throw new IllegalStateException("Error login into account. Null data returned");
@@ -216,7 +216,7 @@ public class OauthLgEmpAuthenticator {
                                                                                   // OAuth
         String loginUrl = gw.getEmpBaseUri() + V2_SESSION_LOGIN_PATH
                 + URLEncoder.encode(preLoginResult.getUsername(), StandardCharsets.UTF_8);
-        RestResult resp = RestUtils.postCall(loginUrl, headers, formData);
+        RestResult resp = RestUtils.postCall(httpClient, loginUrl, headers, formData);
         if (resp == null) {
             logger.error("Error login into account. Null data returned");
             throw new IllegalStateException("Error loggin into acccount. Null data returned");
@@ -251,7 +251,7 @@ public class OauthLgEmpAuthenticator {
         // 3 - get secret key from emp signature
         String empSearchKeyUrl = gw.getLoginBaseUri() + OAUTH_SEARCH_KEY_PATH;
 
-        RestResult resp = RestUtils.getCall(empSearchKeyUrl, null, oauthSearchKeyQueryParams);
+        RestResult resp = RestUtils.getCall(httpClient, empSearchKeyUrl, null, oauthSearchKeyQueryParams);
         if (resp.getStatusCode() != 200) {
             logger.error("Error login into account. The reason is:{}", resp.getJsonResponse());
             throw new IllegalStateException(String.format("Error loggin into acccount:%s", resp.getJsonResponse()));
@@ -289,7 +289,7 @@ public class OauthLgEmpAuthenticator {
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.44");
         logger.debug("===> Localized timestamp used: [{}]", timestamp);
         logger.debug("===> signature created: [{}]", new String(oauthSig));
-        resp = RestUtils.postCall(gw.getTokenSessionEmpUrl(), oauthEmpHeaders, empData);
+        resp = RestUtils.postCall(httpClient, gw.getTokenSessionEmpUrl(), oauthEmpHeaders, empData);
         return handleTokenResult(resp);
     }
 
@@ -302,7 +302,7 @@ public class OauthLgEmpAuthenticator {
                 String.format("Bearer %s", token.getAccessToken()), "X-Lge-Svccode", SVC_CODE, "X-Application-Key",
                 APPLICATION_KEY, "lgemp-x-app-key", CLIENT_ID, "X-Device-Type", "M01", "X-Device-Platform", "ADR",
                 "x-lge-oauth-date", timestamp, "x-lge-oauth-signature", new String(oauthSig));
-        RestResult resp = RestUtils.getCall(oauthUrl, headers, null);
+        RestResult resp = RestUtils.getCall(httpClient, oauthUrl, headers, null);
 
         return handleAccountInfoResult(resp);
     }
@@ -346,7 +346,7 @@ public class OauthLgEmpAuthenticator {
         Map<String, String> headers = Map.of("x-lge-appkey", CLIENT_ID, "x-lge-oauth-signature", new String(oauthSig),
                 "x-lge-oauth-date", timestamp, "Accept", "application/json");
 
-        RestResult resp = RestUtils.postCall(oauthUrl, headers, formData);
+        RestResult resp = RestUtils.postCall(httpClient, oauthUrl, headers, formData);
         return handleRefreshTokenResult(resp, currentToken);
     }
 

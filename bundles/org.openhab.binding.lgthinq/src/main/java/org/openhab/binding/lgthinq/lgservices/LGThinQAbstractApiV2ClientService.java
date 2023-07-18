@@ -22,6 +22,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.api.RestUtils;
 import org.openhab.binding.lgthinq.internal.api.TokenResult;
@@ -47,8 +48,8 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
         extends LGThinQAbstractApiClientService<C, S> {
     private static final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiV2ClientService.class);
 
-    protected LGThinQAbstractApiV2ClientService(Class<C> capabilityClass, Class<S> snapshotClass) {
-        super(capabilityClass, snapshotClass);
+    protected LGThinQAbstractApiV2ClientService(Class<C> capabilityClass, Class<S> snapshotClass, HttpClient httpClient) {
+        super(capabilityClass, snapshotClass, httpClient);
     }
 
     @Override	
@@ -64,7 +65,7 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
                 .path(String.format(V2_CTRL_DEVICE_CONFIG_PATH, deviceId, controlPath));
         Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-        RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, payload);
+        RestResult resp = RestUtils.postCall(httpClient, builder.build().toURL().toString(), headers, payload);
         if (resp == null) {
             logger.warn("Null result returned sending command to LG API V2: {}, {}, {}", deviceId, controlPath, payload);
             throw new LGThinqApiException("Null result returned sending command to LG API V2");

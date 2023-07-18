@@ -15,6 +15,7 @@ package org.openhab.binding.lgthinq.lgservices;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
@@ -31,23 +32,13 @@ public class LGThinQFridgeApiV1ClientServiceImpl
         extends LGThinQAbstractApiV1ClientService<FridgeCapability, FridgeCanonicalSnapshot>
         implements LGThinQFridgeApiClientService {
 
-    private static final LGThinQFridgeApiClientService instance;
-    static {
-        instance = new LGThinQFridgeApiV1ClientServiceImpl(FridgeCapability.class, FridgeCanonicalSnapshot.class);
-    }
-
-    protected LGThinQFridgeApiV1ClientServiceImpl(Class<FridgeCapability> capabilityClass,
-            Class<FridgeCanonicalSnapshot> snapshotClass) {
-        super(capabilityClass, snapshotClass);
+    protected LGThinQFridgeApiV1ClientServiceImpl(HttpClient httpClient) {
+        super(FridgeCapability.class, FridgeCanonicalSnapshot.class, httpClient);
     }
 
     @Override
     protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
         // Nothing to do for V1 thinq
-    }
-
-    public static LGThinQFridgeApiClientService getInstance() {
-        return instance;
     }
 
     @Override

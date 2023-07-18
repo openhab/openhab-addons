@@ -17,6 +17,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
@@ -43,23 +44,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @NonNullByDefault
 public class LGThinQACApiV2ClientServiceImpl extends
         LGThinQAbstractApiV2ClientService<ACCapability, ACCanonicalSnapshot> implements LGThinQACApiClientService {
-    private static final LGThinQACApiClientService instance;
-    private static final Logger logger = LoggerFactory.getLogger(LGThinQACApiV2ClientServiceImpl.class);
 
-    static {
-        instance = new LGThinQACApiV2ClientServiceImpl(ACCapability.class, ACCanonicalSnapshot.class);
+	private static final Logger logger = LoggerFactory.getLogger(LGThinQACApiV2ClientServiceImpl.class);
+
+    protected LGThinQACApiV2ClientServiceImpl(HttpClient httpClient) {
+        super(ACCapability.class, ACCanonicalSnapshot.class, httpClient);
     }
 
-    protected LGThinQACApiV2ClientServiceImpl(Class<ACCapability> capabilityClass,
-            Class<ACCanonicalSnapshot> snapshotClass) {
-        super(capabilityClass, snapshotClass);
-    }
-
-    public static LGThinQACApiClientService getInstance() {
-        return instance;
-    }
-
-    @Override
+	@Override
     public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
             throws LGThinqApiException {
         try {
@@ -233,7 +225,7 @@ public class LGThinQACApiV2ClientServiceImpl extends
         } catch (LGThinqApiException e) {
             throw e;
         } catch (Exception e) {
-            throw new LGThinqApiException("Error sending command to LG API", e);
+            throw new LGThinqApiException("Error sending command to LG API: " + e.getMessage(), e);
         }
     }
 }

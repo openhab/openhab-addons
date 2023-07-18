@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.errors.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,17 +41,9 @@ public class TokenManager {
     private final OauthLgEmpAuthenticator oAuthAuthenticator;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, TokenResult> tokenCached = new ConcurrentHashMap<>();
-    private static final TokenManager instance;
-    static {
-        instance = new TokenManager();
-    }
 
-    private TokenManager() {
-        oAuthAuthenticator = OauthLgEmpAuthenticator.getInstance();
-    }
-
-    public static TokenManager getInstance() {
-        return instance;
+    public TokenManager(HttpClient httpClient) {
+        oAuthAuthenticator = new OauthLgEmpAuthenticator(httpClient);
     }
 
     public boolean isTokenExpired(TokenResult token) {
