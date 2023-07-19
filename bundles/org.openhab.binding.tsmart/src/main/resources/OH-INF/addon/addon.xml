@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>T-Smart Binding</name>
 	<description>This is the binding for Tesla T-Smart Immersion Heater Thermostats.</description>
+	<connection>local</connection>
 
 </addon:addon>
