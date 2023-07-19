@@ -357,7 +357,8 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 
 Example items linked to BUS devices:
 
-NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/)
+NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa).
+In the following example some `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`) metadata were added as examples according to the [documentation for Google Assistant integration on openHAB](https://www.openhab.org/docs/ecosystem/google-assistant) and [the openHAB HomeKit Add-on documentation](https://www.openhab.org/addons/integrations/homekit/): see the specific documentation for more metadata options and specific configurations.
 
 ```java
 Switch              iLR_switch                  "Light"                       (gLivingRoom)     { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
@@ -512,7 +513,8 @@ end
 
 ## Notes
 
-The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/documentation/open-web-net-for-myhome/)
+The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand.
+The documentation of the protocol is freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/local-interoperability/)
 
 ## Special thanks
 
