@@ -4,8 +4,6 @@ This binding is designed to connect to the Tesla T-Smart Smart Immersion Heater 
 
 The device allows monitoring and control over the temperature and heating of water in a water cylinder.
 
-The build is derived from the API docs shared here https://community.home-assistant.io/t/telsa-t-smart-immersion-heater/345853 and some inspiration from https://github.com/britkat1980/tsmart.
-
 ## Supported Things
 
 This supports a single thing type, the Tesla T-Smart Device.
@@ -32,7 +30,7 @@ The binding will discover Tesla T-Smart devices on your local network using a UD
 | `temperatureHigh` | Number:Temperature | R          | Temperature of the high thermostat         |
 | `temperatureLow`  | Number:Temperature | R          | Temperature of the low thermostat          |
 | `relay`           | Switch             | R          | Relay state of the immersion heater        |
-| `smartState`           | String             | R          | State of the thermostat's Smart Mode     |
+| `smartState`      | String             | R          | State of the thermostat's Smart Mode       |
 
 ## Full Example
 

@@ -73,7 +73,7 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>The mode of the thermostat</description>
-		<state readOnly="true">
+		<state>
 			<options>
 				<option value="Manual">Manual</option>
 				<option value="Eco">Eco</option>
