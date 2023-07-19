@@ -460,9 +460,9 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
          Switch    item=iAlarm_Control           label="Arm/Disarm alarm"   icon="shield" mappings=[OFF="Disarmed",ON="Armed"]
          Switch    item=iAlarm_System_Armed      label="Armed"              icon="shield"
          Switch    item=iAlarm_System_Network    label="Network"            icon="network"
-         Default   item=iAlarm_System_Battery    label="Battery"            icon="battery"
-         Switch    item=iAlarm_Zone_3_State      label="Zone 3 state"
-         Default   item=iAlarm_Zone_3_Alarm      label="Zone 3 alarm"       icon="siren"
+         Default item=iAlarm_System_Battery      label="Battery"            icon="battery"
+         Switch  item=iAlarm_Zone_3_State        label="Zone 3 state"
+         Default item=iAlarm_Zone_3_Alarm        label="Zone 3 alarm"       icon="siren"
     }
 }
 ```
