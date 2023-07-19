@@ -16,6 +16,9 @@
 			<channel-group id="strings" typeId="string-values"/>
 			<channel-group id="emergency" typeId="emergency-values"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="refresh" type="integer" min="1000" unit="ms">
 				<label>Refresh Interval</label>
