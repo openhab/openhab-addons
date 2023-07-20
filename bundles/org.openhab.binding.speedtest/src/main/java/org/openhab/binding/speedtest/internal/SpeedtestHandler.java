@@ -17,6 +17,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.speedtest.internal.dto.ResultContainer;
 import org.openhab.binding.speedtest.internal.dto.ResultsContainerServerList;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -82,6 +86,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     private String interfaceExternalIp = "";
     private String resultUrl = "";
     private String server = "";
+    private String timestamp = "";
 
     /**
      * Contains information about which operating system openHAB is running on.
@@ -286,6 +291,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                 ResultContainer.class);
         if (tmpCont != null) {
             if ("result".equals(tmpCont.getType())) {
+                timestamp = tmpCont.getTimestamp();
                 pingJitter = tmpCont.getPing().getJitter();
                 pingLatency = tmpCont.getPing().getLatency();
                 downloadBandwidth = tmpCont.getDownload().getBandwidth();
@@ -331,8 +337,19 @@ public class SpeedtestHandler extends BaseThingHandler {
      */
     private void updateChannels() {
         logger.debug("Updating channels");
+        State newState;
 
-        State newState = new QuantityType<>(Double.parseDouble(pingJitter) / 1000.0, Units.SECOND);
+        // timestamp format: "2023-07-20T19:34:54Z"
+        try {
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(timestamp).withZoneSameInstant(ZoneId.systemDefault());
+            newState = new DateTimeType(zonedDateTime);
+            logger.debug("timestamp: {}", newState);
+            updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.TIMESTAMP), newState);
+        } catch (DateTimeParseException e) {
+            logger.debug("Exception: {}", e.getMessage());
+        }
+
+        newState = new QuantityType<>(Double.parseDouble(pingJitter) / 1000.0, Units.SECOND);
         logger.debug("pingJitter: {}", newState);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER), newState);
 

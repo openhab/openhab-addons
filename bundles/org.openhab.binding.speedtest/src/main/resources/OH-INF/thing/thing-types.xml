@@ -5,10 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="speedtest">
-		<label>Speedtest Binding</label>
-		<description>Binding for Ookla Speedtest (https://www.speedtest.net/)</description>
+		<label>Ookla Speedtest</label>
+		<description>Ookla Speedtest (https://www.speedtest.net/)</description>
 		<channels>
 			<channel id="server" typeId="server"/>
+			<channel id="timestamp" typeId="timestamp"/>
 
 			<channel id="pingJitter" typeId="pingJitter"/>
 			<channel id="pingLatency" typeId="pingLatency"/>
@@ -76,6 +77,12 @@
 		<item-type>String</item-type>
 		<label>Server</label>
 		<description>The remote server that the Speedtest was run against</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="timestamp" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp of the Speedtest run</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pingJitter" advanced="true">

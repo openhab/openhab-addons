@@ -76,6 +76,7 @@ Ensure that the user that openHAB is running with, has the permissions to access
 | Channel               | Type                      | Description                                                       |
 |-----------------------|---------------------------|-------------------------------------------------------------------|
 | `server`              | `String`                  | The remote server that the Speedtest was run against              |
+| `timestamp`           | `DateTime`                | Timestamp of the Speedtest run                                    |
 | `pingJitter`          | `Number:Time`             | Ping Jitter - the variation in the response time                  |
 | `pingLatency`         | `Number:Time`             | Ping Latency - the reaction time of your internet connection      |
 | `downloadBandwidth`   | `Number:DataTransferRate` | Download bandwidth, e.g. in Mbit/s                                |
@@ -102,6 +103,7 @@ Thing   speedtest:speedtest:myspeedtest   "Ookla Speedtest"    [ execPath="/usr/
 
 ```java
 String                    Speedtest_Server                "Server"                { channel="speedtest:speedtest:myspeedtest:server" }
+DateTime                  Speedtest_Timestamp             "Timestamp"             { channel="speedtest:speedtest:myspeedtest:timestamp" }
 Number:Time               Speedtest_Ping_Jitter           "Ping Jitter"           { channel="speedtest:speedtest:myspeedtest:pingJitter" }
 Number:Time               Speedtest_Ping_Latency          "Ping Latency"          { channel="speedtest:speedtest:myspeedtest:pingLatency" }
 Number:DataTransferRate   Speedtest_Download_Bandwith     "Download Bandwith"     { channel="speedtest:speedtest:myspeedtest:downloadBandwidth" }

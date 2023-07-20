@@ -40,6 +40,7 @@ public class SpeedtestBindingConstants {
 
     // Channels
     public static final String SERVER = "server";
+    public static final String TIMESTAMP = "timestamp";
     public static final String PING_JITTER = "pingJitter";
     public static final String PING_LATENCY = "pingLatency";
     public static final String DOWNLOAD_BANDWIDTH = "downloadBandwidth";
