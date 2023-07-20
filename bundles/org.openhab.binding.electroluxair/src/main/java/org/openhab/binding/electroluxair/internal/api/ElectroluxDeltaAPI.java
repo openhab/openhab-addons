@@ -155,26 +155,6 @@ public class ElectroluxDeltaAPI {
         return false;
     }
 
-    public boolean setUILight(String applianceId, String uiLightStatus) {
-        String commandJSON = "{ \"UILight\": " + uiLightStatus + "}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxAirException e) {
-            logger.warn("Work mode manual failed {}", e.getMessage());
-        }
-        return false;
-    }
-
-    public boolean setSafetyLock(String applianceId, String safetyLockStatus) {
-        String commandJSON = "{ \"SafetyLock\": " + safetyLockStatus + "}";
-        try {
-            return sendCommand(commandJSON, applianceId);
-        } catch (ElectroluxAirException e) {
-            logger.warn("Work mode manual failed {}", e.getMessage());
-        }
-        return false;
-    }
-
     private Request createRequest(String uri, HttpMethod httpMethod) {
         Request request = httpClient.newRequest(uri).method(httpMethod);
 

@@ -97,22 +97,6 @@ public class ElectroluxAirHandler extends BaseThingHandler {
                     } else {
                         logger.debug("Unknown command! {}", command);
                     }
-                } else if (CHANNEL_UI_LIGHT.equals(channelUID.getId())) {
-                    if (command == OnOffType.OFF) {
-                        api.setUILight(dto.getApplianceId(), "false");
-                    } else if (command == OnOffType.ON) {
-                        api.setUILight(dto.getApplianceId(), "true");
-                    } else {
-                        logger.debug("Unknown command! {}", command);
-                    }
-                } else if (CHANNEL_SAFETY_LOCK.equals(channelUID.getId())) {
-                    if (command == OnOffType.OFF) {
-                        api.setSafetyLock(dto.getApplianceId(), "false");
-                    } else if (command == OnOffType.ON) {
-                        api.setSafetyLock(dto.getApplianceId(), "true");
-                    } else {
-                        logger.debug("Unknown command! {}", command);
-                    }
                 }
 
                 Bridge bridge = getBridge();
@@ -212,10 +196,6 @@ public class ElectroluxAirHandler extends BaseThingHandler {
                         Units.PERCENT);
             case CHANNEL_IONIZER:
                 return OnOffType.from(dto.getProperties().getReported().isIonizer());
-            case CHANNEL_UI_LIGHT:
-                return OnOffType.from(dto.getProperties().getReported().isUILight());
-            case CHANNEL_SAFETY_LOCK:
-                return OnOffType.from(dto.getProperties().getReported().isSafetyLock());
             case CHANNEL_WORK_MODE:
                 return new StringType(dto.getProperties().getReported().getWorkmode());
             case CHANNEL_DOOR_OPEN:
