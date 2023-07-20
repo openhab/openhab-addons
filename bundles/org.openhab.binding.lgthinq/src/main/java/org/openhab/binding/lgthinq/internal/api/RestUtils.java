@@ -106,14 +106,20 @@ public class RestUtils {
         if (headers != null) {
             headers.forEach(request::header);
         }
-        ContentResponse response;
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("GET request: {}", request.getURI());
+        }
         try {
-            response = request.send();
+            ContentResponse response = request.send();
+
+            logger.trace("GET response: {}", response.getContentAsString());
+
+            return new RestResult(response.getContentAsString(), response.getStatus());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Exception occurred during GET execution: {}", e.getMessage(), e);
             throw new CommunicationException(e);
         }
-        return new RestResult(response.getContentAsString(), response.getStatus());
     }
 
     @Nullable
@@ -159,8 +165,16 @@ public class RestUtils {
             if (headers != null) {
                 headers.forEach(request::header);
             }
-            ContentResponse response = request.content(contentProvider).timeout(10, TimeUnit.SECONDS)
+            if (logger.isTraceEnabled()) {
+                logger.trace("POST request: {}", request.getURI());
+            }
+
+            ContentResponse response = request.content(contentProvider)
+                    .timeout(10, TimeUnit.SECONDS)
                     .send();
+
+            logger.trace("POST response: {}", response.getContentAsString());
+
             return new RestResult(response.getContentAsString(), response.getStatus());
         } catch (TimeoutException e) {
             if (logger.isDebugEnabled()) {
