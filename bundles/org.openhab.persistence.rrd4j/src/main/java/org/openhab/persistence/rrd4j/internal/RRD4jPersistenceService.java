@@ -587,7 +587,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         RrdDefConfig useRdc = getRrdDefConfig(itemName);
         if (useRdc != null) {
             rrdDef.setStep(useRdc.step);
-            rrdDef.setStartTime(System.currentTimeMillis() / 1000 - 1);
+            rrdDef.setStartTime(System.currentTimeMillis() / 1000 - useRdc.step);
             rrdDef.addDatasource(DATASOURCE_STATE, useRdc.dsType, useRdc.heartbeat, useRdc.min, useRdc.max);
             for (RrdArchiveDef rad : useRdc.archives) {
                 rrdDef.addArchive(rad.fcn, rad.xff, rad.steps, rad.rows);
