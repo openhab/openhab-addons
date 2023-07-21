@@ -51,8 +51,6 @@
 			<channel id="fanSpeed" typeId="fanSpeed"/>
 			<channel id="workMode" typeId="workMode"/>
 			<channel id="ionizer" typeId="ionizer"/>
-			<channel id="uiLight" typeId="uiLight"/>
-			<channel id="safetyLock" typeId="safetyLock"/>
 			<channel id="status" typeId="status"/>
 		</channels>
 

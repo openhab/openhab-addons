@@ -54,8 +54,7 @@ The following channels are supported:
 | ionizer                     | Switch                | This channel sets and reports the status of the Ionizer function (On/Off).   |
 | doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                     |
 | workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff).   |
-| uiLIght                     | Switch                | This channel sets and reports the status of the UI Light function (On/Off).   |
-| safetyLock                  | Switch                | This channel sets and reports the status of the Safety Lock  function (On/Off).   |
+
 
 ## Full Example
 
@@ -83,10 +82,7 @@ Contact ElectroluxAirDoor "Electrolux Air Door Status" {channel="electroluxair:e
 String ElectroluxAirWorkModeSetting "ElectroluxAir Work Mode Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:workMode"}
 // Fan speed
 Number ElectroluxAirFanSpeed "Electrolux Air Fan Speed Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:fanSpeed"}
-// UI Light
-Switch ElectroluxAirUILight "Electrolux Air UI Light Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:uiLight"}
+
 // Ionizer
 Switch ElectroluxAirIonizer "Electrolux Air Ionizer Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:ionizer"}
-// Safety Lock
-Switch ElectroluxAirSafetyLock "Electrolux Air Safety Lock Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:safetyLock"}
 ```
