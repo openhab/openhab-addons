@@ -289,9 +289,9 @@ public class ShellyBindingConstants {
     public static final String SERVICE_TYPE = "_http._tcp.local.";
     public static final String SHELLY_API_MIN_FWVERSION = "v1.8.2";
     public static final String SHELLY_API_MIN_FWCOIOT = "v1.6";// v1.6.0+
-    public static final String SHELLY_API_FWCOIOT2 = "v1.0";// CoAP 2 with FW 1.8+
+    public static final String SHELLY_API_FWCOIOT2 = "v1.8";// CoAP 2 with FW 1.8+
     public static final String SHELLY_API_FW_110 = "v1.10"; // FW 1.10 or newer detected, activates some add feature
-    public static final String SHELLY2_API_MIN_FWVERSION = "v0.12.1"; // Gen 2 minimum FW
+    public static final String SHELLY2_API_MIN_FWVERSION = "v0.10.1"; // Gen 2 minimum FW
 
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
