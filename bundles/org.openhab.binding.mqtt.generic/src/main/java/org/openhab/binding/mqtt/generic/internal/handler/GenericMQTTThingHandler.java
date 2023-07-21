@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -172,11 +171,13 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 if (!expectedItemType.equals(actualItemType)) {
                     ChannelBuilder channelBuilder = callback.createChannelBuilder(channel.getUID(), channelTypeUID)
                             .withAcceptedItemType(expectedItemType).withConfiguration(channel.getConfiguration());
-                    if (channel.getLabel() != null) {
-                        channelBuilder.withLabel(Objects.requireNonNull(channel.getLabel()));
+                    String label = channel.getLabel();
+                    if (label != null) {
+                        channelBuilder.withLabel(label);
                     }
-                    if (channel.getDescription() != null) {
-                        channelBuilder.withDescription(Objects.requireNonNull(channel.getDescription()));
+                    String description = channel.getDescription();
+                    if (description != null) {
+                        channelBuilder.withDescription(description);
                     }
                     thingBuilder.withoutChannel(channel.getUID());
                     thingBuilder.withChannel(channelBuilder.build());
