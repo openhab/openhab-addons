@@ -2,8 +2,6 @@
 
 This is an openHAB binding for the Pure A9 Air Purifier, by Electrolux.
 
-This binding uses the Electrolux Delta REST API.
-
 ![Electrolux Pure A9](doc/electrolux_pure_a9.png)
 
 ## Supported Things
@@ -26,15 +24,15 @@ Only the bridge require manual configuration. The Electrolux Pure A9 thing can b
 
 | Parameter | Description                                                  | Type   | Default  | Required |
 |-----------|--------------------------------------------------------------|--------|----------|----------|
-| username  | The username used to connect to the Electrolux Wellbeing app | String | NA       | yes      |
-| password  | The password used to connect to the Electrolux Wellbeing app | String | NA       | yes      |
+| username  | The username used to connect to the Electrolux app           | String | NA       | yes      |
+| password  | The password used to connect to the Electrolux app           | String | NA       | yes      |
 | refresh   | Specifies the refresh interval in second                     | Number | 600      | yes      |
 
 #### Electrolux Pure A9
 
 | Parameter | Description                                                             | Type   | Default  | Required |
 |-----------|-------------------------------------------------------------------------|--------|----------|----------|
-| deviceId  | Product ID of your Electrolux Pure A9 found in Electrolux Wellbeing app | Number | NA       | yes      |
+| deviceId  | Product ID of your Electrolux Pure A9 found in Electrolux app           | Number | NA       | yes      |
 
 ## Channels
 
@@ -53,9 +51,10 @@ The following channels are supported:
 | co2                         | Number:Dimensionless  | This channel reports the CO2 level in ppm.                                   |
 | fanSpeed                    | Number                | This channel sets and reports the current fan speed (1-9).                   |
 | filterLife                  | Number:Dimensionless  | This channel reports the remaining filter life in %.                         |
-| ionizer                     | Switch                | This channel sets and reports the status of the ionizer function (On/Off).   |
+| ionizer                     | Switch                | This channel sets and reports the status of the Ionizer function (On/Off).   |
 | doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                     |
-| workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)|
+| workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff).   |
+
 
 ## Full Example
 
@@ -83,4 +82,7 @@ Contact ElectroluxAirDoor "Electrolux Air Door Status" {channel="electroluxair:e
 String ElectroluxAirWorkModeSetting "ElectroluxAir Work Mode Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:workMode"}
 // Fan speed
 Number ElectroluxAirFanSpeed "Electrolux Air Fan Speed Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:fanSpeed"}
+
+// Ionizer
+Switch ElectroluxAirIonizer "Electrolux Air Ionizer Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:ionizer"}
 ```
