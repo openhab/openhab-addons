@@ -219,98 +219,98 @@
 			</channel>
 
 			<!-- pv energy -->
-			<channel id="pv-energy-today" typeId="system.electrical-energy">
+			<channel id="pv-energy-today" typeId="system.electric-energy">
 				<label>Solar Energy Today</label>
 				<description>Solar energy collected today.</description>
 			</channel>
-			<channel id="pv-energy-total" typeId="system.electrical-energy">
+			<channel id="pv-energy-total" typeId="system.electric-energy">
 				<label>Solar Energy Total</label>
 				<description>Total solar energy collected.</description>
 			</channel>
 
 			<!-- energy taken from solar -->
-			<channel id="pv-grid-energy-today" typeId="system.electrical-energy">
+			<channel id="pv-grid-energy-today" typeId="system.electric-energy">
 				<label>Solar Energy to Grid Today</label>
 				<description>Solar energy supplied to grid today.</description>
 			</channel>
-			<channel id="pv1-grid-energy-today" typeId="advanced-electrical-energy">
+			<channel id="pv1-grid-energy-today" typeId="advanced-electric-energy">
 				<label>Solar Energy #1 to Grid Today</label>
 				<description>Solar energy supplied by string #1 to grid today.</description>
 			</channel>
-			<channel id="pv2-grid-energy-today" typeId="advanced-electrical-energy">
+			<channel id="pv2-grid-energy-today" typeId="advanced-electric-energy">
 				<label>Solar Energy #2 to Grid Today</label>
 				<description>Solar energy supplied by string #2 to grid today.</description>
 			</channel>
 
-			<channel id="pv-grid-energy-total" typeId="system.electrical-energy">
+			<channel id="pv-grid-energy-total" typeId="system.electric-energy">
 				<label>Total Solar Energy to Grid</label>
 				<description>Total solar energy supplied to grid.</description>
 			</channel>
-			<channel id="pv1-grid-energy-total" typeId="advanced-electrical-energy">
+			<channel id="pv1-grid-energy-total" typeId="advanced-electric-energy">
 				<label>Total Solar Energy #1 to Grid</label>
 				<description>Total solar energy supplied by string #1 to grid .</description>
 			</channel>
-			<channel id="pv2-grid-energy-total" typeId="advanced-electrical-energy">
+			<channel id="pv2-grid-energy-total" typeId="advanced-electric-energy">
 				<label>Total Solar Energy #2 to Grid</label>
 				<description>Total solar energy supplied by string #2 to grid.</description>
 			</channel>
 
 			<!-- energy supplied to grid -->
-			<channel id="to-grid-energy-today" typeId="system.electrical-energy">
+			<channel id="to-grid-energy-today" typeId="system.electric-energy">
 				<label>Energy to Grid Today</label>
 				<description>Energy supplied to grid today.</description>
 			</channel>
-			<channel id="to-grid-energy-total" typeId="system.electrical-energy">
+			<channel id="to-grid-energy-total" typeId="system.electric-energy">
 				<label>Total Energy to Grid</label>
 				<description>Total energy supplied to grid.</description>
 			</channel>
 
 			<!-- energy supplied to user -->
-			<channel id="to-user-energy-today" typeId="system.electrical-energy">
+			<channel id="to-user-energy-today" typeId="system.electric-energy">
 				<label>Energy to User Today</label>
 				<description>Energy supplied to user today.</description>
 			</channel>
-			<channel id="to-user-energy-total" typeId="system.electrical-energy">
+			<channel id="to-user-energy-total" typeId="system.electric-energy">
 				<label>Total Energy to User</label>
 				<description>Total energy supplied to user.</description>
 			</channel>
 
 			<!-- energy supplied to local -->
-			<channel id="to-local-energy-today" typeId="system.electrical-energy">
+			<channel id="to-local-energy-today" typeId="system.electric-energy">
 				<label>Energy to Local Today</label>
 				<description>Energy supplied to local today.</description>
 			</channel>
-			<channel id="to-local-energy-total" typeId="system.electrical-energy">
+			<channel id="to-local-energy-total" typeId="system.electric-energy">
 				<label>Total Energy to Local</label>
 				<description>Total energy supplied to local.</description>
 			</channel>
 
 			<!-- energy taken from grid to charge -->
-			<channel id="grid-charge-energy-today" typeId="system.electrical-energy">
+			<channel id="grid-charge-energy-today" typeId="system.electric-energy">
 				<label>Energy to Charge Battery Today</label>
 				<description>Energy used to charge battery today.</description>
 			</channel>
-			<channel id="grid-charge-energy-total" typeId="system.electrical-energy">
+			<channel id="grid-charge-energy-total" typeId="system.electric-energy">
 				<label>Total Energy to Charge Battery</label>
 				<description>Total energy used to charge battery.</description>
 			</channel>
 
 			<!-- energy supplied to grid from discharge of battery -->
-			<channel id="grid-discharge-energy-today" typeId="system.electrical-energy">
+			<channel id="grid-discharge-energy-today" typeId="system.electric-energy">
 				<label>Grid Energy from Battery Today</label>
 				<description>Grid energy produced from battery today.</description>
 			</channel>
-			<channel id="grid-discharge-energy-total" typeId="system.electrical-energy">
+			<channel id="grid-discharge-energy-total" typeId="system.electric-energy">
 				<label>Total Grid Energy from Battery</label>
 				<description>Total grid energy produced from battery.</description>
 			</channel>
 
 			<!-- energy taken from battery -->
-			<channel id="battery-discharge-energy-today" typeId="system.electrical-energy">
+			<channel id="battery-discharge-energy-today" typeId="system.electric-energy">
 				<label>Battery Discharge Energy Today</label>
 				<description>Energy consumed from battery.</description>
 			</channel>
-			<channel id="battery-discharge-energy-total" typeId="system.electrical-energy">
+			<channel id="battery-discharge-energy-total" typeId="system.electric-energy">
 				<label>Total Battery Discharge Energy</label>
 				<description>Total energy consumed from battery.</description>
 			</channel>
@@ -481,83 +481,83 @@
 	<!-- Binding Specific Channel Types -->
 	<channel-type id="system-status-code">
 		<item-type>Number:Dimensionless</item-type>
-		<label>system-status</label>
+		<label>Status Code</label>
 		<category>Status</category>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
 
 	<channel-type id="advanced-status-code" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>advanced-status-code</label>
-		<category>Settings</category>
+		<label>Status Code</label>
+		<category>Status</category>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
 
 	<channel-type id="advanced-fault-code" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>advanced-fault-code</label>
+		<label>Fault Code</label>
 		<category>Siren</category>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
 
 	<channel-type id="advanced-percent" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>advanced-percent</label>
+		<label>Percentage</label>
 		<state readOnly="true" pattern="%0.1f %%"/>
 	</channel-type>
 
 	<channel-type id="advanced-electric-frequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
-		<label>advanced-electric-frequency</label>
+		<label>Electric Frequency</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.2f Hz"/>
 	</channel-type>
 
 	<channel-type id="advanced-electric-va" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>advanced-electric-va</label>
+		<label>Electric VA</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.0f VA"/>
 	</channel-type>
 
 	<channel-type id="advanced-work-time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>advanced-work-time</label>
+		<label>Work Time</label>
 		<category>Time</category>
 		<state readOnly="true" pattern="%0.1f h"/>
 	</channel-type>
 
 	<channel-type id="advanced-electric-power" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>advanced-electric-power</label>
+		<label>Electric Power</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.0f W"/>
 	</channel-type>
 
 	<channel-type id="advanced-electric-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>advanced-electric-current</label>
+		<label>Electric Current</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.1f A"/>
 	</channel-type>
 
 	<channel-type id="advanced-electric-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>advanced-electric-voltage</label>
+		<label>Electric Voltage</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.1f V"/>
 	</channel-type>
 
-	<channel-type id="advanced-electrical-energy" advanced="true">
+	<channel-type id="advanced-electric-energy" advanced="true">
 		<item-type>Number:Energy</item-type>
-		<label>advanced-electrical-energy</label>
+		<label>Electric Energy</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.0f kWh"/>
 	</channel-type>
 
 	<channel-type id="advanced-outdoor-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>advanced-outdoor-temperature</label>
+		<label>Outdoor Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%0.0f °C"/>
 	</channel-type>
