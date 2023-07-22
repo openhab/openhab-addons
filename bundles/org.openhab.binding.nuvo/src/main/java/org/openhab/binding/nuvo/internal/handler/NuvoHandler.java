@@ -307,7 +307,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         // Build a list of State options for the global favorites using user config values (if supplied)
         String[] favoritesArr = !config.favoriteLabels.isEmpty() ? config.favoriteLabels.split(COMMA) : new String[0];
         List<StateOption> favoriteLabelsStateOptions = new ArrayList<>();
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < MAX_FAV; i++) {
             if (favoritesArr.length > i) {
                 favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i + 1), favoritesArr[i]));
             } else if (favoritesArr.length == 0) {
@@ -316,7 +316,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         }
 
         // Also add any openHAB NuvoNet source favorites to the list
-        for (int src = 1; src <= 6; src++) {
+        for (int src = 1; src <= MAX_SRC; src++) {
             NuvoEnum source = NuvoEnum.valueOf(SOURCE + String.valueOf(src));
             String[] favorites = favoriteMap.get(source);
             if (favorites != null) {
