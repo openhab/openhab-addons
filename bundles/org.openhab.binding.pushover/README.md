@@ -40,9 +40,13 @@ The parameter `message` is **mandatory**, the `title` parameter defaults to what
 Parameters declared as `@Nullable` are not optional.
 One has to pass a `null` value if it should be skipped or the default value for it should be used.
 
-- `sendMessage(String message, @Nullable String title, @Nullable String sound, @Nullable String url, @Nullable String urlTitle, @Nullable String attachment, @Nullable String contentType, @Nullable Integer priority, @Nullable String device)` - This method is used to send a plain text message providing all available parameters.
+- `sendMessage(String message, @Nullable String title, @Nullable String sound, @Nullable String url, @Nullable String urlTitle, @Nullable String attachment, @Nullable String contentType, @Nullable Integer priority, @Nullable String device, @Nullable Duration ttl)` - This method is used to send a plain text message providing all available parameters.
+
+- `sendMessage(String message)` - This method is used to send a plain text message with default title.
 
 - `sendMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
+
+- `sendMessage(String message, @Nullable String title, @Nullable Duration ttl)` - This method is used to send a plain text message with TTL.
 
 - `sendHtmlMessage(String message, @Nullable String title)` - This method is used to send a HTML message.
 
@@ -100,3 +104,27 @@ if( receipt !== null ) {
     receipt = null
 }
 ```
+
+:::: tabs
+
+::: tab DSL
+
+```java
+val actions = getActions("pushover", "pushover:pushover-account:account")
+// send expiring message
+actions.sendMessage("Boost has been activated", "Recuperator", Duration.ofHours(1))
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var pushoverActions = actions.thingActions('pushover', 'pushover:pushover-account:account');
+// send expiring message
+pushoverActions.sendMessage("Boost has been activated", "Recuperator", time.Duration.ofHours(1));
+```
+
+:::
+
+::::
