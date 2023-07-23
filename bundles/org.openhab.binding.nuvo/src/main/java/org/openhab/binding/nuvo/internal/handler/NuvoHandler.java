@@ -715,8 +715,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                 // Publish the ALLOFF event to all button channels for awareness in source rules
                 updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, ZERO + COMMA + ALLOFF);
-                NuvoEnum.VALID_SOURCES.forEach(srcNum -> {
-                    updateChannelState(NuvoEnum.valueOf(srcNum), CHANNEL_BUTTON_PRESS, ALLOFF);
+                NuvoEnum.VALID_SOURCES.forEach(src -> {
+                    updateChannelState(src, CHANNEL_BUTTON_PRESS, ALLOFF);
                 });
 
                 break;
@@ -1179,11 +1179,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                     NuvoEnum.VALID_SOURCES.forEach(source -> {
                         try {
-                            connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.NAME);
+                            connector.sendQuery(source, NuvoCommand.NAME);
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                            connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.DISPINFO);
+                            connector.sendQuery(source, NuvoCommand.DISPINFO);
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                            connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.DISPLINE);
+                            connector.sendQuery(source, NuvoCommand.DISPLINE);
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                         } catch (NuvoException | InterruptedException e) {
                             logger.debug("Error Querying Source data: {}", e.getMessage());
