@@ -15,17 +15,26 @@ package org.openhab.binding.vesync.internal.handlers;
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassHumidifierStatus;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2Ver2BypassHumidifierStatus;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.library.items.DateTimeItem;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -47,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("serial")
 public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
 
     public static final String DEV_TYPE_FAMILY_AIR_HUMIDIFIER = "LUH";
@@ -59,32 +69,57 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     public static final String DEV_FAMILY_600S = "600S";
     public static final String DEV_FAMILY_OASIS_MIST = "Oasis Mist";
 
-    public static final VeSyncDeviceMetadata CLASSIC200S = new VeSyncDeviceMetadata(DEV_FAMILY_CLASSIC_200S,
-            Collections.emptyList(), List.of("Classic200S"));
+    public static final String DEV_FAMILY_OASIS_MIST_1000 = "Oasis Mist 1000";
 
-    public static final VeSyncDeviceMetadata CLASSIC300S = new VeSyncDeviceMetadata(DEV_FAMILY_CLASSIC_300S,
-            Arrays.asList("A601S"), List.of("Classic300S"));
+    private static final List<String> AUTO_MAN_SLEEP_MODES = Arrays.asList(MODE_AUTO, MODE_MANUAL, MODE_SLEEP);
 
-    public static final VeSyncDeviceMetadata DUAL200S = new VeSyncDeviceMetadata(DEV_FAMILY_DUAL_200S,
-            Arrays.asList("D301S"), List.of("Dual200S"));
+    private static final List<String> AUTO_MAN_MODES = Arrays.asList(MODE_AUTO, MODE_MANUAL);
 
-    public static final VeSyncDeviceMetadata LV600S = new VeSyncDeviceMetadata(DEV_FAMILY_600S, Arrays.asList("A602S"),
+    private static final List<String> CLASSIC_300S_NIGHT_LIGHT_MODES = Arrays.asList(MODE_ON, MODE_DIM, MODE_OFF);
+
+    public static final VeSyncDeviceHumidifierMetadata CLASSIC200S = new VeSyncDeviceHumidifierMetadata(1,
+            DEV_FAMILY_CLASSIC_200S, Collections.emptyList(), List.of("Classic200S"), AUTO_MAN_MODES, 1, 3, -1, -1,
+            false, Collections.emptyList());
+
+    public static final VeSyncDeviceHumidifierMetadata CLASSIC300S = new VeSyncDeviceHumidifierMetadata(1,
+            DEV_FAMILY_CLASSIC_300S, Arrays.asList("A601S"), List.of("Classic300S"), AUTO_MAN_SLEEP_MODES, 1, 3, -1, -1,
+            false, CLASSIC_300S_NIGHT_LIGHT_MODES);
+
+    public static final VeSyncDeviceHumidifierMetadata DUAL200S = new VeSyncDeviceHumidifierMetadata(1,
+            DEV_FAMILY_DUAL_200S, Arrays.asList("D301S"), List.of("Dual200S"), AUTO_MAN_MODES, 1, 2, -1, -1, false,
             Collections.emptyList());
 
-    public static final VeSyncDeviceMetadata OASIS_MIST = new VeSyncDeviceMetadata(DEV_FAMILY_OASIS_MIST,
-            Arrays.asList("O451S"), Collections.emptyList());
+    public static final VeSyncDeviceHumidifierMetadata LV600S = new VeSyncDeviceHumidifierMetadata(1, DEV_FAMILY_600S,
+            Arrays.asList("A602S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3, 0, 3, true,
+            CLASSIC_300S_NIGHT_LIGHT_MODES);
+
+    public static final VeSyncDeviceHumidifierMetadata OASIS_MIST = new VeSyncDeviceHumidifierMetadata(1,
+            DEV_FAMILY_OASIS_MIST, Arrays.asList("O451S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3, 0, 3,
+            true, Collections.emptyList());
+
+    public static final VeSyncDeviceHumidifierMetadata OASIS_MIST_1000 = new VeSyncDeviceHumidifierMetadata(2,
+            DEV_FAMILY_OASIS_MIST_1000, Arrays.asList("M101S"), Collections.emptyList(), AUTO_MAN_SLEEP_MODES, 1, 3, 0,
+            3, false, Collections.emptyList());
 
     public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = Arrays.asList(LV600S, CLASSIC300S,
             CLASSIC200S, DUAL200S, OASIS_MIST);
-
-    private static final List<String> CLASSIC_300S_600S_MODES = Arrays.asList(MODE_AUTO, MODE_MANUAL, MODE_SLEEP);
-    private static final List<String> CLASSIC_300S_NIGHT_LIGHT_MODES = Arrays.asList(MODE_ON, MODE_DIM, MODE_OFF);
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceAirHumidifierHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_HUMIDIFIER);
 
     private final Object pollLock = new Object();
+
+    public static final Map<String, VeSyncDeviceHumidifierMetadata> DEV_FAMILY_HUMIDIFER_MAP = new HashMap<String, VeSyncDeviceHumidifierMetadata>() {
+        {
+            put(CLASSIC200S.deviceFamilyName, CLASSIC200S);
+            put(CLASSIC300S.deviceFamilyName, CLASSIC300S);
+            put(DUAL200S.deviceFamilyName, DUAL200S);
+            put(LV600S.deviceFamilyName, LV600S);
+            put(OASIS_MIST.deviceFamilyName, OASIS_MIST);
+            put(OASIS_MIST_1000.deviceFamilyName, OASIS_MIST_1000);
+        }
+    };
 
     public VeSyncDeviceAirHumidifierHandler(Thing thing) {
         super(thing);
@@ -97,15 +132,22 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         if (deviceFamily != null) {
             switch (deviceFamily) {
                 case DEV_FAMILY_CLASSIC_300S:
-                    toRemove = new String[] { DEVICE_CHANNEL_WARM_ENABLED, DEVICE_CHANNEL_WARM_LEVEL };
+                    toRemove = new String[] { DEVICE_CHANNEL_WARM_ENABLED, DEVICE_CHANNEL_WARM_LEVEL,
+                            DEVICE_CHANNEL_AF_SCHEDULES_COUNT, DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME };
                     break;
                 case DEV_FAMILY_DUAL_200S:
                 case DEV_FAMILY_CLASSIC_200S:
                     toRemove = new String[] { DEVICE_CHANNEL_WARM_ENABLED, DEVICE_CHANNEL_WARM_LEVEL,
+                            DEVICE_CHANNEL_AF_NIGHT_LIGHT, DEVICE_CHANNEL_AF_SCHEDULES_COUNT,
+                            DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME };
+                    break;
+                case DEV_FAMILY_OASIS_MIST_1000:
+                    toRemove = new String[] { DEVICE_CHANNEL_WARM_ENABLED, DEVICE_CHANNEL_WARM_LEVEL,
                             DEVICE_CHANNEL_AF_NIGHT_LIGHT };
                     break;
                 case DEV_FAMILY_OASIS_MIST:
-                    toRemove = new String[] { DEVICE_CHANNEL_AF_NIGHT_LIGHT };
+                    toRemove = new String[] { DEVICE_CHANNEL_AF_NIGHT_LIGHT, DEVICE_CHANNEL_AF_SCHEDULES_COUNT,
+                            DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME };
                     break;
             }
         }
@@ -152,6 +194,11 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         if (deviceFamily == null) {
             return;
         }
+        final VeSyncDeviceHumidifierMetadata devContraints = DEV_FAMILY_HUMIDIFER_MAP.get(deviceFamily);
+        if (devContraints == null) {
+            logger.warn("Could not find device family for {} during handleCommand", deviceFamily);
+            return;
+        }
 
         scheduler.submit(() -> {
 
@@ -187,31 +234,27 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         }
 
                         sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
-                                new VeSyncRequestManagedDeviceBypassV2.SetMode(MODE_AUTO), false);
+                                new VeSyncRequestManagedDeviceBypassV2.SetMode(
+                                        devContraints.getProtocolMode(MODE_AUTO)),
+                                false);
 
                         sendV2BypassControlCommand(DEVICE_SET_TARGET_HUMIDITY_MODE,
                                 new VeSyncRequestManagedDeviceBypassV2.SetTargetHumidity(targetHumidity));
                         break;
                     case DEVICE_CHANNEL_MIST_LEVEL:
-                        int targetMistLevel = quantityCommand.intValue();
+                        int targetMistLevel = ((QuantityType<?>) command).intValue();
+                        if (!devContraints.isTargetMistLevelSupported(targetMistLevel)) {
+                            logger.warn("Mist level command for \"{}\" is not valid ({}) API possible options {} -> {}",
+                                    command, devContraints.deviceFamilyName, devContraints.targetMinMistLevel,
+                                    devContraints.targetMaxMistLevel);
+                            targetMistLevel = targetMistLevel < devContraints.targetMinMistLevel
+                                    ? devContraints.targetMinMistLevel
+                                    : devContraints.targetMaxMistLevel;
+                        }
+
                         // If more devices have this the hope is it's those with the prefix LUH so the check can
                         // be simplified, originally devices mapped 1/5/9 to 1/2/3.
-                        if (DEV_FAMILY_DUAL_200S.equals(deviceFamily)) {
-                            if (targetMistLevel < 1) {
-                                logger.warn("Target Mist Level less than 1 - adjusting to 1 as the valid API value");
-                                targetMistLevel = 1;
-                            } else if (targetMistLevel > 2) {
-                                logger.warn("Target Mist Level greater than 2 - adjusting to 2 as the valid API value");
-                                targetMistLevel = 2;
-                            }
-                        } else {
-                            if (targetMistLevel < 1) {
-                                logger.warn("Target Mist Level less than 1 - adjusting to 1 as the valid API value");
-                                targetMistLevel = 1;
-                            } else if (targetMistLevel > 3) {
-                                logger.warn("Target Mist Level greater than 3 - adjusting to 3 as the valid API value");
-                                targetMistLevel = 3;
-                            }
+                        if (!DEV_FAMILY_DUAL_200S.equals(deviceFamily)) {
                             // Re-map to what appears to be bitwise encoding of the states
                             switch (targetMistLevel) {
                                 case 1:
@@ -234,33 +277,45 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                         targetMistLevel));
                         break;
                     case DEVICE_CHANNEL_WARM_LEVEL:
-                        logger.warn("Warm level API is unknown in order to send the command");
+                        int targetWarmMistLevel = ((QuantityType<?>) command).intValue();
+                        if (!devContraints.isTargetWramMistLevelSupported(targetWarmMistLevel)) {
+                            logger.warn(
+                                    "Warm mist level command for \"{}\" is not valid ({}) API possible options {} -> {}",
+                                    command, devContraints.deviceFamilyName, devContraints.targetMinWarmMistLevel,
+                                    devContraints.targetMaxWarmMistLevel);
+                            targetWarmMistLevel = targetWarmMistLevel < devContraints.targetMinWarmMistLevel
+                                    ? devContraints.targetMinWarmMistLevel
+                                    : devContraints.targetMaxWarmMistLevel;
+                        }
+
+                        sendV2BypassControlCommand(DEVICE_SET_LEVEL,
+                                new VeSyncRequestManagedDeviceBypassV2.SetLevelPayload(0, DEVICE_LEVEL_TYPE_WARM_MIST,
+                                        targetWarmMistLevel));
                         break;
                 }
             } else if (command instanceof StringType) {
                 final String targetMode = command.toString().toLowerCase();
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_HUMIDIFIER_MODE:
-                        if (!CLASSIC_300S_600S_MODES.contains(targetMode)) {
+                        if (!devContraints.fanModes.contains(targetMode)) {
                             logger.warn(
-                                    "Humidifier mode command for \"{}\" is not valid in the (Classic300S/600S) API possible options {}",
-                                    command, String.join(",", CLASSIC_300S_NIGHT_LIGHT_MODES));
+                                    "Humidifier mode command for \"{}\" is not valid in the ({}}) API possible options {}",
+                                    command, devContraints.deviceFamilyName, String.join(",", devContraints.fanModes));
                             return;
                         }
                         sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
-                                new VeSyncRequestManagedDeviceBypassV2.SetMode(targetMode));
+                                new VeSyncRequestManagedDeviceBypassV2.SetMode(
+                                        devContraints.getProtocolMode(targetMode)));
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
-                        if (!DEV_FAMILY_CLASSIC_300S.equals(deviceFamily) && !DEV_FAMILY_600S.equals(deviceFamily)) {
-                            logger.warn("Humidifier night light is not valid for your device ({}})", deviceFamily);
-                            return;
-                        }
-                        if (!CLASSIC_300S_NIGHT_LIGHT_MODES.contains(targetMode)) {
+                        if (!devContraints.nightLightModes.contains(targetMode)) {
                             logger.warn(
-                                    "Humidifier night light mode command for \"{}\" is not valid in the (Classic300S) API possible options {}",
-                                    command, String.join(",", CLASSIC_300S_NIGHT_LIGHT_MODES));
+                                    "Humidifier night light command for \"{}\" is not valid in the ({}}) API possible options {}",
+                                    command, devContraints.deviceFamilyName,
+                                    String.join(",", devContraints.nightLightModes));
                             return;
                         }
+
                         int targetValue;
                         switch (targetMode) {
                             case MODE_OFF:
@@ -289,7 +344,16 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     @Override
     protected void pollForDeviceData(final ExpiringCache<String> cachedResponse) {
         String response;
-        VeSyncV2BypassHumidifierStatus humidifierStatus;
+        VeSyncResponse humidifierStatus;
+
+        final String deviceFamily = getThing().getProperties().get(DEVICE_PROP_DEVICE_FAMILY);
+
+        final VeSyncDeviceHumidifierMetadata devContraints = DEV_FAMILY_HUMIDIFER_MAP.get(deviceFamily);
+        if (devContraints == null) {
+            logger.warn("Could not find device family for {} during pollForDeviceData", deviceFamily);
+            return;
+        }
+
         synchronized (pollLock) {
             response = cachedResponse.getValue();
             boolean cachedDataUsed = response != null;
@@ -305,7 +369,11 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                 return;
             }
 
-            humidifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV2BypassHumidifierStatus.class);
+            if (devContraints.protocolV2Version == 2) {
+                humidifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV2Ver2BypassHumidifierStatus.class);
+            } else {
+                humidifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV2BypassHumidifierStatus.class);
+            }
 
             if (humidifierStatus == null) {
                 return;
@@ -325,12 +393,19 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             updateStatus(ThingStatus.ONLINE);
         }
 
+        if (devContraints.protocolV2Version != 2) {
+            parseV2Ver1Poll((VeSyncV2BypassHumidifierStatus) humidifierStatus, deviceFamily);
+        } else {
+            parseV2Ver2Poll((VeSyncV2Ver2BypassHumidifierStatus) humidifierStatus);
+        }
+    }
+
+    private void parseV2Ver1Poll(final VeSyncV2BypassHumidifierStatus humidifierStatus,
+            final @Nullable String deviceFamily) {
         if (!"0".equals(humidifierStatus.result.getCode())) {
-            logger.warn("Check correct Thing type has been set - API gave a unexpected response for an Air Humidifier");
+            logger.warn("Check Thing type has been set - API gave a unexpected response for an Air Humidifier");
             return;
         }
-
-        final String deviceFamily = getThing().getProperties().get(DEVICE_PROP_DEVICE_FAMILY);
 
         updateState(DEVICE_CHANNEL_ENABLED, OnOffType.from(humidifierStatus.result.result.enabled));
         updateState(DEVICE_CHANNEL_DISPLAY_ENABLED, OnOffType.from(humidifierStatus.result.result.display));
@@ -342,6 +417,10 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_HUMIDITY,
                 new QuantityType<>(humidifierStatus.result.result.humidity, Units.PERCENT));
         updateState(DEVICE_CHANNEL_MIST_LEVEL, new DecimalType(humidifierStatus.result.result.mistLevel));
+        // Map back HUMIDITY -> AUTO if necessary for devices where auto is remapped
+        if (MODE_AUTO_HUMIDITY.equals(humidifierStatus.result.result.mode)) {
+            humidifierStatus.result.result.mode = MODE_AUTO;
+        }
         updateState(DEVICE_CHANNEL_HUMIDIFIER_MODE, new StringType(humidifierStatus.result.result.mode));
 
         // Only the 300S supports nightlight currently of tested devices.
@@ -354,12 +433,43 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             } else {
                 updateState(DEVICE_CHANNEL_AF_NIGHT_LIGHT, new StringType(MODE_DIM));
             }
-        } else if (DEV_FAMILY_600S.equals(deviceFamily) || DEV_FAMILY_OASIS_MIST.equals(deviceFamily)) {
+        }
+        if (DEV_FAMILY_600S.equals(deviceFamily) || DEV_FAMILY_OASIS_MIST.equals(deviceFamily)) {
             updateState(DEVICE_CHANNEL_WARM_ENABLED, OnOffType.from(humidifierStatus.result.result.warnEnabled));
             updateState(DEVICE_CHANNEL_WARM_LEVEL, new DecimalType(humidifierStatus.result.result.warmLevel));
         }
-
         updateState(DEVICE_CHANNEL_CONFIG_TARGET_HUMIDITY,
                 new QuantityType<>(humidifierStatus.result.result.configuration.autoTargetHumidity, Units.PERCENT));
+    }
+
+    private void parseV2Ver2Poll(final VeSyncV2Ver2BypassHumidifierStatus humidifierStatus) {
+        if (!"0".equals(humidifierStatus.result.getCode())) {
+            logger.warn("Check Thing type has been set - API gave a unexpected response for an Air Humidifier");
+            return;
+        }
+
+        updateState(DEVICE_CHANNEL_ENABLED, OnOffType.from(humidifierStatus.result.result.getPowerSwitch()));
+        updateState(DEVICE_CHANNEL_DISPLAY_ENABLED, OnOffType.from(humidifierStatus.result.result.getScreenSwitch()));
+        updateState(DEVICE_CHANNEL_WATER_LACKS, OnOffType.from(humidifierStatus.result.result.getWaterLacksState()));
+        updateState(DEVICE_CHANNEL_WATER_TANK_LIFTED,
+                OnOffType.from(humidifierStatus.result.result.getWaterTankLifted()));
+        updateState(DEVICE_CHANNEL_STOP_AT_TARGET, OnOffType.from(humidifierStatus.result.result.getAutoStopSwitch()));
+        updateState(DEVICE_CHANNEL_HUMIDITY,
+                new QuantityType<>(humidifierStatus.result.result.humidity, Units.PERCENT));
+        updateState(DEVICE_CHANNEL_MIST_LEVEL, new DecimalType(humidifierStatus.result.result.mistLevel));
+        if (MODE_AUTO_HUMIDITY.equals(humidifierStatus.result.result.workMode)) {
+            humidifierStatus.result.result.workMode = MODE_AUTO;
+        }
+        updateState(DEVICE_CHANNEL_HUMIDIFIER_MODE, new StringType(humidifierStatus.result.result.workMode));
+        updateState(DEVICE_CHANNEL_CONFIG_TARGET_HUMIDITY,
+                new QuantityType<>(humidifierStatus.result.result.targetHumidity, Units.PERCENT));
+        updateState(DEVICE_CHANNEL_ERROR_CODE, new DecimalType(humidifierStatus.result.result.errorCode));
+        updateState(DEVICE_CHANNEL_AF_SCHEDULES_COUNT, new DecimalType(humidifierStatus.result.result.scheduleCount));
+        if (humidifierStatus.result.result.timerRemain > 0) {
+            updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeType(LocalDateTime.now()
+                    .plus(humidifierStatus.result.result.timerRemain, ChronoUnit.MINUTES).toString()));
+        } else {
+            updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeItem("nullEnforcements").getState());
+        }
     }
 }

@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncDeviceConfiguration;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
@@ -47,6 +48,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -410,7 +412,20 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         return result;
     }
 
-    public final String sendV1Command(final String method, final String url, final VeSyncAuthenticatedRequest request) {
+    protected final String sendV1ControlCommand(final String urlPath, final VeSyncAuthenticatedRequest request) {
+        return sendV1ControlCommand(urlPath, request, true);
+    }
+
+    protected final String sendV1ControlCommand(final String urlPath, final VeSyncAuthenticatedRequest request,
+            final boolean readbackDevice) {
+        final String result = sendV1Command(urlPath, request);
+        if (!result.equals(EMPTY_STRING) && readbackDevice) {
+            performReadbackPoll();
+        }
+        return result;
+    }
+
+    public final String sendV1Command(final String urlPath, final VeSyncAuthenticatedRequest request) {
         if (ThingStatus.OFFLINE.equals(this.thing.getStatus())) {
             logger.debug("Command blocked as device is offline");
             return EMPTY_STRING;
@@ -422,6 +437,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             }
             VeSyncClient client = getVeSyncClient();
             if (client != null) {
+                final String url = VeSyncProtocolConstants.SERVER_ENDPOINT + "/" + urlPath;
                 return client.reqV2Authorized(url, deviceLookupKey, request);
             } else {
                 throw new DeviceUnknownException("Missing client");
@@ -546,5 +562,16 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
 
     public VeSyncDeviceMetadata getDeviceFamilyMetadata(final @Nullable String deviceType) {
         return getDeviceFamilyMetadata(deviceType, getDeviceFamilyProtocolPrefix(), getSupportedDeviceMetadata());
+    }
+
+    @Override
+    protected void updateState(final String channelID, final State state) {
+        // In case of any unexpected decoding issues log them, so that the necessary adjustments can
+        // be done. (Not expected but just in case).
+        try {
+            super.updateState(channelID, state);
+        } catch (final Exception e) {
+            logger.warn("Please report issue - could not update channel {} with error {}", channelID, e.toString());
+        }
     }
 }

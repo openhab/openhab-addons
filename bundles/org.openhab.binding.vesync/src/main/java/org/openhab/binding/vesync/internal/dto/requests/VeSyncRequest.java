@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
+import javax.ws.rs.HttpMethod;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,6 +22,8 @@ import com.google.gson.annotations.SerializedName;
  * @author David Goodyear - Initial contribution
  */
 public class VeSyncRequest {
+
+    public transient String httpMethod;
 
     @SerializedName("timeZone")
     public String timeZone = "America/New_York";
@@ -44,5 +48,6 @@ public class VeSyncRequest {
 
     public VeSyncRequest() {
         traceId = String.valueOf(System.currentTimeMillis());
+        httpMethod = HttpMethod.POST;
     }
 }

@@ -167,12 +167,13 @@ public class VeSyncV2ApiHelper {
     private String directReqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException {
         try {
-            Request request = httpClient.POST(url);
+            Request request = httpClient.newRequest(url).method(requestData.httpMethod);
 
             // No headers for login
             request.content(new StringContentProvider(VeSyncConstants.GSON.toJson(requestData)));
 
-            logger.debug("POST @ {} with content\r\n{}", url, VeSyncConstants.GSON.toJson(requestData));
+            logger.debug("{} @ {} with content\r\n{}", requestData.httpMethod, url,
+                    VeSyncConstants.GSON.toJson(requestData));
 
             request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
 
