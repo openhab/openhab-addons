@@ -15,6 +15,7 @@ package org.openhab.binding.mystrom.internal;
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_SWITCH;
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_WS;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.WATT;
 
@@ -50,6 +51,7 @@ public class MyStromPlugHandler extends AbstractMyStromHandler {
     private static class MyStromReport {
 
         public float power;
+        public float Ws;
         public boolean relay;
         public float temperature;
     }
@@ -96,6 +98,7 @@ public class MyStromPlugHandler extends AbstractMyStromHandler {
         if (report != null) {
             updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
             updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
+            updateState(CHANNEL_WS, QuantityType.valueOf(report.Ws, WATT));
             updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));
         }
     }

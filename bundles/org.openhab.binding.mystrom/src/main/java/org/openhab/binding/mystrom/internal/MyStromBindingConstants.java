@@ -38,6 +38,7 @@ public class MyStromBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_WS = "ws";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_RAMP = "ramp";

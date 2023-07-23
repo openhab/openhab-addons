@@ -11,6 +11,7 @@
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="power" typeId="power-channel"/>
+			<channel id="ws" typeId="ws-channel"/>
 			<channel id="temperature" typeId="temperature-channel"/>
 		</channels>
 
@@ -156,6 +157,14 @@
 		<description>The current power delivered by the plug</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="ws-channel">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<description>Average power current since last API call</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+
 
 	<channel-type id="temperature-channel">
 		<item-type>Number:Temperature</item-type>
