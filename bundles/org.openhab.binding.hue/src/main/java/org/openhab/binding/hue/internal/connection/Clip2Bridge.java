@@ -917,13 +917,14 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Use an HTTP/2 PUT command to send a resource to the server.
+     * Use an HTTP/2 PUT command to send a resource to the server. Note: the Hue bridge server can sometimes get
+     * confused by parallel PUT commands, so use 'synchronized' to prevent that.
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
      * @throws InterruptedException
      */
-    public void putResource(Resource resource) throws ApiException, InterruptedException {
+    public synchronized void putResource(Resource resource) throws ApiException, InterruptedException {
         if (onlineState == State.CLOSED) {
             return;
         }
