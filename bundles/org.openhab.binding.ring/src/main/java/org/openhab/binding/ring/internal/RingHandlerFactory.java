@@ -24,6 +24,7 @@ import org.openhab.binding.ring.handler.OtherHandler;
 import org.openhab.binding.ring.handler.StickupcamHandler;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -82,12 +83,12 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(final Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.info("createHandler thingType: {}", thingTypeUID);
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            return new AccountHandler(thing, networkAddressService, httpService, httpPort);
+            return new AccountHandler((Bridge) thing, networkAddressService, httpService, httpPort);
         } else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
             return new DoorbellHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CHIME)) {

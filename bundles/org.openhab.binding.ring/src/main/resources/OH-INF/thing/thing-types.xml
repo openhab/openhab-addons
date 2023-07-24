@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Account Thing Type -->
-	<thing-type id="account">
-		<label>Ring Account Binding Thing</label>
+	<!-- Account Bridge Type -->
+	<bridge-type id="account">
+		<label>Ring Account Binding Bridge</label>
 		<description>Account with ring.com to access the devices</description>
 
 		<channel-groups>
@@ -44,7 +44,6 @@
 				<label>MP4 video download path</label>
 				<description>The folder path to save video .mp4 files in when downloaded from ring.com. Note: the openhab user must
 					have rights to save to this location</description>
-				<default>/etc/openhab2/html/ring/video</default>
 			</parameter>
 			<parameter name="videoRetentionCount" type="integer">
 				<label>The number of video files to keep</label>
@@ -54,11 +53,14 @@
 			</parameter>
 
 		</config-description>
-	</thing-type>
+	</bridge-type>
 	<!-- Other Thing Type -->
 	<thing-type id="other">
 		<label>Other Binding Thing</label>
 		<description>A Ring Other device</description>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
 
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
@@ -86,6 +88,9 @@
 	<thing-type id="chime">
 		<label>Chime Binding Thing</label>
 		<description>Ring Chime connected to the system</description>
+                <supported-bridge-type-refs>
+                        <bridge-type-ref id="account"/>
+                </supported-bridge-type-refs>
 
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
@@ -112,6 +117,9 @@
 	<thing-type id="doorbell">
 		<label>Video Doorbell Binding Thing</label>
 		<description>A Ring Video Doorbell device</description>
+                <supported-bridge-type-refs>
+                        <bridge-type-ref id="account"/>
+                </supported-bridge-type-refs>
 
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
@@ -139,6 +147,9 @@
 	<thing-type id="stickupcam">
 		<label>Stickup Cam Binding Thing</label>
 		<description>A Ring Stickup Cam device</description>
+                <supported-bridge-type-refs>
+                        <bridge-type-ref id="account"/>
+                </supported-bridge-type-refs>
 
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
