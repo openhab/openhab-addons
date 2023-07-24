@@ -69,6 +69,9 @@ public class AndroidTVHandler extends BaseThingHandler {
     private final ThingTypeUID thingTypeUID;
     private final String thingID;
 
+    private String currentThingStatus = "";
+    private boolean currentThingFailed = false;
+
     public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
             MDNSService mdnsService, NetworkAddressService networkAddressService,
             AndroidTVTranslationProvider translationProvider, ThingTypeUID thingTypeUID) {
@@ -135,6 +138,9 @@ public class AndroidTVHandler extends BaseThingHandler {
     }
 
     public void checkThingStatus() {
+        String currentThingStatus = this.currentThingStatus;
+        boolean currentThingFailed = this.currentThingFailed;
+
         String statusMessage = "";
         boolean failed = false;
 
@@ -157,11 +163,16 @@ public class AndroidTVHandler extends BaseThingHandler {
             }
         }
 
-        if (failed) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
-        } else {
-            updateStatus(ThingStatus.ONLINE);
+        if (!currentThingStatus.equals(statusMessage) || (currentThingFailed != failed)) {
+            if (failed) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
+
+        this.currentThingStatus = statusMessage;
+        this.currentThingFailed = failed;
     }
 
     @Override

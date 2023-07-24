@@ -31,7 +31,7 @@
 			</parameter>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Use 2+N[0-2047]. Example: scenario control 5 --> where=25</description>
+				<description>Use 2+N[0-2047]. Example: scenario control 5 --> where="25"</description>
 			</parameter>
 		</config-description>
 
