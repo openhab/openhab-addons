@@ -160,6 +160,7 @@ class BoschHttpClientTest {
     void createRequest() {
         Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET);
         assertNotNull(request);
+        assertEquals("3.2", request.getHeaders().get("api-version"));
     }
 
     @Test
@@ -195,7 +196,7 @@ class BoschHttpClientTest {
         when(response.getStatus()).thenReturn(500);
         ExecutionException e = assertThrows(ExecutionException.class,
                 () -> httpClient.sendRequest(request, SubscribeResult.class, SubscribeResult::isValid, null));
-        assertEquals("Request failed with status code 500", e.getMessage());
+        assertEquals("Send request failed with status code 500", e.getMessage());
     }
 
     @Test

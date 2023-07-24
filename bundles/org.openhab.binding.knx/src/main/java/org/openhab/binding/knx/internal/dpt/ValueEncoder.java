@@ -87,29 +87,29 @@ public class ValueEncoder {
             DPT dpt = translator.getType();
 
             // check for HSBType first, because it extends PercentType as well
-            if (value instanceof HSBType) {
-                return handleHSBType(dptId, (HSBType) value);
+            if (value instanceof HSBType type) {
+                return handleHSBType(dptId, type);
             } else if (value instanceof OnOffType) {
-                return OnOffType.OFF.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
+                return OnOffType.OFF == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof UpDownType) {
-                return UpDownType.UP.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
+                return UpDownType.UP == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof IncreaseDecreaseType) {
                 DPT valueDPT = ((DPTXlator3BitControlled.DPT3BitControlled) dpt).getControlDPT();
-                return IncreaseDecreaseType.DECREASE.equals(value) ? valueDPT.getLowerValue() + " 5"
+                return IncreaseDecreaseType.DECREASE == value ? valueDPT.getLowerValue() + " 5"
                         : valueDPT.getUpperValue() + " 5";
             } else if (value instanceof OpenClosedType) {
-                return OpenClosedType.CLOSED.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
+                return OpenClosedType.CLOSED == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof StopMoveType) {
-                return StopMoveType.STOP.equals(value) ? dpt.getLowerValue() : dpt.getUpperValue();
-            } else if (value instanceof PercentType) {
-                int intValue = ((PercentType) value).intValue();
+                return StopMoveType.STOP == value ? dpt.getLowerValue() : dpt.getUpperValue();
+            } else if (value instanceof PercentType type) {
+                int intValue = type.intValue();
                 return "251.600".equals(dptId) ? String.format("- - - %d %%", intValue) : String.valueOf(intValue);
             } else if (value instanceof DecimalType || value instanceof QuantityType<?>) {
                 return handleNumericTypes(dptId, mainNumber, dpt, value);
             } else if (value instanceof StringType) {
                 return value.toString();
-            } else if (value instanceof DateTimeType) {
-                return handleDateTimeType(dptId, (DateTimeType) value);
+            } else if (value instanceof DateTimeType type) {
+                return handleDateTimeType(dptId, type);
             }
         } catch (KNXException e) {
             return null;
@@ -149,20 +149,20 @@ public class ValueEncoder {
     private static String handleHSBType(String dptId, HSBType hsb) {
         switch (dptId) {
             case "232.600":
-                return "r:" + convertPercentToByte(hsb.getRed()) + " g:" + convertPercentToByte(hsb.getGreen()) + " b:"
-                        + convertPercentToByte(hsb.getBlue());
+                int[] rgb = ColorUtil.hsbToRgb(hsb);
+                return String.format("r:%d g:%d b:%d", rgb[0], rgb[1], rgb[2]);
             case "232.60000":
                 // MDT specific: mis-use 232.600 for hsv instead of rgb
                 int hue = hsb.getHue().toBigDecimal().multiply(BigDecimal.valueOf(255))
-                        .divide(BigDecimal.valueOf(360), 2, RoundingMode.HALF_UP).intValue();
+                        .divide(BigDecimal.valueOf(360), 0, RoundingMode.HALF_UP).intValue();
                 return "r:" + hue + " g:" + convertPercentToByte(hsb.getSaturation()) + " b:"
                         + convertPercentToByte(hsb.getBrightness());
             case "242.600":
                 double[] xyY = ColorUtil.hsbToXY(hsb);
                 return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
             case "251.600":
-                return String.format("%d %d %d - %%", hsb.getRed().intValue(), hsb.getGreen().intValue(),
-                        hsb.getBlue().intValue());
+                rgb = ColorUtil.hsbToRgb(hsb);
+                return String.format("%d %d %d - %%", rgb[0], rgb[1], rgb[2]);
             case "5.003":
                 return hsb.getHue().toString();
             default:
@@ -188,14 +188,20 @@ public class ValueEncoder {
                     || DPTXlator2ByteFloat.DPT_KELVIN_PER_PERCENT.getID().equals(dptId)) {
                 // match unicode character or °C
                 if (value.toString().contains(SIUnits.CELSIUS.getSymbol()) || value.toString().contains("°C")) {
-                    unit = unit.replace("K", "°C");
+                    if (unit != null) {
+                        unit = unit.replace("K", "°C");
+                    }
                 } else if (value.toString().contains("°F")) {
-                    unit = unit.replace("K", "°F");
+                    if (unit != null) {
+                        unit = unit.replace("K", "°F");
+                    }
                     value = ((QuantityType<?>) value).multiply(BigDecimal.valueOf(5.0 / 9.0));
                 }
             } else if (DPTXlator4ByteFloat.DPT_LIGHT_QUANTITY.getID().equals(dptId)) {
                 if (!value.toString().contains("J")) {
-                    unit = unit.replace("J", "lm*s");
+                    if (unit != null) {
+                        unit = unit.replace("J", "lm*s");
+                    }
                 }
             } else if (DPTXlator4ByteFloat.DPT_ELECTRIC_FLUX.getID().equals(dptId)) {
                 // use alternate definition of flux
@@ -250,6 +256,6 @@ public class ValueEncoder {
      */
     private static int convertPercentToByte(PercentType percent) {
         return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).intValue();
+                .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).intValue();
     }
 }

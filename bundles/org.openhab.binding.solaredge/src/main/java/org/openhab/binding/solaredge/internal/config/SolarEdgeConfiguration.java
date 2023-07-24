@@ -13,7 +13,6 @@
 package org.openhab.binding.solaredge.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Bean holding configuration data according to bridge.xml
@@ -23,8 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class SolarEdgeConfiguration {
 
-    private @Nullable String tokenOrApiKey;
-    private @Nullable String solarId;
+    private String tokenOrApiKey = "";
+    private String solarId = "";
 
     private boolean meterInstalled = false;
     private boolean usePrivateApi = false;
@@ -34,7 +33,7 @@ public class SolarEdgeConfiguration {
     private Integer liveDataPollingInterval = 10;
     private Integer aggregateDataPollingInterval = 60;
 
-    public @Nullable String getTokenOrApiKey() {
+    public String getTokenOrApiKey() {
         return tokenOrApiKey;
     }
 
@@ -42,7 +41,7 @@ public class SolarEdgeConfiguration {
         this.tokenOrApiKey = tokenOrApiKey;
     }
 
-    public @Nullable String getSolarId() {
+    public String getSolarId() {
         return solarId;
     }
 

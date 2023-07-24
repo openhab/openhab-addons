@@ -335,6 +335,8 @@ public class DeviceManager {
                 return "Yeelight LED Ceiling";
             case ceiling1:
             case ceiling3:
+            case ceil26:
+            case ceiling11:
                 return "Yeelight LED Ceiling with night mode";
             case ceiling4:
                 return "Yeelight LED Ceiling with ambient light";

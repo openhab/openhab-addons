@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
  *
  */
 @NonNullByDefault
-public class PairingFailedExceptionTest {
+class PairingFailedExceptionTest {
 
     @Test
-    public void testConstructor() {
+    void testConstructor() {
         PairingFailedException fixture = new PairingFailedException();
         assertNotNull(fixture);
         assertNull(fixture.getMessage());
@@ -35,7 +35,7 @@ public class PairingFailedExceptionTest {
     }
 
     @Test
-    public void testConstructorWithMessage() {
+    void testConstructorWithMessage() {
         PairingFailedException fixture = new PairingFailedException("message");
         assertNotNull(fixture);
         assertEquals("message", fixture.getMessage());
@@ -43,7 +43,7 @@ public class PairingFailedExceptionTest {
     }
 
     @Test
-    public void testConstructorWithMessageAndCause() {
+    void testConstructorWithMessageAndCause() {
         RuntimeException testException = new RuntimeException("test exception");
         PairingFailedException fixture = new PairingFailedException("message", testException);
         assertNotNull(fixture);

@@ -428,3 +428,8 @@ knx.items:
 Switch        demoSwitch         "Light [%s]"               <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlSwitch" }
 Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlDimmer" }
 ```
+
+## Console Commands
+
+The KNX binding provides additional functionality which can be triggered from the openHAB console.
+Type `openhab:knx` on the openHAB console for further information.

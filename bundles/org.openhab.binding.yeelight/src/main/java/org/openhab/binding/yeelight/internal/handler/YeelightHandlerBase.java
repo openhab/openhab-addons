@@ -80,6 +80,11 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         DeviceManager.getInstance().startDiscovery(15 * 1000);
     }
 
+    @Override
+    public void dispose() {
+        mDevice.disconnect();
+    }
+
     private DeviceType getDeviceModel(ThingTypeUID typeUID) {
         if (typeUID.equals(THING_TYPE_CEILING)) {
             return DeviceType.ceiling;

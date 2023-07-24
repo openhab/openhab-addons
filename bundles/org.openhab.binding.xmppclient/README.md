@@ -10,14 +10,14 @@ xmppBridge - Basic XMPP (Jabber) client thing, that can send and receive message
 
 Sample configurations:
 
-```
+```java
 Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ username="openhab", domain="example.com", password="********" ] {
   Channels:
     Trigger String : xmpp_command [ separator="##" ]
 }
 ```
 
-```
+```java
 Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=7222, username="openhab", domain="example.com", password="********" ] {
   Channels:
     Trigger String : xmpp_command [ separator="##" ]
@@ -47,7 +47,7 @@ Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=
 
 Send message:
 
-```
+```java
 rule "Leak detected"
 when
     Item Xi_Leak changed
@@ -61,7 +61,7 @@ end
 
 Receive and process message:
 
-```
+```java
 rule "Turn off all lights without separator"
 when
     Channel "xmppclient:xmppBridge:xmpp:xmpp_command" triggered

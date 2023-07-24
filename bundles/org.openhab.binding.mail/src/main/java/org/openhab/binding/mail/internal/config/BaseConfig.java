@@ -21,7 +21,6 @@ import org.openhab.binding.mail.internal.ServerSecurity;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
 @NonNullByDefault
 public class BaseConfig {
     public @Nullable String hostname;

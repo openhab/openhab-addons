@@ -5,4 +5,5 @@
 	<type>binding</type>
 	<name>DMX Binding</name>
 	<description>This is the binding for DMX.</description>
+	<connection>local</connection>
 </addon:addon>
