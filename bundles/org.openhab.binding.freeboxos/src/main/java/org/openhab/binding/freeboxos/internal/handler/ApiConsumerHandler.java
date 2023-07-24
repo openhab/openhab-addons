@@ -68,6 +68,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
     private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
 
     private @Nullable ServiceRegistration<?> reg;
+    protected boolean statusDrivenByBridge = true;
 
     ApiConsumerHandler(Thing thing) {
         super(thing);
@@ -167,7 +168,9 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
             BridgeHandler handler = bridge.getHandler();
             if (handler instanceof FreeboxOsHandler) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
+                    if (statusDrivenByBridge) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                     return (FreeboxOsHandler) handler;
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);

@@ -143,7 +143,8 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
         }
 
         public List<HostName> getNames() {
-            return names != null ? names : List.of();
+            List<HostName> localNames = names;
+            return localNames != null ? localNames : List.of();
         }
 
         public Optional<String> getName(Source searchedSource) {
@@ -222,13 +223,25 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
 
     public Optional<LanHost> getHost(HostName identifier) throws FreeboxException {
         List<LanHost> hosts = getHosts();
+        LanHost result = null;
+        boolean multiple = false;
         for (LanHost host : hosts) {
             Optional<String> sourcedName = host.getName(identifier.source);
             if (sourcedName.isPresent() && sourcedName.get().equals(identifier.name)) {
-                return Optional.of(host);
+                // We will not return something if multiple hosts are found. This can happen in case of IP change that
+                // a previous name remains attached to a different host.
+                if (result == null) {
+                    result = host;
+                } else if (!result.getMac().equals(host.getMac())) {
+                    // Multiple hosts with different macs
+                    multiple = true;
+                }
             }
         }
-        return Optional.empty();
+        if (multiple) {
+            result = null;
+        }
+        return Optional.ofNullable(result);
     }
 
     public boolean wakeOnLan(MACAddress mac, String password) throws FreeboxException {

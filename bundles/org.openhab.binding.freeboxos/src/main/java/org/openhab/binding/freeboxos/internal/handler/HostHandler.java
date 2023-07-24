@@ -49,6 +49,7 @@ public class HostHandler extends ApiConsumerHandler {
 
     public HostHandler(Thing thing) {
         super(thing);
+        statusDrivenByBridge = false;
     }
 
     @Override
