@@ -97,14 +97,27 @@ The *landline* thing requires the following configuration parameters:
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state. | No       | 2       |
 
-### Network devices: Host and WifiHost
+### Network devices: Host
 
-The *host* and *wifihost* things requires the following configuration parameters:
+The *host* things requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
-| MAC Address      | macAddress      | The MAC address of the network host .                                  | Yes      |         |
+| MAC Address      | macAddress      | The MAC address of the network host.                                   | Yes      |         |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state. | No       | 30      |
+
+### Network devices: WifiHost
+
+The *wifihost* things requires the following configuration parameters:
+
+| Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
+|------------------|-----------------|------------------------------------------------------------------------|----------|---------|
+| MAC Address      | macAddress      | The MAC address of the network host.                                   | Yes      |         |
+| Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state. | No       | 30      |
+| mDNS Name        | mDNS            | The mDNS name of the host. Useful in case of virtual mac.              | No       |         |
+
+When used, mDNS will search the host based on its mDNS name and eventually update the Mac Address accordingly.
+This is useful with devices, especially Apple equipments, that uses randomly generated mac addresses.
 
 ### Repeater and Vm thing 
 

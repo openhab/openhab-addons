@@ -56,7 +56,7 @@ public class HostHandler extends ApiConsumerHandler {
         getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(result -> {
             LanHost host = result.host();
             properties.put(Thing.PROPERTY_VENDOR, host.vendorName());
-            host.getUPnPName().ifPresent(upnpName -> properties.put(Source.UPNP.name(), upnpName));
+            host.getName(Source.UPNP).ifPresent(upnpName -> properties.put(Source.UPNP.name(), upnpName));
         });
     }
 

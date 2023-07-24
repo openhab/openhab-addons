@@ -69,7 +69,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     private static record WakeOnLineData(String mac, String password) {
     }
 
-    public static enum Type {
+    private static enum Type {
         MAC_ADDRESS,
         UNKNOWN;
     }
@@ -146,8 +146,8 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
             return names != null ? names : List.of();
         }
 
-        public Optional<String> getUPnPName() {
-            return getNames().stream().filter(name -> name.source == Source.UPNP).findFirst().map(name -> name.name);
+        public Optional<String> getName(Source searchedSource) {
+            return getNames().stream().filter(name -> name.source == searchedSource).findFirst().map(name -> name.name);
         }
 
         public MACAddress getMac() {
@@ -223,11 +223,9 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     public Optional<LanHost> getHost(HostName identifier) throws FreeboxException {
         List<LanHost> hosts = getHosts();
         for (LanHost host : hosts) {
-            for (HostName hostName : host.getNames()) {
-                String localName = hostName.name;
-                if (hostName.source == identifier.source && localName != null && localName.equals(identifier.name)) {
-                    return Optional.of(host);
-                }
+            Optional<String> sourcedName = host.getName(identifier.source);
+            if (sourcedName.isPresent() && sourcedName.get().equals(identifier.name)) {
+                return Optional.of(host);
             }
         }
         return Optional.empty();
