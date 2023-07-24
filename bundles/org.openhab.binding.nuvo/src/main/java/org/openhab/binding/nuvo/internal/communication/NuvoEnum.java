@@ -14,7 +14,6 @@ package org.openhab.binding.nuvo.internal.communication;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -59,7 +58,7 @@ public enum NuvoEnum {
 
     // make a list of all valid source enums
     public static final List<NuvoEnum> VALID_SOURCES = Arrays.stream(values()).filter(s -> s.name().contains("SOURCE"))
-            .collect(Collectors.toList());
+            .toList();
 
     NuvoEnum(String id, String cfgId, int num) {
         this.id = id;
