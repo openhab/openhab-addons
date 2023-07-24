@@ -25,7 +25,6 @@ public class AccountConfiguration {
     public @Nullable String username;
     public @Nullable String password;
     public @Nullable String hardwareId;
-    public @Nullable String refreshToken;
     public @Nullable String twofactorCode;
     public int videoRetentionCount;
     public @Nullable String videoStoragePath;

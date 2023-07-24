@@ -14,9 +14,13 @@ package org.openhab.binding.ring.handler;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,6 +39,7 @@ import org.openhab.binding.ring.internal.data.RingEvent;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.errors.DuplicateIdException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -66,6 +71,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
     private Runnable runnableVideo = null;
     private @Nullable RingVideoServlet ringVideoServlet;
     private @Nullable HttpService httpService;
+    private final String thingId;
     /**
      * The user profile retrieved when authenticating.
      */
@@ -110,6 +116,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
         this.networkAddressService = networkAddressService;
         this.httpService = httpService;
         this.videoExecutorService = Executors.newCachedThreadPool();
+        this.thingId = this.getThing().getUID().getId();
         eventIndex = 0;
     }
 
@@ -204,6 +211,43 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
     protected void refreshState() {
     }
 
+    private void saveRefreshTokenToFile(String refreshToken) {
+        String folderName = OpenHAB.getUserDataFolder() + "/ring";
+        String thingId = this.thingId;
+        File folder = new File(folderName);
+        String fileName = folderName + "/ring." + thingId + ".refreshToken";
+
+        if (!folder.exists()) {
+            logger.debug("Creating directory {}", folderName);
+            folder.mkdirs();
+        }
+        try {
+            Files.write(Paths.get(fileName), refreshToken.getBytes());
+        } catch (IOException ex) {
+            logger.debug("IOException when writing refreshToken to file {}", ex.getMessage());
+        }
+        logger.debug("saveRefreshTokenToFile Successful {}", RingUtils.sanitizeData(refreshToken));
+    }
+
+    private String getRefreshTokenFromFile() {
+        String refreshToken = "";
+        String folderName = OpenHAB.getUserDataFolder() + "/ring";
+        String thingId = this.thingId;
+        String fileName = folderName + "/ring." + thingId + ".refreshToken";
+        File file = new File(fileName);
+        if (!file.exists()) {
+            return refreshToken;
+        }
+        try {
+            final byte[] contents = Files.readAllBytes(Paths.get(fileName));
+            refreshToken = new String(contents);
+        } catch (IOException ex) {
+            logger.debug("IOException when reading refreshToken from file {}", ex.getMessage());
+        }
+        logger.debug("getRefreshTokenFromFile successful {}", RingUtils.sanitizeData(refreshToken));
+        return refreshToken;
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing Ring Account handler");
@@ -214,7 +258,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
         String username = config.username;
         String password = config.password;
         String hardwareId = config.hardwareId;
-        String refreshToken = config.refreshToken;
+        String refreshToken = getRefreshTokenFromFile();
 
         String twofactorCode = config.twofactorCode;
         videoRetentionCount = config.videoRetentionCount;
@@ -238,15 +282,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
             logger.debug("Logging in with refresh token: {}", RingUtils.sanitizeData(refreshToken));
             userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
                     hardwareId);
-            config.refreshToken = userProfile.getRefreshToken();
-            updatedConfiguration.put("refreshToken", config.refreshToken);
-            if (!config.refreshToken.equals(userProfile.getRefreshToken())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Error saving refresh token to account Thing. See log for details.");
-                logger.error(
-                        "Error saving refresh token to account Thing. If created with .thing files, add this refreshToken attribute: {}",
-                        userProfile.getRefreshToken());
-            }
+            saveRefreshTokenToFile(userProfile.getRefreshToken());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
             config.twofactorCode = "";
             updatedConfiguration.put("twofactorCode", config.twofactorCode);
@@ -303,7 +339,7 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
             String username = config.username;
             String password = config.password;
             String hardwareId = config.hardwareId;
-            String refreshToken = config.refreshToken;
+            String refreshToken = getRefreshTokenFromFile();
 
             try {
                 userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, null, hardwareId);
