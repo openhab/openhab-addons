@@ -56,8 +56,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import inet.ipaddr.IPAddress;
-import inet.ipaddr.MACAddressString;
-import inet.ipaddr.mac.MACAddress;
 
 /**
  * The {@link ServerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
@@ -342,11 +340,5 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
     @Override
     public int getClientId() {
         return ((BigDecimal) getConfig().get(ClientConfiguration.ID)).intValue();
-    }
-
-    @Override
-    public MACAddress getMac() {
-        String mac = (String) getConfig().get(Thing.PROPERTY_MAC_ADDRESS);
-        return new MACAddressString(mac).getAddress();
     }
 }

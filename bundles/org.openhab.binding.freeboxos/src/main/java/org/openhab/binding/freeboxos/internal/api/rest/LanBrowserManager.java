@@ -69,7 +69,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     private static record WakeOnLineData(String mac, String password) {
     }
 
-    private static enum Type {
+    public static enum Type {
         MAC_ADDRESS,
         UNKNOWN;
     }
@@ -126,8 +126,8 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     public static record LanHost(String id, @Nullable String primaryName, HostType hostType, boolean primaryNameManual,
             L2Ident l2ident, @Nullable String vendorName, boolean persistent, boolean reachable,
             @Nullable ZonedDateTime lastTimeReachable, boolean active, @Nullable ZonedDateTime lastActivity,
-            @Nullable ZonedDateTime firstActivity, List<HostName> names, List<L3Connectivity> l3connectivities,
-            @Nullable LanAccessPoint accessPoint) {
+            @Nullable ZonedDateTime firstActivity, @Nullable List<HostName> names,
+            List<L3Connectivity> l3connectivities, @Nullable LanAccessPoint accessPoint) {
 
         public @Nullable LanAccessPoint accessPoint() {
             return accessPoint;
@@ -142,8 +142,12 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
             return Optional.ofNullable(primaryName);
         }
 
+        public List<HostName> getNames() {
+            return names != null ? names : List.of();
+        }
+
         public Optional<String> getUPnPName() {
-            return names.stream().filter(name -> name.source == Source.UPNP).findFirst().map(name -> name.name);
+            return getNames().stream().filter(name -> name.source == Source.UPNP).findFirst().map(name -> name.name);
         }
 
         public MACAddress getMac() {
@@ -211,6 +215,19 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
             LanHost host = getHost(intf.name(), "ether-" + searched.toColonDelimitedString());
             if (host != null) {
                 return Optional.of(new HostIntf(host, intf));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<LanHost> getHost(HostName identifier) throws FreeboxException {
+        List<LanHost> hosts = getHosts();
+        for (LanHost host : hosts) {
+            for (HostName hostName : host.getNames()) {
+                String localName = hostName.name;
+                if (hostName.source == identifier.source && localName != null && localName.equals(identifier.name)) {
+                    return Optional.of(host);
+                }
             }
         }
         return Optional.empty();

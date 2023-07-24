@@ -15,8 +15,8 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.HostActions;
@@ -42,8 +42,10 @@ import org.slf4j.LoggerFactory;
 public class HostHandler extends ApiConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
 
-    // We start in pull mode and switch to push after a first update
+    // We start in pull mode and switch to push after a first update...
     private boolean pushSubscribed = false;
+    // ... if not vetoed
+    protected boolean vetoPushSubscription = false;
 
     public HostHandler(Thing thing) {
         super(thing);
@@ -60,10 +62,12 @@ public class HostHandler extends ApiConsumerHandler {
 
     @Override
     public void dispose() {
-        try {
-            getManager(WebSocketManager.class).unregisterListener(getMac());
-        } catch (FreeboxException e) {
-            logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
+        if (pushSubscribed) {
+            try {
+                getManager(WebSocketManager.class).unregisterListener(getMac());
+            } catch (FreeboxException e) {
+                logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
+            }
         }
         super.dispose();
     }
@@ -77,9 +81,11 @@ public class HostHandler extends ApiConsumerHandler {
                 .orElseThrow(() -> new FreeboxException("Host data not found"));
 
         updateConnectivityChannels(data.host());
-        logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
-        getManager(WebSocketManager.class).registerListener(data.host().getMac(), this);
-        pushSubscribed = true;
+        if (!vetoPushSubscription) {
+            logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
+            getManager(WebSocketManager.class).registerListener(data.host().getMac(), this);
+            pushSubscribed = true;
+        }
     }
 
     public void updateConnectivityChannels(LanHost host) {
@@ -100,6 +106,6 @@ public class HostHandler extends ApiConsumerHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(HostActions.class);
+        return Set.of(HostActions.class);
     }
 }

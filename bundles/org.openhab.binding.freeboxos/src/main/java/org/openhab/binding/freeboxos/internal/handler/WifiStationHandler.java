@@ -22,13 +22,21 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.Station;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostName;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 import org.openhab.binding.freeboxos.internal.api.rest.RepeaterManager;
+import org.openhab.binding.freeboxos.internal.config.WifiHostConfiguration;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import inet.ipaddr.mac.MACAddress;
 
 /**
  * The {@link WifiStationHandler} is responsible for handling everything associated to
@@ -40,8 +48,11 @@ import org.openhab.core.types.UnDefType;
 public class WifiStationHandler extends HostHandler {
     private static final String SERVER_HOST = "Server";
 
+    private final Logger logger = LoggerFactory.getLogger(WifiStationHandler.class);
+
     public WifiStationHandler(Thing thing) {
         super(thing);
+        vetoPushSubscription = true;
     }
 
     @Override
@@ -89,5 +100,30 @@ public class WifiStationHandler extends HostHandler {
 
     private int toQoS(int rssi) {
         return rssi > -50 ? 4 : rssi > -60 ? 3 : rssi > -70 ? 2 : rssi > -85 ? 1 : 0;
+    }
+
+    @Override
+    public MACAddress getMac() {
+        MACAddress mac = super.getMac();
+        HostName identifier = getConfigAs(WifiHostConfiguration.class).getIdentifier();
+        if (identifier != null) {
+            try {
+                Optional<LanHost> lanHost = getManager(LanBrowserManager.class).getHost(identifier);
+                if (lanHost.isPresent()) {
+                    MACAddress currentMac = lanHost.get().getMac();
+                    if (!currentMac.equals(mac)) {
+                        Configuration thingConfig = editConfiguration();
+                        thingConfig.put(Thing.PROPERTY_MAC_ADDRESS, currentMac.toColonDelimitedString());
+                        updateConfiguration(thingConfig);
+                        logger.debug("Mac Address of the Wifi network device changed, configuration updated");
+                    }
+                    return currentMac;
+                }
+            } catch (FreeboxException e) {
+                logger.warn("Unable to search identifier {} on service {} : {}", identifier.name(), identifier.source(),
+                        e.getMessage());
+            }
+        }
+        return mac;
     }
 }
