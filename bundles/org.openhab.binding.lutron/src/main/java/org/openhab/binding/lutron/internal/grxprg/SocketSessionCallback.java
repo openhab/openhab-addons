@@ -23,12 +23,12 @@ public interface SocketSessionCallback {
      *
      * @param response a non-null, possibly empty response
      */
-    public void responseReceived(String response);
+    void responseReceived(String response);
 
     /**
      * Called when a command finished with an exception
      *
      * @param e a non-null exception
      */
-    public void responseException(Exception e);
+    void responseException(Exception e);
 }

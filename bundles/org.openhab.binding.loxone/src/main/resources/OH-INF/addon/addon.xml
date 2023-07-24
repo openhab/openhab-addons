@@ -5,4 +5,5 @@
 	<type>binding</type>
 	<name>Loxone Binding</name>
 	<description>This is the binding for Loxone Miniserver</description>
+	<connection>local</connection>
 </addon:addon>

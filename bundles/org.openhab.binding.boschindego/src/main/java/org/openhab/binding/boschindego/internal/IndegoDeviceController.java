@@ -24,6 +24,7 @@ import org.openhab.binding.boschindego.internal.dto.PredictiveAdjustment;
 import org.openhab.binding.boschindego.internal.dto.PredictiveStatus;
 import org.openhab.binding.boschindego.internal.dto.request.SetStateRequest;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceCalendarResponse;
+import org.openhab.binding.boschindego.internal.dto.response.DevicePropertiesResponse;
 import org.openhab.binding.boschindego.internal.dto.response.DeviceStateResponse;
 import org.openhab.binding.boschindego.internal.dto.response.LocationWeatherResponse;
 import org.openhab.binding.boschindego.internal.dto.response.OperatingDataResponse;
@@ -34,7 +35,6 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidCommandException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidResponseException;
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.library.types.RawType;
 
 /**
@@ -60,15 +60,27 @@ public class IndegoDeviceController extends IndegoController {
      * Initialize the controller instance.
      * 
      * @param httpClient the HttpClient for communicating with the service
-     * @param oAuthClientService the OAuthClientService for authorization
+     * @param authorizationProvider the AuthorizationProvider for authenticating with the service
      * @param serialNumber the serial number of the device instance
      */
-    public IndegoDeviceController(HttpClient httpClient, OAuthClientService oAuthClientService, String serialNumber) {
-        super(httpClient, oAuthClientService);
+    public IndegoDeviceController(HttpClient httpClient, AuthorizationProvider authorizationProvider,
+            String serialNumber) {
+        super(httpClient, authorizationProvider);
         if (serialNumber.isBlank()) {
             throw new IllegalArgumentException("Serial number must be provided");
         }
         this.serialNumber = serialNumber;
+    }
+
+    /**
+     * Queries the serial number and device service properties from the server.
+     *
+     * @return the device serial number and properties
+     * @throws IndegoAuthenticationException if request was rejected as unauthorized
+     * @throws IndegoException if any communication or parsing error occurred
+     */
+    public DevicePropertiesResponse getDeviceProperties() throws IndegoAuthenticationException, IndegoException {
+        return super.getDeviceProperties(serialNumber);
     }
 
     /**

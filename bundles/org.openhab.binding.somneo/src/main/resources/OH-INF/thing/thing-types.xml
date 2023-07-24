@@ -14,7 +14,61 @@
 			<channel-group id="sunset" typeId="sunset"/>
 			<channel-group id="relax" typeId="relax"/>
 			<channel-group id="audio" typeId="audio"/>
+			<channel-group id="alarm" typeId="alarmCommon"/>
+			<channel-group id="alarm1" typeId="alarm">
+				<label>Alarm 1</label>
+			</channel-group>
+			<channel-group id="alarm2" typeId="alarm">
+				<label>Alarm 2</label>
+			</channel-group>
+			<channel-group id="alarm3" typeId="alarmErasable">
+				<label>Alarm 3</label>
+			</channel-group>
+			<channel-group id="alarm4" typeId="alarmErasable">
+				<label>Alarm 4</label>
+			</channel-group>
+			<channel-group id="alarm5" typeId="alarmErasable">
+				<label>Alarm 5</label>
+			</channel-group>
+			<channel-group id="alarm6" typeId="alarmErasable">
+				<label>Alarm 6</label>
+			</channel-group>
+			<channel-group id="alarm7" typeId="alarmErasable">
+				<label>Alarm 7</label>
+			</channel-group>
+			<channel-group id="alarm8" typeId="alarmErasable">
+				<label>Alarm 8</label>
+			</channel-group>
+			<channel-group id="alarm9" typeId="alarmErasable">
+				<label>Alarm 9</label>
+			</channel-group>
+			<channel-group id="alarm10" typeId="alarmErasable">
+				<label>Alarm 10</label>
+			</channel-group>
+			<channel-group id="alarm11" typeId="alarmErasable">
+				<label>Alarm 11</label>
+			</channel-group>
+			<channel-group id="alarm12" typeId="alarmErasable">
+				<label>Alarm 12</label>
+			</channel-group>
+			<channel-group id="alarm13" typeId="alarmErasable">
+				<label>Alarm 13</label>
+			</channel-group>
+			<channel-group id="alarm14" typeId="alarmErasable">
+				<label>Alarm 14</label>
+			</channel-group>
+			<channel-group id="alarm15" typeId="alarmErasable">
+				<label>Alarm 15</label>
+			</channel-group>
+			<channel-group id="alarm16" typeId="alarmErasable">
+				<label>Alarm 16</label>
+			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+			<property name="vendor">Philips</property>
+		</properties>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -34,6 +88,12 @@
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="refreshIntervalAlarmExtended" type="integer" unit="s" min="1">
+				<label>Refresh Interval for extended alarm clock settings</label>
+				<description>Interval the device is polled in seconds. This polling triggers a sync icon on the device.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="ignoreSSLErrors" type="boolean">
 				<label>Ignore SSL Errors</label>
 				<description>If set to true ignores invalid SSL certificate errors. This is potentially dangerous.</description>
@@ -42,6 +102,52 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-group-type id="alarm">
+		<label>Alarm Clock</label>
+		<description>Channels to control alarm clock.</description>
+		<category>Alarm</category>
+		<channels>
+			<channel id="switch" typeId="alarmSwitch"/>
+			<channel id="repeatDay" typeId="repeatDay"/>
+			<channel id="alarmTime" typeId="alarmTime"/>
+			<channel id="powerWake" typeId="powerWakeSwitch"/>
+			<channel id="powerWakeDelay" typeId="powerWakeDelay"/>
+			<channel id="sunriseDuration" typeId="sunriseDuration"/>
+			<channel id="sunriseBrightness" typeId="sunriseBrightness"/>
+			<channel id="sunriseSchema" typeId="colorSchema"/>
+			<channel id="sound" typeId="alarmSound"/>
+			<channel id="volume" typeId="system.volume"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="alarmCommon">
+		<label>Common Alarm Clock Settings</label>
+		<description>Channels to control alarm clock settings that affect all alarm clocks.</description>
+		<category>Alarm</category>
+		<channels>
+			<channel id="snooze" typeId="alarmSnooze"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="alarmErasable">
+		<label>Alarm Clock</label>
+		<description>Channels to control alarm clock.</description>
+		<category>Alarm</category>
+		<channels>
+			<channel id="configured" typeId="alarmConfigured"/>
+			<channel id="switch" typeId="alarmSwitch"/>
+			<channel id="repeatDay" typeId="repeatDay"/>
+			<channel id="alarmTime" typeId="alarmTime"/>
+			<channel id="powerWake" typeId="powerWakeSwitch"/>
+			<channel id="powerWakeDelay" typeId="powerWakeDelay"/>
+			<channel id="sunriseDuration" typeId="sunriseDuration"/>
+			<channel id="sunriseBrightness" typeId="sunriseBrightness"/>
+			<channel id="sunriseSchema" typeId="colorSchema"/>
+			<channel id="sound" typeId="alarmSound"/>
+			<channel id="volume" typeId="system.volume"/>
+		</channels>
+	</channel-group-type>
 
 	<channel-group-type id="audio">
 		<label>Audio Player</label>
@@ -67,7 +173,7 @@
 		<description>Different light channels.</description>
 		<category>Light</category>
 		<channels>
-			<channel id="main" typeId="system.brightness"/>
+			<channel id="main" typeId="brightness"/>
 			<channel id="night" typeId="light"/>
 		</channels>
 	</channel-group-type>
@@ -96,10 +202,7 @@
 			<channel id="breathingRate" typeId="breathingRate"/>
 			<channel id="duration" typeId="relaxDuration"/>
 			<channel id="guidanceType" typeId="guidanceType"/>
-			<channel id="lightIntensity" typeId="system.brightness">
-				<label>Light Intensity</label>
-				<description>The channel allows to set the light intensity.</description>
-			</channel>
+			<channel id="lightIntensity" typeId="sunriseBrightness"/>
 			<channel id="volume" typeId="system.volume"/>
 		</channels>
 	</channel-group-type>
@@ -114,9 +217,9 @@
 				<description>The switch channel allows to turn the sunset program on or off.</description>
 			</channel>
 			<channel id="remainingTime" typeId="remainingTime"/>
-			<channel id="lightIntensity" typeId="system.brightness">
-				<label>Light Intensity</label>
-				<description>The channel allows to set the light intensity.</description>
+			<channel id="lightIntensity" typeId="brightness">
+				<label>Sunset Brightness</label>
+				<description>The channel allows to set the sunset light intensity.</description>
 			</channel>
 			<channel id="duration" typeId="sunsetDuration"/>
 			<channel id="colorSchema" typeId="colorSchema"/>
@@ -124,6 +227,80 @@
 			<channel id="volume" typeId="system.volume"/>
 		</channels>
 	</channel-group-type>
+
+	<channel-type id="alarmConfigured">
+		<item-type>Switch</item-type>
+		<label>Configured</label>
+		<description>Indicates if this alarm is configured. Deactivating this switch clears the alarm.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="alarmSnooze">
+		<item-type>Number:Time</item-type>
+		<label>Alarm Snooze</label>
+		<description>The duration of the snooze function in minutes.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%d min" min="1" max="20" step="1"/>
+	</channel-type>
+
+	<channel-type id="alarmSound">
+		<item-type>String</item-type>
+		<label>Alarm Clock Sound</label>
+		<description>The type of sound used for the alarm clock sound.</description>
+		<category>Noise</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Noise</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="off">No sound</option>
+				<option value="wus-1">Forest Birds</option>
+				<option value="wus-2">Summer Birds</option>
+				<option value="wus-3">Buddha Wakeup</option>
+				<option value="wus-4">Morning Alps</option>
+				<option value="wus-5">Yoga Harmony</option>
+				<option value="wus-6">Nepal Bowls</option>
+				<option value="wus-7">Summer Lake</option>
+				<option value="wus-8">Ocean Waves</option>
+				<option value="fmr-1">FM 1</option>
+				<option value="fmr-2">FM 2</option>
+				<option value="fmr-3">FM 3</option>
+				<option value="fmr-4">FM 4</option>
+				<option value="fmr-5">FM 5</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarmSwitch">
+		<item-type>Switch</item-type>
+		<label>Alarm Clock</label>
+		<description>Turn the alarm clock on or off.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="alarmTime">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>Alarm clock time.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state pattern="%1$tH:%1$tM"/>
+	</channel-type>
 
 	<channel-type id="ambientNoise">
 		<item-type>String</item-type>
@@ -170,10 +347,22 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Light Brightness</label>
+		<description>The channel allows to set the light intensity.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%d %%" min="0" max="100" step="4"/>
+	</channel-type>
+
 	<channel-type id="colorSchema">
 		<item-type>Number</item-type>
 		<label>Color Schema</label>
-		<description>Choose a personal sunset.</description>
+		<description>Choose a personal sunrise or sunset.</description>
 		<category>Sunset</category>
 		<tags>
 			<tag>Control</tag>
@@ -261,6 +450,29 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="powerWakeDelay">
+		<item-type>Number:Time</item-type>
+		<label>Power Wake Delay</label>
+		<description>How long after the normal alarm should Power Wake start.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%d min" min="0" max="59" step="1"/>
+	</channel-type>
+
+	<channel-type id="powerWakeSwitch">
+		<item-type>Switch</item-type>
+		<label>Power Wake</label>
+		<description>Turn the power wake on or off.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
 	<channel-type id="preset">
 		<item-type>String</item-type>
 		<label>FM Preset</label>
@@ -282,9 +494,9 @@
 		</tags>
 		<state>
 			<options>
-				<option value="5">5 Minutes</option>
-				<option value="10">10 Minutes</option>
-				<option value="15">15 Minutes</option>
+				<option value="5 min">5 Minutes</option>
+				<option value="10 min">10 Minutes</option>
+				<option value="15 min">15 Minutes</option>
 			</options>
 		</state>
 	</channel-type>
@@ -301,6 +513,52 @@
 		<state pattern="%1$tM:%1$tS min" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="repeatDay">
+		<item-type>Number</item-type>
+		<label>Days</label>
+		<description>The days on which the alarm is repeated.</description>
+		<category>Calendar</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Timestamp</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="sunriseBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Sunrise Brightness</label>
+		<description>The channel allows to set the sunrise light intensity.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%d %%" min="4" max="100" step="4"/>
+	</channel-type>
+
+	<channel-type id="sunriseDuration">
+		<item-type>Number:Time</item-type>
+		<label>Sunrise Duration</label>
+		<description>The duration of sunrise program in minutes.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="5 min">5 Minutes</option>
+				<option value="10 min">10 Minutes</option>
+				<option value="15 min">15 Minutes</option>
+				<option value="20 min">20 Minutes</option>
+				<option value="25 min">25 Minutes</option>
+				<option value="30 min">30 Minutes</option>
+				<option value="35 min">35 Minutes</option>
+				<option value="40 min">40 Minutes</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="sunsetDuration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
@@ -312,13 +570,13 @@
 		</tags>
 		<state>
 			<options>
-				<option value="5">5 Minutes</option>
-				<option value="10">10 Minutes</option>
-				<option value="15">15 Minutes</option>
-				<option value="20">20 Minutes</option>
-				<option value="30">30 Minutes</option>
-				<option value="45">45 Minutes</option>
-				<option value="60">60 Minutes</option>
+				<option value="5 min">5 Minutes</option>
+				<option value="10 min">10 Minutes</option>
+				<option value="15 min">15 Minutes</option>
+				<option value="20 min">20 Minutes</option>
+				<option value="30 min">30 Minutes</option>
+				<option value="45 min">45 Minutes</option>
+				<option value="60 min">60 Minutes</option>
 			</options>
 		</state>
 	</channel-type>

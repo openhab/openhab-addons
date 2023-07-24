@@ -26,15 +26,15 @@ import org.openhab.binding.lametrictime.internal.api.cloud.impl.LaMetricTimeClou
  */
 @NonNullByDefault
 public interface LaMetricTimeCloud {
-    public Icons getIcons();
+    Icons getIcons();
 
-    public Icons getIcons(IconFilter filter);
+    Icons getIcons(IconFilter filter);
 
-    public static LaMetricTimeCloud create(CloudConfiguration config) {
+    static LaMetricTimeCloud create(CloudConfiguration config) {
         return new LaMetricTimeCloudImpl(config);
     }
 
-    public static LaMetricTimeCloud create(CloudConfiguration config, ClientBuilder clientBuilder) {
+    static LaMetricTimeCloud create(CloudConfiguration config, ClientBuilder clientBuilder) {
         return new LaMetricTimeCloudImpl(config, clientBuilder);
     }
 }

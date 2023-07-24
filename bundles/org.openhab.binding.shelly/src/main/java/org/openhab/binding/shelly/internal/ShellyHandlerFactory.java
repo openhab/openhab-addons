@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.shelly.internal;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyBluSensorHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyProtectedHandler;
@@ -57,8 +58,6 @@ import io.reactivex.annotations.NonNull;
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class, ShellyHandlerFactory.class }, configurationPid = "binding.shelly")
 public class ShellyHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-
     private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
     private final HttpClient httpClient;
     private final ShellyTranslationProvider messages;
@@ -103,6 +102,11 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         this.coapServer = new Shelly1CoapServer();
     }
 
+    @Activate
+    void activate() {
+        thingTable.startDiscoveryService(bundleContext);
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -123,11 +127,15 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR) || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)
                 || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)) {
-            logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
+            logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
+        } else if (thingType.startsWith("shellyblu")) {
+            logger.debug("{}: Create new thing of type {} using ShellyBluSensorHandler", thing.getLabel(),
+                    thingTypeUID.toString());
+            handler = new ShellyBluSensorHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            logger.debug("{}: Create new thing of type {} using ShellyRelayHandler", thing.getLabel(),
+            logger.debug("{}: Create new thing of type {} using ShellyRelayHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyRelayHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
         }
@@ -143,20 +151,13 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    public Map<String, ShellyManagerInterface> getThingHandlers() {
-        Map<String, ShellyManagerInterface> table = new HashMap<>();
-        for (Map.Entry<String, ShellyThingInterface> entry : thingTable.getTable().entrySet()) {
-            table.put(entry.getKey(), (ShellyManagerInterface) entry.getValue());
-        }
-        return table;
-    }
-
     /**
      * Remove handler of things.
      */
     @Override
     protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
         if (thingHandler instanceof ShellyBaseHandler) {
+            ((ShellyBaseHandler) thingHandler).stop();
             String uid = thingHandler.getThing().getUID().getAsString();
             thingTable.removeThing(uid);
         }
@@ -184,5 +185,13 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
     public ShellyBindingConfiguration getBindingConfig() {
         return bindingConfig;
+    }
+
+    public Map<String, ShellyManagerInterface> getThingHandlers() {
+        Map<String, ShellyManagerInterface> table = new HashMap<>();
+        for (Map.Entry<String, ShellyThingInterface> entry : thingTable.getTable().entrySet()) {
+            table.put(entry.getKey(), (ShellyManagerInterface) entry.getValue());
+        }
+        return table;
     }
 }

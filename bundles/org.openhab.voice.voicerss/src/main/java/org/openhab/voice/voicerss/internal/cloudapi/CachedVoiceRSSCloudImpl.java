@@ -69,8 +69,8 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
         }
 
         // if not in cache, get audio data and put to cache
-        try (InputStream is = super.getTextToSpeech(apiKey, text, locale, voice, audioCodec, audioFormat);
-                FileOutputStream fos = new FileOutputStream(audioFileInCache)) {
+        try (InputStream is = super.getTextToSpeech(apiKey, text, locale, voice, audioCodec, audioFormat)
+                .getInputStream(); FileOutputStream fos = new FileOutputStream(audioFileInCache)) {
             copyStream(is, fos);
             // write text to file for transparency too
             // this allows to know which contents is in which audio file
@@ -81,6 +81,16 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
         } catch (IOException ex) {
             throw new IOException("Could not write to cache file: " + ex.getMessage(), ex);
         }
+    }
+
+    public @Nullable File getTextToSpeechInCache(String text, String locale, String voice, String audioCodec,
+            String audioFormat) throws IOException {
+        String fileNameInCache = getUniqueFilenameForText(text, locale, voice, audioFormat);
+        if (fileNameInCache == null) {
+            throw new IOException("Could not infer cache file name");
+        }
+        File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioCodec.toLowerCase());
+        return audioFileInCache.exists() ? audioFileInCache : null;
     }
 
     /**

@@ -22,7 +22,7 @@ import org.openhab.binding.myq.internal.dto.DeviceDTO;
  */
 @NonNullByDefault
 public interface MyQDeviceHandler {
-    public void handleDeviceUpdate(DeviceDTO device);
+    void handleDeviceUpdate(DeviceDTO device);
 
-    public String getSerialNumber();
+    String getSerialNumber();
 }
