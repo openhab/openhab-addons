@@ -67,10 +67,29 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYBUTTON1, //
             THING_TYPE_SHELLYBUTTON2, //
             THING_TYPE_SHELLMOTION, //
+
+            // Shelly Plus
             THING_TYPE_SHELLYPLUS1, //
             THING_TYPE_SHELLYPLUS1PM, //
             THING_TYPE_SHELLYPLUS2PM_RELAY, //
             THING_TYPE_SHELLYPLUS2PM_ROLLER, //
+            THING_TYPE_SHELLYPLUSI4, //
+            THING_TYPE_SHELLYPLUSI4DC, //
+            THING_TYPE_SHELLYPLUSHT, //
+            THING_TYPE_SHELLYPLUSSMOKE, //
+            THING_TYPE_SHELLYPLUSPLUGS, //
+            THING_TYPE_SHELLYPLUSPLUGUS, //
+            THING_TYPE_SHELLYPLUSDIMMERUS, //
+
+            // Shelly Wall Display
+            THING_TYPE_SHELLYPLUSWALLDISPLAY, //
+
+            // Shelly Plus Mini
+            THING_TYPE_SHELLYMINI1, //
+            THING_TYPE_SHELLYMINIPM, //
+            THING_TYPE_SHELLYMINI1PM, //
+
+            // Shelly Pro
             THING_TYPE_SHELLYPRO1, //
             THING_TYPE_SHELLYPRO1PM, //
             THING_TYPE_SHELLYPRO2_RELAY, //
@@ -78,18 +97,19 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPRO2PM_ROLLER, //
             THING_TYPE_SHELLYPRO3, //
             THING_TYPE_SHELLYPRO3EM, //
+            THING_TYPE_SHELLYPROEM50, //
             THING_TYPE_SHELLYPRO4PM, //
-            THING_TYPE_SHELLYPLUSI4, //
-            THING_TYPE_SHELLYPLUSI4DC, //
-            THING_TYPE_SHELLYPLUSHT, //
-            THING_TYPE_SHELLYPLUSSMOKE, //
-            THING_TYPE_SHELLYPLUSPLUGS, //
-            THING_TYPE_SHELLYPLUSPLUGUS, //
+
+            // Shelly BLU
+            THING_TYPE_SHELLYBLUBUTTON, //
+            THING_TYPE_SHELLYBLUDW, //
+
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);
 
     // Thing Configuration Properties
     public static final String CONFIG_DEVICEIP = "deviceIp";
+    public static final String CONFIG_DEVICEADDRESS = "deviceAddress";
     public static final String CONFIG_HTTP_USERID = "userId";
     public static final String CONFIG_HTTP_PASSWORD = "password";
     public static final String CONFIG_UPDATE_INTERVAL = "updateInterval";
@@ -99,6 +119,7 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_DEV_TYPE = "deviceType";
     public static final String PROPERTY_DEV_MODE = "deviceMode";
     public static final String PROPERTY_DEV_GEN = "deviceGeneration";
+    public static final String PROPERTY_GW_DEVICE = "gatewayDevice";
     public static final String PROPERTY_HWREV = "deviceHwRev";
     public static final String PROPERTY_HWBATCH = "deviceHwBatch";
     public static final String PROPERTY_UPDATE_PERIOD = "devUpdatePeriod";
@@ -167,7 +188,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
     public static final String CHANNEL_SENSOR_MUTE = "mute";
     public static final String CHANNEL_SENSOR_STATE = "state";
-    public static final String CHANNEL_SENSOR_OPEN = "open";
     public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
     public static final String CHANNEL_SENSOR_MOTION_ACT = "motionActive";
@@ -230,6 +250,7 @@ public class ShellyBindingConstants {
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
     public static final String CHANNEL_DEVST_NAME = "deviceName";
+    public static final String CHANNEL_DEVST_GATEWAY = "gatewayDevice";
     public static final String CHANNEL_DEVST_UPTIME = "uptime";
     public static final String CHANNEL_DEVST_HEARTBEAT = "heartBeat";
     public static final String CHANNEL_DEVST_RSSI = "wifiSignal";
@@ -239,6 +260,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
     public static final String CHANNEL_DEVST_ACCUTOTAL = "accumulatedWTotal";
     public static final String CHANNEL_DEVST_ACCURETURNED = "accumulatedReturned";
+    public static final String CHANNEL_DEVST_RESETTOTAL = CHANNEL_EMETER_RESETTOTAL;
+
     public static final String CHANNEL_DEVST_CHARGER = "charger";
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
@@ -311,4 +334,7 @@ public class ShellyBindingConstants {
     public static final int UPDATE_SETTINGS_INTERVAL_SECONDS = 60; // check for updates every x sec
     public static final int HEALTH_CHECK_INTERVAL_SEC = 300; // Health check interval, 5min
     public static final int VIBRATION_FILTER_SEC = 5; // Absore duplicate vibration events for xx sec
+
+    public static final String BUNDLE_RESOURCE_SNIPLETS = "sniplets"; // where to find code sniplets in the bundle
+    public static final String BUNDLE_RESOURCE_SCRIPTS = "scripts"; // where to find scrips in the bundle
 }

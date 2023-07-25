@@ -19,9 +19,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
@@ -41,8 +39,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /***
  * The{@link ShellyRelayHandler} handles light (bulb+rgbw2) specific commands and status. All other commands will be
@@ -138,9 +134,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
             case CHANNEL_EMETER_RESETTOTAL:
-                logger.debug("{}: Reset Meter Totals", thingName);
-                int mIndex = Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_METER)) - 1;
-                api.resetMeterTotal(mIndex);
+                String id = substringAfter(groupName, CHANNEL_GROUP_METER);
+                int mIdx = id.isEmpty() ? 0 : Integer.parseInt(id) - 1;
+                logger.debug("{}: Reset Meter Totals for meter {}", thingName, mIdx + 1);
+                api.resetMeterTotal(mIdx); // currently there is only 1 emdata component
                 updateChannel(groupName, CHANNEL_EMETER_RESETTOTAL, OnOffType.OFF);
                 break;
         }
@@ -193,7 +190,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         if (brightness > 0) {
             api.setBrightness(lightId, brightness, config.brightnessAutoOn);
         } else {
-            api.setRelayTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
+            api.setLightTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
             if (brightness >= 0) { // ignore -1
                 updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType((double) (power == OnOffType.ON ? brightness : 0), DIGITS_NONE, Units.PERCENT));
@@ -206,7 +203,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         // map status to channels
         boolean updated = false;
         updated |= updateRelays(status);
-        updated |= updateDimmers(status);
+        updated |= ShellyComponents.updateDimmers(this, status);
         updated |= updateLed(status);
         return updated;
     }
@@ -300,12 +297,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         }
     }
 
-    private void createDimmerChannels(ShellySettingsStatus dstatus, int idx) {
-        if (!areChannelsCreated()) {
-            updateChannelDefinitions(ShellyChannelDefinitions.createDimmerChannels(getThing(), profile, dstatus, idx));
-        }
-    }
-
     private void createRollerChannels(ShellyRollerStatus roller) {
         if (!areChannelsCreated()) {
             updateChannelDefinitions(ShellyChannelDefinitions.createRollerChannels(getThing(), roller));
@@ -351,63 +342,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     createRollerChannels(roller);
                     updated |= ShellyComponents.updateRoller(this, roller, i);
                 }
-            }
-        }
-        return updated;
-    }
-
-    /**
-     * Update Relay/Roller channels
-     *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
-     * @param status Last ShellySettingsStatus
-     *
-     * @throws ShellyApiException
-     */
-    public boolean updateDimmers(ShellySettingsStatus orgStatus) throws ShellyApiException {
-        boolean updated = false;
-        if (profile.isDimmer) {
-            // We need to fixup the returned Json: The dimmer returns light[] element, which is ok, but it doesn't have
-            // the same structure as lights[] from Bulb,RGBW2 and Duo. The tag gets replaced by dimmers[] so that Gson
-            // maps to a different structure (ShellyShortLight).
-            Gson gson = new Gson();
-            ShellySettingsStatus dstatus = fromJson(gson, Shelly1ApiJsonDTO.fixDimmerJson(orgStatus.json),
-                    ShellySettingsStatus.class);
-
-            logger.trace("{}: Updating {} dimmers(s)", thingName, dstatus.dimmers.size());
-            int l = 0;
-            for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
-                Integer r = l + 1;
-                String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
-                        : CHANNEL_GROUP_DIMMER_CONTROL + r.toString();
-
-                createDimmerChannels(dstatus, l);
-
-                // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
-                // and send an OFF status to the same channel.
-                // When the device's brightness is > 0 we send the new value to the channel and an ON command
-                if (dimmer.ison) {
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                            toQuantityType((double) getInteger(dimmer.brightness), DIGITS_NONE, Units.PERCENT));
-                } else {
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.OFF);
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                            toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
-                }
-
-                if (profile.settings.dimmers != null) {
-                    ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
-                    if (dsettings != null) {
-                        updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
-                                toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
-                        updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
-                                toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
-                    }
-                }
-
-                l++;
             }
         }
         return updated;

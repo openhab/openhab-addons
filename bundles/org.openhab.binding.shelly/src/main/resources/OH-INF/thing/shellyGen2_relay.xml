@@ -80,16 +80,16 @@
 		<description>@text/thing-type.shelly.shellyplusi4.description</description>
 		<channel-groups>
 			<channel-group id="status1" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.ixChannel1.label</label>
+				<label>@text/channel-group-type.shelly.iXChannel1.label</label>
 			</channel-group>
 			<channel-group id="status2" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.ixChannel2.label</label>
+				<label>@text/channel-group-type.shelly.iXChannel2.label</label>
 			</channel-group>
 			<channel-group id="status3" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.ixChannel3.label</label>
+				<label>@text/channel-group-type.shelly.iXChannel3.label</label>
 			</channel-group>
 			<channel-group id="status4" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.ixChannel4.label</label>
+				<label>@text/channel-group-type.shelly.iXChannel4.label</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -114,6 +114,44 @@
 			<channel-group id="status4" typeId="ixChannel">
 				<label>@text/channel-group-type.shelly.ixChannel4.label</label>
 			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shelly1mini">
+		<label>ShellyPlus 1 Mini</label>
+		<description>@text/thing-type.shelly.shelly1mini.description</description>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+
+	<thing-type id="shellypmmini">
+		<label>ShellyPlus PM Mini</label>
+		<description>@text/thing-type.shelly.shellypmmini.description</description>
+		<channel-groups>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shelly1pmmini">
+		<label>ShellyPlus 1PM Mini</label>
+		<description>@text/thing-type.shelly.shelly1pmmini.description</description>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -254,6 +292,24 @@
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
+	<thing-type id="shellyproem50">
+		<label>Shelly Pro EM-50</label>
+		<description>@text/thing-type.shelly.shellyproem50.description</description>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter1.label</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>@text/channel-group-type.shelly.meter2.label</label>
+			</channel-group>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
 	<thing-type id="shellypro4pm">
 		<label>ShellyPro 4PM</label>
 		<description>@text/thing-type.shelly.shellypro4pm.description</description>
@@ -288,6 +344,20 @@
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypluswdus">
+		<label>Shelly Plus Dimmer US</label>
+		<description>@text/thing-type.shelly.shellypluswdus.description</description>
+		<category>DimmableLight</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
 	</thing-type>
 
 </thing:thing-descriptions>

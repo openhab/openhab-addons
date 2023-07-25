@@ -119,4 +119,6 @@ public interface ShellyThingInterface {
     void incProtMessages();
 
     void incProtErrors();
+
+    void startScan();
 }

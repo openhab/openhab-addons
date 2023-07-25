@@ -405,6 +405,7 @@ public class Shelly1ApiJsonDTO {
         public String pushShortUrl; // to access when roller stopped
 
         // Status information
+        public Integer id;
         public Boolean ison;
         public Boolean overpower;
         @SerializedName("is_valid")
@@ -739,7 +740,12 @@ public class Shelly1ApiJsonDTO {
         public ArrayList<ShellyRollerStatus> rollers;
         public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellySettingsMeter> meters;
+
         public ArrayList<ShellySettingsEMeter> emeters;
+        public Double totalCurrent;
+        public Double totalPower;
+        public Double totalReturned;
+
         @SerializedName("ext_temperature")
         public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
         @SerializedName("ext_humidity")
@@ -751,7 +757,7 @@ public class Shelly1ApiJsonDTO {
         public ShellyStatusSensor.ShellyExtSwitchStatus extSwitch;
 
         // Internal device temp
-        public ShellySensorTmp tmp = new ShellySensorTmp(); // Shelly 1PM
+        public ShellySensorTmp tmp; // Shelly 1PM
         public Double temperature; // Shelly 2.5
         public Boolean overtemperature;
 
@@ -820,6 +826,8 @@ public class Shelly1ApiJsonDTO {
         public Integer brightness; // brightness: 0.100%
         @SerializedName("has_timer")
         public Boolean hasTimer;
+        @SerializedName("timer_duration")
+        public Integer timerDuration;
     }
 
     public static class ShellyStatusRelay {

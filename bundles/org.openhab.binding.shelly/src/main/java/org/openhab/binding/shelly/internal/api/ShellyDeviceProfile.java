@@ -67,6 +67,8 @@ public class ShellyDeviceProfile {
     public boolean auth = false;
     public boolean alwaysOn = true;
     public boolean isGen2 = false;
+    public boolean isBlu = false;
+    public String gateway = "";
 
     public String hwRev = "";
     public String hwBatchId = "";
@@ -100,6 +102,9 @@ public class ShellyDeviceProfile {
     public boolean isIX = false; // true for a Shelly IX
     public boolean isTRV = false; // true for a Shelly TRV
     public boolean isSmoke = false; // true for Shelly Smoke
+    public boolean isWall = false; // true: Shelly Wall Display
+    public boolean is3EM = false; // true for Shelly 3EM and Pro 3EM
+    public boolean isEM50 = false; // true for Shelly Pro EM50
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -125,6 +130,10 @@ public class ShellyDeviceProfile {
             // Shelly UNI uses ext_temperature array, reformat to avoid GSON exception
             json = json.replace("ext_temperature", "ext_temperature_array");
         }
+        if (json.contains("\"ext_humidity\":{\"0\":[{")) {
+            // Shelly UNI uses ext_humidity array, reformat to avoid GSON exception
+            json = json.replace("ext_humidity", "ext_humidity_array");
+        }
         settingsJson = json;
         settings = fromJson(gson, json, ShellySettingsGlobal.class);
 
@@ -132,9 +141,8 @@ public class ShellyDeviceProfile {
         name = getString(settings.name);
         deviceType = getString(settings.device.type);
         mac = getString(settings.device.mac);
-        hostname = settings.device.hostname != null && !settings.device.hostname.isEmpty()
-                ? settings.device.hostname.toLowerCase()
-                : "shelly-" + mac.toUpperCase().substring(6, 11);
+        hostname = !getString(settings.device.hostname).isEmpty() ? settings.device.hostname.toLowerCase()
+                : mac.length() >= 12 ? "shelly-" + mac.toUpperCase().substring(6, 11) : "unknown";
         mode = getString(settings.mode).toLowerCase();
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
@@ -185,7 +193,11 @@ public class ShellyDeviceProfile {
             return;
         }
 
-        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2);
+        isBlu = thingType.startsWith("shellyblu"); // e.g. SBBT for BU Button
+
+        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2)
+                || deviceType.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
+                || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERUS_STR);
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
                 || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR);
@@ -201,16 +213,22 @@ public class ShellyDeviceProfile {
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
         isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);
-        isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR);
+        isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR)
+                || thingType.equals(THING_TYPE_SHELLYBLUDW_STR);
         isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
         isIX = thingType.equals(THING_TYPE_SHELLYIX3_STR) || thingType.equals(THING_TYPE_SHELLYPLUSI4_STR)
                 || thingType.equals(THING_TYPE_SHELLYPLUSI4DC_STR);
-        isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR) || thingType.equals(THING_TYPE_SHELLYBUTTON2_STR);
-        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV;
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV;
+        isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR) || thingType.equals(THING_TYPE_SHELLYBUTTON2_STR)
+                || thingType.equals(THING_TYPE_SHELLYBLUBUTTON_STR);
         isTRV = thingType.equals(THING_TYPE_SHELLYTRV_STR);
+        isWall = thingType.equals(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR);
+        is3EM = thingType.equals(THING_TYPE_SHELLY3EM_STR) || thingType.startsWith(THING_TYPE_SHELLYPRO3EM_STR);
+        isEM50 = thingType.startsWith(THING_TYPE_SHELLYPROEM50_STR);
 
+        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
+                || isWall;
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV;
         alwaysOn = !hasBattery || isMotion || isSense; // true means: device is reachable all the time (no sleep mode)
     }
 
@@ -241,7 +259,8 @@ public class ShellyDeviceProfile {
         } else if (hasRelays) {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
-            return settings.lights == null || settings.lights.size() <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
+            return settings.lights == null || settings.lights != null && settings.lights.size() <= 1
+                    ? CHANNEL_GROUP_LIGHT_CONTROL
                     : CHANNEL_GROUP_LIGHT_CHANNEL + idx;
         } else if (isLight) {
             return CHANNEL_GROUP_LIGHT_CONTROL;

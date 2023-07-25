@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
@@ -28,9 +28,7 @@
     <module>org.openhab.binding.modbus.tests</module>
     <module>org.openhab.binding.mqtt.homeassistant.tests</module>
     <module>org.openhab.binding.mqtt.homie.tests</module>
-    <!-- MQTT ruuvigateway tests disabled until fixed (CoreItemFactory + NumberItem)
-      <module>org.openhab.binding.mqtt.ruuvigateway.tests</module>
-    -->
+    <module>org.openhab.binding.mqtt.ruuvigateway.tests</module>
     <module>org.openhab.binding.nest.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
     <module>org.openhab.binding.systeminfo.tests</module>

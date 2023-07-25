@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationService;
+import org.openhab.core.types.UnDefType;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,9 @@ public class VATTransformationService implements TransformationService {
         try {
             source = new QuantityType<>(sourceString);
         } catch (IllegalArgumentException e) {
+            if (UnDefType.NULL.toString().equals(sourceString) || UnDefType.UNDEF.toString().equals(sourceString)) {
+                return sourceString;
+            }
             logger.warn("Input value '{}' could not be converted to a valid number", sourceString);
             throw new TransformationException("VAT Transformation can only be used with numeric inputs", e);
         }
