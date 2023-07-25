@@ -128,7 +128,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.networkAddressService = networkAddressService;
         this.httpService = httpService;
         this.videoExecutorService = Executors.newCachedThreadPool();
-        this.thingId = this.getBridge().getUID().getId();
+        this.thingId = this.getThing().getUID().getId();
         eventIndex = 0;
     }
 

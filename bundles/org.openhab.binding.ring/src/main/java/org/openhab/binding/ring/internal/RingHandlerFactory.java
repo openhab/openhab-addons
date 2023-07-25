@@ -88,7 +88,12 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.info("createHandler thingType: {}", thingTypeUID);
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            return new AccountHandler((Bridge) thing, networkAddressService, httpService, httpPort);
+            if (thing instanceof Bridge) {
+                return new AccountHandler((Bridge) thing, networkAddressService, httpService, httpPort);
+            } else {
+                logger.warn("Account Bridge configured as legacy Thing");
+                return null;
+            }
         } else if (thingTypeUID.equals(THING_TYPE_DOORBELL)) {
             return new DoorbellHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CHIME)) {

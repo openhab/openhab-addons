@@ -58,9 +58,6 @@
 	<thing-type id="other">
 		<label>Other Binding Thing</label>
 		<description>A Ring Other device</description>
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="account"/>
-		</supported-bridge-type-refs>
 
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
@@ -88,9 +85,6 @@
 	<thing-type id="chime">
 		<label>Chime Binding Thing</label>
 		<description>Ring Chime connected to the system</description>
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="account"/>
-		</supported-bridge-type-refs>
 
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
@@ -117,9 +111,6 @@
 	<thing-type id="doorbell">
 		<label>Video Doorbell Binding Thing</label>
 		<description>A Ring Video Doorbell device</description>
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="account"/>
-		</supported-bridge-type-refs>
 
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
@@ -147,9 +138,6 @@
 	<thing-type id="stickupcam">
 		<label>Stickup Cam Binding Thing</label>
 		<description>A Ring Stickup Cam device</description>
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="account"/>
-		</supported-bridge-type-refs>
 
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
