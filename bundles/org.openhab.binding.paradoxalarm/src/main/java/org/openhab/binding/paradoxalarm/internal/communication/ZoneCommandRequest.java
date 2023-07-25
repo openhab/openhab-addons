@@ -12,15 +12,14 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
+
 /**
- * The {@link RequestType}. Enum with possible request types to Paradox system.
- *
  * @author Konstantin Polihronov - Initial contribution
  */
-public enum RequestType {
-    LOGON_SEQUENCE,
-    RAM,
-    EPROM,
-    PARTITION_COMMAND,
-    ZONE_COMMAND
+public class ZoneCommandRequest extends Request {
+
+    public ZoneCommandRequest(RequestType type, IPPacket packet, IResponseReceiver receiver) {
+        super(type, packet, receiver);
+    }
 }
