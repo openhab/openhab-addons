@@ -319,10 +319,15 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                 return 0;
             }
         } else {
-            logger.error("Cannot read from null stream");
+            logger.warn("Cannot read from null stream");
             Future<?> localReadingTask = readingTask;
             if (localReadingTask != null) {
                 localReadingTask.cancel(true);
+                readingTask = null;
+            }
+            TransceiverErrorListener localListener = errorListener;
+            if (localListener != null) {
+                localListener.errorOccured(new IOException("Cannot read from null stream"));
             }
             return 0;
         }
