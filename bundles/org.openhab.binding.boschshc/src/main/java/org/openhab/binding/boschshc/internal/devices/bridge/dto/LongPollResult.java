@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+
 import java.util.ArrayList;
 
 /**
@@ -35,6 +37,6 @@ public class LongPollResult {
      * ],"jsonrpc":"2.0"}
      */
 
-    public ArrayList<DeviceServiceData> result;
+    public ArrayList<BoschSHCServiceState> result;
     public String jsonrpc;
 }

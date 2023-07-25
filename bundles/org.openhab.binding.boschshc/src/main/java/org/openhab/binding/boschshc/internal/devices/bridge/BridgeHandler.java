@@ -34,10 +34,7 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
-import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
-import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
-import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
 import org.openhab.binding.boschshc.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
@@ -409,8 +406,12 @@ public class BridgeHandler extends BaseBridgeHandler {
      * @param result Results from Long Polling
      */
     private void handleLongPollResult(LongPollResult result) {
-        for (DeviceServiceData deviceServiceData : result.result) {
-            handleDeviceServiceData(deviceServiceData);
+        for (BoschSHCServiceState serviceState : result.result) {
+            if(DeviceServiceData.class == serviceState.getClass()) {
+                handleDeviceServiceData((DeviceServiceData) serviceState);
+            } else if (Scenario.class == serviceState.getClass()) {
+
+            }
         }
     }
 

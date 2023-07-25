@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * Utilities for JSON serialization and deserialization using Google Gson.
@@ -35,6 +36,7 @@ public final class GsonUtils {
      * This instance does not serialize or deserialize fields named <code>logger</code>.
      */
     public static final Gson DEFAULT_GSON_INSTANCE = new GsonBuilder()
+            .registerTypeAdapter(BoschSHCServiceState.class, new BoschServiceDataDeserializer())
             .addSerializationExclusionStrategy(new LoggerExclusionStrategy())
             .addDeserializationExclusionStrategy(new LoggerExclusionStrategy()).create();
 }

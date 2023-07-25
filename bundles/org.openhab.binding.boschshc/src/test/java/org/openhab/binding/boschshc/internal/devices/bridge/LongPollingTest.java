@@ -237,7 +237,7 @@ class LongPollingTest {
         verify(longPollHandler).accept(longPollResultCaptor.capture());
         LongPollResult longPollResult = longPollResultCaptor.getValue();
         assertEquals(1, longPollResult.result.size());
-        DeviceServiceData longPollResultItem = longPollResult.result.get(0);
+        DeviceServiceData longPollResultItem = (DeviceServiceData) longPollResult.result.get(0);
         assertEquals("hdm:HomeMaticIP:3014F711A0001916D859A8A9", longPollResultItem.deviceId);
         assertEquals("/devices/hdm:HomeMaticIP:3014F711A0001916D859A8A9/services/PowerSwitch", longPollResultItem.path);
         assertEquals("PowerSwitch", longPollResultItem.id);
