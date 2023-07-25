@@ -7,40 +7,11 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.solax</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: solax Binding</name>
 
-  <dependencies>
-    <!-- <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-client</artifactId>
-      <version>9.4.50.v20221201</version>
-      </dependency>
-      <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.9.1</version>
-      </dependency>
-      <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.30</version>
-      </dependency>
-      <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.2.11</version>
-      <scope>test</scope>
-      </dependency>
-      <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.2.11</version>
-      </dependency>
-    -->
-  </dependencies>
 </project>
