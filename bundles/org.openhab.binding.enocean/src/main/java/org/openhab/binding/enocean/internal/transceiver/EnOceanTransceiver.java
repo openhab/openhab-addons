@@ -180,7 +180,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         this.path = path;
     }
 
-    public void initilize()
+    public void initialize()
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
         SerialPortManager localSerialPortManager = serialPortManager;
         if (localSerialPortManager == null) {
@@ -224,7 +224,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         @Nullable
         Future<?> localReadingTask = readingTask;
         if (localReadingTask == null || localReadingTask.isCancelled()) {
-            localReadingTask = scheduler.submit(new Runnable() {
+            readingTask = scheduler.submit(new Runnable() {
                 @Override
                 public void run() {
                     receivePackets();
@@ -313,13 +313,19 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         InputStream localInputStream = inputStream;
         if (localInputStream != null) {
             try {
-                localInputStream.read(buffer, 0, length);
+                return localInputStream.read(buffer, 0, length);
             } catch (IOException e) {
                 logger.debug("IOException occured while reading the input stream", e);
                 return 0;
             }
+        } else {
+            logger.error("Cannot read from null stream");
+            Future<?> localReadingTask = readingTask;
+            if (localReadingTask != null) {
+                localReadingTask.cancel(true);
+            }
+            return 0;
         }
-        return 0;
     }
 
     protected void informListeners(BasePacket packet) {
