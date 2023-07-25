@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.HostActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager;
-import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostIntf;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
 import org.openhab.binding.freeboxos.internal.api.rest.WebSocketManager;
@@ -44,8 +43,6 @@ public class HostHandler extends ApiConsumerHandler {
 
     // We start in pull mode and switch to push after a first update...
     private boolean pushSubscribed = false;
-    // ... if not vetoed
-    protected boolean vetoPushSubscription = false;
 
     public HostHandler(Thing thing) {
         super(thing);
@@ -54,23 +51,26 @@ public class HostHandler extends ApiConsumerHandler {
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(result -> {
-            LanHost host = result.host();
-            properties.put(Thing.PROPERTY_VENDOR, host.vendorName());
-            host.getName(Source.UPNP).ifPresent(upnpName -> properties.put(Source.UPNP.name(), upnpName));
-        });
+        LanHost host = getLanHost();
+        properties.put(Thing.PROPERTY_VENDOR, host.vendorName());
+        host.getName(Source.UPNP).ifPresent(upnpName -> properties.put(Source.UPNP.name(), upnpName));
     }
 
     @Override
     public void dispose() {
+        cancelPushSubscription();
+        super.dispose();
+    }
+
+    protected void cancelPushSubscription() {
         if (pushSubscribed) {
             try {
                 getManager(WebSocketManager.class).unregisterListener(getMac());
             } catch (FreeboxException e) {
                 logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
             }
+            pushSubscribed = false;
         }
-        super.dispose();
     }
 
     @Override
@@ -78,15 +78,17 @@ public class HostHandler extends ApiConsumerHandler {
         if (pushSubscribed) {
             return;
         }
-        HostIntf data = getManager(LanBrowserManager.class).getHost(getMac())
-                .orElseThrow(() -> new FreeboxException("Host data not found"));
 
-        updateConnectivityChannels(data.host());
-        if (!vetoPushSubscription) {
-            logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
-            getManager(WebSocketManager.class).registerListener(data.host().getMac(), this);
-            pushSubscribed = true;
-        }
+        LanHost host = getLanHost();
+        updateConnectivityChannels(host);
+        logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
+        getManager(WebSocketManager.class).registerListener(host.getMac(), this);
+        pushSubscribed = true;
+    }
+
+    protected LanHost getLanHost() throws FreeboxException {
+        return getManager(LanBrowserManager.class).getHost(getMac()).map(hostIntf -> hostIntf.host())
+                .orElseThrow(() -> new FreeboxException("Host data not found"));
     }
 
     public void updateConnectivityChannels(LanHost host) {

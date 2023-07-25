@@ -36,8 +36,6 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import inet.ipaddr.mac.MACAddress;
-
 /**
  * The {@link WifiStationHandler} is responsible for handling everything associated to
  * any Freebox thing types except the bridge thing type.
@@ -52,7 +50,6 @@ public class WifiStationHandler extends HostHandler {
 
     public WifiStationHandler(Thing thing) {
         super(thing);
-        vetoPushSubscription = true;
     }
 
     @Override
@@ -103,27 +100,24 @@ public class WifiStationHandler extends HostHandler {
     }
 
     @Override
-    public MACAddress getMac() {
-        MACAddress mac = super.getMac();
-        HostName identifier = getConfigAs(WifiHostConfiguration.class).getIdentifier();
-        if (identifier != null) {
-            try {
+    protected LanHost getLanHost() throws FreeboxException {
+        try {
+            return super.getLanHost();
+        } catch (FreeboxException e) {
+            HostName identifier = getConfigAs(WifiHostConfiguration.class).getIdentifier();
+            if (identifier != null) {
+                cancelPushSubscription();
                 Optional<LanHost> lanHost = getManager(LanBrowserManager.class).getHost(identifier);
-                if (lanHost.isPresent()) {
-                    MACAddress currentMac = lanHost.get().getMac();
-                    if (!currentMac.equals(mac)) {
-                        Configuration thingConfig = editConfiguration();
-                        thingConfig.put(Thing.PROPERTY_MAC_ADDRESS, currentMac.toColonDelimitedString());
-                        updateConfiguration(thingConfig);
-                        logger.debug("Mac Address of the Wifi network device changed, configuration updated");
-                    }
-                    return currentMac;
-                }
-            } catch (FreeboxException e) {
-                logger.warn("Unable to search identifier {} on service {} : {}", identifier.name(), identifier.source(),
-                        e.getMessage());
+                return lanHost.map(host -> {
+                    Configuration thingConfig = editConfiguration();
+                    thingConfig.put(Thing.PROPERTY_MAC_ADDRESS, host.getMac().toColonDelimitedString());
+                    updateConfiguration(thingConfig);
+                    logger.info("MAC address of the wifihost {} changed, configuration updated to {}", thing.getUID(),
+                            host.getMac());
+                    return host;
+                }).orElseThrow(() -> new FreeboxException("Host data not found - mDNS failed also"));
             }
+            throw new FreeboxException("Host not found - no mDNS alternative");
         }
-        return mac;
     }
 }

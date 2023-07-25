@@ -18,7 +18,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostName;
 
 /**
- * The {@link WifiHostConfiguration} holds configuration informations needed to
+ * The {@link WifiHostConfiguration} holds configuration information needed to
  * access/poll a wifi network device
  *
  * @author Gaël L'hopital - Initial contribution

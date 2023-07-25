@@ -166,12 +166,12 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof FreeboxOsHandler) {
+            if (handler instanceof FreeboxOsHandler fbOsHandler) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     if (statusDrivenByBridge) {
                         updateStatus(ThingStatus.ONLINE);
                     }
-                    return (FreeboxOsHandler) handler;
+                    return fbOsHandler;
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else {

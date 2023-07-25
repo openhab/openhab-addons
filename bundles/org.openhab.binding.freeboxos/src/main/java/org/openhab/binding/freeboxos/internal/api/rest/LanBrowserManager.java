@@ -135,7 +135,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
 
         public String vendorName() {
             String localVendor = vendorName;
-            return localVendor != null ? localVendor : "Unknown";
+            return localVendor == null || localVendor.isEmpty() ? "Unknown" : localVendor;
         }
 
         public Optional<String> getPrimaryName() {
@@ -148,7 +148,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
         }
 
         public Optional<String> getName(Source searchedSource) {
-            return getNames().stream().filter(name -> name.source == searchedSource).findFirst().map(name -> name.name);
+            return getNames().stream().filter(name -> name.source == searchedSource).findFirst().map(HostName::name);
         }
 
         public MACAddress getMac() {
