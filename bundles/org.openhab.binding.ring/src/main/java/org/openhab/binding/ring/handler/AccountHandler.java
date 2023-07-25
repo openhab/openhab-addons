@@ -215,9 +215,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         }
     }
 
-    /**
-     * Check every 60 seconds if one of the alarm times is reached.
-     */
     protected void startAutomaticRefresh(final int refreshInterval) {
         final Runnable runnable = new Runnable() {
             @Override
