@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Possible states for a smoke detector.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault

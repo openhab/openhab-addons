@@ -125,7 +125,7 @@ public class TapoUniversalDevice extends TapoDevice {
         } else {
             HashMap<String, Object> newState = new HashMap<>();
             newState.put(JSON_KEY_ON, true);
-            newState.put(JSON_KEY_BRIGHTNES, newBrightness);
+            newState.put(JSON_KEY_BRIGHTNESS, newBrightness);
             connector.sendDeviceCommands(newState);
         }
     }
@@ -140,7 +140,7 @@ public class TapoUniversalDevice extends TapoDevice {
         newState.put(JSON_KEY_ON, true);
         newState.put(JSON_KEY_HUE, command.getHue());
         newState.put(JSON_KEY_SATURATION, command.getSaturation());
-        newState.put(JSON_KEY_BRIGHTNES, command.getBrightness());
+        newState.put(JSON_KEY_BRIGHTNESS, command.getBrightness());
         connector.sendDeviceCommands(newState);
     }
 

@@ -42,6 +42,7 @@ import org.openhab.binding.boschshc.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.binding.boschshc.internal.services.dto.JsonRestExceptionResponse;
 import org.openhab.core.thing.Bridge;
@@ -58,7 +59,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
@@ -75,11 +75,6 @@ import com.google.gson.reflect.TypeToken;
 public class BridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
-
-    /**
-     * gson instance to convert a class to json string and back.
-     */
-    private final Gson gson = new Gson();
 
     /**
      * Handler to do long polling.
@@ -143,6 +138,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             // prepare SSL key and certificates
             factory = new BoschSslUtil(ipAddress).getSslContextFactory();
         } catch (PairingFailedException e) {
+            logger.debug("Error while obtaining SSL context factory.", e);
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-ssl");
             return;
@@ -187,7 +183,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             try {
                 httpClient.stop();
             } catch (Exception e) {
-                logger.debug("HttpClient failed on bridge disposal: {}", e.getMessage());
+                logger.debug("HttpClient failed on bridge disposal: {}", e.getMessage(), e);
             }
             this.httpClient = null;
         }
@@ -197,6 +193,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // commands are handled by individual device handlers
     }
 
     /**
@@ -262,15 +259,19 @@ public class BridgeHandler extends BaseBridgeHandler {
 
             // start long polling loop
             this.updateStatus(ThingStatus.ONLINE);
-            try {
-                this.longPolling.start(httpClient);
-            } catch (LongPollingFailedException e) {
-                this.handleLongPollFailure(e);
-            }
+            startLongPolling(httpClient);
 
         } catch (InterruptedException e) {
             this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.interrupted");
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private void startLongPolling(BoschHttpClient httpClient) {
+        try {
+            this.longPolling.start(httpClient);
+        } catch (LongPollingFailedException e) {
+            this.handleLongPollFailure(e);
         }
     }
 
@@ -334,11 +335,10 @@ public class BridgeHandler extends BaseBridgeHandler {
 
             Type collectionType = new TypeToken<ArrayList<Device>>() {
             }.getType();
-            @Nullable
-            List<Device> nullableDevices = gson.fromJson(content, collectionType);
+            List<Device> nullableDevices = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, collectionType);
             return Optional.ofNullable(nullableDevices).orElse(Collections.emptyList());
         } catch (TimeoutException | ExecutionException e) {
-            logger.debug("Request devices failed because of {}!", e.getMessage());
+            logger.debug("Request devices failed because of {}!", e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -371,7 +371,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 Type collectionType = new TypeToken<ArrayList<Room>>() {
                 }.getType();
 
-                ArrayList<Room> rooms = gson.fromJson(content, collectionType);
+                ArrayList<Room> rooms = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, collectionType);
                 return Objects.requireNonNullElse(rooms, emptyRooms);
             } catch (TimeoutException | ExecutionException e) {
                 logger.debug("Request rooms failed because of {}!", e.getMessage());
@@ -452,7 +452,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         // the battery level service receives no individual state object but rather requires the DeviceServiceData
         // structure
         if ("BatteryLevel".equals(deviceServiceData.id)) {
-            return gson.toJsonTree(deviceServiceData);
+            return GsonUtils.DEFAULT_GSON_INSTANCE.toJsonTree(deviceServiceData);
         }
 
         return deviceServiceData.state;
@@ -473,8 +473,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             // All children of this should implement BoschSHCHandler
             @Nullable
             ThingHandler baseHandler = childThing.getHandler();
-            if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
-                BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
+            if (baseHandler instanceof BoschSHCHandler handler) {
                 @Nullable
                 String deviceId = handler.getBoschID();
 
@@ -530,7 +529,8 @@ public class BridgeHandler extends BaseBridgeHandler {
         Request request = httpClient.createRequest(url, GET);
 
         return httpClient.sendRequest(request, Device.class, Device::isValid, (Integer statusCode, String content) -> {
-            JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
+            JsonRestExceptionResponse errorResponse = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content,
+                    JsonRestExceptionResponse.class);
             if (errorResponse != null && JsonRestExceptionResponse.isValid(errorResponse)) {
                 if (errorResponse.errorCode.equals(JsonRestExceptionResponse.ENTITY_NOT_FOUND)) {
                     return new BoschSHCException("@text/offline.conf-error.invalid-device-id");
@@ -628,7 +628,8 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         int statusCode = contentResponse.getStatus();
         if (statusCode != 200) {
-            JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
+            JsonRestExceptionResponse errorResponse = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content,
+                    JsonRestExceptionResponse.class);
             if (errorResponse != null) {
                 throw new BoschSHCException(
                         String.format("State request with URL %s failed with status code %d and error code %s", url,

@@ -40,7 +40,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 /**
@@ -80,12 +79,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         public final Collection<String> affectedChannels;
     }
 
-    /**
-     * Reusable gson instance to convert a class to json string and back in derived classes.
-     */
-    protected static final Gson GSON = new Gson();
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Services of the device.
@@ -450,7 +444,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     private <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
             Collection<String> affectedChannels) {
-        this.services.add(new DeviceService<TState>(service, affectedChannels));
+        this.services.add(new DeviceService<>(service, affectedChannels));
     }
 
     /**

@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
  *
  */
 @NonNullByDefault
-public class LongPollingFailedExceptionTest {
+class LongPollingFailedExceptionTest {
 
     @Test
-    public void testConstructor() {
+    void testConstructor() {
         RuntimeException testException = new RuntimeException("test exception");
         LongPollingFailedException longPollingFailedException = new LongPollingFailedException("message",
                 testException);

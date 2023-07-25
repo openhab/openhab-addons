@@ -111,7 +111,7 @@ public class TapoThingConstants {
     public static final String CLOUD_JSON_KEY_TYPE = "deviceType";
 
     /*** DEVICE JSON STRINGS (DEVICE) ***/
-    public static final String JSON_KEY_BRIGHTNES = "brightness";
+    public static final String JSON_KEY_BRIGHTNESS = "brightness";
     public static final String JSON_KEY_COLORTEMP = "color_temp";
     public static final String JSON_KEY_FW = "fw_ver";
     public static final String JSON_KEY_HUE = "hue";
@@ -138,12 +138,14 @@ public class TapoThingConstants {
     public static final String JSON_KEY_LIGHTNING_EFFECT_BRIGHNTESS = "brightness";
     public static final String JSON_KEY_LIGHTNING_EFFECT_COLORTEMPRANGE = "color_temp_range";
     public static final String JSON_KEY_LIGHTNING_EFFECT_CUSTOM = "custom";
+    public static final String JSON_KEY_LIGHTNING_EFFECT_OFF = "off";
     public static final String JSON_KEY_LIGHTNING_EFFECT_DISPLAYCOLORS = "displayColors";
     public static final String JSON_KEY_LIGHTNING_EFFECT_ENABLE = "enable";
     public static final String JSON_KEY_LIGHTNING_EFFECT_ID = "id";
     public static final String JSON_KEY_LIGHTNING_EFFECT_NAME = "name";
     public static final String JSON_KEY_LIGHTNING_DYNAMIC_ENABLE = "dynamic_light_effect_enable";
     public static final String JSON_KEY_LIGHTNING_DYNAMIC_ID = "dynamic_light_effect_id";
+
     // energy monitoring
     public static final String JSON_KEY_ENERGY_POWER = "current_power";
     public static final String JSON_KEY_ENERGY_RUNTIME_TODAY = "today_runtime";

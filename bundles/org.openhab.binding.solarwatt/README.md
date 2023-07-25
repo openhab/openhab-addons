@@ -4,10 +4,22 @@ Binding to query a [solarwatt](https://www.solarwatt.de/) [energy manager](https
 
 All supported values and devices were discovered while playing with my own energy manager.
 
+## Supported devices
+
+* Solarwatt Energymanager; ie. the DIN rail mounted device in your house distribution.
+
+## Not supported by this binding
+
+* Solarwatt Manager/Manager Flex; ie. the black square device that is wall mounted.
+ 
+The Solarwatt Manager already contains an OpenHAB installation which can be connected to
+other installations via [Remote openHAB Binding](https://www.openhab.org/addons/bindings/remoteopenhab/).
+
+
 ## Supported Things
 
 | Thing Type ID    | Devices                                                |
-| ---------------- | ------------------------------------------------------ |
+|------------------|--------------------------------------------------------|
 | energymanager    | EnergyManager itself.                                  |
 | location         | Location part of the EnergyManager.                    |
 | pvplant          | Power producing part of the EnergyManager.             |
@@ -16,6 +28,7 @@ All supported values and devices were discovered while playing with my own energ
 | batteryconverter | battery storage systems; e.g. MyReserve                |
 | powermeter       | powermeters; e.g. S0BusCounter, MyReserve              |
 | evstation        | electric-vehicle charging station; e.g. Keba Wallbox   |
+| smartheater      | Radiators for PV systems; e.g. EGO SmartHeater         |
 
 ## Discovery
 
@@ -141,6 +154,18 @@ All of _Inverter_ plus
 | --------------- | -------------------- | ----------------------------------- |
 | feedInLimit     | Number:Dimensionless | Current derating setting in percent |
 
+### SmartHeater
+
+| Channel Type ID   | Item Type          | Description                            |
+|-------------------|--------------------|----------------------------------------|
+| workACIn          | Number:Energy      | Energy fed into smart heater           |
+| powerACIn         | Number:Power       | Power fed into smart heater            |
+| temperature       | Number:Temperature | Current heating temperature in celsius |
+| temperatureBoiler | Number:Temperature | Current boiler temperature in celsius  |
+| temperatureSet    | Number:Temperature | Set temperature                        |
+| temperatureSetMin | Number:Temperature | Minimum adjustable temperature         |
+| temperatureSetMax | Number:Temperature | Maximum adjustable temperature         |
+
 ## Example
 
 demo.things:
@@ -249,4 +274,13 @@ Number Solarwatt_Manager_ERC05000008007_FractionCPULoadAverageLastFifteenMinutes
 // Gridflow com.kiwigrid.kiwiapp.gridflow.GridFlow
 Number Solarwatt_Gridflow_UrnKiwigridGridflowERC05000008007_CurrentLimit "CurrentLimit [%d A]" <energy> ["Point"]  {channel="solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007:currentLimit"}
 Number Solarwatt_Gridflow_UrnKiwigridGridflowERC05000008007_FeedInLimit "FeedInLimit [%d %%]" <status> ["Point"]  {channel="solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007:feedInLimit"}
+
+// SmartHeater com.kiwigrid.devices.smartheater.SmartHeater
+Number:Power Solarwatt_Smartheater_UrnEgoSmartheater62018833_PowerACIn "SmartHeater powerACIn [%.2f W]" <energy> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:powerACIn" }
+Number:Energy Solarwatt_Smartheater_UrnEgoSmartheater62018833_WorkACIn "SmartHeater workACIn [%.2f Wh]" <energy> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:workACIn" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_TemperatureBoiler "SmartHeater temperatureBoiler [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperatureBoiler" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_Temperature "SmartHeater temperature [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperature" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_TemperatureSet "SmartHeater temperatureSet [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperatureSet" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_TemperatureSetMax "SmartHeater temperatureSetMax [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperatureSetMax" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_TemperatureSetMin "SmartHeater temperatureSetMin [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperatureSetMin" }
 ```

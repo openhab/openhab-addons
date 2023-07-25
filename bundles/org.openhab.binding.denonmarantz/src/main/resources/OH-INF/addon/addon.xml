@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>DenonMarantz Binding</name>
 	<description>Binding for controlling network enabled Denon and Marantz receivers.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -40,13 +40,15 @@ Click the 'Show advanced' checkbox on the Thing configuration page to display th
 For both the heating and cooling programs, the 7-day repeating schedule has 4 setpoint periods per day (Morning, Day, Evening, Night).
 In order for the heating or cooling program to be valid, all time and setpoint fields must be populated.
 The time is expressed in 24-hour (HH:mm) format and the time value for each successive period within a day must be greater than the previous period.
-Once the schedule is populated and the configuration saved, the new schedule will be sent to the thermostat during binding initialization, overwriting its existing schedule.
+Once the schedule is populated and the configuration saved, the new schedule will be sent to the thermostat each time the binding is initialized, overwriting its existing schedule.
+If the thermostat's current setpoint was overridden, it will be reset to the applicable program setpoint.
 
 If one or more time or setpoint fields are left blank in a given schedule and the configuration saved, the Thing will display a configuration error until the entries are corrected.
 A heating or cooling schedule with all fields left blank will be ignored by the binding.
 In that case, the existing schedule on the thermostat will remain untouched.
 
-If the thermostat schedule is to be managed by openHAB, the thermostat should be de-provisioned from the MyRadioThermostat/EnergyHub cloud service to prevent the openHAB schedule from being overridden.
+The MyRadioThermostat/EnergyHub cloud service that previously enabled remote control and scheduling of the thermostat is now defunct.
+As such, disabling cloud connectivity on a thermostat that was previously connected to the cloud service may slightly improve the speed and reliability of accessing the local API.
 
 The thermostat can de-provisioned from the cloud by issuing the following `curl` commands:
 
@@ -60,6 +62,8 @@ curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}' -X POST
 - The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it with excessive amounts of simultaneous commands.
 - When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
 - Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
+- Clock sync will not occur if `override` flag is on (i.e. the program setpoint has been manually overridden) because syncing time will reset the temperature back to the program setpoint.
+- The `override` flag is not reported correctly on older thermostat versions (i.e. /tstat/model reports v1.09)
 - The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
 - Humidity information is available only when using a CT80 thermostat.
 
@@ -88,6 +92,7 @@ The thermostat information that is retrieved is available as these channels:
 | today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                              |
 | yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                          |
 | yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                          |
+| message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed    |
 
 ## Full Example
 
@@ -158,15 +163,16 @@ Number Therm_FanStatus          "Fan Status [MAP(radiotherm.map):%s_fstus]"     
 Number Therm_Override           "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
 Switch Therm_Hold               "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
 
-Number Therm_Day       "Thermostat Day [%s]"                                 { channel="radiothermostat:rtherm:mytherm1:day" }
-Number Therm_Hour      "Thermostat Hour [%s]"                                { channel="radiothermostat:rtherm:mytherm1:hour" }
-Number Therm_Minute    "Thermostat Minute [%s]"                              { channel="radiothermostat:rtherm:mytherm1:minute" }
+Number Therm_Day       "Thermostat Day [%d]"                                 { channel="radiothermostat:rtherm:mytherm1:day" }
+Number Therm_Hour      "Thermostat Hour [%d]"                                { channel="radiothermostat:rtherm:mytherm1:hour" }
+Number Therm_Minute    "Thermostat Minute [%d]"                              { channel="radiothermostat:rtherm:mytherm1:minute" }
 String Therm_Dstmp     "Thermostat DateStamp [%s]" <time>                    { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
 
 Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime" }
 Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
 Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
 Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
+String Therm_Message   "Message: [%s]"                                      { channel="radiothermostat:rtherm:mytherm1:message" }
 
 // Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
 Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>     { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
@@ -228,5 +234,30 @@ then
   // JSON to send directly to the thermostat's '/tstat' endpoint
   // See RadioThermostat_CT50_Honeywell_Wifi_API_V1.3.pdf for more detail
   actions.sendRawCommand('{"hold":1, "t_heat":' + "68" + ', "tmode":1}')
+
+  // Also a command can be sent to a specific endpoint on the thermostat by
+  // specifying it as the second argument to sendRawCommand():
+
+  // Reboot the thermostat
+  // actions.sendRawCommand('{"command": "reboot"}', 'sys/command')
+
+  // Control the energy LED (CT80 only) [0 = off, 1 = green, 2 = yellow, 4 = red]
+  // actions.sendRawCommand('{"energy_led": 1}', 'tstat/led')
+
+  // Send a message to the User Message Area (CT80 only)
+  // actions.sendRawCommand('{"line": 0, "message": "Hello World!"}', 'tstat/uma')
+
+end
+
+rule "Display outside temp in thermostat message area"
+when
+  // An item containing the current outside temperature
+  Item OutsideTemp changed
+then
+  // Display up to 5 numbers in the thermostat's Price Message Area (PMA)
+  // A decimal point can be used. CT80 can display a negative '-' number
+  // Send null or empty string to clear the number and restore the time display
+  var Number temp = Math.round((OutsideTemp.state as DecimalType).doubleValue).intValue
+  Therm_Message.sendCommand(temp)
 end
 ```

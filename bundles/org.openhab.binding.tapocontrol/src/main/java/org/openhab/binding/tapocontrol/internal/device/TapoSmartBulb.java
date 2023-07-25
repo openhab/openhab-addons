@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.device;
 
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
@@ -118,7 +119,7 @@ public class TapoSmartBulb extends TapoDevice {
         } else {
             HashMap<String, Object> newState = new HashMap<>();
             newState.put(JSON_KEY_ON, true);
-            newState.put(JSON_KEY_BRIGHTNES, newBrightness);
+            newState.put(JSON_KEY_BRIGHTNESS, newBrightness);
             connector.sendDeviceCommands(newState);
         }
     }
@@ -133,7 +134,7 @@ public class TapoSmartBulb extends TapoDevice {
         newState.put(JSON_KEY_ON, true);
         newState.put(JSON_KEY_HUE, command.getHue().intValue());
         newState.put(JSON_KEY_SATURATION, command.getSaturation().intValue());
-        newState.put(JSON_KEY_BRIGHTNES, command.getBrightness().intValue());
+        newState.put(JSON_KEY_BRIGHTNESS, command.getBrightness().intValue());
         newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE, false);
         connector.sendDeviceCommands(newState);
     }
@@ -158,15 +159,13 @@ public class TapoSmartBulb extends TapoDevice {
      */
     protected void setLightEffect(String fxName) {
         HashMap<String, Object> newState = new HashMap<>();
-        if (fxName.length() > 0) {
-            newState.put(JSON_KEY_ON, true);
-            newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE, true);
-            newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ID, fxName);
+        if (fxName.length() > 0 && !fxName.equals(JSON_KEY_LIGHTNING_EFFECT_OFF)) {
+            newState.put(JSON_KEY_LIGHTNING_EFFECT_ENABLE, true);
+            newState.put(JSON_KEY_LIGHTNING_EFFECT_ID, fxName);
         } else {
-            newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE, false);
-            newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ID, "");
+            newState.put(JSON_KEY_LIGHTNING_EFFECT_ENABLE, false);
         }
-        connector.sendDeviceCommands(newState);
+        connector.sendDeviceCommands(DEVICE_CMD_SET_LIGHT_FX, newState);
     }
 
     /**

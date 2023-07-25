@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>GREE Binding</name>
 	<description>This is the binding for GREE air conditioners.</description>
+	<connection>local</connection>
 
 </addon:addon>

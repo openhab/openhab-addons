@@ -1,0 +1,211 @@
+[
+	{
+		"creationtime": "2022-10-18T12:02:45Z",
+		"data": [
+			{
+				"id": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+				"id_v1": "/lights/18",
+				"on": {
+					"on": false
+				},
+				"owner": {
+					"rid": "d8da96f0-0637-40bc-a89d-65ac47bceb0a",
+					"rtype": "device"
+				},
+				"type": "light"
+			},
+			{
+				"id": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+				"id_v1": "/lights/10",
+				"on": {
+					"on": false
+				},
+				"owner": {
+					"rid": "adeb3425-6a6b-49a0-8262-129126de7941",
+					"rtype": "device"
+				},
+				"type": "light"
+			},
+			{
+				"dimming": {
+					"brightness": 100.0
+				},
+				"id": "9228d710-3c54-4ae4-8c88-bfe57d8fd220",
+				"id_v1": "/groups/0",
+				"owner": {
+					"rid": "f467cdcc-405f-40ab-8db9-4664aa1c3d63",
+					"rtype": "bridge_home"
+				},
+				"type": "grouped_light"
+			},
+			{
+				"id": "6e2fee8d-c25f-4468-8ac8-5ed75c6f3cf1",
+				"id_v1": "/groups/9",
+				"on": {
+					"on": false
+				},
+				"owner": {
+					"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+					"rtype": "zone"
+				},
+				"type": "grouped_light"
+			},
+			{
+				"dimming": {
+					"brightness": 0.0
+				},
+				"id": "6e2fee8d-c25f-4468-8ac8-5ed75c6f3cf1",
+				"id_v1": "/groups/9",
+				"owner": {
+					"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+					"rtype": "zone"
+				},
+				"type": "grouped_light"
+			},
+			{
+				"id": "1bfb7090-e2b3-4417-8834-86e1ebb0a50c",
+				"id_v1": "/groups/10",
+				"on": {
+					"on": false
+				},
+				"owner": {
+					"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+					"rtype": "zone"
+				},
+				"type": "grouped_light"
+			},
+			{
+				"dimming": {
+					"brightness": 0.0
+				},
+				"id": "1bfb7090-e2b3-4417-8834-86e1ebb0a50c",
+				"id_v1": "/groups/10",
+				"owner": {
+					"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+					"rtype": "zone"
+				},
+				"type": "grouped_light"
+			},
+			{
+				"id": "3913b23e-4ba8-4ebd-965d-e15c7b3213ce",
+				"id_v1": "/groups/13",
+				"on": {
+					"on": false
+				},
+				"owner": {
+					"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+					"rtype": "room"
+				},
+				"type": "grouped_light"
+			},
+			{
+				"dimming": {
+					"brightness": 0.0
+				},
+				"id": "3913b23e-4ba8-4ebd-965d-e15c7b3213ce",
+				"id_v1": "/groups/13",
+				"owner": {
+					"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+					"rtype": "room"
+				},
+				"type": "grouped_light"
+			}
+		],
+		"id": "dba95b8a-e763-4667-a667-a10cd8ba5b3e",
+		"type": "update"
+	},
+	{
+		"creationtime": "2022-10-18T12:02:45Z",
+		"data": [
+			{
+				"button": {
+					"last_event": "short_release"
+				},
+				"id": "eb2c07bc-1d09-4096-a044-dec29b40619a",
+				"id_v1": "/sensors/14",
+				"owner": {
+					"rid": "431026fb-298c-4726-8ce4-47450fea13c4",
+					"rtype": "device"
+				},
+				"type": "button"
+			}
+		],
+		"id": "5686a018-0779-4f65-b7d1-2943b5a6b066",
+		"type": "update"
+	},
+    {
+        "creationtime": "2023-03-28T13:30:51Z",
+        "data": [
+            {
+                "id": "224d33d8-ceb7-4a8d-a3c9-3c71c9996a59",
+                "id_v1": "/lights/1",
+                "on": {
+                    "on": true
+                },
+                "owner": {
+                    "rid": "6485b533-3d67-429c-89ff-e7ba813513f6",
+                    "rtype": "device"
+                },
+                "type": "light"
+            },
+            {
+                "id": "fc344d9a-4c63-4e38-8082-d23b48b2152c",
+                "id_v1": "/scenes/zqEj6fQ8nSN8AUO",
+                "status": {
+                    "active": "inactive"
+                },
+                "type": "scene"
+            },
+            {
+                "id": "c766b174-536e-4a2d-bc62-e3365c5229ae",
+                "id_v1": "/groups/0",
+                "on": {
+                    "on": true
+                },
+                "owner": {
+                    "rid": "bd9983ea-ce23-447e-95a8-cfd02bd037d7",
+                    "rtype": "bridge_home"
+                },
+                "type": "grouped_light"
+            },
+            {
+                "dimming": {
+                    "brightness": 84.65
+                },
+                "id": "c766b174-536e-4a2d-bc62-e3365c5229ae",
+                "id_v1": "/groups/0",
+                "owner": {
+                    "rid": "bd9983ea-ce23-447e-95a8-cfd02bd037d7",
+                    "rtype": "bridge_home"
+                },
+                "type": "grouped_light"
+            },
+            {
+                "id": "ba365fdb-f055-410c-9021-561b725cdc22",
+                "id_v1": "/groups/1",
+                "on": {
+                    "on": true
+                },
+                "owner": {
+                    "rid": "dc30bab1-66e9-4b8e-9d9d-8725a770c515",
+                    "rtype": "room"
+                },
+                "type": "grouped_light"
+            },
+            {
+                "dimming": {
+                    "brightness": 84.65
+                },
+                "id": "ba365fdb-f055-410c-9021-561b725cdc22",
+                "id_v1": "/groups/1",
+                "owner": {
+                    "rid": "dc30bab1-66e9-4b8e-9d9d-8725a770c515",
+                    "rtype": "room"
+                },
+                "type": "grouped_light"
+            }
+        ],
+        "id": "441f1e29-f02f-4936-bbfa-c6c08ff1ea12",
+        "type": "update"
+    }
+]

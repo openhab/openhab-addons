@@ -60,6 +60,13 @@ import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_01;
 import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_01_FXBH;
 import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_02;
 import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_03;
+import org.openhab.binding.enocean.internal.eep.A5_09.A5_09_02;
+import org.openhab.binding.enocean.internal.eep.A5_09.A5_09_04;
+import org.openhab.binding.enocean.internal.eep.A5_09.A5_09_05;
+import org.openhab.binding.enocean.internal.eep.A5_09.A5_09_08;
+import org.openhab.binding.enocean.internal.eep.A5_09.A5_09_09;
+import org.openhab.binding.enocean.internal.eep.A5_09.A5_09_0C;
+import org.openhab.binding.enocean.internal.eep.A5_09.A5_09_0D;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_01;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_02;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_03;
@@ -299,6 +306,17 @@ public enum EEPType {
     LightSensor01(RORG._4BS, 0x06, 0x01, false, A5_06_01.class, THING_TYPE_LIGHTSENSOR, CHANNEL_ILLUMINATION),
     LightSensor02(RORG._4BS, 0x06, 0x01, false, "ELTAKO", ELTAKOID, A5_06_01_ELTAKO.class, THING_TYPE_LIGHTSENSOR,
             CHANNEL_ILLUMINATION),
+
+    GasSensor_A5_09_02(RORG._4BS, 0x09, 0x02, false, A5_09_02.class, THING_TYPE_GASSENSOR, CHANNEL_CO,
+            CHANNEL_TEMPERATURE, CHANNEL_BATTERY_VOLTAGE),
+    GasSensor_A5_09_04(RORG._4BS, 0x09, 0x04, false, A5_09_04.class, THING_TYPE_GASSENSOR, CHANNEL_CO2,
+            CHANNEL_TEMPERATURE, CHANNEL_HUMIDITY),
+    GasSensor_A5_09_05(RORG._4BS, 0x09, 0x05, false, A5_09_05.class, THING_TYPE_GASSENSOR, CHANNEL_VOC, CHANNEL_VOC_ID),
+    GasSensor_A5_09_08(RORG._4BS, 0x09, 0x08, false, A5_09_08.class, THING_TYPE_GASSENSOR, CHANNEL_CO2),
+    GasSensor_A5_09_09(RORG._4BS, 0x09, 0x09, false, A5_09_09.class, THING_TYPE_GASSENSOR, CHANNEL_CO2),
+    GasSensor_A5_09_0C(RORG._4BS, 0x09, 0x0C, false, A5_09_0C.class, THING_TYPE_GASSENSOR, CHANNEL_VOC, CHANNEL_VOC_ID),
+    GasSensor_A5_09_0D(RORG._4BS, 0x09, 0x0D, false, A5_09_0D.class, THING_TYPE_GASSENSOR, CHANNEL_HUMIDITY,
+            CHANNEL_TVOC, CHANNEL_TEMPERATURE),
 
     RoomPanel_A5_10_01(RORG._4BS, 0x10, 0x01, false, A5_10_01.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_SETPOINT, CHANNEL_FANSPEEDSTAGE, CHANNEL_OCCUPANCY),

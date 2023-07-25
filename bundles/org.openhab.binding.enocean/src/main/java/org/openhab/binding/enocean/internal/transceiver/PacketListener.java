@@ -22,7 +22,7 @@ import org.openhab.binding.enocean.internal.messages.BasePacket;
 @NonNullByDefault
 public interface PacketListener {
 
-    public void packetReceived(BasePacket packet);
+    void packetReceived(BasePacket packet);
 
-    public long getEnOceanIdToListenTo();
+    long getEnOceanIdToListenTo();
 }

@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -121,13 +120,12 @@ public interface CommonInterface {
                 .filter(channel -> ChannelKind.STATE.equals(channel.getKind()) && isLinked(channel.getUID()));
     }
 
-    default Optional<CommonInterface> getHomeHandler() {
-        CommonInterface bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            return bridgeHandler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(bridgeHandler)
-                    : Optional.empty();
+    default Optional<CommonInterface> recurseUpToHomeHandler(@Nullable CommonInterface handler) {
+        if (handler == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return handler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(handler)
+                : recurseUpToHomeHandler(handler.getBridgeHandler());
     }
 
     default List<CommonInterface> getActiveChildren() {
@@ -135,8 +133,7 @@ public interface CommonInterface {
         if (thing instanceof Bridge) {
             return ((Bridge) thing).getThings().stream().filter(Thing::isEnabled)
                     .filter(th -> th.getStatusInfo().getStatusDetail() != ThingStatusDetail.BRIDGE_OFFLINE)
-                    .map(Thing::getHandler).filter(Objects::nonNull).map(CommonInterface.class::cast)
-                    .collect(Collectors.toList());
+                    .map(Thing::getHandler).filter(Objects::nonNull).map(CommonInterface.class::cast).toList();
         }
         return List.of();
     }
@@ -146,7 +143,8 @@ public interface CommonInterface {
     }
 
     default <T extends RestCapability<?>> Optional<T> getHomeCapability(Class<T> clazz) {
-        return getHomeHandler().map(handler -> handler.getCapabilities().get(clazz)).orElse(Optional.empty());
+        return recurseUpToHomeHandler(this).map(handler -> handler.getCapabilities().get(clazz))
+                .orElse(Optional.empty());
     }
 
     default void setNewData(NAObject newData) {
@@ -182,7 +180,7 @@ public interface CommonInterface {
             String channelName = channelUID.getIdWithoutGroup();
             getCapabilities().values().forEach(cap -> cap.handleCommand(channelName, command));
         } else {
-            getLogger().debug("Command {}, on channel {} dropped - thing is not ONLINE", command, channelUID);
+            getLogger().debug("Command {} on channel {} dropped - thing is not ONLINE", command, channelUID);
         }
     }
 

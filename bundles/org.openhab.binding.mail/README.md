@@ -40,15 +40,41 @@ Default ports are `143` (for `PLAIN` and `STARTTLS`) and `993` (for `SSL`) in th
 ## Channels
 
 There are no channels for the `smtp` thing.
-The `imap` and `pop3` things can be extended with `mailcount`-type channels.
+The `imap` and `pop3` things can be extended with `mailcount`- and `content`-type channels.
 
 ### Type `mailcount`
 
 Each channel has two parameters: `folder` and `type`.
+
 The `folder` is mandatory and denotes the folder name on the given account.
-You can either use the root folder like (e.g. "INBOX") or a sub directory of your structure (e.g. "INBOX.Sent" or "INBOX.Junk").
+
+You can either use the root folder like (e.g. "INBOX") or a subdirectory of your structure (e.g. "INBOX.Sent" or "INBOX.Junk").
 The `type` parameter can be `UNREAD` or `TOTAL` (default).
 Channels with type `UNREAD` give the number on unread mails in that folder.
+
+### Type `content`
+
+The `content` type channel presents the contents of an unread mail.
+If the message is a MIME- or MIME-multipart message, all parts are concatenated.
+The content is converted to a plain string without processing (i.e. HTML tags are still present).
+In most cases the mail content needs further processing in rules to trigger appropriate action.
+
+Each channel has five parameters: `folder`, `subject`, `sender`, `transformation` and `markAsRead`.
+
+The `folder` is mandatory and denotes the folder name on the given account.
+You can either use the root folder like (e.g. "INBOX") or a subdirectory of your structure (e.g. "INBOX.Sent" or "INBOX.Junk").
+
+`subject` and `sender` can be used to filter the messages that are processed by the channel.
+Filters use regular expressions (e.g. `.*DHL.*` as `sender` would match all From-addresses that contain "DHL").
+If a parameter is left empty, no filter is applied.
+
+The `transformation` is applied before setting the channel status.
+Transformations can be chained by separating them with the mathematical intersection character "∩", e.g. `REGEX:.*Shipment-Status: ([a-z]+).*∩MAP:status.map` would first extract a character string with a regular expression and then apply the given MAP transformation on the result.
+Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
+This means that you can also use it to filter certain emails e.g. `REGEX:(.*Sendungsbenachrichtigung.*)` would only match for mails containing the string "Sendungsbenachrichtigung" but output the whole message.
+
+Since with each refresh all unread mails are processed the same message content would be sent to the channel multiple times.
+This can be prevented by setting `markAsRead` to `true` (default is `false`), which marks all processed messages as read.
 
 ## Full Example
 
@@ -61,6 +87,7 @@ Thing mail:imap:sampleimap [ hostname="imap.example.com", security="SSL", userna
     Channels:
         Type mailcount : inbox_total [ folder="INBOX", type="TOTAL" ]
         Type mailcount : inbox_unread [ folder="INBOX", type="UNREAD" ]
+        Type content : fedex_notification [ folder="INBOX" sender="Fedex.*" markAsRead="true" ]
 }
 ```
 
@@ -69,6 +96,7 @@ mail.items:
 ```java
 Number InboxTotal  "INBOX [%d]"        { channel="mail:imap:sampleimap:inbox_total" }
 Number InboxUnread "INBOX Unread [%d]" { channel="mail:imap:sampleimap:inbox_unread" }
+String FedexNotification               { channel="mail:imap:sampleimap:fedex_notification" }
 ```
 
 mail.sitemap:

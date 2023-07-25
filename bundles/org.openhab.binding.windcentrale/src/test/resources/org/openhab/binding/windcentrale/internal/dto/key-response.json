@@ -1,0 +1,14 @@
+{
+  "client_id": "715j3r0trk7o8dqg3md57il7q0",
+  "issuer": null,
+  "authorization_endpoint": null,
+  "logout_endpoint": null,
+  "revoke_token_endpoint": null,
+  "logout_redirect_url": "https://www.windcentrale.nl/",
+  "privacy_and_cookie_url": "http://docs.servicehouse.nl/windcentrale/algemeen_privacy_statement.pdf",
+  "label_key": "1024",
+  "ga_tracking_id": null,
+  "region": "eu-west-1",
+  "user_pool_id": "eu-west-1_U7eYBPrBd",
+  "cognito_active": true
+}

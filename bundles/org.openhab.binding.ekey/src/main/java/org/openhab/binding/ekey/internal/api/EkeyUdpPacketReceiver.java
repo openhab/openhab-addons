@@ -119,7 +119,8 @@ public class EkeyUdpPacketReceiver {
                         lastPacket = packet.getData();
                         readMessage(lastPacket);
                     } else {
-                        logger.warn("Packet received from unknown source- {}", packet.getData());
+                        logger.warn("Packet received from unknown source (ip={}) - {}",
+                                packet.getAddress().getHostAddress(), packet.getData());
                     }
                 } catch (UnknownHostException e) {
                     logger.debug("Exception during address conversion - {}", e.getMessage());

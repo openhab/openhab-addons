@@ -35,6 +35,7 @@ import org.openhab.binding.anthem.internal.AnthemConfiguration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -64,7 +65,7 @@ public class AnthemHandler extends BaseThingHandler {
     private @Nullable BufferedWriter writer;
     private @Nullable BufferedReader reader;
 
-    private AnthemCommandParser messageParser;
+    private AnthemCommandParser commandParser;
 
     private final BlockingQueue<AnthemCommand> sendQueue = new LinkedBlockingQueue<>();
 
@@ -83,7 +84,7 @@ public class AnthemHandler extends BaseThingHandler {
 
     public AnthemHandler(Thing thing) {
         super(thing);
-        messageParser = new AnthemCommandParser(this);
+        commandParser = new AnthemCommandParser();
     }
 
     @Override
@@ -120,6 +121,28 @@ public class AnthemHandler extends BaseThingHandler {
         if (groupId == null) {
             return;
         }
+
+        if (CHANNEL_GROUP_GENERAL.equals(groupId)) {
+            handleGeneralCommand(channelUID, command);
+        } else {
+            handleZoneCommand(groupId, channelUID, command);
+        }
+    }
+
+    private void handleGeneralCommand(ChannelUID channelUID, Command command) {
+        switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_COMMAND:
+                if (command instanceof StringType) {
+                    sendCommand(AnthemCommand.customCommand(command.toString()));
+                }
+                break;
+            default:
+                logger.debug("Received general command '{}' for unhandled channel '{}'", command, channelUID.getId());
+                break;
+        }
+    }
+
+    private void handleZoneCommand(String groupId, ChannelUID channelUID, Command command) {
         Zone zone = Zone.fromValue(groupId);
 
         switch (channelUID.getIdWithoutGroup()) {
@@ -162,69 +185,9 @@ public class AnthemHandler extends BaseThingHandler {
                 }
                 break;
             default:
-                logger.debug("Received command '{}' for unhandled channel '{}'", command, channelUID.getId());
+                logger.debug("Received zone command '{}' for unhandled channel '{}'", command, channelUID.getId());
                 break;
         }
-    }
-
-    public void setModel(String model) {
-        updateProperty("Model", model);
-    }
-
-    public void setRegion(String region) {
-        updateProperty("Region", region);
-    }
-
-    public void setSoftwareVersion(String version) {
-        updateProperty("Software Version", version);
-    }
-
-    public void setSoftwareBuildDate(String date) {
-        updateProperty("Software Build Date", date);
-    }
-
-    public void setHardwareVersion(String version) {
-        updateProperty("Hardware Version", version);
-    }
-
-    public void setMacAddress(String mac) {
-        updateProperty("Mac Address", mac);
-    }
-
-    public void updateChannelState(String zone, String channelId, State state) {
-        updateState(zone + "#" + channelId, state);
-    }
-
-    public void checkPowerStatusChange(String zone, String power) {
-        // Zone 1
-        if (Zone.MAIN.equals(Zone.fromValue(zone))) {
-            boolean newZone1PowerState = "1".equals(power) ? true : false;
-            if (!zone1PreviousPowerState && newZone1PowerState) {
-                // Power turned on for main zone.
-                // This will cause the main zone channel states to be updated
-                scheduler.submit(() -> queryAdditionalInformation(Zone.MAIN));
-            }
-            zone1PreviousPowerState = newZone1PowerState;
-        }
-        // Zone 2
-        else if (Zone.ZONE2.equals(Zone.fromValue(zone))) {
-            boolean newZone2PowerState = "1".equals(power) ? true : false;
-            if (!zone2PreviousPowerState && newZone2PowerState) {
-                // Power turned on for zone 2.
-                // This will cause zone 2 channel states to be updated
-                scheduler.submit(() -> queryAdditionalInformation(Zone.ZONE2));
-            }
-            zone2PreviousPowerState = newZone2PowerState;
-        }
-    }
-
-    public void setNumAvailableInputs(int numInputs) {
-        // Request the names for all the inputs
-        for (int input = 1; input <= numInputs; input++) {
-            sendCommand(AnthemCommand.queryInputShortName(input));
-            sendCommand(AnthemCommand.queryInputLongName(input));
-        }
-        updateProperty("Number of Inputs", String.valueOf(numInputs));
     }
 
     private void queryAdditionalInformation(Zone zone) {
@@ -418,7 +381,10 @@ public class AnthemHandler extends BaseThingHandler {
                 if (c == COMMAND_TERMINATION_CHAR) {
                     command = sbReader.toString();
                     logger.debug("Reader thread sending command to parser: {}", command);
-                    messageParser.parseMessage(command);
+                    AnthemUpdate update = commandParser.parseCommand(command);
+                    if (update != null) {
+                        processUpdate(update);
+                    }
                     sbReader.setLength(0);
                 }
             }
@@ -432,6 +398,90 @@ public class AnthemHandler extends BaseThingHandler {
                     "@text/thing-status-detail-ioexception");
         } finally {
             logger.debug("Reader thread exiting");
+        }
+    }
+
+    private void processUpdate(AnthemUpdate update) {
+        // State update
+        if (update.isStateUpdate()) {
+            StateUpdate stateUpdate = update.getStateUpdate();
+            updateState(stateUpdate.getGroupId() + ChannelUID.CHANNEL_GROUP_SEPARATOR + stateUpdate.getChannelId(),
+                    stateUpdate.getState());
+            postProcess(stateUpdate);
+        }
+        // Property update
+        else if (update.isPropertyUpdate()) {
+            PropertyUpdate propertyUpdate = update.getPropertyUpdate();
+            updateProperty(propertyUpdate.getName(), propertyUpdate.getValue());
+            postProcess(propertyUpdate);
+        }
+    }
+
+    private void postProcess(StateUpdate stateUpdate) {
+        switch (stateUpdate.getChannelId()) {
+            case CHANNEL_POWER:
+                checkPowerStatusChange(stateUpdate);
+                break;
+            case CHANNEL_ACTIVE_INPUT:
+                updateInputNameChannels(stateUpdate);
+                break;
+        }
+    }
+
+    private void checkPowerStatusChange(StateUpdate stateUpdate) {
+        String zone = stateUpdate.getGroupId();
+        State power = stateUpdate.getState();
+        // Zone 1
+        if (Zone.MAIN.equals(Zone.fromValue(zone))) {
+            boolean newZone1PowerState = (power instanceof OnOffType && power == OnOffType.ON) ? true : false;
+            if (!zone1PreviousPowerState && newZone1PowerState) {
+                // Power turned on for main zone.
+                // This will cause the main zone channel states to be updated
+                scheduler.submit(() -> queryAdditionalInformation(Zone.MAIN));
+            }
+            zone1PreviousPowerState = newZone1PowerState;
+        }
+        // Zone 2
+        else if (Zone.ZONE2.equals(Zone.fromValue(zone))) {
+            boolean newZone2PowerState = (power instanceof OnOffType && power == OnOffType.ON) ? true : false;
+            if (!zone2PreviousPowerState && newZone2PowerState) {
+                // Power turned on for zone 2.
+                // This will cause zone 2 channel states to be updated
+                scheduler.submit(() -> queryAdditionalInformation(Zone.ZONE2));
+            }
+            zone2PreviousPowerState = newZone2PowerState;
+        }
+    }
+
+    private void updateInputNameChannels(StateUpdate stateUpdate) {
+        State state = stateUpdate.getState();
+        String groupId = stateUpdate.getGroupId();
+        if (state instanceof StringType) {
+            updateState(groupId + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ACTIVE_INPUT_SHORT_NAME,
+                    new StringType(commandParser.getInputShortName(state.toString())));
+            updateState(groupId + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ACTIVE_INPUT_LONG_NAME,
+                    new StringType(commandParser.getInputLongName(state.toString())));
+        }
+    }
+
+    private void postProcess(PropertyUpdate propertyUpdate) {
+        switch (propertyUpdate.getName()) {
+            case PROPERTY_NUM_AVAILABLE_INPUTS:
+                queryAllInputNames(propertyUpdate);
+                break;
+        }
+    }
+
+    private void queryAllInputNames(PropertyUpdate propertyUpdate) {
+        try {
+            int numInputs = Integer.parseInt(propertyUpdate.getValue());
+            for (int input = 1; input <= numInputs; input++) {
+                sendCommand(AnthemCommand.queryInputShortName(input));
+                sendCommand(AnthemCommand.queryInputLongName(input));
+            }
+        } catch (NumberFormatException e) {
+            logger.debug("Unable to convert property '{}' to integer: {}", propertyUpdate.getName(),
+                    propertyUpdate.getValue());
         }
     }
 }

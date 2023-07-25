@@ -75,7 +75,8 @@ public class ShadePosition {
      * @param posKindCoords the actuator class (coordinate system) whose state is to be changed.
      * @param percent the new position value.
      */
-    private void setPosition1(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
+    private void setPosition1(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percentArg) {
+        int percent = percentArg;
         switch (posKindCoords) {
             case PRIMARY_POSITION:
                 /*
@@ -202,7 +203,8 @@ public class ShadePosition {
      * @param posKindCoords the actuator class (coordinate system) whose state is to be changed.
      * @param percent the new position value.
      */
-    private void setPosition2(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
+    private void setPosition2(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percentArg) {
+        int percent = percentArg;
         switch (posKindCoords) {
             case PRIMARY_POSITION:
                 /*

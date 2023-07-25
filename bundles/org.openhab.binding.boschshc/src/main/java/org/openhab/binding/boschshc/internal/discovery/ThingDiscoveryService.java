@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.boschshc.internal.discovery;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,18 +68,21 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     protected static final Map<String, ThingTypeUID> DEVICEMODEL_TO_THINGTYPE_MAP = Map.ofEntries(
             new AbstractMap.SimpleEntry<>("BBL", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL),
             new AbstractMap.SimpleEntry<>("TWINGUARD", BoschSHCBindingConstants.THING_TYPE_TWINGUARD),
-            new AbstractMap.SimpleEntry<>("PSM", BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH),
+            new AbstractMap.SimpleEntry<>("BSM", BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH),
+            new AbstractMap.SimpleEntry<>("PSM", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT),
             new AbstractMap.SimpleEntry<>("PLUG_COMPACT", BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT),
             new AbstractMap.SimpleEntry<>("CAMERA_360", BoschSHCBindingConstants.THING_TYPE_CAMERA_360),
             new AbstractMap.SimpleEntry<>("CAMERA_EYES", BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES),
-            new AbstractMap.SimpleEntry<>("BWTH", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT), // wall thermostat
+            new AbstractMap.SimpleEntry<>("BWTH", BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT), // wall thermostat
             new AbstractMap.SimpleEntry<>("THB", BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT), // wall thermostat with batteries
             new AbstractMap.SimpleEntry<>("SD", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR),
             new AbstractMap.SimpleEntry<>("MD", BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR),
             new AbstractMap.SimpleEntry<>("ROOM_CLIMATE_CONTROL", BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL),
             new AbstractMap.SimpleEntry<>("INTRUSION_DETECTION_SYSTEM", BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM),
             new AbstractMap.SimpleEntry<>("HUE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
-            new AbstractMap.SimpleEntry<>("WRC2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT)
+            new AbstractMap.SimpleEntry<>("LEDVANCE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
+            new AbstractMap.SimpleEntry<>("SWD", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT),
+            new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT)
 // Future Extension: map deviceModel names to BoschSHC Thing Types when they are supported
 //            new AbstractMap.SimpleEntry<>("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
 //            new AbstractMap.SimpleEntry<>("PRESENCE_SIMULATION_SERVICE", BoschSHCBindingConstants.),
@@ -139,9 +146,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof BridgeHandler) {
+        if (handler instanceof BridgeHandler bridgeHandler) {
             logger.trace("Set bridge handler {}", handler);
-            shcBridgeHandler = (BridgeHandler) handler;
+            shcBridgeHandler = bridgeHandler;
         }
     }
 
@@ -215,8 +222,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     }
 
     private String getNiceName(String name, String roomName) {
-        if (!name.startsWith("-"))
+        if (!name.startsWith("-")) {
             return name;
+        }
 
         // convert "-IntrusionDetectionSystem-" into "Intrusion Detection System"
         // convert "-RoomClimateControl-" into "Room Climate Control myRoomName"

@@ -16,14 +16,10 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -31,83 +27,41 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
-import org.openhab.binding.netatmo.internal.api.dto.AccessTokenResponse;
-import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AuthenticationApi} handles oAuth2 authentication and token refreshing
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Jacob Laursen - Refactored to use standard OAuth2 implementation
  */
 @NonNullByDefault
 public class AuthenticationApi extends RestManager {
-    private static final URI TOKEN_URI = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_TOKEN).build();
+    public static final URI TOKEN_URI = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_TOKEN).build();
+    public static final URI AUTH_URI = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_AUTHORIZE).build();
 
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
-    private final ScheduledExecutorService scheduler;
-
-    private Optional<ScheduledFuture<?>> refreshTokenJob = Optional.empty();
     private List<Scope> grantedScope = List.of();
     private @Nullable String authorization;
 
-    public AuthenticationApi(ApiBridgeHandler bridge, ScheduledExecutorService scheduler) {
+    public AuthenticationApi(ApiBridgeHandler bridge) {
         super(bridge, FeatureArea.NONE);
-        this.scheduler = scheduler;
     }
 
-    public void authorize(ApiHandlerConfiguration credentials, String refreshToken, @Nullable String code,
-            @Nullable String redirectUri) throws NetatmoException {
-        if (!(credentials.clientId.isBlank() || credentials.clientSecret.isBlank())) {
-            Map<String, String> params = new HashMap<>(Map.of(SCOPE, FeatureArea.ALL_SCOPES));
-
-            if (!refreshToken.isBlank()) {
-                params.put(REFRESH_TOKEN, refreshToken);
-            } else if (code != null && redirectUri != null) {
-                params.putAll(Map.of(REDIRECT_URI, redirectUri, CODE, code));
-            }
-
-            if (params.size() > 1) {
-                requestToken(credentials.clientId, credentials.clientSecret, params);
-                return;
-            }
+    public void setAccessToken(@Nullable String accessToken) {
+        if (accessToken != null) {
+            authorization = "Bearer " + accessToken;
+        } else {
+            authorization = null;
         }
-        throw new IllegalArgumentException("Inconsistent configuration state, please file a bug report.");
     }
 
-    private void requestToken(String clientId, String secret, Map<String, String> entries) throws NetatmoException {
-        disconnect();
-
-        Map<String, String> payload = new HashMap<>(entries);
-        payload.putAll(Map.of(GRANT_TYPE, payload.keySet().contains(CODE) ? AUTHORIZATION_CODE : REFRESH_TOKEN,
-                CLIENT_ID, clientId, CLIENT_SECRET, secret));
-
-        AccessTokenResponse response = post(TOKEN_URI, AccessTokenResponse.class, payload);
-
-        refreshTokenJob = Optional.of(scheduler.schedule(() -> {
-            try {
-                requestToken(clientId, secret, Map.of(REFRESH_TOKEN, response.getRefreshToken()));
-            } catch (NetatmoException e) {
-                logger.warn("Unable to refresh access token : {}", e.getMessage());
-            }
-        }, Math.round(response.getExpiresIn() * 0.9), TimeUnit.SECONDS));
-
-        grantedScope = response.getScope();
-        authorization = "Bearer %s".formatted(response.getAccessToken());
-        apiBridge.storeRefreshToken(response.getRefreshToken());
-    }
-
-    public void disconnect() {
-        authorization = null;
-        grantedScope = List.of();
+    public void setScope(String scope) {
+        grantedScope = Stream.of(scope.split(" ")).map(s -> Scope.valueOf(s.toUpperCase())).toList();
     }
 
     public void dispose() {
-        disconnect();
-        refreshTokenJob.ifPresent(job -> job.cancel(true));
-        refreshTokenJob = Optional.empty();
+        authorization = null;
+        grantedScope = List.of();
     }
 
     public Optional<String> getAuthorization() {
