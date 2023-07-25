@@ -114,10 +114,10 @@ The *wifihost* things requires the following configuration parameters:
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
 | MAC Address      | macAddress      | The MAC address of the network host.                                   | Yes      |         |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state. | No       | 30      |
-| mDNS Name        | mDNS            | The mDNS name of the host. Useful in case of virtual mac.              | No       |         |
+| mDNS Name        | mDNS            | The mDNS name of the host. Useful in case of virtual MAC.              | No       |         |
 
-When used, mDNS will search the host based on its mDNS name and eventually update the Mac Address accordingly.
-This is useful with devices, especially Apple equipments, that uses randomly generated mac addresses.
+When used, mDNS will search the host based on its mDNS name and eventually update the MAC address accordingly.
+This is useful with devices, especially Apple equipment, that uses randomly generated MAC addresses.
 
 ### Repeater and Vm thing 
 
