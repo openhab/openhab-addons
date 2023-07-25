@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
-import org.openhab.binding.paradoxalarm.internal.communication.PartitionCommandRequest;
-import org.openhab.binding.paradoxalarm.internal.communication.RequestType;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.CommandPayload;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMessageType;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.IRequest;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommand;
 import org.openhab.binding.paradoxalarm.internal.handlers.Commandable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,16 +47,13 @@ public class Partition extends Entity implements Commandable {
     @Override
     public void handleCommand(String command) {
         PartitionCommand partitionCommand = PartitionCommand.parse(command);
-        if (partitionCommand == PartitionCommand.UNKNOWN) {
-            logger.debug("Command UNKNOWN will be ignored.");
+        if (partitionCommand == null) {
+            logger.debug("Command {} is parsed to null. Skipping it", command);
             return;
         }
 
         logger.debug("Submitting command={} for partition=[{}]", partitionCommand, this);
-        CommandPayload payload = new CommandPayload(getId(), partitionCommand);
-        ParadoxIPPacket packet = new ParadoxIPPacket(payload.getBytes())
-                .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
-        PartitionCommandRequest request = new PartitionCommandRequest(RequestType.PARTITION_COMMAND, packet, null);
+        IRequest request = partitionCommand.getRequest(getId());
         getPanel().getCommunicator().submitRequest(request);
     }
 }

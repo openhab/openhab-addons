@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.paradoxalarm.internal.communication.IRequest;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommand;
+import org.openhab.binding.paradoxalarm.internal.handlers.Commandable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,23 +27,36 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public class Zone extends Entity {
+@NonNullByDefault
+public class Zone extends Entity implements Commandable {
 
     private final Logger logger = LoggerFactory.getLogger(Zone.class);
 
-    private ZoneState zoneState;
+    private @Nullable ZoneState zoneState;
 
-    public Zone(ParadoxPanel panel, int id, String label) {
+    public Zone(ParadoxPanel panel, int id, @Nullable String label) {
         super(panel, id, label);
     }
 
-    public ZoneState getZoneState() {
+    public @Nullable ZoneState getZoneState() {
         return zoneState;
     }
 
     public void setZoneState(ZoneState zoneState) {
         this.zoneState = zoneState;
-        logger.debug("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}", getLabel(),
-                zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery());
+        logger.debug("Zone {} state updated to: {}", getLabel(), zoneState);
+    }
+
+    @Override
+    public void handleCommand(@Nullable String command) {
+        ZoneCommand zoneCommand = ZoneCommand.parse(command);
+        if (zoneCommand == null) {
+            logger.debug("Command {} is parsed to null. Skipping it", command);
+            return;
+        }
+
+        logger.debug("Submitting command={} for partition=[{}]", zoneCommand, this);
+        IRequest request = zoneCommand.getRequest(getId());
+        getPanel().getCommunicator().submitRequest(request);
     }
 }

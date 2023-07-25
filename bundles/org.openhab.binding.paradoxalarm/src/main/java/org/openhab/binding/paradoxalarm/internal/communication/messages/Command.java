@@ -10,17 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.paradoxalarm.internal.communication;
+package org.openhab.binding.paradoxalarm.internal.communication.messages;
+
+import org.openhab.binding.paradoxalarm.internal.communication.IRequest;
 
 /**
- * The {@link RequestType}. Enum with possible request types to Paradox system.
+ * More generic interface for creating command requests
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public enum RequestType {
-    LOGON_SEQUENCE,
-    RAM,
-    EPROM,
-    PARTITION_COMMAND,
-    ZONE_COMMAND
+public interface Command {
+    IRequest getRequest(int id);
 }

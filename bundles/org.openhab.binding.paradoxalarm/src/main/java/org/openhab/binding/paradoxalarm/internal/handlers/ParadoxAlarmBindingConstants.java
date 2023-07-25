@@ -67,7 +67,7 @@ public class ParadoxAlarmBindingConstants {
     public static final String PANEL_BOARD_VOLTAGE = "boardVoltage";
     public static final String PANEL_BATTERY_VOLTAGE = "batteryVoltage";
 
-    public static final String PARTITION_LABEL_CHANNEL_UID = "partitionLabel";
+    public static final String PARTITION_LABEL_CHANNEL_UID = "label";
     public static final String PARTITION_STATE_CHANNEL_UID = "state";
     @Deprecated // After implementation of channels for every possible state, the summarized additional states is no
                 // longer needed. We'll keep it for backward compatibility
@@ -88,10 +88,19 @@ public class ParadoxAlarmBindingConstants {
     public static final String PARTITION_INHIBIT_READY_CHANNEL_UID = "inhibitReady";
     public static final String PARTITION_ALL_ZONES_CLOSED_CHANNEL_UID = "allZonesClosed";
 
-    public static final String ZONE_LABEL_CHANNEL_UID = "zoneLabel";
+    public static final String ZONE_LABEL_CHANNEL_UID = "label";
     public static final String ZONE_OPENED_CHANNEL_UID = "opened";
     public static final String ZONE_TAMPERED_CHANNEL_UID = "tampered";
     public static final String ZONE_LOW_BATTERY_CHANNEL_UID = "lowBattery";
+
+    public static final String ZONE_SUPERVISION_TROUBLE_UID = "supervisionTrouble";
+    public static final String ZONE_IN_TX_DELAY_UID = "inTxDelay";
+    public static final String ZONE_SHUTDOWN_UID = "shutdown";
+    public static final String ZONE_BYPASSED_UID = "bypassed";
+    public static final String ZONE_HAS_ACTIVATED_INTELLIZONE_DELAY_UID = "hasActivatedIntellizoneDelay";
+    public static final String ZONE_HAS_ACTIVATED_ENTRY_DELAY_UID = "hasActivatedEntryDelay";
+    public static final String ZONE_PRESENTLY_IN_ALARM_UID = "presentlyInAlarm";
+    public static final String ZONE_GENERATED_ALARM_UID = "generatedAlarm";
 
     // Misc constants
     public static final StringType STATE_OFFLINE = new StringType("Offline");
