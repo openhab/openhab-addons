@@ -39,7 +39,8 @@ public class Other extends AbstractRingDevice {
      */
     @Override
     public DiscoveryResult getDiscoveryResult() {
-        DiscoveryResult result = DiscoveryResultBuilder.create(new ThingUID("ring:other:" + getId()))
+        DiscoveryResult result = DiscoveryResultBuilder
+                .create(new ThingUID("ring:other:" + getRingAccount().getThingId() + ":" + getId()))
                 .withLabel("Ring Other - " + getDescription()).build();
         return result;
     }

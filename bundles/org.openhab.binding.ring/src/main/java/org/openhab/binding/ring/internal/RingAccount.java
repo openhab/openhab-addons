@@ -36,4 +36,12 @@ public interface RingAccount {
      * @return the user profile.
      */
     public Profile getProfile();
+
+    /**
+     * Get the Account Handler Thing ID
+     * *
+     * 
+     * @return the ring account thing id.
+     */
+    public String getThingId();
 }

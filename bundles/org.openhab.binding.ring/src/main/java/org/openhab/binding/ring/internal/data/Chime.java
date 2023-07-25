@@ -39,7 +39,8 @@ public class Chime extends AbstractRingDevice {
      */
     @Override
     public DiscoveryResult getDiscoveryResult() {
-        DiscoveryResult result = DiscoveryResultBuilder.create(new ThingUID("ring:chime:" + getId()))
+        DiscoveryResult result = DiscoveryResultBuilder
+                .create(new ThingUID("ring:chime:" + getRingAccount().getThingId() + ":" + getId()))
                 .withLabel("Ring Chime - " + getDescription()).build();
         return result;
     }

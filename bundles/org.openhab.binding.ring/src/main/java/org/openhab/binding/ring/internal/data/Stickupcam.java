@@ -41,7 +41,8 @@ public class Stickupcam extends AbstractRingDevice {
      */
     @Override
     public DiscoveryResult getDiscoveryResult() {
-        DiscoveryResult result = DiscoveryResultBuilder.create(new ThingUID("ring:stickupcam:" + getId()))
+        DiscoveryResult result = DiscoveryResultBuilder
+                .create(new ThingUID("ring:stickupcam:" + getRingAccount().getThingId() + ":" + getId()))
                 .withLabel("Ring Video Stickup Cam - " + getDescription()).build();
         return result;
     }

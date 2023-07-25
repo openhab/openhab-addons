@@ -627,6 +627,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         return userProfile;
     }
 
+    @Override
+    public String getThingId() {
+        return thingId;
+    }
+
     /**
      * Dispose off the refreshJob nicely.
      */
