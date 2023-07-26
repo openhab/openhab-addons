@@ -156,7 +156,7 @@ public class PlexApiConnector {
     }
 
     /**
-     * This method will get an X-Token from the PLEX server if one is not provided in the bridge config
+     * This method will get an X-Token from the PLEX.tv server if one is not provided in the bridge config
      * and use this in the communication with the plex server
      */
     public void getToken() {
@@ -181,7 +181,7 @@ public class PlexApiConnector {
     }
 
     /**
-     * This method will get the Api information from the PLEX servers.
+     * This method will get the Api information from the PLEX.tv servers.
      */
     public boolean getApi() {
         try {
@@ -227,18 +227,16 @@ public class PlexApiConnector {
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
         final String response;
         if (verify) {
-            // Requests sent to the PLEX servers should use certificate checking
+            // Requests sent to the PLEX.tv servers should use certificate checking
             response = HttpUtil.executeUrl(method, url, headers, null, null, REQUEST_TIMEOUT_MS);
         } else {
             // Requests sent to the local server need to bypass certificate checking via the custom httpClient
             final Request request = httpClient.newRequest(url).method(HttpUtil.createHttpMethod(method));
-            if (headers != null) {
-                for (String httpHeaderKey : headers.stringPropertyNames()) {
-                    if (httpHeaderKey.equalsIgnoreCase(HttpHeader.USER_AGENT.toString())) {
-                        request.agent(headers.getProperty(httpHeaderKey));
-                    } else {
-                        request.header(httpHeaderKey, headers.getProperty(httpHeaderKey));
-                    }
+            for (String httpHeaderKey : headers.stringPropertyNames()) {
+                if (httpHeaderKey.equalsIgnoreCase(HttpHeader.USER_AGENT.toString())) {
+                    request.agent(headers.getProperty(httpHeaderKey));
+                } else {
+                    request.header(httpHeaderKey, headers.getProperty(httpHeaderKey));
                 }
             }
             final ContentResponse res = request.send();
@@ -268,7 +266,7 @@ public class PlexApiConnector {
      */
     private Properties getClientHeaders() {
         Properties headers = new Properties();
-        headers.put(HttpHeader.USER_AGENT, "openHAB " + org.openhab.core.OpenHAB.getVersion() + "/ PLEX binding");
+        headers.put(HttpHeader.USER_AGENT, "openHAB/" + org.openhab.core.OpenHAB.getVersion() + " PLEX binding");
         headers.put("X-Plex-Client-Identifier", CLIENT_ID);
         headers.put("X-Plex-Product", "openHAB");
         headers.put("X-Plex-Version", "");
