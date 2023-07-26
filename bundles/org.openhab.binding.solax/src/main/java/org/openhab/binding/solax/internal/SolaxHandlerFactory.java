@@ -45,7 +45,7 @@ public class SolaxHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
+        if (THING_TYPE_LOCAL_CONNECT_INVERTER.equals(thingTypeUID)) {
             return new SolaxLocalAccessHandler(thing);
         } else {
             logger.warn("Unsupported thing/bridge type UID. UID={}", thingTypeUID);

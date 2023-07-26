@@ -110,8 +110,8 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
             return deserializedObject;
         } catch (JsonSyntaxException e) {
             logger.warn("Unable to deserialize from JSON.", e);
-            return null;
         }
+        return null;
     }
 
     // Parsed inverter data interface implementation starts here
@@ -233,8 +233,9 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
 
     private short getData(int index) {
         try {
-            if (Data != null) {
-                return Data[index];
+            short[] data = Data;
+            if (data != null) {
+                return data[index];
             }
         } catch (IndexOutOfBoundsException e) {
             logger.debug("Tried to get data out of bounds of the raw data array.", e);

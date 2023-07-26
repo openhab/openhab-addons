@@ -71,7 +71,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
         int refreshInterval = config.refresh;
         TimeUnit timeUnit = TimeUnit.SECONDS;
-        logger.debug("Scheduling regular interval retrieval on every {} {}", refreshInterval, timeUnit);
+        logger.debug("Scheduling regular interval retrieval every {} {}", refreshInterval, timeUnit);
         schedule = scheduler.scheduleWithFixedDelay(this::retrieveData, INITIAL_SCHEDULE_DELAY_SECONDS, refreshInterval,
                 timeUnit);
     }
@@ -150,6 +150,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         super.dispose();
+        ScheduledFuture<?> schedule = this.schedule;
         if (schedule != null) {
             boolean success = schedule.cancel(true);
             String cancelingSuccessful = success ? "successful" : "failed";

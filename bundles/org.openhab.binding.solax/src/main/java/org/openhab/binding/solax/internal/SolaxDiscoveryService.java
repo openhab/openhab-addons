@@ -62,7 +62,7 @@ public class SolaxDiscoveryService extends AbstractDiscoveryService implements T
 
             String serialNumber = data.getWifiSerial();
             if (serialNumber != null) {
-                ThingUID thingUID = new ThingUID(SolaxBindingConstants.THING_TYPE_INVERTER,
+                ThingUID thingUID = new ThingUID(SolaxBindingConstants.THING_TYPE_LOCAL_CONNECT_INVERTER,
                         bridgeHandler.getThing().getUID(), serialNumber);
 
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
