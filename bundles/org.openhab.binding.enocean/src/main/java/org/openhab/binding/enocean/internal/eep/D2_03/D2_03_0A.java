@@ -48,7 +48,7 @@ public class D2_03_0A extends _VLDMessage {
     }
 
     @Override
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_PUSHBUTTON:
