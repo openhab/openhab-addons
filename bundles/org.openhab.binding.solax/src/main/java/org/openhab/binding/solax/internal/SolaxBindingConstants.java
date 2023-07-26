@@ -42,30 +42,30 @@ public class SolaxBindingConstants {
     public static final String SERIAL_NUMBER = "serialWifi";
     public static final String INVERTER_TYPE = "inverterType";
 
-    public static final String INVERTER_OUTPUT_POWER = "inverterOutputPower";
-    public static final String INVERTER_OUTPUT_CURRENT = "inverterCurrent";
-    public static final String INVERTER_OUTPUT_VOLTAGE = "inverterVoltage";
-    public static final String INVERTER_OUTPUT_FREQUENCY = "inverterFrequency";
+    public static final String INVERTER_OUTPUT_POWER = "inverter-output-power";
+    public static final String INVERTER_OUTPUT_CURRENT = "inverter-current";
+    public static final String INVERTER_OUTPUT_VOLTAGE = "inverter-voltage";
+    public static final String INVERTER_OUTPUT_FREQUENCY = "inverter-frequency";
 
-    public static final String INVERTER_PV1_POWER = "pv1Power";
-    public static final String INVERTER_PV1_VOLTAGE = "pv1Voltage";
-    public static final String INVERTER_PV1_CURRENT = "pv1Current";
+    public static final String INVERTER_PV1_POWER = "pv1-power";
+    public static final String INVERTER_PV1_VOLTAGE = "pv1-voltage";
+    public static final String INVERTER_PV1_CURRENT = "pv1-current";
 
-    public static final String INVERTER_PV2_POWER = "pv2Power";
-    public static final String INVERTER_PV2_VOLTAGE = "pv2Voltage";
-    public static final String INVERTER_PV2_CURRENT = "pv2Current";
+    public static final String INVERTER_PV2_POWER = "pv2-power";
+    public static final String INVERTER_PV2_VOLTAGE = "pv2-voltage";
+    public static final String INVERTER_PV2_CURRENT = "pv2-current";
 
-    public static final String INVERTER_PV_TOTAL_POWER = "pvTotalPower";
-    public static final String INVERTER_PV_TOTAL_CURRENT = "pvTotalCurrent";
+    public static final String INVERTER_PV_TOTAL_POWER = "pv-total-power";
+    public static final String INVERTER_PV_TOTAL_CURRENT = "pv-total-current";
 
-    public static final String BATTERY_POWER = "batteryPower";
-    public static final String BATTERY_VOLTAGE = "batteryVoltage";
-    public static final String BATTERY_CURRENT = "batteryCurrent";
-    public static final String BATTERY_TEMPERATURE = "batteryTemperature";
-    public static final String BATTERY_STATE_OF_CHARGE = "batteryStateOfCharge";
+    public static final String BATTERY_POWER = "battery-power";
+    public static final String BATTERY_VOLTAGE = "battery-voltage";
+    public static final String BATTERY_CURRENT = "battery-current";
+    public static final String BATTERY_TEMPERATURE = "battery-temperature";
+    public static final String BATTERY_STATE_OF_CHARGE = "battery-state-of-charge";
 
-    public static final String FEED_IN_POWER = "feedInPower";
+    public static final String FEED_IN_POWER = "feed-in-power";
 
-    public static final String TIMESTAMP = "lastUpdateTime";
-    public static final String RAW_DATA = "rawData";
+    public static final String TIMESTAMP = "last-update-time";
+    public static final String RAW_DATA = "raw-data";
 }

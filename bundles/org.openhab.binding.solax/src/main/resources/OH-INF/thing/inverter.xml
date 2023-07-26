@@ -14,35 +14,35 @@
 		<description>The inverter representation in OpenHAB</description>
 
 		<channels>
-			<channel id="inverterOutputPower" typeId="system.electric-power"/>
-			<channel id="inverterCurrent" typeId="system.electric-current"/>
-			<channel id="inverterVoltage" typeId="system.electric-voltage"/>
-			<channel id="inverterFrequency" typeId="frequency"/>
+			<channel id="inverter-output-power" typeId="system.electric-power"/>
+			<channel id="inverter-current" typeId="system.electric-current"/>
+			<channel id="inverter-voltage" typeId="system.electric-voltage"/>
+			<channel id="inverter-frequency" typeId="frequency"/>
 
-			<channel id="pv1Voltage" typeId="system.electric-voltage"/>
-			<channel id="pv2Voltage" typeId="system.electric-voltage"/>
-			<channel id="pv1Current" typeId="system.electric-current"/>
-			<channel id="pv2Current" typeId="system.electric-current"/>
-			<channel id="pv1Power" typeId="system.electric-power"/>
-			<channel id="pv2Power" typeId="system.electric-power"/>
-			<channel id="pvTotalPower" typeId="system.electric-power"/>
-			<channel id="pvTotalCurrent" typeId="system.electric-current"/>
+			<channel id="pv1-voltage" typeId="system.electric-voltage"/>
+			<channel id="pv2-voltage" typeId="system.electric-voltage"/>
+			<channel id="pv1-current" typeId="system.electric-current"/>
+			<channel id="pv2-current" typeId="system.electric-current"/>
+			<channel id="pv1-power" typeId="system.electric-power"/>
+			<channel id="pv2-power" typeId="system.electric-power"/>
+			<channel id="pv-total-power" typeId="system.electric-power"/>
+			<channel id="pv-total-current" typeId="system.electric-current"/>
 
-			<channel id="batteryPower" typeId="system.electric-power"/>
-			<channel id="batteryCurrent" typeId="system.electric-current"/>
-			<channel id="batteryVoltage" typeId="system.electric-voltage"/>
-			<channel id="batteryTemperature" typeId="battery-temperature"/>
-			<channel id="batteryStateOfCharge" typeId="system.battery-level"/>
+			<channel id="battery-power" typeId="system.electric-power"/>
+			<channel id="battery-current" typeId="system.electric-current"/>
+			<channel id="battery-voltage" typeId="system.electric-voltage"/>
+			<channel id="battery-temperature" typeId="battery-temperature"/>
+			<channel id="battery-state-of-charge" typeId="system.battery-level"/>
 
-			<channel id="feedInPower" typeId="system.electric-power"/>
+			<channel id="feed-in-power" typeId="system.electric-power"/>
 
-			<channel id="lastUpdateTime" typeId="lastRetrieveTimeStamp"/>
+			<channel id="last-update-time" typeId="lastRetrieveTimeStamp"/>
 
-			<channel id="rawData" typeId="rawDataType"/>
+			<channel id="raw-data" typeId="rawDataType"/>
 
-			<channel id="onGridTotalYield" typeId="system.electric-power"/>
-			<channel id="onGridDailyYield" typeId="system.electric-power"/>
-			<channel id="onTotalFeedinEnergy" typeId="system.electric-power"/>
+			<channel id="on-grid-total-yield" typeId="system.electric-power"/>
+			<channel id="on-grid-daily-yield" typeId="system.electric-power"/>
+			<channel id="on-total-feedin-energy" typeId="system.electric-power"/>
 		</channels>
 
 		<properties>

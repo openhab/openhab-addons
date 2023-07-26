@@ -5,9 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="frequency">
-		<item-type>Number</item-type>
-		<label>Electric frequency</label>
-		<description>Electric Frequency</description>
+		<item-type>Number:Frequency</item-type>
+		<label>Electric Frequency</label>
+		<description>Electric Frequency of the input/output voltage of the inverter</description>
 	</channel-type>
 	<channel-type id="battery-temperature">
 		<item-type>Number:Temperature</item-type>
@@ -19,10 +19,10 @@
 		<label>Last retrieve time stamp</label>
 		<description>Last time with a successful retrieval of data</description>
 	</channel-type>
-	<channel-type id="rawDataType">
+	<channel-type id="rawDataType" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw Data</label>
-		<description>Raw data retrieved from system as JSON</description>
+		<description>Raw data retrieved from the system as a JSON</description>
 	</channel-type>
 
 </thing:thing-descriptions>
