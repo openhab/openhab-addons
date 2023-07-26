@@ -84,9 +84,9 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
 
         buildChannel(NUMBER_CHANNEL_ID, value, channelConfiguration.getName(),
                 componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                                channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                        .build();
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos(), channelConfiguration.commandTemplate)
+                .build();
     }
 }

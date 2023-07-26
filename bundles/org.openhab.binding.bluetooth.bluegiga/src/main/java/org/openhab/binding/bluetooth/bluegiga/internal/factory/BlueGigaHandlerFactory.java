@@ -88,7 +88,6 @@ public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
                 bundleContext.registerService(BluetoothAdapter.class.getName(), adapter, new Hashtable<>()));
     }
 
-    @SuppressWarnings("null")
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof BluetoothAdapter) {

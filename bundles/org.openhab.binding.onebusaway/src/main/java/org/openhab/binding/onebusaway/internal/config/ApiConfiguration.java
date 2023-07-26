@@ -14,8 +14,6 @@ package org.openhab.binding.onebusaway.internal.config;
 
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.*;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 /**
  * The {@link ApiConfiguration} defines the model for an API bridge configuration.
  *
@@ -55,7 +53,7 @@ public class ApiConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(API_CONFIG_API_KEY, this.getApiKey())
-                .append(API_CONFIG_API_SERVER, this.getApiServer()).toString();
+        return getClass().getSimpleName() + "{ " + API_CONFIG_API_KEY + "=" + this.getApiKey() + ", "
+                + API_CONFIG_API_SERVER + "=" + this.getApiServer() + "}";
     }
 }

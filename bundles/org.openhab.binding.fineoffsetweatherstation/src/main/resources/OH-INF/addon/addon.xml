@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Fine Offset Weather Station</name>
 	<description>A binding for the Weather Stations Manufactured by Fine Offset</description>
+	<connection>local</connection>
 
 </addon:addon>

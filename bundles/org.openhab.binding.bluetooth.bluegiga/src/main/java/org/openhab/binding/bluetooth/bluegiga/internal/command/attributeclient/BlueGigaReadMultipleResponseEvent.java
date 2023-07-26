@@ -28,8 +28,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
  */
 @NonNullByDefault
 public class BlueGigaReadMultipleResponseEvent extends BlueGigaDeviceResponse {
-    public static int COMMAND_CLASS = 0x04;
-    public static int COMMAND_METHOD = 0x00;
+    public static final int COMMAND_CLASS = 0x04;
+    public static final int COMMAND_METHOD = 0x00;
 
     /**
      * This array contains the concatenated data from the multiple attributes that have been read,

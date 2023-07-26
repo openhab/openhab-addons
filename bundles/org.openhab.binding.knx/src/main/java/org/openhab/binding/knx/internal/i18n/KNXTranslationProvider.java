@@ -83,7 +83,7 @@ public enum KNXTranslationProvider {
      *         translated)]), empty string for null. May possibly change in further releases.
      */
     public String getLocalizedException(final Throwable e) {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         final String exName = e.getClass().getSimpleName();
         final String key = "exception." + exName;
         final String translatedDescription = KNXTranslationProvider.I18N.get(key);

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>JuiceNet Binding</name>
 	<description>This is the binding supporting the JuiceNet EV charger.</description>
+	<connection>local</connection>
 
 </addon:addon>

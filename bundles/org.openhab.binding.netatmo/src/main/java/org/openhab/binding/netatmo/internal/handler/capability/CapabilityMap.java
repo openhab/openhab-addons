@@ -28,9 +28,10 @@ public class CapabilityMap extends ConcurrentHashMap<Class<?>, Capability> {
     private static final long serialVersionUID = -3043492242108419801L;
 
     public void put(Capability capability) {
-        Class<? extends Capability> clazz = capability.getClass();
+        Class<?> clazz = capability.getClass();
         if (super.get(clazz) == null) {
             super.put(clazz, capability);
+            capability.initialize();
         }
     }
 

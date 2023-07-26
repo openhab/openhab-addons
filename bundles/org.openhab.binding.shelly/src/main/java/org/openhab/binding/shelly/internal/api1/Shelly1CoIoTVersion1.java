@@ -149,7 +149,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "current":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
-                                toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.AMPERE));
+                                toQuantityType(getDouble(s.value), DIGITS_AMPERE, Units.AMPERE));
                         break;
                     case "pf":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));

@@ -16,6 +16,7 @@
 			<channel id="plugstatus" typeId="plugstatus"/>
 			<channel id="chargingstatus" typeId="chargingstatus"/>
 			<channel id="chargingmode" typeId="chargingmode"/>
+			<channel id="pause" typeId="pause"/>
 			<channel id="chargingremainingtime" typeId="chargingremainingtime"/>
 			<channel id="estimatedrange" typeId="estimatedrange"/>
 			<channel id="odometer" typeId="odometer"/>
@@ -27,8 +28,20 @@
 			<channel id="locationupdated" typeId="locationupdated"/>
 			<channel id="locked" typeId="locked"/>
 		</channels>
-		<config-description>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description>
+			<parameter name="accountType" type="text">
+				<label>Account Type</label>
+				<options>
+					<option value="MYDACIA">MyDacia</option>
+					<option value="MYRENAULT">MyRenault</option>
+				</options>
+				<default>MYRENAULT</default>
+			</parameter>
 			<parameter name="myRenaultUsername" type="text" required="true">
 				<label>MyRenault Username</label>
 			</parameter>
@@ -88,7 +101,7 @@
 			<parameter name="kamereonApiKey" type="text">
 				<label>Kamereon API Key</label>
 				<description>Access code for MyRenault Services.</description>
-				<default>VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss</default>
+				<default>YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -147,6 +160,12 @@
 				<option value="ALWAYS_CHARGING">Instant charge</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="pause">
+		<item-type>Switch</item-type>
+		<label>Pause Charge</label>
+		<description>Pause or resume the charge.</description>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
 		<item-type>Number:Time</item-type>

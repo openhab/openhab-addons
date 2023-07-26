@@ -42,7 +42,7 @@ public class DishWarmerDeviceThingHandlerTest extends AbstractMieleThingHandlerT
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_DISH_WARMER,
                 MieleCloudBindingIntegrationTestConstants.DISH_WARMER_DEVICE_THING_UID,
-                DishWarmerDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+                DishWarmerDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER, "0");
     }
 
     @Test

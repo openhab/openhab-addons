@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.http.internal;
 
-import static org.openhab.binding.http.internal.HttpBindingConstants.THING_TYPE_URL;
+import static org.openhab.binding.http.internal.HttpBindingConstants.*;
 
 import java.util.Set;
 
@@ -59,8 +59,9 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory
     @Activate
     public HttpHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider) {
-        this.secureClient = new HttpClient(new SslContextFactory.Client());
-        this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
+        this.secureClient = httpClientFactory.createHttpClient(BINDING_ID + "-secure", new SslContextFactory.Client());
+        this.insecureClient = httpClientFactory.createHttpClient(BINDING_ID + "-insecure",
+                new SslContextFactory.Client(true));
         try {
             this.secureClient.start();
             this.insecureClient.start();

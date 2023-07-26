@@ -24,5 +24,5 @@ public interface AvrDisconnectionListener {
      *
      * @param event
      */
-    public void onDisconnection(AvrDisconnectionEvent event);
+    void onDisconnection(AvrDisconnectionEvent event);
 }

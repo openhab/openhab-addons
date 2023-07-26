@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
 import org.openhab.binding.neohub.internal.NeoHubBindingConstants.NeoHubReturnResult;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -65,6 +66,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private final Map<String, Boolean> connectionStates = new HashMap<>();
 
+    private WebSocketFactory webSocketFactory;
+
     private @Nullable NeoHubConfiguration config;
     private @Nullable NeoHubSocketBase socket;
     private @Nullable ScheduledFuture<?> lazyPollingScheduler;
@@ -89,8 +92,9 @@ public class NeoHubHandler extends BaseBridgeHandler {
     private boolean isApiOnline = false;
     private int failedSendAttempts = 0;
 
-    public NeoHubHandler(Bridge bridge) {
+    public NeoHubHandler(Bridge bridge, WebSocketFactory webSocketFactory) {
         super(bridge);
+        this.webSocketFactory = webSocketFactory;
     }
 
     @Override
@@ -148,7 +152,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         NeoHubSocketBase socket;
         try {
             if (config.useWebSocket) {
-                socket = new NeoHubWebSocket(config, thing.getUID().getAsString());
+                socket = new NeoHubWebSocket(config, webSocketFactory, thing.getUID());
             } else {
                 socket = new NeoHubSocket(config, thing.getUID().getAsString());
             }

@@ -26,8 +26,8 @@ import com.google.gson.JsonObject;
 /**
  * The {@link EventItemImpl} is the implementation of the {@link EventItem}.
  *
- * @author Michael Ochel
- * @author Mathias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Mathias Siegele - Initial contribution
  */
 public class EventItemImpl implements EventItem {
 
