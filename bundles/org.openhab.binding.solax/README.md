@@ -1,10 +1,11 @@
 # Solax Binding
 
 This is a binding that provides data of Solax solar power inverters.
+
 Currently it supports only a Solax Wi-Fi module with direct connection via HTTP (Wi-Fi module firmware version 3.x+ is required).
 Please note that earlier firmware releases do not support direct connection, therefore the binding will not work in it's current state.
 
-The binding retrieves a structured data from the Wi-Fi module, parses it and pushes it into the inverter Thing where each channel represents a specific information (inverter output power, voltage, PV1 power, etc.)
+The binding retrieves a structured data from the inverter's Wi-Fi module, parses it and pushes it into the inverter Thing where each channel represents a specific information (inverter output power, voltage, PV1 power, etc.)
 
 In case the parsed information that comes with the binding out of the box differs, the raw data channel can be used with a combination of JSON Path transformation to map the proper values to the necessary items.
 
@@ -16,13 +17,9 @@ In case the parsed information that comes with the binding out of the box differ
 | localConnect      | Bridge     | The bridge is used to communicate directly with the Wi-Fi module of the inverter.                                                           |
 | inverter          | Thing      | This is model representation of inverter with all the data available as a channels (Ex. inverter output power, voltage, PV1 power, etc)     |
 
-## Discovery
-
-Discovery is available. Once the localConnect bridge is configured with the necessary parameters, it can discover automatically the inverter with all it's channels as a separate thing.
-
 ## Thing Configuration
 
-### Local Connect Bridge parameters
+### Local Connect Inverter Configuration
 
 | Parameter         | Description                                                                                                                                        |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -33,8 +30,6 @@ Discovery is available. Once the localConnect bridge is configured with the nece
 The bridge does not have any channels. 
 It is used only to connect to the module and retrieve the data. 
 The data is shown in the Inverter thing
-
-### Inverter Thing Configuration
 
 ### Inverter Output Channels
 
@@ -96,10 +91,8 @@ Here are some file based examples.
 ### Thing Configuration
 
 ```java
-// The local connect bridge
-Bridge solax:localConnect:localBridge "Solax Inverter LocalBridge" [refresh=10, password="<SERIAL NUMBER OF THE WIFI>", hostname="<local IP/hostname in the network>"] {
-    Thing inverter MyInverter "MyInverter via LocalBridge" [serialWifi="<SERIAL NUMBER OF THE WIFI>", inverterType="X1_HYBRID_G4"]
-}
+// The local connect inverter thing 
+Thing solax:localConnectInverter:localInverter  [ refresh=10, password="<SERIAL NUMBER OF THE WIFI MODULE>", hostname="<local IP/hostname in the network>" ] 
 ```
 
 ### Item Configuration
@@ -107,19 +100,19 @@ Bridge solax:localConnect:localBridge "Solax Inverter LocalBridge" [refresh=10, 
 ```java
 Group gSolaxInverter "Solax Inverter" <energy> (boilerRoom)
 Group solarPanels "Solar panels" <energy> (gSolaxInverter)
-String solaxSerial "Serial Number [%s]" <energy> (gsolax_inverter) { channel="solax:inverter:localBridge:MyInverter:serialWifi" }
+String solaxSerial "Serial Number [%s]" <energy> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:serialNumber" }
 
-Number solaxPowerWest "West [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:inverter:localBridge:MyInverter:pv1Power" }
-Number solaxPowerEast "East [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:inverter:localBridge:MyInverter:pv2Power" }
-Number solaxBatteryPower "Battery power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:inverter:localBridge:MyInverter:batteryPower" }
-Number solaxBatterySoc "Battery SoC [%.0f %%]" <batterylevel> (gsolax_inverter,EveryChangePersist) { channel="solax:inverter:localBridge:MyInverter:batteryStateOfCharge" }
+Number solaxPowerWest "West [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:localConnectInverter:localInverter:pv1-power" }
+Number solaxPowerEast "East [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:localConnectInverter:localInverter:pv2-power" }
+Number solaxBatteryPower "Battery power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:battery-power" }
+Number solaxBatterySoc "Battery SoC [%.0f %%]" <batterylevel> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:battery-state-of-charge" }
 
-Number solaxFeedInPower "Feed-in power (CEZ) [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:inverter:localBridge:MyInverter:feedInPower" }
-Number solaxAcPower "Invertor output power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:inverter:localBridge:MyInverter:inverterOutputPower" }
+Number solaxFeedInPower "Feed-in power (CEZ) [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:localConnectInverter:localInverter:feed-in-power" }
+Number solaxAcPower "Invertor output power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:localConnectInverter:localInverter:inverter-output-power" }
 
-String solaxInverterType "Inverter Type [%s]" <energy> (gsolax_inverter) { channel="solax:inverter:localBridge:MyInverter:inverterType"}
-String solaxUploadTime "Last update time [%s]" <calendar> (gsolax_inverter) { channel="solax:inverter:localBridge:MyInverter:lastUpdateTime" }
-String solaxRawData "Raw data [%s]" <data> (gsolax_inverter) { channel="solax:inverter:localBridge:MyInverter:rawData" }
+String solaxInverterType "Inverter Type [%s]" <energy> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:inverter-type"}
+String solaxUploadTime "Last update time [%s]" <calendar> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:last-update-time" }
+String solaxRawData "Raw data [%s]" <data> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:raw-data" }
 ```
 
 ### Sitemap Configuration
