@@ -47,7 +47,7 @@
 
 		<properties>
 			<property name="inverterType"/>
-			<property name="serialWifi"/>
+			<property name="serialNumber"/>
 		</properties>
 
 	</thing-type>

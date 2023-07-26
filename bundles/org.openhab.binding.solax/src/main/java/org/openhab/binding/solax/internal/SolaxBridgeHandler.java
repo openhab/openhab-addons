@@ -15,9 +15,7 @@ package org.openhab.binding.solax.internal;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +28,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -52,7 +51,8 @@ public class SolaxBridgeHandler extends BaseBridgeHandler {
     private SolaxConfiguration config;
 
     private LocalHttpConnector localHttpConnector;
-    private Set<ScheduledFuture<?>> schedules = new HashSet<>();
+
+    private @Nullable ScheduledFuture<?> schedule;
 
     public SolaxBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -63,15 +63,13 @@ public class SolaxBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initialize()...");
         updateStatus(ThingStatus.UNKNOWN);
 
         int refreshInterval = config.refresh;
         TimeUnit timeUnit = TimeUnit.SECONDS;
-        logger.debug("Scheduling regular interval retrival on every {} {}", refreshInterval, timeUnit);
-        ScheduledFuture<?> fixedDelaySchedule = scheduler.scheduleWithFixedDelay(this::retrieveData,
-                INITIAL_SCHEDULE_DELAY_SECONDS, refreshInterval, timeUnit);
-        schedules.add(fixedDelaySchedule);
+        logger.debug("Scheduling regular interval retrieval on every {} {}", refreshInterval, timeUnit);
+        schedule = scheduler.scheduleWithFixedDelay(this::retrieveData, INITIAL_SCHEDULE_DELAY_SECONDS, refreshInterval,
+                timeUnit);
     }
 
     private void retrieveData() {
@@ -86,8 +84,8 @@ public class SolaxBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
-            logger.warn("Exception received while attempting to retrieve data via HTTP", e);
-            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("Exception received while attempting to retrieve data via HTTP", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -110,11 +108,11 @@ public class SolaxBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        schedules.forEach(schedule -> {
+        if (schedule != null) {
             boolean success = schedule.cancel(true);
             String cancelingSuccessful = success ? "successful" : "failed";
             logger.debug("Canceling schedule of {} is {}", schedule, cancelingSuccessful);
-        });
+        }
     }
 
     @Override

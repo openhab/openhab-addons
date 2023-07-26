@@ -60,7 +60,7 @@ public class SolaxInverterHandler extends BaseThingHandler implements InverterDa
     }
 
     private void transferInverterDataToChannels(InverterData data) {
-        updateProperty(SolaxBindingConstants.SERIAL_NUMBER, data.getWifiSerial());
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, data.getWifiSerial());
         updateProperty(SolaxBindingConstants.INVERTER_TYPE, data.getInverterType().name());
 
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER,

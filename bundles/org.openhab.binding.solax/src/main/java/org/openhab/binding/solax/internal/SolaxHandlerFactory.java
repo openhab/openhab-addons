@@ -47,22 +47,13 @@ public class SolaxHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         logger.debug("Attempting to create handler for thing {}", thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (THING_TYPE_LOCAL_CONNECT_BRIDGE.equals(thingTypeUID)) {
-            try {
-                logger.debug("Creating bridge handler of type {}", THING_TYPE_LOCAL_CONNECT_BRIDGE);
-                return new SolaxBridgeHandler((Bridge) thing);
-            } catch (Exception e) {
-                logger.error("Unable to create Solax Bridge handler", e);
-            }
+            return new SolaxBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
-            logger.debug("Creating inverter handler of type {}", THING_TYPE_INVERTER);
             return new SolaxInverterHandler(thing);
         } else {
             logger.warn("Unsupported thing/bridge type UID. UID={}", thingTypeUID);
-            throw new IllegalStateException("Unsupported handler type");
         }
-
         return null;
     }
 }

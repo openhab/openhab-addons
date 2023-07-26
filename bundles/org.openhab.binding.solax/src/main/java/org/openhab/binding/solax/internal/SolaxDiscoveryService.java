@@ -81,8 +81,8 @@ public class SolaxDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SolaxBridgeHandler) {
-            this.bridgeHandler = (SolaxBridgeHandler) handler;
+        if (handler instanceof SolaxBridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
         }
     }
 
