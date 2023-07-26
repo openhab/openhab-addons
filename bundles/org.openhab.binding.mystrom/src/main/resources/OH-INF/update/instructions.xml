@@ -4,11 +4,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="mystrom:mystromplug">
-		<instruction-set targetVersion="1">
-			<update-channel id="ws">
-				<type>mystrom:ws-channel</type>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy-consumed-since-last-call">
+				<type>mystrom:energy-consumed-since-last-call-channel</type>
 			</update-channel>
 		</instruction-set>
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 	</thing-type>
 
 </update:update-descriptions>
