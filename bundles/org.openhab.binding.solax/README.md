@@ -11,7 +11,7 @@ The binding retrieves a structured data from the Wi-Fi module, parses it and pus
 
 | Thing             | Thing Type | Description                                                                                                                                 |
 |-------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| localConnect      | Bridge     | The bridge is used to communicate directly to the wifi module of the inverter.                                                              |
+| localConnect      | Bridge     | The bridge is used to communicate directly with the Wi-Fi module of the inverter.                                                           |
 | inverter          | Thing      | This is model representation of inverter with all the data available as a channels (Ex. inverter output power, voltage, PV1 power, etc)     |
 
 ## Discovery
