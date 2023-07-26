@@ -115,7 +115,7 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     @Override
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         // Alarm
         if (bytes[0] == 0x02) {

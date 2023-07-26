@@ -189,13 +189,10 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                                 break;
                             case TRIGGER:
                                 String lastEvent = lastEvents.get(channelId);
-                                if (lastEvent != null) {
-                                    String event = eep.convertToEvent(channelId, channelTypeId, lastEvent,
-                                            channelConfig);
-                                    if (event != null) {
-                                        triggerChannel(channel.getUID(), event);
-                                        lastEvents.put(channelId, event);
-                                    }
+                                String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig);
+                                if (event != null) {
+                                    triggerChannel(channel.getUID(), event);
+                                    lastEvents.put(channelId, event);
                                 }
                                 break;
                         }

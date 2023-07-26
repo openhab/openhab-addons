@@ -49,7 +49,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     @Override
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_STATUS_REQUEST_EVENT:

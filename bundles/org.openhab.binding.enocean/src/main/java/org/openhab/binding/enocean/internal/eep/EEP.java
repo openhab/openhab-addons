@@ -114,7 +114,7 @@ public abstract class EEP {
         return convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
     }
 
-    public @Nullable String convertToEvent(String channelId, String channelTypeId, String lastEvent,
+    public @Nullable String convertToEvent(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
@@ -223,7 +223,7 @@ public abstract class EEP {
         return UnDefType.UNDEF;
     }
 
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         return null;
     }

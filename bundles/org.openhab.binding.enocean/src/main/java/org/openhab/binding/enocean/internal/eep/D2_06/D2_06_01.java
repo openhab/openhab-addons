@@ -38,7 +38,7 @@ import org.openhab.core.types.UnDefType;
  * battery channels may be not supported by the physical device (depending on the actual model). If a channel is not
  * supported by a device it will transmit a 'not supported' message which is ignored by this implementation.
  * Consequently channels that are not supported by the physical device will never send updates to linked items.
- * 
+ *
  * @author Thomas Lauterbach - Initial contribution
  */
 @NonNullByDefault
@@ -164,7 +164,7 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     protected State getTemperature() {
-        double unscaledTemp = (double) (bytes[5] & 0xFF);
+        double unscaledTemp = bytes[5] & 0xFF;
         if (unscaledTemp <= 250) {
             double scaledTemp = unscaledTemp * 0.32 - 20;
             return new QuantityType<>(scaledTemp, SIUnits.CELSIUS);
@@ -198,7 +198,7 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     @Override
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         // Sensor values
         if (bytes[0] == MessageType.SENSORVALUES.getIntValue()) {
