@@ -142,6 +142,13 @@ public class PushoverActionsTest {
         assertThat(sent, is(true));
     }
 
+    @Test
+    public void testSendURLMessageWithTTL() {
+        pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
+        boolean sent = PushoverActions.sendURLMessage(pushoverThingActions, MESSAGE, TITLE, URL, URL_TITLE, TTL);
+        assertThat(sent, is(true));
+    }
+
     // sendPriorityMessage
     @Test
     public void testSendPriorityMessageThingActionsIsNotPushoverThingActions() {

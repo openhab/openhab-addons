@@ -50,13 +50,23 @@ One has to pass a `null` value if it should be skipped or the default value for 
 
 - `sendHtmlMessage(String message, @Nullable String title)` - This method is used to send a HTML message.
 
+- `sendHtmlMessage(String message, @Nullable String title, @Nullable Duration ttl)` - This method is used to send a HTML message with TTL.
+
 - `sendMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
+
+- `sendMonospaceMessage(String message, @Nullable String title, @Nullable Duration ttl)` - This method is used to send a monospace message with TTL.
 
 - `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a local path or URL to the attachment (parameter `attachment` **mandatory**). Additionally you can pass a data URI scheme to this parameter. Optionally pass a `contentType` to define the content-type of the attachment (default: `image/jpeg` or guessed from image data).
 
+- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable Duration ttl)` - This method is used to send a message with an attachment and TTL. See previous method for details.
+
 - `sendURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
 
+- `sendURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle, @Nullable Duration ttl)` - This method is used to send a message with an URL and TTL. See previous method for details.
+
 - `sendMessageToDevice(String device, String message, @Nullable String title)` - This method is used to send a message to a specific device. Parameter `device` **mandatory** is the name of a specific device (multiple devices may be separated by a comma).
+
+- `sendMessageToDevice(String device, String message, @Nullable String title, @Nullable Duration ttl)` - This method is used to send a message to a specific device with TTL. See previous method for details.
 
 - `sendPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message.
 Parameter `priority` is the priority to be used (`-2` = lowest priority, `-1` = low priority, `0` = normal priority, `1` = high priority, `2` = emergency priority; default: `2`).
