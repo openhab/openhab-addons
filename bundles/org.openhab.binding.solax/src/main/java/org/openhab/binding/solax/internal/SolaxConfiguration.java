@@ -24,5 +24,5 @@ public class SolaxConfiguration {
 
     public String hostname = "";
     public String password = "";
-    public int refresh = 10;
+    public int refreshInterval = 10;
 }

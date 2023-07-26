@@ -14,8 +14,6 @@ package org.openhab.binding.solax.internal;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +32,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +66,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        int refreshInterval = config.refresh;
+        int refreshInterval = config.refreshInterval;
         TimeUnit timeUnit = TimeUnit.SECONDS;
         logger.debug("Scheduling regular interval retrieval every {} {}", refreshInterval, timeUnit);
         schedule = scheduler.scheduleWithFixedDelay(this::retrieveData, INITIAL_SCHEDULE_DELAY_SECONDS, refreshInterval,
@@ -152,9 +149,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         super.dispose();
         ScheduledFuture<?> schedule = this.schedule;
         if (schedule != null) {
-            boolean success = schedule.cancel(true);
-            String cancelingSuccessful = success ? "successful" : "failed";
-            logger.debug("Canceling schedule of {} is {}", schedule, cancelingSuccessful);
+            schedule.cancel(true);
             schedule = null;
         }
     }
@@ -163,10 +158,5 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         String rawJsonData = localHttpConnector.retrieveData();
         logger.debug("Raw data retrieved = {}", rawJsonData);
         return LocalConnectRawDataBean.fromJson(rawJsonData);
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SolaxDiscoveryService.class);
     }
 }

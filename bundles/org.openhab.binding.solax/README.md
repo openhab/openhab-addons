@@ -3,7 +3,7 @@
 This is a binding that provides data of Solax solar power inverters.
 
 Currently it supports only a Solax Wi-Fi module with direct connection via HTTP (Wi-Fi module firmware version 3.x+ is required).
-Please note that earlier firmware releases do not support direct connection, therefore the binding will not work in it's current state.
+Please note that earlier firmware releases do not support direct connection, therefore the binding will not work in its current state.
 
 The binding retrieves a structured data from the inverter's Wi-Fi module, parses it and pushes it into the inverter Thing where each channel represents a specific information (inverter output power, voltage, PV1 power, etc.)
 
@@ -27,10 +27,6 @@ In case the parsed information that comes with the binding out of the box differ
 | password          | Password for accessing the Wi-Fi module (the serial number of the wifi). Mandatory parameter.                                                      |
 | hostname          | IP address or hostname of your Wi-Fi module. If hostname is used must be resolvable by OpenHAB. Mandatory parameter.                               |
 
-The bridge does not have any channels. 
-It is used only to connect to the module and retrieve the data. 
-The data is shown in the Inverter thing
-
 ### Inverter Output Channels
 
 | Channel                  | Type                       | Description                                      |
@@ -38,7 +34,7 @@ The data is shown in the Inverter thing
 | inverter-output-power    | Number:Power               | The output power of the inverter [W]             |
 | inverter-current         | Number:ElectricCurrent     | The output current of the inverter [A]           |
 | inverter-voltage         | Number:ElectricPotential   | The output voltage of the inverter [V]           |
-| inverter-frequency       | Number:ElectricPotential   | The frequency of the output voltage [Hz]         |
+| inverter-frequency       | Number:Frequency           | The frequency of the output voltage [Hz]         |
 
 ### Photovoltaic Panels Production Channels
 
@@ -61,7 +57,7 @@ The data is shown in the Inverter thing
 | battery-current           | Number:ElectricCurrent     | The current to / from battery (negative means power is pulled from battery and vice-versa) [A] |
 | battery-voltage           | Number:ElectricPotential   | The voltage of the battery [V]                                                                 |
 | battery-temperature       | Number:Temperature         | The temperature of the battery [C/F]                                                           |
-| battery-state-of-charge   | Number:Dimensionless       | The state of charge of the battery [%]                                                         |
+| battery-state-of-charge   | Number                     | The state of charge of the battery [%]                                                         |
 
 ### Grid related channels
 
@@ -80,7 +76,7 @@ The data is shown in the Inverter thing
 
 | Property          | Description                               |
 |-------------------|-------------------------------------------|
-| serialNumber      | The Serial Number of the Wi-Fi module     |
+| serialNumber      | The serial number of the Wi-Fi module     |
 | inverterType      | Inverter Type (for example X1_HYBRID_G4)  |
 
 
@@ -92,7 +88,7 @@ Here are some file based examples.
 
 ```java
 // The local connect inverter thing 
-Thing solax:localConnectInverter:localInverter  [ refresh=10, password="<SERIAL NUMBER OF THE WIFI MODULE>", hostname="<local IP/hostname in the network>" ] 
+Thing solax:localConnectInverter:localInverter  [ refreshInterval=10, password="<SERIAL NUMBER OF THE WIFI MODULE>", hostname="<local IP/hostname in the network>" ] 
 ```
 
 ### Item Configuration
@@ -100,7 +96,6 @@ Thing solax:localConnectInverter:localInverter  [ refresh=10, password="<SERIAL 
 ```java
 Group gSolaxInverter "Solax Inverter" <energy> (boilerRoom)
 Group solarPanels "Solar panels" <energy> (gSolaxInverter)
-String solaxSerial "Serial Number [%s]" <energy> (gsolax_inverter) { channel="solax:localConnectInverter:localInverter:serialNumber" }
 
 Number solaxPowerWest "West [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:localConnectInverter:localInverter:pv1-power" }
 Number solaxPowerEast "East [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:localConnectInverter:localInverter:pv2-power" }

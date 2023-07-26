@@ -10,41 +10,89 @@
 		<description>The inverter representation that supports local connections via HTTP</description>
 
 		<channels>
-			<channel id="inverter-output-power" typeId="system.electric-power"/>
-			<channel id="inverter-current" typeId="system.electric-current"/>
-			<channel id="inverter-voltage" typeId="system.electric-voltage"/>
-			<channel id="inverter-frequency" typeId="frequency"/>
+			<channel id="inverter-output-power" typeId="system.electric-power">
+				<label>"Inverter Input/Output Power"</label>
+				<description>"Power to/from the inverter"</description>
+			</channel>
+			<channel id="inverter-current" typeId="system.electric-current">
+				<label>"Inverter Input/Output Current"</label>
+				<description>"Current to/from the inverter"</description>
+			</channel>
+			<channel id="inverter-voltage" typeId="system.electric-voltage">
+				<label>"Inverter Voltage"</label>
+				<description>"Voltage of the inverter"</description>
+			</channel>
+			<channel id="inverter-frequency" typeId="frequency">
+				<label>"Inverter Voltage Frequency"</label>
+				<description>"Voltage frequency of the inverter.(should be the same as the feed in voltage frequency)"</description>
+			</channel>
 
-			<channel id="pv1-voltage" typeId="system.electric-voltage"/>
-			<channel id="pv2-voltage" typeId="system.electric-voltage"/>
-			<channel id="pv1-current" typeId="system.electric-current"/>
-			<channel id="pv2-current" typeId="system.electric-current"/>
-			<channel id="pv1-power" typeId="system.electric-power"/>
-			<channel id="pv2-power" typeId="system.electric-power"/>
-			<channel id="pv-total-power" typeId="system.electric-power"/>
-			<channel id="pv-total-current" typeId="system.electric-current"/>
+			<channel id="pv1-voltage" typeId="system.electric-voltage">
+				<label>"PV String 1 Voltage"</label>
+				<description>"Electric voltage of PV String 1"</description>
+			</channel>
+			<channel id="pv2-voltage" typeId="system.electric-voltage">
+				<label>"PV String 2 Voltage"</label>
+				<description>"Electric voltage of PV String 2"</description>
+			</channel>
+			<channel id="pv1-current" typeId="system.electric-current">
+				<label>"PV String 1 Current"</label>
+				<description>"Electric current of PV String 1"</description>
+			</channel>
+			<channel id="pv2-current" typeId="system.electric-current">
+				<label>"PV String 2 Current"</label>
+				<description>"Electric current of PV String 2"</description>
+			</channel>
+			<channel id="pv1-power" typeId="system.electric-power">
+				<label>"PV String 1 Power"</label>
+				<description>"Electric power of PV String 1"</description>
+			</channel>
+			<channel id="pv2-power" typeId="system.electric-power">
+				<label>"PV String 2 Power"</label>
+				<description>"Electric power of PV String 2"</description>
+			</channel>
+			<channel id="pv-total-power" typeId="system.electric-power">
+				<label>"PV Total Power"</label>
+				<description>"The sum of PV powers from all strings"</description>
+			</channel>
+			<channel id="pv-total-current" typeId="system.electric-current">
+				<label>"PV Total Current"</label>
+				<description>"The sum of PV currents from all strings"</description>
+			</channel>
 
-			<channel id="battery-power" typeId="system.electric-power"/>
-			<channel id="battery-current" typeId="system.electric-current"/>
-			<channel id="battery-voltage" typeId="system.electric-voltage"/>
-			<channel id="battery-temperature" typeId="battery-temperature"/>
-			<channel id="battery-state-of-charge" typeId="system.battery-level"/>
+			<channel id="battery-power" typeId="system.electric-power">
+				<label>"Battery Power"</label>
+				<description>"Power to/from the battery"</description>
+			</channel>
+			<channel id="battery-current" typeId="system.electric-current">
+				<label>"Battery Current"</label>
+				<description>"Electric current to/from the battery"</description>
+			</channel>
+			<channel id="battery-voltage" typeId="system.electric-voltage">
+				<label>"Battery Voltage"</label>
+				<description>"Electric voltage of the battery"</description>
+			</channel>
+			<channel id="battery-temperature" typeId="battery-temperature">
+				<label>"Battery Temperature"</label>
+				<description>"Temperature of the battery"</description>
+			</channel>
+			<channel id="battery-state-of-charge" typeId="system.battery-level">
+				<label>"Battery Level"</label>
+				<description>"The battery state of charge in percent"</description>
+			</channel>
 
-			<channel id="feed-in-power" typeId="system.electric-power"/>
+			<channel id="feed-in-power" typeId="system.electric-power">
+				<label>"Feed-in Power"</label>
+				<description>"Power to/from the electricity network."</description>
+			</channel>
 
 			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
 
-			<channel id="raw-data" typeId="raw-data-type"/>
-
-			<channel id="on-grid-total-yield" typeId="system.electric-power"/>
-			<channel id="on-grid-daily-yield" typeId="system.electric-power"/>
-			<channel id="on-total-feedin-energy" typeId="system.electric-power"/>
+			<channel id="raw-data" typeId="raw-data-type">
+				<label>"Raw Inverter Data"</label>
+				<description>"The raw JSON data retrieved from the inverter's Wi-Fi module."</description>
+			</channel>
 		</channels>
-
-		<properties>
-			<property name="inverterType"/>
-			<property name="serialNumber"/>
-		</properties>
 
 		<config-description>
 			<parameter name="refreshInterval" type="integer" min="1" max="600">
