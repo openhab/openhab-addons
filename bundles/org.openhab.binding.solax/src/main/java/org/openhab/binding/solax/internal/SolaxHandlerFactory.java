@@ -45,7 +45,6 @@ public class SolaxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        logger.debug("Attempting to create handler for thing {}", thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_LOCAL_CONNECT_BRIDGE.equals(thingTypeUID)) {
             return new SolaxBridgeHandler((Bridge) thing);

@@ -1,11 +1,13 @@
 # Solax Binding
 
-This is a binding for a Solax Wi-Fi module that supports connection directly via HTTP (Wi-Fi module firmware version 3.x+ is required).
+This is a binding that provides data of Solax solar power inverters.
+Currently it supports only a Solax Wi-Fi module with direct connection via HTTP (Wi-Fi module firmware version 3.x+ is required).
 Please note that earlier firmware releases do not support direct connection, therefore the binding will not work in it's current state.
 
-Currently the Solax cloud services provide an update every 5 minutes (sometimes even more rarely) and they also happen to be down sometimes, which makes it hard to automate the decision making by openHAB if we have more complex rules.
+The binding retrieves a structured data from the Wi-Fi module, parses it and pushes it into the inverter Thing where each channel represents a specific information (inverter output power, voltage, PV1 power, etc.)
 
-The binding retrieves a structured data from the Wi-Fi module, parses it and pushes it into the inverter Thing where each channel represents a specific information (inverter output power, voltage, PV1 power, etc)
+In case the parsed information that comes with the binding out of the box differs, the raw data channel can be used with a combination of JSON Path transformation to map the proper values to the necessary items.
+
 
 ## Supported Things
 
@@ -24,11 +26,13 @@ Discovery is available. Once the localConnect bridge is configured with the nece
 
 | Parameter         | Description                                                                                                                                        |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| refresh           | Value is in seconds. Defines the refresh interval when the binding polls from the inverter's Wi-Fi module. Optional parameter. Default 10 seconds. |
+| refreshInterval   | Value is in seconds. Defines the refresh interval when the binding polls from the inverter's Wi-Fi module. Optional parameter. Default 10 seconds. |
 | password          | Password for accessing the Wi-Fi module (the serial number of the wifi). Mandatory parameter.                                                      |
 | hostname          | IP address or hostname of your Wi-Fi module. If hostname is used must be resolvable by OpenHAB. Mandatory parameter.                               |
 
-The bridge does not have any channels. It is used only to connect to the module and retrieve the data. The data is shown in the Inverter thing
+The bridge does not have any channels. 
+It is used only to connect to the module and retrieve the data. 
+The data is shown in the Inverter thing
 
 ### Inverter Thing Configuration
 
@@ -36,58 +40,52 @@ The bridge does not have any channels. It is used only to connect to the module 
 
 | Channel                  | Type                       | Description                                      |
 |--------------------------|----------------------------|--------------------------------------------------|
-| inverterOutputPower      | system.electric-power      | The output power of the inverter [W]             |
-| inverterCurrent          | system.electric-current    | The output current of the inverter [A]           |
-| inverterVoltage          | system.electric-voltage    | The output voltage of the inverter [V]           |
-| inverterFrequency        | Number:ElectricPotential   | The frequency of the output voltage [Hz]         |
+| inverter-output-power    | Number:Power               | The output power of the inverter [W]             |
+| inverter-current         | Number:ElectricCurrent     | The output current of the inverter [A]           |
+| inverter-voltage         | Number:ElectricPotential   | The output voltage of the inverter [V]           |
+| inverter-frequency       | Number:ElectricPotential   | The frequency of the output voltage [Hz]         |
 
 ### Photovoltaic Panels Production Channels
 
 | Channel                  | Type                       | Description                            |
 |--------------------------|----------------------------|----------------------------------------|
-| pv1Voltage      | system.electric-voltage    | The voltage of PV1 string [V]                   |
-| pv2Voltage      | system.electric-voltage    | The voltage of PV2 string [V]                   |
-| pv1Current      | system.electric-current    | The current of PV1 string [A]                   |
-| pv2Current      | system.electric-current    | The current of PV2 string [A]                   |
-| pv1Power        | system.electric-power      | The output power PV1 string [W]                 |
-| pv2Power        | system.electric-power      | The output power PV2 string [W]                 |
-| pvTotalPower    | system.electric-power      | The total output power of both PV strings [W]   |
-| pvTotalCurrent  | system.electric-current    | The total current of both PV strings [A]        |
+| pv1-voltage              | Number:ElectricPotential   | The voltage of PV1 string [V]                   |
+| pv2-voltage              | Number:ElectricPotential   | The voltage of PV2 string [V]                   |
+| pv1-current              | Number:ElectricCurrent     | The current of PV1 string [A]                   |
+| pv2-current              | Number:ElectricCurrent     | The current of PV2 string [A]                   |
+| pv1-power                | Number:Power               | The output power PV1 string [W]                 |
+| pv2-power                | Number:Power               | The output power PV2 string [W]                 |
+| pv-total-power           | Number:Power               | The total output power of both PV strings [W]   |
+| pv-total-current         | Number:ElectricCurrent     | The total current of both PV strings [A]        |
 
 ### Battery channels
 
-| Channel                  | Type                       | Description                                                                                    |
-|--------------------------|----------------------------|------------------------------------------------------------------------------------------------|
-| batteryPower             | system.electric-power      | The power to / from battery (negative means power is pulled from battery and vice-versa) [W]   |
-| batteryCurrent           | system.electric-current    | The current to / from battery (negative means power is pulled from battery and vice-versa) [A] |
-| batteryVoltage           | system.electric-voltage    | The voltage of the battery [V]                                                                 |
-| batteryTemperature       | Number:Temperature         | The temperature of the battery [C/F]                                                           |
-| batteryStateOfCharge     | system.battery-level       | The state of charge of the battery [%]                                                         |
+| Channel                   | Type                       | Description                                                                                    |
+|---------------------------|----------------------------|------------------------------------------------------------------------------------------------|
+| battery-power             | Number:Power               | The power to / from battery (negative means power is pulled from battery and vice-versa) [W]   |
+| battery-current           | Number:ElectricCurrent     | The current to / from battery (negative means power is pulled from battery and vice-versa) [A] |
+| battery-voltage           | Number:ElectricPotential   | The voltage of the battery [V]                                                                 |
+| battery-temperature       | Number:Temperature         | The temperature of the battery [C/F]                                                           |
+| battery-state-of-charge   | Number:Dimensionless       | The state of charge of the battery [%]                                                         |
 
 ### Grid related channels
 
 | Channel                  | Type                       | Description                                                                                    |
 |--------------------------|----------------------------|------------------------------------------------------------------------------------------------|
-| feedInPower              | system.electric-power      | The power to / from grid (negative means power is pulled from the grid and vice-versa) [W]     |
-| onGridTotalYield*        | system.electric-power      | Total Yield from PV strings [W]                                                                |
-| onGridDailyYield*         | system.electric-power      | The power to / from grid (negative means power is pulled from the grid and vice-versa) [W]    |
-| onTotalFeedinEnergy*      | system.electric-power      | The power to / from grid (negative means power is pulled from the grid and vice-versa) [W]    |
-| onTotalFeedinEnergy*      | system.electric-power      | The power to / from grid (negative means power is pulled from the grid and vice-versa) [W]    |
-
-_* experimental channels. So far the data does not seem reliable. Either it's taken from wrong part of the JSON or it's calculated wrong in the inverter itself. If someone finds better way to parse it or the meaning of the various int values, please open a new issue for solax binding and share the information._
+| feed-in-power            | Number:Power               | The power to / from grid (negative means power is pulled from the grid and vice-versa) [W]     |
 
 ### General channels
 
 | Channel                  | Type                       | Description                                                                                                                                 |
 |--------------------------|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| lastUpdateTime           | DateTime                   | Last time when a call has been made to the inverter                                                                                         |
-| rawData                  | String                     | The raw data retrieved from inverter in JSON format. (Usable for channels not implemented. Can be consumed with the JSONpath transformation |
+| last-update-time         | DateTime                   | Last time when a call has been made to the inverter                                                                                         |
+| raw-data                 | String                     | The raw data retrieved from inverter in JSON format. (Usable for channels not implemented. Can be consumed with the JSONpath transformation |
 
 ### Properties
 
 | Property          | Description                               |
 |-------------------|-------------------------------------------|
-| serialWifi        | The Wi-Fi module's serial number          |
+| serialNumber      | The Serial Number of the Wi-Fi module     |
 | inverterType      | Inverter Type (for example X1_HYBRID_G4)  |
 
 

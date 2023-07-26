@@ -112,6 +112,7 @@ public class SolaxBridgeHandler extends BaseBridgeHandler {
             boolean success = schedule.cancel(true);
             String cancelingSuccessful = success ? "successful" : "failed";
             logger.debug("Canceling schedule of {} is {}", schedule, cancelingSuccessful);
+            schedule = null;
         }
     }
 

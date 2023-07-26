@@ -14,12 +14,12 @@
 		<label>Battery Temperature</label>
 		<description>Battery Temperature</description>
 	</channel-type>
-	<channel-type id="lastRetrieveTimeStamp">
+	<channel-type id="last-retrieve-time-stamp">
 		<item-type>DateTime</item-type>
 		<label>Last retrieve time stamp</label>
 		<description>Last time with a successful retrieval of data</description>
 	</channel-type>
-	<channel-type id="rawDataType" advanced="true">
+	<channel-type id="raw-data-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw Data</label>
 		<description>Raw data retrieved from the system as a JSON</description>

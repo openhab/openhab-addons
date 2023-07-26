@@ -36,9 +36,9 @@
 
 			<channel id="feed-in-power" typeId="system.electric-power"/>
 
-			<channel id="last-update-time" typeId="lastRetrieveTimeStamp"/>
+			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
 
-			<channel id="raw-data" typeId="rawDataType"/>
+			<channel id="raw-data" typeId="raw-data-type"/>
 
 			<channel id="on-grid-total-yield" typeId="system.electric-power"/>
 			<channel id="on-grid-daily-yield" typeId="system.electric-power"/>

@@ -44,9 +44,9 @@ public class SolaxDiscoveryService extends AbstractDiscoveryService implements T
         super(SolaxBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
     }
 
-    @SuppressWarnings("null")
     @Override
     protected void startScan() {
+        SolaxBridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler == null) {
             logger.warn("Unable to retrieve the registered Solax bridge");
             return;

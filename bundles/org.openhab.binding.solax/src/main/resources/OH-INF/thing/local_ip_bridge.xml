@@ -9,7 +9,7 @@
 		<description>Solax direct connect to the local Wifi bridge</description>
 
 		<config-description>
-			<parameter name="refresh" type="integer" min="1" max="600">
+			<parameter name="refreshInterval" type="integer" min="1" max="600">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
