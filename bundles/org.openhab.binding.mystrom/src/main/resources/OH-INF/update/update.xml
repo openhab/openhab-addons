@@ -6,7 +6,7 @@
 	<thing-type uid="mystrom:mystromplug">
 		<instruction-set targetVersion="1">
 			<update-channel id="ws">
-				<type>system:electrical-energy</type>
+				<type>mystrom:ws-channel</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
