@@ -20,6 +20,7 @@ import org.openhab.binding.solax.internal.model.InverterData;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -38,7 +39,7 @@ public class SolaxDiscoveryService extends AbstractDiscoveryService implements T
 
     private static final int TIMEOUT = 10;
 
-    private @Nullable SolaxBridgeHandler bridgeHandler;
+    private @Nullable SolaxLocalAccessHandler handler;
 
     public SolaxDiscoveryService() throws IllegalArgumentException {
         super(SolaxBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
@@ -46,7 +47,7 @@ public class SolaxDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     protected void startScan() {
-        SolaxBridgeHandler bridgeHandler = this.bridgeHandler;
+        SolaxLocalAccessHandler bridgeHandler = this.handler;
         if (bridgeHandler == null) {
             logger.warn("Unable to retrieve the registered Solax bridge");
             return;
@@ -65,9 +66,9 @@ public class SolaxDiscoveryService extends AbstractDiscoveryService implements T
                         bridgeHandler.getThing().getUID(), serialNumber);
 
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(SolaxBindingConstants.SERIAL_NUMBER, serialNumber)
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber)
                         .withProperty(SolaxBindingConstants.INVERTER_TYPE, data.getInverterType().name())
-                        .withRepresentationProperty(SolaxBindingConstants.SERIAL_NUMBER)
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                         .withBridge(bridgeHandler.getThing().getUID()).withLabel(data.getInverterType().name()).build();
                 thingDiscovered(result);
             } else {
@@ -81,14 +82,14 @@ public class SolaxDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SolaxBridgeHandler bridgeHandler) {
-            this.bridgeHandler = bridgeHandler;
+        if (handler instanceof SolaxLocalAccessHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+        return handler;
     }
 
     @Override

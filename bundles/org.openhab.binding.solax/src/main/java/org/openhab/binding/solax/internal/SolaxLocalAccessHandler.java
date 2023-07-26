@@ -12,9 +12,17 @@
  */
 package org.openhab.binding.solax.internal;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solax.internal.connectivity.LocalHttpConnector;
+import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
@@ -24,39 +32,74 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SolaxInverterHandler} is responsible for handling commands, which are
+ * The {@link SolaxLocalAccessHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class SolaxInverterHandler extends BaseThingHandler implements InverterDataUpdateListener {
+public class SolaxLocalAccessHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SolaxInverterHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SolaxLocalAccessHandler.class);
 
-    public SolaxInverterHandler(Thing thing) {
+    private static final int INITIAL_SCHEDULE_DELAY_SECONDS = 5;
+
+    private SolaxConfiguration config;
+
+    private LocalHttpConnector localHttpConnector;
+
+    private @Nullable ScheduledFuture<?> schedule;
+
+    public SolaxLocalAccessHandler(Thing thing) {
         super(thing);
+
+        config = getConfigAs(SolaxConfiguration.class);
+        localHttpConnector = new LocalHttpConnector(config.password, config.hostname);
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
+
+        int refreshInterval = config.refresh;
+        TimeUnit timeUnit = TimeUnit.SECONDS;
+        logger.debug("Scheduling regular interval retrieval on every {} {}", refreshInterval, timeUnit);
+        schedule = scheduler.scheduleWithFixedDelay(this::retrieveData, INITIAL_SCHEDULE_DELAY_SECONDS, refreshInterval,
+                timeUnit);
     }
 
-    @Override
-    public void updateListener(InverterData data) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+    private void retrieveData() {
+        try {
+            String rawJsonData = localHttpConnector.retrieveData();
+            logger.debug("Raw data retrieved = {}", rawJsonData);
 
-        logger.debug("Received a new inverter data object. Data = {}", data.toStringDetailed());
-        transferInverterDataToChannels(data);
+            updateInverterData(rawJsonData);
+
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (IOException e) {
+            logger.debug("Exception received while attempting to retrieve data via HTTP", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void updateInverterData(@Nullable String rawJsonData) {
+        LocalConnectRawDataBean inverterParsedData = LocalConnectRawDataBean.fromJson(rawJsonData);
+        if (inverterParsedData != null) {
+            logger.debug("Received a new inverter data object. Data = {}", inverterParsedData.toStringDetailed());
+            transferInverterDataToChannels(inverterParsedData);
+        } else {
+            logger.warn("Parsed bean from the raw JSON data is null. Rawdata={}", rawJsonData);
+        }
     }
 
     private void transferInverterDataToChannels(InverterData data) {
@@ -102,5 +145,27 @@ public class SolaxInverterHandler extends BaseThingHandler implements InverterDa
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Nothing to do here as of now
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (schedule != null) {
+            boolean success = schedule.cancel(true);
+            String cancelingSuccessful = success ? "successful" : "failed";
+            logger.debug("Canceling schedule of {} is {}", schedule, cancelingSuccessful);
+            schedule = null;
+        }
+    }
+
+    public @Nullable InverterData scanForInverter() throws IOException {
+        String rawJsonData = localHttpConnector.retrieveData();
+        logger.debug("Raw data retrieved = {}", rawJsonData);
+        return LocalConnectRawDataBean.fromJson(rawJsonData);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(SolaxDiscoveryService.class);
     }
 }

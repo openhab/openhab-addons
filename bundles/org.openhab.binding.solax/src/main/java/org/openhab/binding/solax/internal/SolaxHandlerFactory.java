@@ -16,7 +16,6 @@ import static org.openhab.binding.solax.internal.SolaxBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -46,10 +45,8 @@ public class SolaxHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_LOCAL_CONNECT_BRIDGE.equals(thingTypeUID)) {
-            return new SolaxBridgeHandler((Bridge) thing);
-        } else if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
-            return new SolaxInverterHandler(thing);
+        if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
+            return new SolaxLocalAccessHandler(thing);
         } else {
             logger.warn("Unsupported thing/bridge type UID. UID={}", thingTypeUID);
         }

@@ -27,19 +27,14 @@ import org.openhab.core.thing.ThingTypeUID;
 public class SolaxBindingConstants {
 
     private static final String BINDING_ID = "solax";
-    private static final String BRIDGE_LOCAL_CONNECT_ID = "localConnect";
-    private static final String THING_INVERTER_ID = "inverter";
+    private static final String THING_INVERTER_ID = "localConnectInverter";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_LOCAL_CONNECT_BRIDGE = new ThingTypeUID(BINDING_ID,
-            BRIDGE_LOCAL_CONNECT_ID);
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, THING_INVERTER_ID);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LOCAL_CONNECT_BRIDGE,
-            THING_TYPE_INVERTER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INVERTER);
 
     // List of all Channel ids
-    public static final String SERIAL_NUMBER = "serialWifi";
     public static final String INVERTER_TYPE = "inverterType";
 
     public static final String INVERTER_OUTPUT_POWER = "inverter-output-power";
