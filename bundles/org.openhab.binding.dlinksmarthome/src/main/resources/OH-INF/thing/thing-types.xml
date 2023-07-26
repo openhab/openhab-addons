@@ -26,6 +26,12 @@
 				<label>PIN Code</label>
 				<description>PIN code from the back of the device.</description>
 			</parameter>
+			<parameter name="rebootHour" type="integer" min="0" max="23" required="false">
+				<default>3</default>
+				<advanced>true</advanced>
+				<label>Reboot Hour</label>
+				<description>Hour (24h) of the day that the device will be rebooted to ensure that it remains responsive.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>

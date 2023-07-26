@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>UPB Binding</name>
 	<description>The Universal Powerline Bus (UPB) binding reads and writes messages to and from a UPB modem</description>
+	<connection>local</connection>
 
 	<service-id>org.openhab.upb</service-id>
 

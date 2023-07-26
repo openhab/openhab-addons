@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Tesla Binding</name>
 	<description>This is the binding for Tesla Electric Vehicles.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

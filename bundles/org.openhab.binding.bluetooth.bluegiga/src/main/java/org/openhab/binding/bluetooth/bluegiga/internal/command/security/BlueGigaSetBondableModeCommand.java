@@ -29,8 +29,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  */
 @NonNullByDefault
 public class BlueGigaSetBondableModeCommand extends BlueGigaCommand {
-    public static int COMMAND_CLASS = 0x05;
-    public static int COMMAND_METHOD = 0x01;
+    public static final int COMMAND_CLASS = 0x05;
+    public static final int COMMAND_METHOD = 0x01;
 
     /**
      * Enables or disables bonding mode. 0 : the device is not bondable. 1 : the device is bondable

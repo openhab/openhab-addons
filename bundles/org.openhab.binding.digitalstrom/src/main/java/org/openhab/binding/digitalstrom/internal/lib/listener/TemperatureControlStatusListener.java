@@ -20,8 +20,8 @@ import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontain
  * <br>
  * It also can be implemented as discovery, than the id have to be {@link #DISCOVERY}.
  *
- * @author Michael Ochel
- * @author Matthias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  *
  */
 public interface TemperatureControlStatusListener {

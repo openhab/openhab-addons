@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>QolsysIQ Binding</name>
 	<description>This is the binding for Qolsys IQ Alarm Systems.</description>
+	<connection>local</connection>
 
 </addon:addon>

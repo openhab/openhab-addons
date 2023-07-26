@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.electroluxair.internal.handler;
 
-import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +37,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 
 import com.google.gson.Gson;
 
@@ -147,6 +148,8 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        return;
+        if (CHANNEL_STATUS.equals(channelUID.getId()) && command instanceof RefreshType) {
+            scheduler.schedule(this::refreshAndUpdateStatus, 1, TimeUnit.SECONDS);
+        }
     }
 }

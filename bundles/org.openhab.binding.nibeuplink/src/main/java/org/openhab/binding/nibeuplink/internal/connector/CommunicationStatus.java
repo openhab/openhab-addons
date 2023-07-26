@@ -47,7 +47,7 @@ public class CommunicationStatus {
 
     public final String getMessage() {
         Exception err = error;
-        String errMsg = err == null ? err.getMessage() : null;
+        String errMsg = err == null ? null : err.getMessage();
         String msg = getHttpCode().getMessage();
         if (errMsg != null && !errMsg.isEmpty()) {
             return errMsg;

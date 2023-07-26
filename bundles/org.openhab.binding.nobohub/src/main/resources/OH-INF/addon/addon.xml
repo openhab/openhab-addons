@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Glen Dimplex Nobø Hub Binding</name>
 	<description>This is the binding for Glen Dimplex Nobø Hub.</description>
+	<connection>local</connection>
 
 </addon:addon>

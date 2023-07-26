@@ -37,6 +37,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -245,7 +246,11 @@ public class ShellyUtils {
     }
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
-        return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+        return (value != null && value ? OnOffType.ON : OnOffType.OFF);
+    }
+
+    public static OpenClosedType getOpenClosed(@Nullable Boolean value) {
+        return (value != null && value ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
     }
 
     public static OnOffType getOnOff(int value) {

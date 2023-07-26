@@ -46,7 +46,7 @@ public class SolarwattHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENERGY_MANAGER,
             THING_TYPE_INVERTER, THING_TYPE_POWERMETER, THING_TYPE_EVSTATION, THING_TYPE_BATTERYCONVERTER,
-            THING_TYPE_LOCATION, THING_TYPE_PVPLANT, THING_TYPE_GRIDFLOW);
+            THING_TYPE_LOCATION, THING_TYPE_PVPLANT, THING_TYPE_GRIDFLOW, THING_TYPE_SMARTHEATER);
 
     private final HttpClient commonHttpClient;
     private final SolarwattChannelTypeProvider channelTypeProvider;

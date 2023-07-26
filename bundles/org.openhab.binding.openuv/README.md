@@ -62,6 +62,16 @@ This is quite useful with a free OpenUV account (50 req/day included): in this c
 
 Thing can be extended with as many SafeExposure channels as needed for each skin type.
 
+## Provided icon set
+
+This binding has its own IconProvider and makes available the following list of icons
+
+| Icon Name          | Dynamic | Illustration |
+|--------------------|---------|--------------|
+| oh:openuv:ozone    |   No    | ![](src/main/resources/icon/ozone.svg) |
+| oh:openuv:uv-alarm |   Yes   | ![](src/main/resources/icon/uv-alarm.svg) |
+| oh:openuv:uv-index |   Yes   | ![](src/main/resources/icon/uv-index.svg) |
+
 ## Examples
 
 demo.things:

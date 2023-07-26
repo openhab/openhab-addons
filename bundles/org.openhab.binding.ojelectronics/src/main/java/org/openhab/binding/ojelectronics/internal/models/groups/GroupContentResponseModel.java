@@ -26,5 +26,5 @@ import org.openhab.binding.ojelectronics.internal.models.ResponseModelBase;
 @NonNullByDefault
 public class GroupContentResponseModel extends ResponseModelBase {
 
-    public List<GroupContent> groupContents = new ArrayList<GroupContent>();
+    public List<GroupContentModel> groupContents = new ArrayList<GroupContentModel>();
 }

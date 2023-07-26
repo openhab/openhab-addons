@@ -38,12 +38,10 @@ public class BatteryLevelService extends BoschSHCService<DeviceServiceData> {
     @Override
     public @Nullable DeviceServiceData getState()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         String deviceId = getDeviceId();
         if (deviceId == null) {
             return null;
         }
-
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             return null;

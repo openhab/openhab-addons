@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_FLOODLIGHT;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import java.util.Set;
@@ -22,7 +22,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link PresenceChannelHelper} handles specific channels of Presence external cameras
@@ -39,11 +41,19 @@ public class PresenceChannelHelper extends CameraChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof HomeStatusModule) {
-            HomeStatusModule camera = (HomeStatusModule) naThing;
+        if (naThing instanceof HomeStatusModule presence) {
             switch (channelId) {
                 case CHANNEL_FLOODLIGHT:
-                    return toStringType(camera.getFloodlight());
+                    return toStringType(presence.getFloodlight());
+                case CHANNEL_SIREN:
+                    switch (presence.getSirenStatus()) {
+                        case NO_SOUND:
+                            return OnOffType.OFF;
+                        case SOUND:
+                            return OnOffType.ON;
+                        case UNKNOWN:
+                            return UnDefType.NULL;
+                    }
             }
         }
         return super.internalGetProperty(channelId, naThing, config);
