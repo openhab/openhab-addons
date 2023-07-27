@@ -15,7 +15,7 @@ In case the parsed information that comes with the binding out of the box differ
 
 | Thing             | Thing Type | Description                                                                                                                                 |
 |-------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| inverter          | Thing      | This is model representation of inverter with all the data available as a channels (Ex. inverter output power, voltage, PV1 power, etc)     |
+| localConnectInverter | Thing      | This is model representation of inverter with all the data available as a channels (Ex. inverter output power, voltage, PV1 power, etc)     |
 
 ## Thing Configuration
 
