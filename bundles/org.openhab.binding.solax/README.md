@@ -2,7 +2,8 @@
 
 This is a binding for Solax solar power inverters.
 
-Currently it supports only a Solax Wi-Fi module with direct connection via HTTP (Wi-Fi module firmware version 3.x+ is required).
+Solax Wi-Fi module with direct connection via HTTP is supported.
+Wi-Fi module firmware version 3.x+ is required.
 Please note that earlier firmware releases do not support direct connection, therefore the binding will not work in its current state.
 
 The binding retrieves a structured data from the inverter's Wi-Fi module, parses it and pushes it into the inverter Thing where each channel represents a specific information (inverter output power, voltage, PV1 power, etc.)
