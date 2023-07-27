@@ -79,7 +79,6 @@ In case the parsed information that comes with the binding out of the box differ
 | serialNumber      | The serial number of the Wi-Fi module     |
 | inverterType      | Inverter Type (for example X1_HYBRID_G4)  |
 
-
 ## Full Example
 
 Here are some file based examples.
