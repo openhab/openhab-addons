@@ -23,7 +23,7 @@ In case the parsed information that comes with the binding out of the box differ
 
 | Parameter         | Description                                                                                                                                        |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| refreshInterval   | Value is in seconds. Defines the refresh interval when the binding polls from the inverter's Wi-Fi module. Optional parameter. Default 10 seconds. |
+| refreshInterval   | Defines the refresh interval when the binding polls from the inverter's Wi-Fi module (in seconds). Optional parameter. Default 10 seconds. |
 | password          | Password for accessing the Wi-Fi module (the serial number of the wifi). Mandatory parameter.                                                      |
 | hostname          | IP address or hostname of your Wi-Fi module. If hostname is used must be resolvable by OpenHAB. Mandatory parameter.                               |
 
