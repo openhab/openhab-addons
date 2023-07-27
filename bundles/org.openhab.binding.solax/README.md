@@ -1,6 +1,6 @@
 # Solax Binding
 
-This is a binding that provides data of Solax solar power inverters.
+This is a binding for Solax solar power inverters.
 
 Currently it supports only a Solax Wi-Fi module with direct connection via HTTP (Wi-Fi module firmware version 3.x+ is required).
 Please note that earlier firmware releases do not support direct connection, therefore the binding will not work in its current state.
