@@ -114,7 +114,7 @@ public class Shelly2RpcSocket {
         try {
             disconnect(); // for safety
 
-            URI uri = new URI("ws://" + deviceIp + "/rpc");
+            URI uri = new URI("ws://" + deviceIp + SHELLYRPC_ENDPOINT);
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader(HttpHeaders.HOST, deviceIp);
             request.setHeader("Origin", "http://" + deviceIp);
@@ -276,6 +276,8 @@ public class Shelly2RpcSocket {
                                                     e.event, e.data.name);
                                         }
                                     }
+                                } else {
+                                    handler.onNotifyEvent(fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class));
                                 }
                             }
                         }

@@ -33,7 +33,7 @@ public class ShellyApiResult {
     public String response = "";
     public int httpCode = -1;
     public String httpReason = "";
-    public String authResponse = "";
+    public String authChallenge = "";
 
     public ShellyApiResult() {
     }
