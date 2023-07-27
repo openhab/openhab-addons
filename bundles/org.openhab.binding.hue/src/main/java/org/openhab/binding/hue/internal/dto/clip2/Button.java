@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ButtonEventType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.State;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,17 +27,17 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Button {
-    private @NonNullByDefault({}) @SerializedName("last_event") String lastEvent;
+    private @Nullable @SerializedName("last_event") String lastEvent;
 
     /**
      * @return the last button event as an enum.
-     * @throws IllegalArgumentException if lastEvent is bad.
+     * @throws IllegalArgumentException if lastEvent is null or bad.
      */
     public ButtonEventType getLastEvent() throws IllegalArgumentException {
-        return ButtonEventType.valueOf(lastEvent.toUpperCase());
-    }
-
-    public State getLastEventState() {
-        return new StringType(getLastEvent().name());
+        String lastEvent = this.lastEvent;
+        if (Objects.nonNull(lastEvent)) {
+            return ButtonEventType.valueOf(lastEvent.toUpperCase());
+        }
+        throw new IllegalArgumentException("lastEvent field is null");
     }
 }

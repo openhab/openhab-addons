@@ -196,11 +196,6 @@ public class Resource {
         return UnDefType.NULL;
     }
 
-    public State getButtonLastEventState() {
-        Button button = this.button;
-        return Objects.nonNull(button) ? button.getLastEventState() : UnDefType.NULL;
-    }
-
     public List<ResourceReference> getChildren() {
         List<ResourceReference> children = this.children;
         return Objects.nonNull(children) ? children : List.of();
