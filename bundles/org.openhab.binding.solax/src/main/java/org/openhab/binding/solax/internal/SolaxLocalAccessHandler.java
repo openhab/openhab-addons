@@ -150,7 +150,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         ScheduledFuture<?> schedule = this.schedule;
         if (schedule != null) {
             schedule.cancel(true);
-            schedule = null;
+            this.schedule = null;
         }
     }
 
