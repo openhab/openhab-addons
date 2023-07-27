@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public class LocalHttpConnector implements SolaxConnector {
     }
 
     @Override
-    public String retrieveData() throws IOException {
+    public @Nullable String retrieveData() throws IOException {
         String requestBody = createRequestBody();
         logger.trace("Request body: {}", requestBody);
         String result = HttpUtil.executeUrl(HttpMethod.POST.name(), uri,

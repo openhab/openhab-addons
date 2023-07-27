@@ -13,6 +13,7 @@
 package org.openhab.binding.solax.internal.connectivity;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SolaxConnector} is interface for connecting to the Solax endpoints (cloud API or local IP)
@@ -22,5 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface SolaxConnector {
 
+    @Nullable
     String retrieveData() throws Exception;
 }

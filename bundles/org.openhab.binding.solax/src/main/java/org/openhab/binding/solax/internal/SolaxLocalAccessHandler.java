@@ -79,7 +79,10 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         try {
             String rawJsonData = localHttpConnector.retrieveData();
             logger.debug("Raw data retrieved = {}", rawJsonData);
-            updateData(rawJsonData);
+
+            if (rawJsonData != null && !rawJsonData.isEmpty()) {
+                updateData(rawJsonData);
+            }
         } catch (IOException e) {
             logger.warn("Exception received while attempting to retrieve data via HTTP", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -88,10 +91,8 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private void updateData(String rawJsonData) {
         try {
-            if (rawJsonData != null && !rawJsonData.isEmpty()) {
-                LocalConnectRawDataBean inverterParsedData = parseJson(rawJsonData);
-                updateThing(inverterParsedData);
-            }
+            LocalConnectRawDataBean inverterParsedData = parseJson(rawJsonData);
+            updateThing(inverterParsedData);
         } catch (JsonParseException e) {
             logger.warn("Unable to deserialize from JSON.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
