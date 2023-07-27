@@ -36,6 +36,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonParseException;
+
 /**
  * The {@link SolaxLocalAccessHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -77,26 +79,37 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         try {
             String rawJsonData = localHttpConnector.retrieveData();
             logger.debug("Raw data retrieved = {}", rawJsonData);
-
-            updateInverterData(rawJsonData);
-
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateData(rawJsonData);
         } catch (IOException e) {
-            logger.debug("Exception received while attempting to retrieve data via HTTP", e);
+            logger.warn("Exception received while attempting to retrieve data via HTTP", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void updateInverterData(@Nullable String rawJsonData) {
-        LocalConnectRawDataBean inverterParsedData = LocalConnectRawDataBean.fromJson(rawJsonData);
-        if (inverterParsedData != null) {
-            logger.debug("Received a new inverter data object. Data = {}", inverterParsedData.toStringDetailed());
-            transferInverterDataToChannels(inverterParsedData);
-        } else {
-            logger.warn("Parsed bean from the raw JSON data is null. Rawdata={}", rawJsonData);
+    private void updateData(String rawJsonData) {
+        try {
+            if (rawJsonData != null && !rawJsonData.isEmpty()) {
+                LocalConnectRawDataBean inverterParsedData = parseJson(rawJsonData);
+                updateThing(inverterParsedData);
+            }
+        } catch (JsonParseException e) {
+            logger.warn("Unable to deserialize from JSON.", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    private void updateThing(LocalConnectRawDataBean inverterParsedData) {
+        transferInverterDataToChannels(inverterParsedData);
+
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    private LocalConnectRawDataBean parseJson(String rawJsonData) {
+        LocalConnectRawDataBean inverterParsedData = LocalConnectRawDataBean.fromJson(rawJsonData);
+        logger.debug("Received a new inverter data object. Data = {}", inverterParsedData.toStringDetailed());
+        return inverterParsedData;
     }
 
     private void transferInverterDataToChannels(InverterData data) {
@@ -141,7 +154,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Nothing to do here as of now
+        // Nothing to do here as of now. Maybe implement a REFRESH command in the future.
     }
 
     @Override
@@ -152,11 +165,5 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
             schedule.cancel(true);
             this.schedule = null;
         }
-    }
-
-    public @Nullable InverterData scanForInverter() throws IOException {
-        String rawJsonData = localHttpConnector.retrieveData();
-        logger.debug("Raw data retrieved = {}", rawJsonData);
-        return LocalConnectRawDataBean.fromJson(rawJsonData);
     }
 }

@@ -22,8 +22,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SolaxHandlerFactory} is responsible for creating things and thing
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.solax", service = ThingHandlerFactory.class)
 public class SolaxHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(SolaxHandlerFactory.class);
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -47,8 +43,6 @@ public class SolaxHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_LOCAL_CONNECT_INVERTER.equals(thingTypeUID)) {
             return new SolaxLocalAccessHandler(thing);
-        } else {
-            logger.warn("Unsupported thing/bridge type UID. UID={}", thingTypeUID);
         }
         return null;
     }

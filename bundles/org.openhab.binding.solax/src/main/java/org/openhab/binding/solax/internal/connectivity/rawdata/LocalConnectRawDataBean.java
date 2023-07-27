@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link LocalConnectRawDataBean} collects the raw data and the specific implementation to return the parsed data.
@@ -98,22 +97,11 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
         this.rawData = rawData;
     }
 
-    public static @Nullable LocalConnectRawDataBean fromJson(@Nullable String json) {
-        if (json == null) {
-            throw new IllegalArgumentException("Provided input JSON is null.");
-        }
-
-        try {
-            Gson gson = GsonSupplier.getInstance();
-            LocalConnectRawDataBean deserializedObject = gson.fromJson(json, LocalConnectRawDataBean.class);
-            if (deserializedObject != null) {
-                deserializedObject.setRawData(json);
-                return deserializedObject;
-            }
-        } catch (JsonSyntaxException e) {
-            logger.warn("Unable to deserialize from JSON.", e);
-        }
-        return null;
+    public static LocalConnectRawDataBean fromJson(String json) {
+        Gson gson = GsonSupplier.getInstance();
+        LocalConnectRawDataBean deserializedObject = gson.fromJson(json, LocalConnectRawDataBean.class);
+        deserializedObject.setRawData(json);
+        return deserializedObject;
     }
 
     // Parsed inverter data interface implementation starts here
