@@ -10,12 +10,11 @@ The binding retrieves a structured data from the inverter's Wi-Fi module, parses
 
 In case the parsed information that comes with the binding out of the box differs, the raw data channel can be used with a combination of JSON Path transformation to map the proper values to the necessary items.
 
-
 ## Supported Things
 
-| Thing             | Thing Type | Description                                                                                                                                 |
-|-------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| localConnectInverter | Thing      | This is model representation of inverter with all the data available as a channels (Ex. inverter output power, voltage, PV1 power, etc)     |
+| Thing                | Thing Type | Description                                                                         |
+|----------------------|------------|-------------------------------------------------------------------------------------|
+| localConnectInverter | Thing      | This is model representation of inverter with all the data available as a channels  |
 
 ## Thing Configuration
 
@@ -23,7 +22,7 @@ In case the parsed information that comes with the binding out of the box differ
 
 | Parameter         | Description                                                                                                                                        |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| refreshInterval   | Defines the refresh interval when the binding polls from the inverter's Wi-Fi module (in seconds). Optional parameter. Default 10 seconds. |
+| refreshInterval   | Defines the refresh interval when the binding polls from the inverter's Wi-Fi module (in seconds). Optional parameter. Default 10 seconds.         |
 | password          | Password for accessing the Wi-Fi module (the serial number of the wifi). Mandatory parameter.                                                      |
 | hostname          | IP address or hostname of your Wi-Fi module. If hostname is used must be resolvable by OpenHAB. Mandatory parameter.                               |
 
@@ -38,8 +37,8 @@ In case the parsed information that comes with the binding out of the box differ
 
 ### Photovoltaic Panels Production Channels
 
-| Channel                  | Type                       | Description                            |
-|--------------------------|----------------------------|----------------------------------------|
+| Channel                  | Type                       | Description                                     |
+|--------------------------|----------------------------|-------------------------------------------------|
 | pv1-voltage              | Number:ElectricPotential   | The voltage of PV1 string [V]                   |
 | pv2-voltage              | Number:ElectricPotential   | The voltage of PV2 string [V]                   |
 | pv1-current              | Number:ElectricCurrent     | The current of PV1 string [A]                   |
