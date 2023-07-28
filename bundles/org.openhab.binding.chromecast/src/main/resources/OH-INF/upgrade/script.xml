@@ -6,30 +6,35 @@
 	<thing-type uid="chromecast:audio">
 		<instruction-set targetVersion="1">
 			<update-channel id="currentTime">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Status</tag>
 					<tag>Duration</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="duration">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Duration</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="broadcastDate">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="creationDate">
+				<type>DateTime</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="releaseDate">
+				<type>DateTime</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
@@ -41,30 +46,35 @@
 	<thing-type uid="chromecast:audiogroup">
 		<instruction-set targetVersion="1">
 			<update-channel id="currentTime">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Status</tag>
 					<tag>Duration</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="duration">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Duration</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="broadcastDate">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="creationDate">
+				<type>DateTime</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="releaseDate">
+				<type>DateTime</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
@@ -76,30 +86,35 @@
 	<thing-type uid="chromecast:chromecast">
 		<instruction-set targetVersion="1">
 			<update-channel id="currentTime">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Status</tag>
 					<tag>Duration</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="duration">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Duration</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="broadcastDate">
+				<type>Number:Time</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="creationDate">
+				<type>DateTime</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
 				</tags>
 			</update-channel>
 			<update-channel id="releaseDate">
+				<type>DateTime</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
