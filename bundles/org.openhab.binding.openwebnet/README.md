@@ -29,7 +29,7 @@ These gateways have been tested with the binding:
 [MH200N](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2469209&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),
 [F453](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2703566&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),  etc.
 
-- **Zigbee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
+- **Zigbee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/low_res/395950_501016_MQ00493_b_IT.pdf), also known as [Legrand 088328](https://assets.legrand.com/general/legrand-exp/pc/ex218001_412.pdf)
 
 **NOTE** The new BTicino Living Now&reg; and Livinglight Smart&reg; wireless systems are not supported by this binding as they do not use the OpenWebNet protocol.
 
@@ -107,6 +107,7 @@ Configuration parameters are:
   - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
   - in all other cases, a password must be configured. This includes gateways that have been discovered and added from Inbox: without a password configured they will remain OFFLINE
 - `discoveryByActivation`: discover BUS devices when they are activated also when a device scan hasn't been started from Inbox (`boolean`, _optional_, default: `false`). See [Discovery by Activation](#discovery-by-activation).
+- `dateTimeSynch`: synchronise date and time of slave elements on the SCS BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronisation commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not syncronized with Internet time servers and with daylight saving time changes.
 
 Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
@@ -147,7 +148,7 @@ Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone 
 
 - the `where` configuration parameter (`OpenWebNet Address`):
   - example BUS/SCS zone `1` --> `where="1"`
-- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
+- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4- or 99-zones). `standAlone=true` means the zone is indipendent and no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
 
@@ -155,19 +156,18 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
   - example sensor `5` of external zone `00` --> `where="500"`
   - example: slave sensor `3` of zone `2` --> `where="302"`
 
-The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="0"`.
+The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="#0"` for a 99-zone Central Unit or `where="#0#1"` for a 4-zone Central Unit configured as zone 1.
 
 ##### Thermo Central Unit integration missing points
 
 - Read setPoint temperature and current mode
-- Holiday activation command (all zones)
-- Discovery
+- Holiday/Vacation activation command
 
 #### Configuring Alarm and Auxiliary (AUX)
 
 **NOTE 1** Receiving AUX messages originating from the BUS is not supported yet, only sending messages to the BUS is supported
 
-**NOTE 2** Alarm messages on BUS are not sent by MyHOMEServer1, therfore this gateway cannot be used to integrate the BTicino Alarm system
+**NOTE 2** Alarm messages on BUS are not sent by MyHOMEServer1, therefore this gateway cannot be used to integrate the BTicino Alarm system
 
 BUS Auxiliary commands (WHO=9) can be used to send on the BUS commands to control, for example, external devices or a BTicino Alarm system.
 
@@ -326,7 +326,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"          [ where="51" ]
       bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"          [ where="52" ]
 
-      bus_thermo_cu                 CU_3550              "99 zones central unit"    [ where="0" ]
+      bus_thermo_cu                 CU_3550              "99 zones Central Unit"    [ where="#0" ]
       bus_thermo_zone               LR_zone              "Living Room Zone"         [ where="2"]
       bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
 
@@ -357,7 +357,8 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 
 Example items linked to BUS devices:
 
-NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/)
+NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa).
+In the following example some `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`) metadata were added as examples according to the [documentation for Google Assistant integration on openHAB](https://www.openhab.org/docs/ecosystem/google-assistant) and [the openHAB HomeKit Add-on documentation](https://www.openhab.org/addons/integrations/homekit/): see the specific documentation for more metadata options and specific configurations.
 
 ```java
 Switch              iLR_switch                  "Light"                       (gLivingRoom)     { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
@@ -457,7 +458,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     Frame label="Alarm"
     {
          Switch  item=iAlarm_System_State       label="Alarm state"
-         Switch  item=iAlarm_Control            label="Arm/Disarm alarm"   icon="shield"
+         Switch  item=iAlarm_Control            label="Arm/Disarm alarm"   icon="shield" mappings=[OFF="Disarmed",ON="Armed"]
          Switch  item=iAlarm_System_Armed       label="Armed"              icon="shield"
          Switch  item=iAlarm_System_Network     label="Network"            icon="network"
          Default item=iAlarm_System_Battery     label="Battery"            icon="battery"
@@ -512,7 +513,8 @@ end
 
 ## Notes
 
-The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/documentation/open-web-net-for-myhome/)
+The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand.
+The documentation of the protocol is freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/local-interoperability/)
 
 ## Special thanks
 
@@ -530,6 +532,7 @@ Special thanks for helping on testing this binding go to:
 [@rubenfuser](https://community.openhab.org/u/rubenfuser),
 [@stamate_viorel](https://community.openhab.org/u/stamate_viorel),
 [@marchino](https://community.openhab.org/u/marchino),
-[@the-ninth](https://community.openhab.org/u/the-ninth)
+[@the-ninth](https://community.openhab.org/u/the-ninth),
+[@giacob](https://community.openhab.org/u/giacob)
 
 and many others at the fantastic openHAB community!

@@ -54,6 +54,8 @@ public interface ShellyThingInterface {
 
     void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
 
+    boolean isStopping();
+
     String getThingType();
 
     ThingStatus getThingStatus();
@@ -117,4 +119,6 @@ public interface ShellyThingInterface {
     void incProtMessages();
 
     void incProtErrors();
+
+    void startScan();
 }

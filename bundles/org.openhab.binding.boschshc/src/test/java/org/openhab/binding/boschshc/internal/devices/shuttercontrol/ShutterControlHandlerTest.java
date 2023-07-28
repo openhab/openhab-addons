@@ -44,7 +44,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class ShutterControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest<ShutterControlHandler> {
+class ShutterControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest<ShutterControlHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<ShutterControlServiceState> shutterControlServiceStateCaptor;
 
@@ -64,7 +64,7 @@ public class ShutterControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testHandleCommandUpDownType()
+    void testHandleCommandUpDownType()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_LEVEL),
                 UpDownType.UP);
@@ -82,7 +82,7 @@ public class ShutterControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testHandleCommandStopMoveType()
+    void testHandleCommandStopMoveType()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_LEVEL),
                 StopMoveType.STOP);
@@ -93,7 +93,7 @@ public class ShutterControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testHandleCommandPercentType()
+    void testHandleCommandPercentType()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_LEVEL),
                 new PercentType(42));
@@ -104,7 +104,7 @@ public class ShutterControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testUpdateChannelsShutterControlService() {
+    void testUpdateChannelsShutterControlService() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "   \"@type\": \"shutterControlState\",\n" + "   \"level\": 0.58\n" + " }");
         getFixture().processUpdate("ShutterControl", jsonObject);

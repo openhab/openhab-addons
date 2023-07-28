@@ -30,14 +30,14 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public interface Shelly1CoIoTInterface {
-    int getVersion();
+    public int getVersion();
 
-    CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap);
+    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap);
 
-    void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap);
+    public void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap);
 
-    boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
+    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
             Map<String, State> updates, ShellyColorUtils col);
 
-    String getLastWakeup();
+    public String getLastWakeup();
 }

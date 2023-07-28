@@ -23,7 +23,7 @@ import org.openhab.core.library.types.HSBType;
  * @author David Pace - Initial contribution
  *
  */
-public class HSBColorActuatorServiceStateTest {
+class HSBColorActuatorServiceStateTest {
 
     @Test
     void testToHSBType() {

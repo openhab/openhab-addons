@@ -58,7 +58,6 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.timeout.IdleStateHandler;
 
@@ -308,7 +307,7 @@ public class OnvifConnection {
         if (message.contains("PullMessagesResponse")) {
             eventRecieved(message);
         } else if (message.contains("RenewResponse")) {
-            sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
+            sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
             connecting.lock();
             try {
@@ -320,7 +319,7 @@ public class OnvifConnection {
             logger.debug("Openhabs UTC dateTime is:{}", getUTCdateTime());
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
             parseXAddr(message);
-            sendOnvifRequest(requestBuilder(RequestType.GetProfiles, mediaXAddr));
+            sendOnvifRequest(RequestType.GetProfiles, mediaXAddr);
         } else if (message.contains("GetProfilesResponse")) {// 3rd to be sent.
             connecting.lock();
             try {
@@ -329,25 +328,25 @@ public class OnvifConnection {
                 connecting.unlock();
             }
             parseProfiles(message);
-            sendOnvifRequest(requestBuilder(RequestType.GetSnapshotUri, mediaXAddr));
-            sendOnvifRequest(requestBuilder(RequestType.GetStreamUri, mediaXAddr));
+            sendOnvifRequest(RequestType.GetSnapshotUri, mediaXAddr);
+            sendOnvifRequest(RequestType.GetStreamUri, mediaXAddr);
             if (ptzDevice) {
                 sendPTZRequest(RequestType.GetNodes);
             }
             if (usingEvents) {// stops API cameras from getting sent ONVIF events.
-                sendOnvifRequest(requestBuilder(RequestType.GetEventProperties, eventXAddr));
-                sendOnvifRequest(requestBuilder(RequestType.GetServiceCapabilities, eventXAddr));
+                sendOnvifRequest(RequestType.GetEventProperties, eventXAddr);
+                sendOnvifRequest(RequestType.GetServiceCapabilities, eventXAddr);
             }
         } else if (message.contains("GetServiceCapabilitiesResponse")) {
             if (message.contains("WSSubscriptionPolicySupport=\"true\"")) {
-                sendOnvifRequest(requestBuilder(RequestType.Subscribe, eventXAddr));
+                sendOnvifRequest(RequestType.Subscribe, eventXAddr);
             }
         } else if (message.contains("GetEventPropertiesResponse")) {
-            sendOnvifRequest(requestBuilder(RequestType.CreatePullPointSubscription, eventXAddr));
+            sendOnvifRequest(RequestType.CreatePullPointSubscription, eventXAddr);
         } else if (message.contains("CreatePullPointSubscriptionResponse")) {
             subscriptionXAddr = Helper.fetchXML(message, "SubscriptionReference>", "Address>");
             logger.debug("subscriptionXAddr={}", subscriptionXAddr);
-            sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
+            sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
         } else if (message.contains("GetStatusResponse")) {
             processPTZLocation(message);
         } else if (message.contains("GetPresetsResponse")) {
@@ -380,54 +379,6 @@ public class OnvifConnection {
         }
     }
 
-    HttpRequest requestBuilder(RequestType requestType, String xAddr) {
-        logger.trace("Sending ONVIF request:{}", requestType);
-        String security = "";
-        String extraEnvelope = "";
-        String headerTo = "";
-        String getXmlCache = getXml(requestType);
-        if (requestType.equals(RequestType.CreatePullPointSubscription) || requestType.equals(RequestType.PullMessages)
-                || requestType.equals(RequestType.Renew) || requestType.equals(RequestType.Unsubscribe)) {
-            headerTo = "<a:To s:mustUnderstand=\"1\">" + xAddr + "</a:To>";
-            extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
-        }
-        String headers;
-        if (!password.isEmpty() && !requestType.equals(RequestType.GetSystemDateAndTime)) {
-            String nonce = createNonce();
-            String dateTime = getUTCdateTime();
-            String digest = createDigest(nonce, dateTime);
-            security = "<Security s:mustUnderstand=\"1\" xmlns=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><UsernameToken><Username>"
-                    + user
-                    + "</Username><Password Type=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest\">"
-                    + digest
-                    + "</Password><Nonce EncodingType=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary\">"
-                    + encodeBase64(nonce)
-                    + "</Nonce><Created xmlns=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">"
-                    + dateTime + "</Created></UsernameToken></Security>";
-            headers = "<s:Header>" + security + headerTo + "</s:Header>";
-        } else {// GetSystemDateAndTime must not be password protected as per spec.
-            headers = "";
-        }
-        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"),
-                removeIPfromUrl(xAddr));
-        String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
-        request.headers().add("Content-Type",
-                "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
-        request.headers().add("Charset", "utf-8");
-        request.headers().set("Host", ipAddress + ":" + onvifPort);
-        request.headers().set("Connection", HttpHeaderValues.CLOSE);
-        request.headers().set("Accept-Encoding", "gzip, deflate");
-        String fullXml = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\"" + extraEnvelope + ">"
-                + headers
-                + "<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
-                + getXmlCache + "</s:Body></s:Envelope>";
-        request.headers().add("SOAPAction", "\"" + actionString + "/" + requestType + "\"");
-        ByteBuf bbuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
-        request.headers().set("Content-Length", bbuf.readableBytes());
-        request.content().clear().writeBytes(bbuf);
-        return request;
-    }
-
     /**
      * The {@link removeIPfromUrl} Will throw away all text before the cameras IP, also removes the IP and the PORT
      * leaving just the URL.
@@ -454,6 +405,19 @@ public class OnvifConnection {
         }
         logger.debug("We hit an issue extracting IP:PORT from url:{}", url);
         return "";
+    }
+
+    int extractPortFromUrl(String url) {
+        int startIndex = url.indexOf("//") + 2;// skip past http://
+        startIndex = url.indexOf(":", startIndex);
+        if (startIndex == -1) {// no port defined so use port 80
+            return 80;
+        }
+        int endIndex = url.indexOf("/", startIndex);// skip past any :port to the slash /
+        if (endIndex == -1) {
+            return 80;
+        }
+        return Integer.parseInt(url.substring(startIndex + 1, endIndex));
     }
 
     void parseXAddr(String message) {
@@ -536,19 +500,64 @@ public class OnvifConnection {
         return Base64.getEncoder().encodeToString(encryptedRaw);
     }
 
-    @SuppressWarnings("null")
-    public void sendOnvifRequest(HttpRequest request) {
-        if (bootstrap == null) {
+    public void sendOnvifRequest(RequestType requestType, String xAddr) {
+        logger.trace("Sending ONVIF request:{}", requestType);
+        String security = "";
+        String extraEnvelope = "";
+        String headerTo = "";
+        String getXmlCache = getXml(requestType);
+        if (requestType.equals(RequestType.CreatePullPointSubscription) || requestType.equals(RequestType.PullMessages)
+                || requestType.equals(RequestType.Renew) || requestType.equals(RequestType.Unsubscribe)) {
+            headerTo = "<a:To s:mustUnderstand=\"1\">" + xAddr + "</a:To>";
+            extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
+        }
+        String headers;
+        if (!password.isEmpty() && !requestType.equals(RequestType.GetSystemDateAndTime)) {
+            String nonce = createNonce();
+            String dateTime = getUTCdateTime();
+            String digest = createDigest(nonce, dateTime);
+            security = "<Security s:mustUnderstand=\"1\" xmlns=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\"><UsernameToken><Username>"
+                    + user
+                    + "</Username><Password Type=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest\">"
+                    + digest
+                    + "</Password><Nonce EncodingType=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary\">"
+                    + encodeBase64(nonce)
+                    + "</Nonce><Created xmlns=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">"
+                    + dateTime + "</Created></UsernameToken></Security>";
+            headers = "<s:Header>" + security + headerTo + "</s:Header>";
+        } else {// GetSystemDateAndTime must not be password protected as per spec.
+            headers = "";
+        }
+        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"),
+                removeIPfromUrl(xAddr));
+        String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
+        request.headers().add("Content-Type",
+                "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
+        request.headers().add("Charset", "utf-8");
+        request.headers().set("Host", ipAddress + ":" + onvifPort);
+        request.headers().set("Connection", HttpHeaderValues.CLOSE);
+        request.headers().set("Accept-Encoding", "gzip, deflate");
+        String fullXml = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\"" + extraEnvelope + ">"
+                + headers
+                + "<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
+                + getXmlCache + "</s:Body></s:Envelope>";
+        request.headers().add("SOAPAction", "\"" + actionString + "/" + requestType + "\"");
+        ByteBuf bbuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
+        request.headers().set("Content-Length", bbuf.readableBytes());
+        request.content().clear().writeBytes(bbuf);
+
+        Bootstrap localBootstap = bootstrap;
+        if (localBootstap == null) {
             mainEventLoopGroup = new NioEventLoopGroup(2);
-            bootstrap = new Bootstrap();
-            bootstrap.group(mainEventLoopGroup);
-            bootstrap.channel(NioSocketChannel.class);
-            bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
-            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
-            bootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
-            bootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
-            bootstrap.option(ChannelOption.TCP_NODELAY, true);
-            bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+            localBootstap = new Bootstrap();
+            localBootstap.group(mainEventLoopGroup);
+            localBootstap.channel(NioSocketChannel.class);
+            localBootstap.option(ChannelOption.SO_KEEPALIVE, true);
+            localBootstap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+            localBootstap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
+            localBootstap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
+            localBootstap.option(ChannelOption.TCP_NODELAY, true);
+            localBootstap.handler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
@@ -557,26 +566,28 @@ public class OnvifConnection {
                     socketChannel.pipeline().addLast("OnvifCodec", new OnvifCodec(getHandle()));
                 }
             });
+            bootstrap = localBootstap;
         }
         if (!mainEventLoopGroup.isShuttingDown()) {
-            bootstrap.connect(new InetSocketAddress(ipAddress, onvifPort)).addListener(new ChannelFutureListener() {
+            localBootstap.connect(new InetSocketAddress(ipAddress, extractPortFromUrl(xAddr)))
+                    .addListener(new ChannelFutureListener() {
 
-                @Override
-                public void operationComplete(@Nullable ChannelFuture future) {
-                    if (future == null) {
-                        return;
-                    }
-                    if (future.isSuccess()) {
-                        Channel ch = future.channel();
-                        ch.writeAndFlush(request);
-                    } else { // an error occured
-                        logger.debug("Camera is not reachable on ONVIF port:{} or the port may be wrong.", onvifPort);
-                        if (isConnected) {
-                            disconnect();
+                        @Override
+                        public void operationComplete(@Nullable ChannelFuture future) {
+                            if (future == null) {
+                                return;
+                            }
+                            if (future.isSuccess()) {
+                                Channel ch = future.channel();
+                                ch.writeAndFlush(request);
+                            } else { // an error occured
+                                logger.debug("Camera is not reachable when using xAddr:{}.", xAddr);
+                                if (isConnected) {
+                                    disconnect();
+                                }
+                            }
                         }
-                    }
-                }
-            });
+                    });
         } else {
             logger.debug("ONVIF message not sent as connection is shutting down");
         }
@@ -621,7 +632,7 @@ public class OnvifConnection {
     public void eventRecieved(String eventMessage) {
         String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
         if (topic.isEmpty()) {
-            sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
+            sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
             return;
         }
         String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
@@ -751,7 +762,7 @@ public class OnvifConnection {
             default:
                 logger.debug("Please report this camera has an un-implemented ONVIF event. Topic:{}", topic);
         }
-        sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
+        sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
     }
 
     public boolean supportsPTZ() {
@@ -898,11 +909,11 @@ public class OnvifConnection {
             logger.debug("ONVIF was not connected when a PTZ request was made, connecting now");
             connect(usingEvents);
         }
-        sendOnvifRequest(requestBuilder(requestType, ptzXAddr));
+        sendOnvifRequest(requestType, ptzXAddr);
     }
 
     public void sendEventRequest(RequestType requestType) {
-        sendOnvifRequest(requestBuilder(requestType, eventXAddr));
+        sendOnvifRequest(requestType, eventXAddr);
     }
 
     public void connect(boolean useEvents) {
@@ -911,9 +922,9 @@ public class OnvifConnection {
             if (!isConnected) {
                 logger.debug("Connecting {} to ONVIF", ipAddress);
                 threadPool = Executors.newScheduledThreadPool(2);
-                sendOnvifRequest(requestBuilder(RequestType.GetSystemDateAndTime, deviceXAddr));
+                sendOnvifRequest(RequestType.GetSystemDateAndTime, deviceXAddr);
                 usingEvents = useEvents;
-                sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
+                sendOnvifRequest(RequestType.GetCapabilities, deviceXAddr);
             }
         } finally {
             connecting.unlock();
@@ -951,7 +962,7 @@ public class OnvifConnection {
             if (bootstrap != null) {
                 if (usingEvents && !mainEventLoopGroup.isShuttingDown()) {
                     // Some cameras may continue to send events even when they can't reach a server.
-                    sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+                    sendOnvifRequest(RequestType.Unsubscribe, subscriptionXAddr);
                 }
                 // give time for the Unsubscribe request to be sent, shutdownGracefully will try to send it first.
                 threadPool.schedule(this::cleanup, 50, TimeUnit.MILLISECONDS);

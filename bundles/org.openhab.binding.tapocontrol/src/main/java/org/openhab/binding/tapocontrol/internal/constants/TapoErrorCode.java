@@ -111,8 +111,9 @@ public enum TapoErrorCode {
 
     public static TapoErrorCode fromCode(int errorCode) {
         for (TapoErrorCode e : TapoErrorCode.values()) {
-            if (e.code.equals(errorCode))
+            if (e.code.equals(errorCode)) {
                 return e;
+            }
         }
         return ERR_UNKNOWN;
     }

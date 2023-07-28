@@ -413,7 +413,7 @@ public enum KaleidescapeMessageHandler {
                                 int httpStatus = contentResponse.getStatus();
                                 if (httpStatus == OK_200) {
                                     handler.updateDetailChannel(DETAIL_COVER_ART,
-                                            new RawType(contentResponse.getContent(), RawType.DEFAULT_MIME_TYPE));
+                                            new RawType(contentResponse.getContent(), "image/jpeg"));
                                 } else {
                                     handler.updateDetailChannel(DETAIL_COVER_ART, UnDefType.NULL);
                                 }
