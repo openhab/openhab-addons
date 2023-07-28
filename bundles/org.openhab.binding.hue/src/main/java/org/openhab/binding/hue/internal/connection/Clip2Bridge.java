@@ -662,7 +662,7 @@ public class Clip2Bridge implements Closeable {
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or closed");
         }
-        throttle();
+        throttle(1);
         String url = getUrl(reference);
         HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON);
         LOGGER.trace("GET {} HTTP/2", url);
@@ -697,7 +697,7 @@ public class Clip2Bridge implements Closeable {
         } catch (TimeoutException e) {
             throw new ApiException("Error sending request", e);
         } finally {
-            throttleDone();
+            throttleDone(1);
         }
     }
 
@@ -918,13 +918,14 @@ public class Clip2Bridge implements Closeable {
 
     /**
      * Use an HTTP/2 PUT command to send a resource to the server. Note: the Hue bridge server can sometimes get
-     * confused by parallel PUT commands, so use 'synchronized' to prevent that.
+     * confused by parallel overlapping PUT resp. GET commands, so this method acquires all of the stream access permits
+     * (given by MAX_CONCURRENT_STREAMS) in order to prevent any overlaps.
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
      * @throws InterruptedException
      */
-    public synchronized void putResource(Resource resource) throws ApiException, InterruptedException {
+    public void putResource(Resource resource) throws ApiException, InterruptedException {
         if (onlineState == State.CLOSED) {
             return;
         }
@@ -932,7 +933,7 @@ public class Clip2Bridge implements Closeable {
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or closed");
         }
-        throttle();
+        throttle(MAX_CONCURRENT_STREAMS);
         String requestJson = jsonParser.toJson(resource);
         ByteBuffer requestBytes = ByteBuffer.wrap(requestJson.getBytes(StandardCharsets.UTF_8));
         String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
@@ -965,7 +966,7 @@ public class Clip2Bridge implements Closeable {
         } catch (ExecutionException | TimeoutException e) {
             throw new ApiException("putResource() error sending request", e);
         } finally {
-            throttleDone();
+            throttleDone(MAX_CONCURRENT_STREAMS);
         }
     }
 
@@ -1041,12 +1042,13 @@ public class Clip2Bridge implements Closeable {
     /**
      * Hue Bridges get confused if they receive too many HTTP requests in a short period of time (e.g. on start up), or
      * if too many HTTP sessions are opened at the same time. So this method throttles the requests to a maximum of one
-     * per REQUEST_INTERVAL_MILLISECS, and ensures that no more than MAX_CONCURRENT_SESSIONS sessions are started.
+     * per REQUEST_INTERVAL_MILLISECS, and ensures that no more than MAX_CONCURRENT_SESSIONS stream permits are issued.
      *
+     * @param permitCount indicates how many stream permits to be acquired.
      * @throws InterruptedException
      */
-    private synchronized void throttle() throws InterruptedException {
-        streamMutex.acquire();
+    private synchronized void throttle(int permitCount) throws InterruptedException {
+        streamMutex.acquire(permitCount);
         Instant now = Instant.now();
         if (lastRequestTime.isPresent()) {
             long delay = Duration.between(now, lastRequestTime.get()).toMillis() + REQUEST_INTERVAL_MILLISECS;
@@ -1058,9 +1060,11 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Release the mutex.
+     * Release the given number of stream permits.
+     *
+     * @param permitCount indicates how many stream permits to be released.
      */
-    private void throttleDone() {
-        streamMutex.release();
+    private void throttleDone(int permitCount) {
+        streamMutex.release(permitCount);
     }
 }
