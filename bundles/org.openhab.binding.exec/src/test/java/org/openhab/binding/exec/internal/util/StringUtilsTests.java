@@ -22,20 +22,20 @@ import org.junit.jupiter.api.Test;
  * @author Leo Siepel - Initial contribution
  */
 
-public class UtilTests {
+public class StringUtilsTests {
 
     @Test
     public void chompTest() {
-        assertEquals("", Util.chomp(""));
-        assertEquals(null, Util.chomp(null));
-        assertEquals("abc ", Util.chomp("abc \r"));
-        assertEquals("abc", Util.chomp("abc\n"));
-        assertEquals("abc", Util.chomp("abc\r\n"));
-        assertEquals("abc\r\n", Util.chomp("abc\r\n\r\n"));
-        assertEquals("abc\n", Util.chomp("abc\n\r"));
-        assertEquals("abc\n\rabc", Util.chomp("abc\n\rabc"));
-        assertEquals("", Util.chomp("\r"));
-        assertEquals("", Util.chomp("\n"));
-        assertEquals("", Util.chomp("\r\n"));
+        assertEquals("", StringUtils.chomp(""));
+        assertEquals(null, StringUtils.chomp(null));
+        assertEquals("abc ", StringUtils.chomp("abc \r"));
+        assertEquals("abc", StringUtils.chomp("abc\n"));
+        assertEquals("abc", StringUtils.chomp("abc\r\n"));
+        assertEquals("abc\r\n", StringUtils.chomp("abc\r\n\r\n"));
+        assertEquals("abc\n", StringUtils.chomp("abc\n\r"));
+        assertEquals("abc\n\rabc", StringUtils.chomp("abc\n\rabc"));
+        assertEquals("", StringUtils.chomp("\r"));
+        assertEquals("", StringUtils.chomp("\n"));
+        assertEquals("", StringUtils.chomp("\r\n"));
     }
 }

@@ -32,7 +32,7 @@ import java.util.regex.PatternSyntaxException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.exec.internal.ExecWhitelistWatchService;
-import org.openhab.binding.exec.internal.util.Util;
+import org.openhab.binding.exec.internal.util.StringUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -289,7 +289,7 @@ public class ExecHandler extends BaseThingHandler {
 
             outputBuilder.append(errorBuilder.toString());
 
-            String transformedResponse = Util.chomp(outputBuilder.toString());
+            String transformedResponse = StringUtils.chomp(outputBuilder.toString());
             String transformation = (String) getConfig().get(TRANSFORM);
 
             if (transformation != null && transformation.length() > 0 && transformedResponse != null) {
