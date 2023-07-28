@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="chromecast:audio">
+		<instruction-set targetVersion="1">
+			<update-channel id="currentTime">
+				<tags>
+					<tag>Status</tag>
+					<tag>Duration</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="duration">
+				<tags>
+					<tag>Point</tag>
+					<tag>Duration</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="broadcastDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="creationDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="releaseDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="chromecast:audiogroup">
+		<instruction-set targetVersion="1">
+			<update-channel id="currentTime">
+				<tags>
+					<tag>Status</tag>
+					<tag>Duration</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="duration">
+				<tags>
+					<tag>Point</tag>
+					<tag>Duration</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="broadcastDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="creationDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="releaseDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="chromecast:chromecast">
+		<instruction-set targetVersion="1">
+			<update-channel id="currentTime">
+				<tags>
+					<tag>Status</tag>
+					<tag>Duration</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="duration">
+				<tags>
+					<tag>Point</tag>
+					<tag>Duration</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="broadcastDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="creationDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+			<update-channel id="releaseDate">
+				<tags>
+					<tag>Point</tag>
+					<tag>Timestamp</tag>
+				</tags>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>
