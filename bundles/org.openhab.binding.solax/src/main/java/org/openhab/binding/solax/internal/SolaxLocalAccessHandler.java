@@ -51,25 +51,23 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private static final int INITIAL_SCHEDULE_DELAY_SECONDS = 5;
 
-    private SolaxConfiguration config;
-
-    private LocalHttpConnector localHttpConnector;
+    private @NonNullByDefault({}) LocalHttpConnector localHttpConnector;
 
     private @Nullable ScheduledFuture<?> schedule;
 
     public SolaxLocalAccessHandler(Thing thing) {
         super(thing);
-
-        config = getConfigAs(SolaxConfiguration.class);
-        localHttpConnector = new LocalHttpConnector(config.password, config.hostname);
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
+        SolaxConfiguration config = getConfigAs(SolaxConfiguration.class);
+        localHttpConnector = new LocalHttpConnector(config.password, config.hostname);
         int refreshInterval = config.refreshInterval;
         TimeUnit timeUnit = TimeUnit.SECONDS;
+
         logger.debug("Scheduling regular interval retrieval every {} {}", refreshInterval, timeUnit);
         schedule = scheduler.scheduleWithFixedDelay(this::retrieveData, INITIAL_SCHEDULE_DELAY_SECONDS, refreshInterval,
                 timeUnit);
@@ -82,9 +80,12 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
             if (rawJsonData != null && !rawJsonData.isEmpty()) {
                 updateData(rawJsonData);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "JSON data could not be retrieved.");
             }
         } catch (IOException e) {
-            logger.warn("Exception received while attempting to retrieve data via HTTP", e);
+            logger.debug("Exception received while attempting to retrieve data via HTTP", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -94,7 +95,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
             LocalConnectRawDataBean inverterParsedData = parseJson(rawJsonData);
             updateThing(inverterParsedData);
         } catch (JsonParseException e) {
-            logger.warn("Unable to deserialize from JSON.", e);
+            logger.debug("Unable to deserialize from JSON.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -115,7 +116,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private void transferInverterDataToChannels(InverterData data) {
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, data.getWifiSerial());
-        updateProperty(SolaxBindingConstants.INVERTER_TYPE, data.getInverterType().name());
+        updateProperty(SolaxBindingConstants.PROPERTY_INVERTER_TYPE, data.getInverterType().name());
 
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER,
                 new QuantityType<>(data.getInvertеrOutputPower(), Units.WATT));

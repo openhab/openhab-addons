@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="localConnectInverter">
+	<thing-type id="local-connect-inverter">
 
 		<label>Local Connect Inverter</label>
 		<description>The inverter representation that supports local connections via HTTP</description>
@@ -23,8 +23,8 @@
 				<description>Voltage of the inverter</description>
 			</channel>
 			<channel id="inverter-frequency" typeId="frequency">
-				<label>Inverter Voltage Frequency</label>
-				<description>Voltage frequency of the inverter.(should be the same as the feed in voltage frequency)</description>
+				<label>Inverter Frequency</label>
+				<description>Frequency of the electricity to/from the inverter</description>
 			</channel>
 
 			<channel id="pv1-voltage" typeId="system.electric-voltage">
@@ -76,7 +76,7 @@
 				<label>Battery Temperature</label>
 				<description>Temperature of the battery</description>
 			</channel>
-			<channel id="battery-state-of-charge" typeId="system.battery-level">
+			<channel id="battery-level" typeId="system.battery-level">
 				<label>Battery Level</label>
 				<description>The battery state of charge in percent</description>
 			</channel>

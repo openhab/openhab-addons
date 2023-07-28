@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solax.internal.connectivity;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -24,5 +26,5 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface SolaxConnector {
 
     @Nullable
-    String retrieveData() throws Exception;
+    String retrieveData() throws IOException;
 }
