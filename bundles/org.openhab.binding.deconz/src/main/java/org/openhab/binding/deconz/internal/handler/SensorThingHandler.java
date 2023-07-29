@@ -117,7 +117,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             case CHANNEL_COLOR -> {
                 final double @Nullable [] xy = newState.xy;
                 if (xy != null && xy.length == 2) {
-                    updateState(channelUID, ColorUtil.xyToHsv(xy));
+                    updateState(channelUID, ColorUtil.xyToHsb(xy));
                 }
             }
             case CHANNEL_CONSUMPTION -> updateQuantityTypeChannel(channelUID, newState.consumption, WATT_HOUR);

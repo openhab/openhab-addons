@@ -61,11 +61,11 @@ public class TapoSmartPlug extends TapoDevice {
         } else if (command instanceof OnOffType) {
             Boolean targetState = command == OnOffType.ON ? Boolean.TRUE : Boolean.FALSE;
             if (CHANNEL_OUTPUT.equals(id)) { // Command is sent to the device output
-                connector.sendDeviceCommand(DEVICE_PROPERTY_ON, targetState);
+                connector.sendDeviceCommand(JSON_KEY_ON, targetState);
                 refreshInfo = true;
             } else if (id.startsWith(CHANNEL_OUTPUT)) { // Command is sent to a child's device output
                 Integer index = Integer.valueOf(id.replace(CHANNEL_OUTPUT, ""));
-                connector.sendChildCommand(index, DEVICE_PROPERTY_ON, targetState);
+                connector.sendChildCommand(index, JSON_KEY_ON, targetState);
                 refreshInfo = true;
             }
         } else {

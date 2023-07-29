@@ -6,8 +6,9 @@
 	<type>misc</type>
 	<name>Hue Emulation</name>
 	<description>Exposes openHAB as Hue Devices.</description>
+	<connection>local</connection>
 
 	<service-id>org.openhab.hueemulation</service-id>
 
-	<config-description-ref uri="io.hueemulation"/>
+	<config-description-ref uri="io:hueemulation"/>
 </addon:addon>

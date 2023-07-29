@@ -158,6 +158,7 @@ public class NetatmoConstants {
 
     // Payloads
     public static final String PAYLOAD_FLOODLIGHT = "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"floodlight\":\"%s\"} ]}}";
+    public static final String PAYLOAD_SIREN_PRESENCE = "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"siren_status\":\"%s\"} ]}}";
     public static final String PAYLOAD_PERSON_AWAY = "{\"home_id\":\"%s\",\"person_id\":\"%s\"}";
     public static final String PAYLOAD_PERSON_HOME = "{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}";
 
@@ -346,6 +347,20 @@ public class NetatmoConstants {
         @SerializedName("2")
         ALIM_CORRECT_POWER,
         UNKNOWN;
+    }
+
+    public enum SirenStatus {
+        SOUND,
+        NO_SOUND,
+        UNKNOWN;
+
+        public static SirenStatus get(String value) {
+            try {
+                return valueOf(value.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return UNKNOWN;
+            }
+        }
     }
 
     public enum BatteryState {

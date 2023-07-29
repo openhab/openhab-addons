@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Roku Binding</name>
 	<description>Controls Roku Streaming Media Players and TVs</description>
+	<connection>local</connection>
 
 </addon:addon>

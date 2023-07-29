@@ -27,7 +27,7 @@ import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
  */
 @NonNullByDefault
 public interface EcovacsDevice {
-    public interface EventListener {
+    interface EventListener {
         void onFirmwareVersionChanged(EcovacsDevice device, String fwVersion);
 
         void onBatteryLevelUpdated(EcovacsDevice device, int newLevelPercent);

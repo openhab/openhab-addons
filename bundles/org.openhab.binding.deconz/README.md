@@ -139,7 +139,7 @@ The sensor devices support some of the following channels:
 | dark                  | Switch                   | R           | Light level is below the darkness threshold                                               | lightsensor, sometimes for presencesensor         |
 | daylight              | Switch                   | R           | Light level is above the daylight threshold                                               | lightsensor                                       |
 | enabled               | Switch                   | R/W         | This channel activates or deactivates the sensor                                          | presencesensor                                    |
-| externalwindowopen    | Contact                  | R/W         | forward a status to a thermostat (some devices)                                           | thermostat                                        |
+| externalwindowopen    | Contact                  | R/W         | Forward a status to a thermostat (some devices)                                           | thermostat                                        |
 | fire                  | Switch                   | R           | Status of a fire: `ON` = fire was detected; `OFF` = no fire detected                      | firesensor                                        |
 | gesture               | Number                   | R           | A gesture that was performed with the switch                                              | switch                                            |
 | humidity              | Number:Dimensionless     | R           | Humidity in %                                                                             | humiditysensor                                    |
@@ -148,9 +148,9 @@ The sensor devices support some of the following channels:
 | light                 | String                   | R           | Light level: `Daylight`; `Sunset`; `Dark`                                                 | daylightsensor                                    |
 | lightlux              | Number:Illuminance       | R           | Light illuminance in Lux                                                                  | lightsensor                                       |
 | light_level           | Number                   | R           | Light level                                                                               | lightsensor                                       |
-| locked                | Switch                   | R/W         | reports/sets the child lock on some thermostats                                           | thermostat                                        |
+| locked                | Switch                   | R/W         | Reports/sets the child lock on some thermostats                                           | thermostat                                        |
 | moisture              | Number:Dimensionless     | R           | Moisture                                                                                  | moisturesensor                                    |
-| on                    | Switch                   | R           | some thermostats report their output state as switch                                      | thermostat                                        |
+| on                    | Switch                   | R           | Some thermostats report their output state as switch                                      | thermostat                                        |
 | open                  | Contact                  | R           | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                                   |
 | orientation_x, _y, _z | Number                   | R           | Orientation of vibration sensor                                                           | vibrationsensor                                   |
 | power                 | Number:Power             | R           | Power usage in Watts                                                                      | powersensor, sometimes for consumptionsensor      |
@@ -257,27 +257,41 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
     waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
     alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8", lastSeenPolling=5 ]
+    moisturesensor      livingroom-chili        "Livingroom Chili Plant"    [ id="9" ]
+    firesensor          livingroom-fire         "Livingroom Fire"           [ id="10" ]
+    thermostat          livingroom-thermostat   "Livingroom Thermostat"     [ id="11" ]
     dimmablelight       livingroom-ceiling      "Livingroom Ceiling"        [ id="1" ]
     lightgroup          livingroom              "Livingroom"                [ id="1" ]
     doorlock            entrance-door           "Door Lock"                 [ id="20" ]
+    warningdevice       entrance-siren          "Entrance Siren"            [ id="21" ]
 }
 ```
 
 ### Items file
 
 ```java
-Switch                  Livingroom_Presence     "Presence Livingroom [%s]"          <motion>        { channel="deconz:presencesensor:homeserver:livingroom-presence:presence" }
-Number:Temperature      Livingroom_Temperature  "Temperature Livingroom [%.1f °C]"  <temperature>   { channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature" }
-Number:Dimensionless    Livingroom_Humidity     "Humidity Livingroom [%.1f %%]"     <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
-String                  Livingroom_voc_label    "Air quality Livingroom [%s]"                       { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airquality" }
-Number:Dimensionless    Livingroom_voc          "Air quality [%d ppb]"                              { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
-Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"    <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
-Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
-Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
-Switch                  Basement_Alarm          "Basement Alarm Triggered [%s]"                     { channel="deconz:alarmsensor:homeserver:basement-alarm:alarm" }
-Dimmer                  Livingroom_Ceiling      "Livingroom Ceiling [%d]"           <light>         { channel="deconz:dimmablelight:homeserver:livingroom-ceiling:brightness" }                 
-Color                   Livingroom              "Livingroom Light Control"                          { channel="deconz:lightgroup:homeserver:livingroom:color" }
-Switch                  Entrance_Door           "Doorlock"                                          { channel="deconz:doorlock:homeserver:entrance-door:lock" }
+Switch                  Livingroom_Presence                      "Presence Livingroom [%s]"           <motion>        { channel="deconz:presencesensor:homeserver:livingroom-presence:presence" }
+Number:Temperature      Livingroom_Temperature                   "Temperature Livingroom [%.1f °C]"   <temperature>   { channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature" }
+Number:Dimensionless    Livingroom_Humidity                      "Humidity Livingroom [%.1f %%]"      <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
+String                  Livingroom_voc_label                     "Air quality Livingroom [%s]"                        { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airquality" }
+Number:Dimensionless    Livingroom_voc                           "Air quality [%d ppb]"                               { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
+Number:Pressure         Livingroom_Pressure                      "Pressure Livingroom [%.1f hPa]"     <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
+Contact                 Livingroom_Window                        "Window Livingroom [%s]"             <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
+Switch                  Basement_Water_Leakage                   "Basement Water Leakage [%s]"                        { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
+Switch                  Basement_Alarm                           "Basement Alarm Triggered [%s]"                      { channel="deconz:alarmsensor:homeserver:basement-alarm:alarm" }
+Number:Dimensionless    Livingroom_Chili_Moisture                "Chili Plant Moisture [%.1f %%]"                     { channel="deconz:moisturesensor:homeserver:livingroom-chili:moisture" }
+Switch                  Livingroom_Fire                          "Fire [%s]"                          <smoke>         { channel="deconz:firesensor:homeserver:livingroom-fire:fire" }
+Number:Temperature      Livingroom_Thermostat_CurrentTemperature "Thermostat Temperature [%.1f °C]"   <temperature>   { channel="deconz:thermostat:homeserver:livingroom-thermostat:temperature" }
+Number:Temperature      Livingroom_Thermostat_TargetTemperature  "Thermostat Setpoint [%.1f °C]"      <temperature>   { channel="deconz:thermostat:homeserver:livingroom-thermostat:heatsetpoint" }
+Number:Temperature      Livingroom_Thermostat_Offset             "Thermostat Offset [%.1f °C]"        <temperature>   { channel="deconz:thermostat:homeserver:livingroom-thermostat:offset" }
+Number:Dimensionless    Livingroom_Thermostat_ValvePosition      "Thermostat Valve Position [%.1f %%]"                { channel="deconz:thermostat:homeserver:livingroom-thermostat:valve" }
+Contact                 Livingroom_Thermostat_WindowOpen         "Thermostat Window Open [%s]"                        { channel="deconz:thermostat:homeserver:livingroom-thermostat:windowopen" }
+Switch                  Livingroom_Thermostat_Locked             "Thermostat Locked [%s]"                             { channel="deconz:thermostat:homeserver:livingroom-thermostat:locked" }
+String                  Livingroom_Thermostat_Mode               "Thermostat Mode [%s]"                               { channel="deconz:thermostat:homeserver:livingroom-thermostat:mode" }
+Dimmer                  Livingroom_Ceiling                       "Livingroom Ceiling [%d]"            <light>         { channel="deconz:dimmablelight:homeserver:livingroom-ceiling:brightness" }                 
+Color                   Livingroom                               "Livingroom Light Control"                           { channel="deconz:lightgroup:homeserver:livingroom:color" }
+Switch                  Entrance_Door                            "Doorlock"                                           { channel="deconz:doorlock:homeserver:entrance-door:lock" }
+String                  Entrance_Siren                           "Siren [%s]"                         <alarm>         { channel="deconz:warningdevice:homeserver:entrance-siren:alert" }
 ```
 
 ### Events

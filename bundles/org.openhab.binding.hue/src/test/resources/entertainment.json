@@ -1,0 +1,79 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "4658e884-e2a2-425d-ad00-55353afcea4e",
+			"id_v1": "/lights/3",
+			"owner": {
+				"rid": "7bf2175d-0bb8-48dc-a7b4-775d3af3dfc9",
+				"rtype": "device"
+			},
+			"renderer": true,
+			"proxy": true,
+			"segments": {
+				"configurable": false,
+				"max_segments": 1,
+				"segments": [
+					{
+						"start": 0,
+						"length": 1
+					}
+				]
+			},
+			"type": "entertainment"
+		},
+		{
+			"id": "819489fb-2485-4e34-8805-aa19f85c6e5f",
+			"id_v1": "/lights/2",
+			"owner": {
+				"rid": "e0aafa22-59ab-4467-b603-632d92d2c15b",
+				"rtype": "device"
+			},
+			"renderer": true,
+			"proxy": true,
+			"segments": {
+				"configurable": false,
+				"max_segments": 1,
+				"segments": [
+					{
+						"start": 0,
+						"length": 1
+					}
+				]
+			},
+			"type": "entertainment"
+		},
+		{
+			"id": "f391a6b1-8266-4039-b19c-3cce3572236f",
+			"id_v1": "",
+			"owner": {
+				"rid": "f4c5c816-925b-4e22-a112-2b44a23f5613",
+				"rtype": "device"
+			},
+			"renderer": false,
+			"proxy": true,
+			"type": "entertainment"
+		},
+		{
+			"id": "a22e43a7-b804-47dd-b50e-9a8f49efc6df",
+			"id_v1": "/lights/1",
+			"owner": {
+				"rid": "e41beec5-0340-4700-9094-8244f9a8ed0d",
+				"rtype": "device"
+			},
+			"renderer": true,
+			"proxy": true,
+			"segments": {
+				"configurable": false,
+				"max_segments": 1,
+				"segments": [
+					{
+						"start": 0,
+						"length": 1
+					}
+				]
+			},
+			"type": "entertainment"
+		}
+	]
+}

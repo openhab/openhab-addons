@@ -39,9 +39,12 @@
 			<channel id="light_switch" typeId="light_switch"/>
 			<channel id="light_can_be_controlled" typeId="light_can_be_controlled"/>
 			<channel id="door_state" typeId="door_state"/>
+			<channel id="water_consumption_current" typeId="water_consumption_current"/>
+			<channel id="energy_consumption_current" typeId="energy_consumption_current"/>
 		</channels>
 
 		<properties>
+			<property name="thingTypeVersion">1</property>
 			<property name="vendor">Miele</property>
 		</properties>
 
