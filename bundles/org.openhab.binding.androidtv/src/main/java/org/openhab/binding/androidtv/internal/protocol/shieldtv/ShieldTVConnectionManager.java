@@ -361,8 +361,6 @@ public class ShieldTVConnectionManager {
         config.reconnect = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_SECONDS;
         config.heartbeat = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
         config.delay = (config.delay < 0) ? 0 : config.delay;
-        config.shim = config.shim;
-        config.shimNewKeys = config.shimNewKeys;
 
         config.keystoreFileName = (!config.keystoreFileName.equals("")) ? config.keystoreFileName
                 : folderName + "/shieldtv." + ((config.shim) ? "shim." : "") + handler.getThing().getUID().getId()
