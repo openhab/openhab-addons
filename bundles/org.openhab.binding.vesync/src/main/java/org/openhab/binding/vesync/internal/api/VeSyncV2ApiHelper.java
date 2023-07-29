@@ -231,7 +231,7 @@ public class VeSyncV2ApiHelper {
                     VeSyncConstants.GSON.toJson(new VeSyncLoginCredentials(username, password))));
 
             request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
-
+            String test = VeSyncConstants.GSON.toJson(new VeSyncLoginCredentials(username, password)).toString();
             ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                 VeSyncLoginResponse loginResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),

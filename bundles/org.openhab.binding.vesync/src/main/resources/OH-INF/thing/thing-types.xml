@@ -40,6 +40,29 @@
 		</config-description>
 	</bridge-type>
 
+	<thing-type id="wifiSwitch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Wifi Switch via VeSync</label>
+		<description>An Wifi Switch uplinking to VeSync</description>
+
+		<channels>
+			<channel id="enabled" typeId="deviceEnabledType"></channel>
+			<channel id="activeTime" typeId="activeTimeType"></channel>
+			<channel id="energy" typeId="energyType"></channel>
+			<channel id="power" typeId="powerType"></channel>
+			<channel id="voltage" typeId="voltageType"></channel>
+			<channel id="energyWeek" typeId="energyWeekType"></channel>
+			<channel id="energyMonth" typeId="energyMonthType"></channel>
+			<channel id="energyYear" typeId="energyYearType"></channel>
+			<channel id="nightlightStatus" typeId="nightlightStatusType"></channel>
+			<channel id="nightlightMode" typeId="nightlightModeType"></channel>
+			<channel id="nightlightBrightness" typeId="nightlightBrightnessType"></channel>
+		</channels>
+	</thing-type>
+
 	<thing-type id="airPurifier">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -131,6 +154,75 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-type id="activeTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Active Time of the device</label>
+		<description>Active Time of the device in minutes</description>
+		<state pattern="%i min"/>
+	</channel-type>
+
+	<channel-type id="energyType">
+		<item-type>Number:Power</item-type>
+		<label>Energy</label>
+		<description>Today's energy in kWh</description>
+		<state pattern="%i kWh"/>
+	</channel-type>
+
+	<channel-type id="powerType">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Current power in W</description>
+	</channel-type>
+
+	<channel-type id="voltageType">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Current Voltage</description>
+	</channel-type>
+
+	<channel-type id="energyWeekType">
+		<item-type>Number:Power</item-type>
+		<label>Energy Week</label>
+		<description>Total energy of week in kWh</description>
+		<state pattern="%i kWh"/>
+	</channel-type>
+
+	<channel-type id="energyMonthType">
+		<item-type>Number:Power</item-type>
+		<label>Energy Month</label>
+		<description>Total energy of month in kWh</description>
+	</channel-type>
+
+	<channel-type id="energyYearType">
+		<item-type>Number:Power</item-type>
+		<label>Energy Year</label>
+		<description>Total energy of year in kWh</description>
+	</channel-type>
+
+	<channel-type id="nightlightStatusType">
+		<item-type>Switch</item-type>
+		<label>Nightlight On</label>
+		<description>Indicator if the Nightlight is switched on</description>
+	</channel-type>
+
+	<channel-type id="nightlightModeType">
+		<item-type>String</item-type>
+		<label>Nightlight Automode</label>
+		<description>Indicator for the mode the nightlight is in</description>
+	</channel-type>
+
+	<channel-type id="nightlightBrightnessType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Nightlight Brightness</label>
+		<description>Brightness level of the nightlight</description>
+		<state>
+			<options>
+				<option value="manual">Manual</option>
+				<option value="auto">Automatic</option>
+			</options>
+		</state>
+	</channel-type>
 
 	<channel-type id="deviceEnabledType">
 		<item-type>Switch</item-type>

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.vesync.internal.handlers;
 
-import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
+import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_BRIDGE_ACCEPT_LANG;
+import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_BRIDGE_COUNTRY_CODE;
+import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_BRIDGE_REG_TS;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -172,6 +174,13 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
                                 VeSyncDeviceAirHumidifierHandler.DEV_TYPE_FAMILY_AIR_HUMIDIFIER,
                                 VeSyncDeviceAirHumidifierHandler.SUPPORTED_MODEL_FAMILIES)
                         .equals(VeSyncBaseDeviceHandler.UNKNOWN));
+    }
+
+    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getWifiSwitchMetaData() {
+        return api.getMacLookupMap().values().stream().filter(x -> !VeSyncBaseDeviceHandler
+                .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceWifiSwitchHandler.DEV_TYPE_FAMILY_WIFI_SWITCH,
+                        VeSyncDeviceWifiSwitchHandler.SUPPORTED_MODEL_FAMILIES)
+                .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
     protected void updateThings() {
