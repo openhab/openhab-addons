@@ -30,11 +30,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
+import org.influxdb.InfluxDBIOException;
 import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
+import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
@@ -58,12 +60,14 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     private final Logger logger = LoggerFactory.getLogger(InfluxDB1RepositoryImpl.class);
     private final InfluxDBConfiguration configuration;
     private final InfluxDBMetadataService influxDBMetadataService;
+    private final FilterCriteriaQueryCreator queryCreator;
     private @Nullable InfluxDB client;
 
     public InfluxDB1RepositoryImpl(InfluxDBConfiguration configuration,
             InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
         this.influxDBMetadataService = influxDBMetadataService;
+        this.queryCreator = new InfluxDB1FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 
     @Override
@@ -127,11 +131,17 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             BatchPoints batchPoints = BatchPoints.database(configuration.getDatabaseName())
                     .retentionPolicy(configuration.getRetentionPolicy()).points(points).build();
             currentClient.write(batchPoints);
-        } catch (InfluxException e) {
+        } catch (InfluxException | InfluxDBIOException e) {
             logger.debug("Writing to database failed", e);
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean remove(FilterCriteria filter) {
+        logger.warn("Removing data is not supported in InfluxDB v1.");
+        return false;
     }
 
     private Optional<Point> convertPointToClientFormat(InfluxPoint point) {
@@ -155,14 +165,20 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public List<InfluxRow> query(String query) {
-        final InfluxDB currentClient = client;
-        if (currentClient != null) {
-            Query parsedQuery = new Query(query, configuration.getDatabaseName());
-            List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
-            return convertClientResultToRepository(results);
-        } else {
-            logger.warn("Returning empty list because queryAPI isn't present");
+    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
+        try {
+            final InfluxDB currentClient = client;
+            if (currentClient != null) {
+                String query = queryCreator.createQuery(filter, retentionPolicy);
+                logger.trace("Query {}", query);
+                Query parsedQuery = new Query(query, configuration.getDatabaseName());
+                List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
+                return convertClientResultToRepository(results);
+            } else {
+                throw new InfluxException("API not present");
+            }
+        } catch (InfluxException | InfluxDBIOException e) {
+            logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
             return List.of();
         }
     }
@@ -215,10 +231,5 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     @Override
     public Map<String, Integer> getStoredItemsCount() {
         return Collections.emptyMap();
-    }
-
-    @Override
-    public FilterCriteriaQueryCreator createQueryCreator() {
-        return new InfluxDB1FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 }

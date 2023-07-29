@@ -173,6 +173,7 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_ALARM_SYSTEM_BATTERY = "battery";
     public static final String CHANNEL_ALARM_ZONE_STATE = "state";
     public static final String CHANNEL_ALARM_ZONE_ALARM = "alarm";
+    public static final String CHANNEL_ALARM_ZONE_ALARM_TIMESTAMP = "timestamp";
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";

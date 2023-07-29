@@ -26,7 +26,7 @@
 		<parameter name="gems" type="text" required="false" groupName="gems">
 			<label>Ruby Gems</label>
 			<description><![CDATA[A comma separated list of Ruby Gems to install. Versions may be constrained by separating with an
-			    <tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>5.0.0</tt>".
+			    <tt>=</tt> and then the standard RubyGems version constraint, such as "<tt>openhab-scripting=~>5.0</tt>".
 				]]></description>
 			<default>openhab-scripting=~>5.0.0</default>
 		</parameter>

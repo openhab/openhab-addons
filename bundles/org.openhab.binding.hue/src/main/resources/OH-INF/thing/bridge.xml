@@ -62,4 +62,37 @@
 		</config-description>
 	</bridge-type>
 
+	<!-- API v2 Bridge -->
+	<bridge-type id="bridge-api2">
+		<label>Hue API v2 Bridge</label>
+		<description>The Hue Bridge represents a Philips Hue Bridge supporting API v2.</description>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the Hue Bridge.</description>
+			</parameter>
+			<parameter name="applicationKey" type="text">
+				<context>password</context>
+				<label>Application Key</label>
+				<description>A registered Hue Bridge application key that allows access to the API.</description>
+			</parameter>
+			<parameter name="checkMinutes" type="integer" min="10" step="1" unit="min">
+				<label>Connection Check Interval</label>
+				<description>Minutes between retrying the HTTP 2 and SSE connections. Default is 60.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="useSelfSignedCertificate" type="boolean">
+				<label>Use Self-Signed Certificate</label>
+				<description>Use self-signed certificate for HTTPS connection to Hue Bridge.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 </thing:thing-descriptions>

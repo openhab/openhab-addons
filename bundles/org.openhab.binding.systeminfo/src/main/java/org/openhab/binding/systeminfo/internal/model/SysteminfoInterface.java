@@ -42,7 +42,7 @@ public interface SysteminfoInterface {
 
     // Operating system info
     /**
-     * Get the Family of the operating system /e.g. Windows,Unix,.../
+     * Get the Family of the operating system /e.g. Windows, Unix,.../
      */
     StringType getOsFamily();
 
