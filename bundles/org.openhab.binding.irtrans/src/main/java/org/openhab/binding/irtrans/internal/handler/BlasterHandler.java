@@ -69,8 +69,13 @@ public class BlasterHandler extends BaseThingHandler implements TransceiverStatu
         if (!(command instanceof RefreshType)) {
             if (channelUID.getId().equals(CHANNEL_IO)) {
                 if (command instanceof StringType) {
-                    String remoteName = command.toString().substring(0, command.toString().indexOf(","));
-                    String irCommandName = command.toString().substring(command.toString().indexOf(",") + 1);
+                    String remoteName = command.toString();
+                    String irCommandName = command.toString();
+
+                    if (command.toString().indexOf(",") > 0) {
+                        remoteName = command.toString().substring(0, command.toString().indexOf(","));
+                        irCommandName = command.toString().substring(command.toString().indexOf(",") + 1);
+                    }
 
                     IrCommand ircommand = new IrCommand();
                     ircommand.setRemote(remoteName);
