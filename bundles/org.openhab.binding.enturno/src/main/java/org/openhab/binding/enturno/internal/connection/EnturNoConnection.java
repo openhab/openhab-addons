@@ -232,8 +232,12 @@ public class EnturNoConnection {
     }
 
     private String getIsoDateTime(String dateTimeWithoutColonInZone) {
-        String dateTime = dateTimeWithoutColonInZone.substring(0, dateTimeWithoutColonInZone.lastIndexOf("+"));
-        String offset = dateTimeWithoutColonInZone.substring(dateTimeWithoutColonInZone.lastIndexOf("+") + 1);
+        String dateTime = dateTimeWithoutColonInZone;
+        String offset = dateTimeWithoutColonInZone;
+        if (dateTimeWithoutColonInZone.lastIndexOf("+") > 0) {
+            dateTime = dateTimeWithoutColonInZone.substring(0, dateTimeWithoutColonInZone.lastIndexOf("+"));
+            offset = dateTimeWithoutColonInZone.substring(dateTimeWithoutColonInZone.lastIndexOf("+") + 1);
+        }
 
         StringBuilder builder = new StringBuilder();
         return builder.append(dateTime).append("+").append(offset.substring(0, 2)).append(":00").toString();
