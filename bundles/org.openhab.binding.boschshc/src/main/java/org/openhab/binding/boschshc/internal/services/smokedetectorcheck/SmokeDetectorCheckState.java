@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Possible states for a smoke detector.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
@@ -27,7 +27,6 @@ public enum SmokeDetectorCheckState {
     SMOKE_TEST_FAILED;
 
     public static SmokeDetectorCheckState from(String stateString) {
-
         try {
             return SmokeDetectorCheckState.valueOf(stateString);
         } catch (Exception a) {

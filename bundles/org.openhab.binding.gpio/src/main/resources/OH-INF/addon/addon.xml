@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>GPIO Binding</name>
 	<description>Adds GPIO support to openHAB.</description>
+	<connection>local</connection>
 
 </addon:addon>

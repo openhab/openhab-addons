@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>TiVo DVR Binding</name>
 	<description>Controls TiVo DVRs that support the TiVo TCP Control Protocol v1.1</description>
+	<connection>local</connection>
 
 </addon:addon>

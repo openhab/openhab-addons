@@ -24,8 +24,8 @@ import com.google.gson.JsonObject;
  * can be implement by subclasses which contains the same device informations like dSID and/or mechanismen like the
  * {@link DeviceStatusListener}.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public abstract class AbstractGeneralDeviceInformations implements GeneralDeviceInformation {
 

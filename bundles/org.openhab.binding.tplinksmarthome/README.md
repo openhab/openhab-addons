@@ -8,74 +8,74 @@ The following TP-Link Smart Devices are supported:
 
 ### EP10 Kasa Smart Wi-Fi Plug Mini
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### EP40 Kasa Smart Wi-Fi Outdoor Plug
 
-* Power On/Off Group
-* Power On/Off 2 Outlets
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off Group
+- Power On/Off 2 Outlets
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ## ES20M Smart Wi-Fi Light Switch, Motion-Activated
 
-* Power On/Off
-* Dimmer
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Dimmer
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### HS100 Kasa Smart Wi-Fi Plug
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### HS103 Kasa Smart Wi-Fi Plug Lite
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### HS105 Kasa Smart Wi-Fi Plug
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### HS107 Kasa Smart Wi-Fi Plug, 2-Outlets
 
-* Power On/Off Group
-* Power On/Off 2 Outlets
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off Group
+- Power On/Off 2 Outlets
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### HS110 Kasa Smart Wi-Fi Plug
 
-* Power On/Off
-* Energy readings
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Energy readings
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### HS200 Kasa Smart Wi-Fi Switch
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### HS210 Kasa Smart Wi-Fi Light Switch 3-Way Kit
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### HS220 Kasa Smart Wi-Fi Light Switch, Dimmer
 
-* Power On/Off
-* Adjust the brightness
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 Use the brightness channel on the HS220 with a Switch item can be used to switch the device on and off.
 It will not change the brightness value.
@@ -87,255 +87,255 @@ Switching via openHAB activates the switch directly.
 
 ### HS300 Kasa Smart Wi-Fi Power Strip
 
-* Power On/Off Group
-* Power On/Off 6 Outlets
-* Energy readings 6 Outlets
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off Group
+- Power On/Off 6 Outlets
+- Energy readings 6 Outlets
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### LB100 Kasa Smart Wi-Fi LED Bulb with Dimmable Light
 
-* Power On/Off
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### LB110 Kasa Smart Wi-Fi LED Bulb with Dimmable Light
 
-* Power On/Off
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### LB120 Kasa Smart Wi-Fi LED Bulb with Tunable White Light
 
-* Power On/Off
-* Adjust light appearance from soft white (2700k) to daylight (6500k)
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust light appearance from soft white (2700k) to daylight (6500k)
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### LB130 Kasa Smart Wi-Fi LED Bulb with Color Changing Hue
 
-* Power On/Off
-* Fine-tune colors
-* Adjust light appearance from soft white (2500k) to daylight (9000k)
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Fine-tune colors
+- Adjust light appearance from soft white (2500k) to daylight (9000k)
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching, Brightness and Color is done using the `color` channel.
 
 ### LB200 Kasa Smart Wi-Fi LED Bulb with Dimmable Light
 
-* Power On/Off
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### LB230 Kasa Smart Wi-Fi LED Bulb with Color Changing Hue
 
-* Power On/Off
-* Fine-tune colors
-* Adjust light appearance from soft white (2500k) to daylight (9000k)
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Fine-tune colors
+- Adjust light appearance from soft white (2500k) to daylight (9000k)
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching, Brightness and Color is done using the `color` channel.
 
 ### KB100 Kasa Smart Light Bulb
 
-* Power On/Off
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### KB130 Kasa Multi-color Smart Light Bulb
 
-* Power On/Off
-* Fine-tune colors
-* Adjust light appearance from soft white (2500k) to daylight (9000k)
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Fine-tune colors
+- Adjust light appearance from soft white (2500k) to daylight (9000k)
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching, Brightness and Color is done using the `color` channel.
 
 ### KL50 Kasa Filament Smart Bulb, Soft White
 
-* Power On/Off
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### KL60 Kasa Filament Smart Bulb, Warm Amber
 
-* Power On/Off
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### KL110 Kasa Smart Wi-Fi LED Bulb with Dimmable Light
 
-* Power On/Off
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### KL120 Kasa Smart Wi-Fi LED Bulb with Tunable White Light
 
-* Power On/Off
-* Adjust light appearance from soft white (2700k) to daylight (6500k)
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust light appearance from soft white (2700k) to daylight (6500k)
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching and Brightness is done using the `brightness` channel.
 
 ### KL125 Kasa Smart Wi-Fi Bulb Multicolor
 
-* Power On/Off
-* Fine-tune colors
-* Adjust light appearance from soft white (2500k) to daylight (6500k)
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Fine-tune colors
+- Adjust light appearance from soft white (2500k) to daylight (6500k)
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching, Brightness and Color is done using the `color` channel.
 
 ### KL130 Kasa Smart Wi-Fi LED Bulb with Color Changing Hue
 
-* Power On/Off
-* Fine-tune colors
-* Adjust light appearance from soft white (2500k) to daylight (9000k)
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Fine-tune colors
+- Adjust light appearance from soft white (2500k) to daylight (9000k)
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching, Brightness and Color is done using the `color` channel.
 
 ### KL135 Kasa Smart Wi-Fi Bulb Multicolor
 
-* Power On/Off
-* Fine-tune colors
-* Adjust light appearance from soft white (2500k) to daylight (6500k)
-* Adjust the brightness
-* Actual power usage
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Fine-tune colors
+- Adjust light appearance from soft white (2500k) to daylight (6500k)
+- Adjust the brightness
+- Actual power usage
+- Wi-Fi signal strength (RSSI)
 
 Switching, Brightness and Color is done using the `color` channel.
 
 ### KL400 Kasa Smart LED Light Strip
 
-* Power On/Off
-* Fine-tune colors
-* Adjust light appearance from soft white (2500k) to daylight (9000k)
-* Adjust the brightness
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Fine-tune colors
+- Adjust light appearance from soft white (2500k) to daylight (9000k)
+- Adjust the brightness
+- Wi-Fi signal strength (RSSI)
 
 ### KL430 Kasa Smart LED Light Strip, 16 Color Zones
 
-* Power On/Off
-* Fine-tune colors
-* Adjust light appearance from soft white (2500k) to daylight (9000k)
-* Adjust the brightness
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Fine-tune colors
+- Adjust light appearance from soft white (2500k) to daylight (9000k)
+- Adjust the brightness
+- Wi-Fi signal strength (RSSI)
 
 Switching, Brightness and Color is done using the `color` channel.
 
 ### KP100 Kasa Wi-Fi Smart Plug - Slim Edition
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KP105 Kasa Wi-Fi Smart Plug - Slim Edition
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KP115 Kasa Wi-Fi Smart Plug with Energy Monitoring - Slim Edition
 
-* Power On/Off
-* Energy readings
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Energy readings
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KP125 Kasa Smart WiFi Plug Slim with Energy Monitoring
 
-* Power On/Off
-* Energy readings
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Energy readings
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KP200 Kasa Smart Wi-Fi Power Outlet, 2-Sockets
 
-* Power On/Off Group
-* Power On/Off 2 Outlets
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off Group
+- Power On/Off 2 Outlets
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KP303 Kasa Smart Wi-Fi Power Outlet, 3-Sockets
 
-* Power On/Off Group
-* Power On/Off 3 Outlets
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off Group
+- Power On/Off 3 Outlets
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KP400 Kasa Smart Outdoor Plug
 
-* Power On/Off Group
-* Power On/Off 2 Outlets
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off Group
+- Power On/Off 2 Outlets
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KP401 Kasa Smart WiFi Outdoor Plug
 
-* Power On/Off
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KP405 Kasa Smart Wi-Fi Outdoor Plug-In Dimmer
 
-* Power On/Off
-* Dimmer
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Dimmer
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### KS230 Kasa Smart Wi-Fi Dimmer Switch 3-Way Kit
 
-* Power On/Off
-* Adjust the brightness
-* LED On/Off
-* Wi-Fi signal strength (RSSI)
+- Power On/Off
+- Adjust the brightness
+- LED On/Off
+- Wi-Fi signal strength (RSSI)
 
 ### RE270K AC750 Wi-Fi Range Extender with Smart Plug
 
-* Power On/Off (readonly)
-* Wi-Fi signal strength (RSSI)
+- Power On/Off (readonly)
+- Wi-Fi signal strength (RSSI)
 
 ### RE370K AC1200 Wi-Fi Range Extender with Smart Plug
 
-* Power On/Off (readonly)
-* Wi-Fi signal strength (RSSI)
+- Power On/Off (readonly)
+- Wi-Fi signal strength (RSSI)
 
 It is not possible to set the switch state on the Range Extender.
 This is because it is not known what command to send to the device to make this possible.
@@ -419,7 +419,7 @@ Than the a `RefreshType` command will fetch the device state and update the inte
 
 ### tplinksmarthome.things:
 
-```
+```java
 tplinksmarthome:hs100:tv      "TV"                 [ deviceId="00000000000000000000000000000001", refresh=60 ]
 tplinksmarthome:hs300:laptop  "Laptop"             [ deviceId="00000000000000000000000000000004", refresh=60 ]
 tplinksmarthome:lb110:bulb1   "Living Room Bulb 1" [ deviceId="00000000000000000000000000000002", refresh=60, transitionPeriod=2500 ]
@@ -429,7 +429,7 @@ tplinksmarthome:kp401:outlet  "Outdoor Outlet"     [ ipAddress="192.168.1.101" ]
 
 ### tplinksmarthome.items:
 
-```
+```java
 Switch       TP_L_TV      "TV"                                 { channel="tplinksmarthome:hs100:tv:switch" }
 Switch       TP_L_Laptop  "Laptop"                             { channel="tplinksmarthome:hs300:laptop:outlet1#switch" }
 Number:Power TP_L_RSSI    "Signal [%d %unit%]"        <signal> { channel="tplinksmarthome:hs100:tv:rssi" }

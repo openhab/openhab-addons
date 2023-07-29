@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lametrictime.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This bean represents the information necessary to uniquely reference a widget on the LaMetric Time platform.
  *
  * @author Gregor Moyer - Initial contribution
  */
+@NonNullByDefault
 public class WidgetRef {
     private final String packageName;
     private final String widgetId;

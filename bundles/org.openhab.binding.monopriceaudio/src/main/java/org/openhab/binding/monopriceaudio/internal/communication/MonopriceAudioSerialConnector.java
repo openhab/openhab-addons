@@ -51,11 +51,14 @@ public class MonopriceAudioSerialConnector extends MonopriceAudioConnector {
      * @param serialPortManager the serial port manager
      * @param serialPortName the serial port name to be used
      * @param uid the thing uid string
+     * @param amp the AmplifierModel being used
      */
-    public MonopriceAudioSerialConnector(SerialPortManager serialPortManager, String serialPortName, String uid) {
+    public MonopriceAudioSerialConnector(SerialPortManager serialPortManager, String serialPortName, String uid,
+            AmplifierModel amp) {
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
         this.uid = uid;
+        setAmplifierModel(amp);
     }
 
     @Override

@@ -24,7 +24,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
+import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponseTransformerPublicApi;
@@ -36,7 +36,7 @@ import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implements SolarEdgeCommand {
+public class AggregateDataUpdatePublicApi extends AbstractCommand implements SolarEdgeCommand {
 
     /**
      * the solaredge handler
@@ -61,8 +61,9 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
      * @param handler
      * @param period
      */
-    public AggregateDataUpdatePublicApi(SolarEdgeHandler handler, AggregatePeriod period) {
-        super(handler.getConfiguration());
+    public AggregateDataUpdatePublicApi(SolarEdgeHandler handler, AggregatePeriod period,
+            StatusUpdateListener listener) {
+        super(handler.getConfiguration(), listener);
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         this.handler = handler;
         this.transformer = new AggregateDataResponseTransformerPublicApi(handler);

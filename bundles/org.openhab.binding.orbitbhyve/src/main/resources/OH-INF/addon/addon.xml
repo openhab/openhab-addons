@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Orbit B-hyve Binding</name>
 	<description>This is the binding for Orbit B-hyve Wi-Fi irrigation systems.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

@@ -74,8 +74,8 @@ public abstract class AbstractPowerSwitchHandler extends BoschSHCDeviceHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_POWER_SWITCH:
-                if (command instanceof OnOffType) {
-                    updatePowerSwitchState((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    updatePowerSwitchState(onOffCommand);
                 }
                 break;
         }

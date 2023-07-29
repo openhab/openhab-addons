@@ -30,19 +30,19 @@ public interface MeterValueListener {
      *
      * @param e The Exception that was thrown.
      */
-    public void errorOccurred(Throwable e);
+    void errorOccurred(Throwable e);
 
     /**
      * Called whenever some value was added or changed for a meter device.
      *
      * @param value The changed value.
      */
-    public <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value);
+    <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value);
 
     /**
      * Called whenever some value was removed from the meter device (not available anymore).
      *
      * @param value The removed value.
      */
-    public <Q extends Quantity<Q>> void valueRemoved(MeterValue<Q> value);
+    <Q extends Quantity<Q>> void valueRemoved(MeterValue<Q> value);
 }

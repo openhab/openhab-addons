@@ -28,8 +28,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  */
 @NonNullByDefault
 public class BlueGigaWriteCommand extends BlueGigaCommand {
-    public static int COMMAND_CLASS = 0x02;
-    public static int COMMAND_METHOD = 0x00;
+    public static final int COMMAND_CLASS = 0x02;
+    public static final int COMMAND_METHOD = 0x00;
 
     /**
      * Handle of the attribute to write.

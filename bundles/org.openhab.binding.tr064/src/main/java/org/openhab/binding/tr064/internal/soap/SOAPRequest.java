@@ -48,7 +48,6 @@ public class SOAPRequest {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         SOAPRequest that = (SOAPRequest) o;
 
         if (!service.equals(that.service)) {
@@ -57,6 +56,7 @@ public class SOAPRequest {
         if (!soapAction.equals(that.soapAction)) {
             return false;
         }
+
         return arguments.equals(that.arguments);
     }
 

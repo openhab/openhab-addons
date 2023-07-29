@@ -14,6 +14,7 @@ package org.openhab.binding.tr064.internal.phonebook;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,15 +140,13 @@ public class PhonebookProfile implements StateProfile {
         }
         if (state instanceof StringType) {
             Optional<String> match = resolveNumber(state.toString());
-            State newState = match.map(name -> (State) new StringType(name)).orElse(state);
-            // Compare by reference to check if the name is mapped to the same state
-            if (newState == state) {
+            State newState = Objects.requireNonNull(match.map(name -> (State) new StringType(name)).orElse(state));
+            if (newState.equals(state)) {
                 logger.debug("Number '{}' not found in phonebook '{}' from provider '{}'", state, phonebookName,
                         thingUID);
             }
             callback.sendUpdate(newState);
-        } else if (state instanceof StringListType) {
-            StringListType stringList = (StringListType) state;
+        } else if (state instanceof StringListType stringList) {
             try {
                 String phoneNumber = stringList.getValue(phoneNumberIndex);
                 Optional<String> match = resolveNumber(phoneNumber);

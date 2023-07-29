@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>OneBusAway Binding</name>
 	<description>This is the binding for OneBusAway, an open system to provide transit data.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

@@ -29,7 +29,7 @@ These gateways have been tested with the binding:
 [MH200N](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2469209&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),
 [F453](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2703566&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),  etc.
 
-- **Zigbee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
+- **Zigbee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/low_res/395950_501016_MQ00493_b_IT.pdf), also known as [Legrand 088328](https://assets.legrand.com/general/legrand-exp/pc/ex218001_412.pdf)
 
 **NOTE** The new BTicino Living Now&reg; and Livinglight Smart&reg; wireless systems are not supported by this binding as they do not use the OpenWebNet protocol.
 
@@ -107,6 +107,7 @@ Configuration parameters are:
   - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
   - in all other cases, a password must be configured. This includes gateways that have been discovered and added from Inbox: without a password configured they will remain OFFLINE
 - `discoveryByActivation`: discover BUS devices when they are activated also when a device scan hasn't been started from Inbox (`boolean`, _optional_, default: `false`). See [Discovery by Activation](#discovery-by-activation).
+- `dateTimeSynch`: synchronise date and time of slave elements on the SCS BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronisation commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not syncronized with Internet time servers and with daylight saving time changes.
 
 Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
@@ -147,7 +148,7 @@ Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone 
 
 - the `where` configuration parameter (`OpenWebNet Address`):
   - example BUS/SCS zone `1` --> `where="1"`
-- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
+- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4- or 99-zones). `standAlone=true` means the zone is indipendent and no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
 
@@ -155,19 +156,18 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
   - example sensor `5` of external zone `00` --> `where="500"`
   - example: slave sensor `3` of zone `2` --> `where="302"`
 
-The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="0"`.
+The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="#0"` for a 99-zone Central Unit or `where="#0#1"` for a 4-zone Central Unit configured as zone 1.
 
 ##### Thermo Central Unit integration missing points
 
 - Read setPoint temperature and current mode
-- Holiday activation command (all zones)
-- Discovery
+- Holiday/Vacation activation command
 
 #### Configuring Alarm and Auxiliary (AUX)
 
 **NOTE 1** Receiving AUX messages originating from the BUS is not supported yet, only sending messages to the BUS is supported
 
-**NOTE 2** Alarm messages on BUS are not sent by MyHOMEServer1, therfore this gateway cannot be used to integrate the BTicino Alarm system
+**NOTE 2** Alarm messages on BUS are not sent by MyHOMEServer1, therefore this gateway cannot be used to integrate the BTicino Alarm system
 
 BUS Auxiliary commands (WHO=9) can be used to send on the BUS commands to control, for example, external devices or a BTicino Alarm system.
 
@@ -228,6 +228,7 @@ OPEN command to execute: *5*8#134##
 | `battery`                    | `bus_alarm_system`                     | String      | Alarm system battery state (`OK`, `FAULT`, `UNLOADED`)                |      R      |
 | `armed`                      | `bus_alarm_system`                     | Switch      | Alarm system is armed (`ON`) or disarmed (`OFF`)                      |      R      |
 | `alarm`                      | `bus_alarm_zone`                       | String      | Current alarm for the zone  (`SILENT`, `INTRUSION`, `TAMPERING`, `ANTI_PANIC`) |      R      |
+| `timestamp`                  | `bus_alarm_zone`                       | DateTime  | Current date and time of the zone's alarm event (YY/MM/DD hh:mm:ss)   |      R      |
 
 ### Thermo channels
 
@@ -257,21 +258,22 @@ OPEN command to execute: *5*8#134##
 
 #### `shutter` position
 
-For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN. It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically.
+For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in milliseconds) to go from full UP to full DOWN. It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically.
 
-_Automatic calibration of `shutterRun`_
+##### Automatic calibration of `shutterRun`
 
-If `shutterRun` is set to AUTO a _UP >> DOWN >> Position%_ cycle will be performed automatically the first time a Percent command is sent to the shutter. The binding then relies on the _STOP_ command sent by the actuator at the stop time set in the actuator's advanced configuration in the My Home Suite. Therefore the binding's automatic calibration of `shutterRun` only works correctly if the stop time is set to the time the shutters need to go from full UP to full DOWN. 
+When `shutterRun` is set to `AUTO`, a  _UP >> DOWN >> Position%_  cycle will be performed automatically the first time a Percent command is sent to the shutter: this way the binding will calculate the shutter "run time" and set the `shutterRun` parameter accordingly.
 
-Older actuators that come without an ID and do not support advanced configuration via the My Home Suite have a fixed stop time of 60 seconds. In this case auto calibration of the binding cannot be used and `shutterRun` has to be set manually.
+**NOTE**
+A "stop time" parameter is usually set on the physical actuator (eg. F411U2) either via virtual configuration (MyHOME_Suite: parameters named "Stop time" or "M") or physical configuration (jumpers): check the actuator instructions to configure correctly this parameter on the actuator before performing auto calibration. If the "stop time" on the physical actuator is wrongly set or cannot be modified to the actual "run time" of the shutter, auto calibration cannot be used and `shutterRun` should be set manually to the actual runtime of the shutters.
 
-_Notes on `shutter` position_
+##### Position estimation of the shutter
 
 - if `shutterRun` is not set, or is set to `AUTO` but calibration has not been performed yet, then position estimation will remain `UNDEF` (undefined)
-- if `shutterRun` is wrongly set higher than the actual runtime, then position estimation will remain `UNDEF`: try to reduce shutterRun until you find the right value
-- before adding/configuring roller shutter Things it is suggested to have all roller shutters `UP`, otherwise the Percent command won’t work until the roller shutter is fully rolled up
-- if OH is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronize again its position with the binding
-- the shutter position is estimated based on UP/DOWN timing: an error of ±2% is normal
+- if `shutterRun` is wrongly set *higher* than the actual runtime or the "stop time" of the actuator (see NOTE above), then position estimation will remain `UNDEF`: try to reduce `shutterRun` until you find the right value
+- before adding/configuring roller shutter Things it is suggested to have all roller shutters `UP`, otherwise the Percent command will not work until the roller shutter is fully rolled up
+- if openHAB is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronise again its position with the binding
+- the shutter position is estimated based on UP/DOWN timings: an error of ±2% is normal
 
 #### Scenario channels
 
@@ -319,12 +321,12 @@ BUS gateway and things configuration:
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
       bus_on_off_switch             LR_switch            "Living Room Light"        [ where="51" ]
       bus_dimmer                    LR_dimmer            "Living Room Dimmer"       [ where="0311#4#01" ]
-      bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="10050"]      
+      bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="20050"]
 
       bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"          [ where="51" ]
       bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"          [ where="52" ]
 
-      bus_thermo_cu                 CU_3550              "99 zones central unit"    [ where="0" ]
+      bus_thermo_cu                 CU_3550              "99 zones Central Unit"    [ where="#0" ]
       bus_thermo_zone               LR_zone              "Living Room Zone"         [ where="2"]
       bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
 
@@ -355,7 +357,8 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 
 Example items linked to BUS devices:
 
-NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/)
+NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa).
+In the following example some `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`) metadata were added as examples according to the [documentation for Google Assistant integration on openHAB](https://www.openhab.org/docs/ecosystem/google-assistant) and [the openHAB HomeKit Add-on documentation](https://www.openhab.org/addons/integrations/homekit/): see the specific documentation for more metadata options and specific configurations.
 
 ```java
 Switch              iLR_switch                  "Light"                       (gLivingRoom)     { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
@@ -438,7 +441,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     Frame label="Living Room Thermo"
     {
           Default   item=iLR_zone_temp      label="Temperature" icon="fire" valuecolor=[<20="red"] 
-          Setpoint  item=iLR_zone_set       label="Setpoint [%.1f °C]" step=0.5 minValue=15 maxValue=30
+          Setpoint  item=iLR_zone_setTemp   label="Setpoint [%.1f °C]" step=0.5 minValue=15 maxValue=30
           Selection item=iLR_zone_fanSpeed  label="Fan Speed" icon="fan" mappings=[AUTO="AUTO", SPEED_1="Low", SPEED_2="Medium", SPEED_3="High"]
           Switch    item=iLR_zone_mode      label="Mode" icon="settings"
           Selection item=iLR_zone_func      label="Function" icon="heating" mappings=[HEATING="Heating", COOLING="Cooling", GENERIC="Heating/Cooling"]
@@ -455,7 +458,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     Frame label="Alarm"
     {
          Switch  item=iAlarm_System_State       label="Alarm state"
-         Switch  item=iAlarm_Control            label="Arm/Disarm alarm"   icon="shield"
+         Switch  item=iAlarm_Control            label="Arm/Disarm alarm"   icon="shield" mappings=[OFF="Disarmed",ON="Armed"]
          Switch  item=iAlarm_System_Armed       label="Armed"              icon="shield"
          Switch  item=iAlarm_System_Network     label="Network"            icon="network"
          Default item=iAlarm_System_Battery     label="Battery"            icon="battery"
@@ -510,7 +513,8 @@ end
 
 ## Notes
 
-The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/documentation/open-web-net-for-myhome/)
+The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand.
+The documentation of the protocol is freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/local-interoperability/)
 
 ## Special thanks
 
@@ -526,5 +530,9 @@ Special thanks for helping on testing this binding go to:
 [@feodor](https://community.openhab.org/u/feodor),
 [@aconte80](https://community.openhab.org/u/aconte80),
 [@rubenfuser](https://community.openhab.org/u/rubenfuser),
-[@stamate_viorel](https://community.openhab.org/u/stamate_viorel)
+[@stamate_viorel](https://community.openhab.org/u/stamate_viorel),
+[@marchino](https://community.openhab.org/u/marchino),
+[@the-ninth](https://community.openhab.org/u/the-ninth),
+[@giacob](https://community.openhab.org/u/giacob)
+
 and many others at the fantastic openHAB community!

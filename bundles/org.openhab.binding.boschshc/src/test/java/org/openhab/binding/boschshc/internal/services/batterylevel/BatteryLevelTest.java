@@ -15,7 +15,10 @@ package org.openhab.binding.boschshc.internal.services.batterylevel;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Fault;
@@ -30,6 +33,7 @@ import org.openhab.core.types.UnDefType;
  * @author David Pace - Initial contribution
  *
  */
+@NonNullByDefault
 class BatteryLevelTest {
 
     @Test
@@ -56,7 +60,7 @@ class BatteryLevelTest {
         deviceServiceData.faults = faults;
         assertSame(BatteryLevel.OK, BatteryLevel.fromDeviceServiceData(deviceServiceData));
 
-        ArrayList<Fault> entries = new ArrayList<>();
+        List<@Nullable Fault> entries = new ArrayList<>();
         faults.entries = entries;
         assertSame(BatteryLevel.OK, BatteryLevel.fromDeviceServiceData(deviceServiceData));
 

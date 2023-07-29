@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Network UPS Tools Binding</name>
 	<description>Binding for connecting to Network UPS Tools (NUT) servers</description>
+	<connection>local</connection>
 
 </addon:addon>

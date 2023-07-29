@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>OpenWeatherMap Binding</name>
 	<description>OpenWeatherMap - Current weather and forecasts in your city.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

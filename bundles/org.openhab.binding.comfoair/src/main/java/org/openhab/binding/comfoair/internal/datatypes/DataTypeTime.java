@@ -15,6 +15,7 @@ package org.openhab.binding.comfoair.internal.datatypes;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -52,6 +53,16 @@ public class DataTypeTime implements ComfoAirDataType {
                 return UnDefType.NULL;
             }
 
+            if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_DELAYS
+                    || commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_PREHEATER) {
+                if (commandType == ComfoAirCommandType.FILTER_WEEKS) {
+                    return new QuantityType<>(value, Units.WEEK);
+                } else {
+                    return new QuantityType<>(value, Units.MINUTE);
+                }
+            } else if (commandType == ComfoAirCommandType.ENTHALPY_TIME) {
+                return new QuantityType<>(value * 12, Units.MINUTE);
+            }
             return new QuantityType<>(value, Units.HOUR);
         }
     }
@@ -61,25 +72,44 @@ public class DataTypeTime implements ComfoAirDataType {
         int[] template = commandType.getChangeDataTemplate();
         int[] possibleValues = commandType.getPossibleValues();
         int position = commandType.getChangeDataPos();
-        QuantityType<?> hours = ((QuantityType<?>) value).toUnit(Units.HOUR);
+        int intValue;
 
-        if (hours != null) {
-            int intValue = hours.intValue();
+        if (value instanceof QuantityType<?> qt) {
+            QuantityType<?> internalQuantity = new QuantityType<>();
 
-            if (possibleValues == null) {
-                template[position] = intValue;
-            } else {
-                for (int i = 0; i < possibleValues.length; i++) {
-                    if (possibleValues[i] == intValue) {
-                        template[position] = intValue;
-                        break;
-                    }
+            if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_DELAYS
+                    || commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_PREHEATER) {
+                if (commandType == ComfoAirCommandType.FILTER_WEEKS) {
+                    internalQuantity = qt.toUnit(Units.WEEK);
+                } else {
+                    internalQuantity = qt.toUnit(Units.MINUTE);
                 }
+            } else {
+                internalQuantity = qt.toUnit(Units.HOUR);
             }
-            return template;
+
+            if (internalQuantity != null) {
+                intValue = internalQuantity.intValue();
+            } else {
+                return null;
+            }
+        } else if (value instanceof DecimalType dt) {
+            intValue = dt.intValue();
         } else {
             logger.trace("\"DataTypeTime\" class \"convertFromState\" undefined state");
             return null;
         }
+
+        if (possibleValues == null) {
+            template[position] = intValue;
+        } else {
+            for (int i = 0; i < possibleValues.length; i++) {
+                if (possibleValues[i] == intValue) {
+                    template[position] = intValue;
+                    break;
+                }
+            }
+        }
+        return template;
     }
 }

@@ -18,7 +18,8 @@ Each inverter requires the following configuration parameters:
 | parameter       | required | default | description                                                          |
 | --------------- | -------- | ------- | -------------------------------------------------------------------- |
 | host            | yes      |         | hostname or IP address of the inverter                               |
-| port            | no       | 12345   | Port number to connect to. This should be `12345` for most inverters |
+| portNumber      | no       | 12345   | Port number to connect to. This should be `12345` for most inverters |
+| deviceAddress   | no       | 1       | Device address for devices connected serially.                       |
 | refreshInterval | no       | 15      | Interval (in seconds) to refresh the channel values.                 |
 
 ## Properties
@@ -61,7 +62,8 @@ _inverter.things:_
 ```java
 Thing solarmax:inverter:solarmax "SolarMax Inverter" [
     host="192.168.1.151",
-    port="12345",
+    portNumber="12345",
+    deviceAddress="1",
     refresh="15"
 ]
 ```
@@ -101,30 +103,11 @@ Number:Temperature heatSinkTemperature "Heat Sink Temperature in degrees celcius
 
 ```
 
-_heatpump.sitemap:_
-
-```perl
-sitemap heatpump label="Heatpump" {
-    Frame label="Heatpump" {
-        Text item=HeatPump_State_Ext
-        Text item=HeatPump_Temperature_1
-        Text item=HeatPump_Outside_Avg
-        Text item=HeatPump_Hours_Heatpump
-        Text item=HeatPump_Hours_Heating
-        Text item=HeatPump_Hours_Warmwater
-        Switch item=HeatPump_heating_operation_mode  mappings=[0="Auto", 1="Auxiliary heater", 2="Party", 3="Holiday", 4="Off"]
-        Setpoint item=HeatPump_heating_temperature minValue=-10 maxValue=10 step=0.5
-        Switch item=HeatPump_warmwater_operation_mode  mappings=[0="Auto", 1="Auxiliary heater", 2="Party", 3="Holiday", 4="Off"]
-        Setpoint item=HeatPump_warmwater_temperature minValue=10 maxValue=65 step=1
-    }
-}
-```
-
 ### SolarMax Commands
 
 During the implementation the SolarMax device was sent all possible 3 character commands and a number of 4 character commands, to see what it responded to.
 The most interesting, identifiable and useful commands were implemented as channels above.
 
-Here is a list of other commands, which are known to return some kind of value: ADR (DeviceAddress / Device Number - only used if the devices are linked serially), AMM, CID, CPG, CPL, CP1, CP2, CP3, CP4, CP5, CYC, DIN, DMO, ETH, FH2, FQR, FWV, IAA, IED, IEE, IEM, ILM, IP4, ISL, ITS, KFS, KHS, KTS, LAN (Language), MAC (MAC Address), PAE, PAM, PDA, PDC, PFA, PIN (Power Installed), PLR, PPC, PRL (AC Power Percent, PSF, PSR, PSS, QAC, QMO, QUC, RA1, RA2, RB1, RB2, REL, RH1, RH2, RPR, RSD, SAC, SAL, SAM, SCH, SNM (IP Broadcast Address??), SPS, SRD, SRS, SYS (Operating State), TCP (probably port number - 12345), TI1, TL1, TL3, TND, TNH, TNL, TP1, TP2, TP3, TV0, TV1, TYP (Type?), UA2, UB2, UGD, UI1, UI2, UI3, ULH, ULL, UMX, UM1, UM2, UM3, UPD, UZK, VCM
+Here is a list of other commands, which are known to return some kind of value: ADR (Device Address), AMM, CID, CPG, CPL, CP1, CP2, CP3, CP4, CP5, CYC, DIN, DMO, ETH, FH2, FQR, FWV, IAA, IED, IEE, IEM, ILM, IP4, ISL, ITS, KFS, KHS, KTS, LAN (Language), MAC (MAC Address), PAE, PAM, PDA, PDC, PFA, PIN (Power Installed), PLR, PPC, PRL (AC Power Percent, PSF, PSR, PSS, QAC, QMO, QUC, RA1, RA2, RB1, RB2, REL, RH1, RH2, RPR, RSD, SAC, SAL, SAM, SCH, SNM (IP Broadcast Address??), SPS, SRD, SRS, SYS (Operating State), TCP (probably port number - 12345), TI1, TL1, TL3, TND, TNH, TNL, TP1, TP2, TP3, TV0, TV1, TYP (Type?), UA2, UB2, UGD, UI1, UI2, UI3, ULH, ULL, UMX, UM1, UM2, UM3, UPD, UZK, VCM
 
 Valid commands which returned a null/empty value during testing: FFK, FRT, GCP, ITN, PLD, PLE, PLF, PLS, PPO, TV2, VLE, VLI, VLO

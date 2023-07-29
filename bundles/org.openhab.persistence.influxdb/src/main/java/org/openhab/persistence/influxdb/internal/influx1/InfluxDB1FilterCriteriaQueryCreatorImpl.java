@@ -16,6 +16,8 @@ import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.dto.Query;
@@ -24,6 +26,7 @@ import org.influxdb.querybuilder.Select;
 import org.influxdb.querybuilder.Where;
 import org.influxdb.querybuilder.clauses.SimpleClause;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
@@ -48,7 +51,7 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
 
     @Override
     public String createQuery(FilterCriteria criteria, String retentionPolicy) {
-        final String itemName = criteria.getItemName();
+        final String itemName = Objects.requireNonNull(criteria.getItemName()); // we checked non-null before
         final String tableName = getTableName(itemName);
         final boolean hasCriteriaName = itemName != null;
 
@@ -68,10 +71,10 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
             where.and(BuiltQuery.QueryBuilder.lte(COLUMN_TIME_NAME_V1, criteria.getEndDate().toInstant().toString()));
         }
 
-        if (criteria.getState() != null && criteria.getOperator() != null) {
+        State filterState = criteria.getState();
+        if (filterState != null && criteria.getOperator() != null) {
             where.and(new SimpleClause(COLUMN_VALUE_NAME_V1,
-                    getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V1),
-                    stateToObject(criteria.getState())));
+                    getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V1), stateToObject(filterState)));
         }
 
         if (criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING) {
