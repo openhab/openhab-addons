@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.TooManyListenersException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.oceanic.internal.SerialOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
+import org.openhab.binding.oceanic.internal.util.StringUtils;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
