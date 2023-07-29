@@ -30,10 +30,10 @@ public interface PowermaxMessageEventListener extends EventListener {
      *
      * @param event the event object
      */
-    void onNewMessageEvent(EventObject event);
+    public void onNewMessageEvent(EventObject event);
 
     /**
      * Event handler method to indicate that communication has been lost
      */
-    void onCommunicationFailure(String message);
+    public void onCommunicationFailure(String message);
 }

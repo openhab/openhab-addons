@@ -44,11 +44,6 @@ public class LightState {
     public @Nullable Integer ct;
     public double @Nullable [] xy;
 
-    // for window covering
-    public @Nullable Boolean open;
-    public @Nullable Boolean stop;
-    public @Nullable Integer lift;
-
     public @Nullable Integer transitiontime;
 
     /**

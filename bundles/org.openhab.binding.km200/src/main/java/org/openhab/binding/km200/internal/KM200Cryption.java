@@ -83,10 +83,9 @@ public class KM200Cryption {
         try {
             /* Check whether the length of the decryptData is NOT multiplies of 16 */
             if ((decodedB64.length & 0xF) != 0) {
-                logger.debug("Length of message is {}.", decodedB64.length);
                 /* Return the data */
                 retString = new String(decodedB64, remoteDevice.getCharSet());
-                logger.debug("Did NOT decrypt message, returning {}.", retString);
+                logger.debug("Did NOT decrypt message");
                 return retString;
             }
             // --- create cipher
@@ -96,7 +95,7 @@ public class KM200Cryption {
             byte[] decryptedDataWOZP = removeZeroPadding(decryptedData);
             return (new String(decryptedDataWOZP, remoteDevice.getCharSet()));
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.warn("Exception on encoding ({})", e.getMessage());
+            logger.warn("Exception on encoding", e);
             return null;
         }
     }
@@ -120,7 +119,7 @@ public class KM200Cryption {
                 logger.debug("Base64encoding not possible: {}", e.getMessage());
             }
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.warn("Exception on encoding ({})", e.getMessage());
+            logger.warn("Exception on encoding", e);
         }
         return null;
     }

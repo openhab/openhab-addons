@@ -31,17 +31,17 @@ public interface AttributeSelection {
      * Returns the value for this attribute.
      */
     @Nullable
-    Object getValue(TimetableStop stop);
+    public abstract Object getValue(TimetableStop stop);
 
     /**
      * Returns the {@link State} that should be set for the channels'value for this attribute.
      */
     @Nullable
-    State getState(TimetableStop stop);
+    public abstract State getState(TimetableStop stop);
 
     /**
      * Returns a list of values as string list.
      * Returns empty list if value is not present, singleton list if attribute is not single-valued.
      */
-    List<String> getStringValues(TimetableStop t);
+    public abstract List<String> getStringValues(TimetableStop t);
 }

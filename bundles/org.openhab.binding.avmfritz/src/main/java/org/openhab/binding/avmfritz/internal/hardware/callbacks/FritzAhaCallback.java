@@ -31,12 +31,12 @@ public interface FritzAhaCallback {
      *
      * @return URI path as String
      */
-    String getPath();
+    public String getPath();
 
     /**
      * Get the query String
      *
      * @return Query string as String
      */
-    String getArgs();
+    public String getArgs();
 }

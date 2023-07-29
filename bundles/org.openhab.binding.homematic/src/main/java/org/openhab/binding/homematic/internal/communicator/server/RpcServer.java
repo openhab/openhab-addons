@@ -24,10 +24,10 @@ public interface RpcServer {
     /**
      * Starts the rpc server.
      */
-    void start() throws IOException;
+    public void start() throws IOException;
 
     /**
      * Stops the rpc server.
      */
-    void shutdown();
+    public void shutdown();
 }

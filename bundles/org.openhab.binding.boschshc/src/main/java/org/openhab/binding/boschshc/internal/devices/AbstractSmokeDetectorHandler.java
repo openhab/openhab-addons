@@ -36,7 +36,7 @@ public abstract class AbstractSmokeDetectorHandler extends AbstractBatteryPowere
 
     private SmokeDetectorCheckService smokeDetectorCheckService;
 
-    protected AbstractSmokeDetectorHandler(Thing thing) {
+    public AbstractSmokeDetectorHandler(Thing thing) {
         super(thing);
         this.smokeDetectorCheckService = new SmokeDetectorCheckService();
     }

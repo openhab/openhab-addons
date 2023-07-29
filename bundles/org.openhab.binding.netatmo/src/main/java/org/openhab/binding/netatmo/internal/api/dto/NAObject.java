@@ -44,8 +44,7 @@ public class NAObject {
         return ignoredForThingUpdate;
     }
 
-    public NAObject ignoringForThingUpdate() {
-        this.ignoredForThingUpdate = true;
-        return this;
+    public void setIgnoredForThingUpdate(boolean ignoredForThingUpdate) {
+        this.ignoredForThingUpdate = ignoredForThingUpdate;
     }
 }

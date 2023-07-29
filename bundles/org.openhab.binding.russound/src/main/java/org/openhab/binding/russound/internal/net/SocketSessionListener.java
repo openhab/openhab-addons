@@ -27,7 +27,7 @@ public interface SocketSessionListener {
      * @param response a non-null, possibly empty response
      * @throws InterruptedException if the response processing was interrupted
      */
-    void responseReceived(String response) throws InterruptedException;
+    public void responseReceived(String response) throws InterruptedException;
 
     /**
      * Called when a command finished with an exception or a general exception occurred while reading
@@ -35,5 +35,5 @@ public interface SocketSessionListener {
      * @param e a non-null io exception
      * @throws InterruptedException if the exception processing was interrupted
      */
-    void responseException(IOException e) throws InterruptedException;
+    public void responseException(IOException e) throws InterruptedException;
 }

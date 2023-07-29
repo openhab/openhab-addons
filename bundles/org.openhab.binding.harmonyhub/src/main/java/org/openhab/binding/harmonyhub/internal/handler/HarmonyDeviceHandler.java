@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.harmonyhub.internal.HarmonyHubDynamicTypeProvider;
+import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
 import org.openhab.binding.harmonyhub.internal.config.HarmonyDeviceConfig;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -67,13 +67,13 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
 
-    private final HarmonyHubDynamicTypeProvider typeProvider;
+    private HarmonyHubHandlerFactory factory;
 
     private @NonNullByDefault({}) HarmonyDeviceConfig config;
 
-    public HarmonyDeviceHandler(Thing thing, HarmonyHubDynamicTypeProvider typeProvider) {
+    public HarmonyDeviceHandler(Thing thing, HarmonyHubHandlerFactory factory) {
         super(thing);
-        this.typeProvider = typeProvider;
+        this.factory = factory;
     }
 
     protected @Nullable HarmonyHubHandler getHarmonyHubHandler() {
@@ -142,9 +142,8 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        typeProvider.removeChannelTypesForThing(getThing().getUID());
-        super.handleRemoval();
+    public void dispose() {
+        factory.removeChannelTypesForThing(getThing().getUID());
     }
 
     /**
@@ -191,7 +190,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
                 .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withOptions(states).build())
                 .build();
 
-        typeProvider.putChannelType(channelType);
+        factory.addChannelType(channelType);
 
         Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), CHANNEL_BUTTON_PRESS), "String")
                 .withType(channelTypeUID).build();

@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Bond Home Binding</name>
 	<description>This is the binding for the Bond Bridge for Ceiling Fans and other RF devices.</description>
-	<connection>local</connection>
 
 </addon:addon>

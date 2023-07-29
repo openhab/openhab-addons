@@ -15,9 +15,6 @@ package org.openhab.binding.bluetooth.bluegiga.internal.enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * Class to implement the BlueGiga Enumeration <b>ConnectionStatusFlag</b>.
  * <p>
@@ -29,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-@NonNullByDefault
 public enum ConnectionStatusFlag {
     /**
      * Default unknown value
@@ -61,7 +57,7 @@ public enum ConnectionStatusFlag {
      * A mapping between the integer code and its corresponding type to
      * facilitate lookup by code.
      */
-    private static @Nullable Map<Integer, ConnectionStatusFlag> codeMapping;
+    private static Map<Integer, ConnectionStatusFlag> codeMapping;
 
     private int key;
 
@@ -69,24 +65,30 @@ public enum ConnectionStatusFlag {
         this.key = key;
     }
 
+    private static void initMapping() {
+        codeMapping = new HashMap<>();
+        for (ConnectionStatusFlag s : values()) {
+            codeMapping.put(s.key, s);
+        }
+    }
+
     /**
-     * Lookup function based on the type code. Returns {@link UNKNOWN} if the code does not exist.
+     * Lookup function based on the type code. Returns null if the code does not exist.
      *
      * @param connectionStatusFlag
      *            the code to lookup
      * @return enumeration value.
      */
     public static ConnectionStatusFlag getConnectionStatusFlag(int connectionStatusFlag) {
-        Map<Integer, ConnectionStatusFlag> localCodeMapping = codeMapping;
-        if (localCodeMapping == null) {
-            localCodeMapping = new HashMap<>();
-            for (ConnectionStatusFlag s : values()) {
-                localCodeMapping.put(s.key, s);
-            }
-            codeMapping = localCodeMapping;
+        if (codeMapping == null) {
+            initMapping();
         }
 
-        return localCodeMapping.getOrDefault(connectionStatusFlag, UNKNOWN);
+        if (codeMapping.get(connectionStatusFlag) == null) {
+            return UNKNOWN;
+        }
+
+        return codeMapping.get(connectionStatusFlag);
     }
 
     /**

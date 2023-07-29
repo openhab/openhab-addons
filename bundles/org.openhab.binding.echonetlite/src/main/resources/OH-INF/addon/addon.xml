@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>EchonetLite Binding</name>
 	<description>This is the binding for EchonetLite.</description>
-	<connection>local</connection>
 
 </addon:addon>

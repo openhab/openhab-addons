@@ -29,7 +29,7 @@ public interface HomematicConfigDescriptionProvider extends ConfigDescriptionPro
     /**
      * Adds the ConfigDescription to this provider.
      */
-    void addConfigDescription(ConfigDescription configDescription);
+    public void addConfigDescription(ConfigDescription configDescription);
 
     /**
      * Provides a {@link ConfigDescription} for the given URI.
@@ -56,5 +56,5 @@ public interface HomematicConfigDescriptionProvider extends ConfigDescriptionPro
      *         <i>null</i> if no ConfigDescription with the given URI was added
      *         before
      */
-    ConfigDescription getInternalConfigDescription(URI uri);
+    public ConfigDescription getInternalConfigDescription(URI uri);
 }

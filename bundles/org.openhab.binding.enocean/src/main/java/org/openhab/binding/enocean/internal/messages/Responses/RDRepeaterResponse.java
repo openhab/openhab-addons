@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.responses;
+package org.openhab.binding.enocean.internal.messages.Responses;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.openhab.core.library.types.StringType;
 
@@ -22,10 +22,9 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class RDRepeaterResponse extends Response {
 
-    protected String repeaterLevel = "";
+    protected String repeaterLevel;
 
     public RDRepeaterResponse(Response response) {
         this(response.getPayload().length, 0, response.getPayload());
@@ -34,7 +33,7 @@ public class RDRepeaterResponse extends Response {
     RDRepeaterResponse(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, payload);
 
-        if (payload.length < 3) {
+        if (payload == null || payload.length < 3) {
             return;
         }
 
@@ -55,10 +54,11 @@ public class RDRepeaterResponse extends Response {
                     return;
             }
 
-            isValid = true;
+            _isValid = true;
         }
     }
 
+    @NonNull
     public StringType getRepeaterLevel() {
         return StringType.valueOf(repeaterLevel);
     }

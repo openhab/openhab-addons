@@ -70,7 +70,6 @@
 			<property name="Device Name"/>
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
-			<property name="Device Family"/>
 		</properties>
 		<representation-property>macId</representation-property>
 
@@ -115,7 +114,6 @@
 			<property name="Device Name"/>
 			<property name="Device Type"/>
 			<property name="MAC Id"/>
-			<property name="Device Family"/>
 		</properties>
 		<representation-property>macId</representation-property>
 

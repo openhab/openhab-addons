@@ -14,6 +14,8 @@ package org.openhab.binding.onebusaway.internal.config;
 
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.ROUTE_CONFIG_ROUTE_ID;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * The {@link RouteConfiguration} defines the model for a route stop configuration.
  *
@@ -39,6 +41,6 @@ public class RouteConfiguration {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{ " + ROUTE_CONFIG_ROUTE_ID + "=" + this.getRouteId() + "}";
+        return new ToStringBuilder(this).append(ROUTE_CONFIG_ROUTE_ID, this.getRouteId()).toString();
     }
 }

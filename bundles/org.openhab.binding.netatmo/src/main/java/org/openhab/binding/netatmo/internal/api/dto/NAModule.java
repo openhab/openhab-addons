@@ -24,10 +24,9 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
  */
 @NonNullByDefault
 public interface NAModule {
-    String getId();
+    public String getId();
 
-    @Nullable
-    String getName();
+    public @Nullable String getName();
 
-    ModuleType getType();
+    public ModuleType getType();
 }

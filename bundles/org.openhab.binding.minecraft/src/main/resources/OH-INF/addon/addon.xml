@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Minecraft Binding</name>
 	<description>This binding can integrate Minecraft servers.</description>
-	<connection>cloud</connection>
 
 </addon:addon>

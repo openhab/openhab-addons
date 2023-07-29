@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
@@ -123,7 +122,6 @@ public class HeliosHandler221 extends BaseThingHandler {
 
     // REST Client API variables
     private Client heliosClient;
-    private final ClientBuilder heliosClientBuilder;
     private WebTarget baseTarget;
     private WebTarget systemTarget;
     private WebTarget logTarget;
@@ -141,9 +139,8 @@ public class HeliosHandler221 extends BaseThingHandler {
 
     private long logSubscriptionID = 0;
 
-    public HeliosHandler221(Thing thing, ClientBuilder heliosClientBuilder) {
+    public HeliosHandler221(Thing thing) {
         super(thing);
-        this.heliosClientBuilder = heliosClientBuilder;
     }
 
     @Override
@@ -172,7 +169,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 logger.error("An exception occurred while initialising the SSL context : '{}'", e1.getMessage(), e1);
             }
 
-            heliosClient = heliosClientBuilder.sslContext(sslContext).hostnameVerifier(new HostnameVerifier() {
+            heliosClient = ClientBuilder.newBuilder().sslContext(sslContext).hostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
                     return true;
@@ -180,18 +177,19 @@ public class HeliosHandler221 extends BaseThingHandler {
             }).build();
             heliosClient.register(new Authenticator(username, password));
 
-            baseTarget = heliosClient.target(BASE_URI.replace("{ip}", ipAddress));
+            baseTarget = heliosClient.target(BASE_URI);
             systemTarget = baseTarget.path(SYSTEM_PATH);
             logTarget = baseTarget.path(LOG_PATH);
             switchTarget = baseTarget.path(SWITCH_PATH);
 
             Response response = null;
             try {
-                response = systemTarget.resolveTemplate("cmd", INFO).request(MediaType.APPLICATION_JSON_TYPE).get();
-            } catch (ProcessingException e) {
+                response = systemTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", INFO)
+                        .request(MediaType.APPLICATION_JSON_TYPE).get();
+            } catch (NullPointerException e) {
                 logger.debug("An exception occurred while fetching system info of the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -243,11 +241,6 @@ public class HeliosHandler221 extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing the Helios IP Vario handler for '{}'.", getThing().getUID().toString());
-        tearDown();
-    }
-
-    private void tearDown() {
-        logger.debug("Tearing down the Helios IP Vario handler for '{}'.", getThing().getUID().toString());
 
         if (logSubscriptionID != 0) {
             unsubscribe();
@@ -718,7 +711,7 @@ public class HeliosHandler221 extends BaseThingHandler {
 
     protected Runnable resetRunnable = () -> {
         logger.debug("Resetting the Helios IP Vario handler for '{}'", getThing().getUID());
-        tearDown();
+        dispose();
         initialize();
     };
 
@@ -773,26 +766,15 @@ public class HeliosHandler221 extends BaseThingHandler {
                     ThingBuilder thingBuilder = editThing();
                     ChannelTypeUID enablerUID = new ChannelTypeUID(BINDING_ID, SWITCH_ENABLER);
                     ChannelTypeUID triggerUID = new ChannelTypeUID(BINDING_ID, SWITCH_TRIGGER);
-                    ChannelUID activeSwitchChannelUID = new ChannelUID(getThing().getUID(),
-                            "switch" + aSwitch.id + "active");
-                    ChannelUID switchChannelUID = new ChannelUID(getThing().getUID(), "switch" + aSwitch.id);
 
-                    if (this.getThing().getChannel(activeSwitchChannelUID) == null) {
-                        logger.trace(
-                                "Adding a channel with id '{}' to the Helios IP Vario '{}' for the switch with id '{}'",
-                                activeSwitchChannelUID, getThing().getUID().toString(), aSwitch.id);
-                        Channel channel = ChannelBuilder.create(activeSwitchChannelUID, "Switch").withType(enablerUID)
-                                .build();
-                        thingBuilder.withChannel(channel);
-                    }
-                    if (this.getThing().getChannel(switchChannelUID) == null) {
-                        logger.trace(
-                                "Adding a channel with id '{}' to the Helios IP Vario '{}' for the switch with id '{}'",
-                                switchChannelUID, getThing().getUID().toString(), aSwitch.id);
-                        Channel channel = ChannelBuilder.create(switchChannelUID, "Switch").withType(triggerUID)
-                                .build();
-                        thingBuilder.withChannel(channel);
-                    }
+                    Channel channel = ChannelBuilder
+                            .create(new ChannelUID(getThing().getUID(), "switch" + aSwitch.id + "active"), "Switch")
+                            .withType(enablerUID).build();
+                    thingBuilder.withChannel(channel);
+                    channel = ChannelBuilder
+                            .create(new ChannelUID(getThing().getUID(), "switch" + aSwitch.id), "Switch")
+                            .withType(triggerUID).build();
+                    thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
                 }
             }
@@ -806,19 +788,14 @@ public class HeliosHandler221 extends BaseThingHandler {
                         getThing().getUID().toString(), aPort.port);
                 ThingBuilder thingBuilder = editThing();
                 ChannelTypeUID triggerUID = new ChannelTypeUID(BINDING_ID, IO_TRIGGER);
-                ChannelUID ioChannelUID = new ChannelUID(getThing().getUID(), "io" + aPort.port);
 
                 Map<String, String> channelProperties = new HashMap<>();
                 channelProperties.put("type", aPort.type);
 
-                if (this.getThing().getChannel(ioChannelUID) == null) {
-                    logger.trace(
-                            "Adding a channel with id '{}' to the Helios IP Vario '{}' for the switch with id '{}'",
-                            ioChannelUID.getId(), getThing().getUID().toString(), aPort.port);
-                    Channel channel = ChannelBuilder.create(ioChannelUID, "Switch").withType(triggerUID)
-                            .withProperties(channelProperties).build();
-                    thingBuilder.withChannel(channel);
-                }
+                Channel channel = ChannelBuilder
+                        .create(new ChannelUID(getThing().getUID(), "io" + aPort.port), "Switch").withType(triggerUID)
+                        .withProperties(channelProperties).build();
+                thingBuilder.withChannel(channel);
                 updateThing(thingBuilder.build());
             }
         }
@@ -1002,11 +979,6 @@ public class HeliosHandler221 extends BaseThingHandler {
                             logger.trace("No events were retrieved");
                         }
                     }
-                } catch (ProcessingException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    logger.trace("An underlying exception forced the Helios IP Vario to go offline : '{}'",
-                            e.getMessage(), e);
-                    scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 } catch (Exception e) {
                     logger.error("An exception occurred while processing an event : '{}'", e.getMessage(), e);
                 }

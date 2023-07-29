@@ -16,8 +16,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
@@ -31,7 +29,6 @@ import org.openhab.core.types.State;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class D2_01_0F_NodON extends D2_01 {
 
     public D2_01_0F_NodON() {
@@ -44,10 +41,10 @@ public class D2_01_0F_NodON extends D2_01 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (channelId.equalsIgnoreCase(CHANNEL_REPEATERMODE)) {
             if (command instanceof RefreshType) {
-                senderId = new byte[0]; // make this message invalid as we do not support refresh of repeter status
+                senderId = null; // make this message invalid as we do not support refresh of repeter status
             } else if (command instanceof StringType) {
                 switch (((StringType) command).toString()) {
                     case EnOceanBindingConstants.REPEATERMODE_LEVEL_1:

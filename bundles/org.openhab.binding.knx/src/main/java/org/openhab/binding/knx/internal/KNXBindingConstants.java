@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.knx.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-import java.util.Properties;
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,26 +32,19 @@ public class KNXBindingConstants {
 
     public static final String BINDING_ID = "knx";
 
-    // Global config
-    public static final String CONFIG_DISABLE_UOM = "disableUoM";
-    public static boolean disableUoM = false;
-
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_IP_BRIDGE = new ThingTypeUID(BINDING_ID, "ip");
     public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serial");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // Property IDs
-    public static final String DEVICE_MASK_VERSION = "deviceMaskVersion";
-    public static final String DEVICE_PROFILE = "deviceProfile";
-    public static final String DEVICE_MEDIUM_TYPE = "deviceMediumType";
-    public static final String FRIENDLY_NAME = "deviceName";
-    public static final String MANUFACTURER_NAME = "manufacturerName";
-    public static final String MANUFACTURER_SERIAL_NO = "manufacturerSerialNumber";
-    public static final String MANUFACTURER_HARDWARE_TYPE = "manufacturerHardwareType";
-    public static final String MANUFACTURER_FIRMWARE_REVISION = "manufacturerFirmwareRevision";
-    public static final String MANUFACTURER_ORDER_INFO = "manufacturerOrderInfo";
-    public static final String MAX_APDU_LENGTH = "maxApduLength";
+    public static final String FIRMWARE_TYPE = "firmwaretype";
+    public static final String FIRMWARE_VERSION = "firmwareversion";
+    public static final String FIRMWARE_SUBVERSION = "firmwaresubversion";
+    public static final String MANUFACTURER_NAME = "manfacturername";
+    public static final String MANUFACTURER_SERIAL_NO = "manfacturerserialnumber";
+    public static final String MANUFACTURER_HARDWARE_TYPE = "manfacturerhardwaretype";
+    public static final String MANUFACTURER_FIRMWARE_REVISION = "manfacturerfirmwarerevision";
 
     // Thing Configuration parameters
     public static final String IP_ADDRESS = "ipAddress";
@@ -89,8 +81,7 @@ public class KNXBindingConstants {
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
 
-    public static final Set<String> CONTROL_CHANNEL_TYPES = Set.of( //
-            CHANNEL_COLOR_CONTROL, //
+    public static final Set<String> CONTROL_CHANNEL_TYPES = Collections.unmodifiableSet(Stream.of(CHANNEL_COLOR_CONTROL, //
             CHANNEL_CONTACT_CONTROL, //
             CHANNEL_DATETIME_CONTROL, //
             CHANNEL_DIMMER_CONTROL, //
@@ -98,7 +89,7 @@ public class KNXBindingConstants {
             CHANNEL_ROLLERSHUTTER_CONTROL, //
             CHANNEL_STRING_CONTROL, //
             CHANNEL_SWITCH_CONTROL //
-    );
+    ).collect(toSet()));
 
     public static final String CHANNEL_RESET = "reset";
 
@@ -111,26 +102,4 @@ public class KNXBindingConstants {
     public static final String STOP_MOVE_GA = "stopMove";
     public static final String SWITCH_GA = "switch";
     public static final String UP_DOWN_GA = "upDown";
-
-    public static final Map<Integer, String> MANUFACTURER_MAP = readManufacturerMap();
-
-    private static Map<Integer, String> readManufacturerMap() {
-        ClassLoader classLoader = KNXBindingConstants.class.getClassLoader();
-        if (classLoader == null) {
-            return Map.of();
-        }
-
-        try (InputStream is = classLoader.getResourceAsStream("manufacturer.properties")) {
-            if (is == null) {
-                return Map.of();
-            }
-
-            Properties properties = new Properties();
-            properties.load(is);
-            return properties.entrySet().stream()
-                    .collect(Collectors.toMap(e -> Integer.parseInt((String) e.getKey()), e -> (String) e.getValue()));
-        } catch (IOException e) {
-            return Map.of();
-        }
-    }
 }

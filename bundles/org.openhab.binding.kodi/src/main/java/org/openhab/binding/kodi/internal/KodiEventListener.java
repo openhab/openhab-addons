@@ -31,7 +31,7 @@ import org.openhab.core.library.types.RawType;
  * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 public interface KodiEventListener extends EventListener {
-    enum KodiState {
+    public enum KodiState {
         PLAY,
         PAUSE,
         END,
@@ -40,7 +40,7 @@ public interface KodiEventListener extends EventListener {
         FASTFORWARD
     }
 
-    enum KodiPlaylistState {
+    public enum KodiPlaylistState {
         ADD,
         ADDED,
         INSERT,

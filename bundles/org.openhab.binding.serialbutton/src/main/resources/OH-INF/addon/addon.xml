@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Serial Button Binding</name>
 	<description>This binding supports physical push buttons connected to a serial port.</description>
-	<connection>local</connection>
 
 </addon:addon>

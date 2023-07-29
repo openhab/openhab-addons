@@ -23,5 +23,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class IntesisBoxConfiguration {
     public String ipAddress = "";
     public int port;
-    public int pollingInterval = 45;
 }

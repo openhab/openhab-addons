@@ -22,7 +22,7 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComDeviceMessage;
  * @author James Hewitt-Thomas - Convert to interface and add validation and matching
  */
 public interface RFXComDeviceConfiguration {
-    void parseAndValidate() throws RFXComInvalidParameterException;
+    public void parseAndValidate() throws RFXComInvalidParameterException;
 
-    boolean matchesMessage(RFXComDeviceMessage message);
+    public boolean matchesMessage(RFXComDeviceMessage message);
 }

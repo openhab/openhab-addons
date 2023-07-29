@@ -29,11 +29,11 @@ public class NetatmoException extends IOException {
     private ServiceError statusCode = ServiceError.UNKNOWN;
 
     public NetatmoException(String format, Object... args) {
-        super(format.formatted(args));
+        super(String.format(format, args));
     }
 
     public NetatmoException(Exception e, String format, Object... args) {
-        super(format.formatted(args), e);
+        super(String.format(format, args), e);
     }
 
     public NetatmoException(String message) {
@@ -54,6 +54,6 @@ public class NetatmoException extends IOException {
         String message = super.getMessage();
         return message == null ? null
                 : ServiceError.UNKNOWN.equals(statusCode) ? message
-                        : "Rest call failed: statusCode=%s, message=%s".formatted(statusCode, message);
+                        : String.format("Rest call failed: statusCode=%s, message=%s", statusCode, message);
     }
 }

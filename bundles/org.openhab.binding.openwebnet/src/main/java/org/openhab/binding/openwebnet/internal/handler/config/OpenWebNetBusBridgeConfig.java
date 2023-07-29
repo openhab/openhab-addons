@@ -30,7 +30,6 @@ public class OpenWebNetBusBridgeConfig {
     private @Nullable String host;
     private String passwd = "12345";
     private boolean discoveryByActivation = false;
-    private boolean dateTimeSynch = false;
 
     public BigDecimal getPort() {
         return port;
@@ -46,9 +45,5 @@ public class OpenWebNetBusBridgeConfig {
 
     public Boolean getDiscoveryByActivation() {
         return discoveryByActivation;
-    }
-
-    public Boolean getDateTimeSynch() {
-        return dateTimeSynch;
     }
 }

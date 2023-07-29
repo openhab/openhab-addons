@@ -22,7 +22,6 @@ import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FixedLengthAudioStream;
-import org.openhab.core.common.Disposable;
 import org.openhab.core.voice.Voice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +31,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kelly Davis - Initial contribution and API
  * @author Kai Kreuzer - Refactored to use AudioStream and fixed audio format to produce
- * @author Laurent Garnier - Add dispose method to delete the temporary file
  */
-class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
+class MacTTSAudioStream extends FixedLengthAudioStream {
 
     private final Logger logger = LoggerFactory.getLogger(MacTTSAudioStream.class);
 
@@ -175,19 +173,6 @@ class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
             return getFileInputStream(file);
         } else {
             throw new AudioException("No temporary audio file available.");
-        }
-    }
-
-    @Override
-    public void dispose() throws IOException {
-        if (file != null && file.exists()) {
-            try {
-                if (!file.delete()) {
-                    logger.warn("Failed to delete the file {}", file.getAbsolutePath());
-                }
-            } catch (SecurityException e) {
-                logger.warn("Failed to delete the file {}: {}", file.getAbsolutePath(), e.getMessage());
-            }
         }
     }
 }

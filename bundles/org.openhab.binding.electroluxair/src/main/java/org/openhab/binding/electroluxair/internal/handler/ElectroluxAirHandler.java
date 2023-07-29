@@ -22,7 +22,6 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirConfiguration;
 import org.openhab.binding.electroluxair.internal.api.ElectroluxDeltaAPI;
 import org.openhab.binding.electroluxair.internal.dto.ElectroluxPureA9DTO;
@@ -39,7 +38,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -68,60 +66,28 @@ public class ElectroluxAirHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command received: {}", command);
         if (CHANNEL_STATUS.equals(channelUID.getId()) || command instanceof RefreshType) {
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                BridgeHandler bridgeHandler = bridge.getHandler();
-                if (bridgeHandler != null) {
-                    bridgeHandler.handleCommand(channelUID, command);
-                }
-            }
+            update();
         } else {
             ElectroluxPureA9DTO dto = getElectroluxPureA9DTO();
-            ElectroluxDeltaAPI api = getElectroluxDeltaAPI();
+            ElectroluxDeltaAPI api = getElectroluxDeltaAPO();
             if (api != null && dto != null) {
                 if (CHANNEL_WORK_MODE.equals(channelUID.getId())) {
                     if (command.toString().equals(COMMAND_WORKMODE_POWEROFF)) {
-                        api.workModePowerOff(dto.getApplianceId());
+                        api.workModePowerOff(dto.getPncId());
                     } else if (command.toString().equals(COMMAND_WORKMODE_AUTO)) {
-                        api.workModeAuto(dto.getApplianceId());
+                        api.workModeAuto(dto.getPncId());
                     } else if (command.toString().equals(COMMAND_WORKMODE_MANUAL)) {
-                        api.workModeManual(dto.getApplianceId());
+                        api.workModeManual(dto.getPncId());
                     }
                 } else if (CHANNEL_FAN_SPEED.equals(channelUID.getId())) {
-                    api.setFanSpeedLevel(dto.getApplianceId(), Integer.parseInt(command.toString()));
+                    api.setFanSpeedLevel(dto.getPncId(), Integer.parseInt(command.toString()));
                 } else if (CHANNEL_IONIZER.equals(channelUID.getId())) {
                     if (command == OnOffType.OFF) {
-                        api.setIonizer(dto.getApplianceId(), "false");
+                        api.setIonizer(dto.getPncId(), "false");
                     } else if (command == OnOffType.ON) {
-                        api.setIonizer(dto.getApplianceId(), "true");
+                        api.setIonizer(dto.getPncId(), "true");
                     } else {
                         logger.debug("Unknown command! {}", command);
-                    }
-                } else if (CHANNEL_UI_LIGHT.equals(channelUID.getId())) {
-                    if (command == OnOffType.OFF) {
-                        api.setUILight(dto.getApplianceId(), "false");
-                    } else if (command == OnOffType.ON) {
-                        api.setUILight(dto.getApplianceId(), "true");
-                    } else {
-                        logger.debug("Unknown command! {}", command);
-                    }
-                } else if (CHANNEL_SAFETY_LOCK.equals(channelUID.getId())) {
-                    if (command == OnOffType.OFF) {
-                        api.setSafetyLock(dto.getApplianceId(), "false");
-                    } else if (command == OnOffType.ON) {
-                        api.setSafetyLock(dto.getApplianceId(), "true");
-                    } else {
-                        logger.debug("Unknown command! {}", command);
-                    }
-                }
-
-                Bridge bridge = getBridge();
-                if (bridge != null) {
-                    BridgeHandler bridgeHandler = bridge.getHandler();
-                    if (bridgeHandler != null) {
-                        bridgeHandler.handleCommand(
-                                new ChannelUID(this.thing.getUID(), ElectroluxAirBindingConstants.CHANNEL_STATUS),
-                                RefreshType.REFRESH);
                     }
                 }
             }
@@ -149,7 +115,7 @@ public class ElectroluxAirHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable ElectroluxDeltaAPI getElectroluxDeltaAPI() {
+    private @Nullable ElectroluxDeltaAPI getElectroluxDeltaAPO() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ElectroluxAirBridgeHandler handler = (ElectroluxAirBridgeHandler) bridge.getHandler();
@@ -177,7 +143,6 @@ public class ElectroluxAirHandler extends BaseThingHandler {
             getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID))
                     .forEach(channelUID -> {
                         State state = getValue(channelUID.getId(), dto);
-                        logger.trace("Channel: {}, State: {}", channelUID, state);
                         updateState(channelUID, state);
                     });
             updateStatus(ThingStatus.ONLINE);
@@ -187,39 +152,38 @@ public class ElectroluxAirHandler extends BaseThingHandler {
     private State getValue(String channelId, ElectroluxPureA9DTO dto) {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                return new QuantityType<Temperature>(dto.getProperties().getReported().getTemp(), SIUnits.CELSIUS);
+                return new QuantityType<Temperature>(dto.getTwin().getProperties().getReported().getTemp(),
+                        SIUnits.CELSIUS);
             case CHANNEL_HUMIDITY:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getHumidity(), Units.PERCENT);
+                return new QuantityType<Dimensionless>(dto.getTwin().getProperties().getReported().getHumidity(),
+                        Units.PERCENT);
             case CHANNEL_TVOC:
-                return new QuantityType<Density>(dto.getProperties().getReported().getTVOC(),
+                return new QuantityType<Density>(dto.getTwin().getProperties().getReported().gettVOC(),
                         Units.MICROGRAM_PER_CUBICMETRE);
             case CHANNEL_PM1:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getPM1(),
+                return new QuantityType<Dimensionless>(dto.getTwin().getProperties().getReported().getpM1(),
                         Units.PARTS_PER_BILLION);
             case CHANNEL_PM25:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getPM25(),
+                return new QuantityType<Dimensionless>(dto.getTwin().getProperties().getReported().getpM25(),
                         Units.PARTS_PER_BILLION);
             case CHANNEL_PM10:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getPM10(),
+                return new QuantityType<Dimensionless>(dto.getTwin().getProperties().getReported().getpM10(),
                         Units.PARTS_PER_BILLION);
             case CHANNEL_CO2:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getCO2(),
+                return new QuantityType<Dimensionless>(dto.getTwin().getProperties().getReported().getcO2(),
                         Units.PARTS_PER_MILLION);
             case CHANNEL_FAN_SPEED:
-                return new StringType(Integer.toString(dto.getProperties().getReported().getFanspeed()));
+                return new StringType(Integer.toString(dto.getTwin().getProperties().getReported().getFanspeed()));
             case CHANNEL_FILTER_LIFE:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getFilterLife(),
+                return new QuantityType<Dimensionless>(dto.getTwin().getProperties().getReported().getFilterLife(),
                         Units.PERCENT);
             case CHANNEL_IONIZER:
-                return OnOffType.from(dto.getProperties().getReported().isIonizer());
-            case CHANNEL_UI_LIGHT:
-                return OnOffType.from(dto.getProperties().getReported().isUILight());
-            case CHANNEL_SAFETY_LOCK:
-                return OnOffType.from(dto.getProperties().getReported().isSafetyLock());
+                return OnOffType.from(dto.getTwin().getProperties().getReported().ionizer);
             case CHANNEL_WORK_MODE:
-                return new StringType(dto.getProperties().getReported().getWorkmode());
+                return new StringType(dto.getTwin().getProperties().getReported().workmode);
             case CHANNEL_DOOR_OPEN:
-                return dto.getProperties().getReported().isDoorOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                return dto.getTwin().getProperties().getReported().doorOpen ? OpenClosedType.OPEN
+                        : OpenClosedType.CLOSED;
         }
         return UnDefType.UNDEF;
     }
@@ -232,12 +196,13 @@ public class ElectroluxAirHandler extends BaseThingHandler {
             if (bridgeHandler != null) {
                 ElectroluxPureA9DTO dto = bridgeHandler.getElectroluxAirThings().get(config.getDeviceId());
                 if (dto != null) {
-                    properties.put(Thing.PROPERTY_VENDOR, dto.getApplianceInfo().getBrand());
-                    properties.put(PROPERTY_COLOUR, dto.getApplianceInfo().getColour());
-                    properties.put(PROPERTY_DEVICE, dto.getApplianceInfo().getDeviceType());
-                    properties.put(Thing.PROPERTY_MODEL_ID, dto.getApplianceInfo().getModel());
-                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, dto.getApplianceInfo().getSerialNumber());
-                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, dto.getProperties().getReported().getFrmVerNIU());
+                    properties.put(Thing.PROPERTY_VENDOR, dto.getApplicancesInfo().brand);
+                    properties.put(PROPERTY_COLOUR, dto.getApplicancesInfo().colour);
+                    properties.put(PROPERTY_DEVICE, dto.getApplicancesInfo().device);
+                    properties.put(Thing.PROPERTY_MODEL_ID, dto.getApplicancesInfo().model);
+                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, dto.getApplicancesInfo().serialNumber);
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
+                            dto.getTwin().getProperties().getReported().frmVerNIU);
                 }
             }
         }

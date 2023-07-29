@@ -34,12 +34,12 @@ public interface ModbusDiscoveryListener {
      * Discovery participant should call this method when a new
      * thing has been discovered
      */
-    void thingDiscovered(DiscoveryResult result);
+    public void thingDiscovered(DiscoveryResult result);
 
     /**
      * This method should be called once the discovery has been finished
      * or aborted by any error.
      * It is important to call this even when there were no things discovered.
      */
-    void discoveryFinished();
+    public void discoveryFinished();
 }

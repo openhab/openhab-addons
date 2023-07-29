@@ -13,16 +13,18 @@
 package org.openhab.binding.openuv.internal.json;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openuv.internal.OpenUVException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -33,6 +35,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class OpenUVResult {
+    private final Logger logger = LoggerFactory.getLogger(OpenUVResult.class);
+
     public enum FitzpatrickType {
         @SerializedName("st1")
         I, // Fitzpatrick Skin Type I
@@ -54,7 +58,7 @@ public class OpenUVResult {
     private @Nullable ZonedDateTime uvTime;
     private @Nullable ZonedDateTime uvMaxTime;
     private @Nullable ZonedDateTime ozoneTime;
-    private Map<FitzpatrickType, @Nullable Integer> safeExposureTime = Map.of();
+    private Map<FitzpatrickType, @Nullable Integer> safeExposureTime = new HashMap<>();
 
     public double getUv() {
         return uv;
@@ -84,12 +88,16 @@ public class OpenUVResult {
         return getValueOrNull(ozoneTime);
     }
 
-    public State getSafeExposureTime(String index) throws OpenUVException {
+    public State getSafeExposureTime(String index) {
         try {
-            Integer duration = safeExposureTime.get(FitzpatrickType.valueOf(index));
-            return duration != null ? QuantityType.valueOf(duration, Units.MINUTE) : UnDefType.NULL;
+            FitzpatrickType value = FitzpatrickType.valueOf(index);
+            Integer duration = safeExposureTime.get(value);
+            if (duration != null) {
+                return QuantityType.valueOf(duration, Units.MINUTE);
+            }
         } catch (IllegalArgumentException e) {
-            throw new OpenUVException(index, e);
+            logger.warn("Unexpected Fitzpatrick index value '{}' : {}", index, e.getMessage());
         }
+        return UnDefType.NULL;
     }
 }

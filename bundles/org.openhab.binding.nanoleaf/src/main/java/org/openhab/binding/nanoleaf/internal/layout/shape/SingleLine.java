@@ -29,7 +29,6 @@ import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.util.ColorUtil;
 
 /**
  * A single line.
@@ -124,6 +123,6 @@ public class SingleLine extends Panel {
 
     private static Color getColor(int panelId, PanelState state) {
         HSBType color = state.getHSBForPanel(panelId);
-        return new Color(ColorUtil.hsbTosRgb(color));
+        return new Color(color.getRGB());
     }
 }

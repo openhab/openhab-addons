@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.paradoxalarm.internal.communication.crypto.EncryptionHandler;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
@@ -28,7 +27,6 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-@NonNullByDefault
 public class TestEncryptionHandler {
 
     private static final String INPUT_STRING = "My test string for encryption.";

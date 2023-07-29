@@ -58,6 +58,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.timeout.IdleStateHandler;
 
@@ -307,7 +308,7 @@ public class OnvifConnection {
         if (message.contains("PullMessagesResponse")) {
             eventRecieved(message);
         } else if (message.contains("RenewResponse")) {
-            sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
+            sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
             connecting.lock();
             try {
@@ -315,38 +316,33 @@ public class OnvifConnection {
             } finally {
                 connecting.unlock();
             }
+            sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             parseDateAndTime(message);
             logger.debug("Openhabs UTC dateTime is:{}", getUTCdateTime());
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
             parseXAddr(message);
-            sendOnvifRequest(RequestType.GetProfiles, mediaXAddr);
+            sendOnvifRequest(requestBuilder(RequestType.GetProfiles, mediaXAddr));
         } else if (message.contains("GetProfilesResponse")) {// 3rd to be sent.
-            connecting.lock();
-            try {
-                isConnected = true;
-            } finally {
-                connecting.unlock();
-            }
             parseProfiles(message);
-            sendOnvifRequest(RequestType.GetSnapshotUri, mediaXAddr);
-            sendOnvifRequest(RequestType.GetStreamUri, mediaXAddr);
+            sendOnvifRequest(requestBuilder(RequestType.GetSnapshotUri, mediaXAddr));
+            sendOnvifRequest(requestBuilder(RequestType.GetStreamUri, mediaXAddr));
             if (ptzDevice) {
                 sendPTZRequest(RequestType.GetNodes);
             }
             if (usingEvents) {// stops API cameras from getting sent ONVIF events.
-                sendOnvifRequest(RequestType.GetEventProperties, eventXAddr);
-                sendOnvifRequest(RequestType.GetServiceCapabilities, eventXAddr);
+                sendOnvifRequest(requestBuilder(RequestType.GetEventProperties, eventXAddr));
+                sendOnvifRequest(requestBuilder(RequestType.GetServiceCapabilities, eventXAddr));
             }
         } else if (message.contains("GetServiceCapabilitiesResponse")) {
             if (message.contains("WSSubscriptionPolicySupport=\"true\"")) {
-                sendOnvifRequest(RequestType.Subscribe, eventXAddr);
+                sendOnvifRequest(requestBuilder(RequestType.Subscribe, eventXAddr));
             }
         } else if (message.contains("GetEventPropertiesResponse")) {
-            sendOnvifRequest(RequestType.CreatePullPointSubscription, eventXAddr);
+            sendOnvifRequest(requestBuilder(RequestType.CreatePullPointSubscription, eventXAddr));
         } else if (message.contains("CreatePullPointSubscriptionResponse")) {
             subscriptionXAddr = Helper.fetchXML(message, "SubscriptionReference>", "Address>");
             logger.debug("subscriptionXAddr={}", subscriptionXAddr);
-            sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
+            sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
         } else if (message.contains("GetStatusResponse")) {
             processPTZLocation(message);
         } else if (message.contains("GetPresetsResponse")) {
@@ -379,128 +375,7 @@ public class OnvifConnection {
         }
     }
 
-    /**
-     * The {@link removeIPfromUrl} Will throw away all text before the cameras IP, also removes the IP and the PORT
-     * leaving just the URL.
-     *
-     * @author Matthew Skinner - Initial contribution
-     */
-    String removeIPfromUrl(String url) {
-        int index = url.indexOf("//");
-        if (index != -1) {// now remove the :port
-            index = url.indexOf("/", index + 2);
-        }
-        if (index == -1) {
-            logger.debug("We hit an issue parsing url:{}", url);
-            return "";
-        }
-        return url.substring(index);
-    }
-
-    String extractIPportFromUrl(String url) {
-        int startIndex = url.indexOf("//") + 2;
-        int endIndex = url.indexOf("/", startIndex);// skip past any :port to the slash /
-        if (startIndex != -1 && endIndex != -1) {
-            return url.substring(startIndex, endIndex);
-        }
-        logger.debug("We hit an issue extracting IP:PORT from url:{}", url);
-        return "";
-    }
-
-    int extractPortFromUrl(String url) {
-        int startIndex = url.indexOf("//") + 2;// skip past http://
-        startIndex = url.indexOf(":", startIndex);
-        if (startIndex == -1) {// no port defined so use port 80
-            return 80;
-        }
-        int endIndex = url.indexOf("/", startIndex);// skip past any :port to the slash /
-        if (endIndex == -1) {
-            return 80;
-        }
-        return Integer.parseInt(url.substring(startIndex + 1, endIndex));
-    }
-
-    void parseXAddr(String message) {
-        // Normally I would search '<tt:XAddr>' instead but Foscam needed this work around.
-        String temp = Helper.fetchXML(message, "<tt:Device", "tt:XAddr");
-        if (!temp.isEmpty()) {
-            deviceXAddr = temp;
-            logger.debug("deviceXAddr:{}", deviceXAddr);
-        }
-        temp = Helper.fetchXML(message, "<tt:Events", "tt:XAddr");
-        if (!temp.isEmpty()) {
-            subscriptionXAddr = eventXAddr = temp;
-            logger.debug("eventsXAddr:{}", eventXAddr);
-        }
-        temp = Helper.fetchXML(message, "<tt:Media", "tt:XAddr");
-        if (!temp.isEmpty()) {
-            mediaXAddr = temp;
-            logger.debug("mediaXAddr:{}", mediaXAddr);
-        }
-
-        ptzXAddr = Helper.fetchXML(message, "<tt:PTZ", "tt:XAddr");
-        if (ptzXAddr.isEmpty()) {
-            ptzDevice = false;
-            logger.debug("Camera has no ONVIF PTZ support.");
-            List<org.openhab.core.thing.Channel> removeChannels = new ArrayList<>();
-            org.openhab.core.thing.Channel channel = ipCameraHandler.getThing().getChannel(CHANNEL_PAN);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            channel = ipCameraHandler.getThing().getChannel(CHANNEL_TILT);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            channel = ipCameraHandler.getThing().getChannel(CHANNEL_ZOOM);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            ipCameraHandler.removeChannels(removeChannels);
-        } else {
-            logger.debug("ptzXAddr:{}", ptzXAddr);
-        }
-    }
-
-    private void parseDateAndTime(String message) {
-        String minute = Helper.fetchXML(message, "UTCDateTime", "Minute>");
-        String hour = Helper.fetchXML(message, "UTCDateTime", "Hour>");
-        String second = Helper.fetchXML(message, "UTCDateTime", "Second>");
-        String day = Helper.fetchXML(message, "UTCDateTime", "Day>");
-        String month = Helper.fetchXML(message, "UTCDateTime", "Month>");
-        String year = Helper.fetchXML(message, "UTCDateTime", "Year>");
-        logger.debug("Cameras  UTC dateTime is:{}-{}-{}T{}:{}:{}", year, month, day, hour, minute, second);
-    }
-
-    private String getUTCdateTime() {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        format.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return format.format(new Date());
-    }
-
-    String createNonce() {
-        Random nonce = new Random();
-        return "" + nonce.nextInt();
-    }
-
-    String encodeBase64(String raw) {
-        return Base64.getEncoder().encodeToString(raw.getBytes());
-    }
-
-    String createDigest(String nOnce, String dateTime) {
-        String beforeEncryption = nOnce + dateTime + password;
-        MessageDigest msgDigest;
-        byte[] encryptedRaw = null;
-        try {
-            msgDigest = MessageDigest.getInstance("SHA-1");
-            msgDigest.reset();
-            msgDigest.update(beforeEncryption.getBytes(StandardCharsets.UTF_8));
-            encryptedRaw = msgDigest.digest();
-        } catch (NoSuchAlgorithmException e) {
-        }
-        return Base64.getEncoder().encodeToString(encryptedRaw);
-    }
-
-    public void sendOnvifRequest(RequestType requestType, String xAddr) {
+    HttpRequest requestBuilder(RequestType requestType, String xAddr) {
         logger.trace("Sending ONVIF request:{}", requestType);
         String security = "";
         String extraEnvelope = "";
@@ -545,19 +420,116 @@ public class OnvifConnection {
         ByteBuf bbuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
         request.headers().set("Content-Length", bbuf.readableBytes());
         request.content().clear().writeBytes(bbuf);
+        return request;
+    }
 
-        Bootstrap localBootstap = bootstrap;
-        if (localBootstap == null) {
+    /**
+     * The {@link removeIPfromUrl} Will throw away all text before the cameras IP, also removes the IP and the PORT
+     * leaving just the URL.
+     *
+     * @author Matthew Skinner - Initial contribution
+     */
+    String removeIPfromUrl(String url) {
+        int index = url.indexOf("//");
+        if (index != -1) {// now remove the :port
+            index = url.indexOf("/", index + 2);
+        }
+        if (index == -1) {
+            logger.debug("We hit an issue parsing url:{}", url);
+            return "";
+        }
+        return url.substring(index);
+    }
+
+    String extractIPportFromUrl(String url) {
+        int startIndex = url.indexOf("//") + 2;
+        int endIndex = url.indexOf("/", startIndex);// skip past any :port to the slash /
+        if (startIndex != -1 && endIndex != -1) {
+            return url.substring(startIndex, endIndex);
+        }
+        logger.debug("We hit an issue extracting IP:PORT from url:{}", url);
+        return "";
+    }
+
+    void parseXAddr(String message) {
+        // Normally I would search '<tt:XAddr>' instead but Foscam needed this work around.
+        String temp = Helper.fetchXML(message, "<tt:Device", "tt:XAddr");
+        if (!temp.isEmpty()) {
+            deviceXAddr = temp;
+            logger.debug("deviceXAddr:{}", deviceXAddr);
+        }
+        temp = Helper.fetchXML(message, "<tt:Events", "tt:XAddr");
+        if (!temp.isEmpty()) {
+            subscriptionXAddr = eventXAddr = temp;
+            logger.debug("eventsXAddr:{}", eventXAddr);
+        }
+        temp = Helper.fetchXML(message, "<tt:Media", "tt:XAddr");
+        if (!temp.isEmpty()) {
+            mediaXAddr = temp;
+            logger.debug("mediaXAddr:{}", mediaXAddr);
+        }
+
+        ptzXAddr = Helper.fetchXML(message, "<tt:PTZ", "tt:XAddr");
+        if (ptzXAddr.isEmpty()) {
+            ptzDevice = false;
+            logger.trace("Camera must not support PTZ, it failed to give a <tt:PTZ><tt:XAddr>:{}", message);
+        } else {
+            logger.debug("ptzXAddr:{}", ptzXAddr);
+        }
+    }
+
+    private void parseDateAndTime(String message) {
+        String minute = Helper.fetchXML(message, "UTCDateTime", "Minute>");
+        String hour = Helper.fetchXML(message, "UTCDateTime", "Hour>");
+        String second = Helper.fetchXML(message, "UTCDateTime", "Second>");
+        String day = Helper.fetchXML(message, "UTCDateTime", "Day>");
+        String month = Helper.fetchXML(message, "UTCDateTime", "Month>");
+        String year = Helper.fetchXML(message, "UTCDateTime", "Year>");
+        logger.debug("Cameras  UTC dateTime is:{}-{}-{}T{}:{}:{}", year, month, day, hour, minute, second);
+    }
+
+    private String getUTCdateTime() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return format.format(new Date());
+    }
+
+    String createNonce() {
+        Random nonce = new Random();
+        return "" + nonce.nextInt();
+    }
+
+    String encodeBase64(String raw) {
+        return Base64.getEncoder().encodeToString(raw.getBytes());
+    }
+
+    String createDigest(String nOnce, String dateTime) {
+        String beforeEncryption = nOnce + dateTime + password;
+        MessageDigest msgDigest;
+        byte[] encryptedRaw = null;
+        try {
+            msgDigest = MessageDigest.getInstance("SHA-1");
+            msgDigest.reset();
+            msgDigest.update(beforeEncryption.getBytes(StandardCharsets.UTF_8));
+            encryptedRaw = msgDigest.digest();
+        } catch (NoSuchAlgorithmException e) {
+        }
+        return Base64.getEncoder().encodeToString(encryptedRaw);
+    }
+
+    @SuppressWarnings("null")
+    public void sendOnvifRequest(HttpRequest request) {
+        if (bootstrap == null) {
             mainEventLoopGroup = new NioEventLoopGroup(2);
-            localBootstap = new Bootstrap();
-            localBootstap.group(mainEventLoopGroup);
-            localBootstap.channel(NioSocketChannel.class);
-            localBootstap.option(ChannelOption.SO_KEEPALIVE, true);
-            localBootstap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
-            localBootstap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
-            localBootstap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
-            localBootstap.option(ChannelOption.TCP_NODELAY, true);
-            localBootstap.handler(new ChannelInitializer<SocketChannel>() {
+            bootstrap = new Bootstrap();
+            bootstrap.group(mainEventLoopGroup);
+            bootstrap.channel(NioSocketChannel.class);
+            bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+            bootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
+            bootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
+            bootstrap.option(ChannelOption.TCP_NODELAY, true);
+            bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
@@ -566,28 +538,26 @@ public class OnvifConnection {
                     socketChannel.pipeline().addLast("OnvifCodec", new OnvifCodec(getHandle()));
                 }
             });
-            bootstrap = localBootstap;
         }
         if (!mainEventLoopGroup.isShuttingDown()) {
-            localBootstap.connect(new InetSocketAddress(ipAddress, extractPortFromUrl(xAddr)))
-                    .addListener(new ChannelFutureListener() {
+            bootstrap.connect(new InetSocketAddress(ipAddress, onvifPort)).addListener(new ChannelFutureListener() {
 
-                        @Override
-                        public void operationComplete(@Nullable ChannelFuture future) {
-                            if (future == null) {
-                                return;
-                            }
-                            if (future.isSuccess()) {
-                                Channel ch = future.channel();
-                                ch.writeAndFlush(request);
-                            } else { // an error occured
-                                logger.debug("Camera is not reachable when using xAddr:{}.", xAddr);
-                                if (isConnected) {
-                                    disconnect();
-                                }
-                            }
+                @Override
+                public void operationComplete(@Nullable ChannelFuture future) {
+                    if (future == null) {
+                        return;
+                    }
+                    if (future.isSuccess()) {
+                        Channel ch = future.channel();
+                        ch.writeAndFlush(request);
+                    } else { // an error occured
+                        logger.debug("Camera is not reachable on ONVIF port:{} or the port may be wrong.", onvifPort);
+                        if (isConnected) {
+                            disconnect();
                         }
-                    });
+                    }
+                }
+            });
         } else {
             logger.debug("ONVIF message not sent as connection is shutting down");
         }
@@ -631,13 +601,11 @@ public class OnvifConnection {
 
     public void eventRecieved(String eventMessage) {
         String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
-        if (topic.isEmpty()) {
-            sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
-            return;
-        }
         String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
         String dataValue = Helper.fetchXML(eventMessage, "tt:Data", "Value=\"");
-        logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
+        if (!topic.isEmpty()) {
+            logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
+        }
         switch (topic) {
             case "RuleEngine/CellMotionDetector/Motion":
                 if ("true".equals(dataValue)) {
@@ -724,45 +692,9 @@ public class OnvifConnection {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
-            case "RuleEngine/MyRuleDetector/Visitor":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/VehicleDetect":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/DogCatDetect":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/FaceDetect":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/PeopleDetect":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
-                }
-                break;
             default:
-                logger.debug("Please report this camera has an un-implemented ONVIF event. Topic:{}", topic);
         }
-        sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
+        sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
     }
 
     public boolean supportsPTZ() {
@@ -909,11 +841,11 @@ public class OnvifConnection {
             logger.debug("ONVIF was not connected when a PTZ request was made, connecting now");
             connect(usingEvents);
         }
-        sendOnvifRequest(requestType, ptzXAddr);
+        sendOnvifRequest(requestBuilder(requestType, ptzXAddr));
     }
 
     public void sendEventRequest(RequestType requestType) {
-        sendOnvifRequest(requestType, eventXAddr);
+        sendOnvifRequest(requestBuilder(requestType, eventXAddr));
     }
 
     public void connect(boolean useEvents) {
@@ -922,9 +854,8 @@ public class OnvifConnection {
             if (!isConnected) {
                 logger.debug("Connecting {} to ONVIF", ipAddress);
                 threadPool = Executors.newScheduledThreadPool(2);
-                sendOnvifRequest(RequestType.GetSystemDateAndTime, deviceXAddr);
+                sendOnvifRequest(requestBuilder(RequestType.GetSystemDateAndTime, deviceXAddr));
                 usingEvents = useEvents;
-                sendOnvifRequest(RequestType.GetCapabilities, deviceXAddr);
             }
         } finally {
             connecting.unlock();
@@ -962,7 +893,7 @@ public class OnvifConnection {
             if (bootstrap != null) {
                 if (usingEvents && !mainEventLoopGroup.isShuttingDown()) {
                     // Some cameras may continue to send events even when they can't reach a server.
-                    sendOnvifRequest(RequestType.Unsubscribe, subscriptionXAddr);
+                    sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
                 }
                 // give time for the Unsubscribe request to be sent, shutdownGracefully will try to send it first.
                 threadPool.schedule(this::cleanup, 50, TimeUnit.MILLISECONDS);

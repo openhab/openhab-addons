@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.gpstracker.internal.provider.gpslogger;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.provider.AbstractCallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
@@ -22,7 +21,6 @@ import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@NonNullByDefault
 public class GPSLoggerCallbackServlet extends AbstractCallbackServlet {
 
     private static final long serialVersionUID = -6992472786850682196L;

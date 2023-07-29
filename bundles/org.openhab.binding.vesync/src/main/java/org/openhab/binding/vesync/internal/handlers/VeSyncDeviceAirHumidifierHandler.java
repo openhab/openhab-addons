@@ -16,7 +16,6 @@ import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -49,36 +48,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
 
-    public static final String DEV_TYPE_FAMILY_AIR_HUMIDIFIER = "LUH";
-
     public static final int DEFAULT_AIR_PURIFIER_POLL_RATE = 120;
-
-    public static final String DEV_FAMILY_CLASSIC_200S = "Classic 200S";
-    public static final String DEV_FAMILY_CLASSIC_300S = "Classic 300S";
-    public static final String DEV_FAMILY_DUAL_200S = "Dual 200S";
-    public static final String DEV_FAMILY_600S = "600S";
-    public static final String DEV_FAMILY_OASIS_MIST = "Oasis Mist";
-
-    public static final VeSyncDeviceMetadata CLASSIC200S = new VeSyncDeviceMetadata(DEV_FAMILY_CLASSIC_200S,
-            Collections.emptyList(), List.of("Classic200S"));
-
-    public static final VeSyncDeviceMetadata CLASSIC300S = new VeSyncDeviceMetadata(DEV_FAMILY_CLASSIC_300S,
-            Arrays.asList("A601S"), List.of("Classic300S"));
-
-    public static final VeSyncDeviceMetadata DUAL200S = new VeSyncDeviceMetadata(DEV_FAMILY_DUAL_200S,
-            Arrays.asList("D301S"), List.of("Dual200S"));
-
-    public static final VeSyncDeviceMetadata LV600S = new VeSyncDeviceMetadata(DEV_FAMILY_600S, Arrays.asList("A602S"),
-            Collections.emptyList());
-
-    public static final VeSyncDeviceMetadata OASIS_MIST = new VeSyncDeviceMetadata(DEV_FAMILY_OASIS_MIST,
-            Arrays.asList("O451S"), Collections.emptyList());
-
-    public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = Arrays.asList(LV600S, CLASSIC300S,
-            CLASSIC200S, DUAL200S, OASIS_MIST);
+    // "Device Type" values
+    public static final String DEV_TYPE_DUAL_200S = "Dual200S";
+    public static final String DEV_TYPE_CLASSIC_200S = "Classic200S";
+    public static final String DEV_TYPE_CORE_301S = "LUH-D301S-WEU";
+    public static final String DEV_TYPE_CLASSIC_300S = "Classic300S";
+    public static final String DEV_TYPE_600S = "LUH-A602S-WUS";
+    public static final String DEV_TYPE_600S_EU = "LUH-A602S-WEU";
 
     private static final List<String> CLASSIC_300S_600S_MODES = Arrays.asList(MODE_AUTO, MODE_MANUAL, MODE_SLEEP);
     private static final List<String> CLASSIC_300S_NIGHT_LIGHT_MODES = Arrays.asList(MODE_ON, MODE_DIM, MODE_OFF);
+
+    public static final List<String> SUPPORTED_DEVICE_TYPES = List.of(DEV_TYPE_DUAL_200S, DEV_TYPE_CLASSIC_200S,
+            DEV_TYPE_CLASSIC_300S, DEV_TYPE_CORE_301S, DEV_TYPE_600S, DEV_TYPE_600S_EU);
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceAirHumidifierHandler.class);
 
@@ -93,18 +76,20 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     @Override
     protected String[] getChannelsToRemove() {
         String[] toRemove = new String[] {};
-        final String deviceFamily = getThing().getProperties().get(DEVICE_PROP_DEVICE_FAMILY);
-        if (deviceFamily != null) {
-            switch (deviceFamily) {
-                case DEV_FAMILY_CLASSIC_300S:
+        final String deviceType = getThing().getProperties().get(DEVICE_PROP_DEVICE_TYPE);
+        if (deviceType != null) {
+            switch (deviceType) {
+                case DEV_TYPE_CLASSIC_300S:
                     toRemove = new String[] { DEVICE_CHANNEL_WARM_ENABLED, DEVICE_CHANNEL_WARM_LEVEL };
                     break;
-                case DEV_FAMILY_DUAL_200S:
-                case DEV_FAMILY_CLASSIC_200S:
+                case DEV_TYPE_DUAL_200S:
+                case DEV_TYPE_CLASSIC_200S:
+                case DEV_TYPE_CORE_301S:
                     toRemove = new String[] { DEVICE_CHANNEL_WARM_ENABLED, DEVICE_CHANNEL_WARM_LEVEL,
                             DEVICE_CHANNEL_AF_NIGHT_LIGHT };
                     break;
-                case DEV_FAMILY_OASIS_MIST:
+                case DEV_TYPE_600S:
+                case DEV_TYPE_600S_EU:
                     toRemove = new String[] { DEVICE_CHANNEL_AF_NIGHT_LIGHT };
                     break;
             }
@@ -137,19 +122,18 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     }
 
     @Override
-    public String getDeviceFamilyProtocolPrefix() {
-        return DEV_TYPE_FAMILY_AIR_HUMIDIFIER;
-    }
-
-    @Override
-    public List<VeSyncDeviceMetadata> getSupportedDeviceMetadata() {
-        return SUPPORTED_MODEL_FAMILIES;
+    protected boolean isDeviceSupported() {
+        final String deviceType = getThing().getProperties().get(DEVICE_PROP_DEVICE_TYPE);
+        if (deviceType == null) {
+            return false;
+        }
+        return SUPPORTED_DEVICE_TYPES.contains(deviceType);
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        final String deviceFamily = getThing().getProperties().get(DEVICE_PROP_DEVICE_FAMILY);
-        if (deviceFamily == null) {
+        final String deviceType = getThing().getProperties().get(DEVICE_PROP_DEVICE_TYPE);
+        if (deviceType == null) {
             return;
         }
 
@@ -196,7 +180,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         int targetMistLevel = ((QuantityType<?>) command).intValue();
                         // If more devices have this the hope is it's those with the prefix LUH so the check can
                         // be simplified, originally devices mapped 1/5/9 to 1/2/3.
-                        if (DEV_FAMILY_DUAL_200S.equals(deviceFamily)) {
+                        if (DEV_TYPE_CORE_301S.equals(deviceType)) {
                             if (targetMistLevel < 1) {
                                 logger.warn("Target Mist Level less than 1 - adjusting to 1 as the valid API value");
                                 targetMistLevel = 1;
@@ -251,8 +235,8 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                 new VeSyncRequestManagedDeviceBypassV2.SetMode(targetMode));
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
-                        if (!DEV_FAMILY_CLASSIC_300S.equals(deviceFamily) && !DEV_FAMILY_600S.equals(deviceFamily)) {
-                            logger.warn("Humidifier night light is not valid for your device ({}})", deviceFamily);
+                        if (!DEV_TYPE_CLASSIC_300S.equals(deviceType) && !DEV_TYPE_CORE_301S.equals(deviceType)) {
+                            logger.warn("Humidifier night light is not valid for your device ({}})", deviceType);
                             return;
                         }
                         if (!CLASSIC_300S_NIGHT_LIGHT_MODES.contains(targetMode)) {
@@ -330,7 +314,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             return;
         }
 
-        final String deviceFamily = getThing().getProperties().get(DEVICE_PROP_DEVICE_FAMILY);
+        final String deviceType = getThing().getProperties().get(DEVICE_PROP_DEVICE_TYPE);
 
         updateState(DEVICE_CHANNEL_ENABLED, OnOffType.from(humidifierStatus.result.result.enabled));
         updateState(DEVICE_CHANNEL_DISPLAY_ENABLED, OnOffType.from(humidifierStatus.result.result.display));
@@ -345,7 +329,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_HUMIDIFIER_MODE, new StringType(humidifierStatus.result.result.mode));
 
         // Only the 300S supports nightlight currently of tested devices.
-        if (DEV_FAMILY_CLASSIC_300S.equals(deviceFamily) || DEV_FAMILY_600S.equals(deviceFamily)) {
+        if (DEV_TYPE_CLASSIC_300S.equals(deviceType) || DEV_TYPE_CORE_301S.equals(deviceType)) {
             // Map the numeric that only applies to the same modes as the Air Filter 300S series.
             if (humidifierStatus.result.result.nightLightBrightness == 0) {
                 updateState(DEVICE_CHANNEL_AF_NIGHT_LIGHT, new StringType(MODE_OFF));
@@ -354,7 +338,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             } else {
                 updateState(DEVICE_CHANNEL_AF_NIGHT_LIGHT, new StringType(MODE_DIM));
             }
-        } else if (DEV_FAMILY_600S.equals(deviceFamily) || DEV_FAMILY_OASIS_MIST.equals(deviceFamily)) {
+        } else if (DEV_TYPE_600S.equals(deviceType) || DEV_TYPE_600S_EU.equals(deviceType)) {
             updateState(DEVICE_CHANNEL_WARM_ENABLED, OnOffType.from(humidifierStatus.result.result.warnEnabled));
             updateState(DEVICE_CHANNEL_WARM_LEVEL, new DecimalType(humidifierStatus.result.result.warmLevel));
         }

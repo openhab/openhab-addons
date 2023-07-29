@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smartmeter.internal.helper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.serial.SerialPort;
 
@@ -65,7 +66,7 @@ public enum SerialParameter {
      */
     public static SerialParameter fromString(String params) {
         try {
-            return valueOf("_" + params.toUpperCase());
+            return valueOf("_" + StringUtils.upperCase(params));
         } catch (IllegalArgumentException e) {
             return SerialParameter._8N1;
         }

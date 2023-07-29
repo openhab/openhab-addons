@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -39,5 +39,5 @@ public interface InboundSpec {
      *
      * @return a list of group addresses.
      */
-    Set<GroupAddress> getGroupAddresses();
+    List<GroupAddress> getGroupAddresses();
 }

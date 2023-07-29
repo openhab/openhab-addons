@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.evohome.internal.configuration;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Contains the common configuration definition of an evohome Thing
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-@NonNullByDefault
 public class EvohomeThingConfiguration {
-    public String id = "";
-    public String name = "";
+    public String id;
+    public String name;
 }

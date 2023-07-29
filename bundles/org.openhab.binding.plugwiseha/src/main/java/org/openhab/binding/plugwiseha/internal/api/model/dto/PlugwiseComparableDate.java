@@ -16,9 +16,9 @@ package org.openhab.binding.plugwiseha.internal.api.model.dto;
  * @author B. van Wetten - Initial contribution
  */
 public interface PlugwiseComparableDate<T extends PlugwiseBaseModel> {
-    int compareDateWith(T hasModifiedDate);
+    public int compareDateWith(T hasModifiedDate);
 
-    boolean isOlderThan(T hasModifiedDate);
+    public boolean isOlderThan(T hasModifiedDate);
 
-    boolean isNewerThan(T hasModifiedDate);
+    public boolean isNewerThan(T hasModifiedDate);
 }

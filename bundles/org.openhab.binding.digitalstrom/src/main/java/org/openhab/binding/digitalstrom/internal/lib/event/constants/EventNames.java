@@ -15,8 +15,8 @@ package org.openhab.binding.digitalstrom.internal.lib.event.constants;
 /**
  * The {@link EventNames} contains all needed event names to subscribe at the digitalSTROM server.
  *
- * @author Michael Ochel - Initial contribution
- * @author Matthias Siegele - Initial contribution
+ * @author Michael Ochel
+ * @author Matthias Siegele
  */
 public class EventNames {
 

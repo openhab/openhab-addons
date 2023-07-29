@@ -6,5 +6,4 @@
 	<type>binding</type>
 	<name>Broadlinkthermostat Binding</name>
 	<description>This is the binding for Broadlinkthermostat devices.</description>
-	<connection>local</connection>
 </addon:addon>

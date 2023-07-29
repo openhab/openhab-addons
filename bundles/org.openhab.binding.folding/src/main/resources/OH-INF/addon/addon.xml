@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Folding@home</name>
 	<description>Control Folding@home clients on computers.</description>
-	<connection>local</connection>
 
 </addon:addon>

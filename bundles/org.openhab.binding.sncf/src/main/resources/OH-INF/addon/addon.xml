@@ -6,7 +6,5 @@
 	<type>binding</type>
 	<name>SNCF Binding</name>
 	<description>Retrieves French railway informations</description>
-	<connection>cloud</connection>
-	<countries>fr</countries>
 
 </addon:addon>

@@ -39,9 +39,6 @@ public class OwserverDeviceParameter {
         } else {
             this.prefix = prefix;
         }
-        if (this.prefix.startsWith("/")) {
-            this.prefix = this.prefix.substring(1);
-        }
         if (path.startsWith("/")) {
             this.path = path;
         } else {

@@ -37,5 +37,5 @@ public interface DeviceStatusListener<T extends VerisureThingDTO> {
     /**
      * This method returns the thing's class
      */
-    Class<T> getVerisureThingClass();
+    public Class<T> getVerisureThingClass();
 }

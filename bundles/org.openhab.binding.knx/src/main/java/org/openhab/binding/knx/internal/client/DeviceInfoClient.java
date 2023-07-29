@@ -26,15 +26,14 @@ import tuwien.auto.calimero.IndividualAddress;
 @NonNullByDefault
 public interface DeviceInfoClient {
 
-    byte @Nullable [] readDeviceDescription(IndividualAddress address, int descType, boolean authenticate, long timeout)
-            throws InterruptedException;
+    byte @Nullable [] readDeviceDescription(IndividualAddress address, int descType, boolean authenticate,
+            long timeout);
 
     byte @Nullable [] readDeviceMemory(IndividualAddress address, int startAddress, int bytes, boolean authenticate,
-            long timeout) throws InterruptedException;
+            long timeout);
 
     byte @Nullable [] readDeviceProperties(IndividualAddress address, final int interfaceObjectIndex,
-            final int propertyId, final int start, final int elements, boolean authenticate, long timeout)
-            throws InterruptedException;
+            final int propertyId, final int start, final int elements, boolean authenticate, long timeout);
 
-    boolean isConnected();
+    public boolean isConnected();
 }

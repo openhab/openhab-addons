@@ -40,12 +40,12 @@ public interface BridgeCommunicationProtocol {
      *
      * @return name of the communication pair for human beings.
      */
-    String name();
+    public String name();
 
     /**
      * Returns the communication status included within the response message.
      *
      * @return true if the communication was successful, and false otherwise.
      */
-    boolean isCommunicationSuccessful();
+    public boolean isCommunicationSuccessful();
 }

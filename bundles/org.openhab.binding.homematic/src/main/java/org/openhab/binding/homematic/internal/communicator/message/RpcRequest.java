@@ -22,15 +22,15 @@ public interface RpcRequest<T> {
     /**
      * Adds arguments to the RPC method.
      */
-    void addArg(Object arg);
+    public void addArg(Object arg);
 
     /**
      * Generates the RPC data.
      */
-    T createMessage();
+    public T createMessage();
 
     /**
      * Returns the name of the rpc method.
      */
-    String getMethodName();
+    public String getMethodName();
 }

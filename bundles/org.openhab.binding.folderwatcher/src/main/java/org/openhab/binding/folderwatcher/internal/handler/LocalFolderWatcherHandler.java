@@ -102,7 +102,6 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
         ScheduledFuture<?> executionJob = this.executionJob;
         if (executionJob != null) {
             executionJob.cancel(true);
-            this.executionJob = null;
         }
     }
 

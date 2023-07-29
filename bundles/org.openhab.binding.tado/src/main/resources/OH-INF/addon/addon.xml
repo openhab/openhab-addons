@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>tado° Binding</name>
 	<description>Binding for tado° devices</description>
-	<connection>cloud</connection>
 
 </addon:addon>

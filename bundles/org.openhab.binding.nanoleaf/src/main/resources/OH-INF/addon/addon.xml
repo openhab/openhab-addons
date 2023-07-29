@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>@text/addon.nanoleaf.name</name>
 	<description>@text/addon.nanoleaf.description</description>
-	<connection>local</connection>
 
 </addon:addon>

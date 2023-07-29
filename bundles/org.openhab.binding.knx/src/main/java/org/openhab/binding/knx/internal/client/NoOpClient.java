@@ -49,11 +49,13 @@ public class NoOpClient implements KNXClient {
     }
 
     @Override
-    public void registerGroupAddressListener(GroupAddressListener listener) {
+    public boolean registerGroupAddressListener(GroupAddressListener listener) {
+        return false;
     }
 
     @Override
-    public void unregisterGroupAddressListener(GroupAddressListener listener) {
+    public boolean unregisterGroupAddressListener(GroupAddressListener listener) {
+        return false;
     }
 
     @Override

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.core.Configuration;
 
 /**
@@ -22,9 +21,8 @@ import org.openhab.core.config.core.Configuration;
  *
  * @param <T> type of the device handler to be tested
  */
-@NonNullByDefault
 public abstract class AbstractBoschSHCDeviceHandlerTest<T extends BoschSHCDeviceHandler>
-        extends AbstractBoschSHCHandlerTest<T> {
+        extends AbstractSHCHandlerTest<T> {
 
     @Override
     protected Configuration getConfiguration() {

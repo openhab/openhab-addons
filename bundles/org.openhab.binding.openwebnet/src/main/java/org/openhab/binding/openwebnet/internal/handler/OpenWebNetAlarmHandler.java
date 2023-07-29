@@ -14,12 +14,10 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -44,7 +42,6 @@ import org.slf4j.LoggerFactory;
  * {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
- * @author Giovanni Fabiani - Add zone alarm's tismestamp feature
  */
 @NonNullByDefault
 public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
@@ -55,35 +52,17 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
-    private static Set<OpenWebNetAlarmHandler> zoneHandlers = new HashSet<OpenWebNetAlarmHandler>();
-
     private static final String BATTERY_OK = "OK";
     private static final String BATTERY_FAULT = "FAULT";
     private static final String BATTERY_UNLOADED = "UNLOADED";
 
-    private static final String ALARM_INTRUSION = "INTRUSION";
-    private static final String ALARM_TAMPERING = "TAMPERING";
-    private static final String ALARM_ANTI_PANIC = "ANTI_PANIC";
-    private static final String ALARM_SILENT = "SILENT";
-    private static final String ALARM_TECHNICAL = "TECHNICAL";
-    private static final String ALARM_TECHNICAL_RESET = "TECHNICAL_RESET";
-    private static final String ALARM_NONE = "NONE";
+    private static final String SILENT = "SILENT";
+    private static final String INTRUSION = "INTRUSION";
+    private static final String ANTI_PANIC = "ANTI_PANIC";
+    private static final String TAMPERING = "TAMPERING";
 
     public OpenWebNetAlarmHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thing.getThingTypeUID())) {
-            zoneHandlers.add(this);
-            // initially set zone alarm to NONE (it will be set if specific alarm message is
-            // received)
-            updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
-            // initializing timestamp
-            updateState(CHANNEL_ALARM_ZONE_ALARM_TIMESTAMP, new DateTimeType());
-        }
     }
 
     @Override
@@ -126,7 +105,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
                 send(Alarm.requestSystemStatus());
                 lastAllDevicesRefreshTS = System.currentTimeMillis();
             } catch (OWNException e) {
-                logger.warn("Exception while requesting alarm system status: {}", e.getMessage());
+                logger.warn("Excpetion while requesting alarm system status: {}", e.getMessage());
             }
         } else {
             logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
@@ -136,7 +115,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
-        logger.debug("handleMessage({}) for: {} {}", msg, thing.getUID(), msg.getWhat());
+        logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_BUS_ALARM_SYSTEM.equals(thingType)) {
@@ -162,20 +141,18 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             case SYSTEM_ENGAGED:
                 updateAlarmSystemArmed(w);
                 break;
+            case SYSTEM_BATTERY_FAULT:
             case SYSTEM_BATTERY_OK:
             case SYSTEM_BATTERY_UNLOADED:
-            case SYSTEM_BATTERY_FAULT:
                 updateBatteryState(w);
                 break;
             case SYSTEM_NETWORK_ERROR:
             case SYSTEM_NETWORK_OK:
                 updateNetworkState(w);
                 break;
-            case DELAY_END:
-                resetAllZonesAlarmState();
-                break;
             case START_PROGRAMMING:
             case STOP_PROGRAMMING:
+            case DELAY_END:
             case NO_CONNECTION_TO_DEVICE:
             default:
                 logger.debug("Alarm.updateSystem() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
@@ -219,11 +196,10 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             case ZONE_ALARM_TAMPERING:
             case ZONE_ALARM_ANTI_PANIC:
             case ZONE_ALARM_SILENT:
-            case ZONE_ALARM_TECHNICAL:
-            case ZONE_ALARM_TECHNICAL_RESET:
-                updateZoneAlarm(w);
-                updateState(CHANNEL_ALARM_ZONE_ALARM_TIMESTAMP, new DateTimeType());
+                updateZoneAlarmState(w);
                 break;
+            case ZONE_ALARM_TECHNICAL:// not handled for now
+            case ZONE_ALARM_TECHNICAL_RESET:
             default:
                 logger.debug("Alarm.updateZone() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
         }
@@ -233,36 +209,15 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         updateState(CHANNEL_ALARM_ZONE_STATE, OnOffType.from(w == Alarm.WhatAlarm.ZONE_ENGAGED));
     }
 
-    private void updateZoneAlarm(WhatAlarm w) {
-        switch (w) {
-            case ZONE_ALARM_INTRUSION:
-                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_INTRUSION));
-                break;
-            case ZONE_ALARM_TAMPERING:
-                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TAMPERING));
-                break;
-            case ZONE_ALARM_ANTI_PANIC:
-                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_ANTI_PANIC));
-                break;
-            case ZONE_ALARM_SILENT:
-                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_SILENT));
-                break;
-            case ZONE_ALARM_TECHNICAL:
-                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TECHNICAL));
-                break;
-            case ZONE_ALARM_TECHNICAL_RESET:
-                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TECHNICAL_RESET));
-                break;
-            default:
-                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
-                logger.warn("Alarm.updateZoneAlarm() Ignoring unsupported WHAT {} for  zone {}", w, this.deviceWhere);
-        }
-    }
-
-    private void resetAllZonesAlarmState() {
-        for (OpenWebNetAlarmHandler h : zoneHandlers) {
-            h.updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
-            h.updateState(CHANNEL_ALARM_ZONE_ALARM_TIMESTAMP, new DateTimeType());
+    private void updateZoneAlarmState(WhatAlarm w) {
+        if (w == Alarm.WhatAlarm.ZONE_ALARM_SILENT) {
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(SILENT));
+        } else if (w == Alarm.WhatAlarm.ZONE_ALARM_INTRUSION) {
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(INTRUSION));
+        } else if (w == Alarm.WhatAlarm.ZONE_ALARM_ANTI_PANIC) {
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ANTI_PANIC));
+        } else {
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(TAMPERING));
         }
     }
 
@@ -274,14 +229,5 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     @Override
     protected String ownIdPrefix() {
         return Who.BURGLAR_ALARM.value().toString();
-    }
-
-    @Override
-    public void dispose() {
-        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thing.getThingTypeUID())) {
-            zoneHandlers.remove(this);
-            logger.debug("Alarm.dispose() - removed zone {}", this.deviceWhere);
-        }
-        super.dispose();
     }
 }

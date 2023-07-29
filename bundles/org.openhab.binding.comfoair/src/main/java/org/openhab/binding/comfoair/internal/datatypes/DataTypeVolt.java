@@ -15,7 +15,6 @@ package org.openhab.binding.comfoair.internal.datatypes;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -45,7 +44,7 @@ public class DataTypeVolt implements ComfoAirDataType {
     @Override
     public State convertToState(int @Nullable [] data, ComfoAirCommandType commandType) {
         if (data == null) {
-            logger.trace("\"DataTypeVoltage\" class \"convertToState\" method parameter: null");
+            logger.trace("\"DataTypeVolt\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
             int[] readReplyDataPos = commandType.getReadReplyDataPos();
@@ -60,24 +59,14 @@ public class DataTypeVolt implements ComfoAirDataType {
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
         int[] template = commandType.getChangeDataTemplate();
-        float volt;
+        QuantityType<?> volts = ((QuantityType<?>) value).toUnit(Units.VOLT);
 
-        if (value instanceof QuantityType<?> qt) {
-            QuantityType<?> qtVolt = qt.toUnit(Units.VOLT);
-
-            if (qtVolt != null) {
-                volt = qtVolt.floatValue();
-            } else {
-                return null;
-            }
-        } else if (value instanceof DecimalType dt) {
-            volt = dt.floatValue();
+        if (volts != null) {
+            template[commandType.getChangeDataPos()] = (int) (volts.doubleValue() * 255 / 10);
+            return template;
         } else {
             logger.trace("\"DataTypeVolt\" class \"convertFromState\" undefined state");
             return null;
         }
-
-        template[commandType.getChangeDataPos()] = (int) (volt * 255 / 10);
-        return template;
     }
 }

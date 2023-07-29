@@ -5,8 +5,7 @@
 
 	<type>voice</type>
 	<name>Vosk Speech-to-Text</name>
-	<description>Vosk STT Service uses vosk-api to perform offline speech-to-text in openHAB.</description>
-	<connection>none</connection>
+	<description>osk STT Service uses vosk-api to perform offline speech-to-text in openHAB.</description>
 
 	<service-id>org.openhab.voice.voskstt</service-id>
 

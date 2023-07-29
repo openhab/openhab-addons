@@ -19,9 +19,6 @@ import static org.openhab.binding.mqtt.espmilighthub.internal.EspMilightHubBindi
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,6 +26,8 @@ import org.openhab.binding.mqtt.espmilighthub.internal.ConfigOptions;
 import org.openhab.binding.mqtt.espmilighthub.internal.Helper;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
+import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -42,7 +41,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
@@ -58,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
-public class EspMilightHubHandler extends BaseThingHandler implements MqttMessageSubscriber {
+public class EspMilightHubHandler extends BaseThingHandler implements MqttConnectionObserver, MqttMessageSubscriber {
     // these are all constants used in color conversion calcuations.
     // strings are necessary to prevent floating point loss of precision
     private static final BigDecimal BIG_DECIMAL_THOUSAND = new BigDecimal(1000);
@@ -452,22 +451,29 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                 return;
             }
         }
-
-        globeType = thing.getThingTypeUID().getId();// eg rgb_cct
-        String globeLocation = this.getThing().getUID().getId();// eg 0x014
-        remotesGroupID = globeLocation.substring(globeLocation.length() - 1, globeLocation.length());// eg 4
-        String remotesIDCode = globeLocation.substring(0, globeLocation.length() - 1);// eg 0x01
-        fullCommandTopic = COMMANDS_BASE_TOPIC + remotesIDCode + "/" + globeType + "/" + remotesGroupID;
-        fullStatesTopic = STATES_BASE_TOPIC + remotesIDCode + "/" + globeType + "/" + remotesGroupID;
-        // Need to remove the lowercase x from 0x12AB in case it contains all numbers
-        String caseCheck = globeLocation.substring(2, globeLocation.length() - 1);
-        if (!caseCheck.equals(caseCheck.toUpperCase())) {
-            logger.warn("The milight globe {}{} is using lowercase for the remote code when the hub needs UPPERCASE",
-                    remotesIDCode, remotesGroupID);
+        Bridge localBridge = getBridge();
+        if (localBridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Globe must have a valid bridge selected before it can come online.");
+            return;
+        } else {
+            globeType = thing.getThingTypeUID().getId();// eg rgb_cct
+            String globeLocation = this.getThing().getUID().getId();// eg 0x014
+            remotesGroupID = globeLocation.substring(globeLocation.length() - 1, globeLocation.length());// eg 4
+            String remotesIDCode = globeLocation.substring(0, globeLocation.length() - 1);// eg 0x01
+            fullCommandTopic = COMMANDS_BASE_TOPIC + remotesIDCode + "/" + globeType + "/" + remotesGroupID;
+            fullStatesTopic = STATES_BASE_TOPIC + remotesIDCode + "/" + globeType + "/" + remotesGroupID;
+            // Need to remove the lowercase x from 0x12AB in case it contains all numbers
+            String caseCheck = globeLocation.substring(2, globeLocation.length() - 1);
+            if (!caseCheck.equals(caseCheck.toUpperCase())) {
+                logger.warn(
+                        "The milight globe {}{} is using lowercase for the remote code when the hub needs UPPERCASE",
+                        remotesIDCode, remotesGroupID);
+            }
+            channelPrefix = BINDING_ID + ":" + globeType + ":" + localBridge.getUID().getId() + ":" + remotesIDCode
+                    + remotesGroupID + ":";
+            connectMQTT();
         }
-        channelPrefix = BINDING_ID + ":" + globeType + ":" + thing.getBridgeUID().getId() + ":" + remotesIDCode
-                + remotesGroupID + ":";
-        bridgeStatusChanged(getBridgeStatus());
     }
 
     private void sendMQTT(String payload) {
@@ -481,66 +487,57 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
     public void processMessage(String topic, byte[] payload) {
         String state = new String(payload, StandardCharsets.UTF_8);
         logger.trace("Received the following new Milight state:{}:{}", topic, state);
-
-        if (topic.equals(STATUS_TOPIC)) {
-            if (state.equals(CONNECTED)) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Waiting for 'milight/status: connected' MQTT message to be sent from your ESP Milight hub.");
-            }
-        } else {
-            try {
-                processIncomingState(state);
-            } catch (Exception e) {
-                logger.warn("Failed processing Milight state {} for {}", state, topic, e);
-            }
-        }
-    }
-
-    public ThingStatusInfo getBridgeStatus() {
-        Bridge b = getBridge();
-        if (b != null) {
-            return b.getStatusInfo();
-        } else {
-            return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
+        try {
+            processIncomingState(state);
+        } catch (Exception e) {
+            logger.warn("Failed processing Milight state {} for {}", state, topic, e);
         }
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            connection = null;
-            return;
+    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
+        logger.debug("MQTT brokers state changed to:{}", state);
+        switch (state) {
+            case CONNECTED:
+                updateStatus(ThingStatus.ONLINE);
+                break;
+            case CONNECTING:
+            case DISCONNECTED:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Bridge (broker) is not connected to your MQTT broker.");
         }
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            return;
-        }
+    }
 
+    public void connectMQTT() {
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "Bridge is missing or offline, you need to setup a working MQTT broker first.");
             return;
         }
-        ThingHandler handler = localBridge.getHandler();
+        ThingUID thingUID = localBridge.getUID();
+        Thing thing = thingRegistry.get(thingUID);
+        if (thing == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "Bridge is missing or offline, you need to setup a working MQTT broker first.");
+            return;
+        }
+        ThingHandler handler = thing.getHandler();
         if (handler instanceof AbstractBrokerHandler) {
             AbstractBrokerHandler abh = (AbstractBrokerHandler) handler;
-            final MqttBrokerConnection connection;
-            try {
-                connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler has no valid broker connection!");
-                return;
+            MqttBrokerConnection localConnection = abh.getConnection();
+            if (localConnection != null) {
+                localConnection.setKeepAliveInterval(20);
+                localConnection.setQos(1);
+                localConnection.setUnsubscribeOnStop(true);
+                localConnection.addConnectionObserver(this);
+                localConnection.start();
+                localConnection.subscribe(fullStatesTopic + "/#", this);
+                connection = localConnection;
+                if (localConnection.connectionState().compareTo(MqttConnectionState.CONNECTED) == 0) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
-            this.connection = connection;
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Waiting for 'milight/status: connected' MQTT message to be received. Check hub has 'MQTT Client Status Topic' configured.");
-            connection.subscribe(fullStatesTopic, this);
-            connection.subscribe(STATUS_TOPIC, this);
         }
         return;
     }
@@ -549,8 +546,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
     public void dispose() {
         MqttBrokerConnection localConnection = connection;
         if (localConnection != null) {
-            localConnection.unsubscribe(fullStatesTopic, this);
-            localConnection.unsubscribe(STATUS_TOPIC, this);
+            localConnection.unsubscribe(fullStatesTopic + "/#", this);
         }
     }
 }

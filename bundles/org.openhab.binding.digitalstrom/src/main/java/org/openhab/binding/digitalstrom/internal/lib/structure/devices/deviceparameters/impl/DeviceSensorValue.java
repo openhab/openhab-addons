@@ -34,8 +34,8 @@ import com.google.gson.JsonObject;
  * and
  * timestamp of the last sensor update.
  *
- * @author Michael Ochel - Initial contribution
- * @author Matthias Siegele - Initial contribution
+ * @author Michael Ochel - initial contributer
+ * @author Matthias Siegele - initial contributer
  */
 public class DeviceSensorValue {
 

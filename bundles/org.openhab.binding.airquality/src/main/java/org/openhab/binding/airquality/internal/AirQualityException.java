@@ -23,18 +23,24 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class AirQualityException extends Exception {
     private static final long serialVersionUID = -3398100220952729815L;
+    private int statusCode = -1;
 
     public AirQualityException(String message, Exception e) {
         super(message, e);
     }
 
-    public AirQualityException(String message, Object... params) {
-        super(String.format(message, params));
+    public AirQualityException(String message) {
+        super(message);
+    }
+
+    public int getStatusCode() {
+        return statusCode;
     }
 
     @Override
     public @Nullable String getMessage() {
         String message = super.getMessage();
-        return message == null ? null : String.format("Rest call failed: message=%s", message);
+        return message == null ? null
+                : String.format("Rest call failed: statusCode=%d, message=%s", statusCode, message);
     }
 }

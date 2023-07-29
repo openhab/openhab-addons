@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>SMA Energy Meter Binding</name>
 	<description>Binding for a SMA Energy Meter.</description>
-	<connection>local</connection>
 
 </addon:addon>

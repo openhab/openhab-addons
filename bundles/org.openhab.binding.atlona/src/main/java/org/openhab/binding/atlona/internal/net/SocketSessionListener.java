@@ -27,12 +27,12 @@ public interface SocketSessionListener {
      *
      * @param response a non-null, possibly empty response
      */
-    void responseReceived(String response);
+    public void responseReceived(String response);
 
     /**
      * Called when a command finished with an exception or a general exception occurred while reading
      *
      * @param e a non-null exception
      */
-    void responseException(Exception e);
+    public void responseException(Exception e);
 }

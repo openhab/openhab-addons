@@ -16,8 +16,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._1BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -30,11 +28,10 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class D5_00_01 extends _1BSMessage {
 
-    protected static final byte OPEN = 0 | TEACHIN_BIT;
-    protected static final byte CLOSED = 1 | TEACHIN_BIT;
+    final byte OPEN = 0 | TeachInBit;
+    final byte CLOSED = 1 | TeachInBit;
 
     public D5_00_01() {
         super();
@@ -46,7 +43,7 @@ public class D5_00_01 extends _1BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_CONTACT)) {
             EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
             if (c.inverted) {

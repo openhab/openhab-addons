@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface ByteResponseCallback extends ResponseCallback {
 
-    void onResponse(byte[] result);
+    public void onResponse(byte[] result);
 }

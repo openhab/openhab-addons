@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Orvibo Binding</name>
 	<description>This is the binding for Orvibo devices.</description>
-	<connection>local</connection>
 
 </addon:addon>

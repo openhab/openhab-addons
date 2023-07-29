@@ -23,5 +23,5 @@ import org.openhab.core.thing.ThingStatus;
  */
 @NonNullByDefault
 public interface KM200GatewayStatusListener {
-    void gatewayStatusChanged(ThingStatus status);
+    public void gatewayStatusChanged(ThingStatus status);
 }

@@ -77,6 +77,7 @@ public class CommandUtil {
                 return (byte) 0x24;
             default:
                 throw new IllegalArgumentException("Unhandled command type " + command);
+
         }
     }
 }

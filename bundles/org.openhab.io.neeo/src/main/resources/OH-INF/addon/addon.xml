@@ -5,11 +5,10 @@
 
 	<type>misc</type>
 	<name>Neeo</name>
-	<description>The openHAB NEEO integration allows mapping of openHAB things/item to a NEEO device/capabilities.</description>
-	<connection>local</connection>
+	<description>An additional REST endpoint to retrieve openHAB core metrics.</description>
 
 	<service-id>org.openhab.io.neeo.NeeoService</service-id>
 
-	<config-description-ref uri="io:neeo"/>
+	<config-description-ref uri="io.neeo"/>
 
 </addon:addon>

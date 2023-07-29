@@ -17,8 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -85,7 +83,7 @@ public class RelaxData {
         if (durationInMin == null) {
             return UnDefType.NULL;
         }
-        return new QuantityType<>(durationInMin, Units.MINUTE);
+        return new DecimalType(durationInMin);
     }
 
     public void setDurationInMin(int durationInMin) {

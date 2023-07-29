@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class ShadeMotion {
+class ShadeMotion {
 
     public enum Type {
         STOP("stop"),

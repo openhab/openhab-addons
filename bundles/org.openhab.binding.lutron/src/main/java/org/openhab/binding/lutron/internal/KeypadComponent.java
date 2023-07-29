@@ -24,11 +24,11 @@ import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
 @NonNullByDefault
 public interface KeypadComponent {
 
-    int id();
+    public int id();
 
-    String channel();
+    public String channel();
 
-    String description();
+    public String description();
 
-    ComponentType type();
+    public ComponentType type();
 }

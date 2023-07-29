@@ -162,16 +162,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         stopPolls();
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
-            oAuthService.removeAccessTokenRefreshListener(this);
-            oAuthFactory.ungetOAuthService(getThing().toString());
-            this.oAuthService = null;
+            oAuthService.close();
         }
-    }
-
-    @Override
-    public void handleRemoval() {
-        oAuthFactory.deleteServiceAndAccessToken(getThing().toString());
-        super.handleRemoval();
     }
 
     @Override

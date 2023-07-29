@@ -129,6 +129,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Start the periodic polling
      */
     private void startUp() {
+
         connectEndpoint();
 
         if (comms == null || config == null) {

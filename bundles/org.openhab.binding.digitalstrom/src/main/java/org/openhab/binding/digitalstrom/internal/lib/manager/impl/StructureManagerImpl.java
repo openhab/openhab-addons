@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
+import org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.AbstractGeneralDeviceInformations;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Circuit;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;

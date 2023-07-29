@@ -22,5 +22,5 @@ import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
  */
 @NonNullByDefault
 public interface ResponseCallback {
-    void onError(NetworkError error);
+    public void onError(NetworkError error);
 }

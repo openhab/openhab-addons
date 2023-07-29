@@ -23,45 +23,45 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface BlueZEventListener {
 
-    void onDBusBlueZEvent(BlueZEvent event);
+    public void onDBusBlueZEvent(BlueZEvent event);
 
-    default void onDiscoveringChanged(AdapterDiscoveringChangedEvent event) {
+    public default void onDiscoveringChanged(AdapterDiscoveringChangedEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onPoweredChange(AdapterPoweredChangedEvent event) {
+    public default void onPoweredChange(AdapterPoweredChangedEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onRssiUpdate(RssiEvent event) {
+    public default void onRssiUpdate(RssiEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onTxPowerUpdate(TXPowerEvent event) {
+    public default void onTxPowerUpdate(TXPowerEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onCharacteristicNotify(CharacteristicUpdateEvent event) {
+    public default void onCharacteristicNotify(CharacteristicUpdateEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onManufacturerDataUpdate(ManufacturerDataEvent event) {
+    public default void onManufacturerDataUpdate(ManufacturerDataEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onServiceDataUpdate(ServiceDataEvent event) {
+    public default void onServiceDataUpdate(ServiceDataEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onConnectedStatusUpdate(ConnectedEvent event) {
+    public default void onConnectedStatusUpdate(ConnectedEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onNameUpdate(NameEvent event) {
+    public default void onNameUpdate(NameEvent event) {
         onDBusBlueZEvent(event);
     }
 
-    default void onServicesResolved(ServicesResolvedEvent event) {
+    public default void onServicesResolved(ServicesResolvedEvent event) {
         onDBusBlueZEvent(event);
     }
 }

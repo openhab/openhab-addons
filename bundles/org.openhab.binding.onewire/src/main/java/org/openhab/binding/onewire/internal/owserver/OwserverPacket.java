@@ -13,6 +13,7 @@
 package org.openhab.binding.onewire.internal.owserver;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -59,10 +60,10 @@ public class OwserverPacket {
      *
      * @param owInputStream input stream to read from
      * @throws IOException
-     * @throws OwException in case an error occurs
+     * @throws OwExeption
      */
     public OwserverPacket(DataInputStream owInputStream, OwserverPacketType packetType)
-            throws IOException, OwException {
+            throws IOException, OwException, EOFException {
         this.packetType = packetType;
 
         // header
@@ -147,7 +148,7 @@ public class OwserverPacket {
     /**
      * set this packet's temperature scale
      *
-     * @param temperatureScale
+     * @param pressureScale
      */
     public void setTemperatureScale(OwserverTemperatureScale temperatureScale) {
         controlFlags = temperatureScale.setFlag(controlFlags);
@@ -180,7 +181,7 @@ public class OwserverPacket {
      * @param payload string representation of the payload to append
      */
     public void appendPayload(String payload) {
-        byte[] appendBytes = payload.getBytes();
+        byte appendBytes[] = payload.getBytes();
 
         byte[] fullPayload = new byte[this.payload.length + appendBytes.length];
         System.arraycopy(this.payload, 0, fullPayload, 0, this.payload.length);
@@ -297,7 +298,8 @@ public class OwserverPacket {
      * @return OwPageBuffer with this packet's payload
      */
     public OwPageBuffer getPayload() {
-        return new OwPageBuffer(payload);
+        OwPageBuffer byteBuffer = new OwPageBuffer(payload);
+        return byteBuffer;
     }
 
     /**

@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.bluegiga;
 
 import java.util.UUID;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 
 /**
@@ -26,7 +25,6 @@ import org.openhab.binding.bluetooth.BluetoothCharacteristic;
  * @author Connor Petty - Initial contribution
  *
  */
-@NonNullByDefault
 public class BlueGigaBluetoothCharacteristic extends BluetoothCharacteristic {
 
     private boolean notifying;

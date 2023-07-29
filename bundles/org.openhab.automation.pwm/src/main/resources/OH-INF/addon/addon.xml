@@ -6,6 +6,5 @@
 	<type>automation</type>
 	<name>PWM Controller</name>
 	<description>A trigger module for pulse-width modulation.</description>
-	<connection>none</connection>
 
 </addon:addon>

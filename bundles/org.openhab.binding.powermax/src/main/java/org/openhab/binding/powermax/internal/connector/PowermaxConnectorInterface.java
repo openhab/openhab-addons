@@ -28,45 +28,45 @@ public interface PowermaxConnectorInterface {
     /**
      * Method for opening a connection to the Visonic alarm panel.
      */
-    void open() throws Exception;
+    public void open() throws Exception;
 
     /**
      * Method for closing a connection to the Visonic alarm panel.
      */
-    void close();
+    public void close();
 
     /**
      * Returns connection status
      *
      * @return: true if connected or false if not
      **/
-    boolean isConnected();
+    public boolean isConnected();
 
     /**
      * Method for sending a message to the Visonic alarm panel
      *
      * @param data the message as a table of bytes
      **/
-    void sendMessage(byte[] data);
+    public void sendMessage(byte[] data);
 
     /**
      * Method for reading data from the Visonic alarm panel
      *
      * @param buffer the buffer into which the data is read
      **/
-    int read(byte[] buffer) throws IOException;
+    public int read(byte[] buffer) throws IOException;
 
     /**
      * Method for registering an event listener
      *
      * @param listener the listener to be registered
      */
-    void addEventListener(PowermaxMessageEventListener listener);
+    public void addEventListener(PowermaxMessageEventListener listener);
 
     /**
      * Method for removing an event listener
      *
      * @param listener the listener to be removed
      */
-    void removeEventListener(PowermaxMessageEventListener listener);
+    public void removeEventListener(PowermaxMessageEventListener listener);
 }

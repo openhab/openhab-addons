@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -27,7 +26,6 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Jasper van Zuijlen - Initial contribution
  * @author Neil Renaud - Heating Zones
  */
-@NonNullByDefault
 public class EvohomeBindingConstants {
 
     private static final String BINDING_ID = "evohome";

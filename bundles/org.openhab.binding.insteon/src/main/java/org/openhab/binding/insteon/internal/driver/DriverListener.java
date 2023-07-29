@@ -26,10 +26,10 @@ public interface DriverListener {
     /**
      * Notification that querying of the modems on all ports has successfully completed.
      */
-    void driverCompletelyInitialized();
+    public abstract void driverCompletelyInitialized();
 
     /**
      * Notification that the driver was disconnected
      */
-    void disconnected();
+    public abstract void disconnected();
 }

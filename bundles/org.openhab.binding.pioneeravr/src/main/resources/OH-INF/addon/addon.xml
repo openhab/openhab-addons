@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>PioneerAvr Binding</name>
 	<description>A binding for Pioneer AVRs.</description>
-	<connection>local</connection>
 
 </addon:addon>

@@ -38,7 +38,6 @@ import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -51,7 +50,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -82,10 +80,9 @@ public class RobonectHandler extends BaseThingHandler {
 
     private RobonectClient robonectClient;
 
-    public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
+    public RobonectHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        httpClient = httpClientFactory
-                .createHttpClient(ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null));
+        this.httpClient = httpClient;
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -246,7 +243,7 @@ public class RobonectHandler extends BaseThingHandler {
             if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP,
                         new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
-                updateState(CHANNEL_HEALTH_HUM, new QuantityType<>(info.getHealth().getHumidity(), Units.PERCENT));
+                updateState(CHANNEL_HEALTH_HUM, new QuantityType(info.getHealth().getHumidity(), Units.PERCENT));
             }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
@@ -367,12 +364,11 @@ public class RobonectHandler extends BaseThingHandler {
 
         try {
             httpClient.start();
+            robonectClient = new RobonectClient(httpClient, endpoint);
         } catch (Exception e) {
-            logger.error("Exception while trying to start HTTP client", e);
-            throw new IllegalStateException("Could not create HttpClient");
+            logger.error("Exception while trying to start http client", e);
+            throw new RuntimeException("Exception while trying to start http client", e);
         }
-
-        robonectClient = new RobonectClient(httpClient, endpoint);
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
         int pollInterval = robonectConfig.getPollInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
@@ -380,17 +376,12 @@ public class RobonectHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            this.pollingJob = null;
+            pollingJob = null;
         }
 
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.warn("Exception while trying to stop HTTP client", e);
-        }
+        httpClient = null;
     }
 
     /**

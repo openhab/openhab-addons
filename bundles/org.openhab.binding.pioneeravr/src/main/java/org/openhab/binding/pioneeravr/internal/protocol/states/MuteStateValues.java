@@ -18,6 +18,6 @@ package org.openhab.binding.pioneeravr.internal.protocol.states;
  */
 public interface MuteStateValues {
 
-    static final String ON_VALUE = "0";
-    static final String OFF_VALUE = "1";
+    public static final String ON_VALUE = "0";
+    public static final String OFF_VALUE = "1";
 }

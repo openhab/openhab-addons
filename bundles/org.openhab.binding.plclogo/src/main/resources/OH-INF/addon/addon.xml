@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>PLCLogo Binding</name>
 	<description>This binding provides native support for Siemens LOGO! PLC.</description>
-	<connection>local</connection>
 
 </addon:addon>

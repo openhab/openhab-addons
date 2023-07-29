@@ -13,6 +13,5 @@
 		Currently only a continuous polling is available!
 		]]>
 	</description>
-	<connection>local</connection>
 
 </addon:addon>

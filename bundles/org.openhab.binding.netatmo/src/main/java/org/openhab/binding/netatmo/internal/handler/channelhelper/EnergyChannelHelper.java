@@ -50,12 +50,13 @@ public class EnergyChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing data, Configuration config) {
-        if (data instanceof HomeData.Energy energyData) {
-            SetpointMode thermMode = energyData.getThermMode();
-            ThermProgram currentProgram = energyData.getActiveProgram();
+        if (data instanceof HomeData) {
+            HomeData homeData = (HomeData) data;
+            SetpointMode thermMode = homeData.getThermMode();
+            ThermProgram currentProgram = homeData.getActiveProgram();
             switch (channelId) {
                 case CHANNEL_SETPOINT_DURATION:
-                    return toQuantityType(energyData.getThermSetpointDefaultDuration(), Units.MINUTE);
+                    return toQuantityType(homeData.getThermSetpointDefaultDuration(), Units.MINUTE);
                 case CHANNEL_PLANNING:
                     return (currentProgram != null ? toStringType(currentProgram.getName()) : null);
                 case CHANNEL_SETPOINT_END_TIME:

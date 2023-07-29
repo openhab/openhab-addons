@@ -331,11 +331,6 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         String realItemName = filter.getItemName();
-        if (realItemName == null) {
-            logger.warn("Item name is missing in filter {}", filter);
-            return List.of();
-        }
-
         String collectionName = collectionPerItem ? realItemName : this.collection;
         @Nullable
         DBCollection collection = connectToCollection(collectionName);
@@ -359,8 +354,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         if (filter.getItemName() != null) {
             query.put(FIELD_ITEM, filter.getItemName());
         }
-        State filterState = filter.getState();
-        if (filterState != null && filter.getOperator() != null) {
+        if (filter.getState() != null && filter.getOperator() != null) {
             @Nullable
             String op = convertOperator(filter.getOperator());
 
@@ -369,7 +363,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
                 return Collections.emptyList();
             }
 
-            Object value = convertValue(filterState);
+            Object value = convertValue(filter.getState());
             query.put(FIELD_VALUE, new BasicDBObject(op, value));
         }
 

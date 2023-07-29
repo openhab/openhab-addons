@@ -24,5 +24,5 @@ public interface RpcParser<M, R> {
     /**
      * Parses the message returns the result.
      */
-    R parse(M message) throws IOException;
+    public R parse(M message) throws IOException;
 }

@@ -33,9 +33,9 @@ public interface FlicButtonDiscoveryService extends DiscoveryService {
      * @param bdaddr Bluetooth address of the discovered Flic button
      * @return UID that was created by the discovery service
      */
-    ThingUID flicButtonDiscovered(Bdaddr bdaddr);
+    public ThingUID flicButtonDiscovered(Bdaddr bdaddr);
 
-    void activate(FlicClient client);
+    public void activate(FlicClient client);
 
-    void deactivate();
+    public void deactivate();
 }

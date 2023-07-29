@@ -17,16 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.gpstracker.internal.message.dto.LocationMessage;
-import org.openhab.binding.gpstracker.internal.message.dto.TransitionMessage;
-
 /**
  * Handler for notification messages between trackers.
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@NonNullByDefault
 public class NotificationHandler {
     /**
      * Location notifications need to be sent to the own tracker. Only the last location is saved for each tracker
@@ -51,9 +46,7 @@ public class NotificationHandler {
             if (msg instanceof TransitionMessage) {
                 List<TransitionMessage> transitionMessages = transitionNotifications.computeIfAbsent(trackerId,
                         k -> new ArrayList<>());
-                if (transitionMessages != null) {
-                    transitionMessages.add((TransitionMessage) msg);
-                }
+                transitionMessages.add((TransitionMessage) msg);
             } else {
                 locationNotifications.put(trackerId, msg);
             }

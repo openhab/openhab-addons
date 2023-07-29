@@ -15,7 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.LEAK_DETECTED_STATE;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
@@ -32,19 +31,19 @@ import io.github.hapjava.services.impl.LeakSensorService;
  * @author Tim Harper - Initial contribution
  */
 public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl implements LeakSensorAccessory {
-    private final Map<LeakDetectedStateEnum, String> mapping;
+    private final BooleanItemReader leakDetectedReader;
 
     public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        mapping = createMapping(LEAK_DETECTED_STATE, LeakDetectedStateEnum.class);
+        leakDetectedReader = createBooleanReader(LEAK_DETECTED_STATE);
         getServices().add(new LeakSensorService(this));
     }
 
     @Override
     public CompletableFuture<LeakDetectedStateEnum> getLeakDetected() {
-        return CompletableFuture.completedFuture(
-                getKeyFromMapping(LEAK_DETECTED_STATE, mapping, LeakDetectedStateEnum.LEAK_NOT_DETECTED));
+        return CompletableFuture.completedFuture(leakDetectedReader.getValue() ? LeakDetectedStateEnum.LEAK_DETECTED
+                : LeakDetectedStateEnum.LEAK_NOT_DETECTED);
     }
 
     @Override

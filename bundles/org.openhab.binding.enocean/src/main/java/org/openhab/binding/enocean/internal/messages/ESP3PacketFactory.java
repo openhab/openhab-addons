@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.BasePacket.ESPPacketType;
@@ -25,7 +23,6 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class ESP3PacketFactory {
 
     public static final BasePacket CO_RD_VERSION = new CCMessage(CCMessageType.CO_RD_VERSION);
@@ -69,8 +66,7 @@ public class ESP3PacketFactory {
                 new byte[] { SAMessageType.SA_WR_CLIENTLEARNRQ.getValue(), manu1, manu2, rorg, func, type });
     }
 
-    public static @Nullable BasePacket buildPacket(int dataLength, int optionalDataLength, byte packetType,
-            byte[] payload) {
+    public static BasePacket BuildPacket(int dataLength, int optionalDataLength, byte packetType, byte[] payload) {
         ESPPacketType type = ESPPacketType.getPacketType(packetType);
 
         switch (type) {

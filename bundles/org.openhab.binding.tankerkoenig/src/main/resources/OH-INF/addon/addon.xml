@@ -7,6 +7,5 @@
 	<name>Tankerkönig Binding</name>
 	<description>The Tankerkönig Binding allows to poll fuel prices of German gas stations by using the Tankerkoenig.de
 		API.</description>
-	<connection>cloud</connection>
 
 </addon:addon>

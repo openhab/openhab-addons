@@ -14,13 +14,10 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.thing.Channel;
 
 /**
  * number channel type description
@@ -29,15 +26,19 @@ import org.openhab.core.thing.Channel;
  *
  */
 @NonNullByDefault
-class TypeNumber extends KNXChannel {
-    public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_NUMBER, CHANNEL_NUMBER_CONTROL);
+class TypeNumber extends KNXChannelType {
 
-    TypeNumber(Channel channel) {
-        super(List.of(DecimalType.class, QuantityType.class), channel);
+    TypeNumber() {
+        super(CHANNEL_NUMBER, CHANNEL_NUMBER_CONTROL);
     }
 
     @Override
     protected String getDefaultDPT(String gaConfigKey) {
         return "9.001";
+    }
+
+    @Override
+    protected Set<String> getAllGAKeys() {
+        return Collections.singleton(GA);
     }
 }

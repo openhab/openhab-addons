@@ -17,7 +17,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.S
 /**
  * The {@link DeviceSceneSpec} saves a digitalSTROM-Device scene mode.
  *
- * @author Alexander Betker - Initial contribution
+ * @author Alexander Betker - initial contributer
  * @author Michael Ochel - add missing java-doc
  * @author Matthias Siegele - add missing java-doc
  */

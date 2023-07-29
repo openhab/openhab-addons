@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.enocean.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
@@ -22,10 +21,10 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *         This class holds information for creating a channel of an EnOcean thing like acceptedItemType and
  *         channelTypeUID
  */
-@NonNullByDefault
 public class EnOceanChannelDescription {
     public final ChannelTypeUID channelTypeUID;
     public final String acceptedItemType;
+    @NonNull
     public final String label;
     public final boolean isStateChannel;
     public final boolean autoCreate;
@@ -50,11 +49,15 @@ public class EnOceanChannelDescription {
      * @param autoCreate create channel during thing initialization, otherwise channel is created
      *            manually/predefined
      */
-    public EnOceanChannelDescription(ChannelTypeUID channelTypeUID, @Nullable String itemType, @Nullable String label,
+    public EnOceanChannelDescription(ChannelTypeUID channelTypeUID, String itemType, String label,
             boolean isStateChannel, boolean autoCreate) {
         this.channelTypeUID = channelTypeUID;
-        this.acceptedItemType = itemType != null ? itemType : "";
-        this.label = label != null ? label : "";
+        this.acceptedItemType = itemType;
+        if (label != null) {
+            this.label = label;
+        } else {
+            this.label = "";
+        }
 
         this.isStateChannel = isStateChannel;
         this.autoCreate = autoCreate;

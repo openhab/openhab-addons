@@ -43,5 +43,5 @@ public interface EaseeCommand extends SuccessListener, FailureListener, ContentL
      *
      * @param resultProcessor
      */
-    void registerResultProcessor(JsonResultProcessor resultProcessor);
+    public void registerResultProcessor(JsonResultProcessor resultProcessor);
 }

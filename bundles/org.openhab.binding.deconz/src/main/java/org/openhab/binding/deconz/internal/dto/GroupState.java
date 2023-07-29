@@ -14,8 +14,6 @@ package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link GroupState} is send by the websocket connection as well as the Rest API.
  * It is part of a {@link GroupMessage}.
@@ -24,13 +22,11 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class GroupState {
-    @SerializedName(value = "all_on")
-    public boolean allOn;
-    @SerializedName(value = "any_on")
-    public boolean anyOn;
+    public boolean all_on;
+    public boolean any_on;
 
     @Override
     public String toString() {
-        return "GroupState{" + "all_on=" + allOn + ", any_on=" + anyOn + '}';
+        return "GroupState{" + "all_on=" + all_on + ", any_on=" + any_on + '}';
     }
 }

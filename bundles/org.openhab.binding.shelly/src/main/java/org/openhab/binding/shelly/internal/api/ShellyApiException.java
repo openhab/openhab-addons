@@ -83,8 +83,6 @@ public class ShellyApiException extends Exception {
                         string[1]);
             } else if (isMalformedURL()) {
                 message = "Invalid URL: " + url;
-            } else if (isJsonError()) {
-                message = getString(getMessage());
             } else if (isTimeout()) {
                 message = "API Timeout for " + url;
             } else if (!isConnectionError()) {

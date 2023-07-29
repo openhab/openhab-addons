@@ -18,9 +18,9 @@ package org.openhab.binding.jeelink.internal;
  * @author Volker Bier - Initial contribution
  */
 public interface ReadingHandler<R extends Reading> {
-    void handleReading(R r);
+    public void handleReading(R r);
 
-    Class<R> getReadingClass();
+    public Class<R> getReadingClass();
 
-    String getSensorType();
+    public String getSensorType();
 }

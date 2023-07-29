@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>TP-Link Smart Home Binding</name>
 	<description>This binding integrates the TP-Link Wi-Fi Smart Home devices.</description>
-	<connection>local</connection>
 
 </addon:addon>

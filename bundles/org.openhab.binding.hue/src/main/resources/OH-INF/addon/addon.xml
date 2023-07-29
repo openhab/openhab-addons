@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Hue Binding</name>
 	<description>The Hue Binding integrates the Philips Hue system. It allows to control Hue bulbs.</description>
-	<connection>hybrid</connection>
 
 </addon:addon>

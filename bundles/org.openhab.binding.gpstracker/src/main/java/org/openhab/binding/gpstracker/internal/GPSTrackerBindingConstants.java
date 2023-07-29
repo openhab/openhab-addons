@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -25,7 +24,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@NonNullByDefault
 public abstract class GPSTrackerBindingConstants {
     public static final String BINDING_ID = "gpstracker";
     static final String CONFIG_PID = "binding." + BINDING_ID;

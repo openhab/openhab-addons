@@ -13,13 +13,9 @@
 package org.openhab.binding.enocean.internal.transceiver;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
@@ -32,11 +28,10 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class EnOceanESP3Transceiver extends EnOceanTransceiver {
 
     public EnOceanESP3Transceiver(String path, TransceiverErrorListener errorListener,
-            ScheduledExecutorService scheduler, @Nullable SerialPortManager serialPortManager) {
+            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
         super(path, errorListener, scheduler, serialPortManager);
     }
 
@@ -57,38 +52,34 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
     protected void processMessage(byte firstByte) {
         byte[] readingBuffer = new byte[ENOCEAN_MAX_DATA];
         int bytesRead = -1;
-        byte byteBuffer;
+        byte _byte;
 
         try {
             readingBuffer[0] = firstByte;
-            InputStream localInPutStream = this.inputStream;
-            if (localInPutStream == null) {
-                throw new IOException("could not read from inputstream");
-            }
-            bytesRead = localInPutStream.read(readingBuffer, 1, localInPutStream.available());
+
+            bytesRead = this.inputStream.read(readingBuffer, 1, inputStream.available());
             if (bytesRead == -1) {
                 throw new IOException("could not read from inputstream");
             }
 
-            Future<?> localReadingTask = readingTask;
-            if (localReadingTask == null || localReadingTask.isCancelled()) {
+            if (readingTask == null || readingTask.isCancelled()) {
                 return;
             }
 
             bytesRead++;
             for (int p = 0; p < bytesRead; p++) {
-                byteBuffer = readingBuffer[p];
+                _byte = readingBuffer[p];
 
                 switch (state) {
                     case WaitingForSyncByte:
-                        if (byteBuffer == ESP3Packet.ESP3_SYNC_BYTE) {
+                        if (_byte == ESP3Packet.ESP3_SYNC_BYTE) {
                             state = ReadingState.ReadingHeader;
                             logger.trace("Received Sync Byte");
                         }
                         break;
                     case ReadingHeader:
                         if (currentPosition == ESP3Packet.ESP3_HEADER_LENGTH) {
-                            if (ESP3Packet.checkCRC8(dataBuffer, ESP3Packet.ESP3_HEADER_LENGTH, byteBuffer)
+                            if (ESP3Packet.checkCRC8(dataBuffer, ESP3Packet.ESP3_HEADER_LENGTH, _byte)
                                     && ((dataBuffer[0] & 0xFF) << 8) + (dataBuffer[1] & 0xFF)
                                             + (dataBuffer[2] & 0xFF) > 0) {
                                 state = ReadingState.ReadingData;
@@ -119,23 +110,23 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                                             ESP3Packet.ESP3_HEADER_LENGTH - copyFrom);
                                     state = ReadingState.ReadingHeader;
                                     currentPosition = ESP3Packet.ESP3_HEADER_LENGTH - copyFrom;
-                                    dataBuffer[currentPosition++] = byteBuffer;
+                                    dataBuffer[currentPosition++] = _byte;
                                 } else {
                                     currentPosition = 0;
-                                    state = byteBuffer == ESP3Packet.ESP3_SYNC_BYTE ? ReadingState.ReadingHeader
+                                    state = _byte == ESP3Packet.ESP3_SYNC_BYTE ? ReadingState.ReadingHeader
                                             : ReadingState.WaitingForSyncByte;
                                 }
                                 logger.trace("CrC8 header check not successful");
                             }
                         } else {
-                            dataBuffer[currentPosition++] = byteBuffer;
+                            dataBuffer[currentPosition++] = _byte;
                         }
                         break;
                     case ReadingData:
                         if (currentPosition == dataLength + optionalLength) {
-                            if (ESP3Packet.checkCRC8(dataBuffer, dataLength + optionalLength, byteBuffer)) {
+                            if (ESP3Packet.checkCRC8(dataBuffer, dataLength + optionalLength, _byte)) {
                                 state = ReadingState.WaitingForSyncByte;
-                                BasePacket packet = ESP3PacketFactory.buildPacket(dataLength, optionalLength,
+                                BasePacket packet = ESP3PacketFactory.BuildPacket(dataLength, optionalLength,
                                         packetType, dataBuffer);
 
                                 if (packet != null) {
@@ -175,7 +166,7 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                                             .bytesToHex(Arrays.copyOf(dataBuffer, dataLength + optionalLength)));
                                 }
                             } else {
-                                state = byteBuffer == ESP3Packet.ESP3_SYNC_BYTE ? ReadingState.ReadingHeader
+                                state = _byte == ESP3Packet.ESP3_SYNC_BYTE ? ReadingState.ReadingHeader
                                         : ReadingState.WaitingForSyncByte;
                                 logger.trace("ESP3Packet malformed: {}",
                                         HexUtils.bytesToHex(Arrays.copyOf(dataBuffer, dataLength + optionalLength)));
@@ -184,17 +175,13 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                             currentPosition = 0;
                             dataLength = optionalLength = packetType = -1;
                         } else {
-                            dataBuffer[currentPosition++] = byteBuffer;
+                            dataBuffer[currentPosition++] = _byte;
                         }
                         break;
                 }
             }
         } catch (IOException ioexception) {
-            logger.trace("Unable to process message", ioexception);
-            TransceiverErrorListener localListener = errorListener;
-            if (localListener != null) {
-                localListener.errorOccured(ioexception);
-            }
+            errorListener.ErrorOccured(ioexception);
             return;
         }
     }

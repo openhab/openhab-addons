@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>myStrom Binding</name>
 	<description>This is the binding for myStrom devices.</description>
-	<connection>local</connection>
 
 </addon:addon>

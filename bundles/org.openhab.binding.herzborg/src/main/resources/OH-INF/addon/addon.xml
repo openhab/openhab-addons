@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Herzborg Binding</name>
 	<description>This is the binding for Herzborg smart curtain motors.</description>
-	<connection>local</connection>
 
 </addon:addon>

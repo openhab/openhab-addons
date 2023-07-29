@@ -23,5 +23,5 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public interface ChannelCommandHandler {
 
-    void handleCommand(Command command);
+    public void handleCommand(Command command);
 }

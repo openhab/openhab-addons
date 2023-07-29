@@ -48,7 +48,7 @@ public class AsyncHttpClient {
      * @param timeout A timeout
      * @return The result
      */
-    public CompletableFuture<Result> post(String address, @Nullable String jsonString, int timeout) {
+    public CompletableFuture<Result> post(String address, String jsonString, int timeout) {
         return doNetwork(HttpMethod.POST, address, jsonString, timeout);
     }
 
@@ -101,16 +101,15 @@ public class AsyncHttpClient {
         }
 
         request.method(method).timeout(timeout, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
-
+            @NonNullByDefault({})
             @Override
-            public void onComplete(@NonNullByDefault({}) org.eclipse.jetty.client.api.Result result) {
+            public void onComplete(org.eclipse.jetty.client.api.Result result) {
                 final HttpResponse response = (HttpResponse) result.getResponse();
                 if (result.getFailure() != null) {
                     f.completeExceptionally(result.getFailure());
                     return;
                 }
-                String content = getContentAsString();
-                f.complete(new Result(content != null ? content : "", response.getStatus()));
+                f.complete(new Result(getContentAsString(), response.getStatus()));
             }
         });
         return f;

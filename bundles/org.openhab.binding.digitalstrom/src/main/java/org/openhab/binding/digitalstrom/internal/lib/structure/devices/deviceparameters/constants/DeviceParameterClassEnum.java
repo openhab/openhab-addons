@@ -15,7 +15,7 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link DeviceParameterClassEnum} lists all digitalSTROM-device parameter classes.
  *
- * @author Alexander Betker - Initial contribution
+ * @author Alexander Betker - initial contributer
  * @version digitalSTROM-API 1.14.5
  */
 public enum DeviceParameterClassEnum {

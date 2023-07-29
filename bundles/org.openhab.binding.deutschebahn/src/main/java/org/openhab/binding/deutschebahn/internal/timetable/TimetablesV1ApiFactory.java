@@ -28,6 +28,6 @@ public interface TimetablesV1ApiFactory {
     /**
      * Creates a new instance of the {@link TimetablesV1Api}.
      */
-    TimetablesV1Api create(final String clientId, final String clientSecret, final HttpCallable httpCallable)
-            throws JAXBException;
+    public abstract TimetablesV1Api create(final String clientId, final String clientSecret,
+            final HttpCallable httpCallable) throws JAXBException;
 }

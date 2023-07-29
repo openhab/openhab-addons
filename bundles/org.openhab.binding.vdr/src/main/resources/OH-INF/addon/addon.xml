@@ -7,6 +7,5 @@
 	<name>VDR Binding</name>
 	<description>The Video Disk Recorder (VDR) binding allows to control your own Video Disk Recorder
 		(https://www.tvdr.de).</description>
-	<connection>local</connection>
 
 </addon:addon>

@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kai Kreuzer - Initial contribution
  */
-@NonNullByDefault
 public class BluetoothAddressTest {
 
     @Test

@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>MyBMW</name>
 	<description>Provides access to your Vehicle Data like MyBMW App</description>
-	<connection>cloud</connection>
 
 </addon:addon>

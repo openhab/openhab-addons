@@ -15,22 +15,23 @@ package org.openhab.binding.systeminfo.internal;
 import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
+import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
@@ -50,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extended channels can be auto discovered and added to newly created groups in the {@link SysteminfoHandler}. The
+ * Extended channels can be auto discovered and added to newly created groups in the {@link SystemInfoHandler}. The
  * thing needs to be updated to add the groups. The `SysteminfoThingTypeProvider` OSGi service gives access to the
  * `ThingTypeRegistry` and serves the updated `ThingType`.
  *
@@ -59,23 +60,39 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { SysteminfoThingTypeProvider.class, ThingTypeProvider.class })
-public class SysteminfoThingTypeProvider extends AbstractStorageBasedTypeProvider {
+public class SysteminfoThingTypeProvider implements ThingTypeProvider {
     private final Logger logger = LoggerFactory.getLogger(SysteminfoThingTypeProvider.class);
 
     private final ThingTypeRegistry thingTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
 
+    private final Map<ThingTypeUID, ThingType> thingTypes = new HashMap<>();
+
     private final Map<ThingUID, Map<String, Configuration>> thingChannelsConfig = new HashMap<>();
 
     @Activate
     public SysteminfoThingTypeProvider(@Reference ThingTypeRegistry thingTypeRegistry,
             @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry,
-            @Reference ChannelTypeRegistry channelTypeRegistry, @Reference StorageService storageService) {
-        super(storageService);
+            @Reference ChannelTypeRegistry channelTypeRegistry) {
+        super();
         this.thingTypeRegistry = thingTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.channelTypeRegistry = channelTypeRegistry;
+    }
+
+    @Override
+    public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
+        return thingTypes.values();
+    }
+
+    @Override
+    public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
+        return thingTypes.get(thingTypeUID);
+    }
+
+    private void setThingType(ThingTypeUID uid, ThingType type) {
+        thingTypes.put(uid, type);
     }
 
     /**
@@ -97,20 +114,17 @@ public class SysteminfoThingTypeProvider extends AbstractStorageBasedTypeProvide
      * @return false if `typeUID` or its base type UID `systeminfo:computer` cannot be found in the thingTypeRegistry
      */
     public boolean updateThingType(ThingTypeUID typeUID, List<ChannelGroupDefinition> groupDefs) {
-        ThingType baseType = thingTypeRegistry.getThingType(typeUID);
-        if (baseType == null) {
-            baseType = thingTypeRegistry.getThingType(THING_TYPE_COMPUTER);
-            if (baseType == null) {
-                logger.warn("Could not find base thing type in registry.");
-                return false;
-            }
+        ThingTypeUID baseTypeUID = THING_TYPE_COMPUTER;
+        if (thingTypes.containsKey(typeUID)) {
+            baseTypeUID = typeUID;
         }
-        ThingTypeBuilder builder = createThingTypeBuilder(typeUID, baseType.getUID());
-        if (builder != null) {
+        ThingType baseType = thingTypeRegistry.getThingType(baseTypeUID);
+        ThingTypeBuilder builder = createThingTypeBuilder(typeUID, baseTypeUID);
+        if (baseType != null && builder != null) {
             logger.trace("Adding channel group definitions to thing type");
             ThingType type = builder.withChannelGroupDefinitions(groupDefs).build();
 
-            putThingType(type);
+            setThingType(typeUID, type);
             return true;
         } else {
             logger.debug("Error adding channel groups");
@@ -239,7 +253,7 @@ public class SysteminfoThingTypeProvider extends AbstractStorageBasedTypeProvide
     /**
      * Store the channel configurations for a thing, to be able to restore them later when the thing handler for the
      * same thing gets recreated with a new thing type. This is necessary because the
-     * {@link BaseThingHandler##changeThingType()} method reverts channel configurations to their defaults.
+     * {@link BaseThingHandler#changeThingType()} method reverts channel configurations to their defaults.
      *
      * @param thing
      */

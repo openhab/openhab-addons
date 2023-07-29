@@ -14,17 +14,14 @@ package org.openhab.binding.enocean.internal;
 
 import java.util.Arrays;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class Helper {
 
     public static byte[] concatAll(byte[] a, byte[]... rest) {
-        if (rest.length == 0) {
+        if (rest == null) {
             return a;
         }
 
@@ -43,7 +40,7 @@ public class Helper {
                 offset += array.length;
             }
         }
-        return result != null ? result : new byte[0];
+        return result;
     }
 
     public static int tryParseInt(String value, int defaultValue) {

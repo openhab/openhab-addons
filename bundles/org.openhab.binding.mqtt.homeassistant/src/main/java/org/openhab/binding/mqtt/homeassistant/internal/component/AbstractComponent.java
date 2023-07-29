@@ -39,8 +39,6 @@ import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 
-import com.google.gson.Gson;
-
 /**
  * A HomeAssistant component is comparable to a channel group.
  * It has a name and consists of multiple channels.
@@ -244,9 +242,5 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     public boolean isEnabledByDefault() {
         return channelConfiguration.isEnabledByDefault();
-    }
-
-    public Gson getGson() {
-        return componentConfiguration.getGson();
     }
 }

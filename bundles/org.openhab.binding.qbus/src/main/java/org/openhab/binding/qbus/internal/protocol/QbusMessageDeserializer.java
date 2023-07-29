@@ -92,6 +92,7 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
 
             if (jsonObject.has("outputs")) {
                 jsonOutputs = jsonObject.get("outputs");
+
             }
 
             if (ctd != null && cmd != null) {
@@ -114,6 +115,7 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
                         }
                         ((QbusMessageListMap) message).setOutputs(outputsList);
                     }
+
                 } else {
                     message = new QbusMessageMap();
 
@@ -143,6 +145,7 @@ class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
                     if (setpoint != null) {
                         message.setSetPoint(setpoint);
                     }
+
                 }
             }
             return message;

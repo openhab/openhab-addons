@@ -70,7 +70,7 @@ public class RadioThermostatTimeDTO {
                 day = "Tuesday ";
                 break;
             case "2":
-                day = "Wednesday ";
+                day = "Wedensday ";
                 break;
             case "3":
                 day = "Thursday ";

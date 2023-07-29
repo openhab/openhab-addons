@@ -37,10 +37,10 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
-import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -51,8 +51,9 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class BoschHttpClient extends HttpClient {
+    private static final Gson GSON = new Gson();
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(BoschHttpClient.class);
 
     private final String ipAddress;
     private final String systemPassword;
@@ -64,22 +65,13 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
-     * Returns the public information URL for the Bosch SHC client addressed with the given IP address, using port 8446
+     * Returns the public information URL for the Bosch SHC clients, using port 8446.
      * See https://github.com/BoschSmartHome/bosch-shc-api-docs/blob/master/postman/README.md
      *
      * @return URL for public information
      */
-    public static String getPublicInformationUrl(String ipAddress) {
-        return String.format("https://%s:8446/smarthome/public/information", ipAddress);
-    }
-
-    /**
-     * Returns the public information URL for the current Bosch SHC client.
-     *
-     * @return URL for public information
-     */
     public String getPublicInformationUrl() {
-        return getPublicInformationUrl(this.ipAddress);
+        return String.format("https://%s:8446/smarthome/public/information", this.ipAddress);
     }
 
     /**
@@ -176,10 +168,8 @@ public class BoschHttpClient extends HttpClient {
                 logger.debug("Online check failed with status code: {}", contentResponse.getStatus());
                 return false;
             }
-        } catch (InterruptedException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.debug("Online check failed because of {}!", e.getMessage(), e);
+        } catch (TimeoutException | ExecutionException | NullPointerException e) {
+            logger.debug("Online check failed because of {}!", e.getMessage());
             return false;
         }
     }
@@ -204,10 +194,8 @@ public class BoschHttpClient extends HttpClient {
                 logger.debug("Access check failed with status code: {}", contentResponse.getStatus());
                 return false;
             }
-        } catch (InterruptedException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.debug("Access check failed because of {}!", e.getMessage(), e);
+        } catch (TimeoutException | ExecutionException | NullPointerException e) {
+            logger.debug("Access check failed because of {}!", e.getMessage());
             return false;
         }
     }
@@ -252,8 +240,8 @@ public class BoschHttpClient extends HttpClient {
                 logger.info("Pairing failed with response status {}.", contentResponse.getStatus());
                 return false;
             }
-        } catch (TimeoutException | CertificateEncodingException | KeyStoreException | RuntimeException e) {
-            logger.warn("Pairing failed with exception {}", e.getMessage(), e);
+        } catch (TimeoutException | CertificateEncodingException | KeyStoreException | NullPointerException e) {
+            logger.warn("Pairing failed with exception {}", e.getMessage());
             return false;
         } catch (ExecutionException e) {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
@@ -284,15 +272,15 @@ public class BoschHttpClient extends HttpClient {
      * @return created HTTP request instance
      */
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
-        logger.trace("Create request for http client {}", this);
+        logger.trace("Create request for http client {}", this.toString());
 
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
-                .header("api-version", "3.2") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/80
+                .header("api-version", "2.1") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/46
                 .timeout(10, TimeUnit.SECONDS); // Set default timeout
 
         if (content != null) {
-            String body = GsonUtils.DEFAULT_GSON_INSTANCE.toJson(content);
-            logger.trace("create request for {} and content {}", url, content);
+            String body = GSON.toJson(content);
+            logger.trace("create request for {} and content {}", url, content.toString());
             request = request.content(new StringContentProvider(body));
         } else {
             logger.trace("create request for {}", url);
@@ -317,7 +305,7 @@ public class BoschHttpClient extends HttpClient {
             Predicate<TContent> contentValidator,
             @Nullable BiFunction<Integer, String, BoschSHCException> errorResponseHandler)
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        logger.trace("Send request: {}", request);
+        logger.trace("Send request: {}", request.toString());
 
         ContentResponse contentResponse = request.send();
 
@@ -328,16 +316,15 @@ public class BoschHttpClient extends HttpClient {
             if (errorResponseHandler != null) {
                 throw errorResponseHandler.apply(statusCode, textContent);
             } else {
-                throw new ExecutionException(String.format("Send request failed with status code %s", statusCode),
-                        null);
+                throw new ExecutionException(String.format("Request failed with status code %s", statusCode), null);
             }
         }
 
-        logger.debug("Send request completed with success: {} - status code: {}", textContent, statusCode);
+        logger.debug("Received response: {} - status: {}", textContent, statusCode);
 
         try {
             @Nullable
-            TContent content = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(textContent, responseContentClass);
+            TContent content = GSON.fromJson(textContent, responseContentClass);
             if (content == null) {
                 throw new ExecutionException(String.format("Received no content in response, expected type %s",
                         responseContentClass.getName()), null);

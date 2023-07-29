@@ -26,50 +26,50 @@ public interface HomematicGatewayAdapter {
     /**
      * Called when a datapoint has been updated.
      */
-    void onStateUpdated(HmDatapoint dp);
+    public void onStateUpdated(HmDatapoint dp);
 
     /**
      * Called when a new device has been detected on the gateway.
      */
-    void onNewDevice(HmDevice device);
+    public void onNewDevice(HmDevice device);
 
     /**
      * Called when a device has been deleted from the gateway.
      */
-    void onDeviceDeleted(HmDevice device);
+    public void onDeviceDeleted(HmDevice device);
 
     /**
      * Called when the devices values should be reloaded from the gateway.
      */
-    void reloadDeviceValues(HmDevice device);
+    public void reloadDeviceValues(HmDevice device);
 
     /**
      * Called when all values for all devices should be reloaded from the gateway.
      */
-    void reloadAllDeviceValues();
+    public void reloadAllDeviceValues();
 
     /**
      * Called when a device has been loaded from the gateway.
      */
-    void onDeviceLoaded(HmDevice device);
+    public void onDeviceLoaded(HmDevice device);
 
     /**
      * Called when the connection is lost to the gateway.
      */
-    void onConnectionLost();
+    public void onConnectionLost();
 
     /**
      * Called when the connection is resumed to the gateway.
      */
-    void onConnectionResumed();
+    public void onConnectionResumed();
 
     /**
      * Returns the configuration of a datapoint.
      */
-    HmDatapointConfig getDatapointConfig(HmDatapoint dp);
+    public HmDatapointConfig getDatapointConfig(HmDatapoint dp);
 
     /**
      * Called when a new value for the duty cycle of the gateway has been received.
      */
-    void onDutyCycleRatioUpdate(int dutyCycleRatio);
+    public void onDutyCycleRatioUpdate(int dutyCycleRatio);
 }

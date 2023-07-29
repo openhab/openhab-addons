@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.somneo.internal;
 
-import static org.openhab.binding.somneo.internal.SomneoBindingConstants.*;
+import static org.openhab.binding.somneo.internal.SomneoBindingConstants.THING_TYPE_HF367X;
 
 import java.util.Set;
 
@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -51,14 +50,11 @@ public class SomneoHandlerFactory extends BaseThingHandlerFactory implements Htt
     private final SomneoPresetStateDescriptionProvider provider;
 
     @Activate
-    public SomneoHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            @Reference SomneoPresetStateDescriptionProvider provider) {
+    public SomneoHandlerFactory(@Reference SomneoPresetStateDescriptionProvider provider) {
         this.provider = provider;
 
-        this.secureClient = httpClientFactory.createHttpClient(BINDING_ID + "-secure",
-                new SslContextFactory.Client(false));
-        this.insecureClient = httpClientFactory.createHttpClient(BINDING_ID + "-insecure",
-                new SslContextFactory.Client(true));
+        this.secureClient = new HttpClient(new SslContextFactory.Client(false));
+        this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
 
         try {
             this.secureClient.start();

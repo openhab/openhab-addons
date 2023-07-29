@@ -12,40 +12,27 @@
  */
 package org.openhab.binding.monopriceaudio.internal.dto;
 
-import static org.openhab.binding.monopriceaudio.internal.MonopriceAudioBindingConstants.*;
-
 /**
- * Represents the data elements of a single zone of a supported amplifier
+ * Represents the data elements of a single zone of the Monoprice Whole House Amplifier
  *
  * @author Michael Lobstein - Initial contribution
  */
 public class MonopriceAudioZoneDTO {
 
-    private String zone = EMPTY;
-    private String page = EMPTY;
-    private String power = EMPTY;
-    private String mute = EMPTY;
-    private String dnd = EMPTY;
-    private int volume = NIL;
-    private int treble = NIL;
-    private int bass = NIL;
-    private int balance = NIL;
-    private String source = EMPTY;
-    private String keypad = EMPTY;
-
-    public MonopriceAudioZoneDTO() {
-    }
-
-    public MonopriceAudioZoneDTO(String zone) {
-        this.zone = zone;
-    }
+    private String zone;
+    private String page;
+    private String power;
+    private String mute;
+    private String dnd;
+    private int volume;
+    private int treble;
+    private int bass;
+    private int balance;
+    private String source;
+    private String keypad;
 
     public void setZone(String zone) {
         this.zone = zone;
-    }
-
-    public String getZone() {
-        return this.zone;
     }
 
     public void setPage(String page) {
@@ -57,7 +44,7 @@ public class MonopriceAudioZoneDTO {
     }
 
     public boolean isPageActive() {
-        return this.page.contains(ONE);
+        return ("01").equals(this.page);
     }
 
     public void setPower(String power) {
@@ -69,7 +56,7 @@ public class MonopriceAudioZoneDTO {
     }
 
     public boolean isPowerOn() {
-        return this.power.contains(ONE);
+        return ("01").equals(this.power);
     }
 
     public void setMute(String mute) {
@@ -81,7 +68,7 @@ public class MonopriceAudioZoneDTO {
     }
 
     public boolean isMuted() {
-        return this.mute.contains(ONE);
+        return ("01").equals(this.mute);
     }
 
     public void setDnd(String dnd) {
@@ -93,7 +80,7 @@ public class MonopriceAudioZoneDTO {
     }
 
     public boolean isDndOn() {
-        return this.dnd.contains(ONE);
+        return ("01").equals(this.dnd);
     }
 
     public int getVolume() {
@@ -145,12 +132,14 @@ public class MonopriceAudioZoneDTO {
     }
 
     public boolean isKeypadActive() {
-        return this.keypad.contains(ONE);
+        return ("01").equals(this.keypad);
     }
 
     @Override
     public String toString() {
+        // Re-construct the original status message from the controller
         // This is used to determine if something changed from the last polling update
-        return zone + page + power + mute + dnd + volume + treble + bass + balance + source + keypad;
+        return zone + page + power + mute + dnd + (String.format("%02d", volume)) + (String.format("%02d", treble))
+                + (String.format("%02d", bass)) + (String.format("%02d", balance)) + source + keypad;
     }
 }

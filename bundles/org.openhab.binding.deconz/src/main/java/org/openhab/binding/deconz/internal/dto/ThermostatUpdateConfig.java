@@ -26,6 +26,4 @@ public class ThermostatUpdateConfig {
     public @Nullable Integer heatsetpoint;
     public @Nullable ThermostatMode mode;
     public @Nullable Integer offset;
-    public @Nullable Boolean locked;
-    public @Nullable Boolean externalwindowopen;
 }

@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Ekey Binding</name>
 	<description>This is the binding for connecting openHAB to Ekey fingerprint scanners.</description>
-	<connection>local</connection>
 
 </addon:addon>

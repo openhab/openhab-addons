@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -28,7 +29,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.ecobee.internal.dto.oauth.AuthorizeResponseDTO;
 import org.openhab.binding.ecobee.internal.dto.oauth.TokenResponseDTO;
 import org.openhab.binding.ecobee.internal.handler.EcobeeAccountBridgeHandler;
-import org.openhab.binding.ecobee.internal.util.ExceptionUtils;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -254,7 +254,7 @@ public class EcobeeAuth {
         } catch (TimeoutException e) {
             logger.debug("TimeoutException: Call to Ecobee API timed out");
         } catch (ExecutionException e) {
-            if (ExceptionUtils.getRootThrowable(e) instanceof HttpResponseException) {
+            if (ExceptionUtils.getRootCause(e) instanceof HttpResponseException) {
                 logger.info("Awaiting entry of PIN in Ecobee portal. Expires in {} minutes",
                         getMinutesUntilPinExpiration());
             } else {

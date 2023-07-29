@@ -88,8 +88,6 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ceiling3:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
             case ceiling1:
-            case ceil26:
-            case ceiling11:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING1, device.getDeviceId());
             case ceiling4:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING4, device.getDeviceId());
@@ -101,7 +99,6 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ct_bulb:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CTBULB, device.getDeviceId());
             case stripe:
-            case strip6:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_STRIPE, device.getDeviceId());
             case desklamp:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_DESKLAMP, device.getDeviceId());
@@ -115,8 +112,6 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ceiling:
                 return YeelightBindingConstants.THING_TYPE_CEILING;
             case ceiling1:
-            case ceil26:
-            case ceiling11:
                 return YeelightBindingConstants.THING_TYPE_CEILING1;
             case ceiling3:
                 return YeelightBindingConstants.THING_TYPE_CEILING3;
@@ -130,7 +125,6 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ct_bulb:
                 return YeelightBindingConstants.THING_TYPE_CTBULB;
             case stripe:
-            case strip6:
                 return YeelightBindingConstants.THING_TYPE_STRIPE;
             case desklamp:
                 return YeelightBindingConstants.THING_TYPE_DESKLAMP;

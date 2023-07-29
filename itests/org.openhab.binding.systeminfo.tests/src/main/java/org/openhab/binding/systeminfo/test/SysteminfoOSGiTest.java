@@ -36,10 +36,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
 import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory;
+import org.openhab.binding.systeminfo.internal.SysteminfoThingTypeProvider;
 import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService;
 import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
@@ -50,7 +49,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.inbox.Inbox;
 import org.openhab.core.config.discovery.inbox.InboxPredicates;
-import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -77,6 +75,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
@@ -96,7 +95,6 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class SysteminfoOSGiTest extends JavaOSGiTest {
     private static final String DEFAULT_TEST_THING_NAME = "work";
     private static final String DEFAULT_TEST_ITEM_NAME = "test";
@@ -116,16 +114,13 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
      */
     private static final int DEFAULT_TEST_INTERVAL_MEDIUM = 3;
 
-    private @Nullable Thing systeminfoThing;
+    private @Nullable Thing systemInfoThing;
     private @Nullable GenericItem testItem;
 
     private @Mock @NonNullByDefault({}) OSHISysteminfo mockedSystemInfo;
     private @NonNullByDefault({}) SysteminfoHandlerFactory systeminfoHandlerFactory;
     private @NonNullByDefault({}) ThingRegistry thingRegistry;
     private @NonNullByDefault({}) ItemRegistry itemRegistry;
-    private @NonNullByDefault({}) ManagedThingProvider managedThingProvider;
-    private @NonNullByDefault({}) ManagedItemChannelLinkProvider itemChannelLinkProvider;
-    private @NonNullByDefault({}) UnitProvider unitProvider;
 
     @BeforeEach
     public void setUp() {
@@ -153,7 +148,6 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SysteminfoHandlerFactory.class);
             assertThat(systeminfoHandlerFactory, is(notNullValue()));
         });
-
         if (systeminfoHandlerFactory != null) {
             // Unbind oshiSystemInfo service and bind the mock service to make the systeminfo binding tests independent
             // of the external OSHI library
@@ -165,8 +159,13 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
 
         waitForAssert(() -> {
-            systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SysteminfoHandlerFactory.class);
-            assertThat(systeminfoHandlerFactory, is(notNullValue()));
+            ThingTypeProvider thingTypeProvider = getService(ThingTypeProvider.class,
+                    SysteminfoThingTypeProvider.class);
+            assertThat(thingTypeProvider, is(notNullValue()));
+        });
+        waitForAssert(() -> {
+            SysteminfoThingTypeProvider systeminfoThingTypeProvider = getService(SysteminfoThingTypeProvider.class);
+            assertThat(systeminfoThingTypeProvider, is(notNullValue()));
         });
 
         waitForAssert(() -> {
@@ -178,26 +177,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             itemRegistry = getService(ItemRegistry.class);
             assertThat(itemRegistry, is(notNullValue()));
         });
-
-        waitForAssert(() -> {
-            managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
-            assertThat(managedThingProvider, is(notNullValue()));
-        });
-
-        waitForAssert(() -> {
-            itemChannelLinkProvider = getService(ManagedItemChannelLinkProvider.class);
-            assertThat(itemChannelLinkProvider, is(notNullValue()));
-        });
-
-        waitForAssert(() -> {
-            unitProvider = getService(UnitProvider.class);
-            assertThat(unitProvider, is(notNullValue()));
-        });
     }
 
     @AfterEach
     public void tearDown() {
-        Thing thing = systeminfoThing;
+        Thing thing = systemInfoThing;
         if (thing != null) {
             // Remove the systeminfo thing. The handler will be also disposed automatically
             Thing removedThing = thingRegistry.forceRemove(thing.getUID());
@@ -264,11 +248,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         ThingUID thingUID = new ThingUID(thingTypeUID, DEFAULT_TEST_THING_NAME);
 
         ChannelUID channelUID = new ChannelUID(thingUID, channelID);
-        String channelTypeId = channelUID.getIdWithoutGroup();
-        if ("load1".equals(channelTypeId) || "load5".equals(channelTypeId) || "load15".equals(channelTypeId)) {
-            channelTypeId = "loadAverage";
-        }
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SysteminfoBindingConstants.BINDING_ID, channelTypeId);
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SysteminfoBindingConstants.BINDING_ID,
+                channelUID.getIdWithoutGroup());
         Configuration channelConfig = new Configuration();
         channelConfig.put("priority", priority);
         channelConfig.put("pid", new BigDecimal(pid));
@@ -277,9 +258,14 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
         Thing thing = ThingBuilder.create(thingTypeUID, thingUID).withConfiguration(thingConfiguration)
                 .withChannel(channel).build();
-        systeminfoThing = thing;
+        systemInfoThing = thing;
 
-        managedThingProvider.add(thing);
+        ManagedThingProvider managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
+        assertThat(managedThingProvider, is(notNullValue()));
+
+        if (managedThingProvider != null) {
+            managedThingProvider.add(thing);
+        }
 
         waitForAssert(() -> {
             SysteminfoHandler handler = (SysteminfoHandler) thing.getHandler();
@@ -295,7 +281,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     }
 
     private void assertItemState(String acceptedItemType, String itemName, String priority, State expectedState) {
-        Thing thing = systeminfoThing;
+        Thing thing = systemInfoThing;
         if (thing == null) {
             throw new AssertionError("Thing is null");
         }
@@ -337,7 +323,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     private void intializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
         GenericItem item = null;
         if (acceptedItemType.startsWith("Number")) {
-            item = new NumberItem(acceptedItemType, itemName, unitProvider);
+            item = new NumberItem(acceptedItemType, itemName);
         } else if ("String".equals(acceptedItemType)) {
             item = new StringItem(itemName);
         }
@@ -346,6 +332,13 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
         itemRegistry.add(item);
         testItem = item;
+
+        ManagedItemChannelLinkProvider itemChannelLinkProvider = getService(ManagedItemChannelLinkProvider.class);
+        assertThat(itemChannelLinkProvider, is(notNullValue()));
+
+        if (itemChannelLinkProvider == null) {
+            return;
+        }
 
         itemChannelLinkProvider.add(new ItemChannelLink(itemName, channelUID));
     }
@@ -368,7 +361,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     private void testInvalidConfiguration() {
         waitForAssert(() -> {
-            Thing thing = systeminfoThing;
+            Thing thing = systemInfoThing;
             if (thing != null) {
                 assertThat("Invalid configuration is used !", thing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
                 assertThat(thing.getStatusInfo().getStatusDetail(),
@@ -988,9 +981,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         discoveryServiceMock.startScan();
 
         Inbox inbox = getService(Inbox.class);
-        waitForAssert(() -> {
-            assertThat(inbox, is(notNullValue()));
-        });
+        assertThat(inbox, is(notNullValue()));
 
         if (inbox == null) {
             return;
@@ -1005,11 +996,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         inbox.approve(computerUID, SysteminfoDiscoveryService.DEFAULT_THING_LABEL, null);
 
         waitForAssert(() -> {
-            systeminfoThing = thingRegistry.get(computerUID);
-            assertThat(systeminfoThing, is(notNullValue()));
+            systemInfoThing = thingRegistry.get(computerUID);
+            assertThat(systemInfoThing, is(notNullValue()));
         });
 
-        Thing thing = systeminfoThing;
+        Thing thing = systemInfoThing;
         if (thing == null) {
             return;
         }
@@ -1100,7 +1091,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         String acceptedItemType = "Number";
         initializeThingWithChannel(DEFAULT_TEST_CHANNEL_ID, acceptedItemType);
 
-        Thing thing = systeminfoThing;
+        Thing thing = systemInfoThing;
         if (thing == null) {
             throw new AssertionError("Thing is null");
         }

@@ -31,5 +31,5 @@ public interface LifxPropertiesUpdateListener {
      *
      * @param packet the updated properties
      */
-    void handlePropertiesUpdate(Map<String, String> properties);
+    public void handlePropertiesUpdate(Map<String, String> properties);
 }

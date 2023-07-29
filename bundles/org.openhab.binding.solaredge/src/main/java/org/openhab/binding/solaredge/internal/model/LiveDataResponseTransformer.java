@@ -15,7 +15,6 @@ package org.openhab.binding.solaredge.internal.model;
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -143,32 +142,28 @@ public class LiveDataResponseTransformer extends AbstractDataResponseTransformer
                     ZERO_POWER, siteCurrentPowerFlow.unit);
 
             // determine power flow from connection list
-            List<Connection> connections = siteCurrentPowerFlow.connections;
-            if (connections != null) {
-                for (Connection con : connections) {
-                    String conFrom = con.from;
-                    String conTo = con.to;
+            if (siteCurrentPowerFlow.connections != null) {
+                for (Connection con : siteCurrentPowerFlow.connections) {
                     if (grid != null) {
-                        if (conFrom != null && conFrom.equalsIgnoreCase(LiveDataResponse.GRID)) {
+                        if (con.from != null && con.from.equalsIgnoreCase(LiveDataResponse.GRID)) {
                             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_IMPORT),
                                     grid.currentPower, siteCurrentPowerFlow.unit);
-                        } else if (conTo != null && conTo.equalsIgnoreCase(LiveDataResponse.GRID)) {
+                        } else if (con.to != null && con.to.equalsIgnoreCase(LiveDataResponse.GRID)) {
                             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_EXPORT),
                                     grid.currentPower, siteCurrentPowerFlow.unit);
                         }
                     }
 
                     if (storage != null) {
-                        Double currentPower = storage.currentPower;
-                        currentPower = currentPower != null ? currentPower : 0;
-                        if (conFrom != null && conFrom.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
+                        Double currentPower = storage.currentPower != null ? storage.currentPower : 0;
+                        if (con.from != null && con.from.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
                             putPowerType(result,
                                     channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_DISCHARGE),
                                     currentPower, siteCurrentPowerFlow.unit);
                             putPowerType(result,
                                     channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
                                     -1 * currentPower, siteCurrentPowerFlow.unit);
-                        } else if (conTo != null && conTo.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
+                        } else if (con.to != null && con.to.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
                             putPowerType(result,
                                     channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE),
                                     currentPower, siteCurrentPowerFlow.unit);

@@ -135,6 +135,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     public void handleStandaloneElement(final @Nullable String elementName,
             final @Nullable Map<String, String> attributes, final boolean minimized, final int line, final int col)
             throws ParseException {
+
         logger.debug("Unexpected StandaloneElement in {}:{}: {} [{}]", line, col, elementName, attributes);
     }
 
@@ -142,6 +143,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     @NonNullByDefault({})
     public void handleOpenElement(final @Nullable String elementName, final @Nullable Map<String, String> attributes,
             final int line, final int col) throws ParseException {
+
         if (this.parserState == ParserState.INIT && "div".equals(elementName)) {
             this.parserState = ParserState.DATA_ENTRY;
             String classFlags;
@@ -270,6 +272,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleText(final char @Nullable [] buffer, final int offset, final int len, final int line,
             final int col) throws ParseException {
+
         if (buffer == null) {
             return;
         }

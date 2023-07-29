@@ -229,25 +229,23 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         String source = command.toString();
         String id = null;
 
-        String resultResult = result.get("Result");
-        if ("OK".equals(resultResult)) {
+        if (result.get("Result").equals("OK")) {
             String xml = result.get("SourceList");
             if (xml != null) {
                 id = parseSourceList(xml).get(source);
             }
         } else {
-            logger.warn("Source list query failed, result='{}'", resultResult);
+            logger.warn("Source list query failed, result='{}'", result.get("Result"));
         }
 
         if (source != null && id != null) {
             result = updateResourceState("MainTVAgent2", "SetMainTVSource",
                     SamsungTvUtils.buildHashMap("Source", source, "ID", id, "UiID", "0"));
 
-            resultResult = result.get("Result");
-            if ("OK".equals(resultResult)) {
+            if (result.get("Result").equals("OK")) {
                 logger.debug("Command successfully executed");
             } else {
-                logger.warn("Command execution failed, result='{}'", resultResult);
+                logger.warn("Command execution failed, result='{}'", result.get("Result"));
             }
         } else {
             logger.warn("Source id for '{}' couldn't be found", command.toString());
@@ -258,22 +256,20 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         Map<String, String> result = updateResourceState("MainTVAgent2", "RunBrowser",
                 SamsungTvUtils.buildHashMap("BrowserURL", command.toString()));
 
-        String resultResult = result.get("Result");
-        if ("OK".equals(resultResult)) {
+        if (result.get("Result").equals("OK")) {
             logger.debug("Command successfully executed");
         } else {
-            logger.warn("Command execution failed, result='{}'", resultResult);
+            logger.warn("Command execution failed, result='{}'", result.get("Result"));
         }
     }
 
     private void stopBrowser(Command command) {
         Map<String, String> result = updateResourceState("MainTVAgent2", "StopBrowser", null);
 
-        String resultResult = result.get("Result");
-        if ("OK".equals(resultResult)) {
+        if (result.get("Result").equals("OK")) {
             logger.debug("Command successfully executed");
         } else {
-            logger.warn("Command execution failed, result='{}'", resultResult);
+            logger.warn("Command execution failed, result='{}'", result.get("Result"));
         }
     }
 

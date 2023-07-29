@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface Data {
-    enum DataType {
+    public enum DataType {
         INFO,
         POWER,
         WALLBOX,

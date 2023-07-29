@@ -41,10 +41,6 @@
 			<channel-group id="resets" typeId="resets"/>
 		</channel-groups>
 
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
-
 		<config-description-ref uri="thing-type:comfoair:serial"/>
 
 	</thing-type>
@@ -69,11 +65,6 @@
 			<channel-group id="errors" typeId="errors"/>
 			<channel-group id="resets" typeId="resets"/>
 		</channel-groups>
-
-		<properties>
-			<property name="vendor">Zehnder</property>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<config-description-ref uri="thing-type:comfoair:serial"/>
 
@@ -418,10 +409,6 @@
 		<label>Fan Level</label>
 		<description>Fan level</description>
 		<category>Number</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="1">Away</option>
@@ -437,10 +424,6 @@
 		<label>Target Temperature</label>
 		<description>Target (comfort) temperature</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state min="12" max="28" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -557,19 +540,19 @@
 	</channel-type>
 
 	<channel-type id="fan_in_RPM" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type>Number</item-type>
 		<label>Fan In (rpm)</label>
-		<description>Current rotational speed of incoming fan</description>
+		<description>Current absolute speed (rpm) of incoming fan</description>
 		<category>Number</category>
-		<state readOnly="true" pattern="%.0f rpm"/>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fan_out_RPM" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type>Number</item-type>
 		<label>Fan Out (rpm)</label>
-		<description>Current rotational speed of outgoing fan</description>
+		<description>Current absolute speed (rpm) of outgoing fan</description>
 		<category>Number</category>
-		<state readOnly="true" pattern="%.0f rpm"/>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outdoor_temperature_in">
@@ -577,10 +560,6 @@
 		<label>Outdoor Temperature Incoming</label>
 		<description>Intake air temperature (outside)</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -589,10 +568,6 @@
 		<label>Outdoor Temperature Outgoing</label>
 		<description>Outlet air temperature (outside)</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -601,10 +576,6 @@
 		<label>Indoor Temperature Incoming</label>
 		<description>Inlet air temperature (inside)</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -613,10 +584,6 @@
 		<label>Indoor Temperature Outgoing</label>
 		<description>Uptake air temperature (inside)</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -681,15 +648,7 @@
 		<label>Chimney Control State</label>
 		<description>State of the chimney control</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Active</option>
-				<option value="OFF">Inactive</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bypass_state" advanced="true">
@@ -697,15 +656,7 @@
 		<label>Bypass State</label>
 		<description>State of the bypass (ON = open / OFF = closed)</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Open</option>
-				<option value="OFF">Closed</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ghx_state" advanced="true">
@@ -713,15 +664,7 @@
 		<label>Geothermal Heat exchanger State</label>
 		<description>State of the geothermal heat exchanger valve (ON = open / OFF = closed)</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Open</option>
-				<option value="OFF">Closed</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heater_state" advanced="true">
@@ -729,15 +672,7 @@
 		<label>Heater State</label>
 		<description>State of the heater</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Active</option>
-				<option value="OFF">Inactive</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="v_control_state" advanced="true">
@@ -745,15 +680,7 @@
 		<label>0-10V Control State</label>
 		<description>State of the 0-10V control</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Active</option>
-				<option value="OFF">Inactive</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="frost_state" advanced="true">
@@ -761,15 +688,7 @@
 		<label>Antifrost State</label>
 		<description>State of the antifrost control</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Active</option>
-				<option value="OFF">Inactive</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cookerhood_state" advanced="true">
@@ -777,15 +696,7 @@
 		<label>Cookerhood State</label>
 		<description>State of the cookerhood control</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Active</option>
-				<option value="OFF">Inactive</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="enthalpy_state" advanced="true">
@@ -793,15 +704,7 @@
 		<label>Enthalpy State</label>
 		<description>State of the enthalpy module</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Active</option>
-				<option value="OFF">Inactive</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ghx_temperature" advanced="true">
@@ -809,10 +712,6 @@
 		<label>GHX Temperature</label>
 		<description>Temperature of geothermal heat exchanger sensor</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -821,10 +720,6 @@
 		<label>Heater Temperature</label>
 		<description>Temperature of heater sensor</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -833,10 +728,6 @@
 		<label>Cookerhood Temperature</label>
 		<description>Temperature of cookerhood sensor</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -845,7 +736,7 @@
 		<label>Level 0 Duration</label>
 		<description>Uptime at level 0 (away)</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f h"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="level1_time" advanced="true">
@@ -853,7 +744,7 @@
 		<label>Level 1 Duration</label>
 		<description>Uptime at level 1</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f h"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="level2_time" advanced="true">
@@ -861,7 +752,7 @@
 		<label>Level 2 Duration</label>
 		<description>Uptime at level 2</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f h"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="level3_time" advanced="true">
@@ -869,7 +760,7 @@
 		<label>Level 3 Duration</label>
 		<description>Uptime at level 3</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f h"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="freeze_time" advanced="true">
@@ -877,7 +768,7 @@
 		<label>Antifrost Duration</label>
 		<description>Uptime of antifrost</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f h"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="preheater_time" advanced="true">
@@ -885,7 +776,7 @@
 		<label>Preheater Duration</label>
 		<description>Uptime of preheater</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f h"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="bypass_time" advanced="true">
@@ -893,7 +784,7 @@
 		<label>Bypass Duration</label>
 		<description>Hours of bypass open</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f h"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="filter_hours">
@@ -901,7 +792,7 @@
 		<label>Filter Duration</label>
 		<description>Uptime of the filter</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f h"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="bypass_factor" advanced="true">
@@ -941,16 +832,7 @@
 		<label>Preheater Valve</label>
 		<description>State of the preheater valve</description>
 		<category>Number</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="0">Closed</option>
-				<option value="1">Open</option>
-				<option value="2">Unknown</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="preheater_frost_protect" advanced="true">
@@ -958,15 +840,7 @@
 		<label>Frost Protection</label>
 		<description>State of the frost protection</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Active</option>
-				<option value="OFF">Inactive</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="preheater_heating" advanced="true">
@@ -974,23 +848,15 @@
 		<label>Preheater</label>
 		<description>State of the preheater</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="ON">Active</option>
-				<option value="OFF">Inactive</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="preheater_frost_time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Preheater Frost Time</label>
-		<description>Frost time</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%.0f min"/>
+		<description>Frost minutes</description>
+		<category>Number</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="preheater_safety" advanced="true">
@@ -998,17 +864,7 @@
 		<label>Preheater Frost Safety</label>
 		<description>Frost safety setting</description>
 		<category>Number</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="0">Extra-safe setting</option>
-				<option value="1">Safe setting</option>
-				<option value="2">Normal setting</option>
-				<option value="3">Economy setting</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ghx_temperature_low" advanced="true">
@@ -1016,11 +872,7 @@
 		<label>GHX Temperature (low)</label>
 		<description>Lower temperature of the geothermal heat exchanger</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state min="0" max="15" step="1" pattern="%.1f %unit%" readOnly="false"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ghx_temperature_high" advanced="true">
@@ -1028,11 +880,7 @@
 		<label>GHX Temperature (high)</label>
 		<description>Upper temperature of the geothermal heat exchanger</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state min="10" max="25" step="1" pattern="%.1f %unit%" readOnly="false"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ghx_speed" advanced="true">
@@ -1040,7 +888,7 @@
 		<label>GHX Speed Up (%)</label>
 		<description>Speed up of the geothermal heat exchanger</description>
 		<category>Number</category>
-		<state min="0" max="99" step="1" pattern="%.0f %%" readOnly="false"/>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heater_power" advanced="true">
@@ -1064,11 +912,7 @@
 		<label>Heater Target Temperature</label>
 		<description>Target temperature of the heater</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state min="5" max="40" step="1" pattern="%.1f %unit%" readOnly="false"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="cookerhood_speed" advanced="true">
@@ -1084,10 +928,6 @@
 		<label>Enthalpy Sensor Temperature</label>
 		<description>Temperature of the enthalpy sensor</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -1096,10 +936,6 @@
 		<label>Enthalpy Sensor Humidity</label>
 		<description>Humidity of the enthalpy sensor</description>
 		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1112,11 +948,11 @@
 	</channel-type>
 
 	<channel-type id="enthalpy_time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Enthalpy Sensor Timer</label>
 		<description>Timer state of the enthalpy sensor</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.0f min"/>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="is_preheater" advanced="true">
@@ -1350,95 +1186,67 @@
 	</channel-type>
 
 	<channel-type id="cookerhood_delay" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Cookerhood Delay (P20)</label>
-		<description>End delay for cooker hood control (uses minutes internally)</description>
+		<description>End delay for cooker hood control (min)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
-		</tags>
-		<state min="0" max="180" step="1" readOnly="false" pattern="%.0f min"/>
+		<state min="0" max="180" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="bathroom_start_delay" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Bathroom Switch Start Delay (P21)</label>
-		<description>Start delay for bathroom switch (uses minutes internally)</description>
+		<description>Start delay for bathroom switch (min)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
-		</tags>
-		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
+		<state min="0" max="120" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="bathroom_end_delay" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Bathroom Switch End Delay (P22)</label>
-		<description>End delay for bathroom switch (uses minutes internally)</description>
+		<description>End delay for bathroom switch (min)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
-		</tags>
-		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
+		<state min="0" max="120" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="L1_end_delay" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>L1 Switch End Delay (P23)</label>
-		<description>End delay for L1 switch (uses minutes internally)</description>
+		<description>End delay for L1 switch (min)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
-		</tags>
-		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
+		<state min="0" max="120" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filter_weeks" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Filter Period (P24)</label>
-		<description>Usage period until filter pollution message (uses full weeks internally)</description>
+		<description>Usage period until filter pollution message (weeks)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
-		</tags>
-		<state min="10" max="26" step="1" readOnly="false" pattern="%.0f week"/>
+		<state min="10" max="26" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="RF_short_delay" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>RF Short Delay (P25)</label>
-		<description>End delay (RF short actuation) for ventilation level 3 (uses minutes internally)</description>
+		<description>End delay (RF short actuation) for ventilation level 3 (min)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
-		</tags>
-		<state min="1" max="20" step="1" readOnly="false" pattern="%.0f min"/>
+		<state min="1" max="20" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="RF_long_delay" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>RF Long Delay (P26)</label>
-		<description>End delay (RF long actuation) for ventilation level 3 (uses minutes internally)</description>
+		<description>End delay (RF long actuation) for ventilation level 3 (min)</description>
 		<category>Time</category>
-		<state min="1" max="120" step="1" readOnly="false" pattern="%.0f min"/>
+		<state min="1" max="120" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="pulse_ventilation" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Pulse Ventilation Period (P27)</label>
-		<description>Period for pulse ventilation (uses minutes internally)</description>
+		<description>Period for pulse ventilation (min)</description>
 		<category>Time</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
-		</tags>
-		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
+		<state min="0" max="120" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="is_analog" advanced="true">
@@ -1462,12 +1270,7 @@
 		<label>Analog Input State</label>
 		<description>State of analog input</description>
 		<category>Switch</category>
-		<state readOnly="false">
-			<options>
-				<option value="OFF">Controlling</option>
-				<option value="ON">Programming</option>
-			</options>
-		</state>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="RF_mode" advanced="true">
@@ -1475,12 +1278,7 @@
 		<label>RF Input State</label>
 		<description>State of RF input</description>
 		<category>Switch</category>
-		<state readOnly="false">
-			<options>
-				<option value="OFF">Controlling</option>
-				<option value="ON">Programming</option>
-			</options>
-		</state>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="analog_negative" advanced="true">
@@ -1488,12 +1286,7 @@
 		<label>Analog Input Postive/Negative</label>
 		<description>Postive/Negative state of analog input</description>
 		<category>Switch</category>
-		<state readOnly="false">
-			<options>
-				<option value="OFF">Positive</option>
-				<option value="ON">Negative</option>
-			</options>
-		</state>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="RF_negative" advanced="true">
@@ -1501,12 +1294,7 @@
 		<label>RF Input Postive/Negative</label>
 		<description>Postive/Negative state of RF input</description>
 		<category>Switch</category>
-		<state readOnly="false">
-			<options>
-				<option value="OFF">Positive</option>
-				<option value="ON">Negative</option>
-			</options>
-		</state>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="analog_volt" advanced="true">
@@ -1514,10 +1302,6 @@
 		<label>Analog Input Voltage Level</label>
 		<description>Voltage level of analog input</description>
 		<category>Number</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

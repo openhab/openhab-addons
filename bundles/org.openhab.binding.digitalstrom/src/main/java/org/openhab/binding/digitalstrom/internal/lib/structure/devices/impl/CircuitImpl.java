@@ -29,8 +29,8 @@ import com.google.gson.JsonObject;
 /**
  * The {@link CircuitImpl} is the implementation of the {@link Circuit} and represent a digitalSTROM circuit.
  *
- * @author Michael Ochel - Initial contribution
- * @author Matthias Siegele - Initial contribution
+ * @author Michael Ochel - initial contributer
+ * @author Matthias Siegele - initial contributer
  */
 public class CircuitImpl extends AbstractGeneralDeviceInformations implements Circuit {
 

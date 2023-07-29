@@ -34,7 +34,6 @@ public class NetatmoBindingConstants {
     public static final String PROPERTY_COUNTRY = "country";
     public static final String PROPERTY_TIMEZONE = "timezone";
     public static final String PROPERTY_FEATURE = "feature";
-    public static final String PROPERTY_THING_TYPE_VERSION = "thingTypeVersion";
 
     // Channel group ids
     public static final String GROUP_LAST_EVENT = "last-event";
@@ -51,7 +50,6 @@ public class NetatmoBindingConstants {
     public static final String GROUP_SIGNAL = "signal";
     public static final String GROUP_BATTERY = "battery";
     public static final String GROUP_SECURITY = "security";
-    public static final String GROUP_SECURITY_EVENT = "security-event";
     public static final String GROUP_CAM_STATUS = "status";
     public static final String GROUP_CAM_LIVE = "live";
     public static final String GROUP_PRESENCE = "presence";
@@ -70,9 +68,9 @@ public class NetatmoBindingConstants {
     public static final String OPTION_PERSON = "-person";
     public static final String OPTION_ROOM = "-room";
     public static final String OPTION_THERMOSTAT = "-thermostat";
-    public static final String OPTION_ALARM = "-alarm";
+    public static final String OPTION_SMOKE = "-smoke";
     public static final Set<String> GROUP_VARIATIONS = Set.of(OPTION_EXTENDED, OPTION_OUTSIDE, OPTION_DOORBELL,
-            OPTION_PERSON, OPTION_ROOM, OPTION_THERMOSTAT, OPTION_ALARM);
+            OPTION_PERSON, OPTION_ROOM, OPTION_THERMOSTAT, OPTION_SMOKE);
 
     public static final String GROUP_TYPE_TIMESTAMP_EXTENDED = GROUP_TIMESTAMP + OPTION_EXTENDED;
     public static final String GROUP_TYPE_BATTERY_EXTENDED = GROUP_BATTERY + OPTION_EXTENDED;
@@ -85,7 +83,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_DOORBELL_LAST_EVENT = GROUP_LAST_EVENT + OPTION_DOORBELL;
     public static final String GROUP_DOORBELL_SUB_EVENT = GROUP_SUB_EVENT + OPTION_DOORBELL;
     public static final String GROUP_PERSON_LAST_EVENT = GROUP_LAST_EVENT + OPTION_PERSON;
-    public static final String GROUP_ALARM_LAST_EVENT = GROUP_LAST_EVENT + OPTION_ALARM;
+    public static final String GROUP_SMOKE_LAST_EVENT = GROUP_LAST_EVENT + OPTION_SMOKE;
     public static final String GROUP_TYPE_ROOM_TEMPERATURE = GROUP_TEMPERATURE + OPTION_ROOM;
     public static final String GROUP_TYPE_ROOM_PROPERTIES = GROUP_PROPERTIES + OPTION_ROOM;
     public static final String GROUP_TYPE_TH_PROPERTIES = GROUP_PROPERTIES + OPTION_THERMOSTAT;
@@ -114,7 +112,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SUM_RAIN24 = "sum-24";
     public static final String CHANNEL_WIND_ANGLE = "angle";
     public static final String CHANNEL_STATUS = GROUP_CAM_STATUS;
-    public static final String CHANNEL_SIREN = GROUP_SIREN;
     public static final String CHANNEL_WIND_STRENGTH = "strength";
     public static final String CHANNEL_MAX_WIND_STRENGTH = "max-strength";
     public static final String CHANNEL_DATE_MAX_WIND_STRENGTH = "max-strength-date";

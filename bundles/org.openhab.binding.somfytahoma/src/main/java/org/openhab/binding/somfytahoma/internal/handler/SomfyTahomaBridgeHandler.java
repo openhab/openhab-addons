@@ -73,7 +73,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,11 +184,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private void createHttpClient() {
         // let's create the right http client
-        String clientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
         if (thingConfig.isDevMode()) {
-            this.httpClient = httpClientFactory.createHttpClient(clientName, new SslContextFactory.Client(true));
+            this.httpClient = new HttpClient(new SslContextFactory.Client(true));
         } else {
-            this.httpClient = httpClientFactory.createHttpClient(clientName);
+            this.httpClient = httpClientFactory.createHttpClient("somfy_" + thing.getUID().getId());
         }
 
         try {

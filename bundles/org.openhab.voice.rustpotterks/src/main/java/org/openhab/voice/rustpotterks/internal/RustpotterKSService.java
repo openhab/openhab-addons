@@ -17,7 +17,6 @@ import static org.openhab.voice.rustpotterks.internal.RustpotterKSConstants.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +38,7 @@ import org.openhab.core.voice.KSService;
 import org.openhab.core.voice.KSServiceHandle;
 import org.openhab.core.voice.KSpottedEvent;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -46,10 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.givimad.rustpotter_java.Endianness;
-import io.github.givimad.rustpotter_java.Rustpotter;
-import io.github.givimad.rustpotter_java.RustpotterBuilder;
-import io.github.givimad.rustpotter_java.SampleFormat;
-import io.github.givimad.rustpotter_java.ScoreMode;
+import io.github.givimad.rustpotter_java.NoiseDetectionMode;
+import io.github.givimad.rustpotter_java.RustpotterJava;
+import io.github.givimad.rustpotter_java.RustpotterJavaBuilder;
+import io.github.givimad.rustpotter_java.VadMode;
 
 /**
  * The {@link RustpotterKSService} is a keyword spotting implementation based on rustpotter.
@@ -76,7 +76,7 @@ public class RustpotterKSService implements KSService {
     }
 
     @Activate
-    protected void activate(Map<String, Object> config) {
+    protected void activate(ComponentContext componentContext, Map<String, Object> config) {
         modified(config);
     }
 
@@ -111,7 +111,7 @@ public class RustpotterKSService implements KSService {
             throws KSException {
         logger.debug("Loading library");
         try {
-            Rustpotter.loadLibrary();
+            RustpotterJava.loadLibrary();
         } catch (IOException e) {
             throw new KSException("Unable to load rustpotter lib: " + e.getMessage());
         }
@@ -126,13 +126,8 @@ public class RustpotterKSService implements KSService {
         }
         var endianness = isBigEndian ? Endianness.BIG : Endianness.LITTLE;
         logger.debug("Audio wav spec: frequency '{}', bit depth '{}', channels '{}', '{}'", frequency, bitDepth,
-                channels, isBigEndian ? "big-endian" : "little-endian");
-        Rustpotter rustpotter;
-        try {
-            rustpotter = initRustpotter(frequency, bitDepth, channels, endianness);
-        } catch (Exception e) {
-            throw new KSException("Unable to configure rustpotter: " + e.getMessage(), e);
-        }
+                channels, audioFormat.isBigEndian() ? "big-endian" : "little-endian");
+        RustpotterJava rustpotter = initRustpotter(frequency, bitDepth, channels, endianness);
         var modelName = keyword.replaceAll("\\s", "_") + ".rpw";
         var modelPath = Path.of(RUSTPOTTER_FOLDER, modelName);
         if (!modelPath.toFile().exists()) {
@@ -146,43 +141,48 @@ public class RustpotterKSService implements KSService {
         logger.debug("Model '{}' loaded", modelPath);
         AtomicBoolean aborted = new AtomicBoolean(false);
         executor.submit(() -> processAudioStream(rustpotter, ksListener, audioStream, aborted));
-        return () -> {
-            logger.debug("Stopping service");
-            aborted.set(true);
+        return new KSServiceHandle() {
+            @Override
+            public void abort() {
+                logger.debug("Stopping service");
+                aborted.set(true);
+            }
         };
     }
 
-    private Rustpotter initRustpotter(long frequency, int bitDepth, int channels, Endianness endianness)
-            throws Exception {
-        var rustpotterBuilder = new RustpotterBuilder();
+    private RustpotterJava initRustpotter(long frequency, int bitDepth, int channels, Endianness endianness) {
+        var rustpotterBuilder = new RustpotterJavaBuilder();
         // audio configs
         rustpotterBuilder.setBitsPerSample(bitDepth);
         rustpotterBuilder.setSampleRate(frequency);
         rustpotterBuilder.setChannels(channels);
-        rustpotterBuilder.setSampleFormat(SampleFormat.INT);
         rustpotterBuilder.setEndianness(endianness);
         // detector configs
         rustpotterBuilder.setThreshold(config.threshold);
         rustpotterBuilder.setAveragedThreshold(config.averagedThreshold);
-        rustpotterBuilder.setScoreMode(getScoreMode(config.scoreMode));
-        rustpotterBuilder.setMinScores(config.minScores);
         rustpotterBuilder.setComparatorRef(config.comparatorRef);
         rustpotterBuilder.setComparatorBandSize(config.comparatorBandSize);
-        // filter configs
-        rustpotterBuilder.setGainNormalizerEnabled(config.gainNormalizer);
-        rustpotterBuilder.setMinGain(config.minGain);
-        rustpotterBuilder.setMaxGain(config.maxGain);
-        rustpotterBuilder.setGainRef(config.gainRef);
-        rustpotterBuilder.setBandPassFilterEnabled(config.bandPass);
-        rustpotterBuilder.setBandPassLowCutoff(config.lowCutoff);
-        rustpotterBuilder.setBandPassHighCutoff(config.highCutoff);
+        @Nullable
+        VadMode vadMode = getVADMode(config.vadMode);
+        if (vadMode != null) {
+            rustpotterBuilder.setVADMode(vadMode);
+            rustpotterBuilder.setVADSensitivity(config.vadSensitivity);
+            rustpotterBuilder.setVADDelay(config.vadDelay);
+        }
+        @Nullable
+        NoiseDetectionMode noiseDetectionMode = getNoiseMode(config.noiseDetectionMode);
+        if (noiseDetectionMode != null) {
+            rustpotterBuilder.setNoiseMode(noiseDetectionMode);
+            rustpotterBuilder.setNoiseSensitivity(config.noiseSensitivity);
+        }
+        rustpotterBuilder.setEagerMode(config.eagerMode);
         // init the detector
         var rustpotter = rustpotterBuilder.build();
         rustpotterBuilder.delete();
         return rustpotter;
     }
 
-    private void processAudioStream(Rustpotter rustpotter, KSListener ksListener, AudioStream audioStream,
+    private void processAudioStream(RustpotterJava rustpotter, KSListener ksListener, AudioStream audioStream,
             AtomicBoolean aborted) {
         int numBytesRead;
         var bufferSize = (int) rustpotter.getBytesPerFrame();
@@ -191,32 +191,23 @@ public class RustpotterKSService implements KSService {
         while (!aborted.get()) {
             try {
                 numBytesRead = audioStream.read(audioBuffer, bufferSize - remaining, remaining);
-                if (aborted.get() || numBytesRead == -1) {
+                if (aborted.get()) {
                     break;
                 }
                 if (numBytesRead != remaining) {
                     remaining = remaining - numBytesRead;
+                    Thread.sleep(100);
                     continue;
                 }
                 remaining = bufferSize;
-                var result = rustpotter.processBytes(audioBuffer);
+                var result = rustpotter.processBuffer(audioBuffer);
                 if (result.isPresent()) {
                     var detection = result.get();
-                    if (logger.isDebugEnabled()) {
-                        ArrayList<String> scores = new ArrayList<>();
-                        var scoreNames = detection.getScoreNames().split("\\|\\|");
-                        var scoreValues = detection.getScores();
-                        for (var i = 0; i < Integer.min(scoreNames.length, scoreValues.length); i++) {
-                            scores.add("'" + scoreNames[i] + "': " + scoreValues[i]);
-                        }
-                        logger.debug("Detected '{}' with: Score: {}, AvgScore: {}, Count: {}, Gain: {}, Scores: {}",
-                                detection.getName(), detection.getScore(), detection.getAvgScore(),
-                                detection.getCounter(), detection.getGain(), String.join(", ", scores));
-                    }
+                    logger.debug("keyword '{}' detected with score {}!", detection.getName(), detection.getScore());
                     detection.delete();
                     ksListener.ksEventReceived(new KSpottedEvent());
                 }
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 String errorMessage = e.getMessage();
                 ksListener.ksEventReceived(new KSErrorEvent(errorMessage != null ? errorMessage : "Unexpected error"));
             }
@@ -225,27 +216,35 @@ public class RustpotterKSService implements KSService {
         logger.debug("rustpotter stopped");
     }
 
-    private ScoreMode getScoreMode(String mode) {
+    private @Nullable VadMode getVADMode(String mode) {
         switch (mode) {
-            case "average":
-                return ScoreMode.AVG;
-            case "median":
-                return ScoreMode.MEDIAN;
-            case "p25":
-                return ScoreMode.P25;
-            case "p50":
-                return ScoreMode.P50;
-            case "p75":
-                return ScoreMode.P75;
-            case "p80":
-                return ScoreMode.P80;
-            case "p90":
-                return ScoreMode.P90;
-            case "p95":
-                return ScoreMode.P95;
-            case "max":
+            case "low-bitrate":
+                return VadMode.LOW_BITRATE;
+            case "quality":
+                return VadMode.QUALITY;
+            case "aggressive":
+                return VadMode.AGGRESSIVE;
+            case "very-aggressive":
+                return VadMode.VERY_AGGRESSIVE;
             default:
-                return ScoreMode.MAX;
+                return null;
+        }
+    }
+
+    private @Nullable NoiseDetectionMode getNoiseMode(String mode) {
+        switch (mode) {
+            case "easiest":
+                return NoiseDetectionMode.EASIEST;
+            case "easy":
+                return NoiseDetectionMode.EASY;
+            case "normal":
+                return NoiseDetectionMode.NORMAL;
+            case "hard":
+                return NoiseDetectionMode.HARD;
+            case "hardest":
+                return NoiseDetectionMode.HARDEST;
+            default:
+                return null;
         }
     }
 }

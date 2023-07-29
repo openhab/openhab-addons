@@ -26,8 +26,7 @@ public class DeconzBridgeConfig {
     public int httpPort = 80;
     public int port = 0;
     public @Nullable String apikey;
-    public int timeout = 2000;
-    public int websocketTimeout = 120;
+    int timeout = 2000;
 
     public String getHostWithoutPort() {
         String hostWithoutPort = host;

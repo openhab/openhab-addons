@@ -54,7 +54,7 @@ public class PersonChannelHelper extends ChannelHelper {
             HomeStatusPerson person = (HomeStatusPerson) naThing;
             switch (channelId) {
                 case CHANNEL_PERSON_AT_HOME:
-                    return OnOffType.from(person.atHome());
+                    return OnOffType.from(!person.isOutOfSight());
                 case CHANNEL_LAST_SEEN:
                     return toDateTimeType(person.getLastSeen());
             }

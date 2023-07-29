@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public interface StringResponseCallback extends ResponseCallback {
 
-    void onResponse(@Nullable String result);
+    public void onResponse(@Nullable String result);
 }

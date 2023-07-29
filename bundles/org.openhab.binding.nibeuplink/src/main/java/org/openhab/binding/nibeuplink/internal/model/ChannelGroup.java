@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * used to determine the group a channel belongs to
  *
  * @author Alexander Friese - initial contribution
  */
-@NonNullByDefault
 public enum ChannelGroup {
     BASE,
     GENERAL,

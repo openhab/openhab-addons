@@ -14,6 +14,8 @@ package org.openhab.binding.onebusaway.internal.config;
 
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.*;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * The {@link StopConfiguration} defines the model for a stop bridge configuration.
  *
@@ -54,7 +56,7 @@ public class StopConfiguration {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{ " + STOP_CONFIG_INTERVAL + "=" + this.getInterval() + ", "
-                + STOP_CONFIG_ID + "=" + this.getStopId() + "}";
+        return new ToStringBuilder(this).append(STOP_CONFIG_INTERVAL, this.getInterval())
+                .append(STOP_CONFIG_ID, this.getStopId()).toString();
     }
 }

@@ -30,7 +30,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseAuthenticationException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseCommandException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseConnectionException;
@@ -60,7 +59,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
 
 /**
  *
@@ -109,18 +107,15 @@ public class HydrawiseGraphQLClient {
      */
     public @Nullable QueryResponse queryControllers()
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
+        QueryRequest query;
         try {
-            QueryRequest query = new QueryRequest(getQueryString());
-            String queryJson = gson.toJson(query);
-            String response = sendGraphQLQuery(queryJson);
-            try {
-                return gson.fromJson(response, QueryResponse.class);
-            } catch (JsonSyntaxException e) {
-                throw new HydrawiseConnectionException("Invalid Response: " + response);
-            }
+            query = new QueryRequest(getQueryString());
         } catch (IOException e) {
             throw new HydrawiseConnectionException(e);
         }
+        String queryJson = gson.toJson(query);
+        String response = sendGraphQLQuery(queryJson);
+        return gson.fromJson(response, QueryResponse.class);
     }
 
     /***
@@ -267,20 +262,16 @@ public class HydrawiseGraphQLClient {
         logger.debug("Sending Mutation {}", gson.toJson(mutation).toString());
         String response = sendGraphQLRequest(gson.toJson(mutation).toString());
         logger.debug("Mutation response {}", response);
-        try {
-            MutationResponse mResponse = gson.fromJson(response, MutationResponse.class);
-            if (mResponse == null) {
-                throw new HydrawiseCommandException("Malformed response: " + response);
-            }
-            Optional<MutationResponseStatus> status = mResponse.data.values().stream().findFirst();
-            if (!status.isPresent()) {
-                throw new HydrawiseCommandException("Unknown response: " + response);
-            }
-            if (status.get().status != StatusCode.OK) {
-                throw new HydrawiseCommandException("Command Status: " + status.get().status.name());
-            }
-        } catch (JsonSyntaxException e) {
-            throw new HydrawiseConnectionException("Invalid Response: " + response);
+        MutationResponse mResponse = gson.fromJson(response, MutationResponse.class);
+        if (mResponse == null) {
+            throw new HydrawiseCommandException("Malformed response: " + response);
+        }
+        Optional<MutationResponseStatus> status = mResponse.data.values().stream().findFirst();
+        if (!status.isPresent()) {
+            throw new HydrawiseCommandException("Unknown response: " + response);
+        }
+        if (status.get().status != StatusCode.OK) {
+            throw new HydrawiseCommandException("Command Status: " + status.get().status.name());
         }
     }
 
@@ -310,11 +301,6 @@ public class HydrawiseGraphQLClient {
                     }).send();
             String stringResponse = response.getContentAsString();
             logger.trace("Received Response: {}", stringResponse);
-            int statusCode = response.getStatus();
-            if (!HttpStatus.isSuccess(statusCode)) {
-                throw new HydrawiseConnectionException(
-                        "Request failed with HTTP status code: " + statusCode + " response: " + stringResponse);
-            }
             return stringResponse;
         } catch (InterruptedException | TimeoutException | OAuthException | IOException e) {
             logger.debug("Could not send request", e);

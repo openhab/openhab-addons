@@ -7,6 +7,5 @@
 	<name>IpObserver Binding</name>
 	<description>This is the binding for weather stations marketed under many brands that come with or have an IpObserver
 		station connected.</description>
-	<connection>local</connection>
 
 </addon:addon>

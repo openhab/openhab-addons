@@ -20,7 +20,6 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Michael Lobstein - Initial contribution
- * @author Michael Lobstein - Add support for additional amplifier types
  */
 @NonNullByDefault
 public class MonopriceAudioBindingConstants {
@@ -28,11 +27,7 @@ public class MonopriceAudioBindingConstants {
     public static final String BINDING_ID = "monopriceaudio";
 
     // List of all Thing Type UIDs
-    // to avoid breaking existing installations, the 10761/DAX66 will still be known as 'amplifier'
-    public static final ThingTypeUID THING_TYPE_MP = new ThingTypeUID(BINDING_ID, "amplifier");
-    public static final ThingTypeUID THING_TYPE_MP70 = new ThingTypeUID(BINDING_ID, "monoprice70");
-    public static final ThingTypeUID THING_TYPE_DAX88 = new ThingTypeUID(BINDING_ID, "dax88");
-    public static final ThingTypeUID THING_TYPE_XT = new ThingTypeUID(BINDING_ID, "xantech");
+    public static final ThingTypeUID THING_TYPE_AMP = new ThingTypeUID(BINDING_ID, "amplifier");
 
     // List of all Channel types
     public static final String CHANNEL_TYPE_POWER = "power";
@@ -49,10 +44,4 @@ public class MonopriceAudioBindingConstants {
     public static final String CHANNEL_TYPE_ALLSOURCE = "allsource";
     public static final String CHANNEL_TYPE_ALLVOLUME = "allvolume";
     public static final String CHANNEL_TYPE_ALLMUTE = "allmute";
-
-    // misc
-    public static final String ONE = "1";
-    public static final String ZERO = "0";
-    public static final String EMPTY = "";
-    public static final int NIL = -1;
 }

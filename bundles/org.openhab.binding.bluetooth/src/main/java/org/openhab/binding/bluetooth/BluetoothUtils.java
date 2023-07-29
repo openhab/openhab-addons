@@ -14,8 +14,6 @@ package org.openhab.binding.bluetooth;
 
 import java.nio.charset.StandardCharsets;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +23,6 @@ import org.slf4j.LoggerFactory;
  * @author Connor Petty - Initial Contribution
  *
  */
-@NonNullByDefault
 public class BluetoothUtils {
 
     public static final Logger logger = LoggerFactory.getLogger(BluetoothUtils.class);
@@ -46,6 +43,9 @@ public class BluetoothUtils {
      * @return
      */
     public static int[] toIntArray(byte[] value) {
+        if (value == null) {
+            return null;
+        }
         int[] ret = new int[value.length];
         for (int i = 0; i < value.length; i++) {
             ret[i] = value[i];
@@ -54,6 +54,9 @@ public class BluetoothUtils {
     }
 
     public static byte[] toByteArray(int[] value) {
+        if (value == null) {
+            return null;
+        }
         byte[] ret = new byte[value.length];
         for (int i = 0; i < value.length; i++) {
             ret[i] = (byte) (value[i] & 0xFF);
@@ -65,7 +68,7 @@ public class BluetoothUtils {
      * Return the stored value of this characteristic.
      *
      */
-    public static @Nullable Integer getIntegerValue(byte[] value, int formatType, int offset) {
+    public static Integer getIntegerValue(byte[] value, int formatType, int offset) {
         if ((offset + getTypeLen(formatType)) > value.length) {
             return null;
         }
@@ -100,7 +103,7 @@ public class BluetoothUtils {
      * Return the stored value of this characteristic. This doesn't read the remote data.
      *
      */
-    public static @Nullable Float getFloatValue(byte[] value, int formatType, int offset) {
+    public static Float getFloatValue(byte[] value, int formatType, int offset) {
         if ((offset + getTypeLen(formatType)) > value.length) {
             return null;
         }
@@ -121,8 +124,8 @@ public class BluetoothUtils {
      * Return the stored value of this characteristic. This doesn't read the remote data.
      *
      */
-    public static @Nullable String getStringValue(byte[] value, int offset) {
-        if (offset > value.length) {
+    public static String getStringValue(byte[] value, int offset) {
+        if (value == null || offset > value.length) {
             return null;
         }
         byte[] strBytes = new byte[value.length - offset];
@@ -142,7 +145,7 @@ public class BluetoothUtils {
      */
     public static boolean setValue(byte[] dest, int value, int formatType, int offset) {
         int len = offset + getTypeLen(formatType);
-        if (len > dest.length) {
+        if (dest == null || len > dest.length) {
             return false;
         }
         int val = value;
@@ -190,7 +193,7 @@ public class BluetoothUtils {
      */
     public static boolean setValue(byte[] dest, int mantissa, int exponent, int formatType, int offset) {
         int len = offset + getTypeLen(formatType);
-        if (len > dest.length) {
+        if (dest == null || len > dest.length) {
             return false;
         }
 

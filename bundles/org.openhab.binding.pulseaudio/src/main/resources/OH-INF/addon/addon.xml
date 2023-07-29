@@ -6,7 +6,6 @@
 	<type>binding</type>
 	<name>Pulseaudio Binding</name>
 	<description>This is the binding for Pulseaudio.</description>
-	<connection>local</connection>
 
 	<config-description>
 		<parameter name="sink" type="boolean">

@@ -59,6 +59,9 @@ public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCo
 
     @Override
     public void onComplete(@Nullable Result result) {
-        updateListenerStatus();
+        StatusUpdateListener listener = getListener();
+        if (listener != null) {
+            listener.update(getCommunicationStatus());
+        }
     }
 }

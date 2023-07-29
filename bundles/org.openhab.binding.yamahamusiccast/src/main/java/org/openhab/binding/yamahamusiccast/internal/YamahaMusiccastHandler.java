@@ -228,16 +228,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_VOLUMEDB:
-                    float volumeDb;
-                    if (command instanceof QuantityType<?> qt) {
-                        volumeDb = qt.toUnit(Units.DECIBEL).floatValue();
-                    } else if (command instanceof DecimalType dt) {
-                        volumeDb = dt.floatValue();
-                    } else {
-                        logger.debug("Command has wrong type, QuantityType or DecimalType required!");
-                        return;
-                    }
-                    setVolumeDb(volumeDb, zone, this.host);
+                    setVolumeDb(((QuantityType<?>) command).floatValue(), zone, this.host);
                     localSyncVolume = Boolean.parseBoolean(getThing().getConfiguration().get("syncVolume").toString());
                     if (localSyncVolume == Boolean.TRUE) {
                         tmpString = getDistributionInfo(this.host);
@@ -247,7 +238,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                             if ("server".equals(localRole)) {
                                 for (JsonElement ip : distributioninfo.getClientList()) {
                                     JsonObject clientObject = ip.getAsJsonObject();
-                                    setVolumeDbLinkedDevice(volumeDb, zone,
+                                    setVolumeDbLinkedDevice(((DecimalType) command).floatValue(), zone,
                                             clientObject.get("ip_address").getAsString());
                                 }
                             }

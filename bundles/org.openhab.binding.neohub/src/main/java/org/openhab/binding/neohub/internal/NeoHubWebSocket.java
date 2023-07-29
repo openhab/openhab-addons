@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -27,9 +28,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.core.io.net.http.WebSocketFactory;
-import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,14 +71,19 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         public @Nullable String response;
     }
 
-    public NeoHubWebSocket(NeoHubConfiguration config, WebSocketFactory webSocketFactory, ThingUID bridgeUID)
-            throws IOException {
-        super(config, bridgeUID.getAsString());
+    public NeoHubWebSocket(NeoHubConfiguration config, String hubId) throws IOException {
+        super(config, hubId);
 
+        // initialise and start ssl context factory, http client, web socket client
         SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
         sslContextFactory.setTrustAll(true);
-        String name = ThingWebClientUtil.buildWebClientConsumerName(bridgeUID, null);
-        webSocketClient = webSocketFactory.createWebSocketClient(name, sslContextFactory);
+        HttpClient httpClient = new HttpClient(sslContextFactory);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            throw new IOException("Error starting HTTP client", e);
+        }
+        webSocketClient = new WebSocketClient(httpClient);
         webSocketClient.setConnectTimeout(config.socketTimeout * 1000);
         try {
             webSocketClient.start();

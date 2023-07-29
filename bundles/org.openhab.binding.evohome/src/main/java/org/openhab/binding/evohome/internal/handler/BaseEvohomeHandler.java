@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.evohome.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
 import org.openhab.binding.evohome.internal.configuration.EvohomeThingConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -27,9 +25,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
  *
  * @author Jasper van Zuijlen - Initial contribution
  */
-@NonNullByDefault
 public abstract class BaseEvohomeHandler extends BaseThingHandler {
-    private EvohomeThingConfiguration configuration = new EvohomeThingConfiguration();
+    private EvohomeThingConfiguration configuration;
 
     public BaseEvohomeHandler(Thing thing) {
         super(thing);
@@ -43,10 +40,14 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        configuration = null;
     }
 
     public String getId() {
-        return configuration.id;
+        if (configuration != null) {
+            return configuration.id;
+        }
+        return null;
     }
 
     /**
@@ -63,7 +64,7 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      *
      * @return The evohome brdige
      */
-    protected @Nullable EvohomeAccountBridgeHandler getEvohomeBridge() {
+    protected EvohomeAccountBridgeHandler getEvohomeBridge() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             return (EvohomeAccountBridgeHandler) bridge.getHandler();
@@ -77,10 +78,10 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      *
      * @return The current evohome configuration
      */
-    protected @Nullable Locations getEvohomeConfig() {
-        EvohomeAccountBridgeHandler bridgeAccountHandler = getEvohomeBridge();
-        if (bridgeAccountHandler != null) {
-            return bridgeAccountHandler.getEvohomeConfig();
+    protected Locations getEvohomeConfig() {
+        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
+        if (bridge != null) {
+            return bridge.getEvohomeConfig();
         }
 
         return null;
@@ -114,7 +115,7 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      * @param detail The status detail value
      * @param message The message to show with the status
      */
-    protected void updateEvohomeThingStatus(ThingStatus newStatus, ThingStatusDetail detail, @Nullable String message) {
+    protected void updateEvohomeThingStatus(ThingStatus newStatus, ThingStatusDetail detail, String message) {
         // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
             updateStatus(newStatus, detail, message);
@@ -127,7 +128,10 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      * @param configuration The configuration to check
      */
     private void checkConfig() {
-        if (configuration.id.isEmpty()) {
+        if (configuration == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Configuration is missing or corrupted");
+        } else if (configuration.id == null || configuration.id.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
         }
     }

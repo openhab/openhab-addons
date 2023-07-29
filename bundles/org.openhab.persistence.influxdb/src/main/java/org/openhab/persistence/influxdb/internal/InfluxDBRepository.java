@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.persistence.FilterCriteria;
 
 /**
  * Manages InfluxDB server interaction maintaining client connection
@@ -62,27 +61,26 @@ public interface InfluxDBRepository {
     /**
      * Executes Flux query
      *
-     * @param filter the query filter
+     * @param query Query
      * @return Query results
      * 
      */
-    List<InfluxRow> query(FilterCriteria filter, String retentionPolicy);
+    List<InfluxRow> query(String query);
 
     /**
-     * Write points to database
+     * Write point to database
      *
-     * @param influxPoints {@link List<InfluxPoint>} to write
-     * @returns <code>true</code> if points have been written, <code>false</code> otherwise
+     * @param influxPoint Point to write
+     * @throws UnexpectedConditionException when an error occurs
      */
-    boolean write(List<InfluxPoint> influxPoints);
+    void write(InfluxPoint influxPoint) throws UnexpectedConditionException;
 
     /**
-     * Execute delete query
+     * create a query creator on this repository
      *
-     * @param filter the query filter
-     * @return <code>true</code> if query executed successfully, <code>false</code> otherwise
+     * @return the query creator for this repository
      */
-    boolean remove(FilterCriteria filter);
+    FilterCriteriaQueryCreator createQueryCreator();
 
     record InfluxRow(Instant time, String itemName, Object value) {
     }

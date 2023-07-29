@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.core.types.Type;
 
 import tuwien.auto.calimero.GroupAddress;
+import tuwien.auto.calimero.KNXFormatException;
 
 /**
  * Command meta-data
@@ -27,34 +27,29 @@ import tuwien.auto.calimero.GroupAddress;
  *
  */
 @NonNullByDefault
-public class WriteSpecImpl implements OutboundSpec {
-    private final String dpt;
-    private final Type value;
-    private final GroupAddress groupAddress;
+public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
 
-    public WriteSpecImpl(GroupAddressConfiguration groupAddressConfiguration, String defaultDPT, Type value) {
-        this.dpt = Objects.requireNonNullElse(groupAddressConfiguration.getDPT(), defaultDPT);
-        this.groupAddress = groupAddressConfiguration.getMainGA();
-        this.value = value;
+    private final Type type;
+    private final @Nullable GroupAddress groupAddress;
+
+    public WriteSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type type)
+            throws KNXFormatException {
+        super(channelConfiguration, defaultDPT);
+        if (channelConfiguration != null) {
+            this.groupAddress = new GroupAddress(channelConfiguration.getMainGA().getGA());
+        } else {
+            this.groupAddress = null;
+        }
+        this.type = type;
     }
 
     @Override
-    public String getDPT() {
-        return dpt;
+    public Type getType() {
+        return type;
     }
 
     @Override
-    public Type getValue() {
-        return value;
-    }
-
-    @Override
-    public GroupAddress getGroupAddress() {
+    public @Nullable GroupAddress getGroupAddress() {
         return groupAddress;
-    }
-
-    @Override
-    public boolean matchesDestination(GroupAddress groupAddress) {
-        return groupAddress.equals(this.groupAddress);
     }
 }

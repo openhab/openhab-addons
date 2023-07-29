@@ -23,7 +23,7 @@ import org.openhab.core.library.types.OnOffType;
  * @author David Pace - Initial contribution
  *
  */
-class BinarySwitchServiceStateTest {
+public class BinarySwitchServiceStateTest {
 
     @Test
     void testToOnOffType() {

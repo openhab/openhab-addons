@@ -78,6 +78,7 @@ public class MonopriceAudioReaderThread extends Thread {
             }
         } catch (MonopriceAudioException e) {
             logger.debug("Reading failed: {}", e.getMessage(), e);
+            connector.handleIncomingMessage(MonopriceAudioConnector.READ_ERROR.getBytes());
         }
 
         logger.debug("Data listener stopped");

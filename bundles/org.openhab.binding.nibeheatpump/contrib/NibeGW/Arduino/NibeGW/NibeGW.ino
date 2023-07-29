@@ -147,7 +147,7 @@ void setupStaticConfigMode() {
 
   #ifdef ENABLE_NIBE_DEBUG
     nibegw.setDebugCallback(nibeDebugCallback);
-    nibegw.setVerboseLevel(config.debug.verboseLevel);
+    nibegw.setVerboseLevel(config.debug.level);
   #endif
 
   targetIp.fromString(config.nibe.targetIp);

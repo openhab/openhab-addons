@@ -14,7 +14,6 @@ package org.openhab.binding.enocean.internal.eep.Base;
 
 import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -22,7 +21,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public abstract class _SIGMessage extends EEP {
 
     public static final byte MID_ENERGY_STATUS = 0x06;
@@ -37,9 +35,8 @@ public abstract class _SIGMessage extends EEP {
 
     @Override
     protected int getDataLength() {
-        ERP1Message localPacket = packet;
-        if (localPacket != null) {
-            return localPacket.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
+        if (packet != null) {
+            return packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
         } else {
             return bytes.length;
         }

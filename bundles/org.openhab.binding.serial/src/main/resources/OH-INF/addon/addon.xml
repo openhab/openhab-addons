@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Serial Binding</name>
 	<description>This binding supports sending/receiving data to/from a serial port</description>
-	<connection>local</connection>
 
 </addon:addon>

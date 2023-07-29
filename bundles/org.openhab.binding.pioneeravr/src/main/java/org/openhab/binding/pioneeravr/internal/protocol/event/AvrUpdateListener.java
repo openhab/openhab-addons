@@ -27,5 +27,5 @@ public interface AvrUpdateListener extends EventListener {
     /**
      * Procedure for receive status update from Pioneer receiver.
      */
-    void statusUpdateReceived(AvrStatusUpdateEvent event);
+    public void statusUpdateReceived(AvrStatusUpdateEvent event);
 }

@@ -18,5 +18,5 @@ package org.openhab.binding.jeelink.internal;
  * @author Volker Bier - Initial contribution
  */
 public interface JeeLinkReadingConverter<R extends Reading> {
-    R createReading(String inputLine);
+    public R createReading(String inputLine);
 }

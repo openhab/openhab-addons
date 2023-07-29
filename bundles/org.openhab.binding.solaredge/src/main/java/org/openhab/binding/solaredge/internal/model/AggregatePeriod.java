@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.solaredge.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * defines the level of data aggregation
  *
  * @author Alexander Friese - initial contribution
  */
-@NonNullByDefault
 public enum AggregatePeriod {
     DAY,
     WEEK,

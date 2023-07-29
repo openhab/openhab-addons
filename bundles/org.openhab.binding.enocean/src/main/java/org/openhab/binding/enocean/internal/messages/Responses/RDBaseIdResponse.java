@@ -10,9 +10,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.responses;
+package org.openhab.binding.enocean.internal.messages.Responses;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.Response;
 
@@ -20,10 +19,9 @@ import org.openhab.binding.enocean.internal.messages.Response;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class RDBaseIdResponse extends Response {
 
-    private byte[] baseId = new byte[0];
+    private byte[] baseId = null;
     private int remainingWriteCycles = 0;
 
     public RDBaseIdResponse(Response response) {
@@ -34,14 +32,14 @@ public class RDBaseIdResponse extends Response {
     RDBaseIdResponse(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, payload);
 
-        if (this.data.length != 5 || this.optionalData.length != 1) {
+        if (this.data == null || this.data.length != 5 || this.optionalData == null || this.optionalData.length != 1) {
             return;
         }
 
         baseId = getPayload(1, 4);
         remainingWriteCycles = optionalData[0] & 0xFF;
 
-        isValid = true;
+        _isValid = true;
     }
 
     public final byte[] getBaseId() {

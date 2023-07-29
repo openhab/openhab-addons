@@ -26,8 +26,8 @@ import org.osgi.service.component.ComponentContext;
  * digitalSTROM-Bindings. So this class can be implement e.g. by provider implementations like the
  * {@link org.openhab.core.thing.type.ChannelTypeProvider}.
  *
- * @author Michael Ochel - Initial contribution
- * @author Matthias Siegele - Initial contribution
+ * @author Michael Ochel - initial contributer
+ * @author Matthias Siegele - initial contributer
  */
 public abstract class BaseDsI18n {
 

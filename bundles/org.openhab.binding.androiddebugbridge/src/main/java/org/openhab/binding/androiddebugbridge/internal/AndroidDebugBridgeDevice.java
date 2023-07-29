@@ -244,10 +244,6 @@ public class AndroidDebugBridgeDevice {
 
     public boolean isScreenOn() throws InterruptedException, AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
-        if (isAtLeastVersion(12)) {
-            String devicesResp = runAdbShell("getprop", "debug.tracing.screen_state");
-            return devicesResp.replace("\n", "").equals("2");
-        }
         String devicesResp = runAdbShell("dumpsys", "power", "|", "grep", "'Display Power'");
         if (devicesResp.contains("=")) {
             try {

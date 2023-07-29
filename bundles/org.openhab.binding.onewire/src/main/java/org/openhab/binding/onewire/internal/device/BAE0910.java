@@ -88,11 +88,11 @@ public class BAE0910 extends AbstractOwDevice {
     private final OwserverDeviceParameter duty3Parameter = new OwserverDeviceParameter("/duty3");
     private final OwserverDeviceParameter duty4Parameter = new OwserverDeviceParameter("/duty4");
 
-    private final BitSet outcRegister = new BitSet(8);
-    private final BitSet piocRegister = new BitSet(8);
-    private final BitSet adccRegister = new BitSet(8);
-    private final BitSet tpm1cRegister = new BitSet(8);
-    private final BitSet tpm2cRegister = new BitSet(8);
+    private BitSet outcRegister = new BitSet(8);
+    private BitSet piocRegister = new BitSet(8);
+    private BitSet adccRegister = new BitSet(8);
+    private BitSet tpm1cRegister = new BitSet(8);
+    private BitSet tpm2cRegister = new BitSet(8);
 
     private double resolution1 = 8; // in µs
     private double resolution2 = 8; // in µs
@@ -155,16 +155,15 @@ public class BAE0910 extends AbstractOwDevice {
                 BAE091xPIOConfiguration channelConfig = channel.getConfiguration().as(BAE091xPIOConfiguration.class);
                 piocRegister.set(PIOC_DD, channelConfig.mode.equals("output"));
                 switch (channelConfig.pulldevice) {
-                    case "pullup" -> {
+                    case "pullup":
                         piocRegister.set(PIOC_PE);
                         piocRegister.clear(PIOC_PD);
-                    }
-                    case "pulldown" -> {
+                        break;
+                    case "pulldown":
                         piocRegister.set(PIOC_PE);
                         piocRegister.set(PIOC_PD);
-                    }
-                    default -> {
-                    }
+                        break;
+                    default:
                 }
             } else {
                 throw new OwException("trying to configure pin 6 but channel is missing");
@@ -285,78 +284,81 @@ public class BAE0910 extends AbstractOwDevice {
         try {
             BitSet value = new BitSet(8);
             switch (channelId) {
-                case CHANNEL_DIGITAL2 -> {
+                case CHANNEL_DIGITAL2:
                     // output
                     if (!outcRegister.get(OUTC_OUTEN)) {
                         return false;
                     }
-                    value.set(0, command.equals(OnOffType.ON));
+                    value.set(0, ((OnOffType) command).equals(OnOffType.ON));
                     bridgeHandler.writeBitSet(sensorId, pin2OutParameter, value);
-                }
-                case CHANNEL_DIGITAL6 -> {
+                    break;
+                case CHANNEL_DIGITAL6:
                     // not input, pio
                     if (!piocRegister.get(PIOC_DD) || !piocRegister.get(PIOC_PIOEN)) {
                         return false;
                     }
-                    value.set(0, command.equals(OnOffType.ON));
+                    value.set(0, ((OnOffType) command).equals(OnOffType.ON));
                     bridgeHandler.writeBitSet(sensorId, pin6PIOParameter, value);
-                }
-                case CHANNEL_DIGITAL7 -> {
+                    break;
+                case CHANNEL_DIGITAL7:
                     // not pwm, not analog
                     if (!tpm2cRegister.get(TPMC_PWMDIS) || adccRegister.get(ADCC_ADCEN)) {
                         return false;
                     }
-                    tpm2cRegister.set(TPMC_POL, command.equals(OnOffType.ON));
+                    tpm2cRegister.set(TPMC_POL, ((OnOffType) command).equals(OnOffType.ON));
                     bridgeHandler.writeBitSet(sensorId, tpm2cParameter, tpm2cRegister);
-                }
-                case CHANNEL_DIGITAL8 -> {
+                    break;
+                case CHANNEL_DIGITAL8:
                     // not input, not pwm
                     if (tpm1cRegister.get(TPMC_INENA) || !tpm1cRegister.get(TPMC_PWMDIS)) {
                         return false;
                     }
-                    tpm1cRegister.set(TPMC_POL, command.equals(OnOffType.ON));
+                    tpm1cRegister.set(TPMC_POL, ((OnOffType) command).equals(OnOffType.ON));
                     bridgeHandler.writeBitSet(sensorId, tpm1cParameter, tpm1cRegister);
-                }
-                case CHANNEL_PWM_FREQ1 -> {
+                    break;
+                case CHANNEL_PWM_FREQ1:
                     if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, period1Parameter,
                                 convertFrequencyToPeriod(command, resolution1));
                     }
-                }
-                case CHANNEL_PWM_FREQ2 -> {
+                    break;
+                case CHANNEL_PWM_FREQ2:
                     if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, period2Parameter,
                                 convertFrequencyToPeriod(command, resolution2));
                     }
-                }
-                case CHANNEL_PWM_DUTY1 -> {
+                    break;
+                case CHANNEL_PWM_DUTY1:
                     if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, duty1Parameter, calculateDutyCycle(command,
                                 (DecimalType) bridgeHandler.readDecimalType(sensorId, period1Parameter)));
                     }
-                }
-                case CHANNEL_PWM_DUTY2 -> {
+                    break;
+                case CHANNEL_PWM_DUTY2:
                     if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, duty2Parameter, calculateDutyCycle(command,
                                 (DecimalType) bridgeHandler.readDecimalType(sensorId, period2Parameter)));
                     }
-                }
-                case CHANNEL_PWM_DUTY3 -> {
+                    break;
+                case CHANNEL_PWM_DUTY3:
                     if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, duty3Parameter, calculateDutyCycle(command,
                                 (DecimalType) bridgeHandler.readDecimalType(sensorId, period1Parameter)));
                     }
-                }
-                case CHANNEL_PWM_DUTY4 -> {
+                    break;
+                case CHANNEL_PWM_DUTY4:
                     if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, duty4Parameter, calculateDutyCycle(command,
                                 (DecimalType) bridgeHandler.readDecimalType(sensorId, period2Parameter)));
                     }
-                }
-                default -> throw new OwException("unknown or invalid channel");
+                    break;
+                default:
+                    throw new OwException("unknown or invalid channel");
             }
             return true;
-        } catch (OwException e) {
+        } catch (
+
+        OwException e) {
             logger.info("could not write {} to {}: {}", command, channelId, e.getMessage());
             return false;
         }
@@ -367,11 +369,14 @@ public class BAE0910 extends AbstractOwDevice {
         OwserverDeviceParameter deviceTypeParameter = new OwserverDeviceParameter("/device_type");
 
         String subDeviceType = bridgeHandler.readString(sensorId, deviceTypeParameter);
-        return switch (subDeviceType) {
-            case "2" -> OwSensorType.BAE0910;
-            case "3" -> OwSensorType.BAE0911;
-            default -> OwSensorType.UNKNOWN;
-        };
+        switch (subDeviceType) {
+            case "2":
+                return OwSensorType.BAE0910;
+            case "3":
+                return OwSensorType.BAE0911;
+            default:
+                return OwSensorType.UNKNOWN;
+        }
     }
 
     private DecimalType convertFrequencyToPeriod(Command command, double resolution) throws OwException {

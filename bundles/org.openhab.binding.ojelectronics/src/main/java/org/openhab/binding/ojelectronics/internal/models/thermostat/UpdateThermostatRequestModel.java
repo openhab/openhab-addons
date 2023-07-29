@@ -14,6 +14,7 @@ package org.openhab.binding.ojelectronics.internal.models.thermostat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ojelectronics.internal.models.RequestModelBase;
+import org.openhab.binding.ojelectronics.internal.models.Thermostat;
 
 /**
  * Model for updating a thermostat
@@ -23,12 +24,12 @@ import org.openhab.binding.ojelectronics.internal.models.RequestModelBase;
 @NonNullByDefault
 public class UpdateThermostatRequestModel extends RequestModelBase {
 
-    public UpdateThermostatRequestModel(ThermostatModel thermostat) {
+    public UpdateThermostatRequestModel(Thermostat thermostat) {
         setThermostat = thermostat;
         thermostatID = thermostat.serialNumber;
     }
 
-    public ThermostatModel setThermostat;
+    public Thermostat setThermostat;
 
     public String thermostatID;
 }

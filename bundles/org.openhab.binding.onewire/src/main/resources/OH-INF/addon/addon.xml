@@ -5,5 +5,4 @@
 	<type>binding</type>
 	<name>OneWire Binding</name>
 	<description>This is the binding for OneWire.</description>
-	<connection>local</connection>
 </addon:addon>

@@ -42,9 +42,6 @@ Leave this blank.
 **mqtt_state_topic_pattern:**
 `milight/states/:device_id/:device_type/:group_id`
 
-**MQTT Client Status Topic:**
-`milight/status`
-
 **group_state_fields:**
 IMPORTANT: Make sure only the following are ticked:
 

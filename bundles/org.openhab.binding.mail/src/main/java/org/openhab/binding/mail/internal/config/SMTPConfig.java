@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Jan N. Klug - Initial contribution
  */
+
 @NonNullByDefault
 public class SMTPConfig extends BaseConfig {
     public @Nullable String sender;

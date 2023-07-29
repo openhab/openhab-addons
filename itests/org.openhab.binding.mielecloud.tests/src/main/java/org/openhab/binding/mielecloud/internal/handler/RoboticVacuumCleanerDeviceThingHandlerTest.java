@@ -41,8 +41,7 @@ public class RoboticVacuumCleanerDeviceThingHandlerTest extends AbstractMieleThi
     protected AbstractMieleThingHandler setUpThingHandler() {
         return createThingHandler(MieleCloudBindingConstants.THING_TYPE_ROBOTIC_VACUUM_CLEANER,
                 MieleCloudBindingIntegrationTestConstants.ROBOTIC_VACUUM_CLEANER_THING_UID,
-                RoboticVacuumCleanerDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER,
-                "0");
+                RoboticVacuumCleanerDeviceThingHandler.class, MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
     }
 
     @Test

@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>OmniLink Binding</name>
 	<description>This is the binding for OmniLink, a security system that interfaces with many devices.</description>
-	<connection>local</connection>
 
 </addon:addon>

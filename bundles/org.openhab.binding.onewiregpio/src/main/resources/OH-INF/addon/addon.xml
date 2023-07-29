@@ -5,5 +5,4 @@
 	<type>binding</type>
 	<name>OneWireGPIO Binding</name>
 	<description>Use GPIO in various devices like RaspberryPi to communicate the OneWire protocol</description>
-	<connection>local</connection>
 </addon:addon>

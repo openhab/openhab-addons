@@ -18,8 +18,6 @@ import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 import java.util.Arrays;
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
@@ -39,26 +37,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public abstract class EEP {
 
     protected RORG newRORG = RORG.Unknown;
-    protected byte[] bytes = new byte[0];
-    protected byte[] optionalData = new byte[0];
-    protected byte[] senderId = new byte[0];
-    protected byte status = 0x00;
+    protected byte[] bytes;
+    protected byte[] optionalData;
+    protected byte[] senderId;
+    protected byte status;
 
-    protected byte[] destinationId = new byte[0];
+    protected byte[] destinationId;
 
     protected boolean suppressRepeating;
 
     protected Logger logger = LoggerFactory.getLogger(EEP.class);
 
-    private @Nullable EEPType eepType = null;
-    protected @Nullable ERP1Message packet = null;
+    private EEPType eepType = null;
+    protected ERP1Message packet = null;
 
     public EEP() {
         // ctor for sending
+
+        status = 0x00;
+        senderId = null;
+        bytes = null;
     }
 
     public EEP(ERP1Message packet) {
@@ -73,7 +74,7 @@ public abstract class EEP {
     }
 
     public EEP convertFromCommand(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
                     command.toString(), channelId, channelTypeId));
@@ -88,7 +89,7 @@ public abstract class EEP {
     }
 
     public State convertToState(String channelId, String channelTypeId, Configuration config,
-            Function<String, @Nullable State> getCurrentStateFunc) {
+            Function<String, State> getCurrentStateFunc) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
@@ -96,13 +97,13 @@ public abstract class EEP {
 
         switch (channelTypeId) {
             case CHANNEL_RSSI:
-                if (this.optionalData.length < 6) {
+                if (this.optionalData == null || this.optionalData.length < 6) {
                     return UnDefType.UNDEF;
                 }
 
                 return new DecimalType((this.optionalData[5] & 0xFF) * -1);
             case CHANNEL_REPEATCOUNT:
-                if (this.optionalData.length < 6) {
+                if (this.optionalData == null || this.optionalData.length < 6) {
                     return UnDefType.UNDEF;
                 }
 
@@ -114,8 +115,7 @@ public abstract class EEP {
         return convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
     }
 
-    public @Nullable String convertToEvent(String channelId, String channelTypeId, @Nullable String lastEvent,
-            Configuration config) {
+    public String convertToEvent(String channelId, String channelTypeId, String lastEvent, Configuration config) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
@@ -129,7 +129,7 @@ public abstract class EEP {
         return this;
     }
 
-    public EEP setData(byte... bytes) throws IllegalArgumentException {
+    public EEP setData(byte... bytes) {
         if (!validateData(bytes)) {
             throw new IllegalArgumentException();
         }
@@ -139,11 +139,11 @@ public abstract class EEP {
     }
 
     public boolean hasData() {
-        return (this.bytes.length > 0);
+        return (this.bytes != null) && (this.bytes.length > 0);
     }
 
     public EEP setOptionalData(byte... bytes) {
-        if (bytes.length > 0) {
+        if (bytes != null) {
             this.optionalData = Arrays.copyOf(bytes, bytes.length);
         }
 
@@ -151,7 +151,7 @@ public abstract class EEP {
     }
 
     public EEP setSenderId(byte[] senderId) {
-        if (senderId.length != ESP3_SENDERID_LENGTH) {
+        if (senderId == null || senderId.length != ESP3_SENDERID_LENGTH) {
             throw new IllegalArgumentException();
         }
 
@@ -169,10 +169,15 @@ public abstract class EEP {
         return this;
     }
 
-    public final @Nullable ERP1Message getERP1Message() {
+    public final ERP1Message getERP1Message() {
         if (isValid()) {
+            int optionalDataLength = 0;
+            if (optionalData != null) {
+                optionalDataLength = optionalData.length;
+            }
+
             byte[] payLoad = new byte[ESP3_RORG_LENGTH + getDataLength() + ESP3_SENDERID_LENGTH + ESP3_STATUS_LENGTH
-                    + optionalData.length];
+                    + optionalDataLength];
             Arrays.fill(payLoad, ZERO);
 
             byte rorgValue = getEEPType().getRORG().getValue();
@@ -184,7 +189,7 @@ public abstract class EEP {
             payLoad = Helper.concatAll(new byte[] { rorgValue }, bytes, senderId,
                     new byte[] { (byte) (status | (suppressRepeating ? 0b1111 : 0)) }, optionalData);
 
-            return new ERP1Message(payLoad.length - optionalData.length, optionalData.length, payLoad);
+            return new ERP1Message(payLoad.length - optionalDataLength, optionalDataLength, payLoad);
         } else {
             logger.warn("ERP1Message for EEP {} is not valid!", this.getClass().getName());
         }
@@ -193,42 +198,45 @@ public abstract class EEP {
     }
 
     protected boolean validateData(byte[] bytes) {
-        return bytes.length == getDataLength();
+        return bytes != null && bytes.length == getDataLength();
     }
 
     public boolean isValid() {
-        return validateData(bytes) && senderId.length == ESP3_SENDERID_LENGTH;
+        return validateData(bytes) && senderId != null && senderId.length == ESP3_SENDERID_LENGTH;
     }
 
     protected EEPType getEEPType() {
-        EEPType localType = eepType;
-        if (localType == null) {
-            localType = EEPType.getType(this.getClass());
+        if (eepType == null) {
+            eepType = EEPType.getType(this.getClass());
         }
 
-        return localType;
+        return eepType;
     }
 
     protected int getDataLength() {
-        return getEEPType().getRORG().getDataLength();
+        if (getEEPType() != null) {
+            return getEEPType().getRORG().getDataLength();
+        }
+
+        return 0;
     }
 
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         logger.warn("No implementation for sending data from channel {}/{} for this EEP!", channelId, channelTypeId);
     }
 
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         return UnDefType.UNDEF;
     }
 
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
+    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
         return null;
     }
 
-    protected void teachInQueryImpl(@Nullable Configuration config) {
+    protected void teachInQueryImpl(Configuration config) {
         logger.warn("No implementation for sending a response for this teach in!");
     }
 
@@ -237,7 +245,7 @@ public abstract class EEP {
         return (byteData & mask) != 0;
     }
 
-    public @Nullable ThingTypeUID getThingTypeUID() {
+    public ThingTypeUID getThingTypeUID() {
         return getEEPType().getThingTypeUID();
     }
 
@@ -250,7 +258,7 @@ public abstract class EEP {
     }
 
     public EEP setDestinationId(byte[] destinationId) {
-        if (destinationId.length > 0) {
+        if (destinationId != null) {
             this.destinationId = Arrays.copyOf(destinationId, destinationId.length);
             setOptionalData(Helper.concatAll(new byte[] { 0x01 }, destinationId, new byte[] { (byte) 0xff, 0x00 }));
         }

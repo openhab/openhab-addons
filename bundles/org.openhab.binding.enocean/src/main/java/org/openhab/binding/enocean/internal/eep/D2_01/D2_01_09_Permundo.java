@@ -16,8 +16,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
@@ -32,7 +30,6 @@ import org.openhab.core.types.State;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class D2_01_09_Permundo extends D2_01 {
 
     public D2_01_09_Permundo() {
@@ -45,7 +42,7 @@ public class D2_01_09_Permundo extends D2_01 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_REPEATERMODE)) {
             setRepeaterMode(command);
         } else if (channelId.equals(CHANNEL_ECOMODE)) {
@@ -57,7 +54,7 @@ public class D2_01_09_Permundo extends D2_01 {
 
     private void setRepeaterMode(Command command) {
         if (command == RefreshType.REFRESH) {
-            senderId = new byte[0]; // make this message invalid as we do not support refresh of repeater status
+            senderId = null; // make this message invalid as we do not support refresh of repeater status
         } else if (command instanceof StringType) {
             switch (((StringType) command).toString()) {
                 case EnOceanBindingConstants.REPEATERMODE_LEVEL_1:
@@ -74,7 +71,7 @@ public class D2_01_09_Permundo extends D2_01 {
 
     private void setEcoMode(Command command) {
         if (command == RefreshType.REFRESH) {
-            senderId = new byte[0]; // make this message invalid as we do not support refresh of ecomode status
+            senderId = null; // make this message invalid as we do not support refresh of ecomode status
         } else if (command instanceof OnOffType) {
             if (((OnOffType) command) == OnOffType.ON) {
                 setRORG(RORG.MSC).setData((byte) 0x03, (byte) 0x36, (byte) 0x01);

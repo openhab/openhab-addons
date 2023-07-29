@@ -13,7 +13,6 @@
 package org.openhab.binding.openuv.internal.handler;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,7 +58,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
-    private static final String QUERY_URL = "https://api.openuv.io/api/v1/uv?lat=%.2f&lng=%.2f&alt=%.0f";
+    private static final String QUERY_URL = "https://api.openuv.io/api/v1/uv?lat=%s&lng=%s&alt=%s";
     private static final int RECONNECT_DELAY_MIN = 5;
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
@@ -98,7 +97,6 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        header.clear();
         freeReconnectJob();
     }
 
@@ -106,20 +104,20 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             initiateConnexion();
-        } else {
-            logger.debug("The OpenUV bridge only handles Refresh command and not '{}'", command);
+            return;
         }
+        logger.debug("The OpenUV bridge only handles Refresh command and not '{}'", command);
     }
 
     private void initiateConnexion() {
         // Just checking if the provided api key is a valid one by making a fake call
-        getUVData(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        getUVData("0", "0", "0");
     }
 
-    public @Nullable OpenUVResult getUVData(BigDecimal latitude, BigDecimal longitude, BigDecimal altitude) {
+    public @Nullable OpenUVResult getUVData(String latitude, String longitude, String altitude) {
         String statusMessage = "";
         ThingStatusDetail statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
-        String url = QUERY_URL.formatted(latitude, longitude, altitude);
+        String url = String.format(QUERY_URL, latitude, longitude, altitude);
         String jsonData = "";
         try {
             jsonData = HttpUtil.executeUrl("GET", url, header, null, null, REQUEST_TIMEOUT_MS);
@@ -135,25 +133,28 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
             }
         } catch (JsonSyntaxException e) {
             if (jsonData.contains("MongoError")) {
-                statusMessage = "@text/offline.comm-error-faultly-service [ \"%d\" ]".formatted(RECONNECT_DELAY_MIN);
+                statusMessage = String.format("@text/offline.comm-error-faultly-service [ \"%d\" ]",
+                        RECONNECT_DELAY_MIN);
                 scheduleReconnectJob(RECONNECT_DELAY_MIN);
             } else {
                 statusDetail = ThingStatusDetail.NONE;
-                statusMessage = "@text/offline.invalid-json [ \"%s\" ]".formatted(url);
+                statusMessage = String.format("@text/offline.invalid-json [ \"%s\" ]", url);
                 logger.debug("{} : {}", statusMessage, jsonData);
             }
         } catch (IOException e) {
-            statusMessage = "@text/offline.comm-error-ioexception [ \"%s\",\"%d\" ]".formatted(e.getMessage(),
+            statusMessage = String.format("@text/offline.comm-error-ioexception [ \"%s\",\"%d\" ]", e.getMessage(),
                     RECONNECT_DELAY_MIN);
             scheduleReconnectJob(RECONNECT_DELAY_MIN);
         } catch (OpenUVException e) {
             if (e.isQuotaError()) {
                 LocalDateTime nextMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
-                statusMessage = "@text/offline.comm-error-quota-exceeded [ \"%s\" ]".formatted(nextMidnight.toString());
+                statusMessage = String.format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]",
+                        nextMidnight.toString());
                 scheduleReconnectJob(Duration.between(LocalDateTime.now(), nextMidnight).toMinutes());
             } else if (e.isApiKeyError()) {
                 if (keyVerified) {
-                    statusMessage = "@text/offline.api-key-not-recognized [ \"%d\" ]".formatted(RECONNECT_DELAY_MIN);
+                    statusMessage = String.format("@text/offline.api-key-not-recognized [ \"%d\" ]",
+                            RECONNECT_DELAY_MIN);
                     scheduleReconnectJob(RECONNECT_DELAY_MIN);
                 } else {
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;

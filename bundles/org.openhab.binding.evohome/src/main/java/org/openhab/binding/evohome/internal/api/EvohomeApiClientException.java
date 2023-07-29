@@ -12,17 +12,13 @@
  */
 package org.openhab.binding.evohome.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Exception for errors from the API Client.
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-@NonNullByDefault
 public class EvohomeApiClientException extends Exception {
-    private static final long serialVersionUID = 1L;
 
     public EvohomeApiClientException() {
     }

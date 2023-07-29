@@ -51,6 +51,10 @@ public class Parameters {
     }
 
     public Optional<Refine> getRefine() {
-        return Optional.ofNullable(refine);
+        Refine refine = this.refine;
+        if (refine != null) {
+            return Optional.of(refine);
+        }
+        return Optional.empty();
     }
 }

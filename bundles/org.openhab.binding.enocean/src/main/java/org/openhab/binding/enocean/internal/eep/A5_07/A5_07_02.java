@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_07;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
@@ -22,7 +21,6 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class A5_07_02 extends A5_07 {
 
     public A5_07_02(ERP1Message packet) {
@@ -36,11 +34,11 @@ public class A5_07_02 extends A5_07 {
 
     @Override
     protected State getMotion() {
-        return getBit(getDB0Value(), 7) ? OnOffType.ON : OnOffType.OFF;
+        return getBit(getDB_0Value(), 7) ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override
     protected State getSupplyVoltage() {
-        return getSupplyVoltage(getDB3Value());
+        return getSupplyVoltage(getDB_3Value());
     }
 }

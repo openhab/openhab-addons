@@ -29,8 +29,8 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Jan N. Klug - Initial contribution
  */
-@Component(configurationPid = "binding.mail", service = ThingHandlerFactory.class)
 @NonNullByDefault
+@Component(configurationPid = "binding.mail", service = ThingHandlerFactory.class)
 public class MailHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

@@ -37,7 +37,7 @@ public abstract class AbstractBatteryPoweredDeviceHandler extends BoschSHCDevice
      */
     private final BatteryLevelService batteryLevelService;
 
-    protected AbstractBatteryPoweredDeviceHandler(Thing thing) {
+    public AbstractBatteryPoweredDeviceHandler(Thing thing) {
         super(thing);
         this.batteryLevelService = new BatteryLevelService();
     }

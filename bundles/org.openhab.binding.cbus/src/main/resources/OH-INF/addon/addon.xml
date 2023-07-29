@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>C-Bus Binding</name>
 	<description>Clipsal C-Bus Binding</description>
-	<connection>local</connection>
 
 </addon:addon>

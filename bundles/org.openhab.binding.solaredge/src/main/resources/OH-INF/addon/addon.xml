@@ -5,5 +5,4 @@
 	<type>binding</type>
 	<name>SolarEdge Binding</name>
 	<description>This is the binding for SolarEdge.</description>
-	<connection>cloud</connection>
 </addon:addon>

@@ -16,8 +16,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTariffInfoConfig;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.EEPHelper;
@@ -33,7 +31,6 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
-@NonNullByDefault
 public abstract class A5_12 extends _4BSMessage {
     public A5_12(ERP1Message packet) {
         super(packet);
@@ -48,7 +45,7 @@ public abstract class A5_12 extends _4BSMessage {
     }
 
     protected State getCumulativeValue() {
-        byte db0 = getDB0();
+        byte db0 = getDB_0();
         boolean dt = getBit(db0, 2);
 
         if (!dt) {
@@ -73,8 +70,8 @@ public abstract class A5_12 extends _4BSMessage {
                     return UnDefType.UNDEF;
             }
 
-            float cumulativeValue = Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB3(), getDB2(), getDB1() }), 16)
-                    * factor;
+            float cumulativeValue = Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2(), getDB_1() }),
+                    16) * factor;
             return calcCumulativeValue(cumulativeValue);
         }
 
@@ -82,7 +79,7 @@ public abstract class A5_12 extends _4BSMessage {
     }
 
     protected State getCurrentValue() {
-        byte db0 = getDB0();
+        byte db0 = getDB_0();
         boolean dt = getBit(db0, 2);
 
         if (dt) {
@@ -107,7 +104,7 @@ public abstract class A5_12 extends _4BSMessage {
                     return UnDefType.UNDEF;
             }
 
-            float currentValue = Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB3(), getDB2(), getDB1() }), 16)
+            float currentValue = Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2(), getDB_1() }), 16)
                     * factor;
 
             return calcCurrentValue(currentValue);
@@ -117,12 +114,13 @@ public abstract class A5_12 extends _4BSMessage {
     }
 
     protected int getTariffInfo() {
-        return ((getDB0() >>> 4) & 0xff);
+        return ((getDB_0() >>> 4) & 0xff);
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
+
         EnOceanChannelTariffInfoConfig c = config.as(EnOceanChannelTariffInfoConfig.class);
         if (c.tariff != getTariffInfo()) {
             return UnDefType.UNDEF;

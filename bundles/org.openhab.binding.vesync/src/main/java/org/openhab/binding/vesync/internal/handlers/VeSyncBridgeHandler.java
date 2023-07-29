@@ -159,19 +159,13 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     }
 
     public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirPurifiersMetadata() {
-        return api.getMacLookupMap().values().stream().filter(x -> !VeSyncBaseDeviceHandler
-                .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceAirPurifierHandler.DEV_TYPE_FAMILY_AIR_PURIFIER,
-                        VeSyncDeviceAirPurifierHandler.SUPPORTED_MODEL_FAMILIES)
-                .equals(VeSyncBaseDeviceHandler.UNKNOWN));
+        return api.getMacLookupMap().values().stream()
+                .filter(x -> VeSyncDeviceAirPurifierHandler.SUPPORTED_DEVICE_TYPES.contains(x.deviceType));
     }
 
     public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirHumidifiersMetadata() {
         return api.getMacLookupMap().values().stream()
-                .filter(x -> !VeSyncBaseDeviceHandler
-                        .getDeviceFamilyMetadata(x.getDeviceType(),
-                                VeSyncDeviceAirHumidifierHandler.DEV_TYPE_FAMILY_AIR_HUMIDIFIER,
-                                VeSyncDeviceAirHumidifierHandler.SUPPORTED_MODEL_FAMILIES)
-                        .equals(VeSyncBaseDeviceHandler.UNKNOWN));
+                .filter(x -> VeSyncDeviceAirHumidifierHandler.SUPPORTED_DEVICE_TYPES.contains(x.deviceType));
     }
 
     protected void updateThings() {

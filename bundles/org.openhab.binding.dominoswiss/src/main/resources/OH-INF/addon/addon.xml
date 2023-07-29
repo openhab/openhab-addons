@@ -6,5 +6,4 @@
 	<type>binding</type>
 	<name>Dominoswiss Binding</name>
 	<description>The Dominoswiss Binding interacts with the Dominoswiss eGate G1 Gateway to control blinds</description>
-	<connection>local</connection>
 </addon:addon>

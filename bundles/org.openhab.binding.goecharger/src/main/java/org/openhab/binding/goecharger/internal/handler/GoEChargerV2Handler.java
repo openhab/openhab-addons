@@ -145,14 +145,12 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
             case ALLOW_CHARGING:
                 return goeResponse.allowCharging == true ? OnOffType.ON : OnOffType.OFF;
             case TEMPERATURE_TYPE2_PORT:
-                // It was reported that the temperature is invalid when only one value is returned
-                // That's why it is checked that at least 2 values are returned
-                if (goeResponse.temperatures == null || goeResponse.temperatures.length < 2) {
+                if (goeResponse.temperatures == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.temperatures[0], SIUnits.CELSIUS);
             case TEMPERATURE_CIRCUIT_BOARD:
-                if (goeResponse.temperatures == null || goeResponse.temperatures.length < 2) {
+                if (goeResponse.temperatures == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.temperatures[1], SIUnits.CELSIUS);
@@ -170,54 +168,54 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (goeResponse.totalChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.totalChargeConsumption / 1000d, Units.KILOWATT_HOUR);
+                return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 1000d), Units.KILOWATT_HOUR);
             case VOLTAGE_L1:
-                if (goeResponse.energy == null || goeResponse.energy.length < 1) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[0], Units.VOLT);
             case VOLTAGE_L2:
-                if (goeResponse.energy == null || goeResponse.energy.length < 2) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[1], Units.VOLT);
             case VOLTAGE_L3:
-                if (goeResponse.energy == null || goeResponse.energy.length < 3) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[2], Units.VOLT);
             case CURRENT_L1:
-                if (goeResponse.energy == null || goeResponse.energy.length < 5) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[4], Units.AMPERE);
             case CURRENT_L2:
-                if (goeResponse.energy == null || goeResponse.energy.length < 6) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[5], Units.AMPERE);
             case CURRENT_L3:
-                if (goeResponse.energy == null || goeResponse.energy.length < 7) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[6], Units.AMPERE);
             case POWER_L1:
-                if (goeResponse.energy == null || goeResponse.energy.length < 8) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[7], Units.WATT);
             case POWER_L2:
-                if (goeResponse.energy == null || goeResponse.energy.length < 9) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[8], Units.WATT);
             case POWER_L3:
-                if (goeResponse.energy == null || goeResponse.energy.length < 10) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[9], Units.WATT);
             case POWER_ALL:
-                if (goeResponse.energy == null || goeResponse.energy.length < 12) {
+                if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[11], Units.WATT);
@@ -277,13 +275,11 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 }
-                break;
             case TRANSACTION:
                 key = "trx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 }
-                break;
         }
 
         if (key != null && value != null) {
@@ -376,14 +372,14 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         return gson.fromJson(response, GoEStatusResponseV2DTO.class);
     }
 
-    @Override
     protected void updateChannelsAndStatus(@Nullable GoEStatusResponseBaseDTO goeResponse, @Nullable String message) {
         if (goeResponse == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
             updateStatus(ThingStatus.ONLINE);
-            allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
+            allChannels
+                    .forEach(channel -> updateState(channel, getValue(channel, (GoEStatusResponseV2DTO) goeResponse)));
         }
     }
 }

@@ -23,12 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface DSMRConnectorListener {
 
     /**
-     * Callback for {@link DSMRErrorStatus} events.
+     * Callback for {@link DSMRConnectorErrorEvent} events.
      *
-     * @param errorStatus {@link DSMRErrorStatus} that has occurred
-     * @param message Additional error message
+     * @param portEvent {@link DSMRConnectorErrorEvent} that has occurred
      */
-    void handleError(DSMRErrorStatus errorStatus, String message);
+    public void handleErrorEvent(DSMRConnectorErrorEvent portEvent);
 
     /**
      * Handle data.

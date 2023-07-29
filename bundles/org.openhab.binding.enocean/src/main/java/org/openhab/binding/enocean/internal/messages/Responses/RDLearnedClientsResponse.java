@@ -10,11 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.responses;
+package org.openhab.binding.enocean.internal.messages.Responses;
 
 import java.util.Arrays;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.Response;
 
@@ -22,16 +21,15 @@ import org.openhab.binding.enocean.internal.messages.Response;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class RDLearnedClientsResponse extends Response {
 
     public class LearnedClient {
-        public byte[] clientId = new byte[0];
-        public byte[] controllerId = new byte[0];
+        public byte[] clientId;
+        public byte[] controllerId;
         public int mailboxIndex;
     }
 
-    LearnedClient[] learnedClients = new LearnedClient[0];
+    LearnedClient[] learnedClients;
 
     public RDLearnedClientsResponse(Response response) {
         this(response.getPayload().length, response.getOptionalPayload().length,
@@ -41,10 +39,10 @@ public class RDLearnedClientsResponse extends Response {
     RDLearnedClientsResponse(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, payload);
 
-        if (payload.length == 0 || (payload.length - 1) % 9 != 0) {
+        if (payload == null || ((payload.length - 1) % 9) != 0) {
             return;
         } else {
-            isValid = true;
+            _isValid = true;
         }
 
         learnedClients = new LearnedClient[(payload.length - 1) / 9];

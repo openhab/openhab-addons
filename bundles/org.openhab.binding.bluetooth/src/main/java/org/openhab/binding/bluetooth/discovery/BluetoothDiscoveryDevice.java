@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.discovery;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCompanyIdentifiers;
@@ -28,7 +29,7 @@ import org.openhab.binding.bluetooth.DelegateBluetoothDevice;
 @NonNullByDefault
 public class BluetoothDiscoveryDevice extends DelegateBluetoothDevice {
 
-    private @NonNullByDefault({}) BluetoothDevice delegate;
+    private BluetoothDevice delegate;
 
     protected @Nullable String model;
     protected @Nullable String serialNumber;
@@ -42,7 +43,7 @@ public class BluetoothDiscoveryDevice extends DelegateBluetoothDevice {
     }
 
     @Override
-    protected @Nullable BluetoothDevice getDelegate() {
+    protected @NonNull BluetoothDevice getDelegate() {
         return delegate;
     }
 

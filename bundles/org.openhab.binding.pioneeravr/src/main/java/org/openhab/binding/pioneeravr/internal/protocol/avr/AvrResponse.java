@@ -25,7 +25,7 @@ public interface AvrResponse {
     /**
      * Represent the type of a response.
      */
-    interface AvrResponseType {
+    public interface AvrResponseType {
 
         /**
          * Return the prefix of the command of this type.
@@ -73,26 +73,26 @@ public interface AvrResponse {
      *
      * @return
      */
-    ResponseType getResponseType();
+    public ResponseType getResponseType();
 
     /**
      * Return the parameter of this response or null if the resposne has no parameter.
      *
      * @return
      */
-    String getParameterValue();
+    public String getParameterValue();
 
     /**
      * Return true if this response has a parameter.
      *
      * @return
      */
-    boolean hasParameter();
+    public boolean hasParameter();
 
     /**
      * Return the zone number which is concerned by this response.
      *
      * @return
      */
-    Integer getZone();
+    public Integer getZone();
 }

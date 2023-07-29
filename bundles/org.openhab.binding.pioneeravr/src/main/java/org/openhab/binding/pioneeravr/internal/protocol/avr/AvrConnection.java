@@ -29,32 +29,32 @@ public interface AvrConnection {
      *
      * @param listener
      */
-    void addUpdateListener(AvrUpdateListener listener);
+    public void addUpdateListener(AvrUpdateListener listener);
 
     /**
      * Add a disconnection listener. It is notified when the AVR is disconnected.
      *
      * @param listener
      */
-    void addDisconnectionListener(AvrDisconnectionListener listener);
+    public void addDisconnectionListener(AvrDisconnectionListener listener);
 
     /**
      * Connect to the receiver. Return true if the connection has succeeded or if already connected.
      *
      **/
-    boolean connect();
+    public boolean connect();
 
     /**
      * Return true if this manager is connected to the AVR.
      *
      * @return
      */
-    boolean isConnected();
+    public boolean isConnected();
 
     /**
      * Closes the connection.
      **/
-    void close();
+    public void close();
 
     /**
      * Send a power state query to the AVR
@@ -62,7 +62,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendPowerQuery(int zone);
+    public boolean sendPowerQuery(int zone);
 
     /**
      * Send a volume level query to the AVR
@@ -70,7 +70,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendVolumeQuery(int zone);
+    public boolean sendVolumeQuery(int zone);
 
     /**
      * Send a mute state query to the AVR
@@ -78,7 +78,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendMuteQuery(int zone);
+    public boolean sendMuteQuery(int zone);
 
     /**
      * Send a source input state query to the AVR
@@ -86,7 +86,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendInputSourceQuery(int zone);
+    public boolean sendInputSourceQuery(int zone);
 
     /**
      * Send a listening mode state query to the AVR
@@ -94,14 +94,14 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendListeningModeQuery(int zone);
+    public boolean sendListeningModeQuery(int zone);
 
     /**
      * Send an MCACC Memory query to the AVR
      *
      * @return
      */
-    boolean sendMCACCMemoryQuery();
+    public boolean sendMCACCMemoryQuery();
 
     /**
      * Send a power command ot the AVR based on the openHAB command
@@ -110,7 +110,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException;
+    public boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
      * Send a volume command to the AVR based on the openHAB command
@@ -119,7 +119,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendVolumeCommand(Command command, int zone) throws CommandTypeNotSupportedException;
+    public boolean sendVolumeCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
      * Send a source input selection command to the AVR based on the openHAB command
@@ -128,7 +128,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendInputSourceCommand(Command command, int zone) throws CommandTypeNotSupportedException;
+    public boolean sendInputSourceCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
      * Send a listening mode selection command to the AVR based on the openHAB command
@@ -137,7 +137,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendListeningModeCommand(Command command, int zone) throws CommandTypeNotSupportedException;
+    public boolean sendListeningModeCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
      * Send a mute command to the AVR based on the openHAB command
@@ -146,7 +146,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendMuteCommand(Command command, int zone) throws CommandTypeNotSupportedException;
+    public boolean sendMuteCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
      * Send an MCACC Memory selection command to the AVR based on the openHAB command
@@ -155,12 +155,12 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    boolean sendMCACCMemoryCommand(Command command) throws CommandTypeNotSupportedException;
+    public boolean sendMCACCMemoryCommand(Command command) throws CommandTypeNotSupportedException;
 
     /**
      * Return the connection name
      *
      * @return
      */
-    String getConnectionName();
+    public String getConnectionName();
 }

@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Somfy MyLink Binding</name>
 	<description>This is the binding for Somfy MyLink.</description>
-	<connection>local</connection>
 
 </addon:addon>

@@ -14,8 +14,6 @@ package org.openhab.binding.enocean.internal.eep.F6_02;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.SwitchMode;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -30,19 +28,18 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public abstract class F6_02 extends _RPSMessage {
 
-    protected static final byte AI = 0;
-    protected static final byte A0 = 1;
-    protected static final byte BI = 2;
-    protected static final byte B0 = 3;
-    protected static final byte PRESSED = 16;
-    protected static final byte PRESSED_SEC = 1;
+    final byte AI = 0;
+    final byte A0 = 1;
+    final byte BI = 2;
+    final byte B0 = 3;
+    final byte PRESSED = 16;
+    final byte PRESSED_SEC = 1;
 
-    protected static final String DIR1 = "DIR1";
-    protected static final String DIR2 = "DIR2";
-    protected static final String NODIR = "-";
+    final String DIR1 = "DIR1";
+    final String DIR2 = "DIR2";
+    final String NODIR = "-";
 
     int secondByte = -1;
     int secondStatus = -1;
@@ -86,7 +83,7 @@ public abstract class F6_02 extends _RPSMessage {
         return dirA + "|" + dirB;
     }
 
-    protected @Nullable String getChannelEvent(byte dir1, byte dir2) {
+    protected String getChannelEvent(byte dir1, byte dir2) {
         if ((bytes[0] & PRESSED_SEC) != 0) {
             // Do not emit an event if channelA is pressed together with channelB as it is undetermined which one gets
             // fired first

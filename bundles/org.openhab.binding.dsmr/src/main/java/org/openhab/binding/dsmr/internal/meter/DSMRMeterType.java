@@ -388,8 +388,8 @@ public enum DSMRMeterType {
      * @param cosemObjectTypeMeterId identifier cosem object
      * @param requiredCosemObjects list of objects that are present in this meter type
      */
-    DSMRMeterType(final DSMRMeterKind meterKind, final CosemObjectType cosemObjectTypeMeterId,
-            final CosemObjectType... requiredCosemObjects) {
+    DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
+            CosemObjectType... requiredCosemObjects) {
         this(meterKind, cosemObjectTypeMeterId, requiredCosemObjects, new CosemObjectType[0]);
     }
 
@@ -401,8 +401,8 @@ public enum DSMRMeterType {
      * @param requiredCosemObjects list of objects that are present in this meter type
      * @param optionalCosemObjects list of objects that are optional present in this meter type
      */
-    DSMRMeterType(final DSMRMeterKind meterKind, final CosemObjectType cosemObjectTypeMeterId,
-            final CosemObjectType[] requiredCosemObjects, final CosemObjectType[] optionalCosemObjects) {
+    DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
+            CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {
         this.meterKind = meterKind;
         this.cosemObjectTypeMeterId = cosemObjectTypeMeterId;
         this.requiredCosemObjects = requiredCosemObjects;
@@ -427,18 +427,15 @@ public enum DSMRMeterType {
      * @param availableCosemObjects the Cosem Objects to detect if the current meter compatible
      * @return {@link DSMRMeterDescriptor} containing the identification of the compatible meter
      */
-    public @Nullable DSMRMeterDescriptor findCompatible(final List<CosemObject> availableCosemObjects) {
+    public @Nullable DSMRMeterDescriptor findCompatible(List<CosemObject> availableCosemObjects) {
         final Map<@Nullable Integer, AtomicInteger> channelCounter = new HashMap<>(3);
 
         for (final CosemObjectType objectType : requiredCosemObjects) {
             final AtomicBoolean match = new AtomicBoolean();
             availableCosemObjects.stream().filter(a -> a.getType() == objectType).forEach(b -> {
                 match.set(true);
-                final Integer channel = b.getObisIdentifier().getChannel();
-
-                if (channel != null) {
-                    channelCounter.computeIfAbsent(channel, t -> new AtomicInteger()).incrementAndGet();
-                }
+                channelCounter.computeIfAbsent(b.getObisIdentifier().getChannel(), t -> new AtomicInteger())
+                        .incrementAndGet();
             });
             if (!match.get()) {
                 logger.trace("Required objectType {} not found for meter: {}", objectType, this);

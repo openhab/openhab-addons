@@ -6,6 +6,5 @@
 	<type>transformation</type>
 	<name>Scale transformation</name>
 	<description>Transforms a numerical input to a string.</description>
-	<connection>none</connection>
 
 </addon:addon>

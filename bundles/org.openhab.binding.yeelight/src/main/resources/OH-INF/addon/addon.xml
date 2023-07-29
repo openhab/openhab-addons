@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Yeelight Binding</name>
 	<description>This is the binding for Yeelight products.</description>
-	<connection>local</connection>
 
 </addon:addon>

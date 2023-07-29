@@ -13,13 +13,13 @@
 package org.openhab.binding.airquality.internal.api;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.airquality.internal.AirQualityException;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityData;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityResponse;
+import org.openhab.binding.airquality.internal.api.dto.AirQualityResponse.ResponseStatus;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,24 +66,21 @@ public class ApiBridge {
      * @return an air quality data object mapping the JSON response
      * @throws AirQualityException
      */
-    public AirQualityData getData(int stationId, String location) throws AirQualityException {
+    public AirQualityData getData(int stationId, String location, int retryCounter) throws AirQualityException {
         String urlStr = buildRequestURL(apiKey, stationId, location);
         logger.debug("URL = {}", urlStr);
 
         try {
             String response = HttpUtil.executeUrl("GET", urlStr, null, null, null, REQUEST_TIMEOUT_MS);
-            if (response != null) {
-                logger.debug("aqiResponse = {}", response);
-                AirQualityResponse result = GSON.fromJson(response, AirQualityResponse.class);
-                if (result != null) {
-                    String error = result.getErrorMessage();
-                    if (error.isEmpty()) {
-                        return Objects.requireNonNull(result.getData());
-                    }
-                    throw new AirQualityException("Error raised : %s", error);
-                }
+            logger.debug("aqiResponse = {}", response);
+            AirQualityResponse result = GSON.fromJson(response, AirQualityResponse.class);
+            if (result != null && result.getStatus() == ResponseStatus.OK) {
+                return result.getData();
+            } else if (retryCounter == 0) {
+                logger.debug("Error in aqicn.org, retrying once");
+                return getData(stationId, location, retryCounter + 1);
             }
-            throw new JsonSyntaxException("API response is null");
+            throw new AirQualityException("Error in aqicn.org response: Missing data sub-object");
         } catch (IOException | JsonSyntaxException e) {
             throw new AirQualityException("Communication error", e);
         }

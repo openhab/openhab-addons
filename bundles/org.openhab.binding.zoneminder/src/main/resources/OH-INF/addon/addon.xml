@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>ZoneMinder Binding</name>
 	<description>Binding for ZoneMinder video surveillance system</description>
-	<connection>local</connection>
 
 </addon:addon>

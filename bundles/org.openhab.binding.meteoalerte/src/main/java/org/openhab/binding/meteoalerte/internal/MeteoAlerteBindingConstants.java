@@ -23,12 +23,11 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class MeteoAlerteBindingConstants {
-    public static final String BINDING_ID = "meteoalerte";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_METEO_ALERT = new ThingTypeUID(BINDING_ID, "department");
+    public static final ThingTypeUID THING_TYPE_METEO_ALERT = new ThingTypeUID("meteoalerte", "department");
 
-    // List of all Channel IDs
+    // List of all Channel id's
     public static final String WAVE = "vague-submersion";
     public static final String AVALANCHE = "avalanches";
     public static final String HEAT = "canicule";

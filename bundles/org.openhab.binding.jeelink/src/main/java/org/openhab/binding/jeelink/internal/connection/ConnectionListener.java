@@ -39,5 +39,5 @@ public interface ConnectionListener {
     /**
      * Called whenever input has been read from the connection.
      */
-    void handleInput(String input);
+    public void handleInput(String input);
 }

@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.responses;
+package org.openhab.binding.enocean.internal.messages.Responses;
 
 import java.util.Arrays;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.openhab.core.util.HexUtils;
 
@@ -22,7 +22,6 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class RDVersionResponse extends Response {
 
     protected String appVersion = "";
@@ -54,25 +53,29 @@ public class RDVersionResponse extends Response {
                 sb.append((char) (payload[i] & 0xff));
             }
             description = sb.toString();
-            isValid = true;
+            _isValid = true;
 
         } catch (Exception e) {
             responseType = ResponseType.RET_ERROR;
         }
     }
 
+    @NonNull
     public String getAPPVersion() {
         return appVersion;
     }
 
+    @NonNull
     public String getAPIVersion() {
         return apiVersion;
     }
 
+    @NonNull
     public String getChipID() {
         return chipId;
     }
 
+    @NonNull
     public String getDescription() {
         return description;
     }

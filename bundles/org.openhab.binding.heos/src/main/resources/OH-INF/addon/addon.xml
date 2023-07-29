@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>HEOS Binding</name>
 	<description>Binding for the Denon HEOS system.</description>
-	<connection>local</connection>
 
 </addon:addon>

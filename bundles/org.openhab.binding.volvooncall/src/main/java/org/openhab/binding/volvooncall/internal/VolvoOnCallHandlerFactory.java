@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.volvooncall.internal.handler.VehicleHandler;
 import org.openhab.binding.volvooncall.internal.handler.VehicleStateDescriptionProvider;
 import org.openhab.binding.volvooncall.internal.handler.VolvoOnCallBridgeHandler;
@@ -54,13 +55,13 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallHandlerFactory.class);
     private final VehicleStateDescriptionProvider stateDescriptionProvider;
     private final Gson gson;
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
 
     @Activate
     public VolvoOnCallHandlerFactory(@Reference VehicleStateDescriptionProvider provider,
             @Reference HttpClientFactory httpClientFactory) {
         this.stateDescriptionProvider = provider;
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID);
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
@@ -86,7 +87,7 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (APIBRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            return new VolvoOnCallBridgeHandler((Bridge) thing, gson, httpClientFactory);
+            return new VolvoOnCallBridgeHandler((Bridge) thing, gson, httpClient);
         } else if (VEHICLE_THING_TYPE.equals(thingTypeUID)) {
             return new VehicleHandler(thing, stateDescriptionProvider);
         }

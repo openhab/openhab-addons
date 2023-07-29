@@ -18,7 +18,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.openhab.binding.mielecloud.internal.config.MieleCloudConfigService;
 import org.openhab.binding.mielecloud.internal.config.servlet.AccountOverviewServlet;
@@ -90,12 +89,12 @@ public abstract class AbstractConfigFlowTest extends OpenHabOsgiTest {
     }
 
     @BeforeEach
-    public final void setUpConfigFlowTest() throws Exception {
+    public final void setUpConfigFlowTest() {
         setUpCrawler();
         setUpServlets();
     }
 
-    private void setUpCrawler() throws Exception {
+    private void setUpCrawler() {
         HttpClientFactory clientFactory = getService(HttpClientFactory.class);
         assertNotNull(clientFactory);
         crawler = new WebsiteCrawler(Objects.requireNonNull(clientFactory));
@@ -110,10 +109,5 @@ public abstract class AbstractConfigFlowTest extends OpenHabOsgiTest {
         resultServlet = configService.getResultServlet();
         successServlet = configService.getSuccessServlet();
         createBridgeServlet = configService.getCreateBridgeServlet();
-    }
-
-    @AfterEach
-    public final void tearDown() throws Exception {
-        getCrawler().close();
     }
 }

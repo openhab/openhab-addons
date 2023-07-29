@@ -171,24 +171,21 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
-            NetworkAddressService localNetworkAddressService = networkAddressService;
-            if (localNetworkAddressService == null) {
+            if (networkAddressService == null) {
                 logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE);
                 return;
-            } else {
-                localEndPoint = new InetSocketAddress(localNetworkAddressService.getPrimaryIpv4HostAddress(), 0);
             }
+            localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
         }
 
         updateStatus(ThingStatus.UNKNOWN);
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
                 secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
-                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), getCommandExtensionData(),
-                this);
+                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), this);
 
-        IPClient tmpClient = client;
+        final var tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();
         }
@@ -198,7 +195,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void dispose() {
-        Future<?> tmpInitJob = initJob;
+        final var tmpInitJob = initJob;
         if (tmpInitJob != null) {
             while (!tmpInitJob.isDone()) {
                 logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
@@ -211,7 +208,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             }
             initJob = null;
         }
-        IPClient tmpClient = client;
+        final var tmpClient = client;
         if (tmpClient != null) {
             tmpClient.dispose();
             client = null;

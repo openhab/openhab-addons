@@ -78,6 +78,7 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
 
     @Override
     public @Nullable ProfileTypeUID getSuggestedProfileTypeUID(ChannelType channelType, @Nullable String itemType) {
+
         if (CHANNELTYPE_ROCKERSWITCH_ACTION_UID.equals(channelType.getUID())) {
             if (CoreItemFactory.PLAYER.equalsIgnoreCase(itemType)) {
                 return ROCKERSWITCHACTION_TOGGLE_PLAYER;

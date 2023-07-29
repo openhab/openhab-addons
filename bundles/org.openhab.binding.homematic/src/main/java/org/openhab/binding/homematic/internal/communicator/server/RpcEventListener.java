@@ -26,15 +26,15 @@ public interface RpcEventListener {
     /**
      * Called when a new event is received from a Homeamtic gateway.
      */
-    void eventReceived(HmDatapointInfo dpInfo, Object newValue);
+    public void eventReceived(HmDatapointInfo dpInfo, Object newValue);
 
     /**
      * Called when new devices has been detected on the Homeamtic gateway.
      */
-    void newDevices(List<String> adresses);
+    public void newDevices(List<String> adresses);
 
     /**
      * Called when devices has been deleted from the Homeamtic gateway.
      */
-    void deleteDevices(List<String> addresses);
+    public void deleteDevices(List<String> addresses);
 }

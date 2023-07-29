@@ -72,29 +72,29 @@ public class OnOffValue extends Value {
     }
 
     @Override
-    public OnOffType parseCommand(Command command) throws IllegalArgumentException {
+    public void update(Command command) throws IllegalArgumentException {
         if (command instanceof OnOffType) {
-            return (OnOffType) command;
+            state = (OnOffType) command;
         } else {
             final String updatedValue = command.toString();
             if (onState.equals(updatedValue)) {
-                return OnOffType.ON;
+                state = OnOffType.ON;
             } else if (offState.equals(updatedValue)) {
-                return OnOffType.OFF;
+                state = OnOffType.OFF;
             } else {
-                return OnOffType.valueOf(updatedValue);
+                state = OnOffType.valueOf(updatedValue);
             }
         }
     }
 
     @Override
-    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
+    public String getMQTTpublishValue(@Nullable String pattern) {
         String formatPattern = pattern;
         if (formatPattern == null) {
             formatPattern = "%s";
         }
 
-        return String.format(formatPattern, command == OnOffType.ON ? onCommand : offCommand);
+        return String.format(formatPattern, state == OnOffType.ON ? onCommand : offCommand);
     }
 
     @Override

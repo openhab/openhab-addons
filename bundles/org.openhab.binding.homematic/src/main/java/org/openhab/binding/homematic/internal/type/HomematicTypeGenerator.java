@@ -23,16 +23,16 @@ public interface HomematicTypeGenerator {
     /**
      * Initializes the type generator.
      */
-    void initialize();
+    public void initialize();
 
     /**
      * Generates the ThingType and ChannelTypes for the given device.
      */
-    void generate(HmDevice device);
+    public void generate(HmDevice device);
 
     /**
      * Validates all devices for multiple firmware versions. Different firmware versions for the same device may have
      * different datapoints which may cause warnings in the logfile.
      */
-    void validateFirmwares();
+    public void validateFirmwares();
 }

@@ -13,9 +13,15 @@
 package org.openhab.io.homekit.internal.accessories;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.items.GenericItem;
+import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -34,34 +40,62 @@ import io.github.hapjava.services.impl.LockMechanismService;
  *
  */
 public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements LockMechanismAccessory {
-    final Map<LockCurrentStateEnum, String> currentStateMapping;
-    final Map<LockTargetStateEnum, String> targetStateMapping;
+    final OnOffType securedState;
+    final OnOffType unsecuredState;
 
     public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-
-        currentStateMapping = createMapping(HomekitCharacteristicType.LOCK_CURRENT_STATE, LockCurrentStateEnum.class);
-        targetStateMapping = createMapping(HomekitCharacteristicType.LOCK_TARGET_STATE, LockTargetStateEnum.class);
+        securedState = taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON;
+        unsecuredState = taggedItem.isInverted() ? OnOffType.ON : OnOffType.OFF;
         getServices().add(new LockMechanismService(this));
     }
 
     @Override
     public CompletableFuture<LockCurrentStateEnum> getLockCurrentState() {
-        return CompletableFuture.completedFuture(getKeyFromMapping(HomekitCharacteristicType.LOCK_CURRENT_STATE,
-                currentStateMapping, LockCurrentStateEnum.UNKNOWN));
+        final Optional<GenericItem> item = getItem(HomekitCharacteristicType.LOCK_CURRENT_STATE, GenericItem.class);
+        LockCurrentStateEnum lockState = LockCurrentStateEnum.UNKNOWN;
+        if (item.isPresent()) {
+            final State state = item.get().getState();
+            if (state instanceof DecimalType) {
+                lockState = LockCurrentStateEnum.fromCode(((DecimalType) state).intValue());
+            } else if (state instanceof OnOffType) {
+                lockState = state.equals(securedState) ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED;
+            }
+        }
+        return CompletableFuture.completedFuture(lockState);
     }
 
     @Override
     public CompletableFuture<LockTargetStateEnum> getLockTargetState() {
-        return CompletableFuture.completedFuture(getKeyFromMapping(HomekitCharacteristicType.LOCK_TARGET_STATE,
-                targetStateMapping, LockTargetStateEnum.UNSECURED));
+        final @Nullable OnOffType state = getStateAs(HomekitCharacteristicType.LOCK_TARGET_STATE, OnOffType.class);
+        if (state != null) {
+            return CompletableFuture.completedFuture(
+                    state == securedState ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);
+        }
+        return CompletableFuture.completedFuture(LockTargetStateEnum.UNSECURED);
+        // Apple HAP specification has only SECURED and UNSECURED values for lock target state.
+        // unknown does not supported for target state.
     }
 
     @Override
     public CompletableFuture<Void> setLockTargetState(LockTargetStateEnum state) {
-        HomekitCharacteristicFactory.setValueFromEnum(
-                getCharacteristic(HomekitCharacteristicType.LOCK_TARGET_STATE).get(), state, targetStateMapping);
+        getItem(HomekitCharacteristicType.LOCK_TARGET_STATE, SwitchItem.class).ifPresent(item -> {
+            switch (state) {
+                case SECURED:
+                    if (item instanceof SwitchItem) {
+                        item.send(securedState);
+                    }
+                    break;
+                case UNSECURED:
+                    if (item instanceof SwitchItem) {
+                        item.send(unsecuredState);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
         return CompletableFuture.completedFuture(null);
     }
 

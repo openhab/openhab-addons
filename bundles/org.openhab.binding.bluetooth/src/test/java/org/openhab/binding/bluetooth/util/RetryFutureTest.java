@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,11 +33,10 @@ import org.openhab.core.common.NamedThreadFactory;
  * @author Connor Petty - Initial contribution
  *
  */
-@NonNullByDefault
 class RetryFutureTest {
 
     private static final int TIMEOUT_MS = 1000;
-    private @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    private ScheduledExecutorService scheduler;
 
     @BeforeEach
     public void init() {
@@ -167,6 +165,6 @@ class RetryFutureTest {
     }
 
     private static class DummyException extends Exception {
-        private static final long serialVersionUID = 1L;
+
     }
 }

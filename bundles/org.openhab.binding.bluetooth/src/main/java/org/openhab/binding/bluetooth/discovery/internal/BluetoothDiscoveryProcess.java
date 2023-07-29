@@ -221,10 +221,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult> {
         }
         try {
             byte[] value = device.readCharacteristic(characteristic).get(1, TimeUnit.SECONDS);
-            String strValue = BluetoothUtils.getStringValue(value, 0);
-            if (strValue != null) {
-                consumer.accept(strValue);
-            }
+            consumer.accept(BluetoothUtils.getStringValue(value, 0));
         } catch (ExecutionException e) {
             logger.debug("Failed to aquire uuid {} from device {}: {}", uuid, device.getAddress(), e.getMessage());
         } catch (TimeoutException e) {

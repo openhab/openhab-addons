@@ -24,5 +24,5 @@ import org.openhab.core.thing.ThingStatus;
 @NonNullByDefault
 public interface PlugwiseStickStatusListener {
 
-    void stickStatusChanged(ThingStatus status);
+    public void stickStatusChanged(ThingStatus status);
 }

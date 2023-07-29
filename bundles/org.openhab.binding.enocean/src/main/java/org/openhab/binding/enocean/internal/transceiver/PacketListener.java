@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.enocean.internal.transceiver;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public interface PacketListener {
 
-    void packetReceived(BasePacket packet);
+    public void packetReceived(BasePacket packet);
 
-    long getEnOceanIdToListenTo();
+    public long getEnOceanIdToListenTo();
 }

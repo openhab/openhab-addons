@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface DynamoDBItemVisitor<T> {
 
-    T visit(DynamoDBBigDecimalItem dynamoBigDecimalItem);
+    public T visit(DynamoDBBigDecimalItem dynamoBigDecimalItem);
 
-    T visit(DynamoDBStringItem dynamoStringItem);
+    public T visit(DynamoDBStringItem dynamoStringItem);
 }

@@ -30,7 +30,7 @@ public interface PowermaxPanelSettingsListener {
      *
      * @param settings the updated alarm panel settings or null if the panel settings are unknown
      */
-    void onPanelSettingsUpdated(@Nullable PowermaxPanelSettings settings);
+    public void onPanelSettingsUpdated(@Nullable PowermaxPanelSettings settings);
 
     /**
      * This method is called when the bridge thing handler identifies
@@ -39,5 +39,5 @@ public interface PowermaxPanelSettingsListener {
      * @param zoneNumber the zone number
      * @param settings the updated alarm panel settings or null if the panel settings are unknown
      */
-    void onZoneSettingsUpdated(int zoneNumber, @Nullable PowermaxPanelSettings settings);
+    public void onZoneSettingsUpdated(int zoneNumber, @Nullable PowermaxPanelSettings settings);
 }

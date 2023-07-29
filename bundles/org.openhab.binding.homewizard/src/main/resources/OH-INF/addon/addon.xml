@@ -7,6 +7,5 @@
 	<name>HomeWizard Binding</name>
 	<description>This binding provides access to the data provided by the HomeWizard Wi-Fi P1 meter on it's local HTTP
 		interface.</description>
-	<connection>local</connection>
 
 </addon:addon>

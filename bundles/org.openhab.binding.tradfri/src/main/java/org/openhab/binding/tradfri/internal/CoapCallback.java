@@ -31,7 +31,7 @@ public interface CoapCallback {
      *
      * @param data the received json structure
      */
-    void onUpdate(JsonElement data);
+    public void onUpdate(JsonElement data);
 
     /**
      * Tells the listener to set the Thing status.
@@ -40,5 +40,5 @@ public interface CoapCallback {
      * @param status The thing status
      * @param statusDetail the status detail
      */
-    void setStatus(ThingStatus status, ThingStatusDetail statusDetail);
+    public void setStatus(ThingStatus status, ThingStatusDetail statusDetail);
 }

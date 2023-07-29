@@ -335,8 +335,6 @@ public class DeviceManager {
                 return "Yeelight LED Ceiling";
             case ceiling1:
             case ceiling3:
-            case ceil26:
-            case ceiling11:
                 return "Yeelight LED Ceiling with night mode";
             case ceiling4:
                 return "Yeelight LED Ceiling with ambient light";
@@ -348,7 +346,6 @@ public class DeviceManager {
             case ct_bulb:
                 return "Yeelight White LED Bulb v2";
             case stripe:
-            case strip6:
                 return "Yeelight Color LED Stripe";
             case desklamp:
                 return "Yeelight Mi LED Desk Lamp";

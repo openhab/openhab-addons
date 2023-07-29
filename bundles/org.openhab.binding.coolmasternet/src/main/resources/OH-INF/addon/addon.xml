@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>CoolMasterNet Binding</name>
 	<description>Binding for Cool Automation CoolMasterNet HVAC controllers.</description>
-	<connection>local</connection>
 
 </addon:addon>

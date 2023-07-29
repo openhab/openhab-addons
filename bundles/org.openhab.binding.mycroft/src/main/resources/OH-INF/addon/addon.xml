@@ -12,6 +12,5 @@
 		reacting on some
 		specific intent, command skills by faking a spoken utterance, etc.
 	</description>
-	<connection>local</connection>
 
 </addon:addon>

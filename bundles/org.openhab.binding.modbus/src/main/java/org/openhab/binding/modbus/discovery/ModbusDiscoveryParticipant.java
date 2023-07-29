@@ -37,12 +37,12 @@ public interface ModbusDiscoveryParticipant {
      *
      * @return a set of thing type UIDs for which results can be created
      */
-    Set<ThingTypeUID> getSupportedThingTypeUIDs();
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs();
 
     /**
      * Start an asynchronous discovery process of a Modbus endpoint
      *
      * @param handler the endpoint that should be discovered
      */
-    void startDiscovery(ModbusEndpointThingHandler handler, ModbusDiscoveryListener listener);
+    public void startDiscovery(ModbusEndpointThingHandler handler, ModbusDiscoveryListener listener);
 }

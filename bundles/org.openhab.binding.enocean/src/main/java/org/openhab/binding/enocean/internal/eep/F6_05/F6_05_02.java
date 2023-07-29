@@ -16,8 +16,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -29,7 +27,6 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class F6_05_02 extends _RPSMessage {
 
     protected static final byte ALARM_OFF = 0x00;
@@ -46,7 +43,8 @@ public class F6_05_02 extends _RPSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
+
         switch (channelId) {
             case CHANNEL_SMOKEDETECTION:
                 return bytes[0] == ALARM_OFF ? OnOffType.OFF : (bytes[0] == ALARM_ON ? OnOffType.ON : UnDefType.UNDEF);

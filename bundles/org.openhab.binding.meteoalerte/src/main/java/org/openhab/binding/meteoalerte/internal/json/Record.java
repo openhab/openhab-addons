@@ -49,6 +49,10 @@ public class Record {
     }
 
     public Optional<ResponseFieldDTO> getResponseFieldDTO() {
-        return Optional.ofNullable(responseFieldDTO);
+        ResponseFieldDTO fields = this.responseFieldDTO;
+        if (fields != null) {
+            return Optional.of(fields);
+        }
+        return Optional.empty();
     }
 }

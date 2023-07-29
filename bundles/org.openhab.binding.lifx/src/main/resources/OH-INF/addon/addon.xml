@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>LIFX Binding</name>
 	<description>This is the binding for LIFX lights.</description>
-	<connection>local</connection>
 
 </addon:addon>

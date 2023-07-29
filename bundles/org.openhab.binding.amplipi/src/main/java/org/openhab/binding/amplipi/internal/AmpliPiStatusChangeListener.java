@@ -29,5 +29,5 @@ public interface AmpliPiStatusChangeListener {
      *
      * @param status The current status of the AmpliPi
      */
-    void receive(Status status);
+    public void receive(Status status);
 }

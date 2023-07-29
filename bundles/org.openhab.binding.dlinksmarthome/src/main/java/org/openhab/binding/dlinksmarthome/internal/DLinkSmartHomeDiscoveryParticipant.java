@@ -15,7 +15,6 @@ package org.openhab.binding.dlinksmarthome.internal;
 import static org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants.*;
 import static org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig.IP_ADDRESS;
 
-import java.net.Inet4Address;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -97,11 +96,7 @@ public class DLinkSmartHomeDiscoveryParticipant implements MDNSDiscoveryParticip
 
     private DiscoveryResult createMotionSensor(final ThingUID thingUID, final ThingTypeUID thingType,
             final ServiceInfo serviceInfo) {
-        final Inet4Address[] addresses = serviceInfo.getInet4Addresses();
-        if (addresses.length != 1) {
-            return null;
-        }
-        final String host = addresses[0].getHostAddress();
+        final String host = serviceInfo.getHostAddresses()[0];
         final String mac = serviceInfo.getPropertyString("mac");
 
         final Map<String, Object> properties = new HashMap<>();

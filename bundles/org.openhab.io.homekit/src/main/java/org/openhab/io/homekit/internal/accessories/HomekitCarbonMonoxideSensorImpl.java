@@ -15,7 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CARBON_MONOXIDE_DETECTED_STATE;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
@@ -33,20 +32,21 @@ import io.github.hapjava.services.impl.CarbonMonoxideSensorService;
  */
 public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImpl
         implements CarbonMonoxideSensorAccessory {
-    private final Map<CarbonMonoxideDetectedEnum, String> mapping;
+    private final BooleanItemReader carbonMonoxideDetectedReader;
 
     public HomekitCarbonMonoxideSensorImpl(HomekitTaggedItem taggedItem,
             List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
             throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        mapping = createMapping(CARBON_MONOXIDE_DETECTED_STATE, CarbonMonoxideDetectedEnum.class);
+        carbonMonoxideDetectedReader = createBooleanReader(CARBON_MONOXIDE_DETECTED_STATE);
         getServices().add(new CarbonMonoxideSensorService(this));
     }
 
     @Override
     public CompletableFuture<CarbonMonoxideDetectedEnum> getCarbonMonoxideDetectedState() {
-        return CompletableFuture.completedFuture(
-                getKeyFromMapping(CARBON_MONOXIDE_DETECTED_STATE, mapping, CarbonMonoxideDetectedEnum.NORMAL));
+        return CompletableFuture
+                .completedFuture(carbonMonoxideDetectedReader.getValue() ? CarbonMonoxideDetectedEnum.ABNORMAL
+                        : CarbonMonoxideDetectedEnum.NORMAL);
     }
 
     @Override

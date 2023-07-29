@@ -5,7 +5,6 @@
 
 	<type>binding</type>
 	<name>Oppo Blu-ray Player Binding</name>
-	<description>Controls Oppo UDP-203/205 and BDP-83/93/95/103/105 Blu-ray Players</description>
-	<connection>local</connection>
+	<description>Controls the Oppo UDP-203/205 and BDP-83/93/95/103/105 Blu-ray Players</description>
 
 </addon:addon>

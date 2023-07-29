@@ -18,8 +18,6 @@ import static org.openhab.binding.modbus.e3dc.internal.modbus.E3DCModbusConstans
 import java.util.ArrayList;
 import java.util.Optional;
 
-import javax.measure.quantity.Energy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.e3dc.internal.E3DCConfiguration;
@@ -38,8 +36,6 @@ import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.core.io.transport.modbus.PollTask;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -102,8 +98,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     private ChannelUID autarkyChannel;
     private ChannelUID selfConsumptionChannel;
     private ChannelUID batterySOCChannel;
-    private ChannelUID batteryChargedChannel;
-    private ChannelUID batteryUnchargedChannel;
 
     private ChannelUID string1AmpereChannel;
     private ChannelUID string1VoltChannel;
@@ -163,8 +157,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         autarkyChannel = channelUID(thing, POWER_GROUP, AUTARKY_CHANNEL);
         selfConsumptionChannel = channelUID(thing, POWER_GROUP, SELF_CONSUMPTION_CHANNEL);
         batterySOCChannel = channelUID(thing, POWER_GROUP, BATTERY_STATE_OF_CHARGE_CHANNEL);
-        batteryChargedChannel = channelUID(thing, POWER_GROUP, BATTERY_CHARGED_CHANNEL);
-        batteryUnchargedChannel = channelUID(thing, POWER_GROUP, BATTERY_UNCHARGED_CHANNEL);
 
         string1AmpereChannel = channelUID(thing, STRINGS_GROUP, STRING1_DC_CURRENT_CHANNEL);
         string1VoltChannel = channelUID(thing, STRINGS_GROUP, STRING1_DC_VOLTAGE_CHANNEL);
@@ -368,17 +360,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
                 updateState(autarkyChannel, block.autarky);
                 updateState(selfConsumptionChannel, block.selfConsumption);
                 updateState(batterySOCChannel, block.batterySOC);
-                if (config != null) {
-                    if (config.batteryCapacity > 0) {
-                        double soc = block.batterySOC.doubleValue();
-                        QuantityType<Energy> charged = QuantityType.valueOf(soc * config.batteryCapacity / 100,
-                                Units.KILOWATT_HOUR);
-                        updateState(batteryChargedChannel, charged);
-                        QuantityType<Energy> uncharged = QuantityType
-                                .valueOf((100 - soc) * config.batteryCapacity / 100, Units.KILOWATT_HOUR);
-                        updateState(batteryUnchargedChannel, uncharged);
-                    }
-                }
             } else {
                 logger.debug("Unable to get {} from provider {}", DataType.POWER, dataParser.toString());
             }

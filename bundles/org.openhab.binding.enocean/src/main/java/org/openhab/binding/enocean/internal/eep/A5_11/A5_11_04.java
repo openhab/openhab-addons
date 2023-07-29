@@ -16,8 +16,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -37,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Vincent Bakker - Initial contribution
  */
-@NonNullByDefault
+
 public class A5_11_04 extends _4BSMessage {
 
     private enum Error {
@@ -66,14 +64,14 @@ public class A5_11_04 extends _4BSMessage {
         NOT_SUPPORTED
     }
 
-    private Logger logger = LoggerFactory.getLogger(A5_11_04.class);
+    private static Logger logger = LoggerFactory.getLogger(A5_11_04.class);
 
     public A5_11_04(ERP1Message packet) {
         super(packet);
     }
 
     protected boolean isErrorState() {
-        byte db0 = getDB0();
+        byte db0 = getDB_0();
 
         int state = (db0 >> 4) & 0x03;
 
@@ -87,12 +85,12 @@ public class A5_11_04 extends _4BSMessage {
     }
 
     protected ParameterMode getParameterMode() {
-        int pm = (getDB0() >> 1) & 0x03;
+        int pm = (getDB_0() >> 1) & 0x03;
         return ParameterMode.values()[pm];
     }
 
     protected EnergyUnit getEnergyUnit() {
-        int unit = getDB1();
+        int unit = getDB_1();
         if (unit < 8) {
             return EnergyUnit.values()[unit];
         }
@@ -101,7 +99,7 @@ public class A5_11_04 extends _4BSMessage {
     }
 
     protected State getLightingStatus() {
-        byte db0 = getDB0();
+        byte db0 = getDB_0();
         boolean lightOn = getBit(db0, 0);
 
         return lightOn ? OnOffType.ON : OnOffType.OFF;
@@ -109,7 +107,7 @@ public class A5_11_04 extends _4BSMessage {
 
     protected State getDimmerStatus() {
         if (getParameterMode() == ParameterMode.EIGHT_BIT_DIMMER_VALUE_AND_LAMP_OPERATING_HOURS) {
-            return new PercentType(getDB3Value() * 100 / 255);
+            return new PercentType(getDB_3Value() * 100 / 255);
         }
         return UnDefType.UNDEF;
     }
@@ -136,7 +134,7 @@ public class A5_11_04 extends _4BSMessage {
             }
 
             return new QuantityType<>(
-                    Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB3(), getDB2() }), 16) * factor,
+                    Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2() }), 16) * factor,
                     Units.KILOWATT_HOUR);
         }
 
@@ -165,7 +163,7 @@ public class A5_11_04 extends _4BSMessage {
             }
 
             return new QuantityType<>(
-                    Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB3(), getDB2() }), 16) * factor, Units.WATT);
+                    Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2() }), 16) * factor, Units.WATT);
         }
 
         return UnDefType.UNDEF;
@@ -173,7 +171,7 @@ public class A5_11_04 extends _4BSMessage {
 
     protected State getOperatingHours() {
         if (getParameterMode() == ParameterMode.EIGHT_BIT_DIMMER_VALUE_AND_LAMP_OPERATING_HOURS) {
-            return new DecimalType(getDB2Value() << 8 + getDB1Value());
+            return new DecimalType(getDB_2Value() << 8 + getDB_1Value());
         }
 
         return UnDefType.UNDEF;
@@ -181,7 +179,7 @@ public class A5_11_04 extends _4BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (isErrorState()) {
             return UnDefType.UNDEF;
         }

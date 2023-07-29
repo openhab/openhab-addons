@@ -16,9 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * The {@link BluetoothDescriptor} class defines the Bluetooth descriptor.
  * <p>
@@ -29,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - added constructor and fixed setValue method
  */
-@NonNullByDefault
 public class BluetoothDescriptor {
 
     protected final BluetoothCharacteristic characteristic;
@@ -85,7 +81,7 @@ public class BluetoothDescriptor {
         return handle;
     }
 
-    public @Nullable GattDescriptor getDescriptor() {
+    public GattDescriptor getDescriptor() {
         return GattDescriptor.getDescriptor(uuid);
     }
 
@@ -103,7 +99,7 @@ public class BluetoothDescriptor {
         NUMBER_OF_DIGITALS(0x2909),
         TRIGGER_SETTING(0x290A);
 
-        private static @Nullable Map<UUID, GattDescriptor> uuidToServiceMapping;
+        private static Map<UUID, GattDescriptor> uuidToServiceMapping;
 
         private final UUID uuid;
 
@@ -111,16 +107,18 @@ public class BluetoothDescriptor {
             this.uuid = BluetoothBindingConstants.createBluetoothUUID(key);
         }
 
-        public static @Nullable GattDescriptor getDescriptor(UUID uuid) {
-            Map<UUID, GattDescriptor> localServiceMapping = uuidToServiceMapping;
-            if (localServiceMapping == null) {
-                localServiceMapping = new HashMap<>();
-                for (GattDescriptor s : values()) {
-                    localServiceMapping.put(s.uuid, s);
-                }
-                uuidToServiceMapping = localServiceMapping;
+        private static void initMapping() {
+            uuidToServiceMapping = new HashMap<>();
+            for (GattDescriptor s : values()) {
+                uuidToServiceMapping.put(s.uuid, s);
             }
-            return localServiceMapping.get(uuid);
+        }
+
+        public static GattDescriptor getDescriptor(UUID uuid) {
+            if (uuidToServiceMapping == null) {
+                initMapping();
+            }
+            return uuidToServiceMapping.get(uuid);
         }
 
         /**

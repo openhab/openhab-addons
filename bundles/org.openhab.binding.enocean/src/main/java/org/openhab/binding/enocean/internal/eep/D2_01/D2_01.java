@@ -16,8 +16,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelDimmerConfig;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.eep.EEPHelper;
@@ -39,26 +37,25 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public abstract class D2_01 extends _VLDMessage {
 
-    protected static final byte CMD_MASK = 0x0f;
-    protected static final byte OUTPUT_VALUE_MASK = 0x7f;
-    protected static final byte OUTPUT_CHANNEL_MASK = 0x1f;
+    protected final byte cmdMask = 0x0f;
+    protected final byte outputValueMask = 0x7f;
+    protected final byte outputChannelMask = 0x1f;
 
-    protected static final byte CMD_ACTUATOR_SET_STATUS = 0x01;
-    protected static final byte CMD_ACTUATOR_STATUS_QUERY = 0x03;
-    protected static final byte CMD_ACTUATOR_STATUS_RESPONE = 0x04;
-    protected static final byte CMD_ACTUATOR_MEASUREMENT_QUERY = 0x06;
-    protected static final byte CMD_ACTUATOR_MEASUREMENT_RESPONE = 0x07;
+    protected final byte CMD_ACTUATOR_SET_STATUS = 0x01;
+    protected final byte CMD_ACTUATOR_STATUS_QUERY = 0x03;
+    protected final byte CMD_ACTUATOR_STATUS_RESPONE = 0x04;
+    protected final byte CMD_ACTUATOR_MEASUREMENT_QUERY = 0x06;
+    protected final byte CMD_ACTUATOR_MEASUREMENT_RESPONE = 0x07;
 
-    protected static final byte ALL_CHANNELS_MASK = 0x1e;
-    protected static final byte CHANNEL_A_MASK = 0x00;
-    protected static final byte CHANNEL_B_MASK = 0x01;
+    protected final byte AllChannels_Mask = 0x1e;
+    protected final byte ChannelA_Mask = 0x00;
+    protected final byte ChannelB_Mask = 0x01;
 
-    protected static final byte STATUS_SWITCHING_ON = 0x01;
-    protected static final byte STATUS_SWITCHING_OFF = 0x00;
-    protected static final byte STATUS_DIMMING_100 = 0x64;
+    protected final byte STATUS_SWITCHING_ON = 0x01;
+    protected final byte STATUS_SWITCHING_OFF = 0x00;
+    protected final byte STATUS_DIMMING_100 = 0x64;
 
     public D2_01() {
         super();
@@ -69,7 +66,7 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     protected byte getCMD() {
-        return (byte) (bytes[0] & CMD_MASK);
+        return (byte) (bytes[0] & cmdMask);
     }
 
     protected void setSwitchingData(OnOffType command, byte outputChannel) {
@@ -86,19 +83,19 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected State getSwitchingData() {
         if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE) {
-            return (bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
+            return (bytes[bytes.length - 1] & outputValueMask) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
         }
 
         return UnDefType.UNDEF;
     }
 
     protected byte getChannel() {
-        return (byte) (bytes[1] & OUTPUT_CHANNEL_MASK);
+        return (byte) (bytes[1] & outputChannelMask);
     }
 
     protected State getSwitchingData(byte channel) {
-        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE && (getChannel() == channel || getChannel() == ALL_CHANNELS_MASK)) {
-            return (bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
+        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE && (getChannel() == channel || getChannel() == AllChannels_Mask)) {
+            return (bytes[bytes.length - 1] & outputValueMask) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
         }
 
         return UnDefType.UNDEF;
@@ -127,7 +124,7 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected State getDimmingData() {
         if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE) {
-            return new PercentType((bytes[bytes.length - 1] & OUTPUT_VALUE_MASK));
+            return new PercentType((bytes[bytes.length - 1] & outputValueMask));
         }
 
         return UnDefType.UNDEF;
@@ -200,52 +197,48 @@ public abstract class D2_01 extends _VLDMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_GENERAL_SWITCHING)) {
             if (command == RefreshType.REFRESH) {
-                setSwitchingQueryData(ALL_CHANNELS_MASK);
+                setSwitchingQueryData(AllChannels_Mask);
             } else {
-                setSwitchingData((OnOffType) command, ALL_CHANNELS_MASK);
+                setSwitchingData((OnOffType) command, AllChannels_Mask);
             }
         } else if (channelId.equals(CHANNEL_GENERAL_SWITCHINGA)) {
             if (command == RefreshType.REFRESH) {
-                setSwitchingQueryData(CHANNEL_A_MASK);
+                setSwitchingQueryData(ChannelA_Mask);
             } else {
-                setSwitchingData((OnOffType) command, CHANNEL_A_MASK);
+                setSwitchingData((OnOffType) command, ChannelA_Mask);
             }
         } else if (channelId.equals(CHANNEL_GENERAL_SWITCHINGB)) {
             if (command == RefreshType.REFRESH) {
-                setSwitchingQueryData(CHANNEL_B_MASK);
+                setSwitchingQueryData(ChannelB_Mask);
             } else {
-                setSwitchingData((OnOffType) command, CHANNEL_B_MASK);
+                setSwitchingData((OnOffType) command, ChannelB_Mask);
             }
         } else if (channelId.equals(CHANNEL_DIMMER)) {
             if (command == RefreshType.REFRESH) {
-                setSwitchingQueryData(ALL_CHANNELS_MASK);
+                setSwitchingQueryData(AllChannels_Mask);
             } else {
-                if (config != null) {
-                    setDimmingData(command, ALL_CHANNELS_MASK, config);
-                } else {
-                    logger.error("Cannot set dimming data when config is null");
-                }
+                setDimmingData(command, AllChannels_Mask, config);
             }
         } else if (channelId.equals(CHANNEL_INSTANTPOWER) && command == RefreshType.REFRESH) {
-            setPowerMeasurementQueryData(ALL_CHANNELS_MASK);
+            setPowerMeasurementQueryData(AllChannels_Mask);
         } else if (channelId.equals(CHANNEL_TOTALUSAGE) && command == RefreshType.REFRESH) {
-            setEnergyMeasurementQueryData(ALL_CHANNELS_MASK);
+            setEnergyMeasurementQueryData(AllChannels_Mask);
         }
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_GENERAL_SWITCHING:
                 return getSwitchingData();
             case CHANNEL_GENERAL_SWITCHINGA:
-                return getSwitchingData(CHANNEL_A_MASK);
+                return getSwitchingData(ChannelA_Mask);
             case CHANNEL_GENERAL_SWITCHINGB:
-                return getSwitchingData(CHANNEL_B_MASK);
+                return getSwitchingData(ChannelB_Mask);
             case CHANNEL_DIMMER:
                 return getDimmingData();
             case CHANNEL_INSTANTPOWER:

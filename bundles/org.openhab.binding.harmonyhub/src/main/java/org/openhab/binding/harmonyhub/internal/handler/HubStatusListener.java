@@ -24,5 +24,5 @@ import org.openhab.core.thing.ThingStatus;
  */
 @NonNullByDefault
 public interface HubStatusListener {
-    void hubStatusChanged(ThingStatus status);
+    public void hubStatusChanged(ThingStatus status);
 }

@@ -6,5 +6,4 @@
 	<type>binding</type>
 	<name>Luxom Binding</name>
 	<description>This is the binding for Luxom bus system (https://www.luxom.io/)</description>
-	<connection>local</connection>
 </addon:addon>

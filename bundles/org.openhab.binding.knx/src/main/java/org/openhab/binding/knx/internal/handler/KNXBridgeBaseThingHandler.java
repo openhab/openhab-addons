@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -29,7 +28,9 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 
+import tuwien.auto.calimero.IndividualAddress;
 import tuwien.auto.calimero.knxnetip.SecureConnection;
+import tuwien.auto.calimero.mgmt.Destination;
 import tuwien.auto.calimero.secure.KnxSecureException;
 
 /**
@@ -64,31 +65,19 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         public long latencyToleranceMs = 0;
     }
 
-    /**
-     * Helper class to carry information which can be used by the
-     * command line extension (openHAB console).
-     */
-    public record CommandExtensionData(Map<String, Long> unknownGA) {
-    }
-
+    protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
     private final ScheduledExecutorService knxScheduler = ThreadPoolManager.getScheduledPool("knx");
     private final ScheduledExecutorService backgroundScheduler = Executors.newSingleThreadScheduledExecutor();
     protected SecureRoutingConfig secureRouting;
     protected SecureTunnelConfig secureTunnel;
-    private CommandExtensionData commandExtensionData;
 
     public KNXBridgeBaseThingHandler(Bridge bridge) {
         super(bridge);
         secureRouting = new SecureRoutingConfig();
         secureTunnel = new SecureTunnelConfig();
-        commandExtensionData = new CommandExtensionData(new TreeMap<>());
     }
 
     protected abstract KNXClient getClient();
-
-    public CommandExtensionData getCommandExtensionData() {
-        return commandExtensionData;
-    }
 
     /***
      * Initialize KNX secure if configured (full interface)

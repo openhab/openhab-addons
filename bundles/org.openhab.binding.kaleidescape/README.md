@@ -229,9 +229,7 @@ String z1_Detail_DiscLocation "Disc Location: [%s]" { channel="kaleidescape:play
 ksecondsformat.js:
 
 ```javascript
-(function(timestamp) {
-    var totalSeconds = Date.parse(timestamp) / 1000
-
+(function(totalSeconds) {
     if (isNaN(totalSeconds)) {
         return '-';
     } else {

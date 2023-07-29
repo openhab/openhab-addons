@@ -87,7 +87,6 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
             }
         }
 
-        @SuppressWarnings("null")
         private void cleanMap() {
             long currentTime = new Date().getTime();
             for (K key : timeMap.keySet()) {

@@ -120,6 +120,7 @@ public class NetatmoConstants {
 
     // Netatmo API urls
     public static final String URL_API = "https://api.netatmo.com/";
+    public static final String URL_APP = "https://app.netatmo.net/";
     public static final String PATH_OAUTH = "oauth2";
     public static final String SUB_PATH_TOKEN = "token";
     public static final String SUB_PATH_AUTHORIZE = "authorize";
@@ -158,7 +159,6 @@ public class NetatmoConstants {
 
     // Payloads
     public static final String PAYLOAD_FLOODLIGHT = "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"floodlight\":\"%s\"} ]}}";
-    public static final String PAYLOAD_SIREN_PRESENCE = "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"siren_status\":\"%s\"} ]}}";
     public static final String PAYLOAD_PERSON_AWAY = "{\"home_id\":\"%s\",\"person_id\":\"%s\"}";
     public static final String PAYLOAD_PERSON_HOME = "{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}";
 
@@ -198,13 +198,10 @@ public class NetatmoConstants {
         WRITE_DOORBELL,
         @SerializedName("access_doorbell")
         ACCESS_DOORBELL,
-        @SerializedName("read_carbonmonoxidedetector")
-        READ_CARBONMONOXIDEDETECTOR,
         UNKNOWN;
     }
 
     private static final Scope[] SMOKE_SCOPES = { Scope.READ_SMOKEDETECTOR };
-    private static final Scope[] CARBON_MONOXIDE_SCOPES = { Scope.READ_CARBONMONOXIDEDETECTOR };
     private static final Scope[] AIR_CARE_SCOPES = { Scope.READ_HOMECOACH };
     private static final Scope[] WEATHER_SCOPES = { Scope.READ_STATION };
     private static final Scope[] THERMOSTAT_SCOPES = { Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT };
@@ -216,7 +213,7 @@ public class NetatmoConstants {
         AIR_CARE(AIR_CARE_SCOPES),
         WEATHER(WEATHER_SCOPES),
         ENERGY(THERMOSTAT_SCOPES),
-        SECURITY(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES, CARBON_MONOXIDE_SCOPES),
+        SECURITY(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES),
         NONE();
 
         public static String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(fa -> fa.scopes)
@@ -347,20 +344,6 @@ public class NetatmoConstants {
         @SerializedName("2")
         ALIM_CORRECT_POWER,
         UNKNOWN;
-    }
-
-    public enum SirenStatus {
-        SOUND,
-        NO_SOUND,
-        UNKNOWN;
-
-        public static SirenStatus get(String value) {
-            try {
-                return valueOf(value.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return UNKNOWN;
-            }
-        }
     }
 
     public enum BatteryState {

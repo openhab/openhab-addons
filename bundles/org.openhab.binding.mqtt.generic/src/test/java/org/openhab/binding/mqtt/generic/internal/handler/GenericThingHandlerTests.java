@@ -42,6 +42,7 @@ import org.openhab.binding.mqtt.generic.values.ValueFactory;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -50,7 +51,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Tests cases for {@link GenericMQTTThingHandler}.
@@ -156,9 +156,8 @@ public class GenericThingHandlerTests {
 
         StringType updateValue = new StringType("UPDATE");
         thingHandler.handleCommand(TEXT_CHANNEL_UID, updateValue);
-        verify(value).parseCommand(eq(updateValue));
-        // It didn't update the cached state
-        assertThat(value.getChannelState(), is(UnDefType.UNDEF));
+        verify(value).update(eq(updateValue));
+        assertThat(channelConfig.getCache().getChannelState().toString(), is("UPDATE"));
     }
 
     @Test
@@ -174,7 +173,8 @@ public class GenericThingHandlerTests {
         StringType updateValue = new StringType("ON");
         thingHandler.handleCommand(TEXT_CHANNEL_UID, updateValue);
 
-        verify(value).parseCommand(eq(updateValue));
+        verify(value).update(eq(updateValue));
+        assertThat(channelConfig.getCache().getChannelState(), is(OnOffType.ON));
     }
 
     @Test

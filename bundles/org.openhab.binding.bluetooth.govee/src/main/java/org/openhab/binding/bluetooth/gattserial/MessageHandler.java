@@ -26,12 +26,12 @@ public interface MessageHandler<T extends GattMessage, R extends GattMessage> {
      * @param payload
      * @return true if this handler should be removed from the handler list
      */
-    boolean handleReceivedMessage(R message);
+    public boolean handleReceivedMessage(R message);
 
     /**
      *
      * @param payload
      * @return true if this handler should be removed from the handler list
      */
-    boolean handleFailedMessage(T message, Throwable th);
+    public boolean handleFailedMessage(T message, Throwable th);
 }

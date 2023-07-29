@@ -12,14 +12,10 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class EnOceanBridgeConfig {
 
     public enum ESPVersion {
@@ -44,16 +40,23 @@ public class EnOceanBridgeConfig {
         }
     }
 
-    public String path = "";
+    public String path;
 
-    public String espVersion = "ESP3";
+    public String espVersion;
     public boolean rs485;
-    public String rs485BaseId = "";
+    public String rs485BaseId;
 
-    public @Nullable Integer nextSenderId;
+    public Integer nextSenderId;
 
-    public boolean enableSmack = true;
+    public boolean enableSmack;
     public boolean sendTeachOuts;
+
+    public EnOceanBridgeConfig() {
+        espVersion = "ESP3";
+        sendTeachOuts = false;
+        enableSmack = true;
+        nextSenderId = null;
+    }
 
     public ESPVersion getESPVersion() {
         return ESPVersion.getESPVersion(espVersion);

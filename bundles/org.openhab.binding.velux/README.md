@@ -42,7 +42,7 @@ The binding supports the following types of Thing.
 | information   | A Thing that provides overall information about the binding itself.               |      |
 
 1. Only supported in hubs with firmware v0.2.x.x or above
-1. Only needed in hubs with firmware v0.1.x.x (due to note 1. above)
+2. Only needed in hubs with firmware v0.1.x.x (due to note 1. above)
 
 ## Discovery
 
@@ -95,7 +95,7 @@ For your convenience you'll see a log entry for the recognized configuration wit
 
 ### Thing Configuration for "actuator", "window", "rollershutter"
 
-These types of Thing only supported in the Velux Bridge in API version two or higher (firmware version > 0.2.\*.\*).
+These types of Thing only supported in the Velux Bridge in API version two or higher (firmware version > 0.2.*.*).
 These types of Thing are configured by means of their serial number in the hub.
 In addition there are some optional Configuration Parameters.
 
@@ -107,20 +107,14 @@ In addition there are some optional Configuration Parameters.
 
 Notes:
 
-1. To enable a complete inversion of all parameter values use the property `inverted` or add a trailing star to the eight-byte serial number.
+1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number.
+  For an example, see the Thing definition for 'Bathroom_Roof_Window' below.
 
-1. Somfy devices do not provide a valid serial number to the Velux KLF200 Bridge.
+2. Somfy devices do not provide a valid serial number to the Velux KLF200 Bridge.
   For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
   This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
   The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
   For an example, see the Thing definition for 'Living_Room_Awning' below.
-
-The impact of the `inverted` parameter on the open/close position of the device, when a command is sent, is shown in the table below..
-
-| Inverted Parameter | UP Button Pressed | DOWN Button Pressed | Slider Position 0% | Slider Position 100% | Switch Command OFF | Switch Command ON |
-|--------------------|-------------------|---------------------|--------------------|----------------------|--------------------|-------------------|
-| `inverted` = false | Device is open    | Device is closed    | Device is open     | Device is closed     | Device is open     | Device is closed  |
-| `inverted` = true  | Device is closed  | Device is open      | Device is closed   | Device is open       | Device is closed   | Device is open    |
 
 ### Thing Configuration for "scene"
 
@@ -235,12 +229,10 @@ The supported Channel and its associated channel type is shown below.
 
 ## Rain Sensor
 
-Unfortunately the rain sensor is closely integrated into the window device and it is therefore not possible to display its state via a channel.
-However, the 'limitMinimum' channel can provide information about rainy weather.
-The rain sensor, when triggered, overrides the window position so it cannot open more than the ventilation position.
-(Normally 5% .. 10% depending on the window type, resp. 90% .. 95% inverted).
-So if 'limitMinimum' changes from its normal value (usually 100% resp. 0% inverted) to this ventilation position value, it is an indication that the rain sensor has probably been triggered.
-
+Unfortunately Velux has decided to closely integrate the rain sensor into the window device.
+The rain sensor is therefore not displayed in the device list.
+On the other hand, the 'limitMinimum' channel of a roof window provides information about rainy weather:
+If it is set internally by the Velux control unit to a value other than zero, it rains. (Joke!!)
 
 ## Properties of the "bridge" Thing
 
@@ -268,10 +260,10 @@ The bridge Thing provides the following properties.
 
 ```java
 Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.1.xxx", password="secret"] {
-    // Velux (standard) window (with serial number)
-    Thing window Bathroom_Roof_Window "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70"]
+	// Velux (standard) window (with serial number)
+    Thing window Bathroom_Roof_Window "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70", inverted=true]
 
-    // Somfy (non-standard) rollershutter (without serial number)
+	// Somfy (non-standard) rollershutter (without serial number)
     Thing rollershutter Living_Room_Awning "Living Room Awning" @ "Living Room" [serial="00:00:00:00:00:00:00:00", name="Living Room Awning"]
 }
 ```
@@ -290,7 +282,7 @@ See [items.md](doc/items.md) for more examples.
 
 ```perl
 Frame label="Velux Windows" {
-    Slider item=Bathroom_Roof_Window_Position
+	Slider item=Bathroom_Roof_Window_Position
 }
 ```
 
@@ -322,13 +314,13 @@ Example:
 ```java
 rule "Simultaneously Move Main and Vane Positions"
 when
-    ...
+	...
 then
     // note: "velux:klf200:hubid" shall be the thing name of your KLF 200 hub
-    val veluxActions = getActions("velux", "velux:klf200:hubid")
-    if (veluxActions !== null) {
-        val succeeded = veluxActions.moveMainAndVane("velux:rollershutter:hubid:thingid", 75, 25)
-    }
+	val veluxActions = getActions("velux", "velux:klf200:hubid")
+	if (veluxActions !== null) {
+		val succeeded = veluxActions.moveMainAndVane("velux:rollershutter:hubid:thingid", 75, 25)
+	}
 end
 ```
 
@@ -343,28 +335,28 @@ Example:
 ```java
 rule "V_WINDOW_changed"
 when
-    Item V_WINDOW changed
+	Item V_WINDOW changed
 then
-    logInfo("rules.V_WINDOW",    "V_WINDOW_changes() called.")
-    // Get the sensor value
-    val Number windowState = V_WINDOW.state as DecimalType
-    logWarn("rules.V_WINDOW", "Window state is " + windowState + ".")
-    if (windowState < 80) {
-        if (windowState == 0) {
-            logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
-            var int interval = 1
-            createTimer(now.plusMinutes(interval)) [ |
-                    logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
-                    sendCommand(V_WINDOW, 100)
-                    V_WINDOW.postUpdate(100)
-                    logWarn("rules.V_WINDOW:event", "event-V_WINDOW done.")
-                ]
-            } else {
-            logWarn("rules.V_WINDOW", "V-WINDOW changed to partially open.")
-        }
-        }
-    // Check type of item
-    logDebug("rules.V_WINDOW",    "V_WINDOW_changes finished.")
+	logInfo("rules.V_WINDOW",	"V_WINDOW_changes() called.")
+	// Get the sensor value
+	val Number windowState = V_WINDOW.state as DecimalType
+	logWarn("rules.V_WINDOW", "Window state is " + windowState + ".")
+	if (windowState < 80) {
+		if (windowState == 0) {
+			logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
+			var int interval = 1
+			createTimer(now.plusMinutes(interval)) [ |
+					logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
+					sendCommand(V_WINDOW, 100)
+					V_WINDOW.postUpdate(100)
+    				logWarn("rules.V_WINDOW:event", "event-V_WINDOW done.")
+        		]
+    		} else {
+			logWarn("rules.V_WINDOW", "V-WINDOW changed to partially open.")
+		}
+    	}
+	// Check type of item
+	logDebug("rules.V_WINDOW",	"V_WINDOW_changes finished.")
 end
 ```
 
@@ -383,15 +375,15 @@ Example:
 ```java
 rule "Reboot KLF 200"
 when
-    ...
+	...
 then
-    val veluxActions = getActions("velux", "velux:klf200:myhubname")
-    if (veluxActions !== null) {
-        val isRebooting = veluxActions.rebootBridge()
-        logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
-    } else {
-        logWarn("Rules", "Velux KLF 200 actions not found, check thing ID")
-    }
+	val veluxActions = getActions("velux", "velux:klf200:myhubname")
+	if (veluxActions !== null) {
+		val isRebooting = veluxActions.rebootBridge()
+		logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
+	} else {
+		logWarn("Rules", "Velux KLF 200 actions not found, check thing ID")
+	}
 end
 ```
 
@@ -403,18 +395,18 @@ You can exploit this behaviour in a rule to check regularly if a window has been
 ```java
 rule "Every 10 minutes, check if window is in manual mode"
 when
-    Time cron "0 0/10 * * * ?" // every 10 minutes
+	Time cron "0 0/10 * * * ?" // every 10 minutes
 then
-    if (Velux_Window.state != UNDEF) {
-        // command the window to its actual position; this will either
-        // - succeed: the actual position will not change, or
-        // - fail: the position becomes UNDEF (logged next time this rule executes)
-        Velux_Window.sendCommand(Velux_Window.state)
-    } else {
-        logWarn("Rules", "Velux in Manual mode, trying to close again")
-        // try to close it
-        Velux_Window.sendCommand(0)
-    }
+	if (Velux_Window.state != UNDEF) {
+		// command the window to its actual position; this will either
+		// - succeed: the actual position will not change, or
+		// - fail: the position becomes UNDEF (logged next time this rule executes)
+		Velux_Window.sendCommand(Velux_Window.state)
+	} else {
+		logWarn("Rules", "Velux in Manual mode, trying to close again")
+		// try to close it
+		Velux_Window.sendCommand(0)
+	}
 end
 ```
 
@@ -454,9 +446,9 @@ This, of course, is possible on command line with the commands:
 On the other hand, if you prefer a textual configuration, you can append the logging definition with:
 
 ```text
-    <logger name="org.openhab.binding.velux" level="TRACE">
-        <appender-ref ref="FILE" />
-    </logger>
+	<logger name="org.openhab.binding.velux" level="TRACE">
+		<appender-ref ref="FILE" />
+	</logger>
 ```
 
 During startup of normal operations, there should be only some few messages within the logfile, like:

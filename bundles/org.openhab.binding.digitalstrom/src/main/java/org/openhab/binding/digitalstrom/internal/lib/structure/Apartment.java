@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * The {@link Apartment} represents a digitalSTROM-Apartment.
  *
- * @author Alexander Betker - Initial contribution
+ * @author Alexander Betker - initial contributer
  * @author Michael Ochel - add java-doc
  * @author Matthias Siegele - add java-doc
  */

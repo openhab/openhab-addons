@@ -22,11 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface WebsocketInterface {
 
-    void onConnect(boolean connected);
+    public void onConnect(boolean connected);
 
-    void onClose();
+    public void onClose();
 
-    void onMessage(String decodedmessage);
+    public void onMessage(String decodedmessage);
 
-    void onError(Throwable cause);
+    public void onError(Throwable cause);
 }

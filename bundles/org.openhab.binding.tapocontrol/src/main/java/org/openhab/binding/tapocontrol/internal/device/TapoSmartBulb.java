@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.tapocontrol.internal.device;
 
-import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
@@ -20,7 +19,6 @@ import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
-import org.openhab.binding.tapocontrol.internal.structures.TapoLightEffect;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -67,7 +65,7 @@ public class TapoSmartBulb extends TapoDevice {
         } else {
             switch (channel) {
                 case CHANNEL_OUTPUT:
-                    connector.sendDeviceCommand(JSON_KEY_ON, command == OnOffType.ON);
+                    connector.sendDeviceCommand(DEVICE_PROPERTY_ON, command == OnOffType.ON);
                     refreshInfo = true;
                     break;
                 case CHANNEL_BRIGHTNESS:
@@ -92,9 +90,6 @@ public class TapoSmartBulb extends TapoDevice {
                         refreshInfo = true;
                     }
                     break;
-                case CHANNEL_FX_NAME:
-                    setLightEffect(command.toString());
-                    break;
                 default:
                     logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command.toString(),
                             channelUID.getId());
@@ -115,11 +110,11 @@ public class TapoSmartBulb extends TapoDevice {
     protected void setBrightness(Integer newBrightness) {
         /* switch off if 0 */
         if (newBrightness == 0) {
-            connector.sendDeviceCommand(JSON_KEY_ON, false);
+            connector.sendDeviceCommand(DEVICE_PROPERTY_ON, false);
         } else {
             HashMap<String, Object> newState = new HashMap<>();
-            newState.put(JSON_KEY_ON, true);
-            newState.put(JSON_KEY_BRIGHTNESS, newBrightness);
+            newState.put(DEVICE_PROPERTY_ON, true);
+            newState.put(DEVICE_PROPERTY_BRIGHTNES, newBrightness);
             connector.sendDeviceCommands(newState);
         }
     }
@@ -131,11 +126,10 @@ public class TapoSmartBulb extends TapoDevice {
      */
     protected void setColor(HSBType command) {
         HashMap<String, Object> newState = new HashMap<>();
-        newState.put(JSON_KEY_ON, true);
-        newState.put(JSON_KEY_HUE, command.getHue().intValue());
-        newState.put(JSON_KEY_SATURATION, command.getSaturation().intValue());
-        newState.put(JSON_KEY_BRIGHTNESS, command.getBrightness().intValue());
-        newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE, false);
+        newState.put(DEVICE_PROPERTY_ON, true);
+        newState.put(DEVICE_PROPERTY_HUE, command.getHue().intValue());
+        newState.put(DEVICE_PROPERTY_SATURATION, command.getSaturation().intValue());
+        newState.put(DEVICE_PROPERTY_BRIGHTNES, command.getBrightness().intValue());
         connector.sendDeviceCommands(newState);
     }
 
@@ -147,25 +141,9 @@ public class TapoSmartBulb extends TapoDevice {
     protected void setColorTemp(Integer colorTemp) {
         HashMap<String, Object> newState = new HashMap<>();
         colorTemp = limitVal(colorTemp, BULB_MIN_COLORTEMP, BULB_MAX_COLORTEMP);
-        newState.put(JSON_KEY_ON, true);
-        newState.put(JSON_KEY_COLORTEMP, colorTemp);
+        newState.put(DEVICE_PROPERTY_ON, true);
+        newState.put(DEVICE_PROPERTY_COLORTEMP, colorTemp);
         connector.sendDeviceCommands(newState);
-    }
-
-    /**
-     * Set light effect
-     * 
-     * @param fxName (String) id of LightEffect
-     */
-    protected void setLightEffect(String fxName) {
-        HashMap<String, Object> newState = new HashMap<>();
-        if (fxName.length() > 0 && !fxName.equals(JSON_KEY_LIGHTNING_EFFECT_OFF)) {
-            newState.put(JSON_KEY_LIGHTNING_EFFECT_ENABLE, true);
-            newState.put(JSON_KEY_LIGHTNING_EFFECT_ID, fxName);
-        } else {
-            newState.put(JSON_KEY_LIGHTNING_EFFECT_ENABLE, false);
-        }
-        connector.sendDeviceCommands(DEVICE_CMD_SET_LIGHT_FX, newState);
     }
 
     /**
@@ -187,20 +165,5 @@ public class TapoSmartBulb extends TapoDevice {
         publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_ONTIME),
                 getTimeType(deviceInfo.getOnTime(), Units.SECOND));
         publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT), getOnOffType(deviceInfo.isOverheated()));
-
-        updateLightEffectChannels(deviceInfo.getLightEffect());
-    }
-
-    /**
-     * Set light effect channels
-     * 
-     * @param lightEffect
-     */
-    protected void updateLightEffectChannels(TapoLightEffect lightEffect) {
-        String fxId = "";
-        if (lightEffect.getEnable().equals(true)) {
-            fxId = lightEffect.getId();
-        }
-        publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_NAME), getStringType(fxId));
     }
 }

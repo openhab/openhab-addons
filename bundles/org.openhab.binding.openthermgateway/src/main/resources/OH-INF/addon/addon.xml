@@ -10,6 +10,5 @@
 		For more information about the
 		OpenTherm Gateway please see http://otgw.tclcode.com/
 	</description>
-	<connection>local</connection>
 
 </addon:addon>

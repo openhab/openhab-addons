@@ -7,6 +7,5 @@
 	<name>SMSModem Binding</name>
 	<description>This binding handles a GSM modem connected to the openHAB server (Serial), or exposed on the network. It
 		can send and receive SMS.</description>
-	<connection>local</connection>
 
 </addon:addon>

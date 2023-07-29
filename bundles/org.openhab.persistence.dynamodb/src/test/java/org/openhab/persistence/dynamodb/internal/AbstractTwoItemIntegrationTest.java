@@ -317,10 +317,7 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
 
             FilterCriteria criteria = new FilterCriteria();
             criteria.setOperator(Operator.GT);
-            State filterState = getQueryItemStateBetween();
-            if (filterState != null) {
-                criteria.setState(filterState);
-            }
+            criteria.setState(getQueryItemStateBetween());
             criteria.setItemName(getItemName());
             criteria.setBeginDate(beforeStore);
             criteria.setEndDate(afterStore2);

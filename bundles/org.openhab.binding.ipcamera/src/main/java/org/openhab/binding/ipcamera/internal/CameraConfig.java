@@ -27,7 +27,6 @@ public class CameraConfig {
     private int onvifPort;
     private String username = "";
     private String password = "";
-    public boolean useToken = true;
     private int onvifMediaProfile;
     private int pollTime;
     private String ffmpegInput = "";

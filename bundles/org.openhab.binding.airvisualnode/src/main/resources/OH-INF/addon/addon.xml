@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>AirVisual Node Binding</name>
 	<description>Binding for AirVisual Node air quality monitor</description>
-	<connection>local</connection>
 
 </addon:addon>

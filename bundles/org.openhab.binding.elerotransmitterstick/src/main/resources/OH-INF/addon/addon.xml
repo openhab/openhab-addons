@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Elero Transmitter Stick Binding</name>
 	<description>This is the binding for Elero Transmitter Sticks.</description>
-	<connection>local</connection>
 
 </addon:addon>

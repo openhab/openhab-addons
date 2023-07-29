@@ -46,7 +46,7 @@ public interface VeluxBridgeProvider {
      * @return true if communication was successful, and false otherwise.
      */
 
-    boolean bridgeCommunicate(BridgeCommunicationProtocol communication);
+    public boolean bridgeCommunicate(BridgeCommunicationProtocol communication);
 
     /**
      * Returns the class {@link BridgeAPI} which summarizes all interfacing methods.
@@ -54,6 +54,5 @@ public interface VeluxBridgeProvider {
      * @return <b>BridgeAPI</b>
      *         containing all API methods.
      */
-    @Nullable
-    BridgeAPI bridgeAPI();
+    public @Nullable BridgeAPI bridgeAPI();
 }

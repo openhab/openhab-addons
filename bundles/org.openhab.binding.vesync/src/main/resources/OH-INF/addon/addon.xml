@@ -7,6 +7,5 @@
 	<name>VeSync Binding</name>
 	<description>This is the binding for the VeSync products. Currently, this supports the Levoit branded Air Purifiers and
 		Humidifiers using the v2 protocol.</description>
-	<connection>cloud</connection>
 
 </addon:addon>

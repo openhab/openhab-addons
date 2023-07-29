@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class BoschSHCBindingConstants {
 
-    public static final String BINDING_ID = "boschshc";
+    private static final String BINDING_ID = "boschshc";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SHC = new ThingTypeUID(BINDING_ID, "shc");
@@ -82,7 +82,6 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_SMOKE_CHECK = "smoke-check";
-    public static final String CHANNEL_SILENT_MODE = "silent-mode";
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";

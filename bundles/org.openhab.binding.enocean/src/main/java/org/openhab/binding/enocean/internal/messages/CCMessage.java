@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 class CCMessage extends BasePacket {
 
     public enum CCMessageType {

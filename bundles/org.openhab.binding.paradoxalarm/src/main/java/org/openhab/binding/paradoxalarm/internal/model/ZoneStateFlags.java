@@ -21,7 +21,6 @@ public class ZoneStateFlags {
     private byte[] zonesOpened;
     private byte[] zonesTampered;
     private byte[] zonesLowBattery;
-    private byte[] zoneSpecialFlags;
 
     public byte[] getZonesOpened() {
         return zonesOpened;
@@ -45,13 +44,5 @@ public class ZoneStateFlags {
 
     public void setZonesLowBattery(byte[] zonesLowBattery) {
         this.zonesLowBattery = zonesLowBattery;
-    }
-
-    public byte[] getZoneSpecialFlags() {
-        return zoneSpecialFlags;
-    }
-
-    public void setZoneSpecialFlags(byte[] zoneSpecialFlags) {
-        this.zoneSpecialFlags = zoneSpecialFlags;
     }
 }

@@ -36,7 +36,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
-import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
@@ -104,8 +103,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
     private static final String DYNAMODB_THREADPOOL_NAME = "dynamodbPersistenceService";
 
-    private final ItemRegistry itemRegistry;
-    private final UnitProvider unitProvider;
+    private ItemRegistry itemRegistry;
     private @Nullable DynamoDbEnhancedAsyncClient client;
     private @Nullable DynamoDbAsyncClient lowLevelClient;
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
@@ -133,19 +131,15 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     }
 
     @Activate
-    public DynamoDBPersistenceService(final @Reference ItemRegistry itemRegistry,
-            final @Reference UnitProvider unitProvider) {
+    public DynamoDBPersistenceService(final @Reference ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
-        this.unitProvider = unitProvider;
     }
 
     /**
      * For tests
      */
-    DynamoDBPersistenceService(final ItemRegistry itemRegistry, final UnitProvider unitProvider,
-            @Nullable URI endpointOverride) {
+    DynamoDBPersistenceService(final ItemRegistry itemRegistry, @Nullable URI endpointOverride) {
         this.itemRegistry = itemRegistry;
-        this.unitProvider = unitProvider;
         this.endpointOverride = endpointOverride;
     }
 
@@ -390,10 +384,6 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             // Proceed with query
             //
             String itemName = filter.getItemName();
-            if (itemName == null) {
-                logger.warn("Item name is missing in filter {}", filter);
-                return List.of();
-            }
             Item item = getItemFromRegistry(itemName);
             if (item == null) {
                 logger.warn("Could not get item {} from registry! Returning empty query results.", itemName);
@@ -420,7 +410,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
                     item.getClass().getSimpleName(), dtoClass.getSimpleName(), tableName);
 
             QueryEnhancedRequest queryExpression = DynamoDBQueryUtils.createQueryExpression(dtoClass,
-                    localTableNameResolver.getTableSchema(), item, filter, unitProvider);
+                    localTableNameResolver.getTableSchema(), item, filter);
 
             CompletableFuture<List<DynamoDBItem<?>>> itemsFuture = new CompletableFuture<>();
             final SdkPublisher<? extends DynamoDBItem<?>> itemPublisher = table.query(queryExpression).items();
@@ -529,7 +519,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
 
         // We do not want to rely item.state since async context below can execute much later.
         // We 'copy' the item for local use. copyItem also normalizes the unit with NumberItems.
-        final GenericItem copiedItem = copyItem(itemTemplate, item, effectiveName, null, unitProvider);
+        final GenericItem copiedItem = copyItem(itemTemplate, item, effectiveName, null);
 
         resolveTableSchema().thenAcceptAsync(resolved -> {
             if (!resolved) {
@@ -619,18 +609,15 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
      * @param item item that is used to acquire name and state
      * @param nameOverride name override for the resulting copy
      * @param stateOverride state override for the resulting copy
-     * @param unitProvider the unit provider for number with dimension
      * @throws IllegalArgumentException when state is QuantityType and not compatible with item
      */
     static GenericItem copyItem(Item itemTemplate, Item item, @Nullable String nameOverride,
-            @Nullable State stateOverride, UnitProvider unitProvider) {
+            @Nullable State stateOverride) {
         final GenericItem copiedItem;
         try {
             if (itemTemplate instanceof NumberItem) {
-                copiedItem = (GenericItem) itemTemplate.getClass()
-                        .getDeclaredConstructor(String.class, String.class, UnitProvider.class)
-                        .newInstance(itemTemplate.getType(), nameOverride == null ? item.getName() : nameOverride,
-                                unitProvider);
+                copiedItem = (GenericItem) itemTemplate.getClass().getDeclaredConstructor(String.class, String.class)
+                        .newInstance(itemTemplate.getType(), nameOverride == null ? item.getName() : nameOverride);
             } else {
                 copiedItem = (GenericItem) itemTemplate.getClass().getDeclaredConstructor(String.class)
                         .newInstance(nameOverride == null ? item.getName() : nameOverride);

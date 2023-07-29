@@ -29,21 +29,15 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ResponseFieldDTO {
     public enum AlertLevel {
+        UNKNOWN,
         @SerializedName("Vert")
-        GREEN("00ff00"),
+        GREEN,
         @SerializedName("Jaune")
-        YELLOW("ffff00"),
+        YELLOW,
         @SerializedName("Orange")
-        ORANGE("ef6c00"),
+        ORANGE,
         @SerializedName("Rouge")
-        RED("ff0000"),
-        UNKNOWN("3d3c3c");
-
-        public final String color;
-
-        AlertLevel(String color) {
-            this.color = color;
-        }
+        RED;
     }
 
     @SerializedName("nom_reg")

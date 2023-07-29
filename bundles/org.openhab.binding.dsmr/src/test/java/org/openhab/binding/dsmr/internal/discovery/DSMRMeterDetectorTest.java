@@ -42,6 +42,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
+import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
 
@@ -76,7 +77,7 @@ public class DSMRMeterDetectorTest {
     @ParameterizedTest
     @MethodSource("data")
     public void testDetectMeters(final String telegramName, final Set<DSMRMeterType> expectedMeters) {
-        final P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName);
+        final P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
         final DSMRMeterDetector detector = new DSMRMeterDetector();
         final Entry<Collection<DSMRMeterDescriptor>, List<CosemObject>> entry = detector.detectMeters(telegram);
         final Collection<DSMRMeterDescriptor> detectMeters = entry.getKey();

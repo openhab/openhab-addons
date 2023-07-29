@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface ResponseParser<T> {
-    int responseLength();
+    public int responseLength();
 
-    T parse(byte[] buffer) throws Rego6xxProtocolException;
+    public T parse(byte[] buffer) throws Rego6xxProtocolException;
 }

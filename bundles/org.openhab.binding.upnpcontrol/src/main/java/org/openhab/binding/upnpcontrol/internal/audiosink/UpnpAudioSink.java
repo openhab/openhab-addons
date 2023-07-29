@@ -15,15 +15,17 @@ package org.openhab.binding.upnpcontrol.internal.audiosink;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.upnpcontrol.internal.handler.UpnpRendererHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSinkAsync;
+import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.StreamServed;
+import org.openhab.core.audio.FixedLengthAudioStream;
 import org.openhab.core.audio.URLAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.openhab.core.audio.UnsupportedAudioStreamException;
@@ -34,14 +36,14 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @author Mark Herwege - Initial contribution
- * @author Laurent Garnier - Support for more audio streams through the HTTP audio servlet
  */
 @NonNullByDefault
-public class UpnpAudioSink extends AudioSinkAsync {
+public class UpnpAudioSink implements AudioSink {
 
     private final Logger logger = LoggerFactory.getLogger(UpnpAudioSink.class);
 
-    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Stream
+            .of(AudioStream.class, FixedLengthAudioStream.class).collect(Collectors.toSet());
     protected UpnpRendererHandler handler;
     protected AudioHTTPServer audioHTTPServer;
     protected String callbackUrl;
@@ -63,41 +65,27 @@ public class UpnpAudioSink extends AudioSinkAsync {
     }
 
     @Override
-    protected void processAsynchronously(@Nullable AudioStream audioStream)
+    public void process(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (audioStream == null) {
             stopMedia();
             return;
         }
 
-        if (audioStream instanceof URLAudioStream urlAudioStream) {
-            playMedia(urlAudioStream.getURL());
-            try {
-                audioStream.close();
-            } catch (IOException e) {
-            }
+        String url = null;
+        if (audioStream instanceof URLAudioStream) {
+            URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
+            url = urlAudioStream.getURL();
         } else if (!callbackUrl.isEmpty()) {
-            StreamServed streamServed;
-            try {
-                streamServed = audioHTTPServer.serve(audioStream, 5, true);
-            } catch (IOException e) {
-                try {
-                    audioStream.close();
-                } catch (IOException ex) {
-                }
-                throw new UnsupportedAudioStreamException(
-                        handler.getUDN() + " was not able to handle the audio stream (cache on disk failed).",
-                        audioStream.getClass(), e);
-            }
-            streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
-            playMedia(callbackUrl + streamServed.url());
+            String relativeUrl = audioStream instanceof FixedLengthAudioStream
+                    ? audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 20)
+                    : audioHTTPServer.serve(audioStream);
+            url = String.valueOf(this.callbackUrl) + relativeUrl;
         } else {
             logger.warn("We do not have any callback url, so {} cannot play the audio stream!", handler.getUDN());
-            try {
-                audioStream.close();
-            } catch (IOException e) {
-            }
+            return;
         }
+        playMedia(url);
     }
 
     @Override

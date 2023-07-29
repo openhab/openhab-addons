@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.robonect.internal;
 
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.THING_TYPE_AUTOMOWER;
 
+import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.robonect.internal.handler.RobonectHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -36,19 +36,18 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Marco Meyer - Initial contribution
  */
-@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.robonect")
 public class RobonectHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AUTOMOWER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AUTOMOWER);
 
-    private HttpClientFactory httpClientFactory;
+    private HttpClient httpClient;
     private TimeZoneProvider timeZoneProvider;
 
     @Activate
     public RobonectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TimeZoneProvider timeZoneProvider) {
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -58,11 +57,11 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_AUTOMOWER)) {
-            return new RobonectHandler(thing, httpClientFactory, timeZoneProvider);
+            return new RobonectHandler(thing, httpClient, timeZoneProvider);
         }
 
         return null;

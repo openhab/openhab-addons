@@ -20,8 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
@@ -30,7 +28,6 @@ import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
-import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.generic.values.ValueFactory;
@@ -40,12 +37,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescription;
-import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,15 +136,6 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     public void initialize() {
         initializeAvailabilityTopicsFromConfig();
 
-        ThingHandlerCallback callback = getCallback();
-        if (callback == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Framework failure: callback must not be null");
-            return;
-        }
-
-        ThingBuilder thingBuilder = editThing();
-        boolean modified = false;
-
         List<ChannelUID> configErrors = new ArrayList<>();
         for (Channel channel : thing.getChannels()) {
             final ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
@@ -160,31 +144,6 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 continue;
             }
             final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
-
-            if (channelTypeUID
-                    .equals(new ChannelTypeUID(MqttBindingConstants.BINDING_ID, MqttBindingConstants.NUMBER))) {
-                Unit<?> unit = UnitUtils.parseUnit(channelConfig.unit);
-                String dimension = unit == null ? null : UnitUtils.getDimensionName(unit);
-                String expectedItemType = dimension == null ? "Number" : "Number:" + dimension; // unknown dimension ->
-                // Number
-                String actualItemType = channel.getAcceptedItemType();
-                if (!expectedItemType.equals(actualItemType)) {
-                    ChannelBuilder channelBuilder = callback.createChannelBuilder(channel.getUID(), channelTypeUID)
-                            .withAcceptedItemType(expectedItemType).withConfiguration(channel.getConfiguration());
-                    String label = channel.getLabel();
-                    if (label != null) {
-                        channelBuilder.withLabel(label);
-                    }
-                    String description = channel.getDescription();
-                    if (description != null) {
-                        channelBuilder.withDescription(description);
-                    }
-                    thingBuilder.withoutChannel(channel.getUID());
-                    thingBuilder.withChannel(channelBuilder.build());
-                    modified = true;
-                }
-            }
-
             try {
                 Value value = ValueFactory.createValueState(channelConfig, channelTypeUID.getId());
                 ChannelState channelState = createChannelState(channelConfig, channel.getUID(), value);
@@ -198,10 +157,6 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 logger.warn("Configuration error for channel '{}'", channel.getUID(), e);
                 configErrors.add(channel.getUID());
             }
-        }
-
-        if (modified) {
-            updateThing(thingBuilder.build());
         }
 
         // If some channels could not start up, put the entire thing offline and display the channels

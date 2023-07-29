@@ -17,7 +17,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.BasePacket.ESPPacketType;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
@@ -26,7 +25,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
  *
  * @author Daniel Weber - Initial contribution
  */
-@NonNullByDefault
 public class ESP2Packet {
 
     public static final byte ENOCEAN_ESP2_FIRSTSYNC_BYTE = (byte) 0xA5;

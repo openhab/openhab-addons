@@ -29,5 +29,5 @@ public interface RadioThermostatEventListener extends EventListener {
      *
      * @param event the event object
      */
-    void onNewMessageEvent(RadioThermostatEvent event);
+    public void onNewMessageEvent(RadioThermostatEvent event);
 }

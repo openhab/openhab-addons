@@ -5,8 +5,6 @@
 
 	<type>binding</type>
 	<name>Monoprice Whole House Audio Binding</name>
-	<description>Controls Monoprice, Dayton Audio and Xantech Whole House Amplifiers.</description>
-
-	<connection>local</connection>
+	<description>Controls Monoprice and Dayton Audio Whole House Amplifiers.</description>
 
 </addon:addon>

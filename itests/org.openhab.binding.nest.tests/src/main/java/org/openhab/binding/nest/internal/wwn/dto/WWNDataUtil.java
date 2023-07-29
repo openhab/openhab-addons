@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nest.internal.wwn.WWNUtils;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -33,7 +32,6 @@ import org.openhab.core.library.unit.SIUnits;
  *
  * @author Wouter Born - Initial contribution
  */
-@NonNullByDefault
 public final class WWNDataUtil {
 
     public static final String COMPLETE_DATA_FILE_NAME = "top-level-streaming-data.json";

@@ -63,7 +63,7 @@ public class IntesisHomeHttpApi {
 
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
 
-            if (!response.isEmpty()) {
+            if (response != null && !response.isEmpty()) {
                 return response;
             } else {
                 return null;

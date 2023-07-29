@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Sony PlayStation Binding</name>
 	<description>Monitor and control your Sony PlayStation.</description>
-	<connection>local</connection>
 
 </addon:addon>

@@ -104,7 +104,7 @@ public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscover
         setScanning(true);
         if (servletControls != null && !servletControls.isActive()) {
             servletWasInactive = true;
-            servletControls.enable();
+            servletControls.activate();
         }
         thinglessStationIds.keySet().forEach(this::createDiscoveryResult);
     }
@@ -114,7 +114,7 @@ public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscover
         super.stopScan();
         thinglessStationIds.keySet().forEach(this::createDiscoveryResult);
         if (!isBackgroundDiscoveryEnabled() && servletControls != null && servletWasInactive) {
-            servletControls.disable();
+            servletControls.deactivate();
         }
         setScanning(false);
     }

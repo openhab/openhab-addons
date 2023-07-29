@@ -24,7 +24,6 @@ import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FixedLengthAudioStream;
-import org.openhab.core.common.Disposable;
 import org.openhab.core.voice.Voice;
 
 /**
@@ -33,8 +32,7 @@ import org.openhab.core.voice.Voice;
  * @author Florian Schmidt - Initial Contribution
  */
 @NonNullByDefault
-class PicoTTSAudioStream extends FixedLengthAudioStream implements Disposable {
-
+class PicoTTSAudioStream extends FixedLengthAudioStream {
     private final Voice voice;
     private final String text;
     private final AudioFormat audioFormat;
@@ -127,20 +125,6 @@ class PicoTTSAudioStream extends FixedLengthAudioStream implements Disposable {
             return getFileInputStream(file);
         } else {
             throw new AudioException("No temporary audio file available.");
-        }
-    }
-
-    @Override
-    public void dispose() throws IOException {
-        File localFile = file;
-        if (localFile != null && localFile.exists()) {
-            try {
-                if (!localFile.delete()) {
-                    throw new IOException("Failed to delete the file " + localFile.getAbsolutePath());
-                }
-            } catch (SecurityException e) {
-                throw new IOException("Failed to delete the file " + localFile.getAbsolutePath(), e);
-            }
         }
     }
 }

@@ -50,8 +50,6 @@ public class ICloudDeviceInformation {
 
     private String id;
 
-    private String deviceDiscoveryId;
-
     private boolean isLocating;
 
     private boolean isMac;
@@ -160,10 +158,6 @@ public class ICloudDeviceInformation {
 
     public String getId() {
         return this.id;
-    }
-
-    public String getDeviceDiscoveryId() {
-        return this.deviceDiscoveryId;
     }
 
     public boolean getIsLocating() {

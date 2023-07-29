@@ -19,7 +19,7 @@ public interface IInboundOutboundMessageListener {
      *
      * @param message The inbound message received
      */
-    void messageReceived(InboundMessage message);
+    public void messageReceived(InboundMessage message);
 
     /**
      * Implement this method to get warned when
@@ -27,7 +27,7 @@ public interface IInboundOutboundMessageListener {
      *
      * @param message the message sent
      */
-    void messageSent(OutboundMessage message);
+    public void messageSent(OutboundMessage message);
 
     /**
      * Implement this method to get warned when
@@ -35,5 +35,5 @@ public interface IInboundOutboundMessageListener {
      *
      * @param message the delivery report message
      */
-    void messageDelivered(DeliveryReportMessage message);
+    public void messageDelivered(DeliveryReportMessage message);
 }

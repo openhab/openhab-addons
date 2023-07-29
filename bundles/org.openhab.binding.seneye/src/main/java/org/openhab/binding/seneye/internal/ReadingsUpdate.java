@@ -19,7 +19,7 @@ package org.openhab.binding.seneye.internal;
  */
 
 public interface ReadingsUpdate {
-    void newState(SeneyeDeviceReading devicereadings);
+    public void newState(SeneyeDeviceReading devicereadings);
 
-    void invalidConfig();
+    public void invalidConfig();
 }

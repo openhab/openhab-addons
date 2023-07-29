@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>WeMo Binding</name>
 	<description>The WeMo binding integrates Belkin WeMo devices.</description>
-	<connection>local</connection>
 
 </addon:addon>

@@ -37,6 +37,7 @@ import org.openhab.binding.onkyo.internal.automation.modules.OnkyoThingActions;
 import org.openhab.binding.onkyo.internal.config.OnkyoDeviceConfiguration;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
+import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
@@ -76,7 +77,7 @@ import org.xml.sax.SAXException;
  * @author Pauli Anttila - lot of refactoring
  * @author Stewart Cossey - add dynamic state description provider
  */
-public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener {
+public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
 
@@ -97,9 +98,9 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
 
     private static final int NET_USB_ID = 43;
 
-    public OnkyoHandler(Thing thing, UpnpIOService upnpIOService,
+    public OnkyoHandler(Thing thing, UpnpIOService upnpIOService, AudioHTTPServer audioHTTPServer, String callbackUrl,
             OnkyoStateDescriptionProvider stateDescriptionProvider) {
-        super(thing, upnpIOService);
+        super(thing, upnpIOService, audioHTTPServer, callbackUrl);
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -920,6 +921,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
         return new PercentType(((Double) (volume.intValue() / configuration.volumeScale)).intValue());
     }
 
+    @Override
     public PercentType getVolume() throws IOException {
         if (volumeLevelZone1 instanceof PercentType) {
             return (PercentType) volumeLevelZone1;
@@ -928,6 +930,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
         throw new IOException();
     }
 
+    @Override
     public void setVolume(PercentType volume) throws IOException {
         handleVolumeSet(EiscpCommand.Zone.ZONE1, volumeLevelZone1, downScaleVolume(volume));
     }

@@ -38,7 +38,7 @@ public interface KNXTypeMapper {
      * @return datapoint value as a string
      */
     @Nullable
-    String toDPTValue(Type type, @Nullable String dpt);
+    public String toDPTValue(Type type, @Nullable String dpt);
 
     /**
      * maps a datapoint value to an openHAB command or state
@@ -49,8 +49,8 @@ public interface KNXTypeMapper {
      * @return a command or state of openHAB
      */
     @Nullable
-    Type toType(Datapoint datapoint, byte[] data);
+    public Type toType(Datapoint datapoint, byte[] data);
 
     @Nullable
-    Class<? extends Type> toTypeClass(@Nullable String dpt);
+    public Class<? extends Type> toTypeClass(@Nullable String dpt);
 }

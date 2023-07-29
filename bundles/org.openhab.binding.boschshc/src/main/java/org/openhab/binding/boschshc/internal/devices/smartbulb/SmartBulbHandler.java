@@ -31,7 +31,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.util.ColorUtil;
 
 /**
  * Handler for smart light bulbs connected via Zigbee, e.g. Ledvance Smart+ bulbs
@@ -69,38 +68,38 @@ public class SmartBulbHandler extends BoschSHCDeviceHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_POWER_SWITCH:
-                if (command instanceof OnOffType onOffCommand) {
-                    updateBinarySwitchState(onOffCommand);
+                if (command instanceof OnOffType) {
+                    updateBinarySwitchState((OnOffType) command);
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
-                if (command instanceof PercentType percentCommand) {
-                    updateMultiLevelSwitchState(percentCommand);
+                if (command instanceof PercentType) {
+                    updateMultiLevelSwitchState((PercentType) command);
                 }
                 break;
             case CHANNEL_COLOR:
-                if (command instanceof HSBType hsbCommand) {
-                    updateColorState(hsbCommand);
+                if (command instanceof HSBType) {
+                    updateColorState((HSBType) command);
                 }
                 break;
         }
     }
 
-    private void updateBinarySwitchState(OnOffType onOffCommand) {
+    private void updateBinarySwitchState(OnOffType command) {
         BinarySwitchServiceState serviceState = new BinarySwitchServiceState();
-        serviceState.on = onOffCommand == OnOffType.ON;
+        serviceState.on = command == OnOffType.ON;
         this.updateServiceState(binarySwitchService, serviceState);
     }
 
-    private void updateMultiLevelSwitchState(PercentType percentCommand) {
+    private void updateMultiLevelSwitchState(PercentType command) {
         MultiLevelSwitchServiceState serviceState = new MultiLevelSwitchServiceState();
-        serviceState.level = percentCommand.intValue();
+        serviceState.level = command.intValue();
         this.updateServiceState(multiLevelSwitchService, serviceState);
     }
 
-    private void updateColorState(HSBType hsbCommand) {
+    private void updateColorState(HSBType command) {
         HSBColorActuatorServiceState serviceState = new HSBColorActuatorServiceState();
-        serviceState.rgb = ColorUtil.hsbTosRgb(hsbCommand);
+        serviceState.rgb = command.getRGB();
         this.updateServiceState(hsbColorActuatorService, serviceState);
     }
 

@@ -68,18 +68,18 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     private static final String SCOPE = "all";
     private final List<HydrawiseControllerListener> controllerListeners = Collections
             .synchronizedList(new ArrayList<HydrawiseControllerListener>());
-    private final HttpClient httpClient;
-    private final OAuthFactory oAuthFactory;
-    private @Nullable OAuthClientService oAuthService;
-    private @Nullable HydrawiseGraphQLClient apiClient;
+    private final HydrawiseGraphQLClient apiClient;
+    private final OAuthClientService oAuthService;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable Customer lastData;
     private int refresh;
 
     public HydrawiseAccountHandler(final Bridge bridge, final HttpClient httpClient, final OAuthFactory oAuthFactory) {
         super(bridge);
-        this.httpClient = httpClient;
-        this.oAuthFactory = oAuthFactory;
+        this.oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), AUTH_URL, AUTH_URL, CLIENT_ID,
+                CLIENT_SECRET, SCOPE, false);
+        oAuthService.addAccessTokenRefreshListener(this);
+        this.apiClient = new HydrawiseGraphQLClient(httpClient, oAuthService);
     }
 
     @Override
@@ -88,31 +88,14 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
 
     @Override
     public void initialize() {
-        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), AUTH_URL,
-                AUTH_URL, CLIENT_ID, CLIENT_SECRET, SCOPE, false);
-        this.oAuthService = oAuthService;
-        oAuthService.addAccessTokenRefreshListener(this);
-        this.apiClient = new HydrawiseGraphQLClient(httpClient, oAuthService);
         logger.debug("Handler initialized.");
-        scheduler.schedule(() -> configure(oAuthService), 0, TimeUnit.SECONDS);
+        scheduler.schedule(this::configure, 0, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
         clearPolling();
-        OAuthClientService oAuthService = this.oAuthService;
-        if (oAuthService != null) {
-            oAuthService.removeAccessTokenRefreshListener(this);
-            oAuthFactory.ungetOAuthService(getThing().toString());
-            this.oAuthService = null;
-        }
-    }
-
-    @Override
-    public void handleRemoval() {
-        oAuthFactory.deleteServiceAndAccessToken(getThing().toString());
-        super.handleRemoval();
     }
 
     @Override
@@ -151,7 +134,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
         initPolling(delaySeconds, this.refresh);
     }
 
-    private void configure(OAuthClientService oAuthService) {
+    private void configure() {
         HydrawiseAccountConfiguration config = getConfig().as(HydrawiseAccountConfiguration.class);
         try {
             if (!config.userName.isEmpty() && !config.password.isEmpty()) {

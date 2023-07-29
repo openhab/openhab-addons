@@ -30,12 +30,12 @@ public interface PcapNetworkInterfaceListener {
      *
      * @param newNetworkInterface The added networkInterface
      */
-    void onPcapNetworkInterfaceAdded(PcapNetworkInterfaceWrapper newNetworkInterface);
+    public void onPcapNetworkInterfaceAdded(PcapNetworkInterfaceWrapper newNetworkInterface);
 
     /**
      * This method is called whenever a {@link PcapNetworkInterfaceWrapper} is removed.
      *
      * @param removedNetworkInterface The removed networkInterface
      */
-    void onPcapNetworkInterfaceRemoved(PcapNetworkInterfaceWrapper removedNetworkInterface);
+    public void onPcapNetworkInterfaceRemoved(PcapNetworkInterfaceWrapper removedNetworkInterface);
 }

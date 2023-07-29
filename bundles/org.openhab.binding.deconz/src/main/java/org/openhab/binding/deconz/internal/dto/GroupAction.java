@@ -38,23 +38,6 @@ public class GroupAction {
     public @Nullable Integer colorloopspeed;
     public @Nullable Integer transitiontime;
 
-    /**
-     * clear this group action
-     */
-    public void clear() {
-        on = null;
-        bri = null;
-
-        alert = null;
-        colormode = null;
-        effect = null;
-
-        hue = null;
-        sat = null;
-        ct = null;
-        xy = null;
-    }
-
     @Override
     public String toString() {
         return "GroupAction{on=" + on + ", toggle=" + toggle + ", bri=" + bri + ", hue=" + hue + ", sat=" + sat

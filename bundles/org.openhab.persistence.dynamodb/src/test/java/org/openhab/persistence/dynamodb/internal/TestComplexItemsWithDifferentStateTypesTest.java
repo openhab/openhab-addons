@@ -337,12 +337,8 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
         FilterCriteria criteria = new FilterCriteria();
         criteria.setOrdering(Ordering.ASCENDING);
         criteria.setItemName(item);
-        if (operator != null) {
-            criteria.setOperator(operator);
-        }
-        if (state != null) {
-            criteria.setState(state);
-        }
+        criteria.setOperator(operator);
+        criteria.setState(state);
         @SuppressWarnings("null")
         Iterable<HistoricItem> iterable = BaseIntegrationTest.service.query(criteria);
         List<State> actualStatesList = new ArrayList<>();

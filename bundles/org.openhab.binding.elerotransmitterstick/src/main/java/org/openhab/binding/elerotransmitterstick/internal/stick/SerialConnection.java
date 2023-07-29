@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -154,13 +155,8 @@ public class SerialConnection {
         }
 
         if (logger.isTraceEnabled()) {
-            int j = 0;
-            byte[] primeBytes = new byte[bytes.size()];
-            for (Byte b : bytes.toArray(new Byte[bytes.size()])) {
-                primeBytes[j++] = b.byteValue();
-            }
-
-            logger.trace("buffer contains bytes: {}", HexUtils.bytesToHex(primeBytes));
+            logger.trace("buffer contains bytes: {}",
+                    HexUtils.bytesToHex(ArrayUtils.toPrimitive(bytes.toArray(new Byte[bytes.size()]))));
         }
 
         if (bytes.size() > 1) {

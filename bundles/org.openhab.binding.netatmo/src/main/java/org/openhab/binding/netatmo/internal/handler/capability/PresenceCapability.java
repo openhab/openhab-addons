@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_FLOODLIGHT;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
-import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -45,12 +43,6 @@ public class PresenceCapability extends CameraCapability {
     }
 
     @Override
-    public void updateHomeStatusModule(HomeStatusModule newData) {
-        super.updateHomeStatusModule(newData);
-        getSecurityCapability().ifPresent(cap -> cap.changeSirenStatus(handler.getId(), SirenStatus.SOUND));
-    }
-
-    @Override
     public void handleCommand(String channelName, Command command) {
         if (CHANNEL_FLOODLIGHT.equals(channelName)) {
             if (command instanceof OnOffType) {
@@ -58,21 +50,18 @@ public class PresenceCapability extends CameraCapability {
                 return;
             } else if (command instanceof StringType) {
                 try {
-                    changeFloodlightMode(FloodLightMode.valueOf(command.toString()));
+                    FloodLightMode mode = FloodLightMode.valueOf(command.toString());
+                    changeFloodlightMode(mode);
                 } catch (IllegalArgumentException e) {
                     logger.info("Incorrect command '{}' received for channel '{}'", command, channelName);
                 }
                 return;
             }
-        } else if (CHANNEL_SIREN.equals(channelName) && command instanceof OnOffType) {
-            getSecurityCapability().ifPresent(cap -> cap.changeSirenStatus(handler.getId(),
-                    command == OnOffType.ON ? SirenStatus.SOUND : SirenStatus.NO_SOUND));
-            return;
         }
         super.handleCommand(channelName, command);
     }
 
     private void changeFloodlightMode(FloodLightMode mode) {
-        getSecurityCapability().ifPresent(cap -> cap.changeFloodlightMode(handler.getId(), mode));
+        securityCapability.ifPresent(cap -> cap.changeFloodlightMode(handler.getId(), mode));
     }
 }

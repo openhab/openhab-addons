@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
+import org.openhab.binding.digitalstrom.internal.handler.ZoneTemperatureControlHandler;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -37,8 +38,8 @@ import org.slf4j.LoggerFactory;
  * {@link #ZoneTemperatureControlDiscoveryService(BridgeHandler, ThingTypeUID)} as {@link ThingTypeUID}. The supported
  * {@link ThingTypeUID} can be found at {@link ZoneTemperatureControlHandler#SUPPORTED_THING_TYPES}
  *
- * @author Michael Ochel - Initial contribution
- * @author Matthias Siegele - Initial contribution
+ * @author Michael Ochel
+ * @author Matthias Siegele
  */
 public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoveryService {
 

@@ -15,12 +15,12 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link DSUID} represents the digitalSTROM-Device unique identifier.
  *
- * @author Alexander Friese - Initial contribution
+ * @author Alexander Friese - initial contributor
  */
 public class DSUID {
 
     private final String dsuid;
-    private static final String DEFAULT_DSUID = "3504175fe0000000000000000000000001";
+    private final String DEFAULT_DSUID = "3504175fe0000000000000000000000001";
 
     /**
      * Creates a new {@link DSUID}.

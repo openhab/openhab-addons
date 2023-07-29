@@ -41,6 +41,7 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
+import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSink;
 import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSinkReg;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlRendererConfiguration;
@@ -453,7 +454,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke GetTransportState on UPnP AV Transport.
-     * Result is received in {@link #onValueReceived}.
+     * Result is received in {@link onValueReceived}.
      */
     protected void getTransportState() {
         Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
@@ -463,7 +464,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke getPositionInfo on UPnP AV Transport.
-     * Result is received in {@link #onValueReceived}.
+     * Result is received in {@link onValueReceived}.
      */
     protected void getPositionInfo() {
         Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
@@ -473,7 +474,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke GetMediaInfo on UPnP AV Transport.
-     * Result is received in {@link #onValueReceived}.
+     * Result is received in {@link onValueReceived}.
      */
     protected void getMediaInfo() {
         Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
@@ -483,9 +484,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Retrieves the current volume known to the control point, gets updated by GENA events or after UPnP Rendering
-     * Control GetVolume call. This method is used to retrieve volume with the
-     * {@link org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSink#getVolume UpnpAudioSink.getVolume}
-     * method.
+     * Control GetVolume call. This method is used to retrieve volume by {@link UpnpAudioSink.getVolume}.
      *
      * @return current volume
      */
@@ -495,7 +494,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke GetVolume on UPnP Rendering Control.
-     * Result is received in {@link #onValueReceived}.
+     * Result is received in {@link onValueReceived}.
      *
      * @param channel
      */
@@ -536,7 +535,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke getMute on UPnP Rendering Control.
-     * Result is received in {@link #onValueReceived}.
+     * Result is received in {@link onValueReceived}.
      *
      * @param channel
      */
@@ -565,7 +564,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke getMute on UPnP Rendering Control.
-     * Result is received in {@link #onValueReceived}.
+     * Result is received in {@link onValueReceived}.
      *
      * @param channel
      */
@@ -662,7 +661,6 @@ public class UpnpRendererHandler extends UpnpHandler {
                     break;
                 case SHUFFLE:
                     handleCommandShuffle(channelUID, command);
-                    break;
                 case ONLY_PLAY_ONE:
                     handleCommandOnlyPlayOne(channelUID, command);
                     break;

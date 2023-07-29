@@ -6,5 +6,4 @@
 	<type>binding</type>
 	<name>meteoblue Binding</name>
 	<description>The meteoblue binding retrieves weather information from the meteoblue weather service.</description>
-	<connection>cloud</connection>
 </addon:addon>

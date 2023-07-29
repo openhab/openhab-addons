@@ -15,7 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CONTACT_SENSOR_STATE;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
@@ -32,19 +31,19 @@ import io.github.hapjava.services.impl.ContactSensorService;
  * @author Philipp Arndt - Initial contribution
  */
 public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl implements ContactSensorAccessory {
-    private final Map<ContactStateEnum, String> mapping;
+    private final BooleanItemReader contactSensedReader;
 
     public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        mapping = createMapping(CONTACT_SENSOR_STATE, ContactStateEnum.class);
+        contactSensedReader = createBooleanReader(CONTACT_SENSOR_STATE);
         getServices().add(new ContactSensorService(this));
     }
 
     @Override
     public CompletableFuture<ContactStateEnum> getCurrentState() {
-        return CompletableFuture
-                .completedFuture(getKeyFromMapping(CONTACT_SENSOR_STATE, mapping, ContactStateEnum.DETECTED));
+        return CompletableFuture.completedFuture(
+                contactSensedReader.getValue() ? ContactStateEnum.NOT_DETECTED : ContactStateEnum.DETECTED);
     }
 
     @Override

@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Pushover Binding</name>
 	<description>Pushover - Simple Notifications.</description>
-	<connection>cloud</connection>
 
 </addon:addon>

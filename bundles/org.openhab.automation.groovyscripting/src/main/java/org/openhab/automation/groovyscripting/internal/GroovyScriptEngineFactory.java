@@ -44,7 +44,7 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
             .flatMap(List::stream) //
             .collect(Collectors.toUnmodifiableList());
 
-    private final GroovyClassLoader gcl = new GroovyClassLoader(GroovyScriptEngineFactory.class.getClassLoader());
+    private final GroovyClassLoader gcl = new GroovyClassLoader();
 
     public GroovyScriptEngineFactory() {
         String scriptDir = OpenHAB.getConfigFolder() + File.separator + FILE_DIRECTORY;

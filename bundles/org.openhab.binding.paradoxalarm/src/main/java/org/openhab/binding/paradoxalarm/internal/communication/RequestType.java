@@ -21,6 +21,5 @@ public enum RequestType {
     LOGON_SEQUENCE,
     RAM,
     EPROM,
-    PARTITION_COMMAND,
-    ZONE_COMMAND
+    PARTITION_COMMAND
 }

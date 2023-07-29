@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>@text/addon.pushbullet.name</name>
 	<description>@text/addon.pushbullet.description</description>
-	<connection>cloud</connection>
 
 </addon:addon>

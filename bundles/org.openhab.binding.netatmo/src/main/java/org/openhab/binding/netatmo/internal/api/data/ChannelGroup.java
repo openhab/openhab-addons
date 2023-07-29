@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.api.data;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,8 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.SignalChannelH
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TemperatureChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.TimestampChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoThingTypeProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ChannelGroup} makes the link between a channel helper and some group types. It also
@@ -63,9 +66,8 @@ public class ChannelGroup {
             GROUP_NOISE);
     public static final ChannelGroup HUMIDITY = new ChannelGroup(HumidityChannelHelper.class, MeasureClass.HUMIDITY,
             GROUP_HUMIDITY);
-    public static final ChannelGroup ALARM_LAST_EVENT = new ChannelGroup(EventChannelHelper.class,
-            GROUP_ALARM_LAST_EVENT);
 
+    private final Logger logger = LoggerFactory.getLogger(ChannelGroup.class);
     private final Class<? extends ChannelHelper> helper;
     public final Set<String> groupTypes;
     public final Set<String> extensions;
@@ -84,13 +86,13 @@ public class ChannelGroup {
         this.extensions = extensions;
     }
 
-    public ChannelHelper getHelperInstance() {
+    public Optional<ChannelHelper> getHelperInstance() {
         try {
-            return helper.getConstructor(Set.class).newInstance(
-                    groupTypes.stream().map(NetatmoThingTypeProvider::toGroupName).collect(Collectors.toSet()));
+            return Optional.of(helper.getConstructor(Set.class).newInstance(
+                    groupTypes.stream().map(NetatmoThingTypeProvider::toGroupName).collect(Collectors.toSet())));
         } catch (ReflectiveOperationException e) {
-            throw new IllegalArgumentException(
-                    "Error creating or initializing helper class : %s".formatted(e.getMessage()));
+            logger.warn("Error creating or initializing helper class : {}", e.getMessage());
         }
+        return Optional.empty();
     }
 }

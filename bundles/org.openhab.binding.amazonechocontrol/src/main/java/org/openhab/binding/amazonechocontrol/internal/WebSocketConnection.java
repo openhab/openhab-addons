@@ -488,6 +488,7 @@ public class WebSocketConnection {
                     sum += toUnsignedInt((data[index] & 0xFF) << ((index & 3 ^ 3) << 3));
                     overflow += computeBits(sum, 32);
                     sum = toUnsignedInt((int) sum & (int) 4294967295L);
+
                 } else {
                     index = exclusionEnd - 1;
                 }

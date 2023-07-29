@@ -170,7 +170,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         OAuthFactory oAuthFactory = mock(OAuthFactory.class);
         when(oAuthFactory
                 .getOAuthClientService(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString()))
-                .thenReturn(oAuthClientService);
+                        .thenReturn(oAuthClientService);
 
         OpenHabOAuthTokenRefresher tokenRefresher = getService(OAuthTokenRefresher.class,
                 OpenHabOAuthTokenRefresher.class);
@@ -209,8 +209,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
     }
 
     protected AbstractMieleThingHandler createThingHandler(ThingTypeUID thingTypeUid, ThingUID thingUid,
-            Class<? extends AbstractMieleThingHandler> expectedHandlerClass, String deviceIdentifier,
-            String thingTypeVersion) {
+            Class<? extends AbstractMieleThingHandler> expectedHandlerClass, String deviceIdentifier) {
         ThingRegistry registry = getThingRegistry();
 
         List<Channel> channels = createChannelsForThingHandler(thingTypeUid, thingUid);
@@ -218,8 +217,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         Thing thing = ThingBuilder.create(thingTypeUid, thingUid)
                 .withConfiguration(new Configuration(Collections
                         .singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceIdentifier)))
-                .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996")
-                .withProperty("thingTypeVersion", thingTypeVersion).build();
+                .withBridge(getBridge().getUID()).withChannels(channels).withLabel("DA-6996").build();
         assertNotNull(thing);
 
         registry.add(thing);

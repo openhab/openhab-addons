@@ -27,7 +27,6 @@ import org.openhab.binding.tapocontrol.internal.device.TapoLightStrip;
 import org.openhab.binding.tapocontrol.internal.device.TapoSmartBulb;
 import org.openhab.binding.tapocontrol.internal.device.TapoSmartPlug;
 import org.openhab.binding.tapocontrol.internal.device.TapoUniversalDevice;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -38,7 +37,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,9 +54,9 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
 
     @Activate
-    public TapoControlHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+    public TapoControlHandlerFactory() {
         // create new httpClient
-        httpClient = httpClientFactory.createHttpClient(BINDING_ID, new SslContextFactory.Client());
+        httpClient = new HttpClient(new SslContextFactory.Client());
         httpClient.setFollowRedirects(false);
         httpClient.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
         httpClient.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);

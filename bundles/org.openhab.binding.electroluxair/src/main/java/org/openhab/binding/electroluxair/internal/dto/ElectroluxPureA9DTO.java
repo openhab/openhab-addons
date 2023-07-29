@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.electroluxair.internal.dto;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
@@ -26,232 +23,354 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ElectroluxPureA9DTO {
-    private String applianceId = "";
-    private ApplianceInfo applianceInfo = new ApplianceInfo();
-    private ApplianceData applianceData = new ApplianceData();
-    private Properties properties = new Properties();
-    private String status = "";
-    private String connectionState = "";
+    public String pncId = "";
+    public ApplianceData applianceData = new ApplianceData();
+    public AppliancesInfo applicancesInfo = new AppliancesInfo();
 
-    public String getApplianceId() {
-        return applianceId;
-    }
+    public Twin twin = new Twin();
+    public String telemetry = "";
 
-    public ApplianceInfo getApplianceInfo() {
-        return applianceInfo;
-    }
-
-    public void setApplianceInfo(ApplianceInfo applianceInfo) {
-        this.applianceInfo = applianceInfo;
+    public String getPncId() {
+        return pncId;
     }
 
     public ApplianceData getApplianceData() {
         return applianceData;
     }
 
-    public Properties getProperties() {
-        return properties;
+    public AppliancesInfo getApplicancesInfo() {
+        return applicancesInfo;
     }
 
-    public String getStatus() {
-        return status;
+    public void setApplicancesInfo(AppliancesInfo applicancesInfo) {
+        this.applicancesInfo = applicancesInfo;
     }
 
-    public String getConnectionState() {
-        return connectionState;
+    public Twin getTwin() {
+        return twin;
     }
 
-    public class ApplianceInfo {
-        private String manufacturingDateCode = "";
-        private String serialNumber = "";
-        private String pnc = "";
-        private String brand = "";
-        private String market = "";
-        private String productArea = "";
-        private String deviceType = "";
-        private String project = "";
-        private String model = "";
-        private String variant = "";
-        private String colour = "";
-
-        public String getManufacturingDateCode() {
-            return manufacturingDateCode;
-        }
-
-        public String getSerialNumber() {
-            return serialNumber;
-        }
-
-        public String getPnc() {
-            return pnc;
-        }
-
-        public String getBrand() {
-            return brand;
-        }
-
-        public String getMarket() {
-            return market;
-        }
-
-        public String getProductArea() {
-            return productArea;
-        }
-
-        public String getDeviceType() {
-            return deviceType;
-        }
-
-        public String getProject() {
-            return project;
-        }
-
-        public String getModel() {
-            return model;
-        }
-
-        public String getVariant() {
-            return variant;
-        }
-
-        public String getColour() {
-            return colour;
-        }
+    public String getTelemetry() {
+        return telemetry;
     }
 
-    class ApplianceData {
-        private String applianceName = "";
-        private String created = "";
-        private String modelName = "";
+    public class MetaData1 {
 
-        public String getApplianceName() {
-            return applianceName;
-        }
+        @SerializedName("$lastUpdated")
+        public String lastUpdated1 = "";
+        @SerializedName("$lastUpdatedVersion")
+        public int lastUpdatedVersion1;
+        @SerializedName("TimeZoneStandardName")
+        public TimeZoneStandardName timeZoneStandardName = new TimeZoneStandardName();
+        @SerializedName("FrmVer_NIU")
+        public FrmVerNIU frmVerNIU = new FrmVerNIU();
+    }
 
-        public String getCreated() {
-            return created;
-        }
+    public class Metadata2 {
 
-        public String getModelName() {
-            return modelName;
-        }
+        @SerializedName("$lastUpdated")
+        public String lastUpdated2 = "";
+        @SerializedName("FrmVer_NIU")
+        public FrmVerNIU frmVerNIU = new FrmVerNIU();
+        @SerializedName("Workmode")
+        public Workmode workmode = new Workmode();
+        @SerializedName("FilterRFID")
+        public FilterRFID filterRFID = new FilterRFID();
+        @SerializedName("FilterLife")
+        public FilterLife filterLife = new FilterLife();
+        @SerializedName("Fanspeed")
+        public Fanspeed fanspeed = new Fanspeed();
+        @SerializedName("UILight")
+        public UILight uILight = new UILight();
+        @SerializedName("SafetyLock")
+        public SafetyLock safetyLock = new SafetyLock();
+        @SerializedName("Ionizer")
+        public Ionizer ionizer = new Ionizer();
+        @SerializedName("Sleep")
+        public Sleep sleep = new Sleep();
+        @SerializedName("Scheduler")
+        public Scheduler scheduler = new Scheduler();
+        @SerializedName("FilterType")
+        public FilterType filterType = new FilterType();
+        @SerializedName("DspIcoPM2_5")
+        public DspIcoPM25 dspIcoPM25 = new DspIcoPM25();
+        @SerializedName("DspIcoPM1")
+        public DspIcoPM1 dspIcoPM1 = new DspIcoPM1();
+        @SerializedName("DspIcoPM10")
+        public DspIcoPM10 dspIcoPM10 = new DspIcoPM10();
+        @SerializedName("DspIcoTVOC")
+        public DspIcoTVOC dspIcoTVOC = new DspIcoTVOC();
+        @SerializedName("ErrPM2_5")
+        public ErrPM25 errPM25 = new ErrPM25();
+        @SerializedName("ErrTVOC")
+        public ErrTVOC errTVOC = new ErrTVOC();
+        @SerializedName("ErrTempHumidity")
+        public ErrTempHumidity errTempHumidity = new ErrTempHumidity();
+        @SerializedName("ErrFanMtr")
+        public ErrFanMtr errFanMtr = new ErrFanMtr();
+        @SerializedName("ErrCommSensorDisplayBrd")
+        public ErrCommSensorDisplayBrd errCommSensorDisplayBrd = new ErrCommSensorDisplayBrd();
+        @SerializedName("DoorOpen")
+        public DoorOpen doorOpen = new DoorOpen();
+        @SerializedName("ErrRFID")
+        public ErrRFID errRFID = new ErrRFID();
+        @SerializedName("SignalStrength")
+        public SignalStrength signalStrength = new SignalStrength();
+        @SerializedName("PM1")
+        public PM1 pM1 = new PM1();
+        @SerializedName("PM2_5")
+        public PM25 pM25 = new PM25();
+        @SerializedName("PM10")
+        public PM10 pM10 = new PM10();
+        @SerializedName("TVOC")
+        public TVOC tVOC = new TVOC();
+        @SerializedName("CO2")
+        public CO2 cO2 = new CO2();
+        @SerializedName("Temp")
+        public Temp temp = new Temp();
+        @SerializedName("Humidity")
+        public Humidity humidity = new Humidity();
+        @SerializedName("EnvLightLvl")
+        public EnvLightLvl envLightLvl = new EnvLightLvl();
+        @SerializedName("RSSI")
+        public RSSI rSSI = new RSSI();
+    }
+
+    public class ApplianceData {
+
+        public String applianceName = "";
+        public String created = "";
+        public String modelName = "";
+        public String pncId = "";
+    }
+
+    public class AppliancesInfo {
+        public String brand = "";
+        public String colour = "";
+        public String device = "";
+        public String model = "";
+        public String serialNumber = "";
+    }
+
+    public class CO2 {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated3 = "";
+    }
+
+    public class Desired {
+
+        @SerializedName("TimeZoneStandardName")
+        public String timeZoneStandardName = "";
+        @SerializedName("FrmVer_NIU")
+        public String frmVerNIU = "";
+        @SerializedName("$metadata")
+        public MetaData1 metadata3 = new MetaData1();
+        @SerializedName("$version")
+        public int version;
+    }
+
+    public class DoorOpen {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class DspIcoPM1 {
+        @SerializedName("lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class DspIcoPM10 {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class DspIcoPM25 {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class DspIcoTVOC {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class EnvLightLvl {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class ErrCommSensorDisplayBrd {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class ErrFanMtr {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class ErrPM25 {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class ErrRFID {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class ErrTVOC {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class ErrTempHumidity {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class Fanspeed {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class FilterLife {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class FilterRFID {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class FilterType {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class FrmVerNIU {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+        @SerializedName("$lastUpdatedVersion")
+        public int lastUpdatedVersion;
+    }
+
+    // public class FrmVerNIU_ {
+    // @SerializedName("$lastUpdated")
+    // public String lastUpdated = "";
+    // }
+
+    public class Humidity {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class Ionizer {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class PM1 {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class PM10 {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class PM25 {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
     }
 
     public class Properties {
-        private Desired desired = new Desired();
-        private Reported reported = new Reported();
-        private Object metadata = new Object();
-
-        public Desired getDesired() {
-            return desired;
-        }
+        public Desired desired = new Desired();
+        public Reported reported = new Reported();
 
         public Reported getReported() {
             return reported;
         }
-
-        public Object getMetadata() {
-            return metadata;
-        }
     }
 
-    class Desired {
-        @SerializedName("TimeZoneStandardName")
-        private String timeZoneStandardName = "";
-        @SerializedName("FrmVer_NIU")
-        private String frmVerNIU = "";
-        @SerializedName("LocationReq")
-        private boolean locationReq;
-        private Map<String, Object> metadata = new HashMap<>();
-        private int version;
-
-        public String getTimeZoneStandardName() {
-            return timeZoneStandardName;
-        }
-
-        public String getFrmVerNIU() {
-            return frmVerNIU;
-        }
-
-        public boolean isLocationReq() {
-            return locationReq;
-        }
-
-        public Map<String, Object> getMetadata() {
-            return metadata;
-        }
-
-        public int getVersion() {
-            return version;
-        }
+    public class RSSI {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
     }
 
     public class Reported {
+
         @SerializedName("FrmVer_NIU")
-        private String frmVerNIU = "";
+        public String frmVerNIU = "";
         @SerializedName("Workmode")
-        private String workmode = "";
+        public String workmode = "";
         @SerializedName("FilterRFID")
-        private String filterRFID = "";
+        public String filterRFID = "";
         @SerializedName("FilterLife")
-        private int filterLife = 0;
+        public int filterLife;
         @SerializedName("Fanspeed")
-        private int fanSpeed = 0;
+        public int fanspeed;
         @SerializedName("UILight")
-        private boolean uiLight = false;
+        public boolean uILight;
         @SerializedName("SafetyLock")
-        private boolean safetyLock = false;
+        public boolean safetyLock;
         @SerializedName("Ionizer")
-        private boolean ionizer = false;
+        public boolean ionizer;
         @SerializedName("Sleep")
-        private boolean sleep = false;
+        public boolean sleep;
         @SerializedName("Scheduler")
-        private boolean scheduler = false;
+        public boolean scheduler;
         @SerializedName("FilterType")
-        private int filterType = 0;
+        public int filterType;
         @SerializedName("DspIcoPM2_5")
-        private boolean dspIcoPM25 = false;
+        public boolean dspIcoPM25;
         @SerializedName("DspIcoPM1")
-        private boolean dspIcoPM1 = false;
+        public boolean dspIcoPM1;
         @SerializedName("DspIcoPM10")
-        private boolean dspIcoPM10 = false;
+        public boolean dspIcoPM10;
         @SerializedName("DspIcoTVOC")
-        private boolean dspIcoTVOC = false;
+        public boolean dspIcoTVOC;
         @SerializedName("ErrPM2_5")
-        private boolean errPM25 = false;
+        public boolean errPM25;
         @SerializedName("ErrTVOC")
-        private boolean errTVOC = false;
+        public boolean errTVOC;
         @SerializedName("ErrTempHumidity")
-        private boolean errTempHumidity = false;
+        public boolean errTempHumidity;
         @SerializedName("ErrFanMtr")
-        private boolean errFanMtr = false;
+        public boolean errFanMtr;
         @SerializedName("ErrCommSensorDisplayBrd")
-        private boolean errCommSensorDisplayBrd = false;
+        public boolean errCommSensorDisplayBrd;
         @SerializedName("DoorOpen")
-        private boolean doorOpen = false;
+        public boolean doorOpen;
         @SerializedName("ErrRFID")
-        private boolean errRFID = false;
+        public boolean errRFID;
         @SerializedName("SignalStrength")
-        private String signalStrength = "";
-        private Map<String, Object> metadata = new HashMap<>();
-        private int version = 0;
-        private String deviceId = "";
-        @SerializedName("CO2")
-        private int co2 = 0;
-        @SerializedName("TVOC")
-        private int tvoc = 0;
-        @SerializedName("Temp")
-        private int temp = 0;
-        @SerializedName("Humidity")
-        private int humidity = 0;
-        @SerializedName("RSSI")
-        private int rssi = 0;
+        public String signalStrength = "";
+        @SerializedName("$metadata")
+        public Metadata2 metadata2 = new Metadata2();
+        @SerializedName("$version")
+        public int version;
+        public String deviceId = "";
         @SerializedName("PM1")
-        private int pm1 = 0;
+        public int pM1;
         @SerializedName("PM2_5")
-        private int pm25 = 0;
+        public int pM25;
         @SerializedName("PM10")
-        private int pm10 = 0;
+        public int pM10;
+        @SerializedName("TVOC")
+        public int tVOC;
+        @SerializedName("CO2")
+        public int cO2;
+        @SerializedName("Temp")
+        public int temp;
+        @SerializedName("Humidity")
+        public int humidity;
+        @SerializedName("EnvLightLvl")
+        public int envLightLvl;
+        @SerializedName("RSSI")
+        public int rSSI;
 
         public String getFrmVerNIU() {
             return frmVerNIU;
@@ -270,11 +389,11 @@ public class ElectroluxPureA9DTO {
         }
 
         public int getFanspeed() {
-            return fanSpeed;
+            return fanspeed;
         }
 
-        public boolean isUILight() {
-            return uiLight;
+        public boolean isuILight() {
+            return uILight;
         }
 
         public boolean isSafetyLock() {
@@ -345,10 +464,6 @@ public class ElectroluxPureA9DTO {
             return signalStrength;
         }
 
-        public Map<String, Object> getMetadata() {
-            return metadata;
-        }
-
         public int getVersion() {
             return version;
         }
@@ -357,12 +472,24 @@ public class ElectroluxPureA9DTO {
             return deviceId;
         }
 
-        public int getCO2() {
-            return co2;
+        public int getpM1() {
+            return pM1;
         }
 
-        public int getTVOC() {
-            return tvoc;
+        public int getpM25() {
+            return pM25;
+        }
+
+        public int getpM10() {
+            return pM10;
+        }
+
+        public int gettVOC() {
+            return tVOC;
+        }
+
+        public int getcO2() {
+            return cO2;
         }
 
         public int getTemp() {
@@ -373,20 +500,82 @@ public class ElectroluxPureA9DTO {
             return humidity;
         }
 
-        public int getRSSI() {
-            return rssi;
+        public int getEnvLightLvl() {
+            return envLightLvl;
         }
 
-        public int getPM1() {
-            return pm1;
+        public int getrSSI() {
+            return rSSI;
+        }
+    }
+
+    public class SafetyLock {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class Scheduler {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class SignalStrength {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class Sleep {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class TVOC {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class Temp {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class TimeZoneStandardName {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+        @SerializedName("$lastUpdatedVersion")
+        public int lastUpdatedVersion;
+    }
+
+    public class Twin {
+        public String deviceId = "";
+        public Properties properties = new Properties();
+        public String status = "";
+        public String connectionState = "";
+
+        public String getDeviceId() {
+            return deviceId;
         }
 
-        public int getPM25() {
-            return pm25;
+        public Properties getProperties() {
+            return properties;
         }
 
-        public int getPM10() {
-            return pm10;
+        public String getStatus() {
+            return status;
         }
+
+        public String getConnectionState() {
+            return connectionState;
+        }
+    }
+
+    public class UILight {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
+    }
+
+    public class Workmode {
+        @SerializedName("$lastUpdated")
+        public String lastUpdated = "";
     }
 }

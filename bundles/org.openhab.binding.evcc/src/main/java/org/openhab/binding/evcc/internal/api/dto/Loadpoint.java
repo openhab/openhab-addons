@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a loadpoint object of the status response (/api/state).
- * This DTO was written for evcc version 0.117.0
+ * This DTO was written for evcc version 0.111.1
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -57,6 +57,12 @@ public class Loadpoint {
     @SerializedName("enabled")
     private boolean enabled;
 
+    @SerializedName("hasVehicle")
+    private boolean hasVehicle;
+
+    @SerializedName("loadpoint")
+    private int loadpoint;
+
     @SerializedName("maxCurrent")
     private float maxCurrent;
 
@@ -69,14 +75,14 @@ public class Loadpoint {
     @SerializedName("mode")
     private String mode;
 
-    @SerializedName("phasesEnabled")
+    @SerializedName("phases")
     private int phases;
 
-    @SerializedName("planActive")
-    private boolean planActive;
+    @SerializedName("pvAction")
+    private String pvAction;
 
-    @SerializedName("targetEnergy")
-    private float targetEnergy;
+    @SerializedName("pvRemaining")
+    private long pvRemaining;
 
     @SerializedName("targetSoc")
     private float targetSoC;
@@ -183,6 +189,20 @@ public class Loadpoint {
     }
 
     /**
+     * @return whether vehicle is configured for loadpoint
+     */
+    public boolean getHasVehicle() {
+        return hasVehicle;
+    }
+
+    /**
+     * @return loadpoint id
+     */
+    public int getLoadpoint() {
+        return loadpoint;
+    }
+
+    /**
      * @return maximum current
      */
     public float getMaxCurrent() {
@@ -218,17 +238,17 @@ public class Loadpoint {
     }
 
     /**
-     * @return whether charging plan is active
+     * @return the pv action
      */
-    public boolean getPlanActive() {
-        return planActive;
+    public String getPvAction() {
+        return pvAction;
     }
 
     /**
-     * @return target energy
+     * @return the pv remaining
      */
-    public float getTargetEnergy() {
-        return targetEnergy;
+    public long getPvRemaining() {
+        return pvRemaining;
     }
 
     /**

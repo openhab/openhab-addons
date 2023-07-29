@@ -25,6 +25,5 @@ public class SomneoConfiguration {
     public String hostname = "";
     public int port = 443;
     public int refreshInterval = 30;
-    public int refreshIntervalAlarmExtended = 300;
     public boolean ignoreSSLErrors = false;
 }

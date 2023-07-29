@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bluetooth.notification;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 
 /**
@@ -21,15 +19,13 @@ import org.openhab.binding.bluetooth.BluetoothAddress;
  *
  * @author Chris Jackson - Initial contribution
  */
-@NonNullByDefault
 public abstract class BluetoothNotification {
-
-    protected @Nullable BluetoothAddress address;
+    protected BluetoothAddress address;
 
     /**
      * Returns the bluetooth address for this frame
      */
-    public @Nullable BluetoothAddress getAddress() {
+    public BluetoothAddress getAddress() {
         return address;
     }
 }

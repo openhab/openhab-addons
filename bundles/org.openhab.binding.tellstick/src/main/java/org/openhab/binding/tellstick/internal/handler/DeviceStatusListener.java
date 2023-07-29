@@ -33,7 +33,7 @@ public interface DeviceStatusListener {
      * @param device
      *            The device which received the state update.
      */
-    void onDeviceStateChanged(Bridge bridge, Device device, TellstickEvent deviceEvent);
+    public void onDeviceStateChanged(Bridge bridge, Device device, TellstickEvent deviceEvent);
 
     /**
      * This method us called whenever a device is removed.
@@ -43,7 +43,7 @@ public interface DeviceStatusListener {
      * @param device
      *            The device which is removed.
      */
-    void onDeviceRemoved(Bridge bridge, Device device);
+    public void onDeviceRemoved(Bridge bridge, Device device);
 
     /**
      * This method us called whenever a device is added.
@@ -53,5 +53,5 @@ public interface DeviceStatusListener {
      * @param device
      *            The device which is added.
      */
-    void onDeviceAdded(Bridge bridge, Device device);
+    public void onDeviceAdded(Bridge bridge, Device device);
 }

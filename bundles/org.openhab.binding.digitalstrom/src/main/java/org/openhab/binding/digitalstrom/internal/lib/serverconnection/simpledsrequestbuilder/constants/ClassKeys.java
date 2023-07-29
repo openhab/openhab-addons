@@ -15,8 +15,8 @@ package org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsr
 /**
  * The {@link ClassKeys} contains digitalSTROM-JSON class keys.
  *
- * @author Michael Ochel - Initial contribution
- * @author Matthias Siegele - Initial contribution
+ * @author Michael Ochel - initial contributer
+ * @author Matthias Siegele - initial contributer
  */
 public class ClassKeys {
 

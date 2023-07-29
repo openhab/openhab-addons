@@ -32,7 +32,6 @@ import com.google.gson.JsonElement;
  */
 @NonNullByDefault
 class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
-
     private final Logger logger = LoggerFactory.getLogger(NAPushTypeDeserializer.class);
 
     @Override
@@ -41,19 +40,15 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
         final String[] elements = string.split("-");
         ModuleType moduleType = ModuleType.UNKNOWN;
         EventType eventType = EventType.UNKNOWN;
-
         if (elements.length == 2) {
             moduleType = fromNetatmoObject(elements[0]);
             eventType = fromEvent(elements[1]);
-        } else if (elements.length == 1) {
-            moduleType = ModuleType.ACCOUNT;
-            eventType = fromEvent(string);
+        } else {
+            logger.warn("Unexpected syntax received for push_type field : {}", string);
         }
-
         if (moduleType.equals(ModuleType.UNKNOWN) || eventType.equals(EventType.UNKNOWN)) {
             logger.warn("Unknown module or event type : {}, deserialized to '{}-{}'", string, moduleType, eventType);
         }
-
         return new NAPushType(moduleType, eventType);
     }
 

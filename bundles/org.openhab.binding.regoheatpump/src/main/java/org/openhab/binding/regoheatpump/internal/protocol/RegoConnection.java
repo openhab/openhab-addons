@@ -29,27 +29,27 @@ public interface RegoConnection {
      * Connect to the receiver. Return true if the connection has succeeded or if already connected.
      *
      **/
-    void connect() throws IOException;
+    public void connect() throws IOException;
 
     /**
      * Return true if this manager is connected to the AVR.
      *
      * @return
      */
-    boolean isConnected();
+    public boolean isConnected();
 
     /**
      * Closes the connection.
      **/
-    void close();
+    public void close();
 
     /**
      * Returns an output stream for this connection.
      */
-    OutputStream outputStream() throws IOException;
+    public OutputStream outputStream() throws IOException;
 
     /**
      * Returns an input stream for this connection.
      */
-    InputStream inputStream() throws IOException;
+    public InputStream inputStream() throws IOException;
 }

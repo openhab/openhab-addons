@@ -13,7 +13,8 @@
 package org.openhab.binding.airquality.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link AirQualityResponse} is the Java class used to map the JSON
@@ -22,40 +23,24 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Kuba Wolanin - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityResponse extends ResponseRoot {
+public class AirQualityResponse {
 
-    private @Nullable AirQualityData data;
+    public static enum ResponseStatus {
+        NONE,
+        @SerializedName("error")
+        ERROR,
+        @SerializedName("ok")
+        OK;
+    }
 
-    public @Nullable AirQualityData getData() {
+    private ResponseStatus status = ResponseStatus.NONE;
+    private @NonNullByDefault({}) AirQualityData data;
+
+    public ResponseStatus getStatus() {
+        return status;
+    }
+
+    public AirQualityData getData() {
         return data;
-    }
-
-    private ResponseStatus getStatus() {
-        AirQualityData localData = data;
-        return status == ResponseStatus.OK && localData != null && localData.status == ResponseStatus.OK
-                ? ResponseStatus.OK
-                : ResponseStatus.ERROR;
-    }
-
-    public String getErrorMessage() {
-        if (getStatus() != ResponseStatus.OK) {
-            String localMsg = msg;
-            if (localMsg != null) {
-                return localMsg;
-            } else {
-                AirQualityData localData = data;
-                if (localData != null) {
-                    localMsg = localData.msg;
-                    if (localMsg != null) {
-                        return localMsg;
-                    } else {
-                        return "Unknown error";
-                    }
-                } else {
-                    return "No data provided";
-                }
-            }
-        }
-        return "";
     }
 }

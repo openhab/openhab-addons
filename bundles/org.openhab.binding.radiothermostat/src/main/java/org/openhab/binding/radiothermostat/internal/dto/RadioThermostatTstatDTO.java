@@ -106,10 +106,6 @@ public class RadioThermostatTstatDTO {
         return override;
     }
 
-    public void setOverride(Integer override) {
-        this.override = override;
-    }
-
     public Integer getHold() {
         return hold;
     }

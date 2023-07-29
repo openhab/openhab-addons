@@ -126,12 +126,6 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
-        super.handleRemoval();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 

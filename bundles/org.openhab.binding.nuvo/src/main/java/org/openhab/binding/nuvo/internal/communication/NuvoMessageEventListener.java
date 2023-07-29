@@ -29,5 +29,5 @@ public interface NuvoMessageEventListener extends EventListener {
      *
      * @param event the NuvoMessageEvent object
      */
-    void onNewMessageEvent(NuvoMessageEvent event);
+    public void onNewMessageEvent(NuvoMessageEvent event);
 }

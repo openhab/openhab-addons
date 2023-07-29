@@ -14,6 +14,7 @@ package org.openhab.automation.jsscripting.internal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
@@ -48,13 +49,15 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     private static final GraalJSEngineFactory factory = new GraalJSEngineFactory();
 
-    private static final List<String> scriptTypes = createScriptTypes();
+    public static final String MIME_TYPE = "application/javascript";
+    private static final String ALIAS = "graaljs";
+    private static final List<String> SCRIPT_TYPES = createScriptTypes();
 
     private static List<String> createScriptTypes() {
         // Add those for backward compatibility (existing scripts may rely on those MIME types)
-        List<String> backwardCompat = List.of("application/javascript;version=ECMAScript-2021", "graaljs");
+        List<String> backwardCompat = List.of("application/javascript;version=ECMAScript-2021", ALIAS);
         return Stream.of(factory.getMimeTypes(), factory.getExtensions(), backwardCompat).flatMap(List::stream)
-                .toList();
+                .collect(Collectors.toUnmodifiableList());
     }
 
     private boolean injectionEnabled = true;
@@ -73,7 +76,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public List<String> getScriptTypes() {
-        return scriptTypes;
+        return SCRIPT_TYPES;
     }
 
     @Override
@@ -83,11 +86,11 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public @Nullable ScriptEngine createScriptEngine(String scriptType) {
-        if (!scriptTypes.contains(scriptType)) {
+        if (!SCRIPT_TYPES.contains(scriptType)) {
             return null;
         }
-        return new DebuggingGraalScriptEngine<>(new OpenhabGraalJSScriptEngine(injectionEnabled, useIncludedLibrary,
-                jsScriptServiceUtil, jsDependencyTracker));
+        return new DebuggingGraalScriptEngine<>(
+                new OpenhabGraalJSScriptEngine(injectionEnabled, useIncludedLibrary, jsScriptServiceUtil));
     }
 
     @Override

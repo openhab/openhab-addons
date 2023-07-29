@@ -15,7 +15,6 @@ package org.openhab.binding.dsmr.internal.device;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialConnector;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialSettings;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 
 /**
@@ -37,15 +36,14 @@ public class DSMRFixedConfigDevice implements DSMRDevice {
      * @param serialPortManager the manager to get a new serial port connecting from
      * @param serialPortName the port name (e.g. /dev/ttyUSB0 or COM1)
      * @param fixedPortSettings The serial port connection settings
-     * @param listener the parent {@link P1TelegramListener}
+     * @param listener the parent {@link DSMREventListener}
      * @param telegramListener listener to report found telegrams or errors
      */
-    public DSMRFixedConfigDevice(final SerialPortManager serialPortManager, final String serialPortName,
-            final DSMRSerialSettings fixedPortSettings, final P1TelegramListener listener,
-            final DSMRTelegramListener telegramListener) {
+    public DSMRFixedConfigDevice(SerialPortManager serialPortManager, String serialPortName,
+            DSMRSerialSettings fixedPortSettings, DSMREventListener listener, DSMRTelegramListener telegramListener) {
         this.fixedPortSettings = fixedPortSettings;
         this.telegramListener = telegramListener;
-        telegramListener.setP1TelegramListener(listener);
+        telegramListener.setDsmrEventListener(listener);
 
         dsmrPort = new DSMRSerialConnector(serialPortManager, serialPortName, telegramListener);
     }
@@ -66,7 +64,7 @@ public class DSMRFixedConfigDevice implements DSMRDevice {
     }
 
     @Override
-    public void setLenientMode(final boolean lenientMode) {
+    public void setLenientMode(boolean lenientMode) {
         telegramListener.setLenientMode(lenientMode);
     }
 }

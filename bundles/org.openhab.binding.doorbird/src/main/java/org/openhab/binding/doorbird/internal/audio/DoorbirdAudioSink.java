@@ -13,6 +13,7 @@
 package org.openhab.binding.doorbird.internal.audio;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -22,8 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
 import org.openhab.core.audio.AudioFormat;
-import org.openhab.core.audio.AudioSinkSync;
+import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.FixedLengthAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
@@ -35,12 +37,17 @@ import org.openhab.core.library.types.PercentType;
  *
  */
 @NonNullByDefault
-public class DoorbirdAudioSink extends AudioSinkSync {
+public class DoorbirdAudioSink implements AudioSink {
 
-    private static final Set<AudioFormat> SUPPORTED_FORMATS = Set.of(AudioFormat.WAV);
-    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
+    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
+    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
 
     private DoorbellHandler doorbellHandler;
+
+    static {
+        SUPPORTED_FORMATS.add(AudioFormat.WAV);
+        SUPPORTED_STREAMS.add(FixedLengthAudioStream.class);
+    }
 
     public DoorbirdAudioSink(DoorbellHandler doorbellHandler) {
         this.doorbellHandler = doorbellHandler;
@@ -57,7 +64,7 @@ public class DoorbirdAudioSink extends AudioSinkSync {
     }
 
     @Override
-    protected void processSynchronously(@Nullable AudioStream audioStream)
+    public void process(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (audioStream == null) {
             return;
@@ -86,6 +93,6 @@ public class DoorbirdAudioSink extends AudioSinkSync {
 
     @Override
     public void setVolume(PercentType volume) {
-        throw new UnsupportedOperationException("Volume can not be set");
+        // NOT IMPLEMENTED
     }
 }

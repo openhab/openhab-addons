@@ -15,7 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.SMOKE_DETECTED_STATE;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
@@ -32,19 +31,19 @@ import io.github.hapjava.services.impl.SmokeSensorService;
  * @author Cody Cutrer - Initial contribution
  */
 public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl implements SmokeSensorAccessory {
-    private final Map<SmokeDetectedStateEnum, String> mapping;
+    private final BooleanItemReader smokeDetectedReader;
 
     public HomekitSmokeSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        mapping = createMapping(SMOKE_DETECTED_STATE, SmokeDetectedStateEnum.class);
+        smokeDetectedReader = createBooleanReader(SMOKE_DETECTED_STATE);
         this.getServices().add(new SmokeSensorService(this));
     }
 
     @Override
     public CompletableFuture<SmokeDetectedStateEnum> getSmokeDetectedState() {
-        return CompletableFuture
-                .completedFuture(getKeyFromMapping(SMOKE_DETECTED_STATE, mapping, SmokeDetectedStateEnum.NOT_DETECTED));
+        return CompletableFuture.completedFuture(
+                smokeDetectedReader.getValue() ? SmokeDetectedStateEnum.DETECTED : SmokeDetectedStateEnum.NOT_DETECTED);
     }
 
     @Override
