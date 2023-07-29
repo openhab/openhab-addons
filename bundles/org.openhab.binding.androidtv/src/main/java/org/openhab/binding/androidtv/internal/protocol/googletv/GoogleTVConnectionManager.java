@@ -462,9 +462,6 @@ public class GoogleTVConnectionManager {
         }
 
         config.port = (config.port > 0) ? config.port : DEFAULT_PORT;
-        config.reconnect = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_SECONDS;
-        config.heartbeat = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
-        config.delay = (config.delay < 0) ? 0 : config.delay;
         config.mode = (!config.mode.equals("")) ? config.mode : DEFAULT_MODE;
 
         config.keystoreFileName = (!config.keystoreFileName.equals("")) ? config.keystoreFileName
