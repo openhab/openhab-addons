@@ -15,8 +15,8 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * This enum contains all binary inputs with they id. <br>
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public enum DeviceBinarayInputEnum {
 

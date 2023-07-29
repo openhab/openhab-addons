@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Helios Binding</name>
 	<description>This is the binding for Helios IP (Vario/...) class of intercom/(video)doorstations.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -30,8 +30,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  */
 @NonNullByDefault
 public class BlueGigaPasskeyRequestEvent extends BlueGigaResponse {
-    public static int COMMAND_CLASS = 0x05;
-    public static int COMMAND_METHOD = 0x03;
+    public static final int COMMAND_CLASS = 0x05;
+    public static final int COMMAND_METHOD = 0x03;
 
     /**
      * Bluetooth connection handle

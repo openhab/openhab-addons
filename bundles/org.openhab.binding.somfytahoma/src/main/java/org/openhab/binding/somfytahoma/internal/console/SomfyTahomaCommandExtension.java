@@ -103,8 +103,8 @@ public class SomfyTahomaCommandExtension extends AbstractConsoleCommandExtension
         if (cursorArgumentIndex <= 0) {
             return new StringsCompleter(thingRegistry.getAll().stream()
                     .filter(t -> SomfyTahomaBindingConstants.THING_TYPE_BRIDGE.equals(t.getThingTypeUID()))
-                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
-                            cursorArgumentIndex, cursorPosition, candidates);
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
+                    .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);
             if (thing != null && SomfyTahomaBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {

@@ -6,5 +6,7 @@
 	<type>binding</type>
 	<name>VigiCrues Binding</name>
 	<description>Retrieves rivers levels and alerts in France</description>
+	<connection>cloud</connection>
+	<countries>fr</countries>
 
 </addon:addon>

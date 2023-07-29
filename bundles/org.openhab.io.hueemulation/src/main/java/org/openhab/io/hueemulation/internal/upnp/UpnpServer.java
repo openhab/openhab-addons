@@ -194,7 +194,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
 
         try {
             httpService.unregister(DISCOVERY_FILE);
-        } catch (IllegalArgumentException ignore) {
+        } catch (RuntimeException ignore) {
         }
 
         try {

@@ -32,8 +32,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  */
 @NonNullByDefault
 public class BlueGigaSetAdvParametersResponse extends BlueGigaResponse {
-    public static int COMMAND_CLASS = 0x06;
-    public static int COMMAND_METHOD = 0x08;
+    public static final int COMMAND_CLASS = 0x06;
+    public static final int COMMAND_METHOD = 0x08;
 
     /**
      * 0: Command was successfully executed. Non-zero: An error occurred

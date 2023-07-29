@@ -32,7 +32,7 @@ The first command will send a pairing start request to the TV. This triggers the
 
 Start Pairing:
 
-```
+```shell
 openhab:vizio <thingUID> start_pairing <deviceName>
 ```
 
@@ -41,7 +41,7 @@ Substitute `<deviceName>` the desired device name that will appear in the TV's s
 
 Submit Pairing Code:
 
-```
+```shell
 openhab:vizio <thingUID> submit_code <pairingCode>
 ```
 
@@ -114,7 +114,7 @@ By editing the JSON, apps that are not desired can be removed from the `activeAp
 
 An entry for an application has a `name` element and a `config` element containing `APP_ID`, `NAME_SPACE` and `MESSAGE` (null for most apps):
 
-```
+```json
 {
    "name": "Crackle",
    "config": {
@@ -129,19 +129,19 @@ An entry for an application has a `name` element and a `config` element containi
 If an app is running that is not currently recognized by the binding, the `activeApp` channel will display a message that contains the `APP_ID` and `NAME_SPACE` which can be used to create the missing record for that app in the JSON.
 
 If an app that is in the JSON database fails to start when selected, try adjusting the `NAME_SPACE` value for that app.
-`NAME_SPACE` seems to be a version number and adjusting the number up or down may correct the mismatch between the TV and the binding. 
+`NAME_SPACE` seems to be a version number and adjusting the number up or down may correct the mismatch between the TV and the binding.
 
-A current list of `APP_ID`'s can be found at http://hometest.buddytv.netdna-cdn.com/appservice/vizio_apps_prod.json
-and `NAME_SPACE` &amp; `MESSAGE` values needed can be found at http://hometest.buddytv.netdna-cdn.com/appservice/app_availability_prod.json
+A current list of `APP_ID`'s can be found at <http://scfs.vizio.com/appservice/vizio_apps_prod.json>
+and `NAME_SPACE` &amp; `MESSAGE` values needed can be found at <http://scfs.vizio.com/appservice/app_availability_prod.json>
 
-If there is an error in the user supplied `appListJson`, the thing will fail to start and display a CONFIGURATION_PENDING message.
+If there is an error in the user supplied `appListJson`, the thing will fail to start and display a CONFIGURATION_ERROR message.
 If all text in `appListJson` is removed (set to null) and the thing configuration saved, the binding will restore `appListJson` from the binding's JSON db.
 
 ## Full Example
 
 vizio.things:
 
-```
+```java
 // Vizio TV
 vizio:vizio_tv:mytv1 "My Vizio TV" [ hostName="192.168.10.1", port=7345, authToken="idspisp0pd" ]
 
@@ -149,7 +149,7 @@ vizio:vizio_tv:mytv1 "My Vizio TV" [ hostName="192.168.10.1", port=7345, authTok
 
 vizio.items:
 
-```
+```java
 // Vizio TV items:
 
 Switch TV_Power       "Power"              { channel="vizio:vizio_tv:mytv1:power" }
@@ -164,7 +164,7 @@ String TV_Button      "Send Command to TV" { channel="vizio:vizio_tv:mytv1:butto
 
 vizio.sitemap:
 
-```
+```perl
 sitemap vizio label="Vizio" {
     Frame label="My Vizio TV" {
         Switch item=TV_Power

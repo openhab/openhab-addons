@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>MELCloud Binding</name>
 	<description>Binding for Mitsubishi MELCloud connected A.C. devices.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

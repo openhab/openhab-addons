@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>ElectroluxAir Binding</name>
 	<description>This is the binding for Electrolux Pure A9 Air Purifier.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

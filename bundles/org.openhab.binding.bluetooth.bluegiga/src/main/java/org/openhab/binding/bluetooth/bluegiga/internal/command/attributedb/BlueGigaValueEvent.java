@@ -30,8 +30,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeChan
  */
 @NonNullByDefault
 public class BlueGigaValueEvent extends BlueGigaDeviceResponse {
-    public static int COMMAND_CLASS = 0x02;
-    public static int COMMAND_METHOD = 0x00;
+    public static final int COMMAND_CLASS = 0x02;
+    public static final int COMMAND_METHOD = 0x00;
 
     /**
      * Reason why value has changed see: enum Attribute Change Reason

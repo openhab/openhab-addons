@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="plex"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="server">
+		<label>PLEX Server</label>
+		<description>Represents a PLEX Server</description>
+		<channels>
+			<channel id="currentPlayer" typeId="currentPlayers"/>
+			<channel id="currentPlayersActive" typeId="currentPlayersActive"/>
+		</channels>
+		<config-description-ref uri="thing-type:plex:server"/>
+	</bridge-type>
+
+	<thing-type id="player">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+		<label>PLEX Player</label>
+		<description>Represents a PLEX player</description>
+		<channels>
+			<channel id="state" typeId="state"/>
+			<channel id="power" typeId="power"/>
+			<channel id="title" typeId="title"/>
+			<channel id="type" typeId="type"/>
+			<channel id="endtime" typeId="endtime"/>
+			<channel id="progress" typeId="progress"/>
+			<channel id="art" typeId="art"/>
+			<channel id="thumb" typeId="thumb"/>
+			<channel id="player" typeId="player"/>
+			<channel id="user" typeId="user"/>
+		</channels>
+		<config-description-ref uri="thing-type:plex:player"/>
+	</thing-type>
+
+	<channel-type id="currentPlayers">
+		<item-type>Number</item-type>
+		<label>Current Players</label>
+		<description>The number of players currently configured to watch on PLEX</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="currentPlayersActive">
+		<item-type>Number</item-type>
+		<label>Current Players Active</label>
+		<description>The number of players currently being used on PLEX</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>Player State</label>
+		<description>The current state of the Player</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Player Power State</label>
+		<description>The power status of the player</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Player Title</label>
+		<description>The title of media that is playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="type">
+		<item-type>String</item-type>
+		<label>Media Type</label>
+		<description>The current type of playing media</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="endtime">
+		<item-type>DateTime</item-type>
+		<label>End Time</label>
+		<description>Time at which the media that is playing will end</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="progress">
+		<item-type>Dimmer</item-type>
+		<label>Media Progress</label>
+		<description>The current progress of playing media</description>
+	</channel-type>
+	<channel-type id="art">
+		<item-type>String</item-type>
+		<label>Background Art</label>
+		<description>The URL of the background art for currently playing media</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="thumb">
+		<item-type>String</item-type>
+		<label>Cover Art</label>
+		<description>The URL of the cover art for currently playing media</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Player Control</label>
+		<description>The control channel for the player `PLAY/PAUSE/NEXT/PREVIOUS`</description>
+	</channel-type>
+	<channel-type id="user">
+		<item-type>String</item-type>
+		<label>Player User</label>
+		<description>The title of the user controlling the player</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

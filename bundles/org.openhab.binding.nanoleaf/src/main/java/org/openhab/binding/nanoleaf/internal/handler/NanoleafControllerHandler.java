@@ -91,6 +91,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -147,7 +148,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
     }
 
     private void initializeTouchHttpClient() {
-        String httpClientName = thing.getUID().getId();
+        String httpClientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
 
         try {
             httpClientSSETouchEvent = httpClientFactory.createHttpClient(httpClientName);
@@ -290,6 +291,14 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
     @Override
     public void dispose() {
         stopAllJobs();
+        HttpClient localHttpClientSSETouchEvent = this.httpClientSSETouchEvent;
+        if (localHttpClientSSETouchEvent != null) {
+            try {
+                localHttpClientSSETouchEvent.stop();
+            } catch (Exception e) {
+            }
+            this.httpClientSSETouchEvent = null;
+        }
         super.dispose();
         logger.debug("Disposing handler for Nanoleaf controller {}", getThing().getUID());
     }

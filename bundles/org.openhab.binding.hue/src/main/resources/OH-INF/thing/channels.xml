@@ -22,7 +22,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="light_level" advanced="true">
+	<channel-type id="light_level">
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
@@ -180,4 +180,80 @@
 		<label>Scene</label>
 		<description>The scene channel allows recalling a scene to all lights that belong to the scene.</description>
 	</channel-type>
+
+	<!-- API v2 Channel Types -->
+	<channel-type id="button-last-event">
+		<kind>trigger</kind>
+		<label>Button Last Event</label>
+		<description>Numeric code (e.g. 1003) representing the last push button event.</description>
+		<event/>
+	</channel-type>
+
+	<channel-type id="rotary-steps">
+		<kind>trigger</kind>
+		<label>Rotary Steps</label>
+		<description>The last 'steps' value (e.g. +/-30) of the rotary dial.</description>
+		<event/>
+	</channel-type>
+
+	<channel-type id="sensor-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sensor Enabled</label>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="scene-v2" advanced="true">
+		<item-type>String</item-type>
+		<label>Scene</label>
+		<category>MediaControl</category>
+		<state pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="last-updated-v2" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Updated</label>
+		<description>The date and time when the thing was last updated.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="alert-v2" advanced="true">
+		<item-type>String</item-type>
+		<label>Alert</label>
+		<state pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="effect-v2" advanced="true">
+		<item-type>String</item-type>
+		<label>Effect</label>
+		<state pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="dynamics" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Dynamics</label>
+		<description>The duration (ms) of dynamic transitions between light or scene states.</description>
+		<category>Time</category>
+		<state min="0" step="100" pattern="%d ms"/>
+	</channel-type>
+
+	<channel-type id="advanced-color" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color XY Only</label>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="advanced-brightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Dimming Only</label>
+		<category>Light</category>
+		<state pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="advanced-power" advanced="true">
+		<item-type>Switch</item-type>
+		<label>On/Off Only</label>
+		<category>Switch</category>
+	</channel-type>
+
 </thing:thing-descriptions>

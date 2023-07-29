@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Map;
@@ -113,6 +114,13 @@ public class OpenhabGraalJSScriptEngine
                     v -> v.hasMember("minusDuration") && v.hasMember("toNanos"),
                     v -> Duration.ofNanos(v.invokeMember("toNanos").asLong()), HostAccess.TargetMappingPrecedence.LOW)
 
+            // Translate JS-Joda Instant to java.time.Instant
+            .targetTypeMapping(Value.class, Instant.class,
+                    // picking two members to check as Instant has many common function names
+                    v -> v.hasMember("toEpochMilli") && v.hasMember("epochSecond"),
+                    v -> Instant.ofEpochMilli(v.invokeMember("toEpochMilli").asLong()),
+                    HostAccess.TargetMappingPrecedence.LOW)
+
             // Translate openhab-js Item to org.openhab.core.items.Item
             .targetTypeMapping(Value.class, Item.class, v -> v.hasMember("rawItem"),
                     v -> v.getMember("rawItem").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
@@ -139,7 +147,7 @@ public class OpenhabGraalJSScriptEngine
      * lifecycle and provides hooks for scripts to do so too.
      */
     public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean useIncludedLibrary,
-            JSScriptServiceUtil jsScriptServiceUtil) {
+            JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.injectionEnabled = injectionEnabled;
         this.useIncludedLibrary = useIncludedLibrary;
@@ -149,7 +157,8 @@ public class OpenhabGraalJSScriptEngine
 
         delegate = GraalJSScriptEngine.create(ENGINE,
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
-                        .allowHostAccess(HOST_ACCESS).option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
+                        .allowHostAccess(HOST_ACCESS)
+                        .option("js.commonjs-require-cwd", jsDependencyTracker.getLibraryPath().toString())
                         .option("js.nashorn-compat", "true") // Enable Nashorn compat mode as openhab-js relies on
                                                              // accessors, see
                                                              // https://github.com/oracle/graaljs/blob/master/docs/user/NashornMigrationGuide.md#accessors

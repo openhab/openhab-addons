@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Jellyfin Binding</name>
 	<description>This is the binding for Jellyfin the free software media system.</description>
+	<connection>local</connection>
 
 </addon:addon>

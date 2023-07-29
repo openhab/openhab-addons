@@ -13,7 +13,7 @@
 package org.openhab.binding.airquality.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -67,7 +67,7 @@ public class AirQualityBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(AirQualityDiscoveryService.class);
+        return Set.of(AirQualityDiscoveryService.class);
     }
 
     public LocationProvider getLocationProvider() {

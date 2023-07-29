@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>openHAB HDanywhere Binding</name>
 	<description>This is the binding for HDanywhere HDMI Matrices</description>
+	<connection>local</connection>
 
 </addon:addon>

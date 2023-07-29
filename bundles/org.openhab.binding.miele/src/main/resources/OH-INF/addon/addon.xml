@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Miele Binding</name>
 	<description>This is the binding for Miele@home appliances</description>
+	<connection>local</connection>
 
 </addon:addon>

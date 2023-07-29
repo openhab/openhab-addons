@@ -18,8 +18,8 @@ import java.util.Map;
 /**
  * The {@link EventResponseEnum} contains digitalSTROM-Event properties of the events at {@link EventNames}.
  *
- * @author Michael Ochel
- * @author Mathias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Mathias Siegele - Initial contribution
  */
 public enum EventResponseEnum {
 

@@ -12,18 +12,27 @@
  */
 package org.openhab.binding.lametrictime.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration class for LaMetric Time apps.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeAppConfiguration {
 
     public static final String PACKAGE_NAME = "packageName";
     public static final String WIDGET_ID = "widgetId";
     public static final String ACCESS_TOKEN = "accessToken";
 
+    @Nullable
     public String packageName;
+
+    @Nullable
     public String widgetId;
+
+    @Nullable
     public String accessToken;
 }
