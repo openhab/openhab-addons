@@ -25,13 +25,13 @@ import org.openhab.binding.digitalstrom.internal.lib.serverconnection.HttpTransp
  */
 public interface ConnectionManager {
 
-    public static final int GENERAL_EXCEPTION = -1;
-    public static final int MALFORMED_URL_EXCEPTION = -2;
-    public static final int CONNECTION_EXCEPTION = -3;
-    public static final int SOCKET_TIMEOUT_EXCEPTION = -4;
-    public static final int UNKNOWN_HOST_EXCEPTION = -5;
-    public static final int AUTHENTIFICATION_PROBLEM = -6;
-    public static final int SSL_HANDSHAKE_EXCEPTION = -7;
+    static final int GENERAL_EXCEPTION = -1;
+    static final int MALFORMED_URL_EXCEPTION = -2;
+    static final int CONNECTION_EXCEPTION = -3;
+    static final int SOCKET_TIMEOUT_EXCEPTION = -4;
+    static final int UNKNOWN_HOST_EXCEPTION = -5;
+    static final int AUTHENTIFICATION_PROBLEM = -6;
+    static final int SSL_HANDSHAKE_EXCEPTION = -7;
 
     /**
      * Returns the {@link HttpTransport} to execute queries or special commands on the digitalSTROM-Server.

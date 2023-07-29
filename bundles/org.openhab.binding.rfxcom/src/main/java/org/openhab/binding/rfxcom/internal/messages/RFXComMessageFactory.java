@@ -27,8 +27,8 @@ import org.openhab.core.types.Command;
  * @author James Hewitt-Thomas - Switch to making messages for a specific command
  */
 public interface RFXComMessageFactory {
-    public RFXComMessage createMessage(PacketType packetType, RFXComDeviceConfiguration config, ChannelUID channelUID,
+    RFXComMessage createMessage(PacketType packetType, RFXComDeviceConfiguration config, ChannelUID channelUID,
             Command command) throws RFXComException;
 
-    public RFXComMessage createMessage(byte[] packet) throws RFXComException;
+    RFXComMessage createMessage(byte[] packet) throws RFXComException;
 }

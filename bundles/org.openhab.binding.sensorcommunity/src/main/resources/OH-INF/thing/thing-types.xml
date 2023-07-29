@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sensorcommunity"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="particulate">
+		<label>Particulate Sensor</label>
+		<description>Sensor to measure Particulate Matter (PM)</description>
+
+		<channels>
+			<channel id="pm25" typeId="pm25-channel"/>
+			<channel id="pm100" typeId="pm100-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Internal IP Address</label>
+				<description>Local IP address of your personal owned sensor</description>
+			</parameter>
+			<parameter name="sensorid" type="integer">
+				<label>External Sensor ID</label>
+				<description>Sensor ID from https://deutschland.maps.sensor.community/</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="conditions">
+		<label>Condition Sensor</label>
+		<description>Sensor to measure Temperature and Humidity conditions</description>
+
+		<channels>
+			<channel id="temperature" typeId="temp-channel"/>
+			<channel id="humidity" typeId="hum-channel"/>
+			<channel id="pressure" typeId="pressure-channel"/>
+			<channel id="pressure-sea" typeId="pressure-sea-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Internal IP Address</label>
+				<description>Local IP address of your personal owned sensor</description>
+			</parameter>
+			<parameter name="sensorid" type="integer">
+				<label>External Sensor ID</label>
+				<description>Sensor ID from https://deutschland.maps.sensor.community/</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="noise">
+		<label>Noise Sensor</label>
+		<description>Sensor to measure noise on location</description>
+
+		<channels>
+			<channel id="noise-eq" typeId="noise-eq-channel"/>
+			<channel id="noise-min" typeId="noise-min-channel"/>
+			<channel id="noise-max" typeId="noise-max-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Internal IP Address</label>
+				<description>Local IP address of your personal owned sensor</description>
+			</parameter>
+			<parameter name="sensorid" type="integer">
+				<label>External Sensor ID</label>
+				<description>Sensor ID from https://deutschland.maps.sensor.community/</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="pm25-channel">
+		<item-type>Number:Density</item-type>
+		<label>Particulate Matter category 2.5</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pm100-channel">
+		<item-type>Number:Density</item-type>
+		<label>Particulate Matter category 10.0</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temp-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature from the selected Sensor ID</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hum-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Humidity from the selected Sensor ID</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pressure-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Atmospheric Pressure</label>
+		<description>Atmospheric Pressure from the selected Sensor ID</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pressure-sea-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Atmospheric Pressure Sea Level</label>
+		<description>Atmospheric Pressure at sea level from the selected Sensor ID</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="noise-eq-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Average Noise</label>
+		<description>Average noise level from the selected Sensor ID</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="noise-min-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Minimum Noise</label>
+		<description>Minimum noise level (last 2.5 minutes) from the selected Sensor ID</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="noise-max-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Maximum Noise</label>
+		<description>Maximum noise level (last 2.5 minutes) from the selected Sensor ID</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

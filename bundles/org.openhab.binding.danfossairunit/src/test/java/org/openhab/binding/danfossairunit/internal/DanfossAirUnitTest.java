@@ -30,6 +30,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.test.java.JavaTest;
 
 /**
@@ -144,6 +145,14 @@ public class DanfossAirUnitTest extends JavaTest {
                 .thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController);
         assertEquals(new PercentType(50), airUnit.getManualFanStep());
+    }
+
+    @Test
+    public void getSupplyFanSpeedIsReturnedAsRPM() throws IOException {
+        byte[] response = new byte[] { (byte) 0x04, (byte) 0xda };
+        when(this.communicationController.sendRobustRequest(REGISTER_4_READ, SUPPLY_FAN_SPEED)).thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController);
+        assertEquals(new QuantityType<>(1242, Units.RPM), airUnit.getSupplyFanSpeed());
     }
 
     @Test

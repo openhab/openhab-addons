@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Nuvo Whole House Audio Binding</name>
 	<description>Controls the Nuvo Grand Concerto or Essentia G Whole House Amplifier.</description>
+	<connection>local</connection>
 
 </addon:addon>

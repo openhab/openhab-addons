@@ -22,13 +22,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface ResponseListener {
 
-    public void receivedResponse(GetBatteryLevelCommand command);
+    void receivedResponse(GetBatteryLevelCommand command);
 
-    public void receivedResponse(GetAllCommand command);
+    void receivedResponse(GetAllCommand command);
 
-    public void receivedResponse(GetLightLevelCommand command);
+    void receivedResponse(GetLightLevelCommand command);
 
-    public void receivedResponse(GetPositionCommand command);
+    void receivedResponse(GetPositionCommand command);
 
-    public void receivedResponse(GetSpeedCommand command);
+    void receivedResponse(GetSpeedCommand command);
 }

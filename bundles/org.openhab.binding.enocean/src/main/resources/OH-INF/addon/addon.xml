@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>EnOcean Binding</name>
 	<description>The EnOcean binding integrates the EnOcean system into openHAB.</description>
+	<connection>local</connection>
 
 </addon:addon>

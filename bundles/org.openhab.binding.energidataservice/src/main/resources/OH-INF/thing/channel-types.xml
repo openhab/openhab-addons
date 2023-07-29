@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energidataservice"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="spot-price">
+		<item-type>Number</item-type>
+		<label>Spot Price</label>
+		<description>Spot price.</description>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.9f"></state>
+	</channel-type>
+
+	<channel-type id="datahub-price">
+		<item-type>Number</item-type>
+		<label>Datahub Price</label>
+		<description>Datahub price.</description>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.6f"></state>
+		<config-description-ref uri="channel-type:energidataservice:datahub-price"/>
+	</channel-type>
+
+	<channel-type id="hourly-prices" advanced="true">
+		<item-type>String</item-type>
+		<label>Hourly Prices</label>
+		<description>JSON array with hourly prices from 24 hours ago and onward.</description>
+		<category>Price</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

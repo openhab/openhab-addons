@@ -27,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  * @author Manuel Raffel - Added support for blinds
+ * @author Vivien Boistuaud - Added support for air purifier
  */
 @NonNullByDefault
 public class TradfriBindingConstants {
@@ -45,6 +46,7 @@ public class TradfriBindingConstants {
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "0107");
     public static final ThingTypeUID THING_TYPE_BLINDS = new ThingTypeUID(BINDING_ID, "0202");
     public static final ThingTypeUID THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL = new ThingTypeUID(BINDING_ID, "0203");
+    public static final ThingTypeUID THING_TYPE_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "0007");
 
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_TEMP_LIGHT, THING_TYPE_COLOR_LIGHT)
@@ -53,6 +55,8 @@ public class TradfriBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_PLUG_TYPES_UIDS = Collections.singleton(THING_TYPE_ONOFF_PLUG);
 
     public static final Set<ThingTypeUID> SUPPORTED_BLINDS_TYPES_UIDS = Collections.singleton(THING_TYPE_BLINDS);
+
+    public static final Set<ThingTypeUID> SUPPORTED_AIR_PURIFIER_TYPES_UIDS = Set.of(THING_TYPE_AIR_PURIFIER);
 
     // List of all Gateway Configuration Properties
     public static final String GATEWAY_CONFIG_HOST = "host";
@@ -70,7 +74,8 @@ public class TradfriBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_LIGHT_TYPES_UIDS.stream(), SUPPORTED_CONTROLLER_TYPES_UIDS.stream(),
-                    SUPPORTED_PLUG_TYPES_UIDS.stream(), SUPPORTED_BLINDS_TYPES_UIDS.stream())
+                    SUPPORTED_PLUG_TYPES_UIDS.stream(), SUPPORTED_BLINDS_TYPES_UIDS.stream(),
+                    SUPPORTED_AIR_PURIFIER_TYPES_UIDS.stream())
             .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
@@ -85,9 +90,20 @@ public class TradfriBindingConstants {
     public static final String CHANNEL_POSITION = "position";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
+    public static final String CHANNEL_FAN_MODE = "fan_mode";
+    public static final String CHANNEL_FAN_SPEED = "fan_speed";
+    public static final String CHANNEL_DISABLE_LED = "disable_led";
+    public static final String CHANNEL_LOCK_BUTTON = "lock_button";
+    public static final String CHANNEL_AIR_QUALITY_PM25 = "air_quality_pm25";
+    public static final String CHANNEL_AIR_QUALITY_RATING = "air_quality_rating";
+    public static final String CHANNEL_FILTER_CHECK_NEXT = "filter_check_next";
+    public static final String CHANNEL_FILTER_CHECK_ALARM = "filter_check_alarm";
+    public static final String CHANNEL_FILTER_UPTIME = "filter_uptime";
 
     // IPSO Objects
     public static final String DEVICES = "15001";
+    public static final String AIR_PURIFIER = "15025";
+    public static final String AIR_QUALITY = "5907";
     public static final String AUTH_PATH = "9063";
     public static final String BLINDS = "15015";
     public static final String CLIENT_IDENTITY_PROPOSED = "9090";
@@ -107,6 +123,9 @@ public class TradfriBindingConstants {
     public static final String END_TIME_HR = "9048";
     public static final String END_TIME_MN = "9049";
     public static final String ERROR_TAG = "errorcode";
+    public static final String FAN_MODE = "5900";
+    public static final String FAN_SPEED = "5908";
+    public static final String FILTER_UPTIME = "5902";
     public static final String FORCE_CHECK_OTA_UPDATE = "9032";
     public static final String GATEWAY = "15011";
     public static final String GATEWAY_DETAILS = "15012";
@@ -125,9 +144,11 @@ public class TradfriBindingConstants {
     public static final String IKEA_MOODS = "9068";
     public static final String INSTANCE_ID = "9003";
     public static final String LAST_SEEN = "9020";
+    public static final String LED_DISABLE = "5906";
     public static final String LIGHT = "3311";
     public static final int LIGHTS_OFF_SMART_TASK = 2;
     public static final String LIGHT_SETTING = "15013";
+    public static final String LOCK_PHYSICAL_BUTTON = "5905";
     public static final int LOSS_OF_INTERNET_CONNECTIVITY = 5001;
     public static final String MASTER_TOKEN_TAG = "9036";
     public static final String MAX_MSR_VALUE = "5602";
@@ -137,6 +158,7 @@ public class TradfriBindingConstants {
     public static final String NAME = "9001";
     public static final int NEW_FIRMWARE_AVAILABLE = 1001;
     public static final String NEW_PSK_BY_GW = "9091";
+    public static final String NEXT_FILTER_CHECK = "5910";
     public static final String NOTIFICATION_EVENT = "9015";
     public static final String NOTIFICATION_NVPAIR = "9017";
     public static final String NOTIFICATION_STATE = "9014";
@@ -201,8 +223,27 @@ public class TradfriBindingConstants {
     public static final String TYPE_SENSOR = "4";
     public static final String TYPE_REPEATER = "6";
     public static final String TYPE_BLINDS = "7";
+    public static final String TYPE_AIR_PURIFIER = "10";
+
     public static final String DEVICE_VENDOR = "0";
     public static final String DEVICE_MODEL = "1";
     public static final String DEVICE_FIRMWARE = "3";
     public static final String DEVICE_BATTERY_LEVEL = "9";
+
+    // List of Air Purifier Constants
+    public static final int FAN_MODE_OFF = 0;
+    public static final int FAN_MODE_AUTO = 1;
+    public static final int FAN_MODE_SPEED1 = 10;
+    public static final int FAN_MODE_SPEED2 = 20;
+    public static final int FAN_MODE_SPEED3 = 30;
+    public static final int FAN_MODE_SPEED4 = 40;
+    public static final int FAN_MODE_SPEED5 = 50;
+
+    public static final Set<Integer> AIR_PURIFIER_FANMODE = Set.of(FAN_MODE_OFF, FAN_MODE_AUTO, FAN_MODE_SPEED1,
+            FAN_MODE_SPEED2, FAN_MODE_SPEED3, FAN_MODE_SPEED4, FAN_MODE_SPEED5);
+
+    public static final int AIR_PURIFIER_AIR_QUALITY_OK = 36;
+    public static final int AIR_PURIFIER_AIR_QUALITY_BAD = 86;
+
+    public static final int AIR_PURIFIER_AIR_QUALITY_UNDEFINED = 65535;
 }

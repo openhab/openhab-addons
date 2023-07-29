@@ -43,6 +43,8 @@ public enum EventSubType {
     BATTERY_VERY_LOW(1, EventType.BATTERY_STATUS),
     SMOKE_CLEARED(0, EventType.SMOKE),
     SMOKE_DETECTED(1, EventType.SMOKE),
+    HUSH_ACTIVATED(0, EventType.HUSH),
+    HUSH_DEACTIVATED(1, EventType.HUSH),
     SOUND_TEST_OK(0, EventType.SOUND_TEST),
     SOUND_TEST_ERROR(1, EventType.SOUND_TEST),
     DETECTOR_READY(0, EventType.TAMPERED),

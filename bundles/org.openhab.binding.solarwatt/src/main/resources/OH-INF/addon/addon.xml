@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Solarwatt Binding</name>
 	<description>This is the binding for Solarwatt Energymanager.</description>
+	<connection>local</connection>
 
 </addon:addon>

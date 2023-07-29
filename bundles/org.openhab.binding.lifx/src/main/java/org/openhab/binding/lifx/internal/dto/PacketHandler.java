@@ -36,5 +36,5 @@ public interface PacketHandler<T extends Packet> {
      * @throws IllegalArgumentException when an empty packet could not be created or the data in the buffer
      *             could not be parsed
      */
-    public abstract T handle(ByteBuffer buf);
+    T handle(ByteBuffer buf);
 }

@@ -7,5 +7,6 @@
 	<name>Plugwise Binding</name>
 	<description>Monitor and control Plugwise ZigBee devices using the Stick. Supported devices are the Circle, Circle+,
 		Scan, Sense, Stealth and Switch.</description>
+	<connection>local</connection>
 
 </addon:addon>

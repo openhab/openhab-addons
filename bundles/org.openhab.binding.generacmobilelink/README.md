@@ -36,22 +36,25 @@ The MobileLink account bridge must be added manually. Once added, generator thin
 
 All channels are read-only.
 
-| channel                 | type                 | description                               |
-|-------------------------|----------------------|-------------------------------------------|
-| connected               | Switch               | Connected status                          |
-| greenLight              | Switch               | Green light state (typically auto mode)   |
-| yellowLight             | Switch               | Yellow light state                        |
-| redLight                | Switch               | Red light state (typically off mode)      |
-| blueLight               | Switch               | Blue light state (typically running mode) |
-| statusDate              | DateTime             | Status date (start of day)                |
-| status                  | String               | General status                            |
-| currentAlarmDescription | String               | Current alarm description                 |
-| runHours                | Number:Time          | Number of run hours                       |
-| exerciseHours           | Number:Time          | Number of exercise hours                  |
-| fuelType                | Number               | Fuel type                                 |
-| fuelLevel               | Number:Dimensionless | Fuel level                                |
-| batteryVoltage          | String               | Battery voltage status                    |
-| serviceStatus           | Switch               | Service status                            |
+| Channel ID           | Item Type                   | Description                       |
+|----------------------|-----------------------------|-----------------------------------|
+| heroImageUrl         | String                      | Hero Image URL                    |
+| statusLabel          | String                      | Status Label                      |
+| statusText           | String                      | Status Text                       |
+| activationDate       | DateTime                    | Activation Date                   |
+| deviceSsid           | String                      | Device SSID                       |
+| status               | Number                      | Status                            |
+| isConnected          | Switch                      | Is Connected                      |
+| isConnecting         | Switch                      | Is Connecting                     |
+| showWarning          | Switch                      | Show Warning                      |
+| hasMaintenanceAlert  | Switch                      | Has Maintenance Alert             |
+| lastSeen             | DateTime                    | Last Seen                         |
+| connectionTime       | DateTime                    | Connection Time                   |
+| runHours             | Number:Time                 | Number of Hours Run               |
+| batteryVoltage       | Number:ElectricPotential    | Battery Voltage                   |
+| hoursOfProtection    | Number:Time                 | Number of Hours of Protection     |
+| signalStrength       | Number:Dimensionless        | Signal Strength                   |
+
 
 ## Full Example
 
@@ -66,27 +69,41 @@ Bridge generacmobilelink:account:main "MobileLink Account" [ userName="foo@bar.c
 ### Items
 
 ```java
-Switch GeneratorConnected "Connected [%s]" {channel="generacmobilelink:generator:main:123456:connected"}
-Switch GeneratorGreenLight "Green Light [%s]" {channel="generacmobilelink:generator:main:123456:greenLight"}
-Switch GeneratorYellowLight "Yellow Light [%s]" {channel="generacmobilelink:generator:main:123456:yellowLight"}
-Switch GeneratorBlueLight "Blue Light [%s]" {channel="generacmobilelink:generator:main:123456:blueLight"}
-Switch GeneratorRedLight "Red Light [%s]" {channel="generacmobilelink:generator:main:123456:redLight"}
-String GeneratorStatus "Status [%s]" {channel="generacmobilelink:generator:main:123456:status"}
-String GeneratorAlarm "Alarm [%s]" {channel="generacmobilelink:generator:main:123456:currentAlarmDescription"}
+String GeneratorHeroImageUrl "Hero Image URL [%s]" { channel="generacmobilelink:generator:main:123456:heroImageUrl" }
+String GeneratorStatusLabel "Status Label [%s]" { channel="generacmobilelink:generator:main:123456:statusLabel" }
+String GeneratorStatusText "Status Text [%s]" { channel="generacmobilelink:generator:main:123456:statusText" }
+DateTime GeneratorActivationDate "Activation Date [%s]" { channel="generacmobilelink:generator:main:123456:activationDate" }
+String GeneratorDeviceSsid "Device SSID [%s]" { channel="generacmobilelink:generator:main:123456:deviceSsid" }
+Number GeneratorStatus "Status [%d]" { channel="generacmobilelink:generator:main:123456:status" }
+Switch GeneratorIsConnected "Is Connected [%s]" { channel="generacmobilelink:generator:main:123456:isConnected" }
+Switch GeneratorIsConnecting "Is Connecting [%s]" { channel="generacmobilelink:generator:main:123456:isConnecting" }
+Switch GeneratorShowWarning "Show Warning [%s]" { channel="generacmobilelink:generator:main:123456:showWarning" }
+Switch GeneratorHasMaintenanceAlert "Has Maintenance Alert [%s]" { channel="generacmobilelink:generator:main:123456:hasMaintenanceAlert" }
+DateTime GeneratorLastSeen "Last Seen [%s]" { channel="generacmobilelink:generator:main:123456:lastSeen" }
+DateTime GeneratorConnectionTime "Connection Time [%s]" { channel="generacmobilelink:generator:main:123456:connectionTime" }
+Number:Time GeneratorRunHours "Number of Hours Run [%d]" { channel="generacmobilelink:generator:main:123456:runHours" }
+Number:ElectricPotential GeneratorBatteryVoltage "Battery Voltage [%d]v" { channel="generacmobilelink:generator:main:123456:batteryVoltage" }
+Number:Time GeneratorHoursOfProtection "Number of Hours of Protection [%d]" { channel="generacmobilelink:generator:main:123456:hoursOfProtection" }
+Number:Dimensionless GeneratorSignalStrength "Signal Strength [%d]" { channel="generacmobilelink:generator:main:123456:signalStrength" }
+
 ```
 
 ### Sitemap
 
 ```perl
-sitemap MobileLink label="Demo Sitemap" {
-  Frame label="Generator" {
-    Switch item=GeneratorConnected
-    Switch item=GeneratorGreenLight
-    Switch item=GeneratorYellowLight
-    Switch item=GeneratorBlueLight
-    Switch item=GeneratorRedLight
-    Text   item=GeneratorStatus
-    Text   item=GeneratorAlarm
-  }                
+sitemap generacmobilelink label="Generac MobileLink"
+{
+    Frame label="Generator Status" {
+        Text item=GeneratorStatus
+        Text item=GeneratorStatusLabel
+        Text item=GeneratorStatusText
+    }
+
+    Frame label="Generator Properties" {
+        Text item=GeneratorRunHours
+        Text item=GeneratorHoursOfProtection
+        Text item=GeneratorBatteryVoltage
+        Text item=GeneratorSignalStrength
+    }
 }
 ```

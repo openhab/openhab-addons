@@ -38,55 +38,55 @@ import org.openhab.binding.lametrictime.internal.api.local.impl.LaMetricTimeLoca
  */
 @NonNullByDefault
 public interface LaMetricTimeLocal {
-    public Api getApi();
+    Api getApi();
 
-    public Device getDevice();
+    Device getDevice();
 
-    public String createNotification(Notification notification) throws NotificationCreationException;
+    String createNotification(Notification notification) throws NotificationCreationException;
 
-    public List<Notification> getNotifications();
+    List<Notification> getNotifications();
 
-    public @Nullable Notification getCurrentNotification();
+    @Nullable
+    Notification getCurrentNotification();
 
-    public Notification getNotification(String id) throws NotificationNotFoundException;
+    Notification getNotification(String id) throws NotificationNotFoundException;
 
-    public void deleteNotification(String id) throws NotificationNotFoundException;
+    void deleteNotification(String id) throws NotificationNotFoundException;
 
-    public Display getDisplay();
+    Display getDisplay();
 
-    public Display updateDisplay(Display display) throws UpdateException;
+    Display updateDisplay(Display display) throws UpdateException;
 
-    public Audio getAudio();
+    Audio getAudio();
 
-    public Audio updateAudio(Audio audio) throws UpdateException;
+    Audio updateAudio(Audio audio) throws UpdateException;
 
-    public Bluetooth getBluetooth();
+    Bluetooth getBluetooth();
 
-    public Bluetooth updateBluetooth(Bluetooth bluetooth) throws UpdateException;
+    Bluetooth updateBluetooth(Bluetooth bluetooth) throws UpdateException;
 
-    public Wifi getWifi();
+    Wifi getWifi();
 
-    public void updateApplication(String packageName, String accessToken, WidgetUpdates widgetUpdates)
-            throws UpdateException;
+    void updateApplication(String packageName, String accessToken, WidgetUpdates widgetUpdates) throws UpdateException;
 
-    public SortedMap<String, Application> getApplications();
+    SortedMap<String, Application> getApplications();
 
-    public @Nullable Application getApplication(String packageName) throws ApplicationNotFoundException;
+    @Nullable
+    Application getApplication(String packageName) throws ApplicationNotFoundException;
 
-    public void activatePreviousApplication();
+    void activatePreviousApplication();
 
-    public void activateNextApplication();
+    void activateNextApplication();
 
-    public void activateApplication(String packageName, String widgetId) throws ApplicationActivationException;
+    void activateApplication(String packageName, String widgetId) throws ApplicationActivationException;
 
-    public void doAction(String packageName, String widgetId, @Nullable UpdateAction action)
-            throws ApplicationActionException;
+    void doAction(String packageName, String widgetId, @Nullable UpdateAction action) throws ApplicationActionException;
 
-    public static LaMetricTimeLocal create(LocalConfiguration config) {
+    static LaMetricTimeLocal create(LocalConfiguration config) {
         return new LaMetricTimeLocalImpl(config);
     }
 
-    public static LaMetricTimeLocal create(LocalConfiguration config, ClientBuilder clientBuilder) {
+    static LaMetricTimeLocal create(LocalConfiguration config, ClientBuilder clientBuilder) {
         return new LaMetricTimeLocalImpl(config, clientBuilder);
     }
 }

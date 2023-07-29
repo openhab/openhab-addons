@@ -28,10 +28,12 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Control of your shutter to take any position you desire.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
@@ -48,6 +50,8 @@ public class ShutterControlHandler extends BoschSHCDeviceHandler {
             return (100 - openPercentage) / 100.0;
         }
     }
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ShutterControlService shutterControlService;
 
@@ -67,31 +71,28 @@ public class ShutterControlHandler extends BoschSHCDeviceHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
 
-        if (command instanceof UpDownType) {
+        if (command instanceof UpDownType upDownCommand) {
             // Set full close/open as target state
-            UpDownType upDownType = (UpDownType) command;
             ShutterControlServiceState state = new ShutterControlServiceState();
-            if (upDownType == UpDownType.UP) {
+            if (upDownCommand == UpDownType.UP) {
                 state.level = 1.0;
-            } else if (upDownType == UpDownType.DOWN) {
+            } else if (upDownCommand == UpDownType.DOWN) {
                 state.level = 0.0;
             } else {
-                logger.warn("Received unknown UpDownType command: {}", upDownType);
+                logger.warn("Received unknown UpDownType command: {}", upDownCommand);
                 return;
             }
             this.updateServiceState(this.shutterControlService, state);
-        } else if (command instanceof StopMoveType) {
-            StopMoveType stopMoveType = (StopMoveType) command;
-            if (stopMoveType == StopMoveType.STOP) {
+        } else if (command instanceof StopMoveType stopMoveCommand) {
+            if (stopMoveCommand == StopMoveType.STOP) {
                 // Set STOPPED operation state
                 ShutterControlServiceState state = new ShutterControlServiceState();
                 state.operationState = OperationState.STOPPED;
                 this.updateServiceState(this.shutterControlService, state);
             }
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType percentCommand) {
             // Set specific level
-            PercentType percentType = (PercentType) command;
-            double level = DataConversion.openPercentageToLevel(percentType.doubleValue());
+            double level = DataConversion.openPercentageToLevel(percentCommand.doubleValue());
             this.updateServiceState(this.shutterControlService, new ShutterControlServiceState(level));
         }
     }
