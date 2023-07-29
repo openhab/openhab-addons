@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Sonnen Binding</name>
 	<description>This binding communicates with a solar battery from sonnen.</description>
+	<connection>local</connection>
 
 </addon:addon>

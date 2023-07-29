@@ -277,7 +277,7 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService implemen
 
             String name;
             if ("0".equals(group.getId())) {
-                name = "@text/discovery.group.all_lights.label";
+                name = "@text/discovery.group.all-lights.label";
             } else if ("Room".equals(group.getType())) {
                 name = group.getName();
             } else {

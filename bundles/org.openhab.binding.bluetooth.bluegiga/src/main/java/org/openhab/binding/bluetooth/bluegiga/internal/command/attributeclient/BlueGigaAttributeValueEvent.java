@@ -31,8 +31,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeValu
  */
 @NonNullByDefault
 public class BlueGigaAttributeValueEvent extends BlueGigaDeviceResponse {
-    public static int COMMAND_CLASS = 0x04;
-    public static int COMMAND_METHOD = 0x05;
+    public static final int COMMAND_CLASS = 0x04;
+    public static final int COMMAND_METHOD = 0x05;
 
     /**
      * Attribute handle

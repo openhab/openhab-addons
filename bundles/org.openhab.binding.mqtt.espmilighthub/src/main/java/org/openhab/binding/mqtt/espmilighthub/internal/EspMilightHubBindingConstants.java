@@ -31,6 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class EspMilightHubBindingConstants {
     public static final String STATES_BASE_TOPIC = "milight/states/";
     public static final String COMMANDS_BASE_TOPIC = "milight/commands/";
+    public static final String STATUS_TOPIC = "milight/status";
     public static final BigDecimal BIG_DECIMAL_100 = new BigDecimal(100);
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RGB_CCT = new ThingTypeUID(BINDING_ID, "rgb_cct");
@@ -50,4 +51,7 @@ public class EspMilightHubBindingConstants {
     public static final String CHANNEL_DISCO_MODE = "discoMode";
     public static final String CHANNEL_BULB_MODE = "bulbMode";
     public static final String CHANNEL_COMMAND = "command";
+
+    // Status
+    public static final String CONNECTED = "connected";
 }

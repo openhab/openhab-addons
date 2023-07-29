@@ -7,6 +7,7 @@
 	<name>UPnP Control Binding</name>
 	<description>This binding acts as a UPnP Control Point that can query media server content directories and serve
 		content to media renderers.</description>
+	<connection>local</connection>
 	<config-description>
 		<parameter name="path" type="text">
 			<label>Storage Path</label>

@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 
 /**
  * Test class for {@link DSMRMeter}.
@@ -35,15 +34,15 @@ public class DSMRMeterTest {
      */
     @Test
     public void testFilterMeterValues() {
-        final List<CosemObject> cosemObjects = TelegramReaderUtil.readTelegram("dsmr_50", TelegramState.OK)
-                .getCosemObjects();
+        final List<CosemObject> cosemObjects = TelegramReaderUtil.readTelegram("dsmr_50").getCosemObjects();
 
         assertMeterValues(cosemObjects, DSMRMeterType.DEVICE_V5, DSMRMeterConstants.UNKNOWN_CHANNEL, 3);
         assertMeterValues(cosemObjects, DSMRMeterType.ELECTRICITY_V5_0, 0, 29);
         assertMeterValues(cosemObjects, DSMRMeterType.M3_V5_0, 1, 3);
     }
 
-    private void assertMeterValues(List<CosemObject> cosemObjects, DSMRMeterType type, int channel, int expected) {
+    private void assertMeterValues(final List<CosemObject> cosemObjects, final DSMRMeterType type, final int channel,
+            final int expected) {
         final DSMRMeterDescriptor descriptor = new DSMRMeterDescriptor(type, channel);
         final DSMRMeter meter = new DSMRMeter(descriptor);
         final List<CosemObject> filterMeterValues = meter.filterMeterValues(cosemObjects, channel);

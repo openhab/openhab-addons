@@ -94,7 +94,10 @@ function build_addon() {
 
 function build_based_on_changes() {
     local changed_addon=$(changed_addons | xargs)
-    if [ $(echo $changed_addon | wc -w) -eq 1 ] && [ $(addon_unrelated_changed_files $changed_addon | wc -l) -eq 0 ]; then
+    if [ $(echo $changed_addon | wc -w) -eq 1 ] && \
+        [ $(addon_unrelated_changed_files $changed_addon | wc -l) -eq 0 ] && \
+        [ -d "./bundles/$changed_addon" ]
+    then
         build_addon $changed_addon
     else
         build_all

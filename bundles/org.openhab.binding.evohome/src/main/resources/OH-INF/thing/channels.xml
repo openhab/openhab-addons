@@ -20,19 +20,27 @@
 		</state>
 	</channel-type>
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current zone temperature</description>
 		<category>temperature</category>
-		<state readOnly="true" pattern="%.1f °C">
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="setpoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Set Point</label>
 		<description>Gets or sets the set point of this zone (0 cancels the override).</description>
 		<category>heating</category>
-		<state min="0.0" max="35.0" step="0.5" pattern="%.1f °C"/>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="setpointstatus">
 		<item-type>String</item-type>

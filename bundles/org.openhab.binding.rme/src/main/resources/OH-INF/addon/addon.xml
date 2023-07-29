@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>openHAB RME Binding</name>
 	<description>This is the binding for RME Rain Manager.</description>
+	<connection>local</connection>
 
 </addon:addon>

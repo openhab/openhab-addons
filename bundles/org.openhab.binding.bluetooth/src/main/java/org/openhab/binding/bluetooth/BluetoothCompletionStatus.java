@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * An enumeration of transaction completion status values
  *
  * @author Chris Jackson - Initial contribution
  *
  */
+@NonNullByDefault
 public enum BluetoothCompletionStatus {
     SUCCESS,
     ERROR

@@ -14,6 +14,8 @@ package org.openhab.binding.gpstracker.internal.config;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
 
@@ -22,6 +24,7 @@ import org.openhab.core.library.types.PointType;
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
 public class ConfigHelper {
     // configuration constants
     public static final String CONFIG_TRACKER_ID = "trackerId";
@@ -53,7 +56,7 @@ public class ConfigHelper {
         return (String) config.get(CONFIG_TRACKER_ID);
     }
 
-    public static PointType getRegionCenterLocation(Configuration config) {
+    public static @Nullable PointType getRegionCenterLocation(Configuration config) {
         String location = (String) config.get(CONFIG_REGION_CENTER_LOCATION);
         return location != null ? new PointType(location) : null;
     }

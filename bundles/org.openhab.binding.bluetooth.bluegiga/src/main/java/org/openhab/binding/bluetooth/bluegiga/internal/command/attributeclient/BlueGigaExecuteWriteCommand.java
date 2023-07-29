@@ -29,8 +29,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  */
 @NonNullByDefault
 public class BlueGigaExecuteWriteCommand extends BlueGigaDeviceCommand {
-    public static int COMMAND_CLASS = 0x04;
-    public static int COMMAND_METHOD = 0x0A;
+    public static final int COMMAND_CLASS = 0x04;
+    public static final int COMMAND_METHOD = 0x0A;
 
     /**
      * 1: commits queued writes, 0: cancels queued writes

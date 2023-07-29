@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>SqueezeBox Binding</name>
 	<description>This is the binding for the Logitech Squeeze Server and Players.</description>
+	<connection>local</connection>
 
 	<config-description>
 		<parameter name="callbackUrl" type="text">
