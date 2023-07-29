@@ -263,7 +263,6 @@ public class SceneDiscovery {
                                             groupIdInter = null;
                                         }
                                         if (groupID != null) {
-
                                             if (ApplicationGroup.Color.YELLOW
                                                     .equals(ApplicationGroup.getGroup(groupID).getColor())) {
                                                 discoverScene(SceneEnum.AUTO_OFF.getSceneNumber(), groupID);

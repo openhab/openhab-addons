@@ -26,15 +26,15 @@ public interface GardenaSmartEventListener {
     /**
      * Called when a device has been updated.
      */
-    public void onDeviceUpdated(Device device);
+    void onDeviceUpdated(Device device);
 
     /**
      * Called when a new device has been detected.
      */
-    public void onNewDevice(Device device);
+    void onNewDevice(Device device);
 
     /**
      * Called when an unrecoverable error occurs.
      */
-    public void onError();
+    void onError();
 }

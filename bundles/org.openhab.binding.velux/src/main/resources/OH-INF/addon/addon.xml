@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>@text/addon.velux.name</name>
 	<description>@text/addon.velux.description</description>
-
+	<connection>local</connection>
 
 </addon:addon>

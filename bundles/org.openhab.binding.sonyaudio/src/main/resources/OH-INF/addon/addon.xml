@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>SonyAudio Binding</name>
 	<description>This is the binding for SonyAudio products (Receivers and wireless speakers).</description>
+	<connection>local</connection>
 
 </addon:addon>

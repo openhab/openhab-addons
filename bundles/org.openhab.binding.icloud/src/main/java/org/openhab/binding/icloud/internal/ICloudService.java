@@ -246,8 +246,14 @@ public class ICloudService {
             this.session.post(AUTH_ENDPOINT + "/verify/trusteddevice/securitycode", JsonUtils.toJson(requestBody),
                     headers);
         } catch (ICloudApiResponseException ex) {
-            logger.debug("Code verification failed.", ex);
-            return false;
+            logger.trace("Exception on code verification with HTTP status {}. Verification might still be successful.",
+                    ex.getStatusCode(), ex);
+            // iCloud API returns different 4xx error codes even if validation is successful
+            // currently 400 seems to show that verification "really" failed.
+            if (ex.getStatusCode() == 400 || ex.getStatusCode() >= 500) {
+                this.logger.debug("Verification failed with HTTP status {}.", ex.getStatusCode());
+                return false;
+            }
         }
 
         logger.debug("Code verification successful.");

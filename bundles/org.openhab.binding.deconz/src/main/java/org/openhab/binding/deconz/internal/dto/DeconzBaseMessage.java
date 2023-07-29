@@ -25,10 +25,14 @@ import org.openhab.binding.deconz.internal.types.ResourceType;
 @NonNullByDefault
 public class DeconzBaseMessage {
     // For websocket change events
-    public String e = ""; // "changed"
+    public String e = ""; // "changed", "scene-called"
     public ResourceType r = ResourceType.UNKNOWN; // "sensors"
     public String t = ""; // "event"
     public String id = ""; // "3"
+
+    // for scene-recall
+    public String gid = "";
+    public String scid = "";
 
     // for rest API
     public String manufacturername = "";

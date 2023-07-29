@@ -45,6 +45,7 @@ public class Car {
     private boolean disableHvac = false;
     private boolean disableLockStatus = false;
 
+    private boolean pausemode = false;
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
     private ChargingMode chargingMode = ChargingMode.UNKNOWN;
     private PlugStatus plugStatus = PlugStatus.UNKNOWN;
@@ -298,6 +299,10 @@ public class Car {
         return chargingMode;
     }
 
+    public boolean getPauseMode() {
+        return pausemode;
+    }
+
     public @Nullable Integer getChargingRemainingTime() {
         return chargingRemainingTime;
     }
@@ -344,6 +349,10 @@ public class Car {
             default:
                 break;
         }
+    }
+
+    public void setPauseMode(boolean pausemode) {
+        this.pausemode = pausemode;
     }
 
     private @Nullable JsonObject getAttributes(JsonObject responseJson)

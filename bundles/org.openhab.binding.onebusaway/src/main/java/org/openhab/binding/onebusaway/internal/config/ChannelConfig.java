@@ -14,8 +14,6 @@ package org.openhab.binding.onebusaway.internal.config;
 
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.CHANNEL_CONFIG_OFFSET;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 /**
  * The {@link ChannelConfig} defines the model for a channel configuration.
  *
@@ -40,6 +38,6 @@ public class ChannelConfig {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(CHANNEL_CONFIG_OFFSET, this.getOffset()).toString();
+        return getClass().getSimpleName() + "{ " + CHANNEL_CONFIG_OFFSET + "=" + this.getOffset() + "}";
     }
 }

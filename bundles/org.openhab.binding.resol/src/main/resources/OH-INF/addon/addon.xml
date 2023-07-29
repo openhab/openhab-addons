@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Resol Binding</name>
 	<description>This is the binding for Resol solar and system controllers (including branded versions).</description>
+	<connection>local</connection>
 
 </addon:addon>

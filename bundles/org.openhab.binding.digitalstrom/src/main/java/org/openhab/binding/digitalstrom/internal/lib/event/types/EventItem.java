@@ -19,7 +19,7 @@ import org.openhab.binding.digitalstrom.internal.lib.event.constants.EventRespon
 /**
  * The {@link EventItem} represents an event item of a digitalSTROM-Event.
  *
- * @author Alexander Betker
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - add getSource()
  * @author Matthias Siegele - add getSource()
  */

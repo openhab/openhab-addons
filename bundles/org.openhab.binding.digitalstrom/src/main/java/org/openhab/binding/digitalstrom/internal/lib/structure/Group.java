@@ -15,7 +15,7 @@ package org.openhab.binding.digitalstrom.internal.lib.structure;
 /**
  * The {@link Group} represents a digitalSTROM-Group.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - add java-doc
  * @author Matthias Siegele - add java-doc
  */

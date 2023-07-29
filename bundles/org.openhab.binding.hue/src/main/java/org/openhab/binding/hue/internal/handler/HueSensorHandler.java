@@ -118,7 +118,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                 properties.put(PROPERTY_MODEL_ID, modelId);
             }
             properties.put(PROPERTY_VENDOR, fullSensor.getManufacturerName());
-            properties.put(PRODUCT_NAME, fullSensor.getProductName());
+            properties.put(PROPERTY_PRODUCT_NAME, fullSensor.getProductName());
             String uniqueID = fullSensor.getUniqueID();
             if (uniqueID != null) {
                 properties.put(UNIQUE_ID, uniqueID);

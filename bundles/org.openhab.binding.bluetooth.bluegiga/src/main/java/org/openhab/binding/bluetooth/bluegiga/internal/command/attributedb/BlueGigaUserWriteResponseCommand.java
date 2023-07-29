@@ -34,8 +34,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  */
 @NonNullByDefault
 public class BlueGigaUserWriteResponseCommand extends BlueGigaDeviceCommand {
-    public static int COMMAND_CLASS = 0x02;
-    public static int COMMAND_METHOD = 0x04;
+    public static final int COMMAND_CLASS = 0x02;
+    public static final int COMMAND_METHOD = 0x04;
 
     /**
      * 0: User Read Request is responded with data. In case of an error an application specific error

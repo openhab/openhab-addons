@@ -7,5 +7,6 @@
 	<name>Rotel Binding</name>
 	<description>The Rotel binding controls a Rotel audio device like a surround processor, a surround receiver, a stereo
 		preamplifier, an integrated amplifier, a CD player or a tuner.</description>
+	<connection>local</connection>
 
 </addon:addon>

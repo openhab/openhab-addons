@@ -105,4 +105,17 @@
 		<config-description-ref uri="thing-type:solarwatt:device"/>
 	</thing-type>
 
+	<thing-type id="smartheater">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>SmartHeater</label>
+		<description>Smart heater for the production of hot water.</description>
+
+		<representation-property>IdName</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:device"/>
+	</thing-type>
+
 </thing:thing-descriptions>

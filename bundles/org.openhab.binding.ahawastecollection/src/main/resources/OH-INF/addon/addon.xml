@@ -10,5 +10,6 @@
 		the waste collection company of the region Hannover. The values are retrieved from the online
 		aha waste collection
 		schedule available at: https://www.aha-region.de/abholtermine/abfuhrkalender.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

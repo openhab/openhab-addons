@@ -164,7 +164,7 @@ public class ShellyManagerPage {
         }
 
         String html = "";
-        String file = TEMPLATE_PATH + template;
+        String file = BUNDLE_RESOURCE_SNIPLETS + "/" + template;
         logger.debug("Read HTML from {}", file);
         ClassLoader cl = ShellyManagerInterface.class.getClassLoader();
         if (cl != null) {

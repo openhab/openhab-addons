@@ -50,7 +50,7 @@ public class SceneGroupChannelBuilderTest {
     private SceneGroupChannelBuilder builder = SceneGroupChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         builder = SceneGroupChannelBuilder.create(TRANSLATION_PROVIDER, CHANNEL_GROUP_UID);
     }
 

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Leap Motion Binding</name>
 	<description>This is the binding for Leap Motion controllers.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -6,9 +6,10 @@
 	<type>misc</type>
 	<name>Metrics</name>
 	<description>An additional REST endpoint to retrieve openHAB core metrics.</description>
+	<connection>local</connection>
 
 	<service-id>org.openhab.metrics</service-id>
 
-	<config-description-ref uri="io.metrics"/>
+	<config-description-ref uri="io:metrics"/>
 
 </addon:addon>

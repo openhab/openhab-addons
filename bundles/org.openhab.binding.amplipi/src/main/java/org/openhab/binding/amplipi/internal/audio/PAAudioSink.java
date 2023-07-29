@@ -13,6 +13,7 @@
 package org.openhab.binding.amplipi.internal.audio;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
@@ -20,9 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amplipi.internal.AmpliPiHandler;
 import org.openhab.core.audio.AudioFormat;
-import org.openhab.core.audio.AudioSink;
+import org.openhab.core.audio.AudioSinkSync;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.audio.StreamServed;
 import org.openhab.core.audio.URLAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.openhab.core.audio.UnsupportedAudioStreamException;
@@ -39,59 +40,66 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class PAAudioSink implements AudioSink, ThingHandlerService {
+public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(PAAudioSink.class);
 
     private static final Set<AudioFormat> SUPPORTED_AUDIO_FORMATS = Set.of(AudioFormat.MP3, AudioFormat.WAV);
-    private static final Set<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = Set
-            .of(FixedLengthAudioStream.class, URLAudioStream.class);
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = Set.of(AudioStream.class);
 
     private @Nullable AmpliPiHandler handler;
 
     private @Nullable PercentType volume;
 
     @Override
-    public void process(@Nullable AudioStream audioStream)
+    protected void processSynchronously(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (audioStream == null) {
             // in case the audioStream is null, this should be interpreted as a request to end any currently playing
             // stream.
-            logger.debug("Web Audio sink does not support stopping the currently playing stream.");
+            logger.debug("AmpliPi sink does not support stopping the currently playing stream.");
             return;
         }
         AmpliPiHandler localHandler = this.handler;
-        if (localHandler != null) {
-            try (AudioStream stream = audioStream) {
-                logger.debug("Received audio stream of format {}", audioStream.getFormat());
-                String audioUrl;
-                if (audioStream instanceof URLAudioStream) {
-                    // it is an external URL, so we can directly pass this on.
-                    URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
-                    audioUrl = urlAudioStream.getURL();
-                } else if (audioStream instanceof FixedLengthAudioStream) {
-                    String callbackUrl = localHandler.getCallbackUrl();
-                    if (callbackUrl == null) {
-                        throw new UnsupportedAudioStreamException(
-                                "Cannot play audio since no callback url is available.", audioStream.getClass());
-                    } else {
-                        // we need to serve it for a while, hence only
-                        // FixedLengthAudioStreams are supported.
-                        String relativeUrl = localHandler.getAudioHTTPServer()
-                                .serve((FixedLengthAudioStream) audioStream, 10).toString();
-                        audioUrl = callbackUrl + relativeUrl;
-                    }
-                } else {
-                    throw new UnsupportedAudioStreamException(
-                            "Web audio sink can only handle FixedLengthAudioStreams and URLAudioStreams.",
-                            audioStream.getClass());
-                }
-                localHandler.playPA(audioUrl, volume);
-                // we reset the volume value again, so that a next invocation without a volume will again use the zones
-                // defaults.
-                volume = null;
+        if (localHandler == null) {
+            tryClose(audioStream);
+            return;
+        }
+        logger.debug("Received audio stream of format {}", audioStream.getFormat());
+        String callbackUrl = localHandler.getCallbackUrl();
+        String audioUrl;
+        if (audioStream instanceof URLAudioStream urlAudioStream) {
+            // it is an external URL, so we can directly pass this on.
+            audioUrl = urlAudioStream.getURL();
+            tryClose(audioStream);
+        } else if (callbackUrl != null) {
+            // we need to serve it for a while
+            StreamServed streamServed;
+            try {
+                streamServed = localHandler.getAudioHTTPServer().serve(audioStream, 10, true);
             } catch (IOException e) {
-                logger.debug("Error while closing the audio stream: {}", e.getMessage(), e);
+                tryClose(audioStream);
+                throw new UnsupportedAudioStreamException(
+                        "AmpliPi was not able to handle the audio stream (cache on disk failed).",
+                        audioStream.getClass(), e);
+            }
+            audioUrl = callbackUrl + streamServed.url();
+        } else {
+            logger.warn("We do not have any callback url, so AmpliPi cannot play the audio stream!");
+            tryClose(audioStream);
+            return;
+        }
+        localHandler.playPA(audioUrl, volume);
+        // we reset the volume value again, so that a next invocation without a volume will again use the zones
+        // defaults.
+        volume = null;
+    }
+
+    private void tryClose(@Nullable InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException ignored) {
             }
         }
     }
