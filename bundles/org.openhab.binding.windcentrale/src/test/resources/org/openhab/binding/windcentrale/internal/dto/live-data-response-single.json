@@ -1,0 +1,17 @@
+{
+   "WND-JH":{
+      "power_per_share":"52",
+      "id":"2",
+      "timestamp":"1680425425",
+      "wind_power":"5",
+      "power":"522",
+      "wind_direction":"O",
+      "year_production":"1508090",
+      "rpm":"14.9",
+      "total_runtime":"122330",
+      "year_runtime":"2089.000000",
+      "diameter":"35",
+      "pulsating":"0",
+      "power_percentage":"23"
+   }
+}

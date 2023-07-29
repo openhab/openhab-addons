@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface GattMessage {
 
-    public byte[] getPayload();
+    byte[] getPayload();
 }

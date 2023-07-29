@@ -22,10 +22,10 @@ public interface RpcResponse {
     /**
      * Returns the decoded methodName.
      */
-    public String getMethodName();
+    String getMethodName();
 
     /**
      * Returns the decoded data.
      */
-    public Object[] getResponseData();
+    Object[] getResponseData();
 }

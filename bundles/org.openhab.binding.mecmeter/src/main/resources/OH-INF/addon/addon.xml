@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>mecMeter Binding</name>
 	<description>This is the binding for the din-rail power meter from MEC.</description>
+	<connection>local</connection>
 
 </addon:addon>

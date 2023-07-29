@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
@@ -48,19 +48,20 @@ class TestState2 extends BoschSHCServiceState {
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public class BoschSHCServiceStateTest {
-    private final Gson gson = new Gson();
+class BoschSHCServiceStateTest {
 
     @Test
-    public void fromJsonNullStateForDifferentType() {
-        var state = BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"differentState\"}", JsonObject.class),
+    void fromJsonNullStateForDifferentType() {
+        var state = BoschSHCServiceState.fromJson(
+                GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"differentState\"}", JsonObject.class),
                 TestState.class);
         assertEquals(null, state);
     }
 
     @Test
-    public void fromJsonStateObjectForValidJson() {
-        var state = BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
+    void fromJsonStateObjectForValidJson() {
+        var state = BoschSHCServiceState.fromJson(
+                GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
                 TestState.class);
         assertNotEquals(null, state);
     }
@@ -69,9 +70,12 @@ public class BoschSHCServiceStateTest {
      * This checks for a bug we had where the expected type stayed the same for different state classes
      */
     @Test
-    public void fromJsonStateObjectForValidJsonAfterOtherState() {
-        BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState\"}", JsonObject.class), TestState.class);
-        var state2 = BoschSHCServiceState.fromJson(gson.fromJson("{\"@type\":\"testState2\"}", JsonObject.class),
+    void fromJsonStateObjectForValidJsonAfterOtherState() {
+        BoschSHCServiceState.fromJson(
+                GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
+                TestState.class);
+        var state2 = BoschSHCServiceState.fromJson(
+                GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState2\"}", JsonObject.class),
                 TestState2.class);
         assertNotEquals(null, state2);
     }

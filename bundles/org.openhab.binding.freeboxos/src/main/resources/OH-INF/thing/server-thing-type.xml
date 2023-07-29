@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="revolution">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Revolution</label>
+		<description>Provides various informations regarding the status of the Freebox Revolution Server</description>
+
+		<channel-groups>
+			<channel-group typeId="display" id="display"/>
+			<channel-group typeId="sensors" id="sensors"/>
+			<channel-group typeId="fans" id="fans"/>
+			<channel-group typeId="file-sharing" id="file-sharing"/>
+			<channel-group typeId="sysinfo" id="sysinfo"/>
+			<channel-group typeId="actions" id="actions"/>
+			<channel-group typeId="connection-status" id="connection-status"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:freeboxos:server"/>
+	</thing-type>
+
+	<thing-type id="delta">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Delta</label>
+		<description>Provides various informations regarding the status of the Freebox Delta Server</description>
+
+		<channel-groups>
+			<channel-group typeId="sensors" id="sensors"/>
+			<channel-group typeId="fans" id="fans"/>
+			<channel-group typeId="file-sharing" id="file-sharing"/>
+			<channel-group typeId="sysinfo" id="sysinfo"/>
+			<channel-group typeId="actions" id="actions"/>
+			<channel-group typeId="connection-status" id="connection-status"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:freeboxos:server"/>
+	</thing-type>
+
+</thing:thing-descriptions>

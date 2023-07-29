@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>RFXCOM Binding</name>
 	<description>This is the binding for RFXCOM transceivers.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -27,8 +27,12 @@ public class Endpoints {
     private static final String FAMILY_STATUS = "/rest/bed/familyStatus";
     private static final String PAUSE_MODE = "/rest/bed/%s/pauseMode";
     private static final String SLEEP_DATA = "/rest/sleepData";
-    private static final String SET_SLEEP_NUMBER = "/rest/bed/%s/sleepNumber";
-    private static final String SET_PAUSE_MODE = "/rest/bed/%s/pauseMode";
+    private static final String SLEEP_NUMBER = "/rest/bed/%s/sleepNumber";
+    private static final String FOUNDATION_STATUS = "/rest/bed/%s/foundation/status";
+    private static final String FOUNDATION_FEATURES = "/rest/bed/%s/foundation/system";
+    private static final String FOUNDATION_POSITION = "/rest/bed/%s/foundation/adjustment/micro";
+    private static final String FOUNDATION_PRESET = "/rest/bed/%s/foundation/preset";
+    private static final String FOUNDATION_OUTLET = "/rest/bed/%s/foundation/outlet";
 
     public static String login() {
         return LOGIN;
@@ -54,12 +58,28 @@ public class Endpoints {
         return SLEEP_DATA;
     }
 
-    public static String setSleepNumber(String bedId) {
-        return String.format(SET_SLEEP_NUMBER, bedId);
+    public static String sleepNumber(String bedId) {
+        return String.format(SLEEP_NUMBER, bedId);
     }
 
-    public static String setPauseMode(String bedId) {
-        return String.format(SET_PAUSE_MODE, bedId);
+    public static String foundationStatus(String bedId) {
+        return String.format(FOUNDATION_STATUS, bedId);
+    }
+
+    public static String foundationFeatures(String bedId) {
+        return String.format(FOUNDATION_FEATURES, bedId);
+    }
+
+    public static String foundationPosition(String bedId) {
+        return String.format(FOUNDATION_POSITION, bedId);
+    }
+
+    public static String foundationPreset(String bedId) {
+        return String.format(FOUNDATION_PRESET, bedId);
+    }
+
+    public static String foundationOutlet(String bedId) {
+        return String.format(FOUNDATION_OUTLET, bedId);
     }
 
     private Endpoints() {

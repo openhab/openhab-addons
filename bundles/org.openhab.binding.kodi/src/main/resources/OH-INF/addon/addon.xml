@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>Kodi Binding</name>
 	<description>This is the binding for Kodi.</description>
+	<connection>local</connection>
 
 	<config-description>
 		<parameter name="callbackUrl" type="text" required="false">

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>YamahaReceiver Binding</name>
 	<description>For all network enabled Yamaha receivers.</description>
+	<connection>local</connection>
 
 </addon:addon>

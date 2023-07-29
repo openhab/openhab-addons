@@ -7,4 +7,5 @@
 	<name>MQTT Binding</name>
 	<description>Allows management of MQTT broker connections and linking
 		of MQTT topics to Things and Channels</description>
+	<connection>local</connection>
 </addon:addon>

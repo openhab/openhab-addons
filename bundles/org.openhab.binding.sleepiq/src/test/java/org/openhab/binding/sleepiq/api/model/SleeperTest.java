@@ -35,17 +35,6 @@ public class SleeperTest extends AbstractTest {
     private static Gson gson = GsonGenerator.create(true);
 
     @Test
-    public void testSerializeAllFields() throws Exception {
-        Sleeper sleeper = new Sleeper().withAccountId("-5555555555555555555").withAccountOwner(true).withActive(true)
-                .withAvatar("").withBedId("-9999999999999999999").withBirthMonth(6).withBirthYear("1970")
-                .withChild(false).withDuration("").withEmail("alice@domain.com").withEmailValidated(true)
-                .withFirstName("Alice").withHeight(64).withLastLogin("2017-02-17 20:19:36 CST").withLicenseVersion(6L)
-                .withMale(false).withSide(Side.RIGHT).withSleeperId("-1111111111111111111").withSleepGoal(450)
-                .withTimezone("US/Pacific").withUsername("alice@domain.com").withWeight(110).withZipCode("90210");
-        assertEquals(readJson("sleeper.json"), gson.toJson(sleeper));
-    }
-
-    @Test
     public void testSerializeLastLoginNull() throws Exception {
         Sleeper sleeper = new Sleeper().withLastLogin("null");
         assertEquals(readJson("sleeper-lastlogin-null.json"), gson.toJson(sleeper));

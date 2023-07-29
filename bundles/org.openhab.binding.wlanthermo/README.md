@@ -5,29 +5,28 @@ This binding add support for the WlanThermo BBQ Thermometer.
 |--------------------------------------|-------------------------------------|
 | ![WlanThermo Nano V1+](doc/nano.jpg) | ![WlanThermo Mini V2](doc/mini.jpg) |
 
-
 ## Supported Things
 
 This binding supports the following version of WlanThermo:
 
- - Nano V1 (untested, but should be working)
- - Nano V1+
- - Mini V1 (untested, but should be working)
- - Mini V2
+- Nano V1 (untested, but should be working)
+- Nano V1+
+- Mini V1 (untested, but should be working)
+- Mini V2
 
  Pitmaster support is currently only enabled for Mini V1/V2.  
  If you have a WlanThermo Nano with Pitmaster, please contact the author of this binding to include the support in future releases.
 
 ## Discovery
 
-There is no auto-discovery for WlanThermo Things. 
+There is no auto-discovery for WlanThermo Things.
 Things must be created manually.
 
 ## Thing Configuration
 
 WlanThermo things require you to specify the IP-address of your WlanThermo device (the one you enter into your browser to access the WebUI)
-The configuration of username/password is optional. 
-If ommitted, the binding data will be read-only for all channels. 
+The configuration of username/password is optional.
+If ommitted, the binding data will be read-only for all channels.
 WlanThermo Mini things do not require a username/password and will always be read-only!
 
 ## Channels
@@ -36,7 +35,7 @@ Depending on the WlanThermo you're using, the following channels are available.
 
 ### WlanThermo Nano
 
-If username/password is given in the thing, most channels are writeable. 
+If username/password is given in the thing, most channels are writeable.
 
 #### The device itself provides the following channels:  
 
@@ -46,7 +45,6 @@ If username/password is given in the thing, most channels are writeable.
 | charging            | Switch               | On, if device is charging, off otherwise |
 | rssi_signalstrength | Number               | Signal Strength in range [0 ... 4]       |
 | rssi                | Number               | Signal Strength in dBm                   |
-
 
 #### The following channels apply for all 8 probes of the WlanThermo Nano:  
 
@@ -64,8 +62,6 @@ If username/password is given in the thing, most channels are writeable.
 | color              | Color              | The color of this probe. Read only.                                  |
 | color_name         | String             | The color name of the probe.                                         |
 
-
-
 #### The following channels are available for the Pitmaster
 
 | channel    | type                 | description                                                                                 |
@@ -76,18 +72,16 @@ If username/password is given in the thing, most channels are writeable.
 | channel_id | Number               | The channel id of the probe assigned to the pitmaster channel                               |
 | pid_id     | Number               | The number of the PID profile to be used. Check the WlanThermo WebUI for available IDs!     |
 
-
-
 ### WlanThermo Mini
 
 All channels are read only!
+
 #### The device itself provides the following channels:
 
 | channel  | type                 | description                   |
 |----------|----------------------|-------------------------------|
 | cpu_load | Number:Dimensionless | CPU Load in %                 |
 | cpu_temp | Number:Temperature   | CPU Temperature               |
-
 
 #### The following channels apply for all 10 probes of the WlanThermo Mini:
 
@@ -103,7 +97,6 @@ All channels are read only!
 | color              | Color              | The color of this probe                                              |
 | color_name         | String             | The color name of this probe                                         |
 
-
 #### The following channels apply for both Pitmaster channels of the WlanThermo Mini:
 
 | channel    | type                 | description                                                             |
@@ -115,8 +108,6 @@ All channels are read only!
 | lid_open   | Switch               | Indicates if Lid-open detection is active                               |
 | channel_id | Number               | The channel id of the probe assigned to this pitmaster channel          |
 
-
-
 ## Triggers
 
 The following trigger apply for all channels of Nano and Mini:
@@ -126,16 +117,14 @@ The following trigger apply for all channels of Nano and Mini:
 | alarm_openhab | MIN    | Triggers repeatedly if current temp is below minimum temperature threshold |
 | alarm_openhab | MAX    | Triggers repeatedly if current temp is above maximum temperature threshold |
 
-
-
 ## Full Example
 
 ### Items
 
-Example .items file for WlanThermo Nano and Mini. 
+Example .items file for WlanThermo Nano and Mini.
 Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual thing id!
 
-```
+```java
 Group                   gWlanThermoNano         "WlanThermo Nano"
 Number:Dimensionless    nano_soc                "State of Charge"       (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#soc"}
 Number                  nano_rssi               "Signal Strength"       (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#rssi"}
@@ -390,7 +379,7 @@ Number                  mini_pit_channel_2      "Input Channel ID"      (gPitmas
 
 (Example for WlanThermo Nano)
 
-```
+```perl
 sitemap wlanthermo label="WlanThermo" {
     Frame label="WlanThermo" {
         Default item=nano_rssi icon="qualityofservice"
@@ -536,4 +525,3 @@ sitemap wlanthermo label="WlanThermo" {
 }
 
 ```
-

@@ -57,7 +57,7 @@ This is done by setting `useMeteorologicalSeason` to true in the advanced settin
       - `totalElevation, partialElevation, ringElevation` (Number:Angle)
   - **group** `phase`
     - **channel**
-      - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NIGHT`
+      - `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NOON, NIGHT`
 - **thing** `moon`
   - **group** `rise, set`
     - **channel**
@@ -263,6 +263,16 @@ Example :
  val azimuth = sunActions.getAzimuth(sunEventTime)
  val elevation = sunActions.getElevation(sunEventTime)
  logInfo("AstroActions", "{} will be positioned at elevation {} - azimuth {}",sunEvent, elevation.toString,azimuth.toString)
+```
+
+### getTotalRadiation(timeStamp)
+
+Retrieves the total radiation (QuantityType<Intensity>) of the sun at the requested instant.
+Thing method only applies to Sun thing type.
+
+```java
+ val totalRadiation = sunActions.getTotalRadiation(ZonedDateTime.now)
+ logInfo("AstroActions", "Currently, the total sun radiation is {}", totalRadiation.toString)
 ```
 
 ## Tips

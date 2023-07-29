@@ -16,14 +16,14 @@ A Velbus configuration module (e.g. VMBRSUSB) or a network server (e.g. [VelServ
 
 The supported Velbus devices are:
 
-```
+```text
 vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbelpir, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro, vmbvp1
 ```
 
-The type of a specific device can be found in the configuration section for things in the UI. 
+The type of a specific device can be found in the configuration section for things in the UI.
 It is part of the unique thing id which could look like:
 
-```
+```text
 velbus:vmb4ryld:0424e5d2:01:CH1
 ```
 
@@ -31,10 +31,10 @@ The thing type is the second string behind the first colon and in this example i
 
 ## Discovery
 
-The Velbus bridge cannot be discovered automatically. 
+The Velbus bridge cannot be discovered automatically.
 It has to be added manually by defining the serial port of the Velbus Configuration module for the Velbus Serial Bridge or by defining the IP Address and port for the Velbus Network Bridge.
 
-Once the bridge has been added as a thing, a manual scan can be launched to discover all other supported Velbus devices on the bus. 
+Once the bridge has been added as a thing, a manual scan can be launched to discover all other supported Velbus devices on the bus.
 These devices will be available in the inbox.
 The discovery scan will also retrieve the channel names of the Velbus devices.
 
@@ -48,55 +48,54 @@ On Windows it will be `COM1`, `COM2`, etc.
 
 In the things file, this might look e.g. like
 
-```
+```java
 Bridge velbus:bridge:1 [ port="COM1" ]
 ```
 
 For the Velbus Network Bridge it is necessary to specify the IP Address or hostname and the port of the Velbus network server.
-This will usually be either the loopback address `127.0.0.1`, and port number. 
+This will usually be either the loopback address `127.0.0.1`, and port number.
 Or the specific IP of the machine `10.0.0.110` , and port number.
 
 In the things file, this might look like
 
-```
+```java
 Bridge velbus:networkbridge:1 "Velbus Network Bridge - Loopback" @ "Control" [ address="127.0.0.1", port=6000 ]
 ```
 
-Optionally, both the serial bridge and the network bridge can also update the realtime clock, date and daylight savings status of the Velbus modules. 
+Optionally, both the serial bridge and the network bridge can also update the realtime clock, date and daylight savings status of the Velbus modules.
 This is achieved by setting the Time Update Interval (in minutes) on the bridge, e.g.:
 
-```
+```java
 Bridge velbus:bridge:1 [ port="COM1", timeUpdateInterval="360" ]
 ```
 
-The default time update interval is every 360 minutes. 
+The default time update interval is every 360 minutes.
 Setting the interval to 0 minutes or leaving it empty disables the update of the realtime clock, date and daylight savings status of the Velbus modules.
 
-In case of a connection error, the bridges can also try to reconnect automatically. 
+In case of a connection error, the bridges can also try to reconnect automatically.
 You can specify at which interval the bridge should try to reconnect by setting the Reconnection Interval (in seconds), e.g.:
 
-```
+```java
 Bridge velbus:bridge:1 [ port="COM1", reconnectionInterval="15" ]
 ```
 
 The default reconnection interval is 15 seconds.
 
-
 For the other Velbus devices, the thing configuration has the following syntax:
 
-```
+```java
 Thing velbus:<thing type>:<bridgeId>:<thingId> "Label" @ "Location" [CH1="Kitchen Light", CH2="Living Light"]
 ```
 
 or nested in the bridge configuration:
 
-```
+```java
 <thing type> <thingId> "Label" @ "Location" [CH1="Kitchen Light", CH2="Living Light"]
 ```
 
 The following thing types are valid for configuration:
 
-```
+```text
 vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbelpir, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro, vmbvp1
 ```
 
@@ -110,16 +109,16 @@ vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, 
 
 For thing types with builtin sensors (e.g. temperature), the interval at which the sensors should be checked can be set by specifying the Refresh Interval, e.g.:
 
-```
+```java
 Thing velbus:vmbelo:<bridgeId>:<thingId> [refresh="300"]
 ```
 
-The default refresh interval for the sensors is 300 seconds. 
+The default refresh interval for the sensors is 300 seconds.
 Setting the refresh interval to 0 or leaving it empty will prevent the thing from periodically refreshing the sensor values.
 
 The following thing types support a sensor refresh interval:
 
-```
+```text
 vmb1ts, vmb4an, vmbel1, vmbel2, vmbel4, vmbelo, vmbelpir, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
 ```
 
@@ -127,19 +126,19 @@ The `vmb7in` thing type also supports a refresh interval. For this thing type, t
 
 For dimmers the speed (in seconds) at which the modules should dim from 0% to 100% can be set by specifying the Dimspeed, e.g.:
 
-```
+```java
 Thing velbus:vmb4dc:<bridgeId>:<thingId> [dimspeed="5"]
 ```
 
 The following thing types support setting the dimspeed:
 
-```
+```text
 vmb1dm, vmb1led, vmb4dc, vmbdme, vmbdmi, vmbdmir
 ```
 
 ## Channels
 
-For thing types `vmb1bl` and `vmb1bls` the supported channel is `CH1`. 
+For thing types `vmb1bl` and `vmb1bls` the supported channel is `CH1`.
 UpDown, StopMove and Percent command types are supported.
 
 For thing types `vmb1dm`, `vmb1led`, `vmbdme`, `vmbdmi` and `vmbdmir` the supported channel is `CH1`.
@@ -179,11 +178,11 @@ Pressed and Long_Pressed command types are supported on channels `button#CH1` ..
 Thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` also have and 2 channels to steer the button LED feedback (`feedback:CH1` and `feedback:CH2`).
 Additionally, the modules `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
 
-For thing type`vmb4an` 8 trigger channels are avaiable `input:CH1` ... `input:CH8`. 
+For thing type`vmb4an` 8 trigger channels are avaiable `input:CH1` ... `input:CH8`.
 These channels will be triggered by the module's alarms.
-Four pairs of channels are available to retrieve the module's analog inputs. 
+Four pairs of channels are available to retrieve the module's analog inputs.
 Each pair has a channel to retrieve the raw analog value (`analogInput:CH9Raw` ... `analogInput:CH12Raw`) and a channel to retrieve the textual analog value (`analogInput:CH9` ... `analogInput:CH12`).
-Four channels are available to set the module's analog outputs `analogOutput:CH13` ... `analogOutput:CH16`. 
+Four channels are available to set the module's analog outputs `analogOutput:CH13` ... `analogOutput:CH16`.
 
 For thing type `vmb4dc` 4 channels are available `CH1` ... `CH4`.
 OnOff and Percent command types are supported.
@@ -225,7 +224,7 @@ Go to the Items list, select the Item, add a State Description Metadata, and set
 
 .things:
 
-```
+```java
 Bridge velbus:bridge:1 [ port="COM1"] {
     vmb2ble     01
     vmb2pbn     02
@@ -246,7 +245,7 @@ Bridge velbus:bridge:1 [ port="COM1"] {
 
 .items:
 
-```
+```java
 Switch LivingRoom           {channel="velbus:vmb4ryld:1:06:CH1"}                # Switch for onOff type action
 Switch KitchenButton        {velbus:vmb2pbn:1:05:button#CH1}                    # Switch for Pressed and Long_Pressed type actions
 Dimmer TVRoom               {channel="velbus:vmb4dc:1:07:CH2"}                  # Changing brightness dimmer type action
@@ -259,7 +258,7 @@ Number Temperature_Outside   "Temperature [%.1f °C]"     <temperature> channel=
 
 .sitemap:
 
-```
+```perl
 Switch item=LivingRoom
 Slider item=TVRoom
 Switch item=TVRoom          # allows switching dimmer item off or on
@@ -274,7 +273,7 @@ Switch item=KitchenButton mappings=[LONG_PRESSED="Push"] # only the Long_Pressed
 
 Example trigger rule:
 
-```
+```java
 rule "example trigger rule"
 when
     Channel 'velbus:vmb7in:1:05:CH5' triggered PRESSED

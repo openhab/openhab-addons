@@ -37,6 +37,8 @@ public class DeviceFactory {
                 return new CeilingDevice(id);
             case ceiling1:
             case ceiling3:
+            case ceil26:
+            case ceiling11:
                 return new CeilingDeviceWithNightDevice(id);
             case ceiling4:
                 return new CeilingDeviceWithAmbientDevice(id);

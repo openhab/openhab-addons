@@ -14,10 +14,13 @@ package org.openhab.binding.enocean.internal.messages;
 
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EventMessage extends BasePacket {
 
     public enum EventMessageType {
