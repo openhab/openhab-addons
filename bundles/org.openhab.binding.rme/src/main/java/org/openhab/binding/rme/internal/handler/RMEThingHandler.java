@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openhab.binding.rme.internal.RMEBindingConstants.DataField;
+import org.openhab.binding.rme.internal.util.StringUtils;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -77,7 +78,7 @@ public class RMEThingHandler extends SerialThingHandler {
 
     @Override
     public void onDataReceived(String receivedLine) {
-        String line = receivedLine.replaceAll("\r", "").replaceAll("\n", "");
+        String line = StringUtils.chomp(receivedLine);
 
         // little hack to overcome Locale limits of the RME Rain Manager
         // note to the attentive reader : should we add support for system
