@@ -5,9 +5,10 @@
 
 	<thing-type uid="mystrom:mystromplug">
 		<instruction-set targetVersion="1">
-			<update-channel id="energy-consumed-since-last-call">
+			<add-channel id="energy-consumed-since-last-call">
 				<type>mystrom:energy-consumed-since-last-call-channel</type>
-			</update-channel>
+				<label>Energy Consumption</label>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
