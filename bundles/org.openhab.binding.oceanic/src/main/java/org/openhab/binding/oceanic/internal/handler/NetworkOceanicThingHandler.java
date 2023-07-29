@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.oceanic.internal.NetworkOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
+import org.openhab.binding.oceanic.internal.util.StringUtils;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -183,7 +184,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                                     if (index > 0) {
                                         line = new String(Arrays.copyOf(dataBuffer, index));
                                         logger.debug("Received response '{}'", line);
-                                        line = line.replaceAll("\r", "").replaceAll("\n", "");
+                                        line = StringUtils.chomp(line);
                                         line = line.replace(",", ".");
                                         line = line.trim();
                                         index = 0;

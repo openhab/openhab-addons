@@ -21,6 +21,7 @@ import java.util.Enumeration;
 
 import org.openhab.binding.oceanic.internal.SerialOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
+import org.openhab.binding.oceanic.internal.util.StringUtils;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -291,8 +292,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler {
                                                 new String(Arrays.copyOf(dataBuffer, index)));
                                     }
 
-                                    line = new String(Arrays.copyOf(dataBuffer, index)).replaceAll("\r", "")
-                                            .replaceAll("\n", "");
+                                    line = StringUtils.chomp(new String(Arrays.copyOf(dataBuffer, index)));
                                     line = line.replace(",", ".");
                                     line = line.trim();
                                     index = 0;
