@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * The {@link SceneEnum} lists all available scenes of digitalSTROM.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  * @version digitalSTROM-API 1.14.5
  *
  * @author Michael Ochel - add new scenes and missing java-doc

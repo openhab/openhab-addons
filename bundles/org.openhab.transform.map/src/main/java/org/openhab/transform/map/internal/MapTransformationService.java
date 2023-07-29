@@ -81,7 +81,7 @@ public class MapTransformationService
             if (!cachedTransformations.containsKey(transformation.getUID())) {
                 importConfiguration(transformation);
             }
-            Properties properties = cachedTransformations.get(function);
+            Properties properties = cachedTransformations.get(transformation.getUID());
             if (properties != null) {
                 String target = properties.getProperty(source);
 

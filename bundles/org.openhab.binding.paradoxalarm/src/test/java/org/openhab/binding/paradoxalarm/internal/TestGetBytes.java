@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.paradoxalarm.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.CommandPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.EpromRequestPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.IPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommandPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommandPayload;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
@@ -33,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public class TestGetBytes {
 
     private static final int PARTITION_NUMBER = 1;
@@ -61,18 +65,18 @@ public class TestGetBytes {
         assertTrue(Arrays.equals(packetBytes, EXPECTED1));
     }
 
-    private static final byte[] EXPECTED_COMMAND_PAYLOAD = { 0x40, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00 };
+    private static final byte[] EXPECTED_PARTITION_COMMAND_PAYLOAD = { 0x40, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
     @Test
-    public void testCommandPayload() {
-        CommandPayload payload = new CommandPayload(PARTITION_NUMBER, PartitionCommand.ARM);
+    public void testPartitionCommandPayload() {
+        PartitionCommandPayload payload = new PartitionCommandPayload(PARTITION_NUMBER, PartitionCommand.ARM);
         final byte[] packetBytes = payload.getBytes();
 
-        ParadoxUtil.printByteArray("Expected =", EXPECTED_COMMAND_PAYLOAD);
+        ParadoxUtil.printByteArray("Expected =", EXPECTED_PARTITION_COMMAND_PAYLOAD);
         ParadoxUtil.printByteArray("Result   =", packetBytes);
 
-        assertTrue(Arrays.equals(packetBytes, EXPECTED_COMMAND_PAYLOAD));
+        assertTrue(Arrays.equals(packetBytes, EXPECTED_PARTITION_COMMAND_PAYLOAD));
     }
 
     private static final byte[] EXPECTED_MEMORY_PAYLOAD = { (byte) 0xAA, 0x0A, 0x00, 0x03, 0x08, (byte) 0xF0, 0x00,
@@ -87,5 +91,40 @@ public class TestGetBytes {
         byte[] bytes = payload.getBytes();
         ParadoxUtil.printByteArray("Expected =", EXPECTED_MEMORY_PAYLOAD);
         ParadoxUtil.printByteArray("Result   =", bytes);
+    }
+
+    private static final byte[] EXPECTED_ZONE_5_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x10,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x0f };
+    private static final byte[] EXPECTED_ZONE_5_CLEAR_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x00, 0x00, 0x00,
+            0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07 };
+    private static final byte[] EXPECTED_ZONE_20_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x00,
+            0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x07 };
+    private static final byte[] EXPECTED_ZONE_23_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x00,
+            0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x3f };
+    private static final byte[] EXPECTED_ZONE_23_CLEAR_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x37 };
+
+    @Test
+    public void testZoneCommandPayload() {
+        testZoneCommandPayload(5, ZoneCommand.BYPASS, EXPECTED_ZONE_5_BYPASS_COMMAND);
+        testZoneCommandPayload(5, ZoneCommand.CLEAR_BYPASS, EXPECTED_ZONE_5_CLEAR_BYPASS_COMMAND);
+        testZoneCommandPayload(20, ZoneCommand.BYPASS, EXPECTED_ZONE_20_BYPASS_COMMAND);
+        testZoneCommandPayload(23, ZoneCommand.BYPASS, EXPECTED_ZONE_23_BYPASS_COMMAND);
+        testZoneCommandPayload(23, ZoneCommand.CLEAR_BYPASS, EXPECTED_ZONE_23_CLEAR_BYPASS_COMMAND);
+    }
+
+    private void testZoneCommandPayload(int zoneNumber, ZoneCommand command, byte[] expected) {
+        ZoneCommandPayload payload = new ZoneCommandPayload(zoneNumber, command);
+        final byte[] packetBytes = payload.getBytes();
+
+        ParadoxUtil.printByteArray("Expected " + zoneNumber + " =", expected);
+        ParadoxUtil.printByteArray("Result   " + zoneNumber + " =", packetBytes);
+
+        assertTrue(Arrays.equals(packetBytes, expected));
     }
 }

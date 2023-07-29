@@ -9,13 +9,9 @@
 			<label>Wakeword Detector</label>
 			<description>Wakeword detection options.</description>
 		</parameter-group>
-		<parameter-group name="noiseDetector">
-			<label>Noise Detector</label>
-			<description>Optional noise detection options.</description>
-		</parameter-group>
-		<parameter-group name="vadDetector">
-			<label>VAD Detector</label>
-			<description>Optional voice activity detector options.</description>
+		<parameter-group name="filters">
+			<label>Audio Filters</label>
+			<description>Optional audio filter options.</description>
 		</parameter-group>
 		<parameter name="threshold" type="decimal" min="0" max="1" groupName="wakewordDetector">
 			<label>Threshold</label>
@@ -31,6 +27,27 @@
 				cpu. If set to 0 this functionality is disabled.</description>
 			<default>0.2</default>
 		</parameter>
+		<parameter name="scoreMode" type="text" groupName="wakewordDetector">
+			<label>Score Mode</label>
+			<description>Indicates how to calculate the final score.</description>
+			<default>max</default>
+			<options>
+				<option value="average">Average</option>
+				<option value="max">Max</option>
+				<option value="median">Median</option>
+				<option value="p25">P25</option>
+				<option value="p50">P50</option>
+				<option value="p75">P75</option>
+				<option value="p80">P80</option>
+				<option value="p90">P90</option>
+				<option value="p95">P95</option>
+			</options>
+		</parameter>
+		<parameter name="minScores" type="integer" groupName="wakewordDetector">
+			<label>Min Scores</label>
+			<description>Minimum number of positive scores to consider a partial detection as a detection.</description>
+			<default>5</default>
+		</parameter>
 		<parameter name="comparatorRef" type="decimal" min="0" max="1" groupName="wakewordDetector">
 			<label>Comparator Ref</label>
 			<description>Configures the reference for the comparator used to match the samples.</description>
@@ -40,58 +57,44 @@
 		<parameter name="comparatorBandSize" type="integer" groupName="wakewordDetector">
 			<label>Comparator Band Size</label>
 			<description>Configures the band-size for the comparator used to match the samples.</description>
-			<default>6</default>
+			<default>5</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="eagerMode" type="boolean" groupName="wakewordDetector">
-			<label>Eager Mode</label>
-			<description>Enables eager mode. End detection as soon as a result is over the score, instead of waiting to
-				see if the
-				next frame has a higher score.</description>
-			<default>true</default>
+		<parameter name="gainNormalizer" type="boolean" groupName="filters">
+			<label>Gain Normalizer</label>
+			<description> Enables an audio filter that intent to approximate the volume of the stream to a reference level (RMS
+				of the samples is used as volume measure).</description>
+			<default>false</default>
 		</parameter>
-		<parameter name="noiseDetectionMode" type="text" groupName="noiseDetector">
-			<label>Noise Detection Mode</label>
-			<description>Use a noise detector to reduce computation in the absence of sound. Configures the difficulty to
-				consider
-				a
-				frame as noise (the required noise level).</description>
-			<default>disabled</default>
-			<options>
-				<option value="disabled">Disabled</option>
-				<option value="easiest">Easiest</option>
-				<option value="easy">Easy</option>
-				<option value="normal">Normal</option>
-				<option value="hard">Hard</option>
-				<option value="hardest">Hardest</option>
-			</options>
-		</parameter>
-		<parameter name="noiseSensitivity" type="decimal" min="0" max="1" groupName="noiseDetector">
-			<label>Noise Sensitivity</label>
-			<description>Noise/silence ratio in the last second to consider voice is detected.</description>
+		<parameter name="minGain" type="decimal" min="0.1" max="1" step="0.1" groupName="filters">
+			<label>Min Gain</label>
+			<description>Min gain applied by the gain normalizer filter.</description>
 			<default>0.5</default>
 		</parameter>
-		<parameter name="vadMode" type="text" groupName="vadDetector">
-			<label>VAD Mode</label>
-			<description>Use a vad detector to reduce computation in the absence of vocal sound.</description>
-			<default>disabled</default>
-			<options>
-				<option value="disabled">Disabled</option>
-				<option value="low-bitrate">Low Bitrate</option>
-				<option value="quality">Quality</option>
-				<option value="aggressive">Aggressive</option>
-				<option value="very-aggressive">Very Aggressive</option>
-			</options>
+		<parameter name="maxGain" type="decimal" min="0.1" max="1" step="0.1" groupName="filters">
+			<label>Max Gain</label>
+			<description>Max gain applied by the gain normalizer filter.</description>
+			<default>1</default>
 		</parameter>
-		<parameter name="vadSensitivity" type="decimal" min="0" max="1" groupName="vadDetector">
-			<label>VAD Sensitivity</label>
-			<description>Voice/silence ratio in the last second to consider voice is detected.</description>
-			<default>0.5</default>
+		<parameter name="gainRef" type="decimal" min="0" max="1" step="0.001" groupName="filters">
+			<label>Gain Ref</label>
+			<description>Set the RMS reference used by the gain-normalizer to calculate the gain applied. If unset an estimation
+				of the wakeword level is used.</description>
 		</parameter>
-		<parameter name="vadDelay" type="integer" groupName="vadDetector">
-			<label>VAD Delay</label>
-			<description>Seconds to disable the vad detector after voice is detected.</description>
-			<default>3</default>
+		<parameter name="bandPass" type="boolean" groupName="filters">
+			<label>Band Pass</label>
+			<description>Enables an audio filter that attenuates frequencies outside the low cutoff and high cutoff range.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="lowCutoff" type="decimal" min="0" groupName="filters">
+			<label>Low Cutoff</label>
+			<description>Low cutoff for the band-pass filter.</description>
+			<default>80</default>
+		</parameter>
+		<parameter name="highCutoff" type="decimal" min="0" groupName="filters">
+			<label>High Cutoff</label>
+			<description>High cutoff for the band-pass filter.</description>
+			<default>400</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

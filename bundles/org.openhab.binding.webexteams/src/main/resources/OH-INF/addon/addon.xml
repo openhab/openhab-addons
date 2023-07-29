@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>WebexTeams Binding</name>
 	<description>This is the binding for WebexTeams. Send messages with actions.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

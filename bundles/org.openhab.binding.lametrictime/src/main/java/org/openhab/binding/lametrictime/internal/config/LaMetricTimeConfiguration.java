@@ -12,16 +12,23 @@
  */
 package org.openhab.binding.lametrictime.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration class for LaMetric Time device.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeConfiguration {
 
     public static final String HOST = "host";
     public static final String API_KEY = "apiKey";
 
+    @Nullable
     public String host;
+
+    @Nullable
     public String apiKey;
 }

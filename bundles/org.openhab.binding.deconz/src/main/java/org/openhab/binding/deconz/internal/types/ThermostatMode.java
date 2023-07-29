@@ -21,7 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Thermostat mode as reported by the REST API for usage in {@link org.openhab.binding.deconz.internal.dto.SensorConfig}
+ * Thermostat mode as reported by the REST API for usage in
+ * {@link org.openhab.binding.deconz.internal.dto.SensorConfig}
  *
  * @author Lukas Agethen - Initial contribution
  */
@@ -36,7 +37,7 @@ public enum ThermostatMode {
             .collect(Collectors.toMap(v -> v.deconzValue, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(ThermostatMode.class);
 
-    private String deconzValue;
+    private final String deconzValue;
 
     ThermostatMode(String deconzValue) {
         this.deconzValue = deconzValue;

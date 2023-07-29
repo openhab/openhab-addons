@@ -37,7 +37,6 @@ import org.openhab.binding.digitalstrom.internal.providers.DsDeviceThingTypeProv
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ThingType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -212,7 +211,7 @@ public class DiscoveryServiceManager
                 if (discoveryServices.get(DsDeviceThingTypeProvider.SupportedThingTypes.circuit.toString()) != null) {
                     ((DeviceDiscoveryService) discoveryServices
                             .get(DsDeviceThingTypeProvider.SupportedThingTypes.circuit.toString()))
-                                    .onDeviceAdded(device);
+                            .onDeviceAdded(device);
                 }
             }
         } catch (RuntimeException ex) {
@@ -241,7 +240,7 @@ public class DiscoveryServiceManager
         if (discoveryServices.get(DigitalSTROMBindingConstants.THING_TYPE_ZONE_TEMERATURE_CONTROL.toString()) != null) {
             ((ZoneTemperatureControlDiscoveryService) discoveryServices
                     .get(DigitalSTROMBindingConstants.THING_TYPE_ZONE_TEMERATURE_CONTROL.toString()))
-                            .configChanged(tempControlStatus);
+                    .configChanged(tempControlStatus);
         }
     }
 
