@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -239,7 +238,7 @@ public class EnturNoConnection {
             dateTime = dateTimeWithoutColonInZone.substring(0, dateTimeWithoutColonInZone.lastIndexOf("+"));
             offset = dateTimeWithoutColonInZone.substring(dateTimeWithoutColonInZone.lastIndexOf("+") + 1);
             if (offset.length() > 1) {
-                offset = offset.substring(0,2);
+                offset = offset.substring(0, 2);
             }
         }
 
