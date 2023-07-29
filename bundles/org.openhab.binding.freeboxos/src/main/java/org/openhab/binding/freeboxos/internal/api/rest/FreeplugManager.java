@@ -25,6 +25,7 @@ import inet.ipaddr.mac.MACAddress;
 
 /**
  * The {@link FreeplugManager} is the Java class used to handle api requests related to freeplugs
+ * https://dev.freebox.fr/sdk/os/freeplug/
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -43,9 +44,9 @@ public class FreeplugManager extends RestManager {
     }
 
     private enum Status {
-        UP,
-        DOWN,
-        UNKNOWN
+        UP, // The ethernet port is up
+        DOWN, // The ethernet port is down
+        UNKNOWN // The ethernet port state is unknown
     }
 
     public static record Freeplug(MACAddress id, String netId, // Id of the network holding the plug

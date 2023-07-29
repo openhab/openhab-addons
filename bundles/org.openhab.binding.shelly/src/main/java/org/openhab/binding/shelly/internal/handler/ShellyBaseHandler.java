@@ -104,7 +104,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final ShellyChannelCache cache;
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
 
-    private final boolean gen2;
+    private boolean gen2 = false;
     private final boolean blu;
     protected boolean autoCoIoT = false;
 
@@ -1138,11 +1138,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @param mode Device mode (e.g. relay, roller)
      */
     protected void changeThingType(String thingType, String mode) {
-        ThingTypeUID thingTypeUID = ShellyThingCreator.getThingTypeUID(thingType, "", mode);
+        String deviceType = substringBefore(thingType, "-");
+        ThingTypeUID thingTypeUID = ShellyThingCreator.getThingTypeUID(thingType, deviceType, mode);
         if (!thingTypeUID.equals(THING_TYPE_SHELLYUNKNOWN)) {
             logger.debug("{}: Changing thing type to {}", getThing().getLabel(), thingTypeUID);
             Map<String, String> properties = editProperties();
-            properties.replace(PROPERTY_DEV_TYPE, thingType);
+            properties.replace(PROPERTY_DEV_TYPE, deviceType);
             properties.replace(PROPERTY_DEV_MODE, mode);
             updateProperties(properties);
             changeThingType(thingTypeUID, getConfig());

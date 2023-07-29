@@ -783,9 +783,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_BUTTON_LAST_EVENT);
                     controlIds.put(resource.getId(), resource.getControlId());
+                } else {
+                    State buttonState = resource.getButtonEventState(controlIds);
+                    updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 }
-                State buttonState = resource.getButtonEventState(controlIds);
-                updateState(CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 break;
 
             case DEVICE_POWER:
@@ -828,8 +829,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case RELATIVE_ROTARY:
                 if (fullUpdate) {
                     addSupportedChannel(CHANNEL_2_ROTARY_STEPS);
+                } else {
+                    updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 }
-                updateState(CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 break;
 
             case TEMPERATURE:
