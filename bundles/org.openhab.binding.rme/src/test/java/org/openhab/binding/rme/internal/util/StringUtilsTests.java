@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  * @author Leo Siepel - Initial contribution
  */
 
- @NonNullByDefault
+@NonNullByDefault
 public class StringUtilsTests {
 
     @Test
