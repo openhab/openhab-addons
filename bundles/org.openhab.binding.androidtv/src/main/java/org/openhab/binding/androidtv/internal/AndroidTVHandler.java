@@ -157,7 +157,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
         String ipAddress = googletvConfig.ipAddress;
-        boolean gtvEnabled = (googletvConfig.gtvEnabled) ? true : false;
+        boolean gtvEnabled = googletvConfig.gtvEnabled;
 
         if (ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
