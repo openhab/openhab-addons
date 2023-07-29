@@ -14,6 +14,7 @@ package org.openhab.binding.irtrans.internal.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
  * @author Leo Siepel - Initial contribution
  */
 
+@NonNullByDefault
 public class StringUtilsTests {
 
     @Test
