@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
+  <version>4.1.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -68,17 +68,19 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <ohc.version>4.0.0-SNAPSHOT</ohc.version>
+    <ohc.version>4.1.0-SNAPSHOT</ohc.version>
     <bnd.version>6.4.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.2.1</eea.version>
     <jackson.version>2.14.1</jackson.version>
-    <karaf.version>4.3.7</karaf.version>
-    <netty.version>4.1.72.Final</netty.version>
+    <karaf.version>4.4.3</karaf.version>
+    <netty.version>4.1.92.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
-    <sat.version>0.13.0</sat.version>
-    <spotless.version>2.28.0</spotless.version>
-    <spotless.eclipse.version>4.21.0</spotless.eclipse.version>
+    <sat.version>0.15.0</sat.version>
+    <spotless.version>2.37.0</spotless.version>
+    <!-- Eclipse Java formatter version 4.26+ does not check test files -->
+    <spotless.eclipse.version>4.25</spotless.eclipse.version>
+    <spotless.eclipse.wtp.version>4.21.0</spotless.eclipse.wtp.version>
 
     <bnd.importpackage/>
     <bnd.exportpackage/>
@@ -86,6 +88,32 @@
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
+
+    <oh.bndDefaults><![CDATA[Bundle-SymbolicName: ${project.artifactId}
+Automatic-Module-Name: ${def;bsn}
+Import-Package: \\
+  io.swagger.v3.oas.annotations.*;resolution:=optional,\\
+  javax.annotation.security.*;resolution:=optional,\\
+  org.eclipse.jdt.annotation.*;resolution:=optional,\\
+  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\\
+  org.openhab.*;version=!,\\
+  com.google.common.*;version="14.0",\\
+  ${bnd.importpackage},\\
+  *
+-exportcontents: \\
+  !*.internal.*,\\
+  !*.impl.*, \\
+  org.openhab.*, \\
+  ${bnd.exportpackage}
+-noimportjava: true
+-sources: false
+-contract: *
+-includeresource: ${bnd.includeresource}
+-fixupmessages: \\
+  'Unused Import-Package instructions';is:=ignore,\\
+  'Unused Export-Package instructions';is:=ignore,\\
+  ${bnd.fixupmessages}]]>
+    </oh.bndDefaults>
   </properties>
 
   <dependencyManagement>
@@ -140,30 +168,7 @@
           <artifactId>bnd-maven-plugin</artifactId>
           <version>${bnd.version}</version>
           <configuration>
-            <bnd><![CDATA[Bundle-SymbolicName: ${project.artifactId}
-Automatic-Module-Name: ${def;bsn}
-Import-Package: \\
-  io.swagger.v3.oas.annotations.*;resolution:=optional,\\
-  javax.annotation.security.*;resolution:=optional,\\
-  org.eclipse.jdt.annotation.*;resolution:=optional,\\
-  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\\
-  org.openhab.*;version=!,\\
-  com.google.common.*;version="14.0",\\
-  ${bnd.importpackage},\\
-  *
--exportcontents: \\
-  !*.internal.*,\\
-  !*.impl.*, \\
-  org.openhab.*, \\
-  ${bnd.exportpackage}
--noimportjava: true
--sources: false
--contract: *
--includeresource: ${bnd.includeresource}
--fixupmessages: \\
-  'Unused Import-Package instructions';is:=ignore,\\
-  'Unused Export-Package instructions';is:=ignore,\\
-  ${bnd.fixupmessages}]]></bnd>
+            <bnd><![CDATA[${oh.bndDefaults}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
             <skipIfEmpty>true</skipIfEmpty>
@@ -393,7 +398,7 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M7</version>
+          <version>3.0.0</version>
           <configuration>
             <argLine>
               --add-opens java.base/java.lang=ALL-UNNAMED
@@ -518,7 +523,7 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_xml_files.prefs</file>
                   </files>
-                  <version>${spotless.eclipse.version}</version>
+                  <version>${spotless.eclipse.wtp.version}</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
@@ -533,7 +538,7 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_feature_file.prefs</file>
                   </files>
-                  <version>${spotless.eclipse.version}</version>
+                  <version>${spotless.eclipse.wtp.version}</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
@@ -548,7 +553,7 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_pom_file.prefs</file>
                   </files>
-                  <version>${spotless.eclipse.version}</version>
+                  <version>${spotless.eclipse.wtp.version}</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>

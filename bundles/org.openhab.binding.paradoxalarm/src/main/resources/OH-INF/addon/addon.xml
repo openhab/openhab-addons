@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>ParadoxAlarm Binding</name>
 	<description>This is the binding for ParadoxAlarm.</description>
+	<connection>local</connection>
 
 </addon:addon>

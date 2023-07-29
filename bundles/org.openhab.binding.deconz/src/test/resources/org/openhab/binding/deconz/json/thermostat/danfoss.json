@@ -1,0 +1,36 @@
+{
+  "config": {
+    "battery": 41,
+    "displayflipped": false,
+    "externalsensortemp": -8000,
+    "externalwindowopen": false,
+    "heatsetpoint": 2100,
+    "locked": false,
+    "mode": "heat",
+    "mountingmode": false,
+    "offset": 0,
+    "on": true,
+    "reachable": true,
+    "schedule": {},
+    "schedule_on": false
+  },
+  "ep": 1,
+  "etag": "ef283096d058861074798efae930ab36",
+  "lastannounced": null,
+  "lastseen": "2023-03-18T05:58Z",
+  "manufacturername": "Danfoss",
+  "modelid": "eTRV0103",
+  "name": "Thermostat Flur",
+  "state": {
+    "errorcode": "0",
+    "lastupdated": "2023-03-18T05:52:29.506",
+    "mountingmodeactive": false,
+    "on": false,
+    "temperature": 2145,
+    "valve": 1,
+    "windowopen": "Closed"
+  },
+  "swversion": "00.20.0008 00.20",
+  "type": "ZHAThermostat",
+  "uniqueid": "xxxx"
+}

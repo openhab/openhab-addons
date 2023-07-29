@@ -31,5 +31,5 @@ public interface DeviceStatusListener {
      * @param bridge The Pulseaudio bridge the added device was connected to.
      * @param device The device which is added.
      */
-    public void onDeviceAdded(Thing bridge, AbstractAudioDeviceConfig device);
+    void onDeviceAdded(Thing bridge, AbstractAudioDeviceConfig device);
 }

@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.sleepiq.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration class for a SleepIQ bed.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class SleepIQBedConfiguration {
     public static final String BED_ID = "bedId";
 
-    public String bedId;
+    public @Nullable String bedId;
 }

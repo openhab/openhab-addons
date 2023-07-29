@@ -13,7 +13,6 @@
 package org.openhab.automation.jsscripting.internal.fs.watch;
 
 import java.io.File;
-import java.nio.file.Files;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
@@ -25,8 +24,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tracks JS module dependencies
@@ -38,17 +35,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class JSDependencyTracker extends AbstractScriptDependencyTracker {
 
-    private final Logger logger = LoggerFactory.getLogger(JSDependencyTracker.class);
-
-    public static final String LIB_PATH = String.join(File.separator, "automation", "js", "node_modules");
+    private static final String LIB_PATH = String.join(File.separator, "automation", "js", "node_modules");
 
     @Activate
     public JSDependencyTracker(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
         super(watchService, LIB_PATH);
-
-        if (Files.isRegularFile(this.libraryPath)) {
-            logger.warn("Trying to watch directory '{}', however it is a file", this.libraryPath);
-        }
     }
 
     @Deactivate

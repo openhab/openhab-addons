@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>evcc Binding</name>
 	<description>This is the binding for evcc (electric vehicle charging control) - soak up the sun.</description>
+	<connection>local</connection>
 
 </addon:addon>

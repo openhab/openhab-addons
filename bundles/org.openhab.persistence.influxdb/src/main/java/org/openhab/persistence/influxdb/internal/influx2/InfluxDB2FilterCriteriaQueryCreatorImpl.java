@@ -18,9 +18,11 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
 
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
@@ -54,30 +56,31 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
         if (criteria.getBeginDate() != null) {
             range.withStart(criteria.getBeginDate().toInstant());
         } else {
-            range = flux.range(-100L, ChronoUnit.YEARS); // Flux needs a mandatory start range
+            range.withStart(-100L, ChronoUnit.YEARS); // Flux needs a mandatory start range
         }
         if (criteria.getEndDate() != null) {
             range.withStop(criteria.getEndDate().toInstant());
+        } else {
+            range.withStop(100L, ChronoUnit.YEARS);
         }
         flux = range;
 
-        String itemName = criteria.getItemName();
-        if (itemName != null) {
-            String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
-            String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
-            flux = flux.filter(measurement().equal(measurementName));
-            if (!measurementName.equals(itemName)) {
-                flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemName));
-                flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2,
-                        TAG_ITEM_NAME });
-            } else {
-                flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2 });
-            }
+        String itemName = Objects.requireNonNull(criteria.getItemName()); // we checked non-null before
+        String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
+        String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
+        flux = flux.filter(measurement().equal(measurementName));
+        if (!measurementName.equals(itemName)) {
+            flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemName));
+            flux = flux.keep(
+                    new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2, TAG_ITEM_NAME });
+        } else {
+            flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2 });
         }
 
-        if (criteria.getState() != null && criteria.getOperator() != null) {
+        State filterState = criteria.getState();
+        if (filterState != null && criteria.getOperator() != null) {
             Restrictions restrictions = Restrictions.and(Restrictions.field().equal(FIELD_VALUE_NAME),
-                    Restrictions.value().custom(stateToObject(criteria.getState()),
+                    Restrictions.value().custom(stateToObject(filterState),
                             getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V2)));
             flux = flux.filter(restrictions);
         }

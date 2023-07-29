@@ -38,17 +38,53 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
     public class HomesDataResponse extends ApiResponse<ListBodyResponse<HomeData>> {
     }
 
+    public class Security extends HomeData {
+        private @Nullable NAObjectMap<HomeDataPerson> persons;
+
+        public NAObjectMap<HomeDataPerson> getPersons() {
+            NAObjectMap<HomeDataPerson> localPersons = persons;
+            return localPersons != null ? localPersons : new NAObjectMap<>();
+        }
+
+        public List<HomeDataPerson> getKnownPersons() {
+            NAObjectMap<HomeDataPerson> localPersons = persons;
+            return localPersons != null ? localPersons.values().stream().filter(HomeDataPerson::isKnown).toList()
+                    : List.of();
+        }
+    }
+
+    public class Energy extends HomeData {
+        private String temperatureControlMode = "";
+        private SetpointMode thermMode = SetpointMode.UNKNOWN;
+        private int thermSetpointDefaultDuration;
+        private List<ThermProgram> schedules = List.of();
+
+        public int getThermSetpointDefaultDuration() {
+            return thermSetpointDefaultDuration;
+        }
+
+        public SetpointMode getThermMode() {
+            return thermMode;
+        }
+
+        public String getTemperatureControlMode() {
+            return temperatureControlMode;
+        }
+
+        public List<ThermProgram> getThermSchedules() {
+            return schedules;
+        }
+
+        public @Nullable ThermProgram getActiveProgram() {
+            return schedules.stream().filter(ThermProgram::isSelected).findFirst().orElse(null);
+        }
+    }
+
     private double altitude;
     private double[] coordinates = {};
     private @Nullable String country;
     private @Nullable String timezone;
 
-    private @Nullable String temperatureControlMode;
-    private SetpointMode thermMode = SetpointMode.UNKNOWN;
-    private int thermSetpointDefaultDuration;
-    private List<ThermProgram> schedules = List.of();
-
-    private NAObjectMap<HomeDataPerson> persons = new NAObjectMap<>();
     private NAObjectMap<HomeDataRoom> rooms = new NAObjectMap<>();
     private NAObjectMap<HomeDataModule> modules = new NAObjectMap<>();
 
@@ -77,26 +113,6 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
         return Optional.ofNullable(timezone);
     }
 
-    public int getThermSetpointDefaultDuration() {
-        return thermSetpointDefaultDuration;
-    }
-
-    public SetpointMode getThermMode() {
-        return thermMode;
-    }
-
-    public NAObjectMap<HomeDataPerson> getPersons() {
-        return persons;
-    }
-
-    public List<HomeDataPerson> getKnownPersons() {
-        return persons.values().stream().filter(HomeDataPerson::isKnown).collect(Collectors.toList());
-    }
-
-    public Optional<String> getTemperatureControlMode() {
-        return Optional.ofNullable(temperatureControlMode);
-    }
-
     public NAObjectMap<HomeDataRoom> getRooms() {
         return rooms;
     }
@@ -107,13 +123,5 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
 
     public Set<FeatureArea> getFeatures() {
         return getModules().values().stream().map(m -> m.getType().feature).collect(Collectors.toSet());
-    }
-
-    public List<ThermProgram> getThermSchedules() {
-        return schedules;
-    }
-
-    public @Nullable ThermProgram getActiveProgram() {
-        return schedules.stream().filter(ThermProgram::isSelected).findFirst().orElse(null);
     }
 }

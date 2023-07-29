@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanChannelTariffInfoConfig {
     public int tariff = 0;
 }

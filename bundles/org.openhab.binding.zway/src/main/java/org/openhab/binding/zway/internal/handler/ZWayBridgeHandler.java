@@ -387,18 +387,13 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
         // Z-Way IP address
         String zWayIpAddress = config.getZWayIpAddress();
-        if (zWayIpAddress == null || zWayIpAddress.isBlank()) {
+        if (zWayIpAddress.isBlank()) {
             config.setZWayIpAddress("localhost"); // default value
-        }
-
-        // Z-Way Port
-        if (config.getZWayPort() == null) {
-            config.setZWayPort(8083);
         }
 
         // Z-Way Protocol
         String zWayProtocol = config.getZWayProtocol();
-        if (zWayProtocol == null || zWayProtocol.isBlank()) {
+        if (zWayProtocol.isBlank()) {
             config.setZWayProtocol("http");
         }
 
@@ -412,17 +407,8 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
         // Z-Way Username
         String zWayUsername = config.getZWayUsername();
-        if (zWayUsername == null || zWayUsername.isBlank()) {
+        if (zWayUsername.isBlank()) {
             config.setZWayUsername("admin"); // default value
-        }
-
-        /***********************************
-         ****** General configuration ******
-         **********************************/
-
-        // Polling interval
-        if (config.getPollingInterval() == null) {
-            config.setPollingInterval(3600);
         }
 
         return config;

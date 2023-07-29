@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface LocationEx extends Location {
-    public Optional<String> getCountry();
+    Optional<String> getCountry();
 
-    public Optional<String> getTimezone();
+    Optional<String> getTimezone();
 }

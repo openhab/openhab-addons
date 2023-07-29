@@ -33,8 +33,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  */
 @NonNullByDefault
 public class BlueGigaPrepareWriteResponse extends BlueGigaDeviceResponse {
-    public static int COMMAND_CLASS = 0x04;
-    public static int COMMAND_METHOD = 0x09;
+    public static final int COMMAND_CLASS = 0x04;
+    public static final int COMMAND_METHOD = 0x09;
 
     /**
      * Command result.

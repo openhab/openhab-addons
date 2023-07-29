@@ -40,7 +40,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 /**
@@ -80,12 +79,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         public final Collection<String> affectedChannels;
     }
 
-    /**
-     * Reusable gson instance to convert a class to json string and back in derived classes.
-     */
-    protected static final Gson GSON = new Gson();
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Services of the device.
@@ -124,7 +118,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-
         // Initialize device services
         try {
             this.initializeServices();
@@ -304,7 +297,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
             TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels,
             boolean shouldFetchInitialState) throws BoschSHCException {
-
         String deviceId = verifyBoschID();
         service.initialize(getBridgeHandler(), deviceId, stateUpdateListener);
         this.registerService(service, affectedChannels);
@@ -325,7 +317,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     private <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void fetchInitialState(
             TService service, Consumer<TState> stateUpdateListener) {
-
         try {
             @Nullable
             TState serviceState = service.getState();
@@ -353,7 +344,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     protected <TService extends AbstractBoschSHCService> void registerStatelessService(TService service)
             throws BoschSHCException {
-
         String deviceId = verifyBoschID();
         service.initialize(getBridgeHandler(), deviceId);
         // do not register in service list because the service can not receive state updates
@@ -454,7 +444,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     private <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
             Collection<String> affectedChannels) {
-        this.services.add(new DeviceService<TState>(service, affectedChannels));
+        this.services.add(new DeviceService<>(service, affectedChannels));
     }
 
     /**

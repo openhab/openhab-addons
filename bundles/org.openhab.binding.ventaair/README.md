@@ -36,14 +36,13 @@ By default the binding uses "-42", so a new ID that is not known to the device a
 
 Example Thing configuration:
 
-```
+```java
 Thing ventaair:lw60t:humidifier [ ipAddress="192.168.42.69", macAddress="f8:f0:05:a6:4e:03", deviceType=4, pollingTime=10, hash=-42]
 ```
 
 ## Channels
 
 These are the channels that are currently supported:
-
 
 | channel  | type (RO=read-only)   | description                  |
 |----------|--------|------------------------------|
@@ -69,13 +68,13 @@ These are the channels that are currently supported:
 
 Things:
 
-```
+```java
 Thing ventaair:lw60t:humidifier [ ipAddress="192.168.42.69", macAddress="f8:f0:05:a6:4e:03", deviceType=4, pollingTime=10, hash=-42]
 ```
 
 Items:
 
-```
+```java
 Group gHumidifier "Air Humidifier" <humidity>
 
 Switch Humidifier_Power "Power: [%s]" (gHumidifier) { channel="ventaair:lw60t:humidifier:power" }
@@ -107,7 +106,7 @@ Switch boost "Boost:" { channel="ventaair:generic:humidifier:boost" }
 
 Sitemap:
 
-```
+```perl
 Text item=Humidifier_Humidity
 Text item=Humidifier_Temperature
 Switch item=Humidifier_Power

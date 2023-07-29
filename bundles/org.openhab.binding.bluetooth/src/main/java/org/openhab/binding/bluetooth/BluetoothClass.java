@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents a Bluetooth class, which describes the general characteristics and capabilities of a device.
  *
  * @author Chris Jackson - Initial Contribution
  *
  */
+@NonNullByDefault
 public class BluetoothClass {
     private final int clazz;
 

@@ -6,4 +6,6 @@
 	<type>binding</type>
 	<name>AmbientWeather Binding</name>
 	<description>This binding supports weather stations from Ambient Weather</description>
+	<connection>cloud</connection>
+
 </addon:addon>
