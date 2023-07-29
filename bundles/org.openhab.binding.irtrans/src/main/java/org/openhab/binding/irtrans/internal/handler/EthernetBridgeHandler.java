@@ -39,6 +39,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
 import org.openhab.binding.irtrans.internal.IrCommand;
+import org.openhab.binding.irtrans.internal.util.StringUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -830,7 +831,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
 
     protected int getByteCount(ByteBuffer byteBuffer) {
         String response = new String(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
-        response = response.replaceAll("\r", "").replaceAll("\n", "");
+        response = StringUtils.chomp(response);
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
         if (matcher.matches()) {
@@ -844,7 +845,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         String message = null;
 
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
-        response = response.replaceAll("\r", "").replaceAll("\n", "");
+        response = StringUtils.chomp(response);
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
         if (matcher.matches()) {
