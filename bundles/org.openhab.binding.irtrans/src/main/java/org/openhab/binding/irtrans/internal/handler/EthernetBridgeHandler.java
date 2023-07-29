@@ -279,7 +279,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                     if (command instanceof StringType) {
                         String remoteName = command.toString();
                         String irCommandName = command.toString();
-    
+
                         if (command.toString().indexOf(",") > 0) {
                             remoteName = command.toString().substring(0, command.toString().indexOf(","));
                             irCommandName = command.toString().substring(command.toString().indexOf(",") + 1);
