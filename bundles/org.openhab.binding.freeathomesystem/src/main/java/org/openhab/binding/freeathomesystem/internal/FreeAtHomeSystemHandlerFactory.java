@@ -92,12 +92,15 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public FreeAtHomeSystemHandlerFactory(@Reference FreeAtHomeThingTypeProvider thingTypeProvider,
             @Reference FreeAtHomeChannelTypeProvider channelTypeProvider,
-            @Reference FreeAtHomeChannelGroupTypeProvider channelGroupsTypeProvider) {
+            @Reference FreeAtHomeChannelGroupTypeProvider channelGroupsTypeProvider,
+            @Reference HttpClientFactory httpClientFactory) {
         this.thingTypeProvider = thingTypeProvider;
         this.channelTypeProvider = channelTypeProvider;
         this.channelGroupsTypeProvider = channelGroupsTypeProvider;
+        this.httpClient = httpClientFactory.createHttpClient("FreeAtHome");
 
         generateThingTypes();
+        logger.debug("FreeAtHomeSystemHandlerFactory created");
     }
 
     @Override
@@ -118,14 +121,5 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient("FreeAtHome");
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
     }
 }

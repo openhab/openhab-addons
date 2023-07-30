@@ -134,7 +134,7 @@ public class FreeAtHomeDeviceDescription {
     }
 
     public boolean isVirtual() {
-        return (interfaceType == DEVICE_INTERFACE_VIRTUAL_TYPE) ? true : false;
+        return interfaceType == DEVICE_INTERFACE_VIRTUAL_TYPE;
     }
 
     public int getNumberOfChannels() {

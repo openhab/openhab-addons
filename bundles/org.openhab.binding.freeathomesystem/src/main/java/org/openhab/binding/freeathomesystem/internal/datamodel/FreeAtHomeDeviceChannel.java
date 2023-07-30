@@ -321,7 +321,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_BRIGHTNESS_SENSOR: {
                 this.channelId = channelId;
 
-                logger.debug("Brightnes sensor channel - Channel FID: {}", channelFunctionID);
+                logger.debug("Brightness sensor channel - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
                 newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1026, channelId, channelObject);

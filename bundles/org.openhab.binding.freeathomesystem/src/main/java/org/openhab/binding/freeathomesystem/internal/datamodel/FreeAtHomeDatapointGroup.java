@@ -97,12 +97,12 @@ public class FreeAtHomeDatapointGroup {
             }
         }
 
-        return (resultingDirection != DATAPOINT_DIRECTION_UNKNOWN) ? true : false;
+        return resultingDirection != DATAPOINT_DIRECTION_UNKNOWN;
     }
 
     @SuppressWarnings("null")
     public void applyChangesForVirtualDevice() {
-        // The input and output datapoints are ment from the device point of view. Because the virtual dvices are
+        // The input and output datapoints are meant from the device point of view. Because the virtual devices are
         // outside of the free@home system the input and output datapoint must be switched
         @Nullable
         FreeAtHomeDatapoint localDatapoint = inputDatapoint;

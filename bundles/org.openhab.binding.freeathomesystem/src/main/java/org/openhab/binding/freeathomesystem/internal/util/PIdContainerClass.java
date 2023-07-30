@@ -15,7 +15,7 @@ package org.openhab.binding.freeathomesystem.internal.util;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PIdContainerClass} his a helper class for pairing IDs
+ * The {@link PIdContainerClass} is a helper class for pairing IDs
  *
  * @author Andras Uhrin - Initial contribution
  *

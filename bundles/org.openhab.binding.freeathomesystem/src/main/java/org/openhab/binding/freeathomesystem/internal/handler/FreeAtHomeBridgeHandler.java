@@ -72,8 +72,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeBridgeHandler.class);
 
-    public @Nullable static FreeAtHomeBridgeHandler freeAtHomeSystemHandler = null;
-
     public ChannelUpdateHandler channelUpdateHandler = new ChannelUpdateHandler();
 
     // Clients for the network communication
@@ -97,8 +95,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     int numberOfComponents = 0;
 
     private static final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 60;
-
-    private List<String> listOfComponentId = new ArrayList<String>();
 
     public FreeAtHomeBridgeHandler(Bridge thing, HttpClient client) {
         super(thing);
@@ -125,6 +121,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      */
     @SuppressWarnings("deprecation")
     public @Nullable List<String> getDeviceDeviceList() {
+        List<String> listOfComponentId = new ArrayList<String>();
         boolean ret = false;
 
         listOfComponentId.clear();
@@ -171,7 +168,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 ret = false;
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error("Error to build up the Component list [ {} ]", e.getMessage());
+            logger.debug("Error to build up the Component list [ {} ]", e.getMessage());
 
             ret = false;
         }
@@ -228,12 +225,12 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (InterruptedException e) {
-            logger.error("No communication possible to get device list - Communication interrupt [ {} ]",
+            logger.debug("No communication possible to get device list - Communication interrupt [ {} ]",
                     e.getMessage());
         } catch (TimeoutException e) {
-            logger.error("No communication possible to get device list - Communication timeout [ {} ]", e.getMessage());
+            logger.debug("No communication possible to get device list - Communication timeout [ {} ]", e.getMessage());
         } catch (ExecutionException e) {
-            logger.error("No communication possible to get device list - exception [ {} ]", e.getMessage());
+            logger.debug("No communication possible to get device list - exception [ {} ]", e.getMessage());
         }
 
         return device;
@@ -338,7 +335,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 restartHttpConnection();
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error("Communication error by setDatapoint [{}]", e.getMessage());
+            logger.debug("Communication error by setDatapoint [{}]", e.getMessage());
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -425,7 +422,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot start http client");
 
-            logger.error("Cannot start http client - {}", ex.getMessage());
+            logger.debug("Cannot start http client - {}", ex.getMessage());
 
             ret = false;
         }
@@ -464,7 +461,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Cannot open http connection, wrong passord");
 
-                logger.error("Cannot open http connection {}", ex.getMessage());
+                logger.debug("Cannot open http connection {}", ex.getMessage());
 
                 ret = false;
             }
@@ -559,7 +556,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 ret = false;
             }
         } catch (Exception e) {
-            logger.error("Error by opening Websocket connection [{}]", e.getMessage());
+            logger.debug("Error by opening Websocket connection [{}]", e.getMessage());
 
             if (websocketClient != null) {
                 try {
@@ -725,7 +722,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
-        FreeAtHomeBridgeHandler.freeAtHomeSystemHandler = this;
     }
 
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
@@ -784,7 +780,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } catch (InterruptedException e) {
-                logger.error("Thread interrupted [{}]", e.getMessage());
+                logger.debug("Thread interrupted [{}]", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Problem in websocket connection");
             }
@@ -806,7 +802,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Problem in websocket connection");
 
-                logger.error("Problem in websocket connection, trying to reconnect");
+                logger.debug("Problem in websocket connection, trying to reconnect");
 
                 reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
 

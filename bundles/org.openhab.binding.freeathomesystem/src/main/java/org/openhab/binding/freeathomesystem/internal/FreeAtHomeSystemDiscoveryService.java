@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.freeathomesystem.internal;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -24,6 +26,8 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +39,15 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = DiscoveryService.class)
 @NonNullByDefault
-public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
+public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemDiscoveryService.class);
+
+    private @NonNullByDefault({}) FreeAtHomeBridgeHandler bridge;
 
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            FreeAtHomeBridgeHandler bridge = FreeAtHomeBridgeHandler.freeAtHomeSystemHandler;
-
             if (bridge != null) {
                 ThingUID bridgeUID = bridge.getThing().getUID();
 
@@ -92,9 +96,32 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof FreeAtHomeBridgeHandler) {
+            this.bridge = (FreeAtHomeBridgeHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridge;
+    }
+
+    @Override
     protected void startScan() {
         this.removeOlderResults(getTimestampOfLastScan());
 
         scheduler.execute(runnable);
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
+    }
+
+    @Override
+    public void deactivate() {
+        removeOlderResults(Instant.now().getEpochSecond());
     }
 }
