@@ -24,7 +24,7 @@
     </bnd.importpackage>
     <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 & armv7l / Zulu 17.0.5+8 -->
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@4.5.0</ohjs.version>
+    <ohjs.version>openhab@4.5.1</ohjs.version>
   </properties>
 
   <build>
