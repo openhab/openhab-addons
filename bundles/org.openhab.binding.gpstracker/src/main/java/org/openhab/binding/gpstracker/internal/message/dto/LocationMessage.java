@@ -109,7 +109,8 @@ public class LocationMessage {
      * @return Conversion result
      */
     public State getTrackerLocation() {
-        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude) && Integer.MIN_VALUE != altitude) {
+        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)
+                && Float.compare(0f, altitude) != 0) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude), new DecimalType(altitude));
         } else if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude));
