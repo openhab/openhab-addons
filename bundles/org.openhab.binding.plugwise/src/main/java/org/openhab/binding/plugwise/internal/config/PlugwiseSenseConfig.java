@@ -24,6 +24,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.BoundaryType;
 import org.openhab.binding.plugwise.internal.protocol.field.Humidity;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.Temperature;
+import org.openhab.binding.plugwise.internal.util.StringUtils;
 
 /**
  * The {@link PlugwiseScanConfig} class represents the configuration for a Plugwise Sense.
@@ -35,8 +36,8 @@ public class PlugwiseSenseConfig {
 
     private String macAddress = "";
     private int measurementInterval = 15; // minutes
-    private String boundaryType = upperUnderscoreToLowerCamel(NONE.name());
-    private String boundaryAction = upperUnderscoreToLowerCamel(OFF_BELOW_ON_ABOVE.name());
+    private String boundaryType = StringUtils.upperUnderscoreToLowerCamel(NONE.name());
+    private String boundaryAction = StringUtils.upperUnderscoreToLowerCamel(OFF_BELOW_ON_ABOVE.name());
     private int temperatureBoundaryMin = 15; // degrees Celsius
     private int temperatureBoundaryMax = 25; // degrees Celsius
     private int humidityBoundaryMin = 45; // relative humidity (RH)
@@ -54,11 +55,11 @@ public class PlugwiseSenseConfig {
     }
 
     public BoundaryType getBoundaryType() {
-        return BoundaryType.valueOf(lowerCamelToUpperUnderscore(boundaryType));
+        return BoundaryType.valueOf(StringUtils.lowerCamelToUpperUnderscore(boundaryType));
     }
 
     public BoundaryAction getBoundaryAction() {
-        return BoundaryAction.valueOf(lowerCamelToUpperUnderscore(boundaryAction));
+        return BoundaryAction.valueOf(StringUtils.lowerCamelToUpperUnderscore(boundaryAction));
     }
 
     public Temperature getTemperatureBoundaryMin() {

@@ -28,6 +28,7 @@ import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 import org.openhab.binding.plugwise.internal.protocol.MessageFactory;
 import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
+import org.openhab.binding.plugwise.internal.util.StringUtils;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
 import org.openhab.core.io.transport.serial.SerialPortEventListener;
@@ -94,7 +95,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
      */
     private void parseAndQueue(ByteBuffer readBuffer) {
         String response = new String(readBuffer.array(), 0, readBuffer.limit());
-        response = response.replaceAll("\r", "").replaceAll("\n", "");
+        response = StringUtils.chomp(response);
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
 
