@@ -39,8 +39,13 @@ public class Converter {
         if (dateTimeString == null) {
             return null;
         }
-        String fixedTs = dateTimeString.substring(0, 1).toUpperCase() + dateTimeString.substring(1);
-        return LocalDateTime.parse(fixedTs, ROUTEROS_FORMAT);
+        // As of Firmware 7.10 the date format has changed to "yyyy-MM-dd HH:mm:SS"
+        if (dateTimeString.length() == 19) {
+            return LocalDateTime.parse(dateTimeString.replace(" ", "T"));
+        } else {
+            String fixedTs = dateTimeString.substring(0, 1).toUpperCase() + dateTimeString.substring(1);
+            return LocalDateTime.parse(fixedTs, ROUTEROS_FORMAT);
+        }
     }
 
     public @Nullable static LocalDateTime routerosPeriodBack(@Nullable String durationString) {
