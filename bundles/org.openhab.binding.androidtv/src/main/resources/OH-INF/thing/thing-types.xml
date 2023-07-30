@@ -62,7 +62,7 @@
 				<default>60</default>
 			</parameter>
 			<parameter name="heartbeat" type="integer" min="0">
-				<label>Hearbeat Frequency</label>
+				<label>Heartbeat Frequency</label>
 				<description>Frequency of heartbeats</description>
 				<default>5</default>
 			</parameter>
@@ -128,7 +128,7 @@
 				<default>60</default>
 			</parameter>
 			<parameter name="heartbeat" type="integer" min="0">
-				<label>Hearbeat Frequency</label>
+				<label>Heartbeat Frequency</label>
 				<description>Frequency of heartbeats</description>
 				<default>5</default>
 			</parameter>
