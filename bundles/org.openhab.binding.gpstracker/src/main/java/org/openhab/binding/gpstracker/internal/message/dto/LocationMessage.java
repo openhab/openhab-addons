@@ -53,7 +53,7 @@ public class LocationMessage {
      * Altitude (iOS, Android/integer/meters/optional)
      */
     @SerializedName("alt")
-    private Double altitude = 0d;
+    private Float altitude = 0f;
 
     /**
      * Latitude (iOS, Android/float/meters/required)
