@@ -147,6 +147,9 @@ public class VeluxBindingConstants {
     // List of all virtual shutter channel ids
     public static final String CHANNEL_VSHUTTER_POSITION = "vposition";
 
+    public static final Set<String> POSITION_CHANNELS = Set.of(CHANNEL_ACTUATOR_POSITION, CHANNEL_ACTUATOR_STATE,
+            CHANNEL_VANE_POSITION, CHANNEL_VSHUTTER_POSITION);
+
     // Helper definitions
     public static final String BINDING_VALUES_SEPARATOR = ",";
     public static final String OUTPUT_VALUE_SEPARATOR = ",";

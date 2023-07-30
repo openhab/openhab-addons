@@ -160,6 +160,7 @@ class BoschHttpClientTest {
     void createRequest() {
         Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET);
         assertNotNull(request);
+        assertEquals("3.2", request.getHeaders().get("api-version"));
     }
 
     @Test

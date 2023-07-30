@@ -460,6 +460,7 @@ The Home thing has the following configuration elements:
 | securityId | String | No       | Id of a home holding security monitoring devices                                    |
 
 At least one of these parameter must be filled - at most two : 
+
 * id or securityId
 * id or energyId
 * securityId and energyId
@@ -562,6 +563,7 @@ Warnings:
 | signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
 | signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
 | presence       | floodlight           | String       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
+| presence       | siren                | Switch       | Read-write | Status of the siren, if silent or emitting an alarm                                                                                         |
 | last-event     | type                 | String       | Read-only  | Type of event                                                                                                                               |
 | last-event     | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
 | last-event     | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
@@ -613,7 +615,7 @@ Note: live feeds either locally or via VPN are not available in Netatmo API.
 
 | Channel Group | Channel ID  | Item Type    | Read/Write | Description                                         |
 | ------------- | ----------- | ------------ | ---------- | --------------------------------------------------- |
-| siren         | status      | String       | Read-only  | Status of the siren, if silent or emitting an alarm |
+| siren         | status      | Switch       | Read-only  | Status of the siren, if silent or emitting an alarm |
 | siren         | monitoring  | Switch       | Read-only  | State of the siren device                           |
 | signal        | strength    | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)    |
 | signal        | value       | Number:Power | Read-only  | Signal strength in dBm                              |

@@ -29,8 +29,9 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Automation Dry Contacts (N=1-201): example N=60 --> where=360. Alarm Dry Contacts and IR sensors
-					(Zone=1-9, N=1-9): example Zone=4, N=5 --> where=345</description>
+				<description>A "3" must be added before the address. Automation Dry Contacts 3N with N=[1-201]; example N=60 -->
+					where="360". Alarm Dry Contacts and IR sensors
+					3ZN with Zone Z=[1-9], N=[1-9]; example Z=4, N=5 --> where="345"</description>
 			</parameter>
 		</config-description>
 

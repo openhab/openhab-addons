@@ -149,6 +149,8 @@ Switch Sonos_Mute         "Mute"             <soundvolume_mute> (Sonos) {channel
 Switch Sonos_LED          "LED"              <switch>           (Sonos) {channel="sonos:PLAY1:living:led"}
 String Sonos_CurrentTrack "Now playing [%s]" <text>             (Sonos) {channel="sonos:PLAY1:living:currenttrack"}
 String Sonos_State        "Status [%s]"      <text>             (Sonos) {channel="sonos:PLAY1:living:state"}
+String Sonos_PlayUri      "Playing URI [%s]" <text>             (Sonos) {channel="sonos:PLAY1:living:playuri"}
+Switch PlayWebRadioUri
 ```
 
 demo.sitemap:
@@ -163,6 +165,21 @@ sitemap demo label="Main Menu"
         Switch  item=Sonos_LED
         Text    item=Sonos_CurrentTrack
         Text    item=Sonos_State
+        Text    item=Sonos_PlayUri
+        Switch  item=PlayWebRadioUri
     }
 }
+```
+
+sonos.rules:
+
+```java
+rule "Sonos Play Web Radio URI"
+when Item PlayWebRadioUri changed to ON
+then
+    //Set URI to play
+    Sonos_PlayUri.sendCommand("x-rincon-mp3radio://https://streams.egofm.de/egoFMBW-hq")
+    //Set the Volume
+    Sonos_Volume.sendCommand(40)
+end
 ```

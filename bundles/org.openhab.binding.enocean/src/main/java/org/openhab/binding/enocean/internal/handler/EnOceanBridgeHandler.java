@@ -208,7 +208,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             }
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
-            localTransceiver.initilize();
+            localTransceiver.initialize();
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "starting rx thread...");
             localTransceiver.startReceiving(scheduler);

@@ -38,7 +38,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class TwinguardHandlerTest extends AbstractSmokeDetectorHandlerTest<TwinguardHandler> {
+class TwinguardHandlerTest extends AbstractSmokeDetectorHandlerTest<TwinguardHandler> {
 
     @Override
     protected TwinguardHandler createFixture() {
@@ -56,7 +56,7 @@ public class TwinguardHandlerTest extends AbstractSmokeDetectorHandlerTest<Twing
     }
 
     @Test
-    public void testUpdateChannelsAirQualityLevelService() {
+    void testUpdateChannelsAirQualityLevelService() {
         JsonElement jsonObject = JsonParser.parseString(
                 "{\"temperatureRating\":\"GOOD\",\"humidityRating\":\"MEDIUM\",\"purity\":620,\"@type\":\"airQualityLevelState\",\n"
                         + "     \"purityRating\":\"GOOD\",\"temperature\":23.77,\"description\":\"LITTLE_DRY\",\"humidity\":32.69,\"combinedRating\":\"MEDIUM\"}");

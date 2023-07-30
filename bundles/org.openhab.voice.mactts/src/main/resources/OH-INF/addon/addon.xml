@@ -6,6 +6,6 @@
 	<type>voice</type>
 	<name>macOS Text-to-Speech</name>
 	<description>The macOS Text-to-Speech (TTS) service uses the macOS "say" command for producing spoken text.</description>
-	<connection>local</connection>
+	<connection>none</connection>
 
 </addon:addon>
