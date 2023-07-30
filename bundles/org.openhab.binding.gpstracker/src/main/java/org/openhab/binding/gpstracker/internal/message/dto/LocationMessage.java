@@ -50,7 +50,7 @@ public class LocationMessage {
     private String trackerId = "";
 
     /**
-     * Altitude (iOS, Android/integer/meters/optional)
+     * Altitude (iOS, Android/float/meters/optional)
      */
     @SerializedName("alt")
     private BigDecimal altitude = BigDecimal.ZERO;
