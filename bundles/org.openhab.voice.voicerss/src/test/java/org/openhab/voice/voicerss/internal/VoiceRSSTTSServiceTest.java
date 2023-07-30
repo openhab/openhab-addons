@@ -18,12 +18,16 @@ import static org.hamcrest.core.IsNot.not;
 import static org.openhab.core.audio.AudioFormat.*;
 import static org.openhab.voice.voicerss.internal.CompatibleAudioFormatMatcher.compatibleAudioFormat;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.audio.AudioFormat;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.voice.TTSService;
+import org.openhab.core.voice.internal.cache.TTSLRUCacheImpl;
 
 /**
  * Tests for {@link VoiceRSSTTSService}.
@@ -43,6 +47,8 @@ public class VoiceRSSTTSServiceTest {
     private static final AudioFormat WAV_48KHZ_16BIT = new AudioFormat(AudioFormat.CONTAINER_WAVE,
             AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 48_000L);
 
+    private StorageService storageService;
+
     /**
      * The {@link VoiceRSSTTSService} under test.
      */
@@ -50,7 +56,10 @@ public class VoiceRSSTTSServiceTest {
 
     @BeforeEach
     public void setUp() {
-        final VoiceRSSTTSService ttsService = new VoiceRSSTTSService();
+        Map<String, Object> config = new HashMap<>();
+        config.put("enableCacheTTS", false);
+        TTSLRUCacheImpl voiceLRUCache = new TTSLRUCacheImpl(storageService, config);
+        final VoiceRSSTTSService ttsService = new VoiceRSSTTSService(voiceLRUCache);
         ttsService.activate(null);
 
         this.ttsService = ttsService;

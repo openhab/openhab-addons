@@ -18,10 +18,11 @@ As any other Bluetooth device, RadonEye devices are discovered automatically by 
 
 Supported configuration parameters for the things:
 
-| Property                        | Type    | Default | Required | Description                                                     |
-|---------------------------------|---------|---------|----------|-----------------------------------------------------------------|
-| address                         | String  |         | Yes      | Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX") |
-| refreshInterval                 | Integer | 300     | No       | How often a refresh shall occur in seconds                      |
+| Property        | Type    | Default | Required | Description                                                     |
+|-----------------|---------|---------|----------|-----------------------------------------------------------------|
+| address         | String  |         | Yes      | Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX") |
+| fwVersion       | Integer | 1       | No       | The major version of the firmware on the device                 |
+| refreshInterval | Integer | 300     | No       | How often a refresh shall occur in seconds                      |
 
 ## Channels
 

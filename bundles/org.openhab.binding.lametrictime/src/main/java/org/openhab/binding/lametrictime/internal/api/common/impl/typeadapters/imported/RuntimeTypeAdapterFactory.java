@@ -139,9 +139,9 @@ import com.google.gson.stream.MalformedJsonException;
  *
  * <pre>
  *    {@code
- *   shapeAdapter.registerSubtype(Rectangle.class, "Rectangle");
- *   shapeAdapter.registerSubtype(Circle.class, "Circle");
- *   shapeAdapter.registerSubtype(Diamond.class, "Diamond");
+ * shapeAdapter.registerSubtype(Rectangle.class, "Rectangle");
+ * shapeAdapter.registerSubtype(Circle.class, "Circle");
+ * shapeAdapter.registerSubtype(Diamond.class, "Diamond");
  * }
  * </pre>
  *

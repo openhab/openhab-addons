@@ -22,10 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class RadoneyeConfiguration {
     public String address = "";
-    public int refreshInterval;
+    public int fwVersion = 1;
+    public int refreshInterval = 300;
 
     @Override
     public String toString() {
-        return "[address=" + address + ", refreshInterval=" + refreshInterval + "]";
+        return "[address=" + address + ", fwVersion=" + fwVersion + ", refreshInterval=" + refreshInterval + "]";
     }
 }

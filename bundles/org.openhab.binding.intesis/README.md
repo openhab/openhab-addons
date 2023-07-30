@@ -19,11 +19,12 @@ Intesis devices do not support auto discovery.
 
 The binding uses the following configuration parameters.
 
-| Parameter | Valid for ThingType | Description                                                    |
-|-----------|---------------------|----------------------------------------------------------------|
-| ipAddress | Both                | IP-Address of the device                                       |
-| password  | IntesisHome         | Password to login to the local webserver of IntesisHome device |
-| port      | IntesisBox          | TCP port to connect to IntesisBox device, defaults to 3310     |
+| Parameter        | Valid for ThingType | Description                                                    |
+|------------------|---------------------|----------------------------------------------------------------|
+| ipAddress        | Both                | IP-Address of the device                                       |
+| password         | IntesisHome         | Password to login to the local webserver of IntesisHome device |
+| port             | IntesisBox          | TCP port to connect to IntesisBox device, defaults to 3310     |
+| pollingInterval  | Both                | Interval to retrieve updates from the connected devices        |
 
 ## Channels
 

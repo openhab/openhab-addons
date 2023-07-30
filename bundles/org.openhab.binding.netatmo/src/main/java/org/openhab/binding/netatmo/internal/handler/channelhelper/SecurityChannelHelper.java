@@ -17,15 +17,14 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toRawT
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -50,16 +49,11 @@ public class SecurityChannelHelper extends ChannelHelper {
     @Override
     public void setNewData(@Nullable NAObject data) {
         super.setNewData(data);
-        if (data instanceof HomeData) {
-            HomeData homeData = (HomeData) data;
-            knownIds = homeData.getPersons().values().stream().filter(person -> person.isKnown()).map(p -> p.getId())
-                    .collect(Collectors.toList());
-        }
-        if (data instanceof HomeStatus) {
-            HomeStatus status = (HomeStatus) data;
-            NAObjectMap<HomeStatusPerson> allPersons = status.getPersons();
-            List<HomeStatusPerson> present = allPersons.values().stream().filter(p -> !p.isOutOfSight())
-                    .collect(Collectors.toList());
+        if (data instanceof HomeData.Security securityData) {
+            knownIds = securityData.getKnownPersons().stream().map(HomeDataPerson::getId).toList();
+        } else if (data instanceof NAHomeStatus.Security securityStatus) {
+            List<HomeStatusPerson> present = securityStatus.getPersons().values().stream()
+                    .filter(HomeStatusPerson::atHome).toList();
 
             persons = present.size();
             unknowns = present.stream().filter(person -> !knownIds.contains(person.getId())).count();

@@ -24,6 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NAThingConfiguration {
     public static final String ID = "id";
 
-    public String id = "";
+    protected String id = "";
     public int refreshInterval = -1;
+
+    public String getId() {
+        return id;
+    }
 }

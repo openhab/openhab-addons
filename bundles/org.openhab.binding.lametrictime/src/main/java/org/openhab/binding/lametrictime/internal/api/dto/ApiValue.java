@@ -18,9 +18,9 @@ package org.openhab.binding.lametrictime.internal.api.dto;
  * @author Gregory Moyer - Initial contribution
  */
 public interface ApiValue {
-    public String toRaw();
+    String toRaw();
 
-    public static String raw(ApiValue value) {
+    static String raw(ApiValue value) {
         if (value == null) {
             return null;
         }

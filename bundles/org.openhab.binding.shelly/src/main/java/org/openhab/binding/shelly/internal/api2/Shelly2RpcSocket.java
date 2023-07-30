@@ -34,9 +34,11 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
+import org.openhab.binding.shelly.internal.handler.ShellyBluSensorHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.slf4j.Logger;
@@ -112,7 +114,7 @@ public class Shelly2RpcSocket {
         try {
             disconnect(); // for safety
 
-            URI uri = new URI("ws://" + deviceIp + "/rpc");
+            URI uri = new URI("ws://" + deviceIp + SHELLYRPC_ENDPOINT);
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader(HttpHeaders.HOST, deviceIp);
             request.setHeader("Origin", "http://" + deviceIp);
@@ -250,8 +252,36 @@ public class Shelly2RpcSocket {
                         handler.onNotifyStatus(status);
                         return;
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
-                        handler.onNotifyEvent(fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class));
-                        return;
+                        Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
+                        events.src = message.src;
+                        if (events.params == null || events.params.events == null) {
+                            logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
+                        } else {
+                            for (Shelly2NotifyEvent e : events.params.events) {
+                                if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
+                                    String address = getString(e.data.addr).replaceAll(":", "");
+                                    if (thingTable != null && thingTable.findThing(address) != null) {
+                                        if (thingTable != null) { // known device
+                                            ShellyThingInterface thing = thingTable.getThing(address);
+                                            Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
+                                            handler = api.getRpcHandler();
+                                            handler.onNotifyEvent(
+                                                    fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class));
+                                        }
+                                    } else { // new device
+                                        if (e.event.equals(SHELLY2_EVENT_BLUSCAN)) {
+                                            ShellyBluSensorHandler.addBluThing(message.src, e, thingTable);
+                                        } else {
+                                            logger.debug("{}: NotifyEvent {} for unknown device {}", message.src,
+                                                    e.event, e.data.name);
+                                        }
+                                    }
+                                } else {
+                                    handler.onNotifyEvent(fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class));
+                                }
+                            }
+                        }
+                        break;
                     default:
                         handler.onMessage(receivedMessage);
                 }
@@ -259,7 +289,9 @@ public class Shelly2RpcSocket {
                 logger.debug("{}: No Rpc listener registered for device {}, skip message: {}", thingName,
                         getString(message.src), receivedMessage);
             }
-        } catch (ShellyApiException | IllegalArgumentException | NullPointerException e) {
+        } catch (ShellyApiException | IllegalArgumentException e) {
+            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+        } catch (NullPointerException e) {
             logger.debug("{}: Unable to process Rpc message: {}", thingName, receivedMessage, e);
         }
     }

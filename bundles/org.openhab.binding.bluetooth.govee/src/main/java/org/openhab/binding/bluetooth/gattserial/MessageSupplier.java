@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface MessageSupplier<M extends GattMessage> {
 
-    public M createMessage();
+    M createMessage();
 }

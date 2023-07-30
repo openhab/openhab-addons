@@ -167,8 +167,11 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     protected abstract String getURL();
 
     @Override
-    public final @Nullable StatusUpdateListener getListener() {
-        return listener;
+    public final void updateListenerStatus() {
+        StatusUpdateListener listener = this.listener;
+        if (listener != null) {
+            listener.update(communicationStatus);
+        }
     }
 
     @Override

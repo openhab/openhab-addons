@@ -44,14 +44,14 @@ import io.github.hapjava.services.impl.ServiceLabelService;
  */
 @NonNullByDefault({})
 public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl implements IrrigationSystemAccessory {
-    private BooleanItemReader inUseReader;
+    private Map<InUseEnum, String> inUseMapping;
     private Map<ProgramModeEnum, String> programModeMap;
     private static final String SERVICE_LABEL = "ServiceLabel";
 
     public HomekitIrrigationSystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        inUseReader = createBooleanReader(HomekitCharacteristicType.INUSE_STATUS);
+        inUseMapping = createMapping(HomekitCharacteristicType.INUSE_STATUS, InUseEnum.class);
         programModeMap = HomekitCharacteristicFactory
                 .createMapping(getCharacteristic(HomekitCharacteristicType.PROGRAM_MODE).get(), ProgramModeEnum.class);
         getServices().add(new IrrigationSystemService(this));
@@ -89,7 +89,8 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
 
     @Override
     public CompletableFuture<InUseEnum> getInUse() {
-        return CompletableFuture.completedFuture(inUseReader.getValue() ? InUseEnum.IN_USE : InUseEnum.NOT_IN_USE);
+        return CompletableFuture.completedFuture(
+                getKeyFromMapping(HomekitCharacteristicType.INUSE_STATUS, inUseMapping, InUseEnum.NOT_IN_USE));
     }
 
     @Override

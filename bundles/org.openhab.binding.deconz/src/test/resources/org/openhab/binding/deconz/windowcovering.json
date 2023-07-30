@@ -4,7 +4,7 @@
   "r": "lights",
   "state": {
     "alert": null,
-    "bri": 102,
+    "lift": 41,
     "on": true,
     "reachable": true
   },

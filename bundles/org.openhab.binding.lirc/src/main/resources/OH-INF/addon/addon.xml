@@ -7,5 +7,6 @@
 	<name>LIRC Binding</name>
 	<description>The LIRC binding allows transmission and receipt of standard infrared remote control signals via a LIRC
 		server.</description>
+	<connection>local</connection>
 
 </addon:addon>
