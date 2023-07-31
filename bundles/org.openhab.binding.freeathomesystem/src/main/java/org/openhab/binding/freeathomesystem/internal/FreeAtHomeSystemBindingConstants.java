@@ -31,7 +31,7 @@ public class FreeAtHomeSystemBindingConstants {
     public static final String BINDING_ID = "freeathomesystem";
 
     // List of all Thing Type UIDs
-    public static final String BRIDGE_TYPE_ID = "bridge";
+    public static final String BRIDGE_TYPE_ID = "gateway";
     public static final String FREEATHOMEDEVICE_TYPE_ID = "free-at-home-device";
 
     // List of all Thing Type UIDs

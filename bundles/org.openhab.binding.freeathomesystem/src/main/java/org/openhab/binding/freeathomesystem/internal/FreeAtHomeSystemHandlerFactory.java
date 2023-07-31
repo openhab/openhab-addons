@@ -38,6 +38,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -93,7 +94,8 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
     public FreeAtHomeSystemHandlerFactory(@Reference FreeAtHomeThingTypeProvider thingTypeProvider,
             @Reference FreeAtHomeChannelTypeProvider channelTypeProvider,
             @Reference FreeAtHomeChannelGroupTypeProvider channelGroupsTypeProvider,
-            @Reference HttpClientFactory httpClientFactory) {
+            @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
+        super.activate(componentContext);
         this.thingTypeProvider = thingTypeProvider;
         this.channelTypeProvider = channelTypeProvider;
         this.channelGroupsTypeProvider = channelGroupsTypeProvider;

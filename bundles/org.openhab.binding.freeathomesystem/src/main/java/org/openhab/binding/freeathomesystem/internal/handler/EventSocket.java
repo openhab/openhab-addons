@@ -16,6 +16,7 @@ package org.openhab.binding.freeathomesystem.internal.handler;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public class EventSocket extends WebSocketAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(EventSocket.class);
@@ -39,7 +41,7 @@ public class EventSocket extends WebSocketAdapter {
     private @Nullable CountDownLatch closureLatch = null;
 
     @Override
-    public void onWebSocketConnect(Session session) {
+    public void onWebSocketConnect(@Nullable Session session) {
         super.onWebSocketConnect(session);
 
         if (closureLatch != null) {
@@ -54,7 +56,7 @@ public class EventSocket extends WebSocketAdapter {
 
     @Override
     @SuppressWarnings("null")
-    public void onWebSocketText(String message) {
+    public void onWebSocketText(@Nullable String message) {
         super.onWebSocketText(message);
 
         if (message.toLowerCase(Locale.US).contains("bye")) {
@@ -71,7 +73,7 @@ public class EventSocket extends WebSocketAdapter {
     }
 
     @Override
-    public void onWebSocketClose(int statusCode, String reason) {
+    public void onWebSocketClose(int statusCode, @Nullable String reason) {
         super.onWebSocketClose(statusCode, reason);
 
         logger.debug("Socket Closed: [ {} ] {}", statusCode, reason);
@@ -86,7 +88,7 @@ public class EventSocket extends WebSocketAdapter {
     }
 
     @Override
-    public void onWebSocketError(Throwable cause) {
+    public void onWebSocketError(@Nullable Throwable cause) {
         super.onWebSocketError(cause);
 
         logger.debug("Socket Error: {}", cause.getLocalizedMessage());
@@ -112,11 +114,11 @@ public class EventSocket extends WebSocketAdapter {
         logger.debug("Socket latch reseted - restart latch to [ {} ]", closureLatch.getCount());
     }
 
-    public CountDownLatch getLatch() {
+    public @Nullable CountDownLatch getLatch() {
         return closureLatch;
     }
 
-    public void setBridge(FreeAtHomeBridgeHandler bridge) {
+    public void setBridge(@Nullable FreeAtHomeBridgeHandler bridge) {
         logger.debug("Set bridge to handle the events");
 
         freeAtHomeBridge = bridge;

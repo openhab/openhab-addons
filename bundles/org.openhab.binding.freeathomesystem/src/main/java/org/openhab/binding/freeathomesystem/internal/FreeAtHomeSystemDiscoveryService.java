@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,11 +25,10 @@ import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHan
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andras Uhrin - Initial contribution
  */
-@Component(service = DiscoveryService.class)
 @NonNullByDefault
 public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
@@ -100,6 +99,11 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
         if (handler instanceof FreeAtHomeBridgeHandler) {
             this.bridge = (FreeAtHomeBridgeHandler) handler;
         }
+    }
+
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypes() {
+        return Set.of(FreeAtHomeSystemBindingConstants.BRIDGE_TYPE_UID);
     }
 
     @Override
