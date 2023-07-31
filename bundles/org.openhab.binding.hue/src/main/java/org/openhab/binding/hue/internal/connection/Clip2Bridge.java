@@ -917,9 +917,9 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Use an HTTP/2 PUT command to send a resource to the server. Note: the Hue bridge server can sometimes get
-     * confused by parallel overlapping PUT resp. GET commands, so this method acquires all of the stream access permits
-     * (given by MAX_CONCURRENT_STREAMS) in order to prevent any overlaps.
+     * Use an HTTP/2 PUT command to send a resource to the server. Note: the Hue Bridge can get confused by parallel
+     * overlapping PUT resp. GET commands which cause it to respond with an HTML error page. So this method acquires all
+     * of the stream access permits (given by MAX_CONCURRENT_STREAMS) in order to prevent such overlaps.
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
@@ -1040,9 +1040,10 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Hue Bridges get confused if they receive too many HTTP requests in a short period of time (e.g. on start up), or
-     * if too many HTTP sessions are opened at the same time. So this method throttles the requests to a maximum of one
-     * per REQUEST_INTERVAL_MILLISECS, and ensures that no more than MAX_CONCURRENT_SESSIONS stream permits are issued.
+     * The Hue Bridge can get confused if they receive too many HTTP requests in a short period of time (e.g. on start
+     * up), or if too many HTTP sessions are opened at the same time, which cause it to respond with an HTML error page.
+     * So this method throttles the requests to a maximum of one per REQUEST_INTERVAL_MILLISECS, and ensures that no
+     * more than MAX_CONCURRENT_SESSIONS stream permits are issued.
      *
      * @param permitCount indicates how many stream permits to be acquired.
      * @throws InterruptedException
