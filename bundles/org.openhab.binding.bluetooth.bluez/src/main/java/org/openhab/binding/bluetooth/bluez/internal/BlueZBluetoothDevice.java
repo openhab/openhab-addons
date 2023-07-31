@@ -469,7 +469,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic) {
         BluetoothDevice dev = device;
-        if (dev == null || !dev.isConnected()) {
+        if (dev == null || dev.isConnected() == null || !dev.isConnected()) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }
