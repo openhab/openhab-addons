@@ -13,7 +13,6 @@
 package org.openhab.binding.vesync.internal.discovery;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +29,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+
+import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
@@ -94,6 +95,24 @@ public class VeSyncDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     @Override
     public void handleMetadataRetrieved(VeSyncBridgeHandler handler) {
+        thingHandler.getOutletMetaData().map(apMeta -> {
+            final Map<String, Object> properties = new HashMap<>(6);
+            final String deviceUUID = apMeta.getUuid();
+            properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
+            properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
+            properties.put(DEVICE_PROP_DEVICE_FAMILY,
+                    VeSyncBaseDeviceHandler.getDeviceFamilyMetadata(apMeta.getDeviceType(),
+                            VeSyncDeviceOutletHandler.DEV_TYPE_FAMILY_OUTLET,
+                            VeSyncDeviceOutletHandler.SUPPORTED_MODEL_FAMILIES));
+            properties.put(DEVICE_PROP_DEVICE_MAC_ID, apMeta.getMacId());
+            properties.put(DEVICE_PROP_DEVICE_UUID, deviceUUID);
+            properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());
+            properties.put(DEVICE_PROP_CONFIG_DEVICE_NAME, apMeta.getDeviceName());
+            return DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_OUTLET, bridgeUID, deviceUUID))
+                    .withLabel(apMeta.getDeviceName()).withBridge(bridgeUID).withProperties(properties)
+                    .withRepresentationProperty(DEVICE_PROP_DEVICE_MAC_ID).build();
+        }).forEach(this::thingDiscovered);
+
         thingHandler.getAirPurifiersMetadata().map(apMeta -> {
             final Map<String, Object> properties = new HashMap<>(6);
             final String deviceUUID = apMeta.getUuid();
