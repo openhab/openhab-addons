@@ -32,4 +32,5 @@ public class GoogleTVConfiguration {
     public boolean shim;
     public boolean shimNewKeys;
     public String mode = "";
+    public boolean gtvEnabled;
 }

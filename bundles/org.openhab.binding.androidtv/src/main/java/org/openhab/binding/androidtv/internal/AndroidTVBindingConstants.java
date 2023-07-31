@@ -50,6 +50,7 @@ public class AndroidTVBindingConstants {
 
     // List of all config properties
     public static final String PROPERTY_IP_ADDRESS = "ipAddress";
+    public static final String PROPERTY_GTV_ENABLED = "gtvEnabled";
 
     // List of all static String literals
     public static final String PIN_REQUEST = "REQUEST";
