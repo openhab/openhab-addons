@@ -71,6 +71,11 @@
 				<description>Delay between messages</description>
 				<default>0</default>
 			</parameter>
+			<parameter name="gtvEnabled" type="boolean">
+				<label>Enable GoogleTV</label>
+				<description>Enable the GoogleTV Protocol</description>
+				<default>true</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -136,6 +141,11 @@
 				<label>Delay</label>
 				<description>Delay between messages</description>
 				<default>0</default>
+			</parameter>
+			<parameter name="gtvEnabled" type="boolean">
+				<label>Enable GoogleTV</label>
+				<description>Enable the GoogleTV Protocol</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 
