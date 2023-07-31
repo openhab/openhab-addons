@@ -22,7 +22,7 @@ import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_DE
 import static org.openhab.binding.vesync.internal.VeSyncConstants.THING_TYPE_AIR_HUMIDIFIER;
 import static org.openhab.binding.vesync.internal.VeSyncConstants.THING_TYPE_AIR_PURIFIER;
 import static org.openhab.binding.vesync.internal.VeSyncConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.vesync.internal.VeSyncConstants.THING_TYPE_WIFI_SWITCH;
+import static org.openhab.binding.vesync.internal.VeSyncConstants.THING_TYPE_OUTLET;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import org.openhab.binding.vesync.internal.handlers.VeSyncBaseDeviceHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
-import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceWifiSwitchHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceOutletHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -126,20 +126,20 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void handleMetadataRetrieved(VeSyncBridgeHandler handler) {
-        bridgeHandler.getWifiSwitchMetaData().map(apMeta -> {
+        bridgeHandler.getOutletMetaData().map(apMeta -> {
             final Map<String, Object> properties = new HashMap<>(6);
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
             properties.put(DEVICE_PROP_DEVICE_TYPE, apMeta.getDeviceType());
             properties.put(DEVICE_PROP_DEVICE_FAMILY,
                     VeSyncBaseDeviceHandler.getDeviceFamilyMetadata(apMeta.getDeviceType(),
-                            VeSyncDeviceWifiSwitchHandler.DEV_TYPE_FAMILY_WIFI_SWITCH,
-                            VeSyncDeviceWifiSwitchHandler.SUPPORTED_MODEL_FAMILIES));
+                            VeSyncDeviceOutletHandler.DEV_TYPE_FAMILY_OUTLET,
+                            VeSyncDeviceOutletHandler.SUPPORTED_MODEL_FAMILIES));
             properties.put(DEVICE_PROP_DEVICE_MAC_ID, apMeta.getMacId());
             properties.put(DEVICE_PROP_DEVICE_UUID, deviceUUID);
             properties.put(DEVICE_PROP_CONFIG_DEVICE_MAC, apMeta.getMacId());
             properties.put(DEVICE_PROP_CONFIG_DEVICE_NAME, apMeta.getDeviceName());
-            return DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_WIFI_SWITCH, bridgeUID, deviceUUID))
+            return DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_OUTLET, bridgeUID, deviceUUID))
                     .withLabel(apMeta.getDeviceName()).withBridge(bridgeUID).withProperties(properties)
                     .withRepresentationProperty(DEVICE_PROP_DEVICE_MAC_ID).build();
         }).forEach(this::thingDiscovered);

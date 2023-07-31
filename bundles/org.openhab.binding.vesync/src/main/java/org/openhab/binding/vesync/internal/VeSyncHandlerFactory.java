@@ -23,7 +23,7 @@ import org.openhab.binding.vesync.internal.api.IHttpClientProvider;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
-import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceWifiSwitchHandler;
+import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceOutletHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -45,7 +45,7 @@ import org.osgi.service.component.annotations.Reference;
 public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHttpClientProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
-            THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER, THING_TYPE_WIFI_SWITCH);
+            THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER, THING_TYPE_OUTLET);
 
     private @Nullable HttpClient httpClientRef = null;
 
@@ -62,8 +62,8 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHt
             return new VeSyncDeviceAirPurifierHandler(thing);
         } else if (VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new VeSyncDeviceAirHumidifierHandler(thing);
-        } else if (VeSyncDeviceWifiSwitchHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new VeSyncDeviceWifiSwitchHandler(thing);
+        } else if (VeSyncDeviceOutletHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return new VeSyncDeviceOutletHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new VeSyncBridgeHandler((Bridge) thing, this);
         }

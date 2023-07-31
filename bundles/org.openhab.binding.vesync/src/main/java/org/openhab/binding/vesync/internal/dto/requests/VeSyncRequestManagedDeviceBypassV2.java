@@ -50,6 +50,9 @@ public class VeSyncRequestManagedDeviceBypassV2 extends VeSyncAuthenticatedReque
 
         @SerializedName("data")
         public EmptyPayload data = new EmptyPayload();
+
+        @SerializedName("subDeviceNo")
+        public int subDeviceNo = 0;
     }
 
     public static class EmptyPayload {

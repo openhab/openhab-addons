@@ -176,11 +176,12 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
                         .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
-    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getWifiSwitchMetaData() {
-        return api.getMacLookupMap().values().stream().filter(x -> !VeSyncBaseDeviceHandler
-                .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceWifiSwitchHandler.DEV_TYPE_FAMILY_WIFI_SWITCH,
-                        VeSyncDeviceWifiSwitchHandler.SUPPORTED_MODEL_FAMILIES)
-                .equals(VeSyncBaseDeviceHandler.UNKNOWN));
+    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getOutletMetaData() {
+        return api.getMacLookupMap().values().stream()
+                .filter(x -> !VeSyncBaseDeviceHandler
+                        .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceOutletHandler.DEV_TYPE_FAMILY_OUTLET,
+                                VeSyncDeviceOutletHandler.SUPPORTED_MODEL_FAMILIES)
+                        .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
     protected void updateThings() {

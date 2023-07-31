@@ -37,30 +37,53 @@
 				<description>Seconds between fetching background updates about the air purifiers / humidifiers.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="outletPollInterval" type="integer" min="5" step="1" unit="s">
+				<label>Oultet Poll Rate</label>
+				<description>Seconds between fetching background updates about the outlets.</description>
+				<default>60</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="wifiSwitch">
+	<thing-type id="outlet">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Wifi Switch via VeSync</label>
-		<description>An Wifi Switch uplinking to VeSync</description>
+		<label>Outlet via VeSync</label>
+		<description>An Outlet uplinking to VeSync</description>
 
 		<channels>
 			<channel id="enabled" typeId="deviceEnabledType"></channel>
-			<channel id="activeTime" typeId="activeTimeType"></channel>
+			<channel id="current" typeId="currentType"></channel>
 			<channel id="energy" typeId="energyType"></channel>
 			<channel id="power" typeId="powerType"></channel>
 			<channel id="voltage" typeId="voltageType"></channel>
+			<channel id="highestVoltage" typeId="highestVoltageType"></channel>
+			<channel id="voltagePTStatus" typeId="voltagePTStatusType"></channel>
 			<channel id="energyWeek" typeId="energyWeekType"></channel>
 			<channel id="energyMonth" typeId="energyMonthType"></channel>
 			<channel id="energyYear" typeId="energyYearType"></channel>
-			<channel id="nightlightStatus" typeId="nightlightStatusType"></channel>
-			<channel id="nightlightMode" typeId="nightlightModeType"></channel>
-			<channel id="nightlightBrightness" typeId="nightlightBrightnessType"></channel>
 		</channels>
+
+		<properties>
+			<property name="Device Name"/>
+			<property name="Device Type"/>
+			<property name="MAC Id"/>
+			<property name="Device Family"/>
+		</properties>
+		<representation-property>macId</representation-property>
+
+		<config-description>
+			<parameter name="macId" type="text">
+				<label>MAC Id</label>
+				<description>The MAC Id of the device as reported by the API.</description>
+			</parameter>
+			<parameter name="deviceName" type="text">
+				<label>Device Name</label>
+				<description>The name allocated to the device by the app. (Must be unique if used)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="airPurifier">
@@ -155,73 +178,66 @@
 
 	</thing-type>
 
-	<channel-type id="activeTimeType">
-		<item-type>Number:Time</item-type>
-		<label>Active Time of the device</label>
-		<description>Active Time of the device in minutes</description>
-		<state pattern="%i min"/>
+	<channel-type id="currentType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Actual current in A</description>
+		<state readOnly="true" pattern="%0.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyType">
 		<item-type>Number:Power</item-type>
 		<label>Energy</label>
 		<description>Today's energy in kWh</description>
-		<state pattern="%i kWh"/>
+		<state readOnly="true" pattern="%0.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="powerType">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Current power in W</description>
+		<state readOnly="true" pattern="%0.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="voltageType">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Current Voltage</description>
+		<state readOnly="true" pattern="%0.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="highestVoltageType">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Highest Voltage</label>
+		<description>Highest Voltage ever measured by the outlet</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="voltagePTStatusType">
+		<item-type>Switch</item-type>
+		<label>Voltage PT Status</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="energyWeekType">
 		<item-type>Number:Power</item-type>
 		<label>Energy Week</label>
 		<description>Total energy of week in kWh</description>
-		<state pattern="%i kWh"/>
+		<state readOnly="true" pattern="%i kWh"/>
 	</channel-type>
 
 	<channel-type id="energyMonthType">
 		<item-type>Number:Power</item-type>
 		<label>Energy Month</label>
 		<description>Total energy of month in kWh</description>
+		<state readOnly="true" pattern="%i kWh"/>
 	</channel-type>
 
 	<channel-type id="energyYearType">
 		<item-type>Number:Power</item-type>
 		<label>Energy Year</label>
 		<description>Total energy of year in kWh</description>
-	</channel-type>
-
-	<channel-type id="nightlightStatusType">
-		<item-type>Switch</item-type>
-		<label>Nightlight On</label>
-		<description>Indicator if the Nightlight is switched on</description>
-	</channel-type>
-
-	<channel-type id="nightlightModeType">
-		<item-type>String</item-type>
-		<label>Nightlight Automode</label>
-		<description>Indicator for the mode the nightlight is in</description>
-	</channel-type>
-
-	<channel-type id="nightlightBrightnessType">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Nightlight Brightness</label>
-		<description>Brightness level of the nightlight</description>
-		<state>
-			<options>
-				<option value="manual">Manual</option>
-				<option value="auto">Automatic</option>
-			</options>
-		</state>
+		<state readOnly="true" pattern="%i kWh"/>
 	</channel-type>
 
 	<channel-type id="deviceEnabledType">

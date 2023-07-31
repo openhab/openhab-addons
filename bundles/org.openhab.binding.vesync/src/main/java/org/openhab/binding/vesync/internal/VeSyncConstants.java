@@ -41,7 +41,7 @@ public class VeSyncConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "airPurifier");
     public static final ThingTypeUID THING_TYPE_AIR_HUMIDIFIER = new ThingTypeUID(BINDING_ID, "airHumidifier");
-    public static final ThingTypeUID THING_TYPE_WIFI_SWITCH = new ThingTypeUID(BINDING_ID, "wifiSwitch");
+    public static final ThingTypeUID THING_TYPE_OUTLET = new ThingTypeUID(BINDING_ID, "outlet");
 
     // Thing configuration properties
     public static final String DEVICE_MAC_ID = "macAddress";
@@ -68,10 +68,12 @@ public class VeSyncConstants {
     public static final String DEVICE_CHANNEL_AF_NIGHT_LIGHT = "nightLightMode";
 
     // Energy Related Channel Names
-    public static final String DEVICE_CHANNEL_ACTIVE_TIME = "activeTime";
+    public static final String DEVICE_CHANNEL_CURRENT = "current";
     public static final String DEVICE_CHANNEL_ENERGY = "energy";
     public static final String DEVICE_CHANNEL_POWER = "power";
     public static final String DEVICE_CHANNEL_VOLTAGE = "voltage";
+    public static final String DEVICE_CHANNEL_VOLTAGE_PT_STATUS = "voltagePTStatus";
+    public static final String DEVICE_CHANNEL_HIGHEST_VOLTAGE = "highestVoltage";
     public static final String DEVICE_CHANNEL_ENERGY_WEEK = "energyWeek";
     public static final String DEVICE_CHANNEL_ENERGY_MONTH = "energyMonth";
     public static final String DEVICE_CHANNEL_ENERGY_YEAR = "energyYear";

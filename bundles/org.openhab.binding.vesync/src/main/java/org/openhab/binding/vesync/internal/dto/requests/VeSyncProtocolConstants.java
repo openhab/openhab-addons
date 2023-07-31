@@ -34,7 +34,7 @@ public interface VeSyncProtocolConstants {
     String DEVICE_SET_LEVEL = "setLevel";
 
     // Wifi Switch Commands
-    String DEVICE_GET_WIFI_SWITCH_STATUS = "getWifiSwitchStatus";
+    String DEVICE_GET_OUTLET_STATUS = "getOutletStatus";
 
     // Humidifier Commands
     String DEVICE_SET_AUTOMATIC_STOP = "setAutomaticStop";
