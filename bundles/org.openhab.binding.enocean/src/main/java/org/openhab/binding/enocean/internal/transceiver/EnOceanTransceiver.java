@@ -238,9 +238,9 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.debug("shutting down transceiver");
         logger.debug("Interrupt rx Thread");
 
-        Future<?> timeOut = this.timeOutTask;
-        if (timeOut != null) {
-            timeOut.cancel(true);
+        Future<?> timeOutTask = this.timeOutTask;
+        if (timeOutTask != null) {
+            timeOutTask.cancel(true);
             this.timeOutTask = null;
         }
 
