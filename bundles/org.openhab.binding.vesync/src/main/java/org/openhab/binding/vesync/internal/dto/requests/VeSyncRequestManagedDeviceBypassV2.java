@@ -160,6 +160,20 @@ public class VeSyncRequestManagedDeviceBypassV2 extends VeSyncAuthenticatedReque
         public String mode = "";
     }
 
+    public static class GetEnergyHistory extends EmptyPayload {
+
+        public GetEnergyHistory(final long start, final long end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        @SerializedName("fromDay")
+        public long start = 0;
+
+        @SerializedName("toDay")
+        public long end = 0;
+    }
+
     public VeSyncRequestManagedDeviceBypassV2() {
         super();
         method = "bypassV2";
