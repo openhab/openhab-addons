@@ -33,6 +33,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
@@ -87,6 +88,10 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     public String getThingID() {
         return this.thingID;
+    }
+
+    public ThingUID getThingUID() {
+        return getThing().getUID();
     }
 
     public void updateChannelState(String channel, State state) {
