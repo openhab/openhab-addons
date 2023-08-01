@@ -82,7 +82,7 @@ import io.github.givimad.whisperjni.WhisperState;
         + " Speech-to-Text", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class WhisperSTTService implements STTService {
     private static final int WHISPER_SAMPLE_RATE = 16000;
-    private static final Path WHISPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "whisper");
+    protected static final Path WHISPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "whisper");
     private static final Path SAMPLES_FOLDER = Path.of(WHISPER_FOLDER.toString(), "samples");
 
     static {
