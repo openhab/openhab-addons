@@ -49,7 +49,7 @@
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
 
-        <properties>
+		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
 
@@ -102,8 +102,8 @@
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
-        
-        <properties>
+
+		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
 
@@ -156,8 +156,8 @@
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
-        
-        <properties>
+
+		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
 
