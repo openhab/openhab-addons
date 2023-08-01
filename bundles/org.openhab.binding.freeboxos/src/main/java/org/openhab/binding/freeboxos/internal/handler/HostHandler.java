@@ -15,14 +15,13 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.HostActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager;
-import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostIntf;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
 import org.openhab.binding.freeboxos.internal.api.rest.WebSocketManager;
@@ -42,30 +41,36 @@ import org.slf4j.LoggerFactory;
 public class HostHandler extends ApiConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
 
-    // We start in pull mode and switch to push after a first update
+    // We start in pull mode and switch to push after a first update...
     private boolean pushSubscribed = false;
 
     public HostHandler(Thing thing) {
         super(thing);
+        statusDrivenByBridge = false;
     }
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(result -> {
-            LanHost host = result.host();
-            properties.put(Thing.PROPERTY_VENDOR, host.vendorName());
-            host.getUPnPName().ifPresent(upnpName -> properties.put(Source.UPNP.name(), upnpName));
-        });
+        LanHost host = getLanHost();
+        properties.put(Thing.PROPERTY_VENDOR, host.vendorName());
+        host.getName(Source.UPNP).ifPresent(upnpName -> properties.put(Source.UPNP.name(), upnpName));
     }
 
     @Override
     public void dispose() {
-        try {
-            getManager(WebSocketManager.class).unregisterListener(getMac());
-        } catch (FreeboxException e) {
-            logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
-        }
+        cancelPushSubscription();
         super.dispose();
+    }
+
+    protected void cancelPushSubscription() {
+        if (pushSubscribed) {
+            try {
+                getManager(WebSocketManager.class).unregisterListener(getMac());
+            } catch (FreeboxException e) {
+                logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
+            }
+            pushSubscribed = false;
+        }
     }
 
     @Override
@@ -73,13 +78,17 @@ public class HostHandler extends ApiConsumerHandler {
         if (pushSubscribed) {
             return;
         }
-        HostIntf data = getManager(LanBrowserManager.class).getHost(getMac())
-                .orElseThrow(() -> new FreeboxException("Host data not found"));
 
-        updateConnectivityChannels(data.host());
+        LanHost host = getLanHost();
+        updateConnectivityChannels(host);
         logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
-        getManager(WebSocketManager.class).registerListener(data.host().getMac(), this);
+        getManager(WebSocketManager.class).registerListener(host.getMac(), this);
         pushSubscribed = true;
+    }
+
+    protected LanHost getLanHost() throws FreeboxException {
+        return getManager(LanBrowserManager.class).getHost(getMac()).map(hostIntf -> hostIntf.host())
+                .orElseThrow(() -> new FreeboxException("Host data not found"));
     }
 
     public void updateConnectivityChannels(LanHost host) {
@@ -100,6 +109,6 @@ public class HostHandler extends ApiConsumerHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(HostActions.class);
+        return Set.of(HostActions.class);
     }
 }

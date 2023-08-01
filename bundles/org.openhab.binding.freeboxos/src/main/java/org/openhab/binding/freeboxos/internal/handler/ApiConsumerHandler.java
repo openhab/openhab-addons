@@ -56,8 +56,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import inet.ipaddr.IPAddress;
-import inet.ipaddr.MACAddressString;
-import inet.ipaddr.mac.MACAddress;
 
 /**
  * The {@link ServerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
@@ -70,6 +68,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
     private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
 
     private @Nullable ServiceRegistration<?> reg;
+    protected boolean statusDrivenByBridge = true;
 
     ApiConsumerHandler(Thing thing) {
         super(thing);
@@ -167,10 +166,12 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof FreeboxOsHandler) {
+            if (handler instanceof FreeboxOsHandler fbOsHandler) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                    return (FreeboxOsHandler) handler;
+                    if (statusDrivenByBridge) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+                    return fbOsHandler;
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
@@ -342,11 +343,5 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
     @Override
     public int getClientId() {
         return ((BigDecimal) getConfig().get(ClientConfiguration.ID)).intValue();
-    }
-
-    @Override
-    public MACAddress getMac() {
-        String mac = (String) getConfig().get(Thing.PROPERTY_MAC_ADDRESS);
-        return new MACAddressString(mac).getAddress();
     }
 }
