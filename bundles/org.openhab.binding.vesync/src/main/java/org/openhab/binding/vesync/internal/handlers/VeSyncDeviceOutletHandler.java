@@ -45,6 +45,7 @@ import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHis
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistory.EnergyHistory.Result.EnergyInfo;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassOutletStatus;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -219,10 +220,8 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_HIGHEST_VOLTAGE,
                 new QuantityType<>(outletStatus.outletResult.result.highestVoltage, Units.VOLT));
         updateState(DEVICE_CHANNEL_VOLTAGE_PT_STATUS, OnOffType.from(outletStatus.outletResult.result.voltagePTStatus));
-        updateState(DEVICE_CHANNEL_ENERGY_WEEK,
-                new QuantityType<>(getEnergy(energyHistory, 7), MetricPrefix.KILO(Units.WATT_HOUR)));
-        updateState(DEVICE_CHANNEL_ENERGY_MONTH,
-                new QuantityType<>(getEnergy(energyHistory, 30), MetricPrefix.KILO(Units.WATT_HOUR)));
+        updateState(DEVICE_CHANNEL_ENERGY_WEEK, new DecimalType(getEnergy(energyHistory, 7)));
+        updateState(DEVICE_CHANNEL_ENERGY_MONTH, new DecimalType(getEnergy(energyHistory, 30)));
     }
 
     private static long getTimestampForToday() throws ParseException {
