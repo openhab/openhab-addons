@@ -99,7 +99,7 @@ The *landline* thing requires the following configuration parameters:
 
 ### Network devices: Host
 
-The *host* thing require the following configuration parameters:
+The *host* thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
@@ -108,7 +108,7 @@ The *host* thing require the following configuration parameters:
 
 ### Network devices: WifiHost
 
-The *wifihost* thing require the following configuration parameters:
+The *wifihost* thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
