@@ -49,6 +49,10 @@
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
 
+        <properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:chromecast:device"/>
@@ -98,6 +102,10 @@
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
+        
+        <properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>deviceId</representation-property>
 
@@ -148,6 +156,10 @@
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
+        
+        <properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>deviceId</representation-property>
 
