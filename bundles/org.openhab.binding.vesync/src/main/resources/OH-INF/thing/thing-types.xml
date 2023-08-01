@@ -189,14 +189,14 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<description>Today's energy in kWh</description>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
 
 	<channel-type id="powerType">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Current power in W</description>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.2f W"/>
 	</channel-type>
 
 	<channel-type id="voltageType">
@@ -210,7 +210,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Highest Voltage</label>
 		<description>Highest Voltage ever measured by the outlet</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="voltagePTStatusType">
@@ -223,21 +223,21 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Week</label>
 		<description>Total energy of week in kWh</description>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
 
 	<channel-type id="energyMonthType">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Month</label>
 		<description>Total energy of month in kWh</description>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
 
 	<channel-type id="energyYearType">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Year</label>
 		<description>Total energy of year in kWh</description>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
 
 	<channel-type id="deviceEnabledType">
