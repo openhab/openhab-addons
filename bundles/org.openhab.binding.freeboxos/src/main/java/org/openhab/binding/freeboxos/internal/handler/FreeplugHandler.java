@@ -53,7 +53,7 @@ public class FreeplugHandler extends ApiConsumerHandler {
             properties.put(Thing.PROPERTY_MODEL_ID, plug.model());
             properties.put(ROLE, plug.netRole().name());
             properties.put(NET_ID, plug.netId());
-            properties.put(ETHERNET_SPEED, String.format("%d Mb/s", plug.ethSpeed()));
+            properties.put(ETHERNET_SPEED, "%d Mb/s".formatted(plug.ethSpeed()));
             properties.put(LOCAL, Boolean.valueOf(plug.local()).toString());
             properties.put(FULL_DUPLEX, Boolean.valueOf(plug.ethFullDuplex()).toString());
 
@@ -88,7 +88,7 @@ public class FreeplugHandler extends ApiConsumerHandler {
             getManager(FreeplugManager.class).reboot(getMac());
             logger.debug("Freeplug {} succesfully restarted", getMac());
         } catch (FreeboxException e) {
-            logger.warn("Error restarting freeplug: {}", e.getMessage());
+            logger.warn("Error restarting freeplug {}: {}", getMac(), e.getMessage());
         }
     }
 

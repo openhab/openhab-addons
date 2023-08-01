@@ -126,8 +126,8 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     public static record LanHost(String id, @Nullable String primaryName, HostType hostType, boolean primaryNameManual,
             L2Ident l2ident, @Nullable String vendorName, boolean persistent, boolean reachable,
             @Nullable ZonedDateTime lastTimeReachable, boolean active, @Nullable ZonedDateTime lastActivity,
-            @Nullable ZonedDateTime firstActivity, List<HostName> names, List<L3Connectivity> l3connectivities,
-            @Nullable LanAccessPoint accessPoint) {
+            @Nullable ZonedDateTime firstActivity, @Nullable List<HostName> names,
+            List<L3Connectivity> l3connectivities, @Nullable LanAccessPoint accessPoint) {
 
         public @Nullable LanAccessPoint accessPoint() {
             return accessPoint;
@@ -135,15 +135,20 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
 
         public String vendorName() {
             String localVendor = vendorName;
-            return localVendor != null ? localVendor : "Unknown";
+            return localVendor == null || localVendor.isEmpty() ? "Unknown" : localVendor;
         }
 
         public Optional<String> getPrimaryName() {
             return Optional.ofNullable(primaryName);
         }
 
-        public Optional<String> getUPnPName() {
-            return names.stream().filter(name -> name.source == Source.UPNP).findFirst().map(name -> name.name);
+        public List<HostName> getNames() {
+            List<HostName> localNames = names;
+            return localNames != null ? localNames : List.of();
+        }
+
+        public Optional<String> getName(Source searchedSource) {
+            return getNames().stream().filter(name -> name.source == searchedSource).findFirst().map(HostName::name);
         }
 
         public MACAddress getMac() {
@@ -214,6 +219,29 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<LanHost> getHost(HostName identifier) throws FreeboxException {
+        List<LanHost> hosts = getHosts();
+        LanHost result = null;
+        boolean multiple = false;
+        for (LanHost host : hosts) {
+            Optional<String> sourcedName = host.getName(identifier.source);
+            if (sourcedName.isPresent() && sourcedName.get().equals(identifier.name)) {
+                // We will not return something if multiple hosts are found. This can happen in case of IP change that
+                // a previous name remains attached to a different host.
+                if (result == null) {
+                    result = host;
+                } else if (!result.getMac().equals(host.getMac())) {
+                    // Multiple hosts with different macs
+                    multiple = true;
+                }
+            }
+        }
+        if (multiple) {
+            result = null;
+        }
+        return Optional.ofNullable(result);
     }
 
     public boolean wakeOnLan(MACAddress mac, String password) throws FreeboxException {
