@@ -276,13 +276,12 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
     @Override
     public void handleRemoval() {
-        ScheduledFuture<?> future = releaseFuture;
-        if (future != null && !future.isDone()) {
-            future.cancel(true);
-            future = null;
+        ScheduledFuture<?> releaseFuture = this.releaseFuture;
+        if (releaseFuture != null) {
+            releaseFuture.cancel(true);
+            this.releaseFuture = null;
         }
 
-        releaseFuture = null;
         super.handleRemoval();
     }
 }

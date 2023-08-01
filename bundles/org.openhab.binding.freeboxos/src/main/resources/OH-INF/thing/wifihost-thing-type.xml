@@ -19,7 +19,7 @@
 
 		<representation-property>macAddress</representation-property>
 
-		<config-description-ref uri="thing-type:freeboxos:host"/>
+		<config-description-ref uri="thing-type:freeboxos:wifi-host"/>
 	</thing-type>
 
 </thing:thing-descriptions>
