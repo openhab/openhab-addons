@@ -38,7 +38,12 @@ public enum RobotCababilities {
     ROOM_MAPPING("", "info#room_mapping", "miio:room_mapping", "get_room_mapping"),
     MULTI_MAP_LIST("", "info#multi_maps_list", "miio:multi_maps_list", "get_multi_maps_list"),
     CUSTOMIZE_CLEAN_MODE("", "info#customize_clean_mode", "miio:customize_clean_mode", "get_customize_clean_mode"),
-    SEGMENT_CLEAN("", "actions#segment", "miio:segment", "");
+    SEGMENT_CLEAN("", "actions#segment", "miio:segment", ""),
+    COLLECT_DUST("auto_dust_collection", "actions#collectdust", "miio:collectdust", ""),
+    CLEAN_MOP_START("dry_status", "actions#cleanmopstart", "miio:cleanmopstart", ""),
+    CLEAN_MOP_STOP("dry_status", "actions#cleanmopstop", "miio:cleanmopstop", ""),
+    MOP_DRYING("dry_status", "status#is_mop_drying", "miio:is_mop_drying", ""),
+    MOP_DRYING_REMAING_TIME("dry_status", "status#mop_drying_time", "miio:mop_drying_time", "");
 
     private final String statusFieldName;
     private final String channel;

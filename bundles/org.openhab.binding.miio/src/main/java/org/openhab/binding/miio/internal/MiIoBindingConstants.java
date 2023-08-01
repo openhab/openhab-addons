@@ -94,6 +94,8 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_TOTALAREA = "history#total_clean_area";
     public static final String CHANNEL_HISTORY_COUNT = "history#total_clean_count";
 
+    public static final String CHANNEL_MOP_TOTALDRYTIME = "status#mop_drying_time";
+
     public static final String CHANNEL_HISTORY_START_TIME = "cleaning#last_clean_start_time";
     public static final String CHANNEL_HISTORY_END_TIME = "cleaning#last_clean_end_time";
     public static final String CHANNEL_HISTORY_AREA = "cleaning#last_clean_area";

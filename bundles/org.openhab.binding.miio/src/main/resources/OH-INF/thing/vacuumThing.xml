@@ -34,6 +34,9 @@
 			<channel id="fan" typeId="fan"/>
 			<channel id="vacuum" typeId="vacuum"/>
 			<channel id="segment" typeId="segment"/>
+			<channel id="collectdust" typeId="collectdust"/>
+			<channel id="cleanmopstart" typeId="cleanmopstart"/>
+			<channel id="cleanmopstop" typeId="cleanmopstop"/>
 		</channels>
 	</channel-group-type>
 
@@ -54,6 +57,8 @@
 			<channel id="segment_status" typeId="segment_status"/>
 			<channel id="map_status" typeId="map_status"/>
 			<channel id="led_status" typeId="led_status"/>
+			<channel id="mop_drying_time" typeId="mop_drying_time"/>
+			<channel id="is_mop_drying" typeId="is_mop_drying"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -181,6 +186,17 @@
 		<label>Led Status</label>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
+	<channel-type id="mop_drying_time">
+		<item-type>Number</item-type>
+		<label>Mop Drying Time</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="is_mop_drying">
+		<item-type>Switch</item-type>
+		<label>Mop cleaning active</label>
+		<state readOnly="true"/>
+	</channel-type>
+
 
 	<!-- Dynamic Status Channels -->
 	<channel-type id="water_box_mode">
@@ -296,6 +312,18 @@
 	<channel-type id="segment" advanced="true">
 		<item-type>String</item-type>
 		<label>Vacuum Room [room#]</label>
+	</channel-type>
+	<channel-type id="collectdust" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Start collect the dust at the station</label>
+	</channel-type>
+	<channel-type id="cleanmopstart" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Start mop wash</label>
+	</channel-type>
+	<channel-type id="cleanmopstop" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Stop mop wash</label>
 	</channel-type>
 
 	<channel-type id="consumable_reset">

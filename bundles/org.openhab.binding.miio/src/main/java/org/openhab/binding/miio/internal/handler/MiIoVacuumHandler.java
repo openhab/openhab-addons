@@ -98,7 +98,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream
             .of(RobotCababilities.SEGMENT_STATUS, RobotCababilities.MAP_STATUS, RobotCababilities.LED_STATUS,
                     RobotCababilities.CARPET_MODE, RobotCababilities.FW_FEATURES, RobotCababilities.ROOM_MAPPING,
-                    RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZE_CLEAN_MODE)
+                    RobotCababilities.MULTI_MAP_LIST, RobotCababilities.CUSTOMIZE_CLEAN_MODE,
+                    RobotCababilities.COLLECT_DUST, RobotCababilities.CLEAN_MOP_START, RobotCababilities.CLEAN_MOP_STOP,
+                    RobotCababilities.MOP_DRYING, RobotCababilities.MOP_DRYING_REMAING_TIME)
             .collect(Collectors.toSet()));
 
     private ExpiringCache<String> status;
@@ -260,6 +262,26 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             sendCommand(MiIoCommand.CONSUMABLES_RESET, "[" + command.toString() + "]");
             updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         }
+
+        if (channelUID.getId().equals(RobotCababilities.COLLECT_DUST.getChannel()) && !command.toString().isEmpty()
+                && !command.toString().contentEquals("-")) {
+            sendCommand(MiIoCommand.SET_COLLECT_DUST);
+            forceStatusUpdate();
+            return;
+        }
+
+        if (channelUID.getId().equals(RobotCababilities.CLEAN_MOP_START.getChannel()) && !command.toString().isEmpty()
+                && !command.toString().contentEquals("-")) {
+            sendCommand(MiIoCommand.SET_CLEAN_MOP_START);
+            forceStatusUpdate();
+            return;
+        }
+        if (channelUID.getId().equals(RobotCababilities.CLEAN_MOP_STOP.getChannel()) && !command.toString().isEmpty()
+                && !command.toString().contentEquals("-")) {
+            sendCommand(MiIoCommand.SET_CLEAN_MOP_STOP);
+            forceStatusUpdate();
+            return;
+        }
     }
 
     private void forceStatusUpdate() {
@@ -364,6 +386,22 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (deviceCapabilities.containsKey(RobotCababilities.LOCATING)) {
             safeUpdateState(RobotCababilities.LOCATING.getChannel(), statusInfo.getIsLocating());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.CLEAN_MOP_START)) {
+            safeUpdateState(RobotCababilities.CLEAN_MOP_START.getChannel(), 0);
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.CLEAN_MOP_STOP)) {
+            safeUpdateState(RobotCababilities.CLEAN_MOP_STOP.getChannel(), 0);
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.COLLECT_DUST)) {
+            safeUpdateState(RobotCababilities.COLLECT_DUST.getChannel(), 0);
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.MOP_DRYING)) {
+            safeUpdateState(RobotCababilities.MOP_DRYING.getChannel(), statusInfo.getIsMapDryingActive());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.MOP_DRYING_REMAING_TIME)) {
+            updateState(CHANNEL_MOP_TOTALDRYTIME,
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getMopDryTime()), Units.SECOND));
         }
         return true;
     }
@@ -594,6 +632,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case GET_CUSTOMIZED_CLEAN_MODE:
             case GET_MULTI_MAP_LIST:
             case GET_ROOM_MAPPING:
+            case SET_COLLECT_DUST:
+            case SET_CLEAN_MOP_START:
+            case SET_CLEAN_MOP_STOP:
                 for (RobotCababilities cmd : FEATURES_CHANNELS) {
                     if (response.getCommand().getCommand().contentEquals(cmd.getCommand())) {
                         updateState(cmd.getChannel(), new StringType(response.getResult().toString()));
