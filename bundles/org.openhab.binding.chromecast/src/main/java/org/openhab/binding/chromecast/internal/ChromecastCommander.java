@@ -128,7 +128,18 @@ public class ChromecastCommander {
 
     public void handleCloseApp(final Command command) {
         if (command == OnOffType.ON) {
-            closeApp(MEDIA_PLAYER);
+            Application app;
+            try {
+                app = chromeCast.getRunningApp();
+            } catch (final IOException e) {
+                logger.info("{} command failed: {}", command, e.getMessage());
+                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
+                return;
+            }
+
+            if (app != null) {
+                closeApp(app.id);
+            }
         }
     }
 
@@ -250,13 +261,13 @@ public class ChromecastCommander {
         try {
             if (chromeCast.isAppRunning(appId)) {
                 Application app = chromeCast.getRunningApp();
-                if (app.id.equals(appId) && app.sessionId.equals(statusUpdater.getAppSessionId())) {
+                if (app.id.equals(appId)) {
                     chromeCast.stopApp();
                     logger.debug("Application closed: {}", appId);
                 }
             }
         } catch (final IOException e) {
-            logger.debug("Failed stopping media player app: {} with message: {}", appId, e.getMessage());
+            logger.debug("Failed stopping app: {} with message: {}", appId, e.getMessage());
         }
     }
 
