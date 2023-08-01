@@ -20,7 +20,7 @@
 				</tags>
 			</update-channel>
 			<update-channel id="broadcastDate">
-				<type>Number:broadcastDate</type>
+				<type>chromecast:broadcastDate</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
@@ -60,7 +60,7 @@
 				</tags>
 			</update-channel>
 			<update-channel id="broadcastDate">
-				<type>Number:broadcastDate</type>
+				<type>chromecast:broadcastDate</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
@@ -100,7 +100,7 @@
 				</tags>
 			</update-channel>
 			<update-channel id="broadcastDate">
-				<type>Number:broadcastDate</type>
+				<type>chromecast:broadcastDate</type>
 				<tags>
 					<tag>Point</tag>
 					<tag>Timestamp</tag>
