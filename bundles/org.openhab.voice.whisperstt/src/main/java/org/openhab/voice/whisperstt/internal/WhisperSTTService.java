@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -81,9 +82,9 @@ import io.github.givimad.whisperjni.WhisperState;
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Speech-to-Text", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class WhisperSTTService implements STTService {
-    private static final int WHISPER_SAMPLE_RATE = 16000;
     protected static final Path WHISPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "whisper");
     private static final Path SAMPLES_FOLDER = Path.of(WHISPER_FOLDER.toString(), "samples");
+    private static final int WHISPER_SAMPLE_RATE = 16000;
 
     static {
         Logger logger = LoggerFactory.getLogger(WhisperSTTService.class);
@@ -388,7 +389,8 @@ public class WhisperSTTService implements STTService {
                         if (nSegments == 1) {
                             tempTranscription = whisper.fullGetSegmentTextFromState(state, 0);
                             if (config.createWAVFile) {
-                                createAudioFile(audioSamples, audioSamplesOffset, tempTranscription);
+                                createAudioFile(audioSamples, audioSamplesOffset, tempTranscription,
+                                        locale.getLanguage());
                             }
                             if (config.singleUtteranceMode) {
                                 logger.debug("single utterance mode, ending transcription");
@@ -493,7 +495,7 @@ public class WhisperSTTService implements STTService {
         }
     }
 
-    private void createAudioFile(float[] samples, int size, String transcription) {
+    private void createAudioFile(float[] samples, int size, String transcription, String language) {
         createSamplesDir();
         var jAudioFormat = new javax.sound.sampled.AudioFormat(javax.sound.sampled.AudioFormat.Encoding.PCM_FLOAT,
                 WHISPER_SAMPLE_RATE, 32, 1, 4, WHISPER_SAMPLE_RATE, false);
@@ -504,13 +506,20 @@ public class WhisperSTTService implements STTService {
         AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(buffer.array()),
                 jAudioFormat, samples.length);
         try {
-            Path filePath = Path.of(SAMPLES_FOLDER.toString(),
-                    new SimpleDateFormat("yyyy-MM-dd.HH.mm.ss.SS").format(new Date()) + "(" + transcription + ").wav");
-            logger.debug("Saving transcription audio file: {}", filePath);
-            FileOutputStream outputStream = new FileOutputStream(filePath.toFile());
-            AudioSystem.write(audioInputStreamTemp, AudioFileFormat.Type.WAVE, outputStream);
+            String fileName = new SimpleDateFormat("yyyy-MM-dd.HH.mm.ss.SS").format(new Date()) + "("
+                    + transcription.replaceAll("[^a-zA-Z0-9.-]", "_") + ")";
+            Path audioPath = Path.of(SAMPLES_FOLDER.toString(), fileName + ".wav");
+            Path propertiesPath = Path.of(SAMPLES_FOLDER.toString(), fileName + ".props");
+            logger.debug("Saving audio file: {}", audioPath);
+            FileOutputStream audioFileOutputStream = new FileOutputStream(audioPath.toFile());
+            AudioSystem.write(audioInputStreamTemp, AudioFileFormat.Type.WAVE, audioFileOutputStream);
+            String properties = "transcription=" + transcription + "\nlanguage=" + language + "\n";
+            logger.debug("Saving properties file: {}", propertiesPath);
+            FileOutputStream propertiesFileOutputStream = new FileOutputStream(propertiesPath.toFile());
+            propertiesFileOutputStream.write(properties.getBytes(StandardCharsets.UTF_8));
+            propertiesFileOutputStream.close();
         } catch (IOException e) {
-            logger.warn("Unable to store sample file");
+            logger.warn("Unable to store sample.", e);
         }
     }
 }
