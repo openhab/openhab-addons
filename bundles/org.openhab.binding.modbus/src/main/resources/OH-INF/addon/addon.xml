@@ -5,5 +5,6 @@
 	<type>binding</type>
 	<name>Modbus Binding</name>
 	<description>Binding for Modbus</description>
+	<connection>local</connection>
 
 </addon:addon>

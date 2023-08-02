@@ -5,20 +5,18 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:deconz:bridge">
+		<parameter-group name="http">
+			<label>HTTP Connection</label>
+			<advanced>true</advanced>
+		</parameter-group>
+		<parameter-group name="websocket">
+			<label>Websocket Connection</label>
+			<advanced>true</advanced>
+		</parameter-group>
 		<parameter name="host" type="text" required="true">
 			<label>Host Address</label>
 			<context>network-address</context>
 			<description>IP address or host name of deCONZ interface.</description>
-		</parameter>
-		<parameter name="httpPort" type="integer" min="1" max="65535">
-			<label>HTTP Port</label>
-			<description>Port of the deCONZ HTTP interface.</description>
-			<default>80</default>
-		</parameter>
-		<parameter name="port" type="integer" min="1" max="65535">
-			<label>Websocket Port</label>
-			<description>Port of the deCONZ Websocket.</description>
-			<advanced>true</advanced>
 		</parameter>
 		<parameter name="apikey" type="text">
 			<label>API Key</label>
@@ -26,11 +24,48 @@
 			<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ
 				web interface.</description>
 		</parameter>
-		<parameter name="timeout" type="integer" unit="ms" min="0">
+		<parameter name="httpPort" type="integer" min="1" max="65535" groupName="http">
+			<label>Port</label>
+			<description>Port of the deCONZ HTTP interface.</description>
+			<advanced>true</advanced>
+			<default>80</default>
+		</parameter>
+		<parameter name="timeout" type="integer" unit="ms" min="0" groupName="http">
 			<label>Timeout</label>
 			<description>Timeout for asynchronous HTTP requests (in milliseconds).</description>
 			<advanced>true</advanced>
 			<default>2000</default>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535" groupName="websocket">
+			<label>Port</label>
+			<description>Port of the deCONZ Websocket.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="websocketTimeout" type="integer" unit="s" min="30" groupName="websocket">
+			<label>Timeout</label>
+			<description>Timeout for the websocket connection (in seconds).</description>
+			<advanced>true</advanced>
+			<default>120</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:deconz:lightgroup">
+		<parameter name="id" type="text" required="true">
+			<label>Device ID</label>
+			<description>The deCONZ bridge assigns an integer number ID to each group.</description>
+		</parameter>
+		<parameter name="transitiontime" type="decimal" min="0" unit="s">
+			<label>Transition Time</label>
+			<description>Time to move between two states. If empty, the default of the group is used. Resolution is 1/10 second.</description>
+		</parameter>
+		<parameter name="colormode" type="text">
+			<label>Color Mode</label>
+			<description>Override the default color mode (auto-detect)</description>
+			<options>
+				<option value="hs">HSB</option>
+				<option value="xy">XY</option>
+			</options>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 
@@ -56,6 +91,12 @@
 			<label>Transition Time</label>
 			<description>Time to move between two states. If empty, the default of the device is used. Resolution is 1/10 second.</description>
 		</parameter>
+		<parameter name="lastSeenPolling" type="integer" min="0" unit="min">
+			<label>LastSeen Poll Interval</label>
+			<description>Interval to poll the deCONZ Gateway for this light's "last_seen" channel. Polling is disabled when set
+				to 0 (default: 1440, once per day).</description>
+			<default>1440</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:deconz:colorlight">
@@ -76,21 +117,12 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="lastSeenPolling" type="integer" min="0" unit="min">
+			<label>LastSeen Poll Interval</label>
+			<description>Interval to poll the deCONZ Gateway for this light's "last_seen" channel. Polling is disabled when set
+				to 0 (default: 1440, once per day).</description>
+			<default>1440</default>
+		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:deconz:lightgroup">
-		<parameter name="id" type="text" required="true">
-			<label>Device ID</label>
-			<description>The deCONZ bridge assigns an integer number ID to each group.</description>
-		</parameter>
-		<parameter name="colormode" type="text">
-			<label>Color Mode</label>
-			<description>Override the default color mode (auto-detect)</description>
-			<options>
-				<option value="hs">HSB</option>
-				<option value="xy">XY</option>
-			</options>
-			<advanced>true</advanced>
-		</parameter>
-	</config-description>
 </config-description:config-descriptions>

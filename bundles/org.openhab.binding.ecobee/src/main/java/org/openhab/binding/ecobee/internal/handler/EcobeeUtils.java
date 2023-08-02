@@ -110,7 +110,7 @@ public final class EcobeeUtils {
             QuantityType<Temperature> convertedTemp = ((QuantityType<Temperature>) value)
                     .toUnit(ImperialUnits.FAHRENHEIT);
             if (convertedTemp != null) {
-                return Integer.valueOf(convertedTemp.intValue() * 10);
+                return Integer.valueOf((int) (convertedTemp.doubleValue() * 10));
             }
         }
         throw new IllegalArgumentException("temperature is not a QuantityType");

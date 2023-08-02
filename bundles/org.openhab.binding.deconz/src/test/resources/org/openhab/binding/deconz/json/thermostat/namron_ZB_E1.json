@@ -1,0 +1,25 @@
+{
+  "config": {
+    "heatsetpoint": 2200,
+    "locked": false,
+    "mode": "off",
+    "offset": 0,
+    "on": true,
+    "reachable": true
+  },
+  "ep": 1,
+  "etag": "etagXXXXXXXXXXXXXX",
+  "lastannounced": "2023-03-10T06:11:09Z",
+  "lastseen": "2023-03-18T18:10Z",
+  "manufacturername": "NAMRON AS",
+  "modelid": "5401395",
+  "name": "ZB_E1_PanelOvn",
+  "state": {
+    "lastupdated": "2023-03-18T18:10:39.296",
+    "on": false,
+    "temperature": 2039
+  },
+  "swversion": "6.9.1.0_r4",
+  "type": "ZHAThermostat",
+  "uniqueid": "IDXXXXXXXXX"
+}

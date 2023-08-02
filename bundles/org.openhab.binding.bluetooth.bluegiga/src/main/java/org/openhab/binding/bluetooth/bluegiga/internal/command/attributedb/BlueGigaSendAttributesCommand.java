@@ -32,8 +32,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  */
 @NonNullByDefault
 public class BlueGigaSendAttributesCommand extends BlueGigaDeviceCommand {
-    public static int COMMAND_CLASS = 0x02;
-    public static int COMMAND_METHOD = 0x02;
+    public static final int COMMAND_CLASS = 0x02;
+    public static final int COMMAND_METHOD = 0x02;
 
     /**
      * Attribute handle to send.

@@ -125,7 +125,7 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
         registerService(wemoHttpCallFactory, WemoHttpCallFactory.class.getName());
 
         ChannelTypeProvider channelTypeProvider = mock(ChannelTypeProvider.class);
-        when(channelTypeProvider.getChannelType(any(ChannelTypeUID.class), any(Locale.class))).thenReturn(
+        when(channelTypeProvider.getChannelType(any(ChannelTypeUID.class), nullable(Locale.class))).thenReturn(
                 ChannelTypeBuilder.state(DEFAULT_CHANNEL_TYPE_UID, "label", CoreItemFactory.SWITCH).build());
         registerService(channelTypeProvider);
     }

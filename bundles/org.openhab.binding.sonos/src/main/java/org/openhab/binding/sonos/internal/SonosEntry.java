@@ -14,9 +14,9 @@ package org.openhab.binding.sonos.internal;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sonos.internal.util.StringUtils;
 
 /**
  * The {@link SonosEntry} is a datastructure to describe
@@ -120,7 +120,7 @@ public class SonosEntry implements Serializable {
      * @return the URI for the album art.
      */
     public String getAlbumArtUri() {
-        return StringEscapeUtils.unescapeXml(albumArtUri);
+        return StringUtils.unEscapeXml(albumArtUri);
     }
 
     /**

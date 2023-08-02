@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecobee.internal.action.EcobeeActions;
@@ -50,6 +49,7 @@ import org.openhab.binding.ecobee.internal.dto.thermostat.WeatherDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.WeatherForecastDTO;
 import org.openhab.binding.ecobee.internal.function.AbstractFunction;
 import org.openhab.binding.ecobee.internal.function.FunctionRequest;
+import org.openhab.binding.ecobee.internal.util.StringUtils;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -179,7 +179,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             for (Channel channel : thing.getChannelsOfGroup(group)) {
                 if (isLinked(channel.getUID())) {
                     try {
-                        Field field = selection.getClass().getField("include" + WordUtils.capitalize(group));
+                        Field field = selection.getClass().getField("include" + StringUtils.capitalizeWords(group));
                         logger.trace("ThermostatBridge: Thermostat thing '{}' including object '{}' in selection",
                                 thing.getUID(), field.getName());
                         field.set(selection, Boolean.TRUE);

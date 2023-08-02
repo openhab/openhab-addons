@@ -1,0 +1,30 @@
+{
+  "fsType": "Single",
+  "fsNeedsHoming": false,
+  "fsIsMoving": false,
+  "fsStatusSummary": "48",
+  "fsConfigured": true,
+  "fsCurrentPositionPreset": "66",
+  "fsTimerPositionPreset": "00",
+  
+  "fsCurrentPositionPresetLeft": "Snore",
+  "fsLeftHeadPosition": "0f",
+  "fsLeftFootPosition": "21",
+  "fsLeftHeadActuatorMotorStatus": "08",
+  "fsLeftFootActuatorMotorStatus": "00",
+  "fsTimerPositionPresetLeft": "No timer running, thus no preset to active",
+  "fsLeftPositionTimerMSB": "00",
+  "fsLeftPositionTimerLSB": "00",
+
+  "fsCurrentPositionPresetRight": "Read",
+  "fsRightHeadPosition": "0d",
+  "fsRightFootPosition": "04",
+  "fsRightHeadActuatorMotorStatus": "08",
+  "fsRightFootActuatorMotorStatus": "00",
+  "fsTimerPositionPresetRight": "No timer running, thus no preset to active",
+  "fsRightPositionTimerMSB": "00",
+  "fsRightPositionTimerLSB": "00",
+
+  "fsOutletsOn": true,
+  "fsTimedOutletsOn": false
+}

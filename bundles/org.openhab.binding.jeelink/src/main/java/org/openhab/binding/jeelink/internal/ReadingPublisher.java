@@ -18,7 +18,7 @@ package org.openhab.binding.jeelink.internal;
  * @author Volker Bier - Initial contribution
  */
 public interface ReadingPublisher<R extends Reading> {
-    public void publish(R reading);
+    void publish(R reading);
 
-    public void dispose();
+    void dispose();
 }

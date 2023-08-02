@@ -27,5 +27,5 @@ public interface MsgListener {
      *
      * @param msg the message received
      */
-    public abstract void msg(Msg msg);
+    void msg(Msg msg);
 }

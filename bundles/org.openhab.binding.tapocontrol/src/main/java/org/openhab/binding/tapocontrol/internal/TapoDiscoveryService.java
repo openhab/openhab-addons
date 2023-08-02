@@ -131,17 +131,17 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         TapoBridgeHandler tapoBridge = this.bridge;
         String deviceModel = getDeviceModel(device);
         String label = getDeviceLabel(device);
-        String deviceMAC = device.get(CLOUD_PROPERTY_MAC).getAsString();
+        String deviceMAC = device.get(CLOUD_JSON_KEY_MAC).getAsString();
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, deviceModel);
 
         /* create properties */
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_VENDOR, DEVICE_VENDOR);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, formatMac(deviceMAC, MAC_DIVISION_CHAR));
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.get(CLOUD_PROPERTY_FW).getAsString());
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.get(CLOUD_PROPERTY_HW).getAsString());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.get(CLOUD_JSON_KEY_FW).getAsString());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.get(CLOUD_JSON_KEY_HW).getAsString());
         properties.put(Thing.PROPERTY_MODEL_ID, deviceModel);
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.get(CLOUD_PROPERTY_ID).getAsString());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.get(CLOUD_JSON_KEY_ID).getAsString());
 
         logger.debug("device {} discovered", deviceModel);
         if (tapoBridge != null) {
@@ -190,7 +190,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      */
     protected String getDeviceModel(JsonObject device) {
         try {
-            String deviceModel = device.get(CLOUD_PROPERTY_MODEL).getAsString();
+            String deviceModel = device.get(CLOUD_JSON_KEY_MODEL).getAsString();
             deviceModel = deviceModel.replaceAll("\\(.*\\)", ""); // replace (DE)
             deviceModel = deviceModel.replace("Tapo", "");
             deviceModel = deviceModel.replace("Series", "");

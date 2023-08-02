@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>MagentaTV Binding</name>
 	<description>This is the binding for MagentaTV receivers</description>
+	<connection>hybrid</connection>
 
 </addon:addon>

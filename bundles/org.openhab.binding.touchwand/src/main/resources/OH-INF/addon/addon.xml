@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>TouchWand Binding</name>
 	<description>Connect to TouchWand Wanderfull™ Hub and communicate with units connected to the controller.</description>
+	<connection>local</connection>
 
 </addon:addon>
