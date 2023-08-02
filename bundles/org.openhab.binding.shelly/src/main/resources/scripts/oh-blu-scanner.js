@@ -1,7 +1,6 @@
 /*
  * This script uses the BLE scan functionality in scripting to pass scan reults to openHAB
  * Supported BLU Devices: SBBT , SBDW
- * Version 0.2
  */
 
 let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO"];
@@ -28,11 +27,13 @@ BTH[0x01] = { n: "Battery", t: uint8, u: "%" };
 BTH[0x02] = { n: "Temperature", t: int16, f: 0.01 };
 BTH[0x05] = { n: "Illuminance", t: uint24, f: 0.01 };
 BTH[0x1a] = { n: "Door", t: uint8 };
+BTH[0x21] = { n: "Motion", t: uint8 };
 BTH[0x20] = { n: "Moisture", t: uint8 };
 BTH[0x21] = { n: "Motion", t: uint8 };
 BTH[0x2d] = { n: "Window", t: uint8 };
 BTH[0x3a] = { n: "Button", t: uint8 };
 BTH[0x3f] = { n: "Rotation", t: int16, f: 0.1 };
+
 
 function getByteSize(type) {
   if (type === uint8 || type === int8) return 1;
@@ -150,11 +151,22 @@ function scanCB(ev, res) {
   }
 }
 
+// retry several times to start the scanner if script was started before
+// BLE infrastructure was up in the Shelly
+function startBLEScan() {
+  let bleScanSuccess = BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
+  if( bleScanSuccess === null ) {
+    console.log('Unable to start OH-BLU Scanner, make sure Shelly Gateway Support is disabled in device config.');
+    Timer.set(3000, false, startBLEScan);
+  } else {
+    console.log('Success: OH-BLU Event Gateway running');
+  }
+}
+
 let BLEConfig = Shelly.getComponentConfig('ble');
 if(BLEConfig.enable === false) {
   console.log('Error: BLE not enabled, unable to start OH-BLU Scanner');
 } else {
-    BLE.Scanner.Start({ duration_ms: SCAN_DURATION, active: true }, scanCB);
-    console.log('OH-BLU Event Gateway running');
+  Timer.set(1000, false, startBLEScan);
 }
  
