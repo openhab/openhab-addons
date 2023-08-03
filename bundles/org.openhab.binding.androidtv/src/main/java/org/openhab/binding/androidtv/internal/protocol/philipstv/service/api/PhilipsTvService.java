@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.api;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.service.api;
 
 import java.net.NoRouteToHostException;
 

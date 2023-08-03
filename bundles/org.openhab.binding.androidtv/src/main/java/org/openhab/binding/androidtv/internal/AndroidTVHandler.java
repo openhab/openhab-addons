@@ -222,7 +222,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         if (THING_TYPE_PHILIPSTV.equals(thingTypeUID)) {
             PhilipsTvConfiguration philipstvConfig = getConfigAs(PhilipsTvConfiguration.class);
-            ipAddress = philipstvConfig.ipAddress;
+            ipAddress = philipstvConfig.host;
 
             if (ipAddress.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -230,7 +230,7 @@ public class AndroidTVHandler extends BaseThingHandler {
                 return;
             }
 
-            philipstvConnectionManager = new PhilipsTVConnectionManager(this, shieldtvConfig);
+            philipstvConnectionManager = new PhilipsTVConnectionManager(this, philipstvConfig);
         }
 
         monitorThingStatusJob = scheduler.schedule(this::monitorThingStatus, THING_STATUS_FREQUENCY,

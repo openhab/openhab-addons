@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.pairing;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.BASE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.EMPTY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.PASSWORD;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.SLASH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.USERNAME;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.BASE_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.EMPTY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.PASSWORD;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.SLASH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.USERNAME;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -48,14 +48,14 @@ import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManagerUtil;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.config.PhilipsTvConfiguration;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.AuthDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.DeviceDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.FinishPairingDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.PairingDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.RequestCodeDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManagerUtil;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvConfiguration;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.AuthDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.DeviceDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.FinishPairingDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.PairingDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.RequestCodeDto;
 import org.openhab.core.config.core.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

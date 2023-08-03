@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.ambilight;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ambilight;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.POWER_ON;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.POWER_ON;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

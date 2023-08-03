@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.config;
+package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
 /**
  * The {@link PhilipsTvConfiguration} class contains fields for mapping thing configuration parameters.

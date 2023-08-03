@@ -10,26 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.EMPTY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.POWER_ON;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.STANDBY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_POWERSTATE_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.EMPTY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.POWER_ON;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.STANDBY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_POWERSTATE_PATH;
 
 import java.io.IOException;
 import java.util.function.Predicate;
 
 import org.apache.http.ParseException;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.WakeOnLanUtil;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.config.PhilipsTvConfiguration;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.api.PhilipsTvService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.power.PowerStateDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvConfiguration;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.WakeOnLanUtil;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTvService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.power.PowerStateDto;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;

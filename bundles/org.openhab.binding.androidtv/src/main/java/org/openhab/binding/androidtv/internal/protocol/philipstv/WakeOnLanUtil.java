@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.internal;
+package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.GET_NETWORK_DEVICES_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.GET_NETWORK_DEVICES_PATH;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

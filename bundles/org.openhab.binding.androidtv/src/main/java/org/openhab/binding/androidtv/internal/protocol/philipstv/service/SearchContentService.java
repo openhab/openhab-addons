@@ -10,21 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.LAUNCH_APP_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.LAUNCH_APP_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
 
 import java.io.IOException;
 
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.api.PhilipsTvService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.application.ExtrasDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.application.IntentDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.application.LaunchAppDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTvService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ExtrasDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.IntentDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.LaunchAppDto;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;

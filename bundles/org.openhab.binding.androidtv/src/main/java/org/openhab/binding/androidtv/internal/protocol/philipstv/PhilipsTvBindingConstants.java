@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.internal;
+package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
 import org.openhab.core.thing.ThingTypeUID;
 
