@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,6 @@ public class MetOfficeDelayedExecutor {
 
     public void scheduleNextPoll(final long dayCycleMillis, final Runnable task) {
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        // long pollRateMillis = config.siteSpecificDailyForecastPollRate * 3600000;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % dayCycleMillis))
                 + dayCycleMillis) - millisSinceDayStart;
         if (initialDelayTimeToFirstCycle + millisSinceDayStart > DAY_IN_MILLIS) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,16 +119,16 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
     private final Object timerResetSchedulerLock = new Object();
 
     private void scheduleResetDailyLimiters() {
-        logger.debug("Scheduling reset of forecast data limiter");
+        logger.trace("Scheduling reset of forecast data limiter");
         cancelResetDailyLimiters();
         long delayUntilResetCounters = getMillisUntilMidnight();
         synchronized (timerResetSchedulerLock) {
             timerResetScheduler = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Resetting forecast request data limiter");
+                logger.trace("Resetting forecast request data limiter");
                 forecastDataLimiter.resetLimiter();
             }, delayUntilResetCounters, DAY_IN_MILLIS, TimeUnit.MILLISECONDS);
         }
-        logger.debug("Scheduled reset of forecast data limiter complete");
+        logger.trace("Scheduled reset of forecast data limiter complete");
     }
 
     private void cancelResetDailyLimiters() {
@@ -137,7 +137,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
             if (job != null) {
                 job.cancel(true);
                 timerResetScheduler = null;
-                logger.debug("Cancelled scheduled reset of forecast data limiter");
+                logger.trace("Cancelled scheduled reset of forecast data limiter");
             }
         }
     }

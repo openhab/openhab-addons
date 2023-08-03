@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,14 +97,14 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                 .isPresent()) {
             boolean repollRequired = !requiresDailyData;
             if (!requiresDailyData) {
-                logger.debug("Daily data poll potentially required if older than required poll window");
+                logger.trace("Daily data poll potentially required if older than required poll window");
             }
 
             requiresDailyData = true;
             if (repollRequired) {
                 reconfigureDailyPolling();
             }
-            logger.debug("DAILY DATA REQUIRED");
+            logger.trace("Daily data poll required");
         } else {
             requiresDailyData = false;
         }
@@ -113,20 +113,20 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                 .isPresent()) {
             boolean repollRequired = !requiresHourlyData;
             if (!requiresHourlyData) {
-                logger.debug("Hourly data poll potentially required if older than required poll window");
+                logger.trace("Hourly data poll potentially required if older than required poll window");
             }
 
             requiresHourlyData = true;
             if (repollRequired) {
                 reconfigureHourlyPolling();
             }
-            logger.debug("HOURLY DATA REQUIRED");
+            logger.trace("Hourly data poll required");
         } else {
             requiresHourlyData = false;
         }
 
         if (!requiresHourlyData && !requiresDailyData) {
-            logger.debug("NO DATA REQUIRED");
+            logger.debug("No data required");
         }
     }
 
@@ -450,7 +450,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         request.send(new BufferingResponseListener() { // 4.5kb buffer will cover both requests
             @Override
             public void onComplete(@Nullable Result result) {
-                if (!result.isFailed()) {
+                if (result != null && result.isFailed()) {
                     final byte[] responseContent = getContent();
                     scheduler.execute(() -> {
                         logger.trace("Processing response");
@@ -652,27 +652,29 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH.equals(command)) {
-            scheduleDataRequiredCheck();
-            if (requiresDailyData) {
-                if (!lastDailyResponse.isEmpty()) {
-                    logger.trace("Using cached DAILY forecast response data");
-                    pollForDataDailyData(lastDailyResponse);
-                } else {
-                    logger.trace("Starting poll sequence for DAILY forecast data");
-                    reconfigureDailyPolling();
+        scheduler.execute(() -> {
+            if (RefreshType.REFRESH.equals(command)) {
+                scheduleDataRequiredCheck();
+                if (requiresDailyData) {
+                    if (!lastDailyResponse.isEmpty()) {
+                        logger.trace("Using cached DAILY forecast response data");
+                        pollForDataDailyData(lastDailyResponse);
+                    } else {
+                        logger.trace("Starting poll sequence for DAILY forecast data");
+                        reconfigureDailyPolling();
+                    }
+                }
+                if (requiresHourlyData) {
+                    if (!lastDailyResponse.isEmpty()) {
+                        logger.trace("Using cached HOURLY forecast response data");
+                        pollForDataHourlyData(lastHourlyResponse);
+                    } else {
+                        logger.trace("Starting poll sequence for HOURLY forecast data");
+                        reconfigureHourlyPolling();
+                    }
                 }
             }
-            if (requiresHourlyData) {
-                if (!lastDailyResponse.isEmpty()) {
-                    logger.trace("Using cached HOURLY forecast response data");
-                    pollForDataHourlyData(lastHourlyResponse);
-                } else {
-                    logger.trace("Starting poll sequence for HOURLY forecast data");
-                    reconfigureHourlyPolling();
-                }
-            }
-        }
+        });
     }
 
     /**
