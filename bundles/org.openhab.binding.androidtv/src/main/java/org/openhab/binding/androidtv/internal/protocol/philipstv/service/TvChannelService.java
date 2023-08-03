@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_TV_CHANNEL;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.GET_AVAILABLE_TV_CHANNEL_LIST_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_CHANNEL_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_TV_CHANNEL;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.GET_AVAILABLE_TV_CHANNEL_LIST_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_CHANNEL_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
 
 import java.io.IOException;
 import java.util.Map;
@@ -26,12 +26,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.AvailableTvChannelsDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.ChannelDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.ChannelListDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.TvChannelDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTVConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.api.PhilipsTvService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.channel.AvailableTvChannelsDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.channel.ChannelDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.channel.ChannelListDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.channel.TvChannelDto;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -45,16 +46,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public class TvChannelService implements PhilipsTVService {
+public class TvChannelService implements PhilipsTvService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // Name , ccid of TV Channel
     private Map<String, String> availableTvChannels;
 
-    private final PhilipsTVConnectionManager connectionManager;
+    private final PhilipsTVConnectionManager handler;
 
-    public TvChannelService(PhilipsTVConnectionManager connectionManager) {
+    private final ConnectionManager connectionManager;
+
+    public TvChannelService(PhilipsTVConnectionManager handler, ConnectionManager connectionManager) {
+        this.handler = handler;
         this.connectionManager = connectionManager;
     }
 
@@ -64,14 +68,14 @@ public class TvChannelService implements PhilipsTVService {
             synchronized (this) {
                 if (isTvChannelListEmpty()) { // TODO: avoids multiple inits at startup
                     availableTvChannels = getAvailableTvChannelListFromTv();
-                    connectionManager.updateChannelStateDescription(CHANNEL_TV_CHANNEL, availableTvChannels.keySet()
-                            .stream().collect(Collectors.toMap(Function.identity(), Function.identity())));
+                    handler.updateChannelStateDescription(CHANNEL_TV_CHANNEL, availableTvChannels.keySet().stream()
+                            .collect(Collectors.toMap(Function.identity(), Function.identity())));
                 }
             }
             if (command instanceof RefreshType) {
                 // Get current tv channel name
                 String tvChannelName = getCurrentTvChannel();
-                connectionManager.postUpdateChannel(CHANNEL_TV_CHANNEL, new StringType(tvChannelName));
+                handler.postUpdateChannel(CHANNEL_TV_CHANNEL, new StringType(tvChannelName));
             } else if (command instanceof StringType) {
                 if (availableTvChannels.containsKey(command.toString())) {
                     switchTvChannel(command);
@@ -86,9 +90,9 @@ public class TvChannelService implements PhilipsTVService {
         } catch (Exception e) {
             if (isTvOfflineException(e)) {
                 logger.warn("Could not execute command for TV Channels, the TV is offline.");
-                connectionManager.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, TV_OFFLINE_MSG);
+                handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, TV_OFFLINE_MSG);
             } else if (isTvNotListeningException(e)) {
-                connectionManager.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         TV_NOT_LISTENING_MSG);
             } else {
                 logger.warn("Error occurred during handling of command for TV Channels: {}", e.getMessage(), e);

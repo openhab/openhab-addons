@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CONNECT_TIMEOUT_MILLISECONDS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.HTTPS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.MAX_REQUEST_RETRIES;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.SOCKET_TIMEOUT_MILLISECONDS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CONNECT_TIMEOUT_MILLISECONDS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.HTTPS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.MAX_REQUEST_RETRIES;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.SOCKET_TIMEOUT_MILLISECONDS;
 
 import java.net.NoRouteToHostException;
 import java.security.KeyManagementException;

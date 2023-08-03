@@ -10,23 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.KEY_CODE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.VOLUME_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyCode.KEY_MUTE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_MUTE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_VOLUME;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.KEY_CODE_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.VOLUME_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.KeyCode.KEY_MUTE;
 
 import java.io.IOException;
 
-import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keycode.KeyCodeDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.volume.VolumeDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTVConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.api.PhilipsTvService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.keycode.KeyCodeDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.volume.VolumeDto;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingStatus;
@@ -42,13 +43,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public class VolumeService implements PhilipsTVService {
+public class VolumeService implements PhilipsTvService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final PhilipsTVConnectionManager connectionManager;
+    private final PhilipsTVConnectionManager handler;
 
-    public VolumeService(PhilipsTVConnectionManager connectionManager) {
+    private final ConnectionManager connectionManager;
+
+    public VolumeService(PhilipsTVConnectionManager handler, ConnectionManager connectionManager) {
+        this.handler = handler;
         this.connectionManager = connectionManager;
     }
 
@@ -57,11 +61,11 @@ public class VolumeService implements PhilipsTVService {
         try {
             if (command instanceof RefreshType) {
                 VolumeDto volumeDto = getVolume();
-                connectionManager.postUpdateChannel(CHANNEL_VOLUME, new PercentType(volumeDto.getCurrentVolume()));
-                connectionManager.postUpdateChannel(CHANNEL_MUTE, volumeDto.isMuted() ? OnOffType.ON : OnOffType.OFF);
+                handler.postUpdateChannel(CHANNEL_VOLUME, new PercentType(volumeDto.getCurrentVolume()));
+                handler.postUpdateChannel(CHANNEL_MUTE, volumeDto.isMuted() ? OnOffType.ON : OnOffType.OFF);
             } else if (CHANNEL_VOLUME.equals(channel) && command instanceof PercentType) {
                 setVolume((PercentType) command);
-                connectionManager.postUpdateChannel(CHANNEL_VOLUME, (PercentType) command);
+                handler.postUpdateChannel(CHANNEL_VOLUME, (PercentType) command);
             } else if (CHANNEL_MUTE.equals(channel) && command instanceof OnOffType) {
                 setMute();
             } else {
@@ -69,9 +73,9 @@ public class VolumeService implements PhilipsTVService {
             }
         } catch (Exception e) {
             if (isTvOfflineException(e)) {
-                connectionManager.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, TV_OFFLINE_MSG);
+                handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, TV_OFFLINE_MSG);
             } else if (isTvNotListeningException(e)) {
-                connectionManager.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         TV_NOT_LISTENING_MSG);
             } else {
                 logger.warn("Error during handling the VolumeService command {} for Channel {}: {}", command, channel,

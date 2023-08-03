@@ -10,25 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.EMPTY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.POWER_ON;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.STANDBY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_POWERSTATE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.EMPTY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.POWER_ON;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.STANDBY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_POWERSTATE_PATH;
 
 import java.io.IOException;
 import java.util.function.Predicate;
 
 import org.apache.http.ParseException;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.WakeOnLanUtil;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.config.PhilipsTVConfiguration;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.power.PowerStateDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTVConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.WakeOnLanUtil;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.config.PhilipsTvConfiguration;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.api.PhilipsTvService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.power.PowerStateDto;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -43,16 +44,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public class PowerService implements PhilipsTVService {
+public class PowerService implements PhilipsTvService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final PhilipsTVConnectionManager connectionManager;
+    private final PhilipsTVConnectionManager handler;
 
-    private final Predicate<PhilipsTVConfiguration> isWakeOnLanEnabled = config -> config.macAddress != null
+    private final ConnectionManager connectionManager;
+
+    private final Predicate<PhilipsTvConfiguration> isWakeOnLanEnabled = config -> config.macAddress != null
             && !config.macAddress.isEmpty();
 
-    public PowerService(PhilipsTVConnectionManager connectionManager) {
+    public PowerService(PhilipsTVConnectionManager handler, ConnectionManager connectionManager) {
+        this.handler = handler;
         this.connectionManager = connectionManager;
     }
 
@@ -62,27 +66,27 @@ public class PowerService implements PhilipsTVService {
             if (command instanceof RefreshType) {
                 PowerStateDto powerStateDto = getPowerState();
                 if (powerStateDto.isPoweredOn()) {
-                    connectionManager.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, EMPTY);
+                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, EMPTY);
                 } else if (powerStateDto.isStandby()) {
-                    connectionManager.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
+                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
                 } else {
-                    connectionManager.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, EMPTY);
+                    handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, EMPTY);
                 }
             } else if (command instanceof OnOffType) {
                 setPowerState((OnOffType) command);
                 if (command == OnOffType.ON) {
-                    connectionManager.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Tv turned on.");
+                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Tv turned on.");
                 } else {
-                    connectionManager.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
+                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
                 }
             } else {
                 logger.warn("Unknown command: {} for Channel {}", command, channel);
             }
         } catch (Exception e) {
             if (isTvOfflineException(e)) {
-                connectionManager.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, TV_OFFLINE_MSG);
+                handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, TV_OFFLINE_MSG);
             } else if (isTvNotListeningException(e)) {
-                connectionManager.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         TV_NOT_LISTENING_MSG);
             } else {
                 logger.warn("Unexpected Error handling the PowerState command {} for Channel {}: {}", command, channel,
@@ -98,9 +102,8 @@ public class PowerService implements PhilipsTVService {
     private void setPowerState(OnOffType onOffType) throws IOException, InterruptedException {
         PowerStateDto powerStateDto = new PowerStateDto();
         if (onOffType == OnOffType.ON) {
-            if (isWakeOnLanEnabled.test(connectionManager.config)
-                    && !WakeOnLanUtil.isReachable(connectionManager.config.host)) {
-                WakeOnLanUtil.wakeOnLan(connectionManager.config.host, connectionManager.config.macAddress);
+            if (isWakeOnLanEnabled.test(handler.config) && !WakeOnLanUtil.isReachable(handler.config.host)) {
+                WakeOnLanUtil.wakeOnLan(handler.config.host, handler.config.macAddress);
             }
             powerStateDto.setPowerState(POWER_ON);
         } else {

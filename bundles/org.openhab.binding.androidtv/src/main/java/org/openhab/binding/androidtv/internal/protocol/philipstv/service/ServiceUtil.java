@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
 
 import java.util.Collections;
 
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.DataDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.NodesDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsCurrentDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsUpdateDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ValueDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ValuesDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.DataDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.NodesDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.TvSettingsCurrentDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.TvSettingsUpdateDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.ValueDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.ValuesDto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 

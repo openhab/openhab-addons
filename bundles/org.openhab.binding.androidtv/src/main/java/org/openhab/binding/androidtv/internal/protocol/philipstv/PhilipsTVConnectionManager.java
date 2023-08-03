@@ -10,11 +10,34 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_BOTTOM_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_HUE_POWER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_LEFT_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_LOUNGE_POWER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_POWER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_RIGHT_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_STYLE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_TOP_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_APP_ICON;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_APP_NAME;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_BRIGHTNESS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_CONTRAST;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_KEY_CODE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_MUTE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_PLAYER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_SEARCH_CONTENT;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_SHARPNESS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_TV_CHANNEL;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.CHANNEL_VOLUME;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.HOST;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.HTTPS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.STANDBY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -33,27 +56,21 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.util.EntityUtils;
+import org.openhab.binding.androidtv.internal.AndroidTVDynamicStateDescriptionProvider;
 import org.openhab.binding.androidtv.internal.AndroidTVHandler;
 import org.openhab.binding.androidtv.internal.AndroidTVTranslationProvider;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.config.PhilipsTVConfiguration;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.PhilipsTVPairing;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.AmbilightService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.AppService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyCodeService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.PowerService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.SearchContentService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.TvChannelService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.TvPictureService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.VolumeService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.config.PhilipsTvConfiguration;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.PhilipsTvPairing;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.AmbilightService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.AppService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.KeyCodeService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.PowerService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.SearchContentService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.TvChannelService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.TvPictureService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.VolumeService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.api.PhilipsTvService;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -71,10 +88,8 @@ import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
- * The {@link PhilipsTVConnectionManager} is responsible for handling commands, which are sent to one of the
+ * The {@link PhilipsTvHandler} is responsible for handling commands, which are sent to one of the
  * channels.
  *
  * @author Benjamin Meyer - Initial contribution
@@ -85,19 +100,15 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     private AndroidTVHandler handler;
 
-    public PhilipsTVConfiguration config;
+    public PhilipsTvConfiguration config;
 
     private ScheduledExecutorService scheduler;
 
     private final AndroidTVTranslationProvider translationProvider;
 
-    private boolean isLoggedIn = false;
-
-    private String statusMessage = "";
-
     private DiscoveryServiceRegistry discoveryServiceRegistry;
 
-    private PhilipsTVDynamicStateDescriptionProvider stateDescriptionProvider;
+    private AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider;
 
     private ThingUID upnpThingUID;
 
@@ -107,19 +118,16 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     private final ReentrantLock lock = new ReentrantLock();
 
+    private boolean isLoggedIn = false;
+
+    private String statusMessage = "";
+
     /* Philips TV services */
-    private Map<String, PhilipsTVService> channelServices;
+    private Map<String, PhilipsTvService> channelServices;
 
-    private static final String TARGET_URI_MSG = "Target Uri is: {}";
+    public PhilipsTVConnectionManager(AndroidTVHandler handler, PhilipsTvConfiguration config) {
 
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    private final CloseableHttpClient httpClient;
-
-    private final HttpHost httpHost;
-
-    public PhilipsTVConnectionManager(AndroidTVHandler handler, PhilipsTVConfiguration config) {
-        logger.debug("Create a Philips TV Handler for thing '{}'", handler.getThingID());
+        logger.debug("Create a Philips TV Handler for thing '{}'", handler.getThingUID());
         this.handler = handler;
         this.config = config;
         this.scheduler = handler.getScheduler();
@@ -129,31 +137,17 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
         if (config.useUpnpDiscovery && discoveryServiceRegistry != null) {
             logger.debug("Discovery service registry was initialized.");
-            this.discoveryServiceRegistry = discoveryServiceRegistry;
+            this.discoveryServiceRegistry = handler.getDiscoveryServiceRegistry();
         }
 
         if (stateDescriptionProvider != null) {
             logger.debug("State description was initialized.");
-            this.stateDescriptionProvider = stateDescriptionProvider;
+            this.stateDescriptionProvider = handler.getStateDescriptionProvider();
         }
 
         if (!config.useUpnpDiscovery && isSchedulerInitializable()) {
             startRefreshScheduler();
         }
-    }
-
-    public String getStatusMessage() {
-        return statusMessage;
-    }
-
-    public void setLoggedIn(boolean isLoggedIn) {
-        if (this.isLoggedIn != isLoggedIn) {
-            setStatus(isLoggedIn);
-        }
-    }
-
-    public boolean getLoggedIn() {
-        return isLoggedIn;
     }
 
     private void setStatus(boolean isLoggedIn) {
@@ -173,70 +167,26 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         }
     }
 
-    public String doHttpsGet(String path) throws IOException {
-        String uri = httpHost.toURI() + path;
-        logger.debug(TARGET_URI_MSG, uri);
-        HttpGet httpGet = new HttpGet(uri);
-        String jsonContent;
-        try (CloseableHttpClient client = httpClient; //
-                CloseableHttpResponse response = client.execute(httpHost, httpGet)) {
-            validateResponse(response, uri);
-            jsonContent = getJsonFromResponse(response);
-        }
-        return jsonContent;
-    }
-
-    public String doHttpsPost(String path, String json) throws IOException {
-        String uri = httpHost.toURI() + path;
-        logger.debug(TARGET_URI_MSG, uri);
-        HttpPost httpPost = new HttpPost(uri);
-        httpPost.setHeader("Content-type", "application/json");
-        httpPost.setEntity(new StringEntity(json));
-        String jsonContent;
-        try (CloseableHttpClient client = httpClient; //
-                CloseableHttpResponse response = client.execute(httpHost, httpPost)) {
-            validateResponse(response, uri);
-            jsonContent = getJsonFromResponse(response);
-        }
-        return jsonContent;
-    }
-
-    private void validateResponse(CloseableHttpResponse response, String uri) throws HttpResponseException {
-        if (response == null) {
-            throw new HttpResponseException(0, String.format("The response for the request to %s was empty.", uri));
-        } else if (response.getStatusLine().getStatusCode() == 401) {
-            throw new HttpResponseException(401, "The given username/password combination is invalid.");
+    public void setLoggedIn(boolean isLoggedIn) {
+        if (this.isLoggedIn != isLoggedIn) {
+            setStatus(isLoggedIn);
         }
     }
 
-    private String getJsonFromResponse(HttpResponse response) throws IOException {
-        String jsonContent = EntityUtils.toString(response.getEntity());
-        logger.debug("----------------------------------------");
-        logger.debug("{}", response.getStatusLine());
-        logger.debug("{}", jsonContent);
-        return jsonContent;
+    public boolean getLoggedIn() {
+        return isLoggedIn;
     }
 
-    public byte[] doHttpsGetForImage(String path) throws IOException {
-        String uri = httpHost.toURI() + path;
-        logger.debug(TARGET_URI_MSG, uri);
-        HttpGet httpGet = new HttpGet(uri);
-        try (CloseableHttpClient client = httpClient;
-                CloseableHttpResponse response = client.execute(httpHost, httpGet)) {
-            if ((response != null) && (response.getStatusLine().getStatusCode() == 401)) {
-                throw new HttpResponseException(401, "The given username/password combination is invalid.");
-            }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            if (response != null) {
-                response.getEntity().writeTo(baos);
-            }
-            return baos.toByteArray();
+    public void updateStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail, String thingStatusMessage) {
+        if (thingStatus == ThingStatus.ONLINE) {
+            setLoggedIn(true);
+        } else {
+            setStatus(false, thingStatusMessage);
         }
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
-        boolean isLoggedIn = this.isLoggedIn;
 
         if ((config.username == null) || (config.password == null)) {
             return; // pairing process is not finished
@@ -246,7 +196,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 & !channelUID.getId().equals(CHANNEL_AMBILIGHT_LOUNGE_POWER))) {
             // Check if tv turned on meanwhile
             channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
-            if (isLoggedIn) {
+            if (!isLoggedIn) {
                 // still offline
                 logger.info(
                         "Cannot execute command {} for channel {}: PowerState of TV was checked and resolved to offline.",
@@ -258,7 +208,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         String channel = channelUID.getId();
         long startTime = System.currentTimeMillis();
         // Delegate the other commands to correct channel service
-        PhilipsTVService philipsTvService = channelServices.get(channel);
+        PhilipsTvService philipsTvService = channelServices.get(channel);
 
         if (philipsTvService == null) {
             logger.warn("Unknown channel for Philips TV Binding: {}", channel);
@@ -273,30 +223,34 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     public void initialize() {
         logger.debug("Init of handler for Thing: {}", handler.getThingID());
-        config = this.config;
 
         if ((config.host == null) || (config.port == null)) {
-            setStatus(false, "Cannot connect to Philips TV. Host and/or port are not set.");
+            postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Cannot connect to Philips TV. Host and/or port are not set.");
             return;
         }
 
         HttpHost target = new HttpHost(config.host, config.port, HTTPS);
 
         if ((config.pairingCode == null) && (config.username == null) && (config.password == null)) {
-            setStatus(false, "Pairing is not configured yet, trying to present a Pairing Code on TV.");
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Pairing is not configured yet, trying to present a Pairing Code on TV.");
             try {
                 initPairingCodeRetrieval(target); // TODO wirft keine Exception wenn URL auf Grund anderer Version nicht
                 // gefunden wird
             } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-                setStatus(false, "Error occurred while trying to present a Pairing Code on TV.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error occurred while trying to present a Pairing Code on TV.");
             }
             return;
         } else if ((config.pairingCode != null) && ((config.username == null) || (config.password == null))) {
-            setStatus(false, "Pairing Code is available, but credentials missing. Trying to retrieve them.");
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Pairing Code is available, but credentials missing. Trying to retrieve them.");
             boolean hasFailed = initCredentialsRetrieval(target); // TODO hier fehlt authTimeStamp falls zu lange Zeit
             // vergangen ist - man MUSS von vorne anfangen
             if (hasFailed) {
-                setStatus(false, "Error occurred during retrieval of credentials.");
+                postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Error occurred during retrieval of credentials.");
                 return;
             }
         }
@@ -306,7 +260,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         try {
             httpClient = ConnectionManagerUtil.createSharedHttpClient(target, config.username, config.password);
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-            setStatus(false, String.format("Error occurred during creation of HTTP client: %s", e.getMessage()));
+            postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("Error occurred during creation of HTTP client: %s", e.getMessage()));
             return;
         }
 
@@ -316,6 +271,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             try {
                 Optional<String> macAddress = WakeOnLanUtil.getMacFromEnabledInterface(connectionManager);
                 if (macAddress.isPresent()) {
+                    // Disabled for compile, fix later
                     // getConfig().put(MAC_ADDRESS, macAddress.get());
                 } else {
                     logger.debug("MAC Address could not be determined for Wake-On-LAN support, "
@@ -326,26 +282,26 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             }
         }
 
-        Map<String, PhilipsTVService> services = new HashMap<>();
+        Map<String, PhilipsTvService> services = new HashMap<>();
 
-        PhilipsTVService volumeService = new VolumeService(this);
+        PhilipsTvService volumeService = new VolumeService(this, connectionManager);
         services.put(CHANNEL_VOLUME, volumeService);
         services.put(CHANNEL_MUTE, volumeService);
 
-        PhilipsTVService tvPictureService = new TvPictureService(this);
+        PhilipsTvService tvPictureService = new TvPictureService(this, connectionManager);
         services.put(CHANNEL_BRIGHTNESS, tvPictureService);
         services.put(CHANNEL_SHARPNESS, tvPictureService);
         services.put(CHANNEL_CONTRAST, tvPictureService);
 
-        PhilipsTVService keyCodeService = new KeyCodeService(this);
+        PhilipsTvService keyCodeService = new KeyCodeService(this, connectionManager);
         services.put(CHANNEL_KEY_CODE, keyCodeService);
         services.put(CHANNEL_PLAYER, keyCodeService);
 
-        PhilipsTVService appService = new AppService(this);
+        PhilipsTvService appService = new AppService(this, connectionManager);
         services.put(CHANNEL_APP_NAME, appService);
         services.put(CHANNEL_APP_ICON, appService);
 
-        PhilipsTVService ambilightService = new AmbilightService(this);
+        PhilipsTvService ambilightService = new AmbilightService(this, connectionManager);
         services.put(CHANNEL_AMBILIGHT_POWER, ambilightService);
         services.put(CHANNEL_AMBILIGHT_HUE_POWER, ambilightService);
         services.put(CHANNEL_AMBILIGHT_LOUNGE_POWER, ambilightService);
@@ -356,9 +312,9 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         services.put(CHANNEL_AMBILIGHT_TOP_COLOR, ambilightService);
         services.put(CHANNEL_AMBILIGHT_BOTTOM_COLOR, ambilightService);
 
-        services.put(CHANNEL_TV_CHANNEL, new TvChannelService(this));
-        services.put(CHANNEL_POWER, new PowerService(this));
-        services.put(CHANNEL_SEARCH_CONTENT, new SearchContentService(this));
+        services.put(CHANNEL_TV_CHANNEL, new TvChannelService(this, connectionManager));
+        services.put(CHANNEL_POWER, new PowerService(this, connectionManager));
+        services.put(CHANNEL_SEARCH_CONTENT, new SearchContentService(this, connectionManager));
         channelServices = Collections.unmodifiableMap(services);
 
         if (discoveryServiceRegistry != null) {
@@ -376,7 +332,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         logger.info("Pairing code for tv authentication is missing. "
                 + "Starting initial pairing process. Please provide manually the pairing code shown on the tv at the configuration of the tv thing.");
-        PhilipsTVPairing pairing = new PhilipsTVPairing();
+        PhilipsTvPairing pairing = new PhilipsTvPairing();
         pairing.requestPairingPin(target);
     }
 
@@ -384,13 +340,14 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         boolean hasFailed = false;
         logger.info(
                 "Pairing code is available, but username and/or password is missing. Therefore we try to grant authorization and retrieve username and password.");
-        PhilipsTVPairing pairing = new PhilipsTVPairing();
+        PhilipsTvPairing pairing = new PhilipsTvPairing();
         try {
-            pairing.finishPairingWithTv(config, target);
-            setStatus(false,
+            pairing.finishPairingWithTv(config, handler.getThingConfig(), target);
+            postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Authentication with Philips TV device was successful. Continuing initialization of the tv.");
         } catch (Exception e) {
-            setStatus(false, "Could not successfully finish pairing process with the TV.");
+            postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "Could not successfully finish pairing process with the TV.");
             logger.warn("Error during finishing pairing process with the TV: {}", e.getMessage(), e);
             hasFailed = true;
         }
@@ -425,7 +382,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 }
             }
         }
-        // setStatus(status, statusDetail, msg);
+        updateStatus(status, statusDetail, msg);
     }
 
     private boolean isSchedulerInitializable() {
@@ -454,7 +411,6 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             boolean isLockAcquired = lock.tryLock(1, TimeUnit.SECONDS);
             if (isLockAcquired) {
                 try {
-                    boolean isLoggedIn = this.isLoggedIn;
                     if (!isLoggedIn || !config.useUpnpDiscovery) {
                         channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
                         if (!isLoggedIn) {
@@ -490,7 +446,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
              * thingRemoved).
              */
             upnpThingUID = result.getThingUID();
-            logger.debug("thingDiscovered, thingUID={}, discoveredUID={}", handler.getThingID(), upnpThingUID);
+            logger.debug("thingDiscovered, thingUID={}, discoveredUID={}", handler.getThingUID(), upnpThingUID);
             channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
         }
     }
@@ -500,7 +456,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         logger.debug("thingRemoved: {}", thingUID);
 
         if (thingUID.equals(upnpThingUID)) {
-            setStatus(false);
+            postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
         }
     }
 

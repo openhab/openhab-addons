@@ -10,12 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.pairing;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.BASE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.EMPTY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.SLASH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager.OBJECT_MAPPER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.BASE_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.EMPTY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.PASSWORD;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.SLASH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.internal.PhilipsTvBindingConstants.USERNAME;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -46,23 +48,26 @@ import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.config.PhilipsTVConfiguration;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.AuthDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.DeviceDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.FinishPairingDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.PairingDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.RequestCodeDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.ConnectionManagerUtil;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.config.PhilipsTvConfiguration;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.AuthDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.DeviceDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.FinishPairingDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.PairingDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.pairing.model.RequestCodeDto;
+import org.openhab.core.config.core.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PhilipsTVPairing} is responsible for the initial pairing process with the Philips TV.
+ * The {@link PhilipsTvPairing} is responsible for the initial pairing process with the Philips TV.
  * The outcome of this one-time pairing is a registered user with password, which will be used for
  * controlling the tv.
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public class PhilipsTVPairing {
+public class PhilipsTvPairing {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -94,8 +99,9 @@ public class PhilipsTVPairing {
         logger.info("The pairing code is valid for {} seconds.", pairingDto.getTimeout());
     }
 
-    public void finishPairingWithTv(PhilipsTVConfiguration config, HttpHost target) throws NoSuchAlgorithmException,
-            InvalidKeyException, IOException, KeyStoreException, KeyManagementException {
+    public void finishPairingWithTv(PhilipsTvConfiguration config, Configuration thingConfig, HttpHost target)
+            throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
+            KeyManagementException {
         String pairingCode = config.pairingCode;
         FinishPairingDto finishPairingDto = new FinishPairingDto();
         finishPairingDto.setDevice(createDeviceSpecification());
@@ -150,7 +156,9 @@ public class PhilipsTVPairing {
             }
 
             config.username = deviceId;
+            thingConfig.put(USERNAME, deviceId);
             config.password = authKey;
+            thingConfig.put(PASSWORD, authKey);
         } catch (MalformedChallengeException e) {
             logger.debug("finishPairingWithTv: {}", e.getMessage());
             throw new IOException(e.getMessage());

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.service.api;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.api;
 
 import java.net.NoRouteToHostException;
 
@@ -23,7 +23,7 @@ import org.openhab.core.types.Command;
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public interface PhilipsTVService {
+public interface PhilipsTvService {
 
     /**
      * Procedure for sending command.

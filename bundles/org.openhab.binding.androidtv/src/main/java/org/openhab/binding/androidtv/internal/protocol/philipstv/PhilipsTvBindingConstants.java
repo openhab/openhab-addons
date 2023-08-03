@@ -10,19 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal;
 
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link PhilipsTVBindingConstants} class defines common constants, which are used across the
+ * The {@link PhilipsTvBindingConstants} class defines common constants, which are used across the
  * whole binding.
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public final class PhilipsTVBindingConstants {
+public final class PhilipsTvBindingConstants {
 
-    private PhilipsTVBindingConstants() {
+    private PhilipsTvBindingConstants() {
     }
 
     private static final String BINDING_ID = "philipstv";

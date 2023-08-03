@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv;
+package org.openhab.binding.androidtv.internal;
 
 import java.util.List;
 import java.util.Locale;
@@ -35,9 +35,9 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Benjamin Meyer - Initial contribution
  */
 @Component(service = { DynamicStateDescriptionProvider.class,
-        PhilipsTVDynamicStateDescriptionProvider.class }, immediate = true)
+        AndroidTVDynamicStateDescriptionProvider.class }, immediate = true)
 @NonNullByDefault
-public class PhilipsTVDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
+public class AndroidTVDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, List<@NonNull StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
     // @SuppressWarnings("null")

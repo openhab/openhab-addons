@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keycode;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.model.keycode;
 
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyCode;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.internal.service.KeyCode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
