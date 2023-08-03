@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.LoadState;
@@ -150,8 +151,12 @@ public class Chronothermostat {
         String timeLabel = TIME_FOREVER;
         if (activationTime != null) {
             try {
-                final ZonedDateTime dateActivationTime = DateUtil.parseZonedTime(activationTime, DTF_DATETIME_EXT);
-                final ZonedDateTime dateTomorrow = DateUtil.getZonedStartOfDay(1, dateActivationTime.getZone());
+                boolean dateActivationTimeIsZoned = activationTime.length() > 19;
+
+                final ZonedDateTime dateActivationTime = DateUtil.parseZonedTime(activationTime,
+                        dateActivationTimeIsZoned ? DTF_DATETIME_EXT : DTF_DATETIME);
+                final ZonedDateTime dateTomorrow = DateUtil.getZonedStartOfDay(1,
+                        dateActivationTimeIsZoned ? dateActivationTime.getZone() : TimeZone.getDefault().toZoneId());
 
                 if (dateActivationTime.isBefore(dateTomorrow)) {
                     timeLabel = DateUtil.format(dateActivationTime, DTF_TODAY);
