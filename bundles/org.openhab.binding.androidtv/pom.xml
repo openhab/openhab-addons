@@ -16,10 +16,32 @@
 
   <properties>
     <bnd.importpackage>!org.simpleframework.xml.*,!org.cups4j,!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
-    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
+    <ohc.version>3.2.0</ohc.version>
+    <karaf.version>4.3.7</karaf.version>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <jackson.version>2.12.7</jackson.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-jdk18on</artifactId>
