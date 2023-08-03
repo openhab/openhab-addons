@@ -31,8 +31,9 @@ public class AndroidTVBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GOOGLETV = new ThingTypeUID(BINDING_ID, "googletv");
     public static final ThingTypeUID THING_TYPE_SHIELDTV = new ThingTypeUID(BINDING_ID, "shieldtv");
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GOOGLETV, THING_TYPE_SHIELDTV);
+    public static final ThingTypeUID THING_TYPE_PHILIPSTV = new ThingTypeUID(BINDING_ID, "philipstv");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GOOGLETV, THING_TYPE_SHIELDTV,
+            THING_TYPE_PHILIPSTV);
 
     // List of all Channel ids
     public static final String CHANNEL_DEBUG = "debug";

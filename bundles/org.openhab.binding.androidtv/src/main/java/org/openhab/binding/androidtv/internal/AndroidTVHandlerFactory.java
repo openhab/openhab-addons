@@ -40,8 +40,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.androidtv", service = ThingHandlerFactory.class)
 public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GOOGLETV,
-            THING_TYPE_SHIELDTV);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GOOGLETV, THING_TYPE_SHIELDTV,
+            THING_TYPE_PHILIPSTV);
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final AndroidTVTranslationProvider translationProvider;
