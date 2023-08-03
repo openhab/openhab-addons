@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.discovery;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.DEFAULT_PORT;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.HOST;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.PORT;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.THING_TYPE_PHILIPS_TV;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.DEFAULT_PORT;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.HOST;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.PORT;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.THING_TYPE_PHILIPS_TV;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,13 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PhilipsTvDiscoveryParticipant} is responsible for discovering Philips TV devices through UPnP.
+ * The {@link PhilipsTVDiscoveryParticipant} is responsible for discovering Philips TV devices through UPnP.
  *
  * @author Benjamin Meyer - Initial contribution
  */
 @NonNullByDefault
 @Component(immediate = true)
-public class PhilipsTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
+public class PhilipsTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

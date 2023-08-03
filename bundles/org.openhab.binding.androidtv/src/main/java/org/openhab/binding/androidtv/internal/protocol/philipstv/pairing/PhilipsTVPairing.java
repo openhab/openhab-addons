@@ -13,11 +13,11 @@
 package org.openhab.binding.androidtv.internal.protocol.philipstv.pairing;
 
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.BASE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.EMPTY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.PASSWORD;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.SLASH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.USERNAME;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.BASE_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.EMPTY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.PASSWORD;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.SLASH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.USERNAME;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -50,7 +50,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManagerUtil;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvConfiguration;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.AuthDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.DeviceDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.FinishPairingDto;
@@ -61,13 +61,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PhilipsTvPairing} is responsible for the initial pairing process with the Philips TV.
+ * The {@link PhilipsTVPairing} is responsible for the initial pairing process with the Philips TV.
  * The outcome of this one-time pairing is a registered user with password, which will be used for
  * controlling the tv.
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public class PhilipsTvPairing {
+public class PhilipsTVPairing {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -99,7 +99,7 @@ public class PhilipsTvPairing {
         logger.info("The pairing code is valid for {} seconds.", pairingDto.getTimeout());
     }
 
-    public void finishPairingWithTv(PhilipsTvConfiguration config, Configuration thingConfig, HttpHost target)
+    public void finishPairingWithTv(PhilipsTVConfiguration config, Configuration thingConfig, HttpHost target)
             throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
             KeyManagementException {
         String pairingCode = config.pairingCode;

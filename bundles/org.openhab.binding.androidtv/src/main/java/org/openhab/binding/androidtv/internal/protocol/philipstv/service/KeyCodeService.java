@@ -13,15 +13,15 @@
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.KEY_CODE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.KEY_CODE_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
 
 import java.io.IOException;
 
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTvService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keycode.KeyCodeDto;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.PlayPauseType;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public class KeyCodeService implements PhilipsTvService {
+public class KeyCodeService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

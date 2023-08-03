@@ -13,11 +13,11 @@
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_TV_CHANNEL;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.GET_AVAILABLE_TV_CHANNEL_LIST_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_CHANNEL_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_OFFLINE_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_TV_CHANNEL;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.GET_AVAILABLE_TV_CHANNEL_LIST_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_CHANNEL_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
 
 import java.io.IOException;
 import java.util.Map;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTvService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.AvailableTvChannelsDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.ChannelDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.ChannelListDto;
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public class TvChannelService implements PhilipsTvService {
+public class TvChannelService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

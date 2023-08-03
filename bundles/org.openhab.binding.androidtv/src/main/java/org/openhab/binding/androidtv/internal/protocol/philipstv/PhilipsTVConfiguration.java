@@ -13,11 +13,11 @@
 package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
 /**
- * The {@link PhilipsTvConfiguration} class contains fields for mapping thing configuration parameters.
+ * The {@link PhilipsTVConfiguration} class contains fields for mapping thing configuration parameters.
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public class PhilipsTvConfiguration {
+public class PhilipsTVConfiguration {
 
     public String host;
     public String macAddress;

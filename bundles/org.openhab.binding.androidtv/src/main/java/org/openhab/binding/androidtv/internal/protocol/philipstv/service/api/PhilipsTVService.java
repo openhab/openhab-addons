@@ -23,7 +23,7 @@ import org.openhab.core.types.Command;
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public interface PhilipsTvService {
+public interface PhilipsTVService {
 
     /**
      * Procedure for sending command.

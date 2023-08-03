@@ -12,31 +12,31 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_BOTTOM_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_HUE_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_LEFT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_LOUNGE_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_RIGHT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_STYLE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_AMBILIGHT_TOP_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_APP_ICON;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_APP_NAME;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_BRIGHTNESS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_CONTRAST;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_KEY_CODE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_PLAYER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_SEARCH_CONTENT;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_SHARPNESS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_TV_CHANNEL;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.HOST;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.HTTPS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.STANDBY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_BOTTOM_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_HUE_POWER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_LEFT_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_LOUNGE_POWER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_POWER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_RIGHT_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_STYLE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_TOP_COLOR;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_APP_ICON;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_APP_NAME;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_BRIGHTNESS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_CONTRAST;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_KEY_CODE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_MUTE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_PLAYER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_SEARCH_CONTENT;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_SHARPNESS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_TV_CHANNEL;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_VOLUME;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.HOST;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.HTTPS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.STANDBY;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -60,7 +60,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.openhab.binding.androidtv.internal.AndroidTVDynamicStateDescriptionProvider;
 import org.openhab.binding.androidtv.internal.AndroidTVHandler;
 import org.openhab.binding.androidtv.internal.AndroidTVTranslationProvider;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.PhilipsTvPairing;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.PhilipsTVPairing;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.AmbilightService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.AppService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyCodeService;
@@ -69,7 +69,7 @@ import org.openhab.binding.androidtv.internal.protocol.philipstv.service.SearchC
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.TvChannelService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.TvPictureService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.VolumeService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTvService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -88,7 +88,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PhilipsTvHandler} is responsible for handling commands, which are sent to one of the
+ * The {@link PhilipsTVHandler} is responsible for handling commands, which are sent to one of the
  * channels.
  *
  * @author Benjamin Meyer - Initial contribution
@@ -99,7 +99,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     private AndroidTVHandler handler;
 
-    public PhilipsTvConfiguration config;
+    public PhilipsTVConfiguration config;
 
     private ScheduledExecutorService scheduler;
 
@@ -122,9 +122,9 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     private String statusMessage = "";
 
     /* Philips TV services */
-    private Map<String, PhilipsTvService> channelServices;
+    private Map<String, PhilipsTVService> channelServices;
 
-    public PhilipsTVConnectionManager(AndroidTVHandler handler, PhilipsTvConfiguration config) {
+    public PhilipsTVConnectionManager(AndroidTVHandler handler, PhilipsTVConfiguration config) {
 
         logger.debug("Create a Philips TV Handler for thing '{}'", handler.getThingUID());
         this.handler = handler;
@@ -211,7 +211,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         String channel = channelUID.getId();
         long startTime = System.currentTimeMillis();
         // Delegate the other commands to correct channel service
-        PhilipsTvService philipsTvService = channelServices.get(channel);
+        PhilipsTVService philipsTvService = channelServices.get(channel);
 
         if (philipsTvService == null) {
             logger.warn("Unknown channel for Philips TV Binding: {}", channel);
@@ -285,26 +285,26 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             }
         }
 
-        Map<String, PhilipsTvService> services = new HashMap<>();
+        Map<String, PhilipsTVService> services = new HashMap<>();
 
-        PhilipsTvService volumeService = new VolumeService(this, connectionManager);
+        PhilipsTVService volumeService = new VolumeService(this, connectionManager);
         services.put(CHANNEL_VOLUME, volumeService);
         services.put(CHANNEL_MUTE, volumeService);
 
-        PhilipsTvService tvPictureService = new TvPictureService(this, connectionManager);
+        PhilipsTVService tvPictureService = new TvPictureService(this, connectionManager);
         services.put(CHANNEL_BRIGHTNESS, tvPictureService);
         services.put(CHANNEL_SHARPNESS, tvPictureService);
         services.put(CHANNEL_CONTRAST, tvPictureService);
 
-        PhilipsTvService keyCodeService = new KeyCodeService(this, connectionManager);
+        PhilipsTVService keyCodeService = new KeyCodeService(this, connectionManager);
         services.put(CHANNEL_KEY_CODE, keyCodeService);
         services.put(CHANNEL_PLAYER, keyCodeService);
 
-        PhilipsTvService appService = new AppService(this, connectionManager);
+        PhilipsTVService appService = new AppService(this, connectionManager);
         services.put(CHANNEL_APP_NAME, appService);
         services.put(CHANNEL_APP_ICON, appService);
 
-        PhilipsTvService ambilightService = new AmbilightService(this, connectionManager);
+        PhilipsTVService ambilightService = new AmbilightService(this, connectionManager);
         services.put(CHANNEL_AMBILIGHT_POWER, ambilightService);
         services.put(CHANNEL_AMBILIGHT_HUE_POWER, ambilightService);
         services.put(CHANNEL_AMBILIGHT_LOUNGE_POWER, ambilightService);
@@ -335,7 +335,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         logger.info("Pairing code for tv authentication is missing. "
                 + "Starting initial pairing process. Please provide manually the pairing code shown on the tv at the configuration of the tv thing.");
-        PhilipsTvPairing pairing = new PhilipsTvPairing();
+        PhilipsTVPairing pairing = new PhilipsTVPairing();
         pairing.requestPairingPin(target);
     }
 
@@ -343,7 +343,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         boolean hasFailed = false;
         logger.info(
                 "Pairing code is available, but username and/or password is missing. Therefore we try to grant authorization and retrieve username and password.");
-        PhilipsTvPairing pairing = new PhilipsTvPairing();
+        PhilipsTVPairing pairing = new PhilipsTVPairing();
         try {
             pairing.finishPairingWithTv(config, handler.getThingConfig(), target);
             postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,

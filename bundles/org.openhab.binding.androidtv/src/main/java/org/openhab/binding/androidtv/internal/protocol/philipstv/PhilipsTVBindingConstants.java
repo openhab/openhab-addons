@@ -15,14 +15,14 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link PhilipsTvBindingConstants} class defines common constants, which are used across the
+ * The {@link PhilipsTVBindingConstants} class defines common constants, which are used across the
  * whole binding.
  *
  * @author Benjamin Meyer - Initial contribution
  */
-public final class PhilipsTvBindingConstants {
+public final class PhilipsTVBindingConstants {
 
-    private PhilipsTvBindingConstants() {
+    private PhilipsTVBindingConstants() {
     }
 
     private static final String BINDING_ID = "philipstv";

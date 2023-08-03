@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.CONNECT_TIMEOUT_MILLISECONDS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.HTTPS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.MAX_REQUEST_RETRIES;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvBindingConstants.SOCKET_TIMEOUT_MILLISECONDS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CONNECT_TIMEOUT_MILLISECONDS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.HTTPS;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.MAX_REQUEST_RETRIES;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.SOCKET_TIMEOUT_MILLISECONDS;
 
 import java.net.NoRouteToHostException;
 import java.security.KeyManagementException;

@@ -25,8 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTvConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConnectionManager;
 import org.openhab.core.config.core.Configuration;
@@ -221,7 +221,7 @@ public class AndroidTVHandler extends BaseThingHandler {
         }
 
         if (THING_TYPE_PHILIPSTV.equals(thingTypeUID)) {
-            PhilipsTvConfiguration philipstvConfig = getConfigAs(PhilipsTvConfiguration.class);
+            PhilipsTVConfiguration philipstvConfig = getConfigAs(PhilipsTVConfiguration.class);
             ipAddress = philipstvConfig.host;
 
             if (ipAddress.isBlank()) {
