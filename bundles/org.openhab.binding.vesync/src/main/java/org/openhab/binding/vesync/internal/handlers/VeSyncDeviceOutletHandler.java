@@ -32,7 +32,6 @@ import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolCon
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -73,20 +72,11 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
     public static final int DEFAULT_OUTLET_POLL_RATE = 60;
 
     public static final String DEV_FAMILY_CORE_WHOG_PLUG = "WHOG";
-    public static final String DEV_FAMILY_CORE_ESW = "ESW";
-    public static final String DEV_FAMILY_CORE_ESWL = "ESWL";
-
-    public static final VeSyncDeviceMetadata COREESW = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_ESW,
-            Collections.emptyList(), Arrays.asList("ESW03-USA", "ESW01-EU", "ESW15-USA"));
-
-    public static final VeSyncDeviceMetadata COREESWL = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_ESWL,
-            Collections.emptyList(), Arrays.asList("ESWL01", "ESWL03"));
 
     public static final VeSyncDeviceMetadata COREWHOPGPLUG = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_WHOG_PLUG,
             Arrays.asList("WHOG"), List.of("WHOGPLUG"));
 
-    public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = Arrays.asList(COREESW, COREESWL,
-            COREWHOPGPLUG);
+    public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = Arrays.asList(COREWHOPGPLUG);
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceOutletHandler.class);
 
@@ -206,7 +196,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         }
 
         if (!"0".equals(outletStatus.getCode())) {
-            logger.warn("Check Thing type has been set - API gave a unexpected response for an Air Purifier");
+            logger.warn("Check Thing type has been set - API gave a unexpected response for an Outlet");
             return;
         }
 

@@ -21,6 +21,7 @@ This binding supports the follow thing types:
 | Bridge         | Bridge     | bridge         | Manual    | A single connection to the VeSync API                                 |
 | Air Purifier   | Thing      | airPurifier    | Automatic | An Air Purifier supporting V2 e.g. Core200S/Core300S or Core400S unit |
 | Air Humidifier | Thing      | airHumidifier  | Automatic | An Air Humidifier supporting V2 e.g. Classic300S or 600s              |
+| Outlet         | Thing      | outlet         | Automatic | An Outlet supporting V2 eg WHOGPLUG                                   |
 
 This binding was developed from the great work in the listed projects.
 
@@ -40,6 +41,7 @@ Once the bridge is configured auto discovery will discover supported devices fro
 | username                         | String | The username as used in the VeSync mobile application     |                    |
 | password                         | String | The password as used in the VeSync mobile application     |                    |
 | airPurifierPollInterval          | Number | The poll interval (seconds) for air filters / humidifiers | 60                 |
+| outletPollInterval               | Number | The poll interval (seconds) for outlets                   | 60                 |
 | backgroundDeviceDiscovery        | Switch | Should the system scan periodically for new devices       | ON                 |
 | refreshBackgroundDeviceDiscovery | Number | Frequency (seconds) of scans for new new devices          | 120                |
 
@@ -103,6 +105,13 @@ Channel names in **bold** are read/write, everything else is read-only
 | **nightLightMode**         | String               | The night light mode                                          | 200S, Dual200S, 300S                  | [on, dim, off]      |
 | **humiditySetpoint**       | Number:Dimensionless | Humidity % set point to reach                                 | 200S, Dual200S, 300S, 600S, OasisMist | [30...80]           |
 | warmEnabled                | Switch               | Indicator for warm mist mode                                  | 600S, OasisMist                       |                     |
+
+### Outlet Thing
+
+| Channel                    | Type                 | Description                                                   | Model's Supported                     | Controllable Values |
+|----------------------------|----------------------|---------------------------------------------------------------|---------------------------------------|---------------------|
+| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | WHOGPLUG | [ON, OFF]
+
 
 ## Full Example
 
