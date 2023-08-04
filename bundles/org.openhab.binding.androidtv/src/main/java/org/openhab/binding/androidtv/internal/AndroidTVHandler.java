@@ -197,13 +197,13 @@ public class AndroidTVHandler extends BaseThingHandler {
         String ipAddress = googletvConfig.ipAddress;
         boolean gtvEnabled = googletvConfig.gtvEnabled;
 
-        if (ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.googletv-address-not-specified");
-            return;
-        }
-
         if (THING_TYPE_GOOGLETV.equals(thingTypeUID) || gtvEnabled) {
+            if (ipAddress.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.googletv-address-not-specified");
+                return;
+            }
+
             googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
         }
 
