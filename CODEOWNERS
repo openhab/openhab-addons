@@ -36,12 +36,18 @@
 /bundles/org.openhab.binding.awattar/ @Wolfgang1966
 /bundles/org.openhab.binding.benqprojector/ @mlobstein
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
+/bundles/org.openhab.binding.bkuetooth.bthome/ @markus7017
+/bundles/org.openhab.binding.bkuetooth.bthome/ @markus7017
 /bundles/org.openhab.binding.bluetooth/ @cdjackson @cpmeister
 /bundles/org.openhab.binding.bluetooth.airthings/ @paulianttila
 /bundles/org.openhab.binding.bluetooth.am43/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.bluegiga/ @cdjackson @kaikreuzer
 /bundles/org.openhab.binding.bluetooth.bluez/ @blafois @cpmeister
 /bundles/org.openhab.binding.bluetooth.blukii/ @kaikreuzer
+/bundles/org.openhab.binding.bluetooth.bthome/ @markus7017
+/bundles/org.openhab.binding.bluetooth.bthome/ @markus7017
+/bundles/org.openhab.binding.bluetooth.bthome/ @markus7017
+/bundles/org.openhab.binding.bluetooth.bthome/ @markus7017
 /bundles/org.openhab.binding.bluetooth.daikinmadoka/ @blafois
 /bundles/org.openhab.binding.bluetooth.enoceanble/ @pfink
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
