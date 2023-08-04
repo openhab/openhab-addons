@@ -225,7 +225,7 @@ Number:Temperature    ForecastLondonPlus01MaxTemp                       (gLondon
 Number:Temperature    ForecastLondonPlus01FeelsLikeTemp                 (gLondonNextHour) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentHoursForecastPlus01#feelsLikeTemperature" }
 Number:Dimensionless  ForecastLondonPlus01RelHumidity                   (gLondonNextHour) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentHoursForecastPlus01#screenRelativeHumidity" }
 Number:Length         ForecastLondonPlus01Visibility                    (gLondonNextHour) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentHoursForecastPlus01#visibility" }
-Number:Speed          ForecastLondonPrecipitationRate                   (gLondonNextHour) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentHoursForecastPlus01#precipRate",units="mm/h" }
+Number:Speed          ForecastLondonPlus01PrecipitationRate             (gLondonNextHour) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentHoursForecastPlus01#precipRate",units="mm/h" }
 Number:Dimensionless  ForecastLondonPlus01PrecipitationProb             (gLondonNextHour) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentHoursForecastPlus01#probOfPrecipitation" }
 Number:Length         ForecastLondonPlus01PrecipitationAmount           (gLondonNextHour) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentHoursForecastPlus01#totalPrecipAmount" }
 Number:Length         ForecastLondonPlus01SnowAmount                    (gLondonNextHour) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentHoursForecastPlus01#totalSnowAmount" }
@@ -262,7 +262,7 @@ Number:Temperature    ForecastLondonNightUpperBoundMinTemp          (gLondonCurr
 Number:Temperature    ForecastLondonDayLowerBoundMaxTemp            (gLondonCurrentDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecast#dayLowerBoundMaxTemp" }
 Number:Temperature    ForecastLondonNightLowerBoundMinTemp          (gLondonCurrentDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecast#nightLowerBoundMinTemp" }
 Number:Temperature    ForecastLondonDayMaxFeelsLikeTemp             (gLondonCurrentDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecast#dayMaxFeelsLikeTemp" }
-Number:Temperature    ForecastLondonNightMaxFeelsLikeTemp           (gLondonCurrentDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecast#nightMaxFeelsLikeTemp" }
+Number:Temperature    ForecastLondonNightMinFeelsLikeTemp           (gLondonCurrentDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecast#nightMinFeelsLikeTemp" }
 Number:Temperature    ForecastLondonDayMaxScreenTemperature         (gLondonCurrentDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecast#dayMaxScreenTemperature" }
 Number:Temperature    ForecastLondonNightMinScreenTemperature       (gLondonCurrentDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecast#nightMinScreenTemperature" }
 Number:Temperature    ForecastLondonDayUpperBoundMaxFeelsLikeTemp   (gLondonCurrentDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecast#dayUpperBoundMaxFeelsLikeTemp" }
@@ -304,7 +304,7 @@ Number:Temperature    ForecastLondonPlus01NightUpperBoundMinTemp          (gLond
 Number:Temperature    ForecastLondonPlus01DayLowerBoundMaxTemp            (gLondonNextDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecastPlus01#dayLowerBoundMaxTemp" }
 Number:Temperature    ForecastLondonPlus01NightLowerBoundMinTemp          (gLondonNextDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecastPlus01#nightLowerBoundMinTemp" }
 Number:Temperature    ForecastLondonPlus01DayMaxFeelsLikeTemp             (gLondonNextDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecastPlus01#dayMaxFeelsLikeTemp" }
-Number:Temperature    ForecastLondonPlus01NightMaxFeelsLikeTemp           (gLondonNextDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecastPlus01#nightMaxFeelsLikeTemp" }
+Number:Temperature    ForecastLondonPlus01NightMinFeelsLikeTemp           (gLondonNextDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecastPlus01#nightMinFeelsLikeTemp" }
 Number:Temperature    ForecastLondonPlus01DayMaxScreenTemperature         (gLondonNextDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecastPlus01#dayMaxScreenTemperature" }
 Number:Temperature    ForecastLondonPlus01NightMinScreenTemperature       (gLondonNextDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecastPlus01#nightMinScreenTemperature" }
 Number:Temperature    ForecastLondonPlus01DayUpperBoundMaxFeelsLikeTemp   (gLondonNextDay) { channel="metofficedatahub:siteSpecificApi:metoffice:londonForecast:currentDailyForecastPlus01#dayUpperBoundMaxFeelsLikeTemp" }
@@ -379,86 +379,86 @@ Frame {
 
 ```perl
 Frame {
-   Text                  item=ForecastLondonDailyForecastTs
-   Number:Speed          item=ForecastLondonMiddayWindSpeed10m
-   Number:Speed          item=ForecastLondonMidnightWindSpeed10m
-   Number:Angle          item=ForecastLondonMidday10MWindDirection
-   Number:Angle          item=ForecastLondonMidnight10MWindDirection
-   Number:Speed          item=ForecastLondonMidday10mWindGust
-   Number:Speed          item=ForecastLondonMidnight10mWindGust
-   Number:Length         item=ForecastLondonMiddayVisibility
-   Number:Length         item=ForecastLondonMidnightVisibility
-   Number:Dimensionless  item=ForecastLondonMiddayRelativeHumidity
-   Number:Dimensionless  item=ForecastLondonMidnightRelativeHumidity
-   Number:Pressure       item=ForecastLondonMiddayMslp
-   Number:Pressure       item=ForecastLondonMidnightMslp
-   Number:Dimensionless  item=ForecastLondonMaxUvIndex
-   Number:Temperature    item=ForecastLondonNightUpperBoundMinTemp
-   Number:Temperature    item=ForecastLondonDayLowerBoundMaxTemp
-   Number:Temperature    item=ForecastLondonNightLowerBoundMinTemp
-   Number:Temperature    item=ForecastLondonDayMaxFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonNightMaxFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonDayMaxScreenTemperature
-   Number:Temperature    item=ForecastLondonNightMinScreenTemperature
-   Number:Temperature    item=ForecastLondonDayUpperBoundMaxFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonNightUpperBoundMinFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonDayLowerBoundMaxFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonNightLowerBoundMinFeelsLikeTemp
-   Number:Dimensionless  item=ForecastLondonDayProbabilityOfPrecipitation
-   Number:Dimensionless  item=ForecastLondonNightProbabilityOfPrecipitation
-   Number:Dimensionless  item=ForecastLondonDayProbabilityOfSnow
-   Number:Dimensionless  item=ForecastLondonNightProbabilityOfSnow
-   Number:Dimensionless  item=ForecastLondonDayProbabilityOfHeavySnow
-   Number:Dimensionless  item=ForecastLondonNightProbabilityOfHeavySnow
-   Number:Dimensionless  item=ForecastLondonDayProbabilityOfRain
-   Number:Dimensionless  item=ForecastLondonNightProbabilityOfRain
-   Number:Dimensionless  item=ForecastLondonDayProbabilityOfHeavyRain
-   Number:Dimensionless  item=ForecastLondonNightProbabilityOfHeavyRain
-   Number:Dimensionless  item=ForecastLondonDayProbabilityOfHail
-   Number:Dimensionless  item=ForecastLondonNightProbabilityOfHail
-   Number:Dimensionless  item=ForecastLondonDayProbabilityOfSferics
-   Number:Dimensionless  item=ForecastLondonNightProbabilityOfSferics
+   Text  item=ForecastLondonDailyForecastTs icon="time"
+   Text  item=ForecastLondonMiddayWindSpeed10m icon="wind"
+   Text  item=ForecastLondonMidnightWindSpeed10m icon="wind"
+   Text  item=ForecastLondonMidday10MWindDirection icon="wind"
+   Text  item=ForecastLondonMidnight10MWindDirection icon="wind"
+   Text  item=ForecastLondonMidday10mWindGust icon="wind"
+   Text  item=ForecastLondonMidnight10mWindGust icon="wind"
+   Text  item=ForecastLondonMiddayVisibility icon="sun_clouds"
+   Text  item=ForecastLondonMidnightVisibility icon="sun_clouds"
+   Text  item=ForecastLondonMiddayRelativeHumidity icon="humidity"
+   Text  item=ForecastLondonMidnightRelativeHumidity icon="humidity"
+   Text  item=ForecastLondonMiddayMslp icon="pressure"
+   Text  item=ForecastLondonMidnightMslp icon="pressure"
+   Text  item=ForecastLondonMaxUvIndex icon="pressure"
+   Text  item=ForecastLondonNightUpperBoundMinTemp icon="temperature"
+   Text  item=ForecastLondonDayLowerBoundMaxTemp icon="temperature"
+   Text  item=ForecastLondonNightLowerBoundMinTemp icon="temperature"
+   Text  item=ForecastLondonDayMaxFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonNightMinFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonDayMaxScreenTemperature icon="temperature"
+   Text  item=ForecastLondonNightMinScreenTemperature icon="temperature"
+   Text  item=ForecastLondonDayUpperBoundMaxFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonNightUpperBoundMinFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonDayLowerBoundMaxFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonNightLowerBoundMinFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonDayProbabilityOfPrecipitation icon="rain"
+   Text  item=ForecastLondonNightProbabilityOfPrecipitation icon="rain"
+   Text  item=ForecastLondonDayProbabilityOfSnow icon="rain"
+   Text  item=ForecastLondonNightProbabilityOfSnow icon="rain"
+   Text  item=ForecastLondonDayProbabilityOfHeavySnow icon="rain"
+   Text  item=ForecastLondonNightProbabilityOfHeavySnow icon="rain"
+   Text  item=ForecastLondonDayProbabilityOfRain icon="rain"
+   Text  item=ForecastLondonNightProbabilityOfRain icon="rain"
+   Text  item=ForecastLondonDayProbabilityOfHeavyRain icon="rain"
+   Text  item=ForecastLondonNightProbabilityOfHeavyRain icon="rain"
+   Text  item=ForecastLondonDayProbabilityOfHail icon="rain"
+   Text  item=ForecastLondonNightProbabilityOfHail icon="rain"
+   Text  item=ForecastLondonDayProbabilityOfSferics icon="line"
+   Text  item=ForecastLondonNightProbabilityOfSferics icon="line"
 }
 
 Frame {
-   Text                  item=ForecastLondonPlus01DailyForecastTs
-   Number:Speed          item=ForecastLondonPlus01MiddayWindSpeed10m
-   Number:Speed          item=ForecastLondonPlus01MidnightWindSpeed10m
-   Number:Angle          item=ForecastLondonPlus01Midday10MWindDirection
-   Number:Angle          item=ForecastLondonPlus01Midnight10MWindDirection
-   Number:Speed          item=ForecastLondonPlus01Midday10mWindGust
-   Number:Speed          item=ForecastLondonPlus01Midnight10mWindGust
-   Number:Length         item=ForecastLondonPlus01MiddayVisibility
-   Number:Length         item=ForecastLondonPlus01MidnightVisibility
-   Number:Dimensionless  item=ForecastLondonPlus01MiddayRelativeHumidity
-   Number:Dimensionless  item=ForecastLondonPlus01MidnightRelativeHumidity
-   Number:Pressure       item=ForecastLondonPlus01MiddayMslp
-   Number:Pressure       item=ForecastLondonPlus01MidnightMslp
-   Number:Dimensionless  item=ForecastLondonPlus01MaxUvIndex
-   Number:Temperature    item=ForecastLondonPlus01NightUpperBoundMinTemp
-   Number:Temperature    item=ForecastLondonPlus01DayLowerBoundMaxTemp
-   Number:Temperature    item=ForecastLondonPlus01NightLowerBoundMinTemp
-   Number:Temperature    item=ForecastLondonPlus01DayMaxFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonPlus01NightMaxFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonPlus01DayMaxScreenTemperature
-   Number:Temperature    item=ForecastLondonPlus01NightMinScreenTemperature
-   Number:Temperature    item=ForecastLondonPlus01DayUpperBoundMaxFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonPlus01NightUpperBoundMinFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonPlus01DayLowerBoundMaxFeelsLikeTemp
-   Number:Temperature    item=ForecastLondonPlus01NightLowerBoundMinFeelsLikeTemp
-   Number:Dimensionless  item=ForecastLondonPlus01DayProbabilityOfPrecipitation
-   Number:Dimensionless  item=ForecastLondonPlus01NightProbabilityOfPrecipitation
-   Number:Dimensionless  item=ForecastLondonPlus01DayProbabilityOfSnow
-   Number:Dimensionless  item=ForecastLondonPlus01NightProbabilityOfSnow
-   Number:Dimensionless  item=ForecastLondonPlus01DayProbabilityOfHeavySnow
-   Number:Dimensionless  item=ForecastLondonPlus01NightProbabilityOfHeavySnow
-   Number:Dimensionless  item=ForecastLondonPlus01DayProbabilityOfRain
-   Number:Dimensionless  item=ForecastLondonPlus01NightProbabilityOfRain
-   Number:Dimensionless  item=ForecastLondonPlus01DayProbabilityOfHeavyRain
-   Number:Dimensionless  item=ForecastLondonPlus01NightProbabilityOfHeavyRain
-   Number:Dimensionless  item=ForecastLondonPlus01DayProbabilityOfHail
-   Number:Dimensionless  item=ForecastLondonPlus01NightProbabilityOfHail
-   Number:Dimensionless  item=ForecastLondonPlus01DayProbabilityOfSferics
-   Number:Dimensionless  item=ForecastLondonPlus01NightProbabilityOfSferics
+   Text  item=ForecastLondonPlus01DailyForecastTs icon="time"
+   Text  item=ForecastLondonPlus01MiddayWindSpeed10m icon="wind"
+   Text  item=ForecastLondonPlus01MidnightWindSpeed10m icon="wind"
+   Text  item=ForecastLondonPlus01Midday10MWindDirection icon="wind"
+   Text  item=ForecastLondonPlus01Midnight10MWindDirection icon="wind"
+   Text  item=ForecastLondonPlus01Midday10mWindGust icon="wind"
+   Text  item=ForecastLondonPlus01Midnight10mWindGust icon="wind"
+   Text  item=ForecastLondonPlus01MiddayVisibility icon="sun_clouds"
+   Text  item=ForecastLondonPlus01MidnightVisibility icon="sun_clouds"
+   Text  item=ForecastLondonPlus01MiddayRelativeHumidity icon="humidity"
+   Text  item=ForecastLondonPlus01MidnightRelativeHumidity icon="humidity"
+   Text  item=ForecastLondonPlus01MiddayMslp icon="pressure"
+   Text  item=ForecastLondonPlus01MidnightMslp icon="pressure"
+   Text  item=ForecastLondonPlus01MaxUvIndex icon="pressure"
+   Text  item=ForecastLondonPlus01NightUpperBoundMinTemp icon="temperature"
+   Text  item=ForecastLondonPlus01DayLowerBoundMaxTemp icon="temperature"
+   Text  item=ForecastLondonPlus01NightLowerBoundMinTemp icon="temperature"
+   Text  item=ForecastLondonPlus01DayMaxFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonPlus01NightMinFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonPlus01DayMaxScreenTemperature icon="temperature"
+   Text  item=ForecastLondonPlus01NightMinScreenTemperature icon="temperature"
+   Text  item=ForecastLondonPlus01DayUpperBoundMaxFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonPlus01NightUpperBoundMinFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonPlus01DayLowerBoundMaxFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonPlus01NightLowerBoundMinFeelsLikeTemp icon="temperature"
+   Text  item=ForecastLondonPlus01DayProbabilityOfPrecipitation icon="rain"
+   Text  item=ForecastLondonPlus01NightProbabilityOfPrecipitation icon="rain"
+   Text  item=ForecastLondonPlus01DayProbabilityOfSnow icon="rain"
+   Text  item=ForecastLondonPlus01NightProbabilityOfSnow icon="rain"
+   Text  item=ForecastLondonPlus01DayProbabilityOfHeavySnow icon="rain"
+   Text  item=ForecastLondonPlus01NightProbabilityOfHeavySnow icon="rain"
+   Text  item=ForecastLondonPlus01DayProbabilityOfRain icon="rain"
+   Text  item=ForecastLondonPlus01NightProbabilityOfRain icon="rain"
+   Text  item=ForecastLondonPlus01DayProbabilityOfHeavyRain icon="rain"
+   Text  item=ForecastLondonPlus01NightProbabilityOfHeavyRain icon="rain"
+   Text  item=ForecastLondonPlus01DayProbabilityOfHail icon="rain"
+   Text  item=ForecastLondonPlus01NightProbabilityOfHail icon="rain"
+   Text  item=ForecastLondonPlus01DayProbabilityOfSferics icon="line"
+   Text  item=ForecastLondonPlus01NightProbabilityOfSferics icon="line"
 }
 ```

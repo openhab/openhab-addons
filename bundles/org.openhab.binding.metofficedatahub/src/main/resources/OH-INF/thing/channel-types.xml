@@ -367,7 +367,7 @@
 		<label>Day Maximum UV Index</label>
 		<description>Day Maximum UV Index</description>
 		<category>Sun</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="dayUpperBoundMaxTempType">

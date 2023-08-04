@@ -152,23 +152,15 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     public static String getLastHour() {
         long timeRoundedToLastHour = System.currentTimeMillis();
         timeRoundedToLastHour -= timeRoundedToLastHour % 3600000;
-        Date date = new Date(timeRoundedToLastHour);
-        Instant instant = date.toInstant();
-        // DAG: MUST FIX THIS CODE TO BE MORE SYSTAMATIC
+        final Instant instant = new Date(timeRoundedToLastHour).toInstant();
         return instant.toString().substring(0, 16) + "Z";
-
-        // private static final String PATTERN_FORMAT = "YYYY-mm-DD'T'HH:mm'Z'";
     }
 
     public static String getStartOfDay() {
-        long timeRoundedToLastHour = System.currentTimeMillis();
-        timeRoundedToLastHour -= timeRoundedToLastHour % 86400000;
-        Date date = new Date(timeRoundedToLastHour);
-        Instant instant = date.toInstant();
-        // DAG: MUST FIX THIS CODE TO BE MORE SYSTAMATIC
+        long timeRoundedToDayStart = System.currentTimeMillis();
+        timeRoundedToDayStart -= timeRoundedToDayStart % 86400000;
+        final Instant instant = new Date(timeRoundedToDayStart).toInstant();
         return instant.toString().substring(0, 16) + "Z";
-
-        // private static final String PATTERN_FORMAT = "YYYY-mm-DD'T'HH:mm'Z'";
     }
 
     public void pollForDataHourlyData(String responseContent) {
