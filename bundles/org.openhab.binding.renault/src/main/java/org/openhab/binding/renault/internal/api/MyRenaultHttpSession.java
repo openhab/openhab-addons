@@ -331,8 +331,8 @@ public class MyRenaultHttpSession {
                         response.getStatus(), response.getReason(), response.getContentAsString());
             }
         } else {
-            logger.warn("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(), response.getStatus(),
-                    response.getReason(), response.getContentAsString());
+            logger.debug("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(),
+                    response.getStatus(), response.getReason(), response.getContentAsString());
         }
     }
 

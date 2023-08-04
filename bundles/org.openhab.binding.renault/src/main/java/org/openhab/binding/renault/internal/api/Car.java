@@ -196,7 +196,7 @@ public class Car {
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
-            logger.warn("Error {} parsing Location: {}", e.getMessage(), responseJson);
+            logger.warn("Error {} parsing Lock Status: {}", e.getMessage(), responseJson);
         }
     }
 
