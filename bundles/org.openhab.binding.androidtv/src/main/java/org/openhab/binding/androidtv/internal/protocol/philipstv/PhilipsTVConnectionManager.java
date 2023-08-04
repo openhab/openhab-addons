@@ -147,6 +147,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         if (!config.useUpnpDiscovery && isSchedulerInitializable()) {
             startRefreshScheduler();
         }
+
+        initialize();
     }
 
     private void setStatus(boolean isLoggedIn) {
