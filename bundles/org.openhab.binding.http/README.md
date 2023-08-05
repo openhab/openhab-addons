@@ -17,25 +17,27 @@ It can be extended with different channels.
 | `bufferSize`      | no       |  2048   | The buffer size for the response data (in kB). |
 | `delay`           | no       |    0    | Delay between two requests in ms (advanced parameter). |
 | `username`        | yes      |    -    | Username for authentication (advanced parameter). |
-| `password`        | yes      |    -    | Password for authentication (advanced parameter). |
-| `authMode`        | no       |  BASIC  | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE` or `DIGEST` (advanced parameter). |
+| `password`        | yes      |    -    | Password for authentication (advanced parameter). Also used for the authentication token when using `TOKEN` authentication. |
+| `authMode`        | no       |  BASIC  | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE`, `TOKEN` or `DIGEST` (advanced parameter). |
 | `stateMethod`     | no       |   GET   | Method used for requesting the state: `GET`, `PUT`, `POST`. |
 | `commandMethod`   | no       |   GET   | Method used for sending commands: `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
-| `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |
-| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`. When using text based configuration include at minimum 2 headers to avoid parsing errors.|
-| `ignoreSSLErrors` | no       |  false  | If set to true ignores invalid SSL certificate errors. This is potentially dangerous.|
+| `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  
+| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`| 
+| `ignoreSSLErrors` | no       |  false  | If set to true, ignores invalid SSL certificate errors. This is potentially dangerous.|
+| `strictErrorHandling` | no   |  false  | If set to true, thing status is changed depending on last request result (failed = `OFFLINE`). Failed requests result in `UNDEF` for channel values. |
+| `userAgent`       | yes      |  (yes ) | Sets a custom user agent (default is "Jetty/version", e.g. "Jetty/9.4.20.v20190813"). |
 
-_Note:_ Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
+*Note:* Optional "no" means that you have to configure a value unless a default is provided, and you are ok with that setting.
 
-_Note:_ The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
+*Note:* The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
 This is dangerous and might be misused.
 The option exists to be able to authenticate when the server is not sending the proper 401/Unauthorized code.
 Authentication might fail if redirections are involved as headers are stripper prior to redirection.
 
-_Note:_ If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
+*Note:* If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 
-**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not normally use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
+**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
 URLs are properly escaped by the binding itself before the request is sent.
 Using escaped strings in URL parameters may lead to problems with the formatting (see below).
 
@@ -43,10 +45,13 @@ In certain scenarios you may need to manually escape your URL, for example if yo
 
 ## Channels
 
+The thing has two channels of type `requestDateTime` which provide the timestamp of the last successful (`lastSuccess`) and last failed (`lastFailure`) request.
+
+Additionally, the thing can be extended with data channels.
 Each item type has its own channel-type.
 Depending on the channel-type, channels have different configuration options.
 All channel-types (except `image`) have `stateExtension`, `commandExtension`, `stateTransformation`, `commandTransformation` and `mode` parameters.
-The `image` channel-type supports `stateExtension`, `stateContent` and `escapedUrl` only.
+The `image` channel-type supports `stateExtension` only.
 
 | parameter               | optional | default     | description |
 |-------------------------|----------|-------------|-------------|
@@ -76,7 +81,7 @@ Here are a few examples to unwrap an incoming value via `stateTransformation` fr
 Transformations can be chained by separating them with the mathematical intersection character "∩".
 Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 
-The same mechanism works for commands (`commandTransformation`) for outgoing values.
+The same mechanism works for commands (`commandTransformation`) for outgoing values. 
 
 ### `color`
 
@@ -124,12 +129,12 @@ Please note that incompatible units (e.g. `°C` for a `Number:Density` item) wil
 
 | parameter               | optional | default     | description |
 |-------------------------|----------|-------------|-------------|
-| `play`                  | yes      |      -      | A special value that represents `PLAY` |
-| `pause`                 | yes      |      -      | A special value that represents `PAUSE` |
-| `next`                  | yes      |      -      | A special value that represents `NEXT` |
-| `previous`              | yes      |      -      | A special value that represents `PREVIOUS` |
-| `fastforward`           | yes      |      -      | A special value that represents `FASTFORWARD` |
-| `rewind`                | yes      |      -      | A special value that represents `REWIND` |
+| `playValue`             | yes      |      -      | A special value that represents `PLAY` |
+| `pauseValue`            | yes      |      -      | A special value that represents `PAUSE` |
+| `nextValue`             | yes      |      -      | A special value that represents `NEXT` |
+| `previousValue`         | yes      |      -      | A special value that represents `PREVIOUS` |
+| `fastforwardValue`      | yes      |      -      | A special value that represents `FASTFORWARD` |
+| `rewindValue`           | yes      |      -      | A special value that represents `REWIND` |
 
 ### `rollershutter`
 
@@ -141,7 +146,7 @@ Please note that incompatible units (e.g. `°C` for a `Number:Density` item) wil
 | `moveValue`             | yes      |      -      | A special value that represents `MOVE` |
 
 All values that are not `upValue`, `downValue`, `stopValue`, `moveValue` are interpreted as position 0-100% and need to be numeric only.
-
+                    
 ### `switch`
 
 | parameter               | optional | default     | description |
@@ -153,7 +158,7 @@ All values that are not `upValue`, `downValue`, `stopValue`, `moveValue` are int
 
 ## URL Formatting
 
-After concatenation of the `baseURL` and the `commandExtension` or the `stateExtension` (if provided) the URL is formatted using the [java.util.Formatter](https://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html).
+After concatenation of the `baseURL` and the `commandExtension` or the `stateExtension` (if provided) the URL is formatted using the [java.util.Formatter](http://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html).
 The URL is used as format string and two parameters are added:
 
 - the current date (referenced as `%1$`)

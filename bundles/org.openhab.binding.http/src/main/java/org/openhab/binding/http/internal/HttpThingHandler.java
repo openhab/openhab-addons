@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.http.internal;
 
+import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_LAST_FAILURE;
+import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_LAST_SUCCESS;
+import static org.openhab.binding.http.internal.HttpBindingConstants.REQUEST_DATE_TIME_CHANNELTYPE_UID;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,6 +23,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,33 +31,17 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.DigestAuthentication;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
-import org.openhab.binding.http.internal.config.HttpChannelMode;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
-import org.openhab.binding.http.internal.converter.AbstractTransformingItemConverter;
-import org.openhab.binding.http.internal.converter.ColorItemConverter;
-import org.openhab.binding.http.internal.converter.DimmerItemConverter;
-import org.openhab.binding.http.internal.converter.FixedValueMappingItemConverter;
-import org.openhab.binding.http.internal.converter.GenericItemConverter;
-import org.openhab.binding.http.internal.converter.ImageItemConverter;
-import org.openhab.binding.http.internal.converter.ItemValueConverter;
-import org.openhab.binding.http.internal.converter.NumberItemConverter;
-import org.openhab.binding.http.internal.converter.PlayerItemConverter;
-import org.openhab.binding.http.internal.converter.RollershutterItemConverter;
-import org.openhab.binding.http.internal.http.Content;
 import org.openhab.binding.http.internal.http.HttpAuthException;
 import org.openhab.binding.http.internal.http.HttpResponseListener;
+import org.openhab.binding.http.internal.http.HttpStatusListener;
 import org.openhab.binding.http.internal.http.RateLimitedHttpClient;
 import org.openhab.binding.http.internal.http.RefreshingUrlCache;
-import org.openhab.binding.http.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
@@ -62,6 +51,18 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.generic.ChannelHandler;
+import org.openhab.core.thing.binding.generic.ChannelHandlerContent;
+import org.openhab.core.thing.binding.generic.ChannelMode;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
+import org.openhab.core.thing.binding.generic.converter.ColorChannelHandler;
+import org.openhab.core.thing.binding.generic.converter.DimmerChannelHandler;
+import org.openhab.core.thing.binding.generic.converter.FixedValueMappingChannelHandler;
+import org.openhab.core.thing.binding.generic.converter.GenericChannelHandler;
+import org.openhab.core.thing.binding.generic.converter.ImageChannelHandler;
+import org.openhab.core.thing.binding.generic.converter.NumberChannelHandler;
+import org.openhab.core.thing.binding.generic.converter.PlayerChannelHandler;
+import org.openhab.core.thing.binding.generic.converter.RollershutterChannelHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -77,36 +78,31 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class HttpThingHandler extends BaseThingHandler {
+public class HttpThingHandler extends BaseThingHandler implements HttpStatusListener {
     private static final Set<Character> URL_PART_DELIMITER = Set.of('/', '?', '&');
 
     private final Logger logger = LoggerFactory.getLogger(HttpThingHandler.class);
-    private final ValueTransformationProvider valueTransformationProvider;
     private final HttpClientProvider httpClientProvider;
-    private HttpClient httpClient;
-    private RateLimitedHttpClient rateLimitedHttpClient;
+    private final RateLimitedHttpClient rateLimitedHttpClient;
     private final HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider;
 
     private HttpThingConfig config = new HttpThingConfig();
     private final Map<String, RefreshingUrlCache> urlHandlers = new HashMap<>();
-    private final Map<ChannelUID, ItemValueConverter> channels = new HashMap<>();
+    private final Map<ChannelUID, ChannelHandler> channels = new HashMap<>();
     private final Map<ChannelUID, String> channelUrls = new HashMap<>();
 
     public HttpThingHandler(Thing thing, HttpClientProvider httpClientProvider,
-            ValueTransformationProvider valueTransformationProvider,
             HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider) {
         super(thing);
         this.httpClientProvider = httpClientProvider;
-        this.httpClient = httpClientProvider.getSecureClient();
-        this.rateLimitedHttpClient = new RateLimitedHttpClient(httpClient, scheduler);
-        this.valueTransformationProvider = valueTransformationProvider;
+        this.rateLimitedHttpClient = new RateLimitedHttpClient(httpClientProvider.getSecureClient(), scheduler);
         this.httpDynamicStateDescriptionProvider = httpDynamicStateDescriptionProvider;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        ItemValueConverter itemValueConverter = channels.get(channelUID);
-        if (itemValueConverter == null) {
+        ChannelHandler channelHandler = channels.get(channelUID);
+        if (channelHandler == null) {
             logger.warn("Cannot find channel implementation for channel {}.", channelUID);
             return;
         }
@@ -117,7 +113,11 @@ public class HttpThingHandler extends BaseThingHandler {
                 RefreshingUrlCache refreshingUrlCache = urlHandlers.get(key);
                 if (refreshingUrlCache != null) {
                     try {
-                        refreshingUrlCache.get().ifPresent(itemValueConverter::process);
+                        refreshingUrlCache.get().ifPresentOrElse(channelHandler::process, () -> {
+                            if (config.strictErrorHandling) {
+                                channelHandler.process(null);
+                            }
+                        });
                     } catch (IllegalArgumentException | IllegalStateException e) {
                         logger.warn("Failed processing REFRESH command for channel {}: {}", channelUID, e.getMessage());
                     }
@@ -125,7 +125,7 @@ public class HttpThingHandler extends BaseThingHandler {
             }
         } else {
             try {
-                itemValueConverter.send(command);
+                channelHandler.send(command);
             } catch (IllegalArgumentException e) {
                 logger.warn("Failed to convert command '{}' to channel '{}' for sending", command, channelUID);
             } catch (IllegalStateException e) {
@@ -144,15 +144,21 @@ public class HttpThingHandler extends BaseThingHandler {
             return;
         }
 
+        // check protocol is set
+        if (!config.baseURL.startsWith("http://") && !config.baseURL.startsWith("https://")) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "baseURL is invalid: protocol not defined.");
+            return;
+        }
+
         // check SSL handling and initialize client
         if (config.ignoreSSLErrors) {
             logger.info("Using the insecure client for thing '{}'.", thing.getUID());
-            httpClient = httpClientProvider.getInsecureClient();
+            rateLimitedHttpClient.setHttpClient(httpClientProvider.getInsecureClient());
         } else {
             logger.info("Using the secure client for thing '{}'.", thing.getUID());
-            httpClient = httpClientProvider.getSecureClient();
+            rateLimitedHttpClient.setHttpClient(httpClientProvider.getSecureClient());
         }
-        rateLimitedHttpClient.setHttpClient(httpClient);
         rateLimitedHttpClient.setDelay(config.delay);
 
         int channelCount = thing.getChannels().size();
@@ -168,15 +174,24 @@ public class HttpThingHandler extends BaseThingHandler {
         config.headers.removeIf(String::isBlank);
 
         // configure authentication
-        if (!config.username.isEmpty()) {
+        if (!config.username.isEmpty() || !config.password.isEmpty()) {
             try {
-                AuthenticationStore authStore = httpClient.getAuthenticationStore();
+                AuthenticationStore authStore = rateLimitedHttpClient.getAuthenticationStore();
                 URI uri = new URI(config.baseURL);
                 switch (config.authMode) {
                     case BASIC_PREEMPTIVE:
                         config.headers.add("Authorization=Basic " + Base64.getEncoder()
                                 .encodeToString((config.username + ":" + config.password).getBytes()));
                         logger.debug("Preemptive Basic Authentication configured for thing '{}'", thing.getUID());
+                        break;
+                    case TOKEN:
+                        if (!config.password.isEmpty()) {
+                            config.headers.add("Authorization=Bearer " + config.password);
+                            logger.debug("Token/Bearer Authentication configured for thing '{}'", thing.getUID());
+                        } else {
+                            logger.warn("Token/Bearer Authentication configured for thing '{}' but token is empty!",
+                                    thing.getUID());
+                        }
                         break;
                     case BASIC:
                         authStore.addAuthentication(new BasicAuthentication(uri, Authentication.ANY_REALM,
@@ -203,7 +218,7 @@ public class HttpThingHandler extends BaseThingHandler {
         // create channels
         thing.getChannels().forEach(this::createChannel);
 
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -229,6 +244,10 @@ public class HttpThingHandler extends BaseThingHandler {
      * @param channel a thing channel
      */
     private void createChannel(Channel channel) {
+        if (REQUEST_DATE_TIME_CHANNELTYPE_UID.equals(channel.getChannelTypeUID())) {
+            // do not generate refreshUrls for lastSuccess / lastFailure channels
+            return;
+        }
         ChannelUID channelUID = channel.getUID();
         HttpChannelConfig channelConfig = channel.getConfiguration().as(HttpChannelConfig.class);
 
@@ -242,69 +261,79 @@ public class HttpThingHandler extends BaseThingHandler {
             return;
         }
 
-        ItemValueConverter itemValueConverter;
+        ChannelHandler channelHandler;
         switch (acceptedItemType) {
             case "Color":
-                itemValueConverter = createItemConverter(ColorItemConverter::new, commandUrl, channelUID,
-                        channelConfig);
+                channelHandler = createChannelHandler(ColorChannelHandler::new, commandUrl, channelUID, channelConfig);
                 break;
             case "DateTime":
-                itemValueConverter = createGenericItemConverter(commandUrl, channelUID, channelConfig,
-                        DateTimeType::new);
+                channelHandler = createGenericChannelHandler(commandUrl, channelUID, channelConfig, DateTimeType::new);
                 break;
             case "Dimmer":
-                itemValueConverter = createItemConverter(DimmerItemConverter::new, commandUrl, channelUID,
-                        channelConfig);
+                channelHandler = createChannelHandler(DimmerChannelHandler::new, commandUrl, channelUID, channelConfig);
                 break;
             case "Contact":
             case "Switch":
-                itemValueConverter = createItemConverter(FixedValueMappingItemConverter::new, commandUrl, channelUID,
+                channelHandler = createChannelHandler(FixedValueMappingChannelHandler::new, commandUrl, channelUID,
                         channelConfig);
                 break;
             case "Image":
-                itemValueConverter = new ImageItemConverter(state -> updateState(channelUID, state));
+                channelHandler = new ImageChannelHandler(state -> updateState(channelUID, state));
                 break;
             case "Location":
-                itemValueConverter = createGenericItemConverter(commandUrl, channelUID, channelConfig, PointType::new);
+                channelHandler = createGenericChannelHandler(commandUrl, channelUID, channelConfig, PointType::new);
                 break;
             case "Number":
-                itemValueConverter = createItemConverter(NumberItemConverter::new, commandUrl, channelUID,
-                        channelConfig);
+                channelHandler = createChannelHandler(NumberChannelHandler::new, commandUrl, channelUID, channelConfig);
                 break;
             case "Player":
-                itemValueConverter = createItemConverter(PlayerItemConverter::new, commandUrl, channelUID,
-                        channelConfig);
+                channelHandler = createChannelHandler(PlayerChannelHandler::new, commandUrl, channelUID, channelConfig);
                 break;
             case "Rollershutter":
-                itemValueConverter = createItemConverter(RollershutterItemConverter::new, commandUrl, channelUID,
+                channelHandler = createChannelHandler(RollershutterChannelHandler::new, commandUrl, channelUID,
                         channelConfig);
                 break;
             case "String":
-                itemValueConverter = createGenericItemConverter(commandUrl, channelUID, channelConfig, StringType::new);
+                channelHandler = createGenericChannelHandler(commandUrl, channelUID, channelConfig, StringType::new);
                 break;
             default:
                 logger.warn("Unsupported item-type '{}'", channel.getAcceptedItemType());
                 return;
         }
 
-        channels.put(channelUID, itemValueConverter);
-        if (channelConfig.mode != HttpChannelMode.WRITEONLY) {
+        channels.put(channelUID, channelHandler);
+        if (channelConfig.mode != ChannelMode.WRITEONLY) {
             // we need a key consisting of stateContent and URL, only if both are equal, we can use the same cache
             String key = channelConfig.stateContent + "$" + stateUrl;
             channelUrls.put(channelUID, key);
-            urlHandlers
-                    .computeIfAbsent(key,
+            Objects.requireNonNull(
+                    urlHandlers.computeIfAbsent(key,
                             k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl,
-                                    channelConfig.escapedUrl, config, channelConfig.stateContent))
-                    .addConsumer(itemValueConverter::process);
+                                    channelConfig.escapedUrl, config, channelConfig.stateContent, this)))
+                    .addConsumer(channelHandler::process);
         }
 
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
-                .withReadOnly(channelConfig.mode == HttpChannelMode.READONLY).build().toStateDescription();
+                .withReadOnly(channelConfig.mode == ChannelMode.READONLY).build().toStateDescription();
         if (stateDescription != null) {
             // if the state description is not available, we don't need to add it
             httpDynamicStateDescriptionProvider.setDescription(channelUID, stateDescription);
         }
+    }
+
+    @Override
+    public void onHttpError(@Nullable String message) {
+        updateState(CHANNEL_LAST_FAILURE, new DateTimeType());
+        if (config.strictErrorHandling) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    Objects.requireNonNullElse(message, ""));
+        }
+    }
+
+    @Override
+    public void onHttpSuccess() {
+        updateState(CHANNEL_LAST_SUCCESS, new DateTimeType());
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void sendHttpValue(String commandUrl, boolean escapedUrl, String command) {
@@ -314,54 +343,36 @@ public class HttpThingHandler extends BaseThingHandler {
     private void sendHttpValue(String commandUrl, boolean escapedUrl, String command, boolean isRetry) {
         try {
             // format URL
-            String url = String.format(commandUrl, new Date(), command);
-            URI uri = escapedUrl ? new URI(url) : Util.uriFromString(url);
+            String formattedUrl = String.format(commandUrl, new Date(), command);
+            URI uri = escapedUrl ? URI.create(formattedUrl) : Util.uriFromString(formattedUrl);
 
             // build request
-            Request request = httpClient.newRequest(uri).timeout(config.timeout, TimeUnit.MILLISECONDS)
-                    .method(config.commandMethod);
-            if (config.commandMethod != HttpMethod.GET) {
-                final String contentType = config.contentType;
-                if (contentType != null) {
-                    request.content(new StringContentProvider(command), contentType);
-                } else {
-                    request.content(new StringContentProvider(command));
-                }
-            }
+            rateLimitedHttpClient.newPriorityRequest(uri, config.commandMethod, command, config.contentType)
+                    .thenAccept(request -> {
+                        request.timeout(config.timeout, TimeUnit.MILLISECONDS);
+                        config.getHeaders().forEach(request::header);
 
-            config.headers.forEach(header -> {
-                String[] keyValuePair = header.split("=", 2);
-                if (keyValuePair.length == 2) {
-                    request.header(keyValuePair[0], keyValuePair[1]);
-                } else {
-                    logger.warn("Splitting header '{}' failed. No '=' was found. Ignoring", header);
-                }
-            });
+                        CompletableFuture<@Nullable ChannelHandlerContent> responseContentFuture = new CompletableFuture<>();
+                        responseContentFuture.exceptionally(t -> {
+                            if (t instanceof HttpAuthException) {
+                                if (isRetry || !rateLimitedHttpClient.reAuth(uri)) {
+                                    logger.warn(
+                                            "Retry after authentication failure failed again for '{}', failing here",
+                                            uri);
+                                    onHttpError("Authorization failed");
+                                } else {
+                                    sendHttpValue(commandUrl, escapedUrl, command, true);
+                                }
+                            }
+                            return null;
+                        });
 
-            if (logger.isTraceEnabled()) {
-                logger.trace("Sending to '{}': {}", uri, Util.requestToLogString(request));
-            }
-
-            CompletableFuture<@Nullable Content> f = new CompletableFuture<>();
-            f.exceptionally(e -> {
-                if (e instanceof HttpAuthException) {
-                    if (isRetry) {
-                        logger.warn("Retry after authentication failure failed again for '{}', failing here", uri);
-                    } else {
-                        AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                        Authentication.Result authResult = authStore.findAuthenticationResult(uri);
-                        if (authResult != null) {
-                            authStore.removeAuthenticationResult(authResult);
-                            logger.debug("Cleared authentication result for '{}', retrying immediately", uri);
-                            sendHttpValue(commandUrl, escapedUrl, command, true);
-                        } else {
-                            logger.warn("Could not find authentication result for '{}', failing here", uri);
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Sending to '{}': {}", uri, Util.requestToLogString(request));
                         }
-                    }
-                }
-                return null;
-            });
-            request.send(new HttpResponseListener(f, null, config.bufferSize));
+
+                        request.send(new HttpResponseListener(responseContentFuture, null, config.bufferSize, this));
+                    });
         } catch (IllegalArgumentException | URISyntaxException | MalformedURLException e) {
             logger.warn("Creating request for '{}' failed: {}", commandUrl, e.getMessage());
         }
@@ -380,18 +391,18 @@ public class HttpThingHandler extends BaseThingHandler {
         }
     }
 
-    private ItemValueConverter createItemConverter(AbstractTransformingItemConverter.Factory factory, String commandUrl,
+    private ChannelHandler createChannelHandler(ChannelHandler.Factory factory, String commandUrl,
             ChannelUID channelUID, HttpChannelConfig channelConfig) {
         return factory.create(state -> updateState(channelUID, state), command -> postCommand(channelUID, command),
                 command -> sendHttpValue(commandUrl, channelConfig.escapedUrl, command),
-                valueTransformationProvider.getValueTransformation(channelConfig.stateTransformation),
-                valueTransformationProvider.getValueTransformation(channelConfig.commandTransformation), channelConfig);
+                new ChannelTransformation(channelConfig.stateTransformation),
+                new ChannelTransformation(channelConfig.commandTransformation), channelConfig);
     }
 
-    private ItemValueConverter createGenericItemConverter(String commandUrl, ChannelUID channelUID,
+    private ChannelHandler createGenericChannelHandler(String commandUrl, ChannelUID channelUID,
             HttpChannelConfig channelConfig, Function<String, State> toState) {
-        AbstractTransformingItemConverter.Factory factory = (state, command, value, stateTrans, commandTrans,
-                config) -> new GenericItemConverter(toState, state, command, value, stateTrans, commandTrans, config);
-        return createItemConverter(factory, commandUrl, channelUID, channelConfig);
+        ChannelHandler.Factory factory = (state, command, value, stateTrans, commandTrans,
+                config) -> new GenericChannelHandler(toState, state, command, value, stateTrans, commandTrans, config);
+        return createChannelHandler(factory, commandUrl, channelUID, channelConfig);
     }
 }

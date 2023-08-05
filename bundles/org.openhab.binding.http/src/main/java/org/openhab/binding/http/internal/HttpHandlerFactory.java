@@ -20,17 +20,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.http.internal.transform.CascadedValueTransformationImpl;
-import org.openhab.binding.http.internal.transform.NoOpValueTransformation;
-import org.openhab.binding.http.internal.transform.ValueTransformation;
-import org.openhab.binding.http.internal.transform.ValueTransformationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.openhab.core.transform.TransformationHelper;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -46,8 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.http", service = ThingHandlerFactory.class)
-public class HttpHandlerFactory extends BaseThingHandlerFactory
-        implements ValueTransformationProvider, HttpClientProvider {
+public class HttpHandlerFactory extends BaseThingHandlerFactory implements HttpClientProvider {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_URL);
     private final Logger logger = LoggerFactory.getLogger(HttpHandlerFactory.class);
 
@@ -94,19 +88,10 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_URL.equals(thingTypeUID)) {
-            return new HttpThingHandler(thing, this, this, httpDynamicStateDescriptionProvider);
+            return new HttpThingHandler(thing, this, httpDynamicStateDescriptionProvider);
         }
 
         return null;
-    }
-
-    @Override
-    public ValueTransformation getValueTransformation(@Nullable String pattern) {
-        if (pattern == null || pattern.isEmpty()) {
-            return NoOpValueTransformation.getInstance();
-        }
-        return new CascadedValueTransformationImpl(pattern,
-                name -> TransformationHelper.getTransformationService(bundleContext, name));
     }
 
     @Override

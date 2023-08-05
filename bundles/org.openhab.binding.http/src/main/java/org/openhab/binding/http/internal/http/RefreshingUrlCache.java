@@ -16,7 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
@@ -29,11 +29,10 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.Util;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
+import org.openhab.core.thing.binding.generic.ChannelHandlerContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,29 +47,35 @@ public class RefreshingUrlCache {
     private final Logger logger = LoggerFactory.getLogger(RefreshingUrlCache.class);
 
     private final String url;
-    private final boolean escapedUrl;
+
+    private boolean escapedUrl;
     private final RateLimitedHttpClient httpClient;
+    private final boolean strictErrorHandling;
     private final int timeout;
     private final int bufferSize;
     private final @Nullable String fallbackEncoding;
-    private final Set<Consumer<Content>> consumers = ConcurrentHashMap.newKeySet();
-    private final List<String> headers;
+    private final Set<Consumer<@Nullable ChannelHandlerContent>> consumers = ConcurrentHashMap.newKeySet();
+    private final Map<String, String> headers;
     private final HttpMethod httpMethod;
     private final String httpContent;
+    private final HttpStatusListener httpStatusListener;
 
     private final ScheduledFuture<?> future;
-    private @Nullable Content lastContent;
+    private @Nullable ChannelHandlerContent lastContent;
 
     public RefreshingUrlCache(ScheduledExecutorService executor, RateLimitedHttpClient httpClient, String url,
-            boolean escapedUrl, HttpThingConfig thingConfig, String httpContent) {
+            boolean escapedUrl, HttpThingConfig thingConfig, String httpContent,
+            HttpStatusListener httpStatusListener) {
         this.httpClient = httpClient;
         this.url = url;
         this.escapedUrl = escapedUrl;
+        this.strictErrorHandling = thingConfig.strictErrorHandling;
         this.timeout = thingConfig.timeout;
         this.bufferSize = thingConfig.bufferSize;
-        this.headers = thingConfig.headers;
         this.httpMethod = thingConfig.stateMethod;
+        this.headers = thingConfig.getHeaders();
         this.httpContent = httpContent;
+        this.httpStatusListener = httpStatusListener;
         fallbackEncoding = thingConfig.encoding;
 
         future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);
@@ -89,37 +94,22 @@ public class RefreshingUrlCache {
 
         // format URL
         try {
-            String url = String.format(this.url, new Date());
-            URI uri = escapedUrl ? new URI(url) : Util.uriFromString(url);
+            String formattedUrl = String.format(url, new Date());
+            URI uri = escapedUrl ? URI.create(formattedUrl) : Util.uriFromString(formattedUrl);
             logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
-            httpClient.newRequest(uri, httpMethod, httpContent).thenAccept(request -> {
+            httpClient.newRequest(uri, httpMethod, httpContent, null).thenAccept(request -> {
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
+                headers.forEach(request::header);
 
-                headers.forEach(header -> {
-                    String[] keyValuePair = header.split("=", 2);
-                    if (keyValuePair.length == 2) {
-                        request.header(keyValuePair[0].trim(), keyValuePair[1].trim());
-                    } else {
-                        logger.warn("Splitting header '{}' failed. No '=' was found. Ignoring", header);
-                    }
-                });
-
-                CompletableFuture<@Nullable Content> response = new CompletableFuture<>();
-                response.exceptionally(e -> {
-                    if (e instanceof HttpAuthException) {
-                        if (isRetry) {
-                            logger.warn("Retry after authentication failure failed again for '{}', failing here", uri);
+                CompletableFuture<@Nullable ChannelHandlerContent> responseContentFuture = new CompletableFuture<>();
+                responseContentFuture.exceptionally(t -> {
+                    if (t instanceof HttpAuthException) {
+                        if (isRetry || !httpClient.reAuth(uri)) {
+                            logger.debug("Authentication failed for '{}', retry={}", uri, isRetry);
+                            httpStatusListener.onHttpError("Authorization failed");
                         } else {
-                            AuthenticationStore authStore = httpClient.getAuthenticationStore();
-                            Authentication.Result authResult = authStore.findAuthenticationResult(uri);
-                            if (authResult != null) {
-                                authStore.removeAuthenticationResult(authResult);
-                                logger.debug("Cleared authentication result for '{}', retrying immediately", uri);
-                                refresh(true);
-                            } else {
-                                logger.warn("Could not find authentication result for '{}', failing here", uri);
-                            }
+                            refresh(true);
                         }
                     }
                     return null;
@@ -129,7 +119,8 @@ public class RefreshingUrlCache {
                     logger.trace("Sending to '{}': {}", uri, Util.requestToLogString(request));
                 }
 
-                request.send(new HttpResponseListener(response, fallbackEncoding, bufferSize));
+                request.send(new HttpResponseListener(responseContentFuture, fallbackEncoding, bufferSize,
+                        httpStatusListener));
             }).exceptionally(e -> {
                 if (e instanceof CancellationException) {
                     logger.debug("Request to URL {} was cancelled by thing handler.", uri);
@@ -150,22 +141,17 @@ public class RefreshingUrlCache {
         logger.trace("Stopped refresh task for URL '{}'", url);
     }
 
-    public void addConsumer(Consumer<Content> consumer) {
+    public void addConsumer(Consumer<@Nullable ChannelHandlerContent> consumer) {
         consumers.add(consumer);
     }
 
-    public Optional<Content> get() {
-        final Content content = lastContent;
-        if (content == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(content);
-        }
+    public Optional<ChannelHandlerContent> get() {
+        return Optional.ofNullable(lastContent);
     }
 
-    private void processResult(@Nullable Content content) {
-        if (content != null) {
-            for (Consumer<Content> consumer : consumers) {
+    private void processResult(@Nullable ChannelHandlerContent content) {
+        if (content != null || strictErrorHandling) {
+            for (Consumer<@Nullable ChannelHandlerContent> consumer : consumers) {
                 try {
                     consumer.accept(content);
                 } catch (IllegalArgumentException | IllegalStateException e) {

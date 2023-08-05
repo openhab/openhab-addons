@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.core.thing.binding.generic.ChannelHandlerContent;
 
 /**
  * Unit tests for {@link HttpResponseListenerTest}.
@@ -44,6 +45,7 @@ public class HttpResponseListenerTest {
 
     private Request request = mock(Request.class);
     private Response response = mock(Response.class);
+    private HttpStatusListener httpStatusListener = mock(HttpStatusListener.class);
 
     // ******** Common methods ******** //
 
@@ -78,9 +80,9 @@ public class HttpResponseListenerTest {
     /**
      * Run a default listener with the given result and the given payload.
      */
-    private CompletableFuture<@Nullable Content> run(Result result, byte @Nullable [] payload) {
-        CompletableFuture<@Nullable Content> future = new CompletableFuture<>();
-        HttpResponseListener listener = new HttpResponseListener(future, null, 1024 * 1024);
+    private CompletableFuture<@Nullable ChannelHandlerContent> run(Result result, byte @Nullable [] payload) {
+        CompletableFuture<@Nullable ChannelHandlerContent> future = new CompletableFuture<>();
+        HttpResponseListener listener = new HttpResponseListener(future, null, 1024 * 1024, httpStatusListener);
         if (null != payload) {
             setPayload(listener, payload);
         }
@@ -91,21 +93,21 @@ public class HttpResponseListenerTest {
     /**
      * Run a default listener with the given result.
      */
-    private CompletableFuture<@Nullable Content> run(Result result) {
+    private CompletableFuture<@Nullable ChannelHandlerContent> run(Result result) {
         return run(result, null);
     }
 
     /**
      * Run a default listener with a default result and the given payload.
      */
-    private CompletableFuture<@Nullable Content> run(byte @Nullable [] payload) {
+    private CompletableFuture<@Nullable ChannelHandlerContent> run(byte @Nullable [] payload) {
         return run(createResult(), payload);
     }
 
     /**
      * Run a default listener with a default result.
      */
-    private CompletableFuture<@Nullable Content> run() {
+    private CompletableFuture<@Nullable ChannelHandlerContent> run() {
         return run(createResult());
     }
 
@@ -126,7 +128,7 @@ public class HttpResponseListenerTest {
         RuntimeException requestFailure = new RuntimeException("The request failed!");
         Result result = new Result(request, requestFailure, response);
 
-        CompletableFuture<@Nullable Content> future = run(result);
+        CompletableFuture<@Nullable ChannelHandlerContent> future = run(result);
 
         assertTrue(future.isDone());
         assertFalse(future.isCompletedExceptionally());
@@ -142,7 +144,7 @@ public class HttpResponseListenerTest {
         RuntimeException responseFailure = new RuntimeException("The response failed!");
         Result result = new Result(request, response, responseFailure);
 
-        CompletableFuture<@Nullable Content> future = run(result);
+        CompletableFuture<@Nullable ChannelHandlerContent> future = run(result);
 
         assertTrue(future.isDone());
         assertFalse(future.isCompletedExceptionally());
@@ -151,18 +153,18 @@ public class HttpResponseListenerTest {
 
     /**
      * When the remote side does not send any payload, the future completes normally and contains a
-     * empty Content.
+     * empty ChannelHandlerContent.
      */
     @Test
     public void okWithNoBody() {
         when(response.getStatus()).thenReturn(HttpStatus.OK_200);
 
-        CompletableFuture<@Nullable Content> future = run();
+        CompletableFuture<@Nullable ChannelHandlerContent> future = run();
 
         assertTrue(future.isDone());
         assertFalse(future.isCompletedExceptionally());
 
-        Content content = future.join();
+        ChannelHandlerContent content = future.join();
         assertNotNull(content);
         assertNotNull(content.getRawContent());
         assertEquals(0, content.getRawContent().length);
@@ -170,7 +172,7 @@ public class HttpResponseListenerTest {
     }
 
     /**
-     * When the remote side sends a payload, the future completes normally and contains a Content
+     * When the remote side sends a payload, the future completes normally and contains a ChannelHandlerContent
      * object with the payload.
      */
     @Test
@@ -178,12 +180,12 @@ public class HttpResponseListenerTest {
         when(response.getStatus()).thenReturn(HttpStatus.OK_200);
 
         final String textPayload = "foobar";
-        CompletableFuture<@Nullable Content> future = run(textPayload.getBytes());
+        CompletableFuture<@Nullable ChannelHandlerContent> future = run(textPayload.getBytes());
 
         assertTrue(future.isDone());
         assertFalse(future.isCompletedExceptionally());
 
-        Content content = future.join();
+        ChannelHandlerContent content = future.join();
         assertNotNull(content);
         assertNotNull(content.getRawContent());
         assertEquals(textPayload, new String(content.getRawContent()));
@@ -192,7 +194,7 @@ public class HttpResponseListenerTest {
 
     /**
      * When the remote side sends a payload and encoding header, the future completes normally
-     * and contains a Content object with the payload. The payload gets decoded using the encoding
+     * and contains a ChannelHandlerContent object with the payload. The payload gets decoded using the encoding
      * the remote sent.
      */
     @Test
@@ -200,8 +202,9 @@ public class HttpResponseListenerTest {
         final String encodingName = "UTF-16LE";
         final String fallbackEncodingName = "UTF-8";
 
-        CompletableFuture<@Nullable Content> future = new CompletableFuture<>();
-        HttpResponseListener listener = new HttpResponseListener(future, fallbackEncodingName, 1024 * 1024);
+        CompletableFuture<@Nullable ChannelHandlerContent> future = new CompletableFuture<>();
+        HttpResponseListener listener = new HttpResponseListener(future, fallbackEncodingName, 1024 * 1024,
+                httpStatusListener);
 
         response.getHeaders().put(HttpHeader.CONTENT_TYPE, "text/plain; charset=" + encodingName);
         when(response.getRequest()).thenReturn(request);
@@ -216,7 +219,7 @@ public class HttpResponseListenerTest {
         assertTrue(future.isDone());
         assertFalse(future.isCompletedExceptionally());
 
-        Content content = future.join();
+        ChannelHandlerContent content = future.join();
         assertNotNull(content);
         assertNotNull(content.getRawContent());
         assertEquals(textPayload, new String(content.getRawContent(), encodingName));
@@ -226,15 +229,15 @@ public class HttpResponseListenerTest {
 
     /**
      * When the remote side sends a payload but no encoding, the future completes normally and
-     * contains a Content object with the payload. The payload gets decoded using the fallback
+     * contains a ChannelHandlerContent object with the payload. The payload gets decoded using the fallback
      * encoding of the listener.
      */
     @Test
     public void okWithEncodedBodyFallback() throws UnsupportedEncodingException {
         final String encodingName = "UTF-16BE";
 
-        CompletableFuture<@Nullable Content> future = new CompletableFuture<>();
-        HttpResponseListener listener = new HttpResponseListener(future, encodingName, 1024 * 1024);
+        CompletableFuture<@Nullable ChannelHandlerContent> future = new CompletableFuture<>();
+        HttpResponseListener listener = new HttpResponseListener(future, encodingName, 1024 * 1024, httpStatusListener);
 
         final String textPayload = "汉字编码方法";
         setPayload(listener, textPayload.getBytes(encodingName));
@@ -245,7 +248,7 @@ public class HttpResponseListenerTest {
         assertTrue(future.isDone());
         assertFalse(future.isCompletedExceptionally());
 
-        Content content = future.join();
+        ChannelHandlerContent content = future.join();
         assertNotNull(content);
         assertNotNull(content.getRawContent());
         assertEquals(textPayload, new String(content.getRawContent(), encodingName));
@@ -255,18 +258,18 @@ public class HttpResponseListenerTest {
 
     /**
      * When the remote side response with a HTTP/204 and no payload, the future completes normally
-     * and contains an empty Content.
+     * and contains an empty ChannelHandlerContent.
      */
     @Test
     public void nocontent() {
         when(response.getStatus()).thenReturn(HttpStatus.NO_CONTENT_204);
 
-        CompletableFuture<@Nullable Content> future = run();
+        CompletableFuture<@Nullable ChannelHandlerContent> future = run();
 
         assertTrue(future.isDone());
         assertFalse(future.isCompletedExceptionally());
 
-        Content content = future.join();
+        ChannelHandlerContent content = future.join();
         assertNotNull(content);
         assertNotNull(content.getRawContent());
         assertEquals(0, content.getRawContent().length);
@@ -281,7 +284,7 @@ public class HttpResponseListenerTest {
     public void unauthorized() {
         when(response.getStatus()).thenReturn(HttpStatus.UNAUTHORIZED_401);
 
-        CompletableFuture<@Nullable Content> future = run();
+        CompletableFuture<@Nullable ChannelHandlerContent> future = run();
 
         assertTrue(future.isDone());
         assertTrue(future.isCompletedExceptionally());
@@ -297,24 +300,16 @@ public class HttpResponseListenerTest {
 
     /**
      * When the remote side responds with anything we don't expect (in this case a HTTP/500), the
-     * future completes exceptionally with an IllegalStateException.
+     * future completes with a null content
      */
     @Test
     public void unexpectedStatus() {
         when(response.getStatus()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR_500);
 
-        CompletableFuture<@Nullable Content> future = run();
+        CompletableFuture<@Nullable ChannelHandlerContent> future = run();
 
         assertTrue(future.isDone());
-        assertTrue(future.isCompletedExceptionally());
-
-        @Nullable
-        CompletionException exceptionWrapper = assertThrows(CompletionException.class, () -> future.join());
-        assertNotNull(exceptionWrapper);
-
-        Throwable exception = exceptionWrapper.getCause();
-        assertNotNull(exception);
-        assertTrue(exception instanceof IllegalStateException);
-        assertEquals("Response - Code500", exception.getMessage());
+        ChannelHandlerContent content = future.join();
+        assertNull(content);
     }
 }
