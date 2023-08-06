@@ -14,6 +14,7 @@ package org.openhab.binding.mikrotik.internal.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -36,15 +37,19 @@ public class Converter {
     private static final Pattern PERIOD_PATTERN = Pattern.compile("(\\d+)([a-z]+){1,3}");
 
     public @Nullable static LocalDateTime fromRouterosTime(@Nullable String dateTimeString) {
-        if (dateTimeString == null) {
+        if (dateTimeString == null || dateTimeString.length() < 19) {
             return null;
         }
-        // As of Firmware 7.10 the date format has changed to "yyyy-MM-dd HH:mm:SS"
-        if (dateTimeString.length() == 19) {
-            return LocalDateTime.parse(dateTimeString.replace(" ", "T"));
-        } else {
-            String fixedTs = dateTimeString.substring(0, 1).toUpperCase() + dateTimeString.substring(1);
-            return LocalDateTime.parse(fixedTs, ROUTEROS_FORMAT);
+        try {
+            // As of Firmware 7.10 the date format has changed to "yyyy-MM-dd HH:mm:SS"
+            if (dateTimeString.length() == 19) {
+                return LocalDateTime.parse(dateTimeString.replace(" ", "T"));
+            } else {
+                String fixedTs = dateTimeString.substring(0, 1).toUpperCase() + dateTimeString.substring(1);
+                return LocalDateTime.parse(fixedTs, ROUTEROS_FORMAT);
+            }
+        } catch (DateTimeParseException e) {
+            return null;
         }
     }
 
