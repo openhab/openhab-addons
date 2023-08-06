@@ -33,17 +33,19 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Converter {
     private static final DateTimeFormatter ROUTEROS_FORMAT = DateTimeFormatter.ofPattern("MMM/dd/yyyy kk:mm:ss",
             Locale.ENGLISH);
+    private static final DateTimeFormatter ROUTEROS_FORMAT_NEW = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss",
+            Locale.ENGLISH);
 
     private static final Pattern PERIOD_PATTERN = Pattern.compile("(\\d+)([a-z]+){1,3}");
 
     public @Nullable static LocalDateTime fromRouterosTime(@Nullable String dateTimeString) {
-        if (dateTimeString == null || dateTimeString.length() < 19) {
+        if (dateTimeString == null ) {
             return null;
         }
         try {
-            // As of Firmware 7.10 the date format has changed to "yyyy-MM-dd HH:mm:SS"
+            // As of Firmware 7.10 the date format has changed to "yyyy-MM-dd HH:mm:ss"
             if (dateTimeString.length() == 19) {
-                return LocalDateTime.parse(dateTimeString.replace(" ", "T"));
+                return LocalDateTime.parse(dateTimeString, ROUTEROS_FORMAT_NEW);
             } else {
                 String fixedTs = dateTimeString.substring(0, 1).toUpperCase() + dateTimeString.substring(1);
                 return LocalDateTime.parse(fixedTs, ROUTEROS_FORMAT);
