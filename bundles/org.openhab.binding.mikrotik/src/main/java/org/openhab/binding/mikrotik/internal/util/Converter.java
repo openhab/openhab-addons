@@ -39,7 +39,7 @@ public class Converter {
     private static final Pattern PERIOD_PATTERN = Pattern.compile("(\\d+)([a-z]+){1,3}");
 
     public @Nullable static LocalDateTime fromRouterosTime(@Nullable String dateTimeString) {
-        if (dateTimeString == null ) {
+        if (dateTimeString == null || dateTimeString.length() < 19) {
             return null;
         }
         try {
