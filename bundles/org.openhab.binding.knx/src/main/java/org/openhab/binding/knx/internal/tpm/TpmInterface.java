@@ -59,7 +59,9 @@ import tss.tpm.TPM_SE;
  * @author Holger Friedrich - Initial contribution
  */
 @NonNullByDefault
-public class TpmInterface {
+public enum TpmInterface {
+    TPM;
+
     private final Logger logger = LoggerFactory.getLogger(TpmInterface.class);
     private static final byte[] STANDARD_EK_POLICY = Helpers
             .fromHex("837197674484b3f81a90cc8d46a5d724fd52d76e06520b64f2a1da1b331469aa");
@@ -70,7 +72,8 @@ public class TpmInterface {
 
     private @Nullable CreatePrimaryResponse rsaEk;
     private @Nullable CreatePrimaryResponse rsaSrk;
-    private Tpm tpm;
+    private @Nullable Tpm tpm;
+    private @Nullable StartAuthSessionResponse policySession;
 
     public record SecuredPassword(String secret, String encIdentity, String integrityHMAC) implements Serializable {
         private static final long serialVersionUID = 238409238L;
@@ -81,18 +84,47 @@ public class TpmInterface {
      * 
      * @throws SecurityException
      */
-    public TpmInterface() throws SecurityException {
-        try {
-            @Nullable
-            Tpm tmpTpm = TpmFactory.platformTpm();
-            if (tmpTpm == null) {
-                throw new SecurityException("TPM cannot be accessed");
-            } else {
-                tpm = tmpTpm;
-            }
-        } catch (TpmException e) {
-            throw new SecurityException("TPM cannot be accessed", e);
+    private TpmInterface() {
+    }
+
+    private void init() throws SecurityException {
+        if (tpm == null) {
+            initSynchronized();
         }
+    }
+
+    private synchronized void initSynchronized() throws SecurityException {
+        if (tpm == null) {
+            try {
+                tpm = TpmFactory.platformTpm();
+            } catch (TpmException e) {
+                throw new SecurityException("TPM cannot be accessed", e);
+            }
+            if (tpm == null) {
+                throw new SecurityException("TPM cannot be accessed");
+            }
+        }
+    }
+
+    public boolean isAvailable() {
+        if (tpm != null) {
+            return true;
+        }
+        try {
+            init();
+            if (tpm != null) {
+                return true;
+            }
+        } catch (SecurityException e) {
+            logger.info("cannot open TPM");
+        }
+        return false;
+    }
+
+    public boolean isReady() {
+        CreatePrimaryResponse rsaEk = this.rsaEk; // to avoid warning
+        return (tpm != null) && (rsaEk != null) && (rsaSrk != null) && (rsaEk.outPublic != null)
+                && (policySession != null);
     }
 
     /**
@@ -102,7 +134,15 @@ public class TpmInterface {
      * 
      * @throws SecurityException
      */
-    public void generateKeys() throws SecurityException {
+    public synchronized void generateKeys() throws SecurityException {
+        if ((rsaEk != null) && (rsaSrk != null)) {
+            return; // keys already exist, re-creating will lead to same keys
+        }
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             Instant start = Instant.now();
             TPMT_PUBLIC rsaEkTemplate = new TPMT_PUBLIC(TPM_ALG_ID.SHA256,
@@ -137,7 +177,7 @@ public class TpmInterface {
             end = Instant.now();
             logger.debug("TPM based RSA storage key generated in {} seconds", Duration.between(start, end).toSeconds());
 
-            logger.info("TPM key genration complete");
+            logger.info("TPM key generation complete");
         } catch (TpmException e) {
             throw new SecurityException("TPM exception", e);
         }
@@ -149,6 +189,11 @@ public class TpmInterface {
      * @throws SecurityException
      */
     public SecuredPassword encryptSecret(String secret) throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             if ((rsaEk == null) || (rsaSrk == null)) {
                 generateKeys();
@@ -175,6 +220,11 @@ public class TpmInterface {
     }
 
     public String encryptAndSerializeSecret(String secret) throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             ObjectOutputStream serial = new ObjectOutputStream(stream);
@@ -192,6 +242,11 @@ public class TpmInterface {
      * @throws SecurityException
      */
     public String decryptSecret(SecuredPassword secret) throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             if ((rsaEk == null) || (rsaSrk == null)) {
                 generateKeys();
@@ -211,14 +266,20 @@ public class TpmInterface {
 
             // policy session
             byte[] nonceCaller = Helpers.RandomBytes(20);
-            StartAuthSessionResponse policySession = tpm.StartAuthSession(TPM_HANDLE.NULL, TPM_HANDLE.NULL, nonceCaller,
-                    new byte[0], TPM_SE.POLICY, new TPMT_SYM_DEF(), TPM_ALG_ID.SHA256);
+            if (policySession == null) {
+                policySession = tpm.StartAuthSession(TPM_HANDLE.NULL, TPM_HANDLE.NULL, nonceCaller, new byte[0],
+                        TPM_SE.POLICY, new TPMT_SYM_DEF(), TPM_ALG_ID.SHA256);
+            }
+            StartAuthSessionResponse policySession = this.policySession; // local copy to avoid Null warnings
+            if (policySession == null) {
+                throw new SecurityException("TPM decryption failed, cannot create policy session");
+            }
             // password is used during creation of key handles, so it needs to be set
             policySession.handle.AuthValue = USER_PWD.getBytes();
             tpm.PolicySecret(tpm._EndorsementHandle, policySession.handle, new byte[0], new byte[0], new byte[0], 0);
             byte[] policyDigest = tpm.PolicyGetDigest(policySession.handle);
             if (!Helpers.arraysAreEqual(policyDigest, STANDARD_EK_POLICY)) {
-                throw new SecurityException("TPM decryption failed");
+                throw new SecurityException("TPM decryption failed, policy mismatch");
             }
 
             tpm._withSessions(TPM_HANDLE.pwSession(new byte[0]), policySession.handle);
@@ -232,6 +293,11 @@ public class TpmInterface {
     }
 
     public String deserializeAndDectryptSecret(String encryptedSecret) throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             byte[] array = Helpers.fromHex(encryptedSecret);
             ByteArrayInputStream stream = new ByteArrayInputStream(array);
@@ -252,7 +318,12 @@ public class TpmInterface {
      * @param bytesRequested
      * @return array of random numbers
      */
-    byte[] getRandom(int bytesRequested) {
+    byte[] getRandom(int bytesRequested) throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         return tpm.GetRandom(bytesRequested);
     }
 
@@ -261,6 +332,11 @@ public class TpmInterface {
      * @throws SecurityException
      */
     public String getTpmFirmwareVersion() throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             int ret = TpmHelpers.getTpmProperty(tpm, TPM_PT.FIRMWARE_VERSION_1);
             int major = ret >> 16;
@@ -276,6 +352,11 @@ public class TpmInterface {
      * @throws SecurityException
      */
     public String getTpmManufacturerShort() throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             StringBuilder sb = new StringBuilder(4);
             int ret = TpmHelpers.getTpmProperty(tpm, TPM_PT.MANUFACTURER);
@@ -293,6 +374,11 @@ public class TpmInterface {
      * @throws SecurityException
      */
     public String getTpmModel() throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             StringBuilder sb = new StringBuilder(24);
             int ret = TpmHelpers.getTpmProperty(tpm, TPM_PT.VENDOR_STRING_1);
@@ -323,6 +409,11 @@ public class TpmInterface {
      * @throws SecurityException
      */
     public String getTpmTcgLevel() throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             int ret = TpmHelpers.getTpmProperty(tpm, TPM_PT.LEVEL);
             return "" + ret;
@@ -337,6 +428,11 @@ public class TpmInterface {
      * @throws SecurityException
      */
     public String getTpmTcgRevision() throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             int ret = TpmHelpers.getTpmProperty(tpm, TPM_PT.REVISION);
             return "" + (ret / 100) + "." + (ret % 100);
@@ -351,6 +447,11 @@ public class TpmInterface {
      * @throws SecurityException
      */
     public String getTpmVersion() throws SecurityException {
+        init();
+        Tpm tpm = this.tpm; // local copy to avoid Null warnings
+        if (tpm == null) {
+            throw new SecurityException("TPM cannot be opened");
+        }
         try {
             StringBuilder sb = new StringBuilder(4);
             int ret = TpmHelpers.getTpmProperty(tpm, TPM_PT.FAMILY_INDICATOR);
