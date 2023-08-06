@@ -68,11 +68,12 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
         } else if (args.length == 1 && CMD_TPM_INFO.equalsIgnoreCase(args[0])) {
             try {
                 console.println("trying to access TPM module");
-                TpmInterface tpm = new TpmInterface();
-                console.println("TPM version:   " + tpm.getTpmVersion());
-                console.println("TPM model:     " + tpm.getTpmManufacturerShort() + " " + tpm.getTpmModel());
-                console.println("TPM firmware:  " + tpm.getTpmFirmwareVersion());
-                console.println("TPM TCG Spec.: rev. " + tpm.getTpmTcgRevision() + " level " + tpm.getTpmTcgLevel());
+                console.println("TPM version:   " + TpmInterface.TPM.getTpmVersion());
+                console.println("TPM model:     " + TpmInterface.TPM.getTpmManufacturerShort() + " "
+                        + TpmInterface.TPM.getTpmModel());
+                console.println("TPM firmware:  " + TpmInterface.TPM.getTpmFirmwareVersion());
+                console.println("TPM TCG Spec.: rev. " + TpmInterface.TPM.getTpmTcgRevision() + " level "
+                        + TpmInterface.TPM.getTpmTcgLevel());
             } catch (SecurityException e) {
                 console.print("error: " + e.getMessage());
             }
@@ -80,14 +81,15 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
         } else if (args.length == 2 && CMD_TPM_ENCRYPT.equalsIgnoreCase(args[0])) {
             try {
                 console.println("trying to access TPM module");
-                TpmInterface tpm = new TpmInterface();
-                console.println("generating keys, this might take some time");
-                String p = tpm.encryptAndSerializeSecret(args[1]);
+                if (!TpmInterface.TPM.isReady()) {
+                    console.println("generating keys, this might take some time");
+                }
+                String p = TpmInterface.TPM.encryptAndSerializeSecret(args[1]);
                 console.println("encrypted representation of password");
                 console.println(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX + p);
 
                 // check if TPM can decrypt
-                String decrypted = tpm.deserializeAndDectryptSecret(p);
+                String decrypted = TpmInterface.TPM.deserializeAndDectryptSecret(p);
                 if (args[1].equals(decrypted)) {
                     console.println("Password successfully recovered from encrypted representation");
                 } else {
