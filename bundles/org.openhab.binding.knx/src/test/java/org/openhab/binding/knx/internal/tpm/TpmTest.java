@@ -37,21 +37,13 @@ class TpmTest {
 
     @Test
     void testTpmInfo() {
-        TpmInterface tpmIf = null;
-
-        try {
-            tpmIf = new TpmInterface();
-        } catch (SecurityException ignored) {
-            // TPM might not be availabe
-        }
-
-        if (tpmIf != null) {
-            assertDoesNotThrow(tpmIf::getTpmManufacturerShort);
-            assertDoesNotThrow(tpmIf::getTpmModel);
-            assertDoesNotThrow(tpmIf::getTpmFirmwareVersion);
-            assertDoesNotThrow(tpmIf::getTpmTcgLevel);
-            assertDoesNotThrow(tpmIf::getTpmTcgRevision);
-            assertDoesNotThrow(tpmIf::getTpmVersion);
+        if (TpmInterface.TPM.isAvailable()) {
+            assertDoesNotThrow(TpmInterface.TPM::getTpmManufacturerShort);
+            assertDoesNotThrow(TpmInterface.TPM::getTpmModel);
+            assertDoesNotThrow(TpmInterface.TPM::getTpmFirmwareVersion);
+            assertDoesNotThrow(TpmInterface.TPM::getTpmTcgLevel);
+            assertDoesNotThrow(TpmInterface.TPM::getTpmTcgRevision);
+            assertDoesNotThrow(TpmInterface.TPM::getTpmVersion);
         }
     }
 
@@ -61,32 +53,14 @@ class TpmTest {
     @Test
     @DisabledOnOs(WINDOWS) // this test fails on Windows as user
     void testTpmEncDec() {
-        TpmInterface tpmIf = null;
         SecuredPassword sPwd = null;
 
-        try {
-            tpmIf = new TpmInterface();
-        } catch (SecurityException ignored) {
-            // TPM might not be availabe
-        }
-
-        if (tpmIf != null) {
+        if (TpmInterface.TPM.isAvailable()) {
             try {
                 final String secret = "password";
-                sPwd = tpmIf.encryptSecret(secret);
+                sPwd = TpmInterface.TPM.encryptSecret(secret);
 
-                TpmInterface tpmIf2 = null;
-                try {
-                    tpmIf2 = new TpmInterface();
-                } catch (SecurityException e) {
-                    assertEquals("", e.toString());
-                }
-
-                assertNotEquals(null, tpmIf2);
-
-                if (tpmIf2 != null) { // always true, avoid warning
-                    assertEquals(secret, tpmIf2.decryptSecret(sPwd));
-                }
+                assertEquals(secret, TpmInterface.TPM.decryptSecret(sPwd));
             } catch (SecurityException e) {
                 assertEquals("", e.toString() + " " + Objects.toString(e.getCause(), ""));
             }
@@ -95,17 +69,13 @@ class TpmTest {
 
     @Test
     void testTpmRandom() {
-        TpmInterface tpmIf = null;
-
-        try {
-            tpmIf = new TpmInterface();
-        } catch (SecurityException ignored) {
-            // TPM might not be availabe
-        }
-
-        if (tpmIf != null) {
-            byte[] r = tpmIf.getRandom(20);
-            assertEquals(20, r.length);
+        if (TpmInterface.TPM.isAvailable()) {
+            try {
+                byte[] r = TpmInterface.TPM.getRandom(20);
+                assertEquals(20, r.length);
+            } catch (SecurityException e) {
+                assertEquals("", e.toString() + " " + Objects.toString(e.getCause(), ""));
+            }
         }
     }
 }
