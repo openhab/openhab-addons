@@ -55,7 +55,7 @@ Each `liveevent` thing requires a bridge of type `calendar` and has following co
 
 | parameter name | description | optional |
 |----------------|-------------|----------|
-| `offset` | The offset of the display related to "now" | optional, default: `0` |
+| `offset` | The offset in seconds of the display related to "now" (negative values allowed) | optional, default: `0` |
 | `textEventField` | A field to filter the events text-based. Valid values: `SUMMARY`, `DESCRIPTION`, `COMMENT`, `CONTACT` and `LOCATION` (as described in RFC 5545). | optional/required for text-based filtering |
 | `textEventValue` | The text to filter events with. | optional |
 | `textValueType`  | The type of the text to filter with. Valid values: `TEXT` (field must contain value, case insensitive), `REGEX` (field must match value, completely, dot matches all, usually case sensitive). | optional/required for text-based filtering |
