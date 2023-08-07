@@ -486,7 +486,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             String applicationKey = config.applicationKey;
             applicationKey = Objects.nonNull(applicationKey) ? applicationKey : "";
-            clip2Bridge = new Clip2Bridge(httpClientFactory, this, ipAddress, applicationKey);
+
+            try {
+                clip2Bridge = new Clip2Bridge(httpClientFactory, this, ipAddress, applicationKey);
+            } catch (ApiException e) {
+                logger.trace("initializeAssets() communication error on '{}'", ipAddress, e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
+                return;
+            }
 
             assetsLoaded = true;
         }
@@ -499,14 +507,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public void onConnectionOffline() {
         if (assetsLoaded) {
-            try {
-                getClip2Bridge().setExternalRestartScheduled();
-                cancelTask(checkConnectionTask, false);
-                checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
-                        TimeUnit.SECONDS);
-            } catch (AssetNotLoadedException e) {
-                // should never occur
-            }
+            cancelTask(checkConnectionTask, false);
+            checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
+                    TimeUnit.SECONDS);
         }
     }
 

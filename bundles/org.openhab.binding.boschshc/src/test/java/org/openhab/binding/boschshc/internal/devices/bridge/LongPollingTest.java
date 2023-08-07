@@ -62,7 +62,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-public class LongPollingTest {
+class LongPollingTest {
 
     /**
      * A dummy implementation of {@link ScheduledFuture}.

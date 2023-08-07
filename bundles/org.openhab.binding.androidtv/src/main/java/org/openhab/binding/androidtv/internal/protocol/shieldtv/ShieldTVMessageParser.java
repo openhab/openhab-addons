@@ -96,84 +96,99 @@ public class ShieldTVMessageParser {
                 callback.setHostName(encHostname);
             } else if (msg.startsWith(MESSAGE_HOSTNAME)) {
                 // Longer hostname reply
-                // 080b 12 5b08b510 12 TOTALLEN? 0a LEN Hostname 12 LEN IPADDR Padding? 22 LEN DeviceID 2a LEN arm64-v8a
+                // 080b 12 5b08b510 12 TOTALLEN? 0a LEN Hostname 12 LEN IPADDR 18 9b46 22 LEN DeviceID 2a LEN arm64-v8a
                 // 2a LEN armeabi-v7a 2a LEN armeabi 180b
                 // It's possible for there to be more or less of the arm lists
                 logger.trace("{} - Longer Hostname Reply", thingId);
 
-                int i = 20;
+                int i = 18;
                 int length;
                 int current;
 
-                // Hostname
-                String st = "" + charArray[i] + "" + charArray[i + 1];
-                length = Integer.parseInt(st, 16) * 2;
-                i += 2;
-
                 StringBuilder hostname = new StringBuilder();
-                current = i;
-
-                for (; i < current + length; i = i + 2) {
-                    st = "" + charArray[i] + "" + charArray[i + 1];
-                    hostname.append(st);
-                }
-
-                i += 2; // 12
-
-                // ipAddress
-                st = "" + charArray[i] + "" + charArray[i + 1];
-                length = Integer.parseInt(st, 16) * 2;
-                i += 2;
-
                 StringBuilder ipAddress = new StringBuilder();
-                current = i;
-
-                for (; i < current + length; i = i + 2) {
-                    st = "" + charArray[i] + "" + charArray[i + 1];
-                    ipAddress.append(st);
-                }
-
-                st = "" + charArray[i] + "" + charArray[i + 1];
-                while (!DELIMITER_22.equals(st)) {
-                    i += 2;
-                    st = "" + charArray[i] + "" + charArray[i + 1];
-                }
-
-                i += 2; // 22
-
-                // deviceId
-
-                st = "" + charArray[i] + "" + charArray[i + 1];
-                length = Integer.parseInt(st, 16) * 2;
-                i += 2;
-
                 StringBuilder deviceId = new StringBuilder();
-                current = i;
+                StringBuilder arch = new StringBuilder();
 
-                for (; i < current + length; i = i + 2) {
+                String st = "" + charArray[i] + "" + charArray[i + 1];
+
+                if (DELIMITER_0A.equals(st)) {
+                    i += 2; // 0a
+                    // Hostname
                     st = "" + charArray[i] + "" + charArray[i + 1];
-                    deviceId.append(st);
+                    length = Integer.parseInt(st, 16) * 2;
+                    i += 2;
+
+                    current = i;
+
+                    for (; i < current + length; i = i + 2) {
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                        hostname.append(st);
+                    }
+                }
+                st = "" + charArray[i] + "" + charArray[i + 1];
+
+                if (DELIMITER_12.equals(st)) {
+                    i += 2; // 12
+
+                    // ipAddress
+                    st = "" + charArray[i] + "" + charArray[i + 1];
+                    length = Integer.parseInt(st, 16) * 2;
+                    i += 2;
+
+                    current = i;
+
+                    for (; i < current + length; i = i + 2) {
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                        ipAddress.append(st);
+                    }
+                }
+
+                st = "" + charArray[i] + "" + charArray[i + 1];
+                if (DELIMITER_18.equals(st)) {
+                    while (!DELIMITER_22.equals(st)) {
+                        i += 2;
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                    }
+                }
+
+                st = "" + charArray[i] + "" + charArray[i + 1];
+                if (DELIMITER_22.equals(st)) {
+                    i += 2; // 22
+
+                    // deviceId
+
+                    st = "" + charArray[i] + "" + charArray[i + 1];
+                    length = Integer.parseInt(st, 16) * 2;
+                    i += 2;
+
+                    current = i;
+
+                    for (; i < current + length; i = i + 2) {
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                        deviceId.append(st);
+                    }
                 }
 
                 // architectures
                 st = "" + charArray[i] + "" + charArray[i + 1];
-                StringBuilder arch = new StringBuilder();
-                while (DELIMITER_2A.equals(st)) {
-                    i += 2;
-                    st = "" + charArray[i] + "" + charArray[i + 1];
-                    length = Integer.parseInt(st, 16) * 2;
-                    i += 2;
-                    current = i;
-                    for (; i < current + length; i = i + 2) {
+                if (DELIMITER_2A.equals(st)) {
+                    while (DELIMITER_2A.equals(st)) {
+                        i += 2;
                         st = "" + charArray[i] + "" + charArray[i + 1];
-                        arch.append(st);
-                    }
-                    st = "" + charArray[i] + "" + charArray[i + 1];
-                    if (DELIMITER_2A.equals(st)) {
-                        arch.append("2c");
+                        length = Integer.parseInt(st, 16) * 2;
+                        i += 2;
+                        current = i;
+                        for (; i < current + length; i = i + 2) {
+                            st = "" + charArray[i] + "" + charArray[i + 1];
+                            arch.append(st);
+                        }
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                        if (DELIMITER_2A.equals(st)) {
+                            arch.append("2c");
+                        }
                     }
                 }
-
                 String encHostname = ShieldTVRequest.encodeMessage(hostname.toString());
                 String encIpAddress = ShieldTVRequest.encodeMessage(ipAddress.toString());
                 String encDeviceId = ShieldTVRequest.encodeMessage(deviceId.toString());

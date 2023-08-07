@@ -18,15 +18,18 @@
 	</channel-type>
 
 	<channel-type id="siren-status">
-		<item-type>String</item-type>
-		<label>Status</label>
+		<item-type>Switch</item-type>
+		<label>Siren</label>
 		<description>Status of the siren</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="no_sound">Silent</option>
-				<option value="sound">Alarm</option>
-			</options>
-		</state>
+		<category>Soundvolume</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="siren-status-rw">
+		<item-type>Switch</item-type>
+		<label>Siren</label>
+		<description>Status of the siren</description>
+		<category>Soundvolume</category>
 	</channel-type>
 
 	<channel-type id="window-open">

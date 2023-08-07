@@ -27,6 +27,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Markus Michels - Initial contribution
  */
 public class Shelly2ApiJsonDTO {
+    public static final String SHELLYRPC_ENDPOINT = "/rpc";
+
     public static final String SHELLYRPC_METHOD_CLASS_SHELLY = "Shelly";
     public static final String SHELLYRPC_METHOD_CLASS_SWITCH = "Switch";
 
@@ -47,6 +49,10 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_COVER_CMD_OPEN = "Open";
     public static final String SHELLY2_COVER_CMD_CLOSE = "Close";
     public static final String SHELLY2_COVER_CMD_STOP = "Stop";
+    public static final String SHELLYRPC_METHOD_LIGHT_STATUS = "Light.GetStatus";
+    public static final String SHELLYRPC_METHOD_LIGHT_SET = "Light.Set";
+    public static final String SHELLYRPC_METHOD_LIGHT_SETCONFIG = "Light.SetConfig";
+    public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
     public static final String SHELLYRPC_METHOD_ETHGETCONG = "Eth.GetConfig";
@@ -56,6 +62,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CLOUDSET = "Cloud.SetConfig";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
+    public static final String SHELLYRPC_METHOD_EMDATARESET = "EMData.DeleteAllData";
+    public static final String SHELLYRPC_METHOD_EM1DATARESET = "EM1Data.DeleteAllData";
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
@@ -150,6 +158,12 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_WAKEUPOCAUSE_PERIODIC = "periodic";
     public static final String SHELLY2_WAKEUPOCAUSE_UPDATE = "status_update";
     public static final String SHELLY2_WAKEUPOCAUSE_UNDEFINED = "undefined";
+
+    // Dimmer US: LED power modes
+    public static final String SHELLY2_POWERLED_ON = "on";
+    public static final String SHELLY2_POWERLED_OFF = "off";
+    public static final String SHELLY2_POWERLED_MATCH = "match_output";
+    public static final String SHELLY2_POWERLED_INVERT = "inverted_output";
 
     public class Shelly2DevConfigBle {
         public Boolean enable;
@@ -265,7 +279,7 @@ public class Shelly2ApiJsonDTO {
         }
 
         public class Shelly2DevConfigInput {
-            public String id;
+            public Integer id;
             public String name;
             public String type;
             public Boolean invert;
@@ -276,7 +290,7 @@ public class Shelly2ApiJsonDTO {
         }
 
         public class Shelly2DevConfigSwitch {
-            public String id;
+            public Integer id;
             public String name;
 
             @SerializedName("in_mode")
@@ -309,6 +323,11 @@ public class Shelly2ApiJsonDTO {
             public String phase_selector;
             @SerializedName("monitor_phase_sequence")
             public Boolean monitorPhaseSequence;
+        }
+
+        public class Shelly2DevConfigPm1 {
+            public Integer id;
+            public String name;
         }
 
         public class Shelly2DevConfigCover {
@@ -367,6 +386,41 @@ public class Shelly2ApiJsonDTO {
             public Boolean mute;
         }
 
+        public static class Shelly2GetConfigLight {
+            public static class Shelly2GetConfigLightDefault {
+                public Integer brightness;
+            }
+
+            public static class Shelly2GetConfigLightNightMode {
+                public boolean enable;
+                public Integer brightness;
+            }
+
+            public Integer id;
+            public String name;
+            @SerializedName("initial_state")
+            public String initialState;
+            @SerializedName("auto_on")
+            public Boolean autoOn;
+            @SerializedName("auto_off")
+            public Boolean autoOff;
+            @SerializedName("auto_on_delay")
+            public Double autoOnDelay;
+            @SerializedName("auto_off_delay")
+            public Double autoOffDelay;
+            @SerializedName("default")
+            public Shelly2GetConfigLightDefault defaultCfg;
+            @SerializedName("night_mode")
+            public Shelly2GetConfigLightNightMode nightMode;
+        }
+
+        public class Shelly2DeviceConfigLed {
+            @SerializedName("sys_led_enable")
+            public Boolean sysLedEnable;
+            @SerializedName("power_led")
+            public String powerLed;
+        }
+
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -392,6 +446,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DevConfigMqtt mqtt;
             public Shelly2DeviceConfigSys sys;
             public Shelly2DeviceConfigWiFi wifi;
+            @SerializedName("wd_ui")
+            public Shelly2DeviceConfigLed led;
 
             @SerializedName("input:0")
             public Shelly2DevConfigInput input0;
@@ -410,12 +466,23 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DevConfigSwitch switch2;
             @SerializedName("switch:3")
             public Shelly2DevConfigSwitch switch3;
+            @SerializedName("switch:100")
+            public Shelly2DevConfigSwitch switch100; // Pro 3EM Add-On
 
             @SerializedName("em:0")
             public Shelly2DevConfigEm em0;
+            @SerializedName("em1:0")
+            public Shelly2DevConfigEm em10;
+            @SerializedName("em1:1")
+            public Shelly2DevConfigEm em11;
+            @SerializedName("pm1:0")
+            public Shelly2DevConfigPm1 pm10;
 
             @SerializedName("cover:0")
             public Shelly2DevConfigCover cover0;
+
+            @SerializedName("light:0")
+            public Shelly2GetConfigLight light0;
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
@@ -460,6 +527,17 @@ public class Shelly2ApiJsonDTO {
             public ArrayList<String> errors;// shown only if at least one error is present.
         }
 
+        public static class Shelly2DeviceStatusLight {
+            public Integer id;
+            public String source;
+            public Boolean output;
+            public Double brightness;
+            @SerializedName("timer_started_at")
+            public Double timerStartedAt;
+            @SerializedName("timer_duration")
+            public Integer timerDuration;
+        }
+
         public static class Shelly2DeviceStatusResult {
             public class Shelly2DeviceStatusBle {
 
@@ -499,6 +577,12 @@ public class Shelly2ApiJsonDTO {
             public class Shelly2DeviceStatusHumidity {
                 public Integer id;
                 public Double rh;
+            }
+
+            public class Shelly2DeviceStatusIlluminance {
+                public Integer id;
+                public Double lux;
+                public String illumination;
             }
 
             public class Shelly2DeviceStatusVoltage {
@@ -609,14 +693,28 @@ public class Shelly2ApiJsonDTO {
             public Shelly2RelayStatus switch2;
             @SerializedName("switch:3")
             public Shelly2RelayStatus switch3;
+            @SerializedName("switch:100")
+            public Shelly2RelayStatus switch100; // Pro 3EM Add-On
+
+            @SerializedName("pm1:0")
+            public Shelly2RelayStatus pm10;
 
             @SerializedName("em:0")
-            Shelly2DeviceStatusEm em0;
+            public Shelly2DeviceStatusEm em0;
             @SerializedName("emdata:0")
-            Shelly2DeviceStatusEmData emdata0;
+            public Shelly2DeviceStatusEmData emdata0;
+            @SerializedName("em1:0")
+            public Shelly2StatusEm1 em10;
+            @SerializedName("em1:1")
+            public Shelly2StatusEm1 em11;
+            @SerializedName("em1data:0")
+            public Shelly2DeviceStatusEmData em1data0;
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
+
+            @SerializedName("light:0")
+            public Shelly2DeviceStatusLight light0;
 
             @SerializedName("temperature:0")
             public Shelly2DeviceStatusTempId temperature0;
@@ -635,6 +733,10 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusHumidity humidity0;
             @SerializedName("humidity:100")
             public Shelly2DeviceStatusHumidity humidity100;
+
+            @SerializedName("illuminance:0")
+            Shelly2DeviceStatusIlluminance illuminance0;
+
             @SerializedName("smoke:0")
             public Shelly2DeviceStatusSmoke smoke0;
 
@@ -718,6 +820,36 @@ public class Shelly2ApiJsonDTO {
         public String[] errors;
     }
 
+    public static class Shelly2Pm1Status {
+        public Integer id;
+        public String source;
+        public Boolean output;
+        @SerializedName("timer_started_at")
+        public Double timerStartetAt;
+        @SerializedName("timer_duration")
+        public Integer timerDuration;
+        public Double apower;
+        public Double voltage;
+        public Double current;
+        public Double pf;
+        public Shelly2Energy aenergy;
+        public Shelly2DeviceStatusTemp temperature;
+        public String[] errors;
+    }
+
+    public static class Shelly2StatusEm1 {
+        public Integer id;
+        public Double current;
+        public Double voltage;
+        @SerializedName("act_power")
+        public Double actPower;
+        @SerializedName("aprt_power")
+        public Double aptrPower;
+        public Double pf;
+        public String calibration;
+        public ArrayList<String> errors;
+    }
+
     public static class Shelly2DeviceStatusTemp {
         public Double tC;
         public Double tF;
@@ -751,6 +883,12 @@ public class Shelly2ApiJsonDTO {
         public Boolean autoOff;
         @SerializedName("auto_off_delay")
         public Double autoOffDelay;
+
+        // WD_UI.SetConfig
+        @SerializedName("sys_led_enable")
+        public Boolean sysLedEnable;
+        @SerializedName("power_led")
+        public String powerLed;
     }
 
     public static class Shelly2RpcRequest {
@@ -763,6 +901,11 @@ public class Shelly2ApiJsonDTO {
             // Cover
             public Integer pos;
             public Boolean on;
+
+            // Dimmer / Light
+            public Integer brightness;
+            @SerializedName("toggle_after")
+            public Integer toggleAfter;
 
             // Shelly.SetAuth
             public String user;
@@ -863,7 +1006,7 @@ public class Shelly2ApiJsonDTO {
         public Object params;
         public String event;
         public Object result;
-        public Shelly2AuthRequest auth;
+        public Shelly2AuthRsp auth;
         public Shelly2RpcMessageError error;
     }
 
@@ -881,31 +1024,32 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
+    public static String SHELLY2_AUTHDEF_USER = "admin";
     public static String SHELLY2_AUTHTTYPE_DIGEST = "digest";
     public static String SHELLY2_AUTHTTYPE_STRING = "string";
     public static String SHELLY2_AUTHALG_SHA256 = "SHA-256";
     // = ':auth:'+HexHash("dummy_method:dummy_uri");
     public static String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
 
-    public static class Shelly2AuthRequest {
+    public static class Shelly2AuthChallenge { // on 401 message contains the auth info
+        @SerializedName("auth_type")
+        public String authType;
+        public String nonce;
+        public String nc;
+        public String realm;
+        public String algorithm;
+    }
+
+    public static class Shelly2AuthRsp {
         public String username;
-        public Long nonce;
-        public Long cnonce;
-        public Integer nc;
+        public String nonce;
+        public String cnonce;
+        public String nc;
         public String realm;
         public String algorithm;
         public String response;
         @SerializedName("auth_type")
         public String authType;
-    }
-
-    public static class Shelly2AuthResponse { // on 401 message contains the auth info
-        @SerializedName("auth_type")
-        public String authType;
-        public Long nonce;
-        public Integer nc;
-        public String realm;
-        public String algorithm;
     }
 
     // BTHome samples

@@ -42,11 +42,13 @@
 				<default>4710</default>
 			</parameter>
 			<parameter name="simpleProtocolSourceIdleTimeout" type="integer" required="false">
+				<advanced>true</advanced>
 				<label>Idle Timeout</label>
 				<description>Timeout in ms after which the connection will be closed when no stream is running. This ensures that
-					your speaker is not on all the time and the pulseaudio source can go to idle mode. -1 for no disconnection.
+					your mic is not on all the time and the pulseaudio source can go to idle mode. -1 for no disconnection. 0 for
+					immediate disconnection (recommended value to avoid capturing unwanted buffered audio)
 				</description>
-				<default>30000</default>
+				<default>0</default>
 			</parameter>
 			<parameter name="simpleProtocolSourceFormat" type="text">
 				<label>Simple Protocol Format</label>

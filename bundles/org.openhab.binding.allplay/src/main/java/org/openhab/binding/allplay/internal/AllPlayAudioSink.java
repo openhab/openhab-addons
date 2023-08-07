@@ -13,15 +13,18 @@
 package org.openhab.binding.allplay.internal;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.allplay.internal.handler.AllPlayHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
+import org.openhab.core.audio.AudioSinkAsync;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.StreamServed;
 import org.openhab.core.audio.URLAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.openhab.core.audio.UnsupportedAudioStreamException;
@@ -36,22 +39,15 @@ import de.kaizencode.tchaikovsky.exception.SpeakerException;
  *
  * @author Dominic Lerbs - Initial contribution
  */
-public class AllPlayAudioSink implements AudioSink {
+public class AllPlayAudioSink extends AudioSinkAsync {
 
     private final Logger logger = LoggerFactory.getLogger(AllPlayAudioSink.class);
 
-    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = Set.of(AudioFormat.MP3, AudioFormat.WAV);
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
     private final AllPlayHandler handler;
     private final AudioHTTPServer audioHTTPServer;
     private final String callbackUrl;
-
-    static {
-        SUPPORTED_FORMATS.add(AudioFormat.MP3);
-        SUPPORTED_FORMATS.add(AudioFormat.WAV);
-
-        SUPPORTED_STREAMS.add(AudioStream.class);
-    }
 
     /**
      * @param handler The related {@link AllPlayHandler}
@@ -75,13 +71,41 @@ public class AllPlayAudioSink implements AudioSink {
     }
 
     @Override
-    public void process(AudioStream audioStream)
+    protected void processAsynchronously(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
+        if (audioStream == null) {
+            return;
+        }
+        String url;
+        if (audioStream instanceof URLAudioStream urlAudioStream) {
+            // it is an external URL, the speaker can access it itself and play it
+            url = urlAudioStream.getURL();
+            tryClose(audioStream);
+        } else if (callbackUrl != null) {
+            StreamServed streamServed;
+            try {
+                streamServed = audioHTTPServer.serve(audioStream, 10, true);
+            } catch (IOException e) {
+                tryClose(audioStream);
+                throw new UnsupportedAudioStreamException(
+                        "AllPlay was not able to handle the audio stream (cache on disk failed).",
+                        audioStream.getClass(), e);
+            }
+            url = callbackUrl + streamServed.url();
+            streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
+        } else {
+            logger.warn("We do not have any callback url, so AllPlay cannot play the audio stream!");
+            tryClose(audioStream);
+            return;
+        }
         try {
-            String url = convertAudioStreamToUrl(audioStream);
             handler.playUrl(url);
-        } catch (SpeakerException | AllPlayCallbackException e) {
-            logger.warn("Unable to play audio stream on speaker {}", getId(), e);
+        } catch (SpeakerException e) {
+            if (logger.isDebugEnabled()) {
+                logger.warn("Unable to play audio stream on speaker {}", getId(), e);
+            } else {
+                logger.warn("Unable to play audio stream on speaker {}: {}", getId(), e.getMessage());
+            }
         }
     }
 
@@ -113,36 +137,12 @@ public class AllPlayAudioSink implements AudioSink {
         }
     }
 
-    /**
-     * Converts the given {@link AudioStream} into an URL which can be used for streaming.
-     *
-     * @param audioStream The incoming {@link AudioStream}
-     * @return The URL to use for streaming
-     * @throws AllPlayCallbackException Exception if the URL cannot be created
-     */
-    private String convertAudioStreamToUrl(AudioStream audioStream) throws AllPlayCallbackException {
-        if (audioStream instanceof URLAudioStream) {
-            // it is an external URL, the speaker can access it itself and play it
-            return ((URLAudioStream) audioStream).getURL();
-        } else {
-            return createUrlForLocalHttpServer(audioStream);
-        }
-    }
-
-    private String createUrlForLocalHttpServer(AudioStream audioStream) throws AllPlayCallbackException {
-        if (callbackUrl != null) {
-            String relativeUrl = audioHTTPServer.serve(audioStream);
-            return callbackUrl + relativeUrl;
-        } else {
-            throw new AllPlayCallbackException("Unable to play audio stream as callback URL is not set");
-        }
-    }
-
-    @SuppressWarnings("serial")
-    private class AllPlayCallbackException extends Exception {
-
-        public AllPlayCallbackException(String message) {
-            super(message);
+    private void tryClose(@Nullable InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 }

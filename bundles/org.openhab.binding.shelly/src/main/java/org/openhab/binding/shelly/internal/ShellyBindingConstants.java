@@ -67,10 +67,29 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYBUTTON1, //
             THING_TYPE_SHELLYBUTTON2, //
             THING_TYPE_SHELLMOTION, //
+
+            // Shelly Plus
             THING_TYPE_SHELLYPLUS1, //
             THING_TYPE_SHELLYPLUS1PM, //
             THING_TYPE_SHELLYPLUS2PM_RELAY, //
             THING_TYPE_SHELLYPLUS2PM_ROLLER, //
+            THING_TYPE_SHELLYPLUSI4, //
+            THING_TYPE_SHELLYPLUSI4DC, //
+            THING_TYPE_SHELLYPLUSHT, //
+            THING_TYPE_SHELLYPLUSSMOKE, //
+            THING_TYPE_SHELLYPLUSPLUGS, //
+            THING_TYPE_SHELLYPLUSPLUGUS, //
+            THING_TYPE_SHELLYPLUSDIMMERUS, //
+
+            // Shelly Wall Display
+            THING_TYPE_SHELLYPLUSWALLDISPLAY, //
+
+            // Shelly Plus Mini
+            THING_TYPE_SHELLYMINI1, //
+            THING_TYPE_SHELLYMINIPM, //
+            THING_TYPE_SHELLYMINI1PM, //
+
+            // Shelly Pro
             THING_TYPE_SHELLYPRO1, //
             THING_TYPE_SHELLYPRO1PM, //
             THING_TYPE_SHELLYPRO2_RELAY, //
@@ -78,15 +97,13 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPRO2PM_ROLLER, //
             THING_TYPE_SHELLYPRO3, //
             THING_TYPE_SHELLYPRO3EM, //
+            THING_TYPE_SHELLYPROEM50, //
             THING_TYPE_SHELLYPRO4PM, //
-            THING_TYPE_SHELLYPLUSI4, //
-            THING_TYPE_SHELLYPLUSI4DC, //
-            THING_TYPE_SHELLYPLUSHT, //
-            THING_TYPE_SHELLYPLUSSMOKE, //
-            THING_TYPE_SHELLYPLUSPLUGS, //
-            THING_TYPE_SHELLYPLUSPLUGUS, //
+
+            // Shelly BLU
             THING_TYPE_SHELLYBLUBUTTON, //
             THING_TYPE_SHELLYBLUDW, //
+
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);
 
@@ -171,7 +188,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
     public static final String CHANNEL_SENSOR_MUTE = "mute";
     public static final String CHANNEL_SENSOR_STATE = "state";
-    public static final String CHANNEL_SENSOR_OPEN = "open";
     public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
     public static final String CHANNEL_SENSOR_MOTION_ACT = "motionActive";
@@ -244,6 +260,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
     public static final String CHANNEL_DEVST_ACCUTOTAL = "accumulatedWTotal";
     public static final String CHANNEL_DEVST_ACCURETURNED = "accumulatedReturned";
+    public static final String CHANNEL_DEVST_RESETTOTAL = CHANNEL_EMETER_RESETTOTAL;
+
     public static final String CHANNEL_DEVST_CHARGER = "charger";
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
@@ -273,7 +291,7 @@ public class ShellyBindingConstants {
     public static final String SHELLY_API_MIN_FWCOIOT = "v1.6";// v1.6.0+
     public static final String SHELLY_API_FWCOIOT2 = "v1.8";// CoAP 2 with FW 1.8+
     public static final String SHELLY_API_FW_110 = "v1.10"; // FW 1.10 or newer detected, activates some add feature
-    public static final String SHELLY2_API_MIN_FWVERSION = "v0.10.2"; // Gen 2 minimum FW
+    public static final String SHELLY2_API_MIN_FWVERSION = "v0.10.1"; // Gen 2 minimum FW
 
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
@@ -309,7 +327,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;
 
-    public static final int SHELLY_API_TIMEOUT_MS = 15000;
+    public static final int SHELLY_API_TIMEOUT_MS = 10000;
     public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec
     public static final int UPDATE_SKIP_COUNT = 20; // update every x triggers or when a key was pressed
     public static final int UPDATE_MIN_DELAY = 15;// update every x triggers or when a key was pressed

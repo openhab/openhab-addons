@@ -44,5 +44,5 @@ public class ShellyThingConfiguration {
     public String localPort = "8080";
     public String serviceName = "";
 
-    public boolean enableBluGateway = false;
+    public Boolean enableBluGateway = false;
 }

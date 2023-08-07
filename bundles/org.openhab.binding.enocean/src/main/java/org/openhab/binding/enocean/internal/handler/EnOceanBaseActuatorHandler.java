@@ -296,10 +296,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> localRefreshJob = refreshJob;
-        if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
-            localRefreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
         }
     }
 }
