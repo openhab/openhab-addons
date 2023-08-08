@@ -191,6 +191,25 @@
 				<description>Port to connect to</description>
 				<default>1926</default>
 			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>
+					Username from the pairing process with the Philips TV.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>
+					Password from the pairing process with the Philips TV.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="macAddress" type="text">
+				<label>MAC Address</label>
+				<description>MAC address of the Philips TV device.</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="pairingCode" type="text">
 				<label>Pairing Code (4 digits)</label>
 				<description>Initial pairing code for the Philips TV device to authenticate with the device.</description>
