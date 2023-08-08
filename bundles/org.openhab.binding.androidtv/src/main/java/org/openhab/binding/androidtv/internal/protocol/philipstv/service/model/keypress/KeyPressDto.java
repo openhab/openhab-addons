@@ -10,35 +10,35 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keycode;
+package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keypress;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyCode;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyPress;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The {@link KeyCodeDto} class defines the Data Transfer Object
+ * The {@link KeyPressDto} class defines the Data Transfer Object
  * for the Philips TV API /input/key endpoint for remote controller emulation.
  *
  * @author Benjamin Meyer - Initial contribution
  * @author Ben Rosenblum - Merged into AndroidTV
  */
 @NonNullByDefault
-public class KeyCodeDto {
+public class KeyPressDto {
 
     @JsonProperty
-    private KeyCode key;
+    private KeyPress key;
 
-    public KeyCodeDto(KeyCode key) {
+    public KeyPressDto(KeyPress key) {
         this.key = key;
     }
 
-    public KeyCode getKey() {
+    public KeyPress getKey() {
         return key;
     }
 
-    public void setKey(KeyCode key) {
+    public void setKey(KeyPress key) {
         this.key = key;
     }
 }

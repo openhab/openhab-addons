@@ -12,14 +12,10 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.KEY_CODE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.VOLUME_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyCode.KEY_MUTE;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyPress.KEY_MUTE;
 
 import java.io.IOException;
 
@@ -27,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keycode.KeyCodeDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keypress.KeyPressDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.volume.VolumeDto;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -103,8 +99,8 @@ public class VolumeService implements PhilipsTVService {
 
     private void setMute() throws IOException {
         // We just sent the KEY_MUTE and dont bother what was actually requested
-        KeyCodeDto keyCodeDto = new KeyCodeDto(KEY_MUTE);
-        String muteJson = OBJECT_MAPPER.writeValueAsString(keyCodeDto);
+        KeyPressDto keyPressDto = new KeyPressDto(KEY_MUTE);
+        String muteJson = OBJECT_MAPPER.writeValueAsString(keyPressDto);
         logger.debug("Set json mute state: {}", muteJson);
         connectionManager.doHttpsPost(KEY_CODE_PATH, muteJson);
     }

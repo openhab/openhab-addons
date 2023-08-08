@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ import org.openhab.binding.androidtv.internal.AndroidTVTranslationProvider;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.PhilipsTVPairing;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.AmbilightService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.AppService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyCodeService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyPressService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.PowerService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.SearchContentService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.TvChannelService;
@@ -199,13 +200,13 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     public void initialize() {
         logger.debug("Init of handler for Thing: {}", handler.getThingID());
 
-        if ((config.host == null) || (config.port == null)) {
+        if ((config.ipAddress == null) || (config.port == null)) {
             postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Cannot connect to Philips TV. Host and/or port are not set.");
             return;
         }
 
-        HttpHost target = new HttpHost(config.host, config.port, HTTPS);
+        HttpHost target = new HttpHost(config.ipAddress, config.port, HTTPS);
 
         if ((config.pairingCode == null) && (config.username == null) && (config.password == null)) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
@@ -268,12 +269,12 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         services.put(CHANNEL_SHARPNESS, tvPictureService);
         services.put(CHANNEL_CONTRAST, tvPictureService);
 
-        PhilipsTVService keyCodeService = new KeyCodeService(this, connectionManager);
-        services.put(CHANNEL_KEY_CODE, keyCodeService);
-        services.put(CHANNEL_PLAYER, keyCodeService);
+        PhilipsTVService keyPressService = new KeyPressService(this, connectionManager);
+        services.put(CHANNEL_KEYPRESS, keyPressService);
+        services.put(CHANNEL_PLAYER, keyPressService);
 
         PhilipsTVService appService = new AppService(this, connectionManager);
-        services.put(CHANNEL_APP_NAME, appService);
+        services.put(CHANNEL_APPNAME, appService);
         services.put(CHANNEL_APP_ICON, appService);
 
         PhilipsTVService ambilightService = new AmbilightService(this, connectionManager);
@@ -355,7 +356,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 }
                 // Reset app and channel list (if existing) for new retrieval during next startup
                 if (channelServices != null) {
-                    ((AppService) channelServices.get(CHANNEL_APP_NAME)).clearAvailableAppList();
+                    ((AppService) channelServices.get(CHANNEL_APPNAME)).clearAvailableAppList();
                     ((TvChannelService) channelServices.get(CHANNEL_TV_CHANNEL)).clearAvailableTvChannelList();
                 }
             }
@@ -395,7 +396,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                         }
                     }
                     channelServices.get(CHANNEL_VOLUME).handleCommand(CHANNEL_VOLUME, RefreshType.REFRESH);
-                    channelServices.get(CHANNEL_APP_NAME).handleCommand(CHANNEL_APP_NAME, RefreshType.REFRESH);
+                    channelServices.get(CHANNEL_APPNAME).handleCommand(CHANNEL_APPNAME, RefreshType.REFRESH);
                     channelServices.get(CHANNEL_TV_CHANNEL).handleCommand(CHANNEL_TV_CHANNEL, RefreshType.REFRESH);
                 } finally {
                     lock.unlock();
@@ -416,7 +417,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
         logger.debug("thingDiscovered: {}", result);
 
-        if (config.useUpnpDiscovery && config.host.equals(result.getProperties().get(HOST))) {
+        if (config.useUpnpDiscovery && config.ipAddress.equals(result.getProperties().get(HOST))) {
             upnpThingUID = result.getThingUID();
             logger.debug("thingDiscovered, thingUID={}, discoveredUID={}", handler.getThingUID(), upnpThingUID);
             channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);

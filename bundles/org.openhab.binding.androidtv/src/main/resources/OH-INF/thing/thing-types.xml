@@ -162,11 +162,12 @@
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
 			<channel id="sharpness" typeId="sharpness"/>
-			<channel id="keyCode" typeId="keyCode"/>
-			<channel id="appName" typeId="appName"/>
-			<channel id="appIcon" typeId="appIcon"/>
+			<channel id="keypress" typeId="keypress"/>
+			<channel id="app" typeId="app"/>
+			<channel id="appname" typeId="appname"/>
+			<channel id="appicon" typeId="appicon"/>
 			<channel id="tvChannel" typeId="tvChannel"/>
-			<channel id="player" typeId="system.media-control"/>
+			<channel id="player" typeId="player"/>
 			<channel id="searchContent" typeId="searchContent"/>
 			<channel id="ambilightPower" typeId="ambilightPower"/>
 			<channel id="ambilightHuePower" typeId="ambilightHuePower"/>
@@ -180,22 +181,15 @@
 		</channels>
 
 		<config-description>
-			<parameter name="host" type="text">
+			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
-				<label>Network Address</label>
-				<description>Network address of the Philips TV device.</description>
-				<required>true</required>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
 			</parameter>
 			<parameter name="port" type="integer">
-				<label>Network Port</label>
-				<description>Network port of the Philips TV device.</description>
-				<advanced>true</advanced>
+				<label>Port</label>
+				<description>Port to connect to</description>
 				<default>1926</default>
-			</parameter>
-			<parameter name="macAddress" type="text">
-				<label>MAC Address</label>
-				<description>MAC address of the Philips TV device.</description>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pairingCode" type="text">
 				<label>Pairing Code (4 digits)</label>
@@ -208,20 +202,6 @@
 				</description>
 				<advanced>true</advanced>
 				<default>10</default>
-			</parameter>
-			<parameter name="username" type="text">
-				<label>Username</label>
-				<description>
-					Username from the pairing process with the Philips TV.
-				</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="password" type="text">
-				<label>Password</label>
-				<description>
-					Password from the pairing process with the Philips TV.
-				</description>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="useUpnpDiscovery" type="boolean">
 				<label>Use UPnP Discovery</label>
@@ -264,6 +244,12 @@
 		<description>App URL</description>
 	</channel-type>
 
+	<channel-type id="appicon" advanced="true">
+		<item-type>Image</item-type>
+		<label>App Icon</label>
+		<description>App Icon</description>
+	</channel-type>
+
 	<channel-type id="keypress">
 		<item-type>String</item-type>
 		<label>Key Press</label>
@@ -294,85 +280,12 @@
 		<description>Player Control</description>
 	</channel-type>
 
-	<channel-type id="appName" advanced="true">
-		<item-type>String</item-type>
-		<label>App Name</label>
-		<description>Name of the currently running application. Changing this to a value from the List, starts an
-			application.
-		</description>
-	</channel-type>
-
-	<channel-type id="appIcon" advanced="true">
-		<item-type>Image</item-type>
-		<label>App Icon</label>
-		<description>Icon of the currently running application</description>
-	</channel-type>
-
 	<channel-type id="tvChannel" advanced="true">
 		<item-type>String</item-type>
 		<label>TV Channel</label>
 		<description>Name of the currently running TV Channel. Changing this to a value from the List, switches the
 			channel.
 		</description>
-	</channel-type>
-
-	<channel-type id="keyCode">
-		<item-type>String</item-type>
-		<label>Key Code</label>
-		<description>The key code channel emulates the infrared remote controller and
-			allows to send virtual button presses.
-		</description>
-		<state>
-			<options>
-				<option value="KEY_STANDBY">KEY_STANDBY</option>
-				<option value="KEY_BACK">KEY_BACK</option>
-				<option value="KEY_FIND">KEY_FIND</option>
-				<option value="KEY_RED_COLOR">KEY_RED_COLOR</option>
-				<option value="KEY_GREEN_COLOR">KEY_GREEN_COLOR</option>
-				<option value="KEY_YELLOW_COLOR">KEY_YELLOW_COLOR</option>
-				<option value="KEY_BLUE_COLOR">KEY_BLUE_COLOR</option>
-				<option value="KEY_HOME">KEY_HOME</option>
-				<option value="KEY_VOLUME_UP">KEY_VOLUME_UP</option>
-				<option value="KEY_VOLUME_DOWN">KEY_VOLUME_DOWN</option>
-				<option value="KEY_MUTE">KEY_MUTE</option>
-				<option value="KEY_OPTIONS">KEY_OPTIONS</option>
-				<option value="KEY_DOT">KEY_DOT</option>
-				<option value="KEY_0">KEY_0</option>
-				<option value="KEY_1">KEY_1</option>
-				<option value="KEY_2">KEY_2</option>
-				<option value="KEY_3">KEY_3</option>
-				<option value="KEY_4">KEY_4</option>
-				<option value="KEY_5">KEY_5</option>
-				<option value="KEY_6">KEY_6</option>
-				<option value="KEY_7">KEY_7</option>
-				<option value="KEY_8">KEY_8</option>
-				<option value="KEY_9">KEY_9</option>
-				<option value="KEY_INFO">KEY_INFO</option>
-				<option value="KEY_CURSOR_UP">KEY_CURSOR_UP</option>
-				<option value="KEY_CURSOR_DOWN">KEY_CURSOR_DOWN</option>
-				<option value="KEY_CURSOR_LEFT">KEY_CURSOR_LEFT</option>
-				<option value="KEY_CURSOR_RIGHT">KEY_CURSOR_RIGHT</option>
-				<option value="KEY_CONFIRM">KEY_CONFIRM</option>
-				<option value="KEY_NEXT">KEY_NEXT</option>
-				<option value="KEY_PREVIOUS">KEY_PREVIOUS</option>
-				<option value="KEY_ADJUST">KEY_ADJUST</option>
-				<option value="KEY_WATCH_TV">KEY_WATCH_TV</option>
-				<option value="KEY_VIEW_MODE">KEY_VIEW_MODE</option>
-				<option value="KEY_TELETEXT">KEY_TELETEXT</option>
-				<option value="KEY_SUBTITLE">KEY_SUBTITLE</option>
-				<option value="KEY_CHANNEL_STEP_UP">KEY_CHANNEL_STEP_UP</option>
-				<option value="KEY_CHANNEL_STEP_DOWN">KEY_CHANNEL_STEP_DOWN</option>
-				<option value="KEY_SOURCE">KEY_SOURCE</option>
-				<option value="KEY_AMBILIGHT_ON_OFF">KEY_AMBILIGHT_ON_OFF</option>
-				<option value="KEY_PLAY_PAUSE">KEY_PLAY_PAUSE</option>
-				<option value="KEY_PAUSE">KEY_PAUSE</option>
-				<option value="KEY_FAST_FORWARD">KEY_FAST_FORWARD</option>
-				<option value="KEY_STOP">KEY_STOP</option>
-				<option value="KEY_REWIND">KEY_REWIND</option>
-				<option value="KEY_RECORD">KEY_RECORD</option>
-				<option value="KEY_ONLINE">KEY_ONLINE</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="searchContent" advanced="true">

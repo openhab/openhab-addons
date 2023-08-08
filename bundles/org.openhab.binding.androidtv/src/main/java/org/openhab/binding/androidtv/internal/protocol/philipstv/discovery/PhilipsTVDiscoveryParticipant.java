@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.discovery;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.DEFAULT_PORT;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.HOST;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.PORT;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.THING_TYPE_PHILIPS_TV;
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +48,7 @@ public class PhilipsTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_PHILIPS_TV);
+        return Collections.singleton(THING_TYPE_PHILIPSTV);
     }
 
     @Override
@@ -70,7 +68,7 @@ public class PhilipsTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
             friendlyName = "_" + friendlyName; // label must not start with a digit
         }
 
-        return DiscoveryResultBuilder.create(uid).withThingType(THING_TYPE_PHILIPS_TV).withProperties(properties)
+        return DiscoveryResultBuilder.create(uid).withThingType(THING_TYPE_PHILIPSTV).withProperties(properties)
                 .withLabel(friendlyName).build();
     }
 
@@ -94,7 +92,7 @@ public class PhilipsTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                             logger.debug("Discovered a Philips TV '{}' model '{}' thing with UDN '{}'",
                                     device.getDetails().getFriendlyName(), modelName, udn);
 
-                            return new ThingUID(THING_TYPE_PHILIPS_TV, udn);
+                            return new ThingUID(THING_TYPE_PHILIPSTV, udn);
                         }
                     }
                 }

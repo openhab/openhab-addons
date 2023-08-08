@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PhilipsTVConfiguration {
 
-    public String host = "";
+    public String ipAddress = "";
     public String macAddress = "";
     public Integer port = 1926;
     public Integer refreshRate = 10;

@@ -222,7 +222,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         if (THING_TYPE_PHILIPSTV.equals(thingTypeUID)) {
             PhilipsTVConfiguration philipstvConfig = getConfigAs(PhilipsTVConfiguration.class);
-            ipAddress = philipstvConfig.host;
+            ipAddress = philipstvConfig.ipAddress;
 
             if (ipAddress.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

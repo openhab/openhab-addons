@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * The {@link KeyCode} presents all available key codes of Philips TV.
+ * The {@link KeyPress} presents all available key codes of Philips TV.
  *
  * @see <a
  *      href=
@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * @author Ben Rosenblum - Merged into AndroidTV
  */
 @NonNullByDefault
-public enum KeyCode {
+public enum KeyPress {
 
     KEY_STANDBY("Standby"),
     KEY_BACK("Back"),
@@ -83,11 +83,11 @@ public enum KeyCode {
 
     private final String value;
 
-    KeyCode(String value) {
+    KeyPress(String value) {
         this.value = value;
     }
 
-    public static KeyCode getKeyCodeForValue(String value) throws IllegalArgumentException {
+    public static KeyPress getKeyPressForValue(String value) throws IllegalArgumentException {
         return Arrays.stream(values()).filter(v -> v.value.equalsIgnoreCase(value)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Key code could not be recognized: " + value));
     }

@@ -12,13 +12,9 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.EMPTY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.POWER_ON;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.STANDBY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_POWERSTATE_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
 import java.util.function.Predicate;
@@ -105,8 +101,8 @@ public class PowerService implements PhilipsTVService {
     private void setPowerState(OnOffType onOffType) throws IOException, InterruptedException {
         PowerStateDto powerStateDto = new PowerStateDto();
         if (onOffType == OnOffType.ON) {
-            if (isWakeOnLanEnabled.test(handler.config) && !WakeOnLanUtil.isReachable(handler.config.host)) {
-                WakeOnLanUtil.wakeOnLan(handler.config.host, handler.config.macAddress);
+            if (isWakeOnLanEnabled.test(handler.config) && !WakeOnLanUtil.isReachable(handler.config.ipAddress)) {
+                WakeOnLanUtil.wakeOnLan(handler.config.ipAddress, handler.config.macAddress);
             }
             powerStateDto.setPowerState(POWER_ON);
         } else {

@@ -12,26 +12,9 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.AMBILIGHT_CACHED_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.AMBILIGHT_CONFIG_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.AMBILIGHT_LOUNGE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.AMBILIGHT_MODE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.AMBILIGHT_POWERSTATE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.AMBILIGHT_TOPOLOGY_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_BOTTOM_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_HUE_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_LEFT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_LOUNGE_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_RIGHT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_STYLE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_TOP_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.POWER_OFF;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.UPDATE_SETTINGS_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -190,8 +173,8 @@ public class AmbilightService implements PhilipsTVService {
     private void setAmbilightLoungePowerState(Command command) throws IOException, InterruptedException {
         AmbilightColorDto ambilightColorDto = new AmbilightColorDto();
         if (command.equals(OnOffType.ON)) {
-            if (isWakeOnLanEnabled.test(handler.config) && !WakeOnLanUtil.isReachable(handler.config.host)) {
-                WakeOnLanUtil.wakeOnLan(handler.config.host, handler.config.macAddress);
+            if (isWakeOnLanEnabled.test(handler.config) && !WakeOnLanUtil.isReachable(handler.config.ipAddress)) {
+                WakeOnLanUtil.wakeOnLan(handler.config.ipAddress, handler.config.macAddress);
             }
             ambilightColorDto.setHue(0);
         } else {

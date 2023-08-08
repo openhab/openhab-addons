@@ -12,14 +12,9 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_BRIGHTNESS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_CONTRAST;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_SHARPNESS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CURRENT_SETTINGS_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.UPDATE_SETTINGS_PATH;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
 

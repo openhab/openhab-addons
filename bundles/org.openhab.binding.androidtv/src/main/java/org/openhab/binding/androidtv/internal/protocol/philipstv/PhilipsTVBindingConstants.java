@@ -13,7 +13,6 @@
 package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link PhilipsTVBindingConstants} class defines common constants, which are used across the
@@ -23,38 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Ben Rosenblum - Merged into AndroidTV
  */
 @NonNullByDefault
-public final class PhilipsTVBindingConstants {
-
-    private PhilipsTVBindingConstants() {
-    }
-
-    private static final String BINDING_ID = "philipstv";
-
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_PHILIPS_TV = new ThingTypeUID(BINDING_ID, "tv");
-
-    // List of all Channel ids. Values have to match ids in thing-types.xml
-    public static final String CHANNEL_VOLUME = "volume";
-    public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_MUTE = "mute";
-    public static final String CHANNEL_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_CONTRAST = "contrast";
-    public static final String CHANNEL_SHARPNESS = "sharpness";
-    public static final String CHANNEL_KEY_CODE = "keyCode";
-    public static final String CHANNEL_APP_NAME = "appName";
-    public static final String CHANNEL_APP_ICON = "appIcon";
-    public static final String CHANNEL_TV_CHANNEL = "tvChannel";
-    public static final String CHANNEL_PLAYER = "player";
-    public static final String CHANNEL_SEARCH_CONTENT = "searchContent";
-    public static final String CHANNEL_AMBILIGHT_POWER = "ambilightPower";
-    public static final String CHANNEL_AMBILIGHT_HUE_POWER = "ambilightHuePower";
-    public static final String CHANNEL_AMBILIGHT_LOUNGE_POWER = "ambilightLoungePower";
-    public static final String CHANNEL_AMBILIGHT_STYLE = "ambilightStyle";
-    public static final String CHANNEL_AMBILIGHT_COLOR = "ambilightColor";
-    public static final String CHANNEL_AMBILIGHT_LEFT_COLOR = "ambilightLeftColor";
-    public static final String CHANNEL_AMBILIGHT_RIGHT_COLOR = "ambilightRightColor";
-    public static final String CHANNEL_AMBILIGHT_TOP_COLOR = "ambilightTopColor";
-    public static final String CHANNEL_AMBILIGHT_BOTTOM_COLOR = "ambilightBottomColor";
+public class PhilipsTVBindingConstants {
 
     // Config Parameters
     public static final String HOST = "host";

@@ -12,15 +12,9 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_APP_ICON;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_APP_NAME;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.GET_AVAILABLE_APP_LIST_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.GET_CURRENT_APP_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.LAUNCH_APP_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.SLASH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
 import java.util.AbstractMap;
@@ -85,7 +79,7 @@ public class AppService implements PhilipsTVService {
             synchronized (this) { // TODO: avoids multiple inits at startup
                 if (isAvailableAppListEmpty()) {
                     availableApps = getAvailableAppListFromTv();
-                    handler.updateChannelStateDescription(CHANNEL_APP_NAME, availableApps.keySet().stream()
+                    handler.updateChannelStateDescription(CHANNEL_APPNAME, availableApps.keySet().stream()
                             .collect(Collectors.toMap(Function.identity(), Function.identity())));
                 }
             }
@@ -101,12 +95,12 @@ public class AppService implements PhilipsTVService {
                         .stream().filter(e -> e.getValue().getKey().equalsIgnoreCase(packageName)).findFirst();
                 if (app.isPresent()) {
                     Map.Entry<String, AbstractMap.SimpleEntry<String, String>> appEntry = app.get();
-                    handler.postUpdateChannel(CHANNEL_APP_NAME, new StringType(appEntry.getKey()));
+                    handler.postUpdateChannel(CHANNEL_APPNAME, new StringType(appEntry.getKey()));
                     // Get icon for current App
                     RawType image = getIconForApp(appEntry.getValue().getKey(), appEntry.getValue().getValue());
                     handler.postUpdateChannel(CHANNEL_APP_ICON, (image != null) ? image : UnDefType.UNDEF);
                 } else { // NA
-                    handler.postUpdateChannel(CHANNEL_APP_NAME, new StringType(packageName));
+                    handler.postUpdateChannel(CHANNEL_APPNAME, new StringType(packageName));
                     handler.postUpdateChannel(CHANNEL_APP_ICON, UnDefType.UNDEF);
                 }
             } else if (command instanceof StringType) {

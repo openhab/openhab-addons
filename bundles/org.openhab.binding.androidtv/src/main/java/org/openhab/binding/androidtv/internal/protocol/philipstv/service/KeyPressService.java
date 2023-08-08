@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.KEY_CODE_PATH;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_OFFLINE_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
 
@@ -23,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keycode.KeyCodeDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keypress.KeyPressDto;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RewindFastforwardType;
@@ -36,14 +35,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link KeyCodeService} is responsible for handling key code commands, which emulate a button
+ * The {@link KeyPressService} is responsible for handling key code commands, which emulate a button
  * press on a remote control.
  *
  * @author Benjamin Meyer - Initial contribution
  * @author Ben Rosenblum - Merged into AndroidTV
  */
 @NonNullByDefault
-public class KeyCodeService implements PhilipsTVService {
+public class KeyPressService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -51,33 +50,33 @@ public class KeyCodeService implements PhilipsTVService {
 
     private final ConnectionManager connectionManager;
 
-    public KeyCodeService(PhilipsTVConnectionManager handler, ConnectionManager connectionManager) {
+    public KeyPressService(PhilipsTVConnectionManager handler, ConnectionManager connectionManager) {
         this.handler = handler;
         this.connectionManager = connectionManager;
     }
 
     @Override
     public void handleCommand(String channel, Command command) {
-        KeyCode keyCode = null;
+        KeyPress keyPress = null;
         if (isSupportedCommand(command)) {
             // Three approaches to resolve the KEY_CODE
             try {
-                keyCode = KeyCode.valueOf(command.toString().toUpperCase());
+                keyPress = KeyPress.valueOf(command.toString().toUpperCase());
             } catch (IllegalArgumentException e) {
                 try {
-                    keyCode = KeyCode.valueOf("KEY_" + command.toString().toUpperCase());
+                    keyPress = KeyPress.valueOf("KEY_" + command.toString().toUpperCase());
                 } catch (IllegalArgumentException e2) {
                     try {
-                        keyCode = KeyCode.getKeyCodeForValue(command.toString());
+                        keyPress = KeyPress.getKeyPressForValue(command.toString());
                     } catch (IllegalArgumentException e3) {
                         // do nothing, error message is logged later
                     }
                 }
             }
 
-            if (keyCode != null) {
+            if (keyPress != null) {
                 try {
-                    sendKeyCode(keyCode);
+                    sendKeyPress(keyPress);
                 } catch (Exception e) {
                     if (isTvOfflineException(e)) {
                         logger.warn("Could not execute command for key code, the TV is offline.");
@@ -86,12 +85,12 @@ public class KeyCodeService implements PhilipsTVService {
                         handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 TV_NOT_LISTENING_MSG);
                     } else {
-                        logger.warn("Unknown error occurred while sending keyCode code {}: {}", keyCode, e.getMessage(),
-                                e);
+                        logger.warn("Unknown error occurred while sending keyPress code {}: {}", keyPress,
+                                e.getMessage(), e);
                     }
                 }
             } else {
-                logger.warn("Command '{}' not a supported keyCode code.", command);
+                logger.warn("Command '{}' not a supported keyPress code.", command);
             }
         } else {
             if (!(command instanceof RefreshType)) { // RefreshType is valid but ignored
@@ -105,10 +104,10 @@ public class KeyCodeService implements PhilipsTVService {
                 || (command instanceof PlayPauseType) || (command instanceof RewindFastforwardType);
     }
 
-    private void sendKeyCode(KeyCode key) throws IOException {
-        KeyCodeDto keyCodeDto = new KeyCodeDto(key);
-        String keyCodeJson = OBJECT_MAPPER.writeValueAsString(keyCodeDto);
-        logger.debug("KeyCode Json sent: {}", keyCodeJson);
-        connectionManager.doHttpsPost(KEY_CODE_PATH, keyCodeJson);
+    private void sendKeyPress(KeyPress key) throws IOException {
+        KeyPressDto keyPressDto = new KeyPressDto(key);
+        String keyPressJson = OBJECT_MAPPER.writeValueAsString(keyPressDto);
+        logger.debug("KeyPress Json sent: {}", keyPressJson);
+        connectionManager.doHttpsPost(KEY_CODE_PATH, keyPressJson);
     }
 }
