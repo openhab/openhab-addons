@@ -15,7 +15,10 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv;
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -49,6 +52,7 @@ import org.openhab.binding.androidtv.internal.protocol.philipstv.service.TvChann
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.TvPictureService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.VolumeService;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -65,6 +69,10 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link PhilipsTVHandler} is responsible for handling commands, which are sent to one of the
@@ -101,6 +109,12 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     private boolean isLoggedIn = false;
 
     private String statusMessage = "";
+
+    private String username = "";
+    private String password = "";
+    private String macAddress = "";
+
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /* Philips TV services */
     private @Nullable Map<String, PhilipsTVService> channelServices;
@@ -161,10 +175,72 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         }
     }
 
+    public String getMacAddress() {
+        return this.macAddress;
+    }
+
+    public void saveConfigs() {
+        String folderName = OpenHAB.getUserDataFolder() + "/androidtv";
+        File folder = new File(folderName);
+
+        if (!folder.exists()) {
+            logger.debug("Creating directory {}", folderName);
+            folder.mkdirs();
+        }
+
+        String fileName = folderName + "/philipstv." + handler.getThing().getUID().getId() + ".config";
+        File configFile = new File(fileName);
+
+        Map<String, String> configMap = new HashMap<>();
+        configMap.put("username", username);
+        configMap.put("password", password);
+        configMap.put("macAddress", macAddress);
+
+        try {
+            String configJson = OBJECT_MAPPER.writeValueAsString(configMap);
+            logger.debug("Writing configJson \"{}\" to {}", configJson, fileName);
+            Files.write(Paths.get(fileName), configJson.getBytes());
+        } catch (JsonProcessingException e) {
+            logger.warn("JsonProcessingException trying to save configMap: {}", e.getMessage(), e);
+        } catch (IOException ex) {
+            logger.debug("IOException when writing configJson to file {}", ex.getMessage());
+        }
+    }
+
+    private void readConfigs() {
+        String folderName = OpenHAB.getUserDataFolder() + "/androidtv";
+        String fileName = folderName + "/philipstv." + handler.getThing().getUID().getId() + ".config";
+        File file = new File(fileName);
+        if (!file.exists()) {
+            return;
+        }
+        try {
+            final byte[] contents = Files.readAllBytes(Paths.get(fileName));
+            String configJson = new String(contents);
+            logger.debug("Read configJson \"{}\" from {}", configJson, fileName);
+            Map<String, String> configMap = OBJECT_MAPPER.readValue(configJson,
+                    new TypeReference<HashMap<String, String>>() {
+                    });
+            this.username = configMap.get("username").toString();
+            this.password = configMap.get("password").toString();
+            this.macAddress = configMap.get("macAddress").toString();
+            logger.debug("Processed configJson as {} {} {}", this.username, this.password, this.macAddress);
+        } catch (IOException ex) {
+            logger.debug("IOException when reading configJson from file {}", ex.getMessage());
+        }
+    }
+
+    public void setCreds(String username, String password) {
+        this.username = username;
+        this.password = password;
+        saveConfigs();
+    }
+
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
-
-        if ((config.username == null) || (config.password == null)) {
+        String username = this.username;
+        String password = this.password;
+        if ((username.isEmpty()) || (password.isEmpty())) {
             return; // pairing process is not finished
         }
 
@@ -207,9 +283,13 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         }
 
         HttpHost target = new HttpHost(config.ipAddress, config.port, HTTPS);
+        readConfigs();
+        String username = this.username;
+        String password = this.password;
+        String macAddress = this.macAddress;
 
-        if ((config.pairingCode == null) && (config.username == null) && (config.password == null)) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+        if ((config.pairingCode.isEmpty()) && (username.isEmpty()) && (password.isEmpty())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Pairing is not configured yet, trying to present a Pairing Code on TV.");
             try {
                 initPairingCodeRetrieval(target); // TODO wirft keine Exception wenn URL auf Grund anderer Version nicht
@@ -219,8 +299,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                         "Error occurred while trying to present a Pairing Code on TV.");
             }
             return;
-        } else if ((config.pairingCode != null) && ((config.username == null) || (config.password == null))) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+        } else if ((!config.pairingCode.isEmpty()) && ((username.isEmpty()) || (password.isEmpty()))) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Pairing Code is available, but credentials missing. Trying to retrieve them.");
             boolean hasFailed = initCredentialsRetrieval(target); // TODO hier fehlt authTimeStamp falls zu lange Zeit
             // vergangen ist - man MUSS von vorne anfangen
@@ -234,7 +314,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         CloseableHttpClient httpClient;
 
         try {
-            httpClient = ConnectionManagerUtil.createSharedHttpClient(target, config.username, config.password);
+            httpClient = ConnectionManagerUtil.createSharedHttpClient(target, username, password);
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
             postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("Error occurred during creation of HTTP client: %s", e.getMessage()));
@@ -243,12 +323,12 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
         ConnectionManager connectionManager = new ConnectionManager(httpClient, target);
 
-        if (config.macAddress == null || config.macAddress.isEmpty()) {
+        if (macAddress.isEmpty()) {
             try {
-                Optional<String> macAddress = WakeOnLanUtil.getMacFromEnabledInterface(connectionManager);
-                if (macAddress.isPresent()) {
-                    // Disabled for compile, fix later
-                    // getConfig().put(MAC_ADDRESS, macAddress.get());
+                Optional<String> wolAddress = WakeOnLanUtil.getMacFromEnabledInterface(connectionManager);
+                if (wolAddress.isPresent()) {
+                    this.macAddress = wolAddress.get();
+                    saveConfigs();
                 } else {
                     logger.debug("MAC Address could not be determined for Wake-On-LAN support, "
                             + "because Wake-On-LAN is not enabled on the TV.");
@@ -298,6 +378,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         }
 
         // Thing is initialized, check power state and available communication of the TV and set ONLINE or OFFLINE
+        postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, EMPTY);
         channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
     }
 
@@ -318,7 +399,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 "Pairing code is available, but username and/or password is missing. Therefore we try to grant authorization and retrieve username and password.");
         PhilipsTVPairing pairing = new PhilipsTVPairing();
         try {
-            pairing.finishPairingWithTv(config, handler.getThingConfig(), target);
+            pairing.finishPairingWithTv(config, this, target);
             postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Authentication with Philips TV device was successful. Continuing initialization of the tv.");
         } catch (Exception e) {
@@ -365,7 +446,9 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     }
 
     private boolean isSchedulerInitializable() {
-        return (config.username != null) && (config.password != null)
+        String username = this.username;
+        String password = this.password;
+        return (!username.isEmpty()) && (password.isEmpty())
                 && ((refreshScheduler == null) || refreshScheduler.isDone());
     }
 

@@ -24,12 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PhilipsTVConfiguration {
 
     public String ipAddress = "";
-    public String macAddress = "";
     public Integer port = 1926;
     public Integer refreshRate = 10;
     public boolean useUpnpDiscovery = true;
-
     public String pairingCode = "";
-    public String username = "";
-    public String password = "";
 }

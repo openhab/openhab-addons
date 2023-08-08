@@ -17,12 +17,10 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.Connecti
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
-import java.util.function.Predicate;
 
 import org.apache.http.ParseException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.WakeOnLanUtil;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
@@ -51,12 +49,12 @@ public class PowerService implements PhilipsTVService {
 
     private final ConnectionManager connectionManager;
 
-    private final Predicate<PhilipsTVConfiguration> isWakeOnLanEnabled = config -> config.macAddress != null
-            && !config.macAddress.isEmpty();
+    private final boolean isWakeOnLanEnabled;
 
     public PowerService(PhilipsTVConnectionManager handler, ConnectionManager connectionManager) {
         this.handler = handler;
         this.connectionManager = connectionManager;
+        this.isWakeOnLanEnabled = handler.getMacAddress().isEmpty() ? false : true;
     }
 
     @Override
@@ -101,8 +99,8 @@ public class PowerService implements PhilipsTVService {
     private void setPowerState(OnOffType onOffType) throws IOException, InterruptedException {
         PowerStateDto powerStateDto = new PowerStateDto();
         if (onOffType == OnOffType.ON) {
-            if (isWakeOnLanEnabled.test(handler.config) && !WakeOnLanUtil.isReachable(handler.config.ipAddress)) {
-                WakeOnLanUtil.wakeOnLan(handler.config.ipAddress, handler.config.macAddress);
+            if (isWakeOnLanEnabled && !WakeOnLanUtil.isReachable(handler.config.ipAddress)) {
+                WakeOnLanUtil.wakeOnLan(handler.config.ipAddress, handler.getMacAddress());
             }
             powerStateDto.setPowerState(POWER_ON);
         } else {

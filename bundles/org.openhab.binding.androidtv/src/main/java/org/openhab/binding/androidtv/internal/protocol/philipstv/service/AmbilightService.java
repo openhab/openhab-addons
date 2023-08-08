@@ -19,7 +19,6 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsT
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -27,7 +26,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.WakeOnLanUtil;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
@@ -80,8 +78,7 @@ public class AmbilightService implements PhilipsTVService {
 
     private final PhilipsTVConnectionManager handler;
 
-    private final Predicate<PhilipsTVConfiguration> isWakeOnLanEnabled = config -> config.macAddress != null
-            && !config.macAddress.isEmpty();
+    private final boolean isWakeOnLanEnabled;
 
     private @Nullable AmbilightTopologyDto ambilightTopology;
 
@@ -90,6 +87,7 @@ public class AmbilightService implements PhilipsTVService {
     public AmbilightService(PhilipsTVConnectionManager handler, ConnectionManager connectionManager) {
         this.handler = handler;
         this.connectionManager = connectionManager;
+        this.isWakeOnLanEnabled = handler.getMacAddress().isEmpty() ? false : true;
     }
 
     @Override
@@ -173,8 +171,8 @@ public class AmbilightService implements PhilipsTVService {
     private void setAmbilightLoungePowerState(Command command) throws IOException, InterruptedException {
         AmbilightColorDto ambilightColorDto = new AmbilightColorDto();
         if (command.equals(OnOffType.ON)) {
-            if (isWakeOnLanEnabled.test(handler.config) && !WakeOnLanUtil.isReachable(handler.config.ipAddress)) {
-                WakeOnLanUtil.wakeOnLan(handler.config.ipAddress, handler.config.macAddress);
+            if (isWakeOnLanEnabled && !WakeOnLanUtil.isReachable(handler.config.ipAddress)) {
+                WakeOnLanUtil.wakeOnLan(handler.config.ipAddress, handler.getMacAddress());
             }
             ambilightColorDto.setHue(0);
         } else {
