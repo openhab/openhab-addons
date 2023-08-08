@@ -48,6 +48,7 @@ import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManagerUtil;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConfiguration;
@@ -66,24 +67,25 @@ import org.slf4j.LoggerFactory;
  * controlling the tv.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class PhilipsTVPairing {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static String authTimestamp;
+    private static String authTimestamp = "";
 
-    private static String authKey;
+    private static String authKey = "";
 
-    private static String deviceId;
+    private static String deviceId = "";
 
     private final String pairingBasePath = BASE_PATH + "pair" + SLASH;
 
     public void requestPairingPin(HttpHost target)
             throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        RequestCodeDto requestCodeDto = new RequestCodeDto();
-        requestCodeDto.setScope(Stream.of("read", "write", "control").collect(Collectors.toList()));
-        requestCodeDto.setDevice(createDeviceSpecification());
+        RequestCodeDto requestCodeDto = new RequestCodeDto(
+                Stream.of("read", "write", "control").collect(Collectors.toList()), createDeviceSpecification());
 
         CloseableHttpClient httpClient = ConnectionManagerUtil.createSharedHttpClient(target, EMPTY, EMPTY);
         ConnectionManager connectionManager = new ConnectionManager(httpClient, target);
@@ -103,8 +105,6 @@ public class PhilipsTVPairing {
             throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
             KeyManagementException {
         String pairingCode = config.pairingCode;
-        FinishPairingDto finishPairingDto = new FinishPairingDto();
-        finishPairingDto.setDevice(createDeviceSpecification());
 
         AuthDto authDto = new AuthDto();
         authDto.setAuthAppId("1");
@@ -112,7 +112,7 @@ public class PhilipsTVPairing {
         authDto.setAuthTimestamp(authTimestamp);
         authDto.setPin(pairingCode);
 
-        finishPairingDto.setAuth(authDto);
+        FinishPairingDto finishPairingDto = new FinishPairingDto(createDeviceSpecification(), authDto);
         String grantPairingJson = OBJECT_MAPPER.writeValueAsString(finishPairingDto);
 
         Header challengeHeader = null;

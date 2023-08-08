@@ -14,6 +14,8 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.
 
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.POWER_ON;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -22,11 +24,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /ambilight/power endpoint to retrieve or set the current power state.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class AmbilightPowerDto {
 
     @JsonProperty
-    private String power;
+    private String power = "";
 
     public String getPower() {
         return power;

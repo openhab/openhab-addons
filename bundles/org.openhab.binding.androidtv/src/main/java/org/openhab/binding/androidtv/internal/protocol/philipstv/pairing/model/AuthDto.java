@@ -12,26 +12,30 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link FinishPairingDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class AuthDto {
 
     @JsonProperty("auth_signature")
-    private String authSignature;
+    private String authSignature = "";
 
     @JsonProperty("auth_timestamp")
-    private String authTimestamp;
+    private String authTimestamp = "";
 
     @JsonProperty("pin")
-    private String pin;
+    private String pin = "";
 
     @JsonProperty("auth_AppId")
-    private String authAppId;
+    private String authAppId = "";
 
     public void setAuthSignature(String authSignature) {
         this.authSignature = authSignature;

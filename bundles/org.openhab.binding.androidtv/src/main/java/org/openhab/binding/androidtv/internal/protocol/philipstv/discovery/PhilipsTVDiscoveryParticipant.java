@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * The {@link PhilipsTVDiscoveryParticipant} is responsible for discovering Philips TV devices through UPnP.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
 @NonNullByDefault
 @Component(immediate = true)

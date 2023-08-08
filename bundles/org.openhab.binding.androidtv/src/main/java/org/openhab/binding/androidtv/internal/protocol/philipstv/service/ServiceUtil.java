@@ -16,6 +16,7 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.Connecti
 
 import java.util.Collections;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.DataDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.NodesDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsCurrentDto;
@@ -29,33 +30,28 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Util class for common used methods from philips tv services
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 final class ServiceUtil {
 
     private ServiceUtil() {
     }
 
     static String createTvSettingsRetrievalJson(int nodeId) throws JsonProcessingException {
-        TvSettingsCurrentDto tvSettingCurrent = new TvSettingsCurrentDto();
         NodesDto nodes = new NodesDto();
         nodes.setNodeid(nodeId);
-        tvSettingCurrent.setNodes(Collections.singletonList(nodes));
+        TvSettingsCurrentDto tvSettingCurrent = new TvSettingsCurrentDto(Collections.singletonList(nodes));
         return OBJECT_MAPPER.writeValueAsString(tvSettingCurrent);
     }
 
     static String createTvSettingsUpdateJson(int nodeId, int valueToSet) throws JsonProcessingException {
-        TvSettingsUpdateDto tvSetting = new TvSettingsUpdateDto();
-        ValuesDto values = new ValuesDto();
-
-        ValueDto value = new ValueDto();
+        DataDto data = new DataDto(valueToSet);
+        ValueDto value = new ValueDto(data);
         value.setNodeid(nodeId);
-
-        DataDto data = new DataDto();
-        data.setValue(valueToSet);
-
-        value.setData(data);
+        ValuesDto values = new ValuesDto(value);
         values.setValue(value);
-        tvSetting.setValues(Collections.singletonList(values));
+        TvSettingsUpdateDto tvSetting = new TvSettingsUpdateDto(Collections.singletonList(values));
         return OBJECT_MAPPER.writeValueAsString(tvSetting);
     }
 }

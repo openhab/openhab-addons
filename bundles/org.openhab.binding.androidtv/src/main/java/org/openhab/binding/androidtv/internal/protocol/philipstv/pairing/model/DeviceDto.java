@@ -12,32 +12,36 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link RequestCodeDto} and {@link FinishPairingDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class DeviceDto {
 
     @JsonProperty("app_name")
-    private String appName;
+    private String appName = "";
 
     @JsonProperty("device_name")
-    private String deviceName;
+    private String deviceName = "";
 
     @JsonProperty("id")
-    private String id;
+    private String id = "";
 
     @JsonProperty("type")
-    private String type;
+    private String type = "";
 
     @JsonProperty("app_id")
-    private String appId;
+    private String appId = "";
 
     @JsonProperty("device_os")
-    private String deviceOs;
+    private String deviceOs = "";
 
     public void setAppName(String appName) {
         this.appName = appName;

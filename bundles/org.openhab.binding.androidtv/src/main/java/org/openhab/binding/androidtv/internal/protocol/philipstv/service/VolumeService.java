@@ -23,6 +23,7 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.service.
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
@@ -42,7 +43,9 @@ import org.slf4j.LoggerFactory;
  * volume channel or mute channel.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class VolumeService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -100,8 +103,7 @@ public class VolumeService implements PhilipsTVService {
 
     private void setMute() throws IOException {
         // We just sent the KEY_MUTE and dont bother what was actually requested
-        KeyCodeDto keyCodeDto = new KeyCodeDto();
-        keyCodeDto.setKey(KEY_MUTE);
+        KeyCodeDto keyCodeDto = new KeyCodeDto(KEY_MUTE);
         String muteJson = OBJECT_MAPPER.writeValueAsString(keyCodeDto);
         logger.debug("Set json mute state: {}", muteJson);
         connectionManager.doHttpsPost(KEY_CODE_PATH, muteJson);

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keycode;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.KeyCode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,11 +22,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /input/key endpoint for remote controller emulation.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class KeyCodeDto {
 
     @JsonProperty
     private KeyCode key;
+
+    public KeyCodeDto(KeyCode key) {
+        this.key = key;
+    }
 
     public KeyCode getKey() {
         return key;

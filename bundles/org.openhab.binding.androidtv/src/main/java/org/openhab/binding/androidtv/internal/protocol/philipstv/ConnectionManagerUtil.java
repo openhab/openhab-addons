@@ -41,12 +41,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ConnectionManagerUtil} is offering methods for connection specific processes.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public final class ConnectionManagerUtil {
 
     private ConnectionManagerUtil() {

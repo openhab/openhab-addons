@@ -12,23 +12,32 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link LaunchAppDto} and {@link LaunchAppDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class IntentDto {
 
     @JsonProperty
     private ComponentDto component;
 
     @JsonProperty
-    private String action;
+    private String action = "";
 
     @JsonProperty
     private ExtrasDto extras;
+
+    public IntentDto(ComponentDto component, ExtrasDto extras) {
+        this.component = component;
+        this.extras = extras;
+    }
 
     public void setComponent(ComponentDto component) {
         this.component = component;

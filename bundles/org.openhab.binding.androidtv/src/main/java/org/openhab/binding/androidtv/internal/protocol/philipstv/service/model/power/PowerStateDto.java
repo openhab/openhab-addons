@@ -15,6 +15,8 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.POWER_ON;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.STANDBY;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -23,11 +25,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /powerstate endpoint to retrieve or set the current power state.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class PowerStateDto {
 
     @JsonProperty("powerstate")
-    private String powerState;
+    private String powerState = "";
 
     public String getPowerState() {
         return powerState;

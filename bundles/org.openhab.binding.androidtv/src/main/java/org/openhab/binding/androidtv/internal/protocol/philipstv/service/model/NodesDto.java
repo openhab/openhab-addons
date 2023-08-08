@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link TvSettingsCurrentDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class NodesDto {
 
     @JsonProperty("nodeid")

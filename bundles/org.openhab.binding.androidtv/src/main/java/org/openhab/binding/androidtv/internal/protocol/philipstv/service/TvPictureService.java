@@ -23,6 +23,7 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsT
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
@@ -39,7 +40,9 @@ import org.slf4j.LoggerFactory;
  * Service for handling commands regarding the TV picture settings
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class TvPictureService implements PhilipsTVService {
 
     private static final int SHARPNESS_NODE_ID = 2131230851;

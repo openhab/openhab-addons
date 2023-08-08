@@ -12,31 +12,7 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_BOTTOM_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_HUE_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_LEFT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_LOUNGE_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_RIGHT_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_STYLE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_AMBILIGHT_TOP_COLOR;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_APP_ICON;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_APP_NAME;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_BRIGHTNESS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_CONTRAST;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_KEY_CODE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_PLAYER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_POWER;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_SEARCH_CONTENT;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_SHARPNESS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_TV_CHANNEL;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.HOST;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.HTTPS;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.STANDBY;
-import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.TV_NOT_LISTENING_MSG;
+import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -57,6 +33,8 @@ import java.util.function.Predicate;
 
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.AndroidTVDynamicStateDescriptionProvider;
 import org.openhab.binding.androidtv.internal.AndroidTVHandler;
 import org.openhab.binding.androidtv.internal.AndroidTVTranslationProvider;
@@ -92,7 +70,9 @@ import org.slf4j.LoggerFactory;
  * channels.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -107,11 +87,11 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     private DiscoveryServiceRegistry discoveryServiceRegistry;
 
-    private AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider;
+    private @Nullable AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider;
 
-    private ThingUID upnpThingUID;
+    private @Nullable ThingUID upnpThingUID;
 
-    private ScheduledFuture<?> refreshScheduler;
+    private @Nullable ScheduledFuture<?> refreshScheduler;
 
     private final Predicate<ScheduledFuture<?>> isRefreshSchedulerRunning = r -> (r != null) && !r.isCancelled();
 
@@ -122,7 +102,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     private String statusMessage = "";
 
     /* Philips TV services */
-    private Map<String, PhilipsTVService> channelServices;
+    private @Nullable Map<String, PhilipsTVService> channelServices;
 
     public PhilipsTVConnectionManager(AndroidTVHandler handler, PhilipsTVConfiguration config) {
 
@@ -131,18 +111,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         this.config = config;
         this.scheduler = handler.getScheduler();
         this.translationProvider = handler.getTranslationProvider();
-
-        logger.debug("UPnP discovery enabled: {}", config.useUpnpDiscovery);
-
-        if (config.useUpnpDiscovery && discoveryServiceRegistry != null) {
-            logger.debug("Discovery service registry was initialized.");
-            this.discoveryServiceRegistry = handler.getDiscoveryServiceRegistry();
-        }
-
-        if (stateDescriptionProvider != null) {
-            logger.debug("State description was initialized.");
-            this.stateDescriptionProvider = handler.getStateDescriptionProvider();
-        }
+        this.discoveryServiceRegistry = handler.getDiscoveryServiceRegistry();
+        this.stateDescriptionProvider = handler.getStateDescriptionProvider();
 
         if (!config.useUpnpDiscovery && isSchedulerInitializable()) {
             startRefreshScheduler();
@@ -377,8 +347,11 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         } else if (status == ThingStatus.OFFLINE) {
             handler.updateChannelState(CHANNEL_POWER, OnOffType.OFF);
             if (!TV_NOT_LISTENING_MSG.equals(msg)) { // avoid cancelling refresh if TV is temporarily not available
-                if (config.useUpnpDiscovery && isRefreshSchedulerRunning.test(refreshScheduler)) {
-                    stopRefreshScheduler();
+                ScheduledFuture<?> refreshScheduler = this.refreshScheduler;
+                if (refreshScheduler != null) {
+                    if (config.useUpnpDiscovery && isRefreshSchedulerRunning.test(refreshScheduler)) {
+                        stopRefreshScheduler();
+                    }
                 }
                 // Reset app and channel list (if existing) for new retrieval during next startup
                 if (channelServices != null) {
@@ -408,7 +381,6 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     private void stopRefreshScheduler() {
         logger.info("Stopping Refresh Scheduler for Philips TV: {}", handler.getThingID());
         refreshScheduler.cancel(true);
-        refreshScheduler = null;
     }
 
     private void refreshTvProperties() {
@@ -445,11 +417,6 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         logger.debug("thingDiscovered: {}", result);
 
         if (config.useUpnpDiscovery && config.host.equals(result.getProperties().get(HOST))) {
-            /*
-             * Philips TV discovery services creates thing UID from UPnP UDN.
-             * When thing is generated manually, thing UID may not match UPnP UDN, so store it for later use (e.g.
-             * thingRemoved).
-             */
             upnpThingUID = result.getThingUID();
             logger.debug("thingDiscovered, thingUID={}, discoveredUID={}", handler.getThingUID(), upnpThingUID);
             channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
@@ -466,8 +433,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     }
 
     @Override
-    public Collection<ThingUID> removeOlderResults(DiscoveryService discoveryService, long l,
-            Collection<ThingTypeUID> collection, ThingUID thingUID) {
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService discoveryService, long l,
+            @Nullable Collection<ThingTypeUID> collection, @Nullable ThingUID thingUID) {
         return Collections.emptyList();
     }
 
@@ -475,9 +442,11 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         if (discoveryServiceRegistry != null) {
             discoveryServiceRegistry.removeDiscoveryListener(this);
         }
-
-        if (isRefreshSchedulerRunning.test(refreshScheduler)) {
-            stopRefreshScheduler();
+        ScheduledFuture<?> refreshScheduler = this.refreshScheduler;
+        if (refreshScheduler != null) {
+            if (isRefreshSchedulerRunning.test(refreshScheduler)) {
+                stopRefreshScheduler();
+            }
         }
     }
 }

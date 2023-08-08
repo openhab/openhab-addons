@@ -14,6 +14,8 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
@@ -26,7 +28,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  *
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public enum KeyCode {
 
     KEY_STANDBY("Standby"),

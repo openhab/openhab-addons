@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -19,7 +21,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /activities/tv endpoint to get and switch tv channels.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class TvChannelDto {
 
     @JsonProperty
@@ -27,6 +31,11 @@ public class TvChannelDto {
 
     @JsonProperty
     private ChannelListDto channelList;
+
+    public TvChannelDto(ChannelDto channel, ChannelListDto channelList) {
+        this.channel = channel;
+        this.channelList = channelList;
+    }
 
     public ChannelDto getChannel() {
         return channel;

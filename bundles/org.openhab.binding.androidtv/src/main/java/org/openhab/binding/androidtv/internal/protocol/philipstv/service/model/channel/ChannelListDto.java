@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link TvChannelDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class ChannelListDto {
 
     @JsonProperty
-    private String id;
+    private String id = "";
 
     @JsonProperty
-    private String version;
+    private String version = "";
 
     public String getId() {
         return id;

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -19,7 +21,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /pair/grant endpoint to finish pairing.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class FinishPairingDto {
 
     @JsonProperty("auth")
@@ -27,6 +31,11 @@ public class FinishPairingDto {
 
     @JsonProperty("device")
     private DeviceDto device;
+
+    public FinishPairingDto(DeviceDto device, AuthDto auth) {
+        this.device = device;
+        this.auth = auth;
+    }
 
     public void setAuth(AuthDto auth) {
         this.auth = auth;

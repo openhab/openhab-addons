@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * The {@link WakeOnLanUtil} is offering methods for powering on TVs via Wake-On-LAN.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
 @NonNullByDefault
 public final class WakeOnLanUtil {

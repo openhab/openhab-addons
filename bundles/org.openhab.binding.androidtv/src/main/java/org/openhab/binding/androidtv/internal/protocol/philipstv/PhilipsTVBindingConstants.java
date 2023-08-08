@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -19,7 +20,9 @@ import org.openhab.core.thing.ThingTypeUID;
  * whole binding.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public final class PhilipsTVBindingConstants {
 
     private PhilipsTVBindingConstants() {

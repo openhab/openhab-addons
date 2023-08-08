@@ -14,6 +14,9 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -21,14 +24,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /applications endpoint for retrieving all installed apps.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class AvailableAppsDto {
 
     @JsonProperty
     private int version;
 
     @JsonProperty
-    private List<ApplicationsDto> applications;
+    private @Nullable List<ApplicationsDto> applications;
 
     public void setVersion(int version) {
         this.version = version;
@@ -42,7 +47,7 @@ public class AvailableAppsDto {
         this.applications = applications;
     }
 
-    public List<ApplicationsDto> getApplications() {
+    public @Nullable List<ApplicationsDto> getApplications() {
         return applications;
     }
 

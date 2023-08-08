@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ambilight;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link AmbilightConfigDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class AmbilightColorSettingsDto {
 
     @JsonProperty("color")
@@ -29,6 +33,11 @@ public class AmbilightColorSettingsDto {
 
     @JsonProperty("speed")
     private int speed;
+
+    public AmbilightColorSettingsDto(AmbilightColorDto color, AmbilightColorDeltaDto colorDelta) {
+        this.color = color;
+        this.colorDelta = colorDelta;
+    }
 
     public void setColor(AmbilightColorDto color) {
         this.color = color;

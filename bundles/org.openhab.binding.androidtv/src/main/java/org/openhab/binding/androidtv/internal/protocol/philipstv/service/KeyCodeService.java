@@ -19,6 +19,7 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsT
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
@@ -39,7 +40,9 @@ import org.slf4j.LoggerFactory;
  * press on a remote control.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class KeyCodeService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -103,8 +106,7 @@ public class KeyCodeService implements PhilipsTVService {
     }
 
     private void sendKeyCode(KeyCode key) throws IOException {
-        KeyCodeDto keyCodeDto = new KeyCodeDto();
-        keyCodeDto.setKey(key);
+        KeyCodeDto keyCodeDto = new KeyCodeDto(key);
         String keyCodeJson = OBJECT_MAPPER.writeValueAsString(keyCodeDto);
         logger.debug("KeyCode Json sent: {}", keyCodeJson);
         connectionManager.doHttpsPost(KEY_CODE_PATH, keyCodeJson);

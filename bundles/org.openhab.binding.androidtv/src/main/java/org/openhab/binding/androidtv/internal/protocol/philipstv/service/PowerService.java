@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 import org.apache.http.ParseException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
@@ -43,7 +44,9 @@ import org.slf4j.LoggerFactory;
  * power channel.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class PowerService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

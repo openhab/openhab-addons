@@ -12,23 +12,27 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Response Data Transfer Object of {@link RequestCodeDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class PairingDto {
 
     @JsonProperty("auth_key")
-    private String authKey;
+    private String authKey = "";
 
     @JsonProperty("timestamp")
-    private String timestamp;
+    private String timestamp = "";
 
     @JsonProperty("timeout")
-    private String timeout;
+    private String timeout = "";
 
     public String getTimeout() {
         return timeout;

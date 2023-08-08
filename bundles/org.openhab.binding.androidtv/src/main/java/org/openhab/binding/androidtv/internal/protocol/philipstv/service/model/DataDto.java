@@ -12,17 +12,25 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link TvSettingsUpdateDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class DataDto {
 
     @JsonProperty
     private Object value; // can be int or string
+
+    public DataDto(Object value) {
+        this.value = value;
+    }
 
     public void setValue(Object value) {
         this.value = value;

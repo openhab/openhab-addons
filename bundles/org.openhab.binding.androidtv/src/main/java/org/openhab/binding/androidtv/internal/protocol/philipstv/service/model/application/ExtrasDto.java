@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link IntentDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class ExtrasDto {
 
     @JsonProperty
-    private String query;
+    private String query = "";
 
     public void setQuery(String query) {
         this.query = query;

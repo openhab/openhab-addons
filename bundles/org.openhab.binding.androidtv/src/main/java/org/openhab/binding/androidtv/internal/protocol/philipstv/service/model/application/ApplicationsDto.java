@@ -12,29 +12,37 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link AvailableAppsDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class ApplicationsDto {
 
     @JsonProperty
-    private String label;
+    private String label = "";
 
     @JsonProperty
-    private String id;
+    private String id = "";
 
     @JsonProperty
-    private String type;
+    private String type = "";
 
     @JsonProperty
     private IntentDto intent;
 
     @JsonProperty
     private int order;
+
+    public ApplicationsDto(IntentDto intent) {
+        this.intent = intent;
+    }
 
     public void setLabel(String label) {
         this.label = label;

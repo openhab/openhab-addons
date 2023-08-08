@@ -12,35 +12,40 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link TvChannelDto} and {@link AvailableTvChannelsDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class ChannelDto {
 
     @JsonProperty
-    private String serviceType;
+    private String serviceType = "";
 
     @JsonProperty
     private int logoVersion;
 
     @JsonProperty
-    private String ccid;
+    private String ccid = "";
 
     @JsonProperty
-    private String name;
+    private String name = "";
 
     @JsonProperty
-    private String preset;
+    private String preset = "";
 
     @JsonProperty
     private int tsid;
 
     @JsonProperty
-    private String type;
+    private String type = "";
 
     @JsonProperty
     private int onid;
@@ -64,8 +69,10 @@ public class ChannelDto {
         return logoVersion;
     }
 
-    public void setCcid(String ccid) {
-        this.ccid = ccid;
+    public void setCcid(@Nullable String ccid) {
+        if (!ccid.isEmpty()) {
+            this.ccid = ccid;
+        }
     }
 
     public String getCcid() {

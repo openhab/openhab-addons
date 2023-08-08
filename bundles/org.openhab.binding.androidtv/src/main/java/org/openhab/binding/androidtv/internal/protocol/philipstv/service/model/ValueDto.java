@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link TvSettingsUpdateDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class ValueDto {
 
     @JsonProperty("Controllable")
-    private String controllable;
+    private String controllable = "";
 
     @JsonProperty
     private DataDto data;
@@ -31,7 +35,11 @@ public class ValueDto {
     private int nodeid;
 
     @JsonProperty("Available")
-    private String available;
+    private String available = "";
+
+    public ValueDto(DataDto data) {
+        this.data = data;
+    }
 
     public void setControllable(String controllable) {
         this.controllable = controllable;

@@ -14,6 +14,9 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -21,35 +24,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API channeldb/tv/channelLists/all endpoint for retrieving all tv channels.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class AvailableTvChannelsDto {
 
     @JsonProperty("Channel")
-    private List<ChannelDto> channel;
+    private @Nullable List<ChannelDto> channel;
 
     @JsonProperty
-    private String id;
+    private String id = "";
 
     @JsonProperty
-    private String medium;
+    private String medium = "";
 
     @JsonProperty
     private int version;
 
     @JsonProperty
-    private String listType;
+    private String listType = "";
 
     @JsonProperty
-    private String operator;
+    private String operator = "";
 
     @JsonProperty
-    private String installCountry;
+    private String installCountry = "";
 
     public void setChannel(List<ChannelDto> channel) {
         this.channel = channel;
     }
 
-    public List<ChannelDto> getChannel() {
+    public @Nullable List<ChannelDto> getChannel() {
         return channel;
     }
 

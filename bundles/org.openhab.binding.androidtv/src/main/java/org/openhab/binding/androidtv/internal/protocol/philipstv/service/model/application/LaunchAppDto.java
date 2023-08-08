@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -19,11 +21,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /activities/launch endpoint for launching TV apps and launching search for content.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class LaunchAppDto {
 
     @JsonProperty
     private IntentDto intent;
+
+    public LaunchAppDto(IntentDto intent) {
+        this.intent = intent;
+    }
 
     public void setIntent(IntentDto intent) {
         this.intent = intent;

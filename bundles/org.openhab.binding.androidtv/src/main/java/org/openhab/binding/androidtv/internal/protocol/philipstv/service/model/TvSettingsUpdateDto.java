@@ -14,6 +14,8 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -22,11 +24,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * ambilight hue power.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class TvSettingsUpdateDto {
 
     @JsonProperty
     private List<ValuesDto> values;
+
+    public TvSettingsUpdateDto(List<ValuesDto> values) {
+        this.values = values;
+    }
 
     public void setValues(List<ValuesDto> values) {
         this.values = values;

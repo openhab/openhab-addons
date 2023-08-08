@@ -26,6 +26,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
@@ -45,13 +47,15 @@ import org.slf4j.LoggerFactory;
  * Service for handling commands regarding setting or retrieving the TV channel
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class TvChannelService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // Name , ccid of TV Channel
-    private Map<String, String> availableTvChannels;
+    private @Nullable Map<String, String> availableTvChannels;
 
     private final PhilipsTVConnectionManager handler;
 
@@ -125,17 +129,14 @@ public class TvChannelService implements PhilipsTVService {
     }
 
     private void switchTvChannel(Command command) throws IOException {
-        TvChannelDto tvChannelDto = new TvChannelDto();
-
         ChannelDto channelDto = new ChannelDto();
         channelDto.setCcid(availableTvChannels.get(command.toString()));
-        tvChannelDto.setChannel(channelDto);
 
         ChannelListDto channelListDto = new ChannelListDto();
         channelListDto.setId("allter");
         channelListDto.setVersion("30");
-        tvChannelDto.setChannelList(channelListDto);
 
+        TvChannelDto tvChannelDto = new TvChannelDto(channelDto, channelListDto);
         String switchTvChannelJson = OBJECT_MAPPER.writeValueAsString(tvChannelDto);
         logger.debug("Switch TV Channel json: {}", switchTvChannelJson);
         connectionManager.doHttpsPost(TV_CHANNEL_PATH, switchTvChannelJson);

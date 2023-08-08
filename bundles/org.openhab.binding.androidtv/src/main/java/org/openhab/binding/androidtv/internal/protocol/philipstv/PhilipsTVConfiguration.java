@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PhilipsTVConfiguration} class contains fields for mapping thing configuration parameters.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class PhilipsTVConfiguration {
 
-    public String host;
-    public String macAddress;
-    public Integer port;
-    public Integer refreshRate;
+    public String host = "";
+    public String macAddress = "";
+    public Integer port = 1926;
+    public Integer refreshRate = 10;
     public boolean useUpnpDiscovery = true;
 
-    public String pairingCode;
-    public String username;
-    public String password;
+    public String pairingCode = "";
+    public String username = "";
+    public String password = "";
 }

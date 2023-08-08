@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Part of {@link LaunchAppDto} and {@link CurrentAppDto}
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class ComponentDto {
 
     @JsonProperty
-    private String className;
+    private String className = "";
 
     @JsonProperty
-    private String packageName;
+    private String packageName = "";
 
     public void setClassName(String className) {
         this.className = className;

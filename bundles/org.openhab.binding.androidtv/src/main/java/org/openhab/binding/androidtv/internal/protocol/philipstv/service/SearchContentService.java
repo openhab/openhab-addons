@@ -19,9 +19,11 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsT
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ComponentDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ExtrasDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.IntentDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.LaunchAppDto;
@@ -37,7 +39,9 @@ import org.slf4j.LoggerFactory;
  * Service for toggling the Google Assistant on the Philips TV
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class SearchContentService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -73,16 +77,12 @@ public class SearchContentService implements PhilipsTVService {
     }
 
     private void searchForContentOnTv(String searchContent) throws IOException {
-        LaunchAppDto launchAppDto = new LaunchAppDto();
-
-        IntentDto intentDto = new IntentDto();
-        intentDto.setAction("android.search.action.GLOBAL_SEARCH");
-
         ExtrasDto extrasDto = new ExtrasDto();
         extrasDto.setQuery(searchContent);
 
-        intentDto.setExtras(extrasDto);
-        launchAppDto.setIntent(intentDto);
+        IntentDto intentDto = new IntentDto(new ComponentDto(), extrasDto);
+        intentDto.setAction("android.search.action.GLOBAL_SEARCH");
+        LaunchAppDto launchAppDto = new LaunchAppDto(intentDto);
 
         String searchContentLaunch = OBJECT_MAPPER.writeValueAsString(launchAppDto);
 

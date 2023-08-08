@@ -31,6 +31,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.http.ParseException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
@@ -38,6 +40,7 @@ import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.a
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.AvailableAppsDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ComponentDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.CurrentAppDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ExtrasDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.IntentDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.LaunchAppDto;
 import org.openhab.core.library.types.RawType;
@@ -55,13 +58,15 @@ import org.slf4j.LoggerFactory;
  * press on a remote control.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class AppService implements PhilipsTVService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // Label , Entry<PackageName,ClassName> of App
-    private Map<String, AbstractMap.SimpleEntry<String, String>> availableApps;
+    private @Nullable Map<String, AbstractMap.SimpleEntry<String, String>> availableApps;
 
     private String currentPackageName = "";
 
@@ -133,17 +138,14 @@ public class AppService implements PhilipsTVService {
 
     private void launchApp(Command command) throws IOException {
         Map.Entry<String, String> app = availableApps.get(command.toString());
-        LaunchAppDto launchAppDto = new LaunchAppDto();
 
         ComponentDto componentDto = new ComponentDto();
         componentDto.setPackageName(app.getKey());
         componentDto.setClassName(app.getValue());
 
-        IntentDto intentDto = new IntentDto();
-        intentDto.setComponent(componentDto);
+        IntentDto intentDto = new IntentDto(componentDto, new ExtrasDto());
         intentDto.setAction("empty");
-
-        launchAppDto.setIntent(intentDto);
+        LaunchAppDto launchAppDto = new LaunchAppDto(intentDto);
         String appLaunchJson = OBJECT_MAPPER.writeValueAsString(launchAppDto);
 
         logger.debug("App Launch json: {}", appLaunchJson);
@@ -156,7 +158,7 @@ public class AppService implements PhilipsTVService {
         return currentAppDto.getComponent().getPackageName();
     }
 
-    private RawType getIconForApp(String packageName, String className) throws IOException {
+    private @Nullable RawType getIconForApp(String packageName, String className) throws IOException {
         String pathForIcon = String.format("%s%s-%s%sicon", SLASH, className, packageName, SLASH);
         byte[] icon = connectionManager
                 .doHttpsGetForImage(String.format("%s%s", GET_AVAILABLE_APP_LIST_PATH, pathForIcon));

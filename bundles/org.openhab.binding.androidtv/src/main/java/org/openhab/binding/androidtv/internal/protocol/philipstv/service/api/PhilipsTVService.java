@@ -16,13 +16,16 @@ import java.net.NoRouteToHostException;
 
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.Command;
 
 /**
  * Interface for Philips TV services.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public interface PhilipsTVService {
 
     /**

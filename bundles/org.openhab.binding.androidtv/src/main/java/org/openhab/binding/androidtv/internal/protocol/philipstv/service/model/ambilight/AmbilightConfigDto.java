@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ambilight;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -19,23 +21,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /ambilight/currentconfiguration endpoint to retrieve or set the current ambilight style.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class AmbilightConfigDto {
 
     @JsonProperty
     private boolean isExpert;
 
     @JsonProperty
-    private String menuSetting;
+    private String menuSetting = "";
 
     @JsonProperty
-    private String styleName;
+    private String styleName = "";
 
     @JsonProperty("colorSettings")
     private AmbilightColorSettingsDto colorSettings;
 
     @JsonProperty("algorithm")
-    private String algorithm;
+    private String algorithm = "";
+
+    public AmbilightConfigDto(AmbilightColorSettingsDto colorSettings) {
+        this.colorSettings = colorSettings;
+    }
 
     public void setMenuSetting(String menuSetting) {
         this.menuSetting = menuSetting;

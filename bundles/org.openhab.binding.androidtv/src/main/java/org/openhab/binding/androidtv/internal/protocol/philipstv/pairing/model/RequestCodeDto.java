@@ -14,6 +14,8 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -21,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * for the Philips TV API /pair/request endpoint to request a pairing code.
  *
  * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Merged into AndroidTV
  */
+@NonNullByDefault
 public class RequestCodeDto {
 
     @JsonProperty("scope")
@@ -29,6 +33,11 @@ public class RequestCodeDto {
 
     @JsonProperty("device")
     private DeviceDto device;
+
+    public RequestCodeDto(List<String> scope, DeviceDto device) {
+        this.scope = scope;
+        this.device = device;
+    }
 
     public void setScope(List<String> scope) {
         this.scope = scope;
