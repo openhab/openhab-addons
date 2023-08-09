@@ -27,6 +27,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.SmartSceneState;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 import org.openhab.core.library.types.DecimalType;
@@ -94,6 +95,7 @@ public class Resource {
     private @Nullable List<ResourceReference> children;
     private @Nullable JsonElement status;
     private @Nullable @SuppressWarnings("unused") Dynamics dynamics;
+    private @Nullable String state;
 
     /**
      * Constructor
@@ -507,8 +509,34 @@ public class Resource {
      * @return either 'UnDefType.NULL', a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
      */
     public State getSceneState() {
-        Optional<Boolean> active = getSceneActive();
-        return active.isEmpty() ? UnDefType.NULL : active.get() ? new StringType(getName()) : UnDefType.UNDEF;
+        return getSceneActive().map(a -> a ? new StringType(getName()) : UnDefType.UNDEF).orElse(UnDefType.NULL);
+    }
+
+    /**
+     * Check if the smart scene resource contains a 'state' element. If such an element is present, returns a Boolean
+     * Optional whose value depends on the value of that element, or an empty Optional if it is not.
+     *
+     * @return true, false, or empty.
+     */
+    public Optional<Boolean> getSmartSceneActive() {
+        if (ResourceType.SMART_SCENE == getType()) {
+            String state = this.state;
+            if (Objects.nonNull(state)) {
+                return Optional.of(SmartSceneState.ACTIVE == SmartSceneState.of(state));
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * If the getSmartSceneActive() optional result is empty return 'UnDefType.NULL'. Otherwise if the optional result
+     * is present and 'true' (i.e. the scene is active) return the smart scene name. Or finally (the optional result is
+     * present and 'false') return 'UnDefType.UNDEF'.
+     *
+     * @return either 'UnDefType.NULL', a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
+     */
+    public State getSmartSceneState() {
+        return getSmartSceneActive().map(a -> a ? new StringType(getName()) : UnDefType.UNDEF).orElse(UnDefType.NULL);
     }
 
     public List<ResourceReference> getServiceReferences() {
