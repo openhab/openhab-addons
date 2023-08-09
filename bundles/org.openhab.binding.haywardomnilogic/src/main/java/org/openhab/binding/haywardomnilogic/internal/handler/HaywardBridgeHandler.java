@@ -340,35 +340,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public synchronized boolean getMspConfigChlorEnable() throws HaywardException, InterruptedException {
-        String xmlResponse = getMspConfig();
-        boolean fail = false;
-
-        if (xmlResponse.contentEquals("Fail")) {
-            return false;
-        }
-
-        for (Thing thing : getThing().getThings()) {
-            Map<String, String> properties = thing.getProperties();
-            if ("CHLORINATOR".equals(properties.get(HaywardBindingConstants.PROPERTY_TYPE))) {
-                HaywardChlorinatorHandler handler = (HaywardChlorinatorHandler) thing.getHandler();
-                if (handler != null) {
-                    String systemID = properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-                    if (systemID != null) {
-                        if (!handler.getChlorEnableStatus(xmlResponse, systemID)) {
-                            fail = true;
-                        }
-                    }
-                }
-            }
-        }
-        if (fail) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     public synchronized boolean getAlarmList() throws HaywardException {
         for (Thing thing : getThing().getThings()) {
             Map<String, String> properties = thing.getProperties();
@@ -396,10 +367,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     return;
                 }
                 if (!(getTelemetryData())) {
-                    commFailureCount++;
-                    return;
-                }
-                if (!(getMspConfigChlorEnable())) {
                     commFailureCount++;
                     return;
                 }

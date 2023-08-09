@@ -60,6 +60,10 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                 String thingSystemID = getThing().getUID().getId();
                 for (int i = 0; i < systemIDs.size(); i++) {
                     if (systemIDs.get(i).equals(thingSystemID)) {
+                        // Operating Mode
+                        data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(i));
+
                         // Timed Percent
                         data = bridgehandler.evaluateXPath("//Chlorinator/@Timed-Percent", xmlResponse);
                         channelStates.putAll(
@@ -89,29 +93,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                         data = bridgehandler.evaluateXPath("//Chlorinator/@status", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(i));
 
-                    }
-                }
-                this.updateStatus(ThingStatus.ONLINE);
-            } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            }
-        }
-    }
-
-    public boolean getChlorEnableStatus(String xmlResponse, String systemID) throws HaywardException {
-        List<String> systemIDs = new ArrayList<>();
-        List<String> data = new ArrayList<>();
-
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                systemIDs = bridgehandler.evaluateXPath("//Body-of-water/Chlorinator/System-Id/text()", xmlResponse);
-                String thingSystemID = getThing().getUID().getId();
-                for (int i = 0; i < systemIDs.size(); i++) {
-                    if (systemIDs.get(i).equals(thingSystemID)) {
-                        data = bridgehandler.evaluateXPath("//Body-of-water/Chlorinator/Enabled/text()", xmlResponse);
-                        if (data.get(i).equals("yes")) {
+                        if ((Integer.parseInt(data.get(i)) & 64) > 0 || (Integer.parseInt(data.get(i)) & 128) > 0) {
                             channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1"));
                         } else {
                             channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0"));
@@ -119,13 +101,10 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                     }
                 }
                 this.updateStatus(ThingStatus.ONLINE);
-                return true;
             } else {
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-                return false;
             }
         }
-        return false;
     }
 
     @Override
