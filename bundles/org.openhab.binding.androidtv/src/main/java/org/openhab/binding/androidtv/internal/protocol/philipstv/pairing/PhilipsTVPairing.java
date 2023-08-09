@@ -176,7 +176,7 @@ public class PhilipsTVPairing {
         deviceDto.setDeviceName("heliotrope");
         deviceDto.setDeviceOs("Android");
         deviceDto.setType("native");
-        if (deviceId == null) {
+        if (deviceId.isEmpty()) {
             deviceId = createDeviceId();
         }
         deviceDto.setId(deviceId);
