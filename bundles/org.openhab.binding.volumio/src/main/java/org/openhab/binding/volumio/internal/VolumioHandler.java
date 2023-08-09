@@ -67,12 +67,11 @@ public class VolumioHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         VolumioService volumioLocal = volumio;
-        logger.debug("channelUID: {}", channelUID);
 
         if (volumioLocal == null) {
-            logger.debug("Volumio service was not yet initialized.");
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle command.");
             }
             return;
         }
@@ -174,9 +173,9 @@ public class VolumioHandler extends BaseThingHandler {
         VolumioService volumioLocal = volumio;
 
         if (volumioLocal == null) {
-            logger.debug("Volumio service was not yet initialized.");
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle send system command.");
             }
             return;
         }
@@ -202,9 +201,9 @@ public class VolumioHandler extends BaseThingHandler {
         VolumioService volumioLocal = volumio;
 
         if (volumioLocal == null) {
-            logger.debug("Volumio service was not yet initialized");
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle volume command.");
             }
             return;
         }
@@ -222,9 +221,9 @@ public class VolumioHandler extends BaseThingHandler {
         VolumioService volumioLocal = volumio;
 
         if (volumioLocal == null) {
-            logger.debug("Volumio service was not yet initialized");
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle stop command.");
             }
             return;
         }
@@ -241,9 +240,9 @@ public class VolumioHandler extends BaseThingHandler {
         VolumioService volumioLocal = volumio;
 
         if (volumioLocal == null) {
-            logger.debug("Volumio service was not yet initialized");
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle playback command.");
             }
             return;
         }
@@ -289,9 +288,9 @@ public class VolumioHandler extends BaseThingHandler {
         VolumioService volumioLocal = volumio;
 
         if (volumioLocal == null) {
-            logger.debug("Volumio service was not yet initialized");
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized.");
             }
             return;
         }
@@ -308,14 +307,6 @@ public class VolumioHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         VolumioService volumioLocal = volumio;
-
-        if (volumioLocal == null) {
-            logger.debug("Volumio service was not yet initialized");
-            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
-            }
-            return;
-        }
 
         String hostname = (String) getThing().getConfiguration().get(VolumioBindingConstants.CONFIG_PROPERTY_HOSTNAME);
         int port = ((BigDecimal) getThing().getConfiguration().get(VolumioBindingConstants.CONFIG_PROPERTY_PORT))
@@ -347,7 +338,6 @@ public class VolumioHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         VolumioService volumioLocal = volumio;
-
         if (volumioLocal != null) {
             scheduler.schedule(() -> {
                 if (volumioLocal.isConnected()) {
