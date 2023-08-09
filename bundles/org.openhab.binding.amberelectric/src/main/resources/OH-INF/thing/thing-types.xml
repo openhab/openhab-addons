@@ -61,7 +61,7 @@
 	<channel-type id="amberelectric-spotprice">
 		<item-type>Number</item-type>
 		<label>Current Spot Price</label>
-		<description>Current price to export power from the grid</description>
+		<description>Current price to export power to the grid</description>
 		<state readOnly="true" pattern="%d c/kWh"/>
 	</channel-type>
 
