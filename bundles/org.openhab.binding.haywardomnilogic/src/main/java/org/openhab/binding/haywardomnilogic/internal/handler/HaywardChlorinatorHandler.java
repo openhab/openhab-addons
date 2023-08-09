@@ -60,6 +60,10 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                 String thingSystemID = getThing().getUID().getId();
                 for (int i = 0; i < systemIDs.size(); i++) {
                     if (systemIDs.get(i).equals(thingSystemID)) {
+                        // Enable
+                        data = bridgehandler.evaluateXPath("//Chlorinator/@enable", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, data.get(i));
+
                         // Operating Mode
                         data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(i));
@@ -92,12 +96,6 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                         // Status
                         data = bridgehandler.evaluateXPath("//Chlorinator/@status", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(i));
-
-                        if ((Integer.parseInt(data.get(i)) & 64) > 0 || (Integer.parseInt(data.get(i)) & 128) > 0) {
-                            channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1"));
-                        } else {
-                            channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0"));
-                        }
                     }
                 }
                 this.updateStatus(ThingStatus.ONLINE);
