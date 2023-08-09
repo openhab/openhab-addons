@@ -22,10 +22,7 @@
 				<label>Inverter Voltage</label>
 				<description>Voltage of the inverter</description>
 			</channel>
-			<channel id="inverter-frequency" typeId="frequency">
-				<label>Inverter Frequency</label>
-				<description>Frequency of the electricity to/from the inverter</description>
-			</channel>
+			<channel id="inverter-frequency" typeId="frequency"/>
 
 			<channel id="pv1-voltage" typeId="system.electric-voltage">
 				<label>PV 1 Voltage</label>
@@ -88,10 +85,7 @@
 
 			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
 
-			<channel id="raw-data" typeId="raw-data-type">
-				<label>Raw Inverter Data</label>
-				<description>The raw JSON data retrieved from the inverter's Wi-Fi module.</description>
-			</channel>
+			<channel id="raw-data" typeId="raw-data-type"/>
 		</channels>
 
 		<config-description>

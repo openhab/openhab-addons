@@ -82,7 +82,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
                 updateData(rawJsonData);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "JSON data could not be retrieved.");
+                        SolaxBindingConstants.I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED);
             }
         } catch (IOException e) {
             logger.debug("Exception received while attempting to retrieve data via HTTP", e);

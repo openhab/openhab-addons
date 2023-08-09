@@ -24,8 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LocalHttpConnector} class defines common constants, which are
- * used across the whole binding.
+ * The {@link LocalHttpConnector} class uses HttpUtil to retrieve the raw JSON data from Inverter's Wi-Fi module.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
@@ -54,7 +53,7 @@ public class LocalHttpConnector implements SolaxConnector {
     @Override
     public @Nullable String retrieveData() throws IOException {
         String requestBody = createRequestBody();
-        logger.trace("Request body: {}", requestBody);
+        logger.trace("Uri: {}, Request body: {}", uri, requestBody);
         String result = HttpUtil.executeUrl(HttpMethod.POST.name(), uri,
                 new ByteArrayInputStream(requestBody.getBytes(StandardCharsets.UTF_8)), CONTENT_TYPE,
                 HTTP_REQUEST_TIME_OUT);

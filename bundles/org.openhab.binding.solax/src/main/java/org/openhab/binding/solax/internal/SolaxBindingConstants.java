@@ -36,7 +36,7 @@ public class SolaxBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LOCAL_CONNECT_INVERTER);
 
     // List of properties
-    public static final String PROPERTY_INVERTER_TYPE = "inverter-type";
+    public static final String PROPERTY_INVERTER_TYPE = "inverterType";
 
     // List of all Channel ids
     public static final String INVERTER_OUTPUT_POWER = "inverter-output-power";
@@ -59,10 +59,13 @@ public class SolaxBindingConstants {
     public static final String BATTERY_VOLTAGE = "battery-voltage";
     public static final String BATTERY_CURRENT = "battery-current";
     public static final String BATTERY_TEMPERATURE = "battery-temperature";
-    public static final String BATTERY_STATE_OF_CHARGE = "battery-state-of-charge";
+    public static final String BATTERY_STATE_OF_CHARGE = "battery-level";
 
     public static final String FEED_IN_POWER = "feed-in-power";
 
     public static final String TIMESTAMP = "last-update-time";
     public static final String RAW_DATA = "raw-data";
+
+    // I18N Keys
+    protected static final String I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED = "@text/offline.communication-error.json-cannot-be-retrieved";
 }

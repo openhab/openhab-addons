@@ -26,7 +26,7 @@
 	</channel-type>
 	<channel-type id="last-retrieve-time-stamp">
 		<item-type>DateTime</item-type>
-		<label>Last retrieve time stamp</label>
+		<label>Last Retrieve Time Stamp</label>
 		<description>Last time with a successful retrieval of data</description>
 		<category>Time</category>
 		<state pattern="yyyy-MM-dd HH:mm:ss" readOnly="true"/>
