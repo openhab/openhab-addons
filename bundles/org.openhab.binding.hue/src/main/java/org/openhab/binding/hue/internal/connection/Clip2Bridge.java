@@ -399,6 +399,41 @@ public class Clip2Bridge implements Closeable {
         ACTIVE;
     }
 
+    /**
+     * Class for throttling HTTP GET and PUT requests to prevent overloading the Hue bridge.
+     * <p>
+     * The Hue Bridge can get confused if they receive too many HTTP requests in a short period of time (e.g. on start
+     * up), or if too many HTTP sessions are opened at the same time, which cause it to respond with an HTML error page.
+     * So this class a) waits to acquire permitCount (or no more than MAX_CONCURRENT_SESSIONS) stream permits, and b)
+     * throttles the requests to a maximum of one per REQUEST_INTERVAL_MILLISECS.
+     */
+    private class Throttler implements AutoCloseable {
+        private final int permitCount;
+
+        /**
+         * @param permitCount indicates how many stream permits to be acquired.
+         * @throws InterruptedException
+         */
+        Throttler(int permitCount) throws InterruptedException {
+            this.permitCount = permitCount;
+            streamMutex.acquire(permitCount);
+            long delay;
+            synchronized (Clip2Bridge.this) {
+                Instant now = Instant.now();
+                delay = lastRequestTime
+                        .map(t -> Math.max(0, Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS))
+                        .orElse(0L);
+                lastRequestTime = Optional.of(now.plusMillis(delay));
+            }
+            Thread.sleep(delay);
+        }
+
+        @Override
+        public void close() {
+            streamMutex.release(permitCount);
+        }
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Clip2Bridge.class);
 
     private static final String APPLICATION_ID = "org-openhab-binding-hue-clip2";
@@ -662,11 +697,10 @@ public class Clip2Bridge implements Closeable {
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or closed");
         }
-        throttle();
-        String url = getUrl(reference);
-        HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON);
-        LOGGER.trace("GET {} HTTP/2", url);
-        try {
+        try (Throttler throttler = new Throttler(1)) {
+            String url = getUrl(reference);
+            LOGGER.trace("GET {} HTTP/2", url);
+            HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON);
             Completable<@Nullable Stream> streamPromise = new Completable<>();
             ContentStreamListenerAdapter contentStreamListener = new ContentStreamListenerAdapter();
             session.newStream(headers, streamPromise, contentStreamListener);
@@ -696,8 +730,6 @@ public class Clip2Bridge implements Closeable {
             throw new ApiException("Error sending request", e);
         } catch (TimeoutException e) {
             throw new ApiException("Error sending request", e);
-        } finally {
-            throttleDone();
         }
     }
 
@@ -917,14 +949,15 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Use an HTTP/2 PUT command to send a resource to the server. Note: the Hue bridge server can sometimes get
-     * confused by parallel PUT commands, so use 'synchronized' to prevent that.
+     * Use an HTTP/2 PUT command to send a resource to the server. Note: the Hue Bridge can get confused by parallel
+     * overlapping PUT resp. GET commands which cause it to respond with an HTML error page. So this method acquires all
+     * of the stream access permits (given by MAX_CONCURRENT_STREAMS) in order to prevent such overlaps.
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
      * @throws InterruptedException
      */
-    public synchronized void putResource(Resource resource) throws ApiException, InterruptedException {
+    public void putResource(Resource resource) throws ApiException, InterruptedException {
         if (onlineState == State.CLOSED) {
             return;
         }
@@ -932,14 +965,13 @@ public class Clip2Bridge implements Closeable {
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or closed");
         }
-        throttle();
-        String requestJson = jsonParser.toJson(resource);
-        ByteBuffer requestBytes = ByteBuffer.wrap(requestJson.getBytes(StandardCharsets.UTF_8));
-        String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
-        HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON, "PUT", requestBytes.capacity(),
-                MediaType.APPLICATION_JSON);
-        LOGGER.trace("PUT {} HTTP/2 >> {}", url, requestJson);
-        try {
+        try (Throttler throttler = new Throttler(MAX_CONCURRENT_STREAMS)) {
+            String requestJson = jsonParser.toJson(resource);
+            ByteBuffer requestBytes = ByteBuffer.wrap(requestJson.getBytes(StandardCharsets.UTF_8));
+            String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
+            HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON, "PUT", requestBytes.capacity(),
+                    MediaType.APPLICATION_JSON);
+            LOGGER.trace("PUT {} HTTP/2 >> {}", url, requestJson);
             Completable<@Nullable Stream> streamPromise = new Completable<>();
             ContentStreamListenerAdapter contentStreamListener = new ContentStreamListenerAdapter();
             session.newStream(headers, streamPromise, contentStreamListener);
@@ -964,8 +996,6 @@ public class Clip2Bridge implements Closeable {
             }
         } catch (ExecutionException | TimeoutException e) {
             throw new ApiException("putResource() error sending request", e);
-        } finally {
-            throttleDone();
         }
     }
 
@@ -1036,31 +1066,5 @@ public class Clip2Bridge implements Closeable {
             close2();
             throw e;
         }
-    }
-
-    /**
-     * Hue Bridges get confused if they receive too many HTTP requests in a short period of time (e.g. on start up), or
-     * if too many HTTP sessions are opened at the same time. So this method throttles the requests to a maximum of one
-     * per REQUEST_INTERVAL_MILLISECS, and ensures that no more than MAX_CONCURRENT_SESSIONS sessions are started.
-     *
-     * @throws InterruptedException
-     */
-    private synchronized void throttle() throws InterruptedException {
-        streamMutex.acquire();
-        Instant now = Instant.now();
-        if (lastRequestTime.isPresent()) {
-            long delay = Duration.between(now, lastRequestTime.get()).toMillis() + REQUEST_INTERVAL_MILLISECS;
-            if (delay > 0) {
-                Thread.sleep(delay);
-            }
-        }
-        lastRequestTime = Optional.of(now);
-    }
-
-    /**
-     * Release the mutex.
-     */
-    private void throttleDone() {
-        streamMutex.release();
     }
 }
