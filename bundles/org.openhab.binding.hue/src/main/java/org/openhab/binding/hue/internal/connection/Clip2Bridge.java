@@ -420,13 +420,12 @@ public class Clip2Bridge implements Closeable {
             long delay;
             synchronized (Clip2Bridge.this) {
                 Instant now = Instant.now();
-                delay = lastRequestTime.map(t -> Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS)
+                delay = lastRequestTime
+                        .map(t -> Math.max(0, Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS))
                         .orElse(0L);
-                lastRequestTime = Optional.of(delay > 0 ? now.plusMillis(delay) : now);
+                lastRequestTime = Optional.of(now.plusMillis(delay));
             }
-            if (delay > 0) {
-                Thread.sleep(delay);
-            }
+            Thread.sleep(delay);
         }
 
         @Override
