@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="amberelectric"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="amberelectric">
+		<label>Amber Electric</label>
+		<description>Amber Electric - wholesale access to power prices</description>
+
+		<channels>
+			<channel id="elecprice" typeId="amberelectric-elecprice"/>
+			<channel id="nemtime" typeId="amberelectric-nemtime"/>
+			<channel id="spike" typeId="amberelectric-spike"/>
+			<channel id="spotprice" typeId="amberelectric-spotprice"/>
+			<channel id="renewables" typeId="amberelectric-renewables"/>
+		</channels>
+
+		<config-description>
+			<parameter name="apikey" type="text" required="true">
+				<label>API Key</label>
+				<description>API key from the Amber website</description>
+			</parameter>
+			<parameter name="site" type="text">
+				<label>Site</label>
+				<description>Site ID for your address (Optional)</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>120</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="amberelectric-elecprice">
+		<item-type>Number</item-type>
+		<label>Current Electricity Price</label>
+		<description>Current price to import power from the grid</description>
+		<state readOnly="true" pattern="%d c/kWh"/>
+	</channel-type>
+	<channel-type id="amberelectric-nemtime">
+		<item-type>String</item-type>
+		<label>NEM Time</label>
+		<description>NEM time of last pricing update</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="amberelectric-renewables">
+		<item-type>Number</item-type>
+		<label>Current Renewables</label>
+		<description>Current level of renewables in the grid</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+	<channel-type id="amberelectric-spike">
+		<item-type>Switch</item-type>
+		<label>Energy Price Spike</label>
+		<description>Report if the grid has a current price spike</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="amberelectric-spotprice">
+		<item-type>Number</item-type>
+		<label>Current Spot Price</label>
+		<description>Current price to export power from the grid</description>
+		<state readOnly="true" pattern="%d c/kWh"/>
+	</channel-type>
+
+</thing:thing-descriptions>
