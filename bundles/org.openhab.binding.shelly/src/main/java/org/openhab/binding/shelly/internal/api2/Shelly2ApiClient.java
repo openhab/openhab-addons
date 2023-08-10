@@ -148,6 +148,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         MAP_ROLLER_STATE.put(SHELLY2_RSTATE_STOPPED, SHELLY_RSTATE_STOP);
         MAP_ROLLER_STATE.put(SHELLY2_RSTATE_CALIB, SHELLY2_RSTATE_CALIB); // Gen2-only
     }
+    protected static final Map<String, String> MAP_PROFILE = new HashMap<>();
+    static {
+        MAP_ROLLER_STATE.put(SHELLY_CLASS_RELAY, SHELLY2_PROFILE_RELAY);
+        MAP_ROLLER_STATE.put(SHELLY_CLASS_ROLLER, SHELLY2_PROFILE_COVER);
+    }
 
     protected @Nullable ArrayList<@Nullable ShellySettingsRelay> fillRelaySettings(ShellyDeviceProfile profile,
             Shelly2GetConfigResult dc) {

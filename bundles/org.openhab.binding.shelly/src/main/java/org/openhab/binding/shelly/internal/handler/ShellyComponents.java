@@ -438,7 +438,10 @@ public class ShellyComponents {
                     if (t.tmp != null) {
                         updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                                 t.tmp.value, t.tmp.units);
-                        updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, CHANNEL_CONTROL_SETTEMP,
+                        if (t.targetTemp.unit == null) {
+                            t.targetTemp.unit = t.tmp.units;
+                        }
+                        updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
                                 t.targetTemp.value, t.targetTemp.unit);
                     }
                     if (t.pos != null) {

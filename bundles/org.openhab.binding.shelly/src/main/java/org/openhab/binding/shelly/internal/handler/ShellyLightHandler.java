@@ -82,7 +82,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
         try {
             ShellyColorUtils oldCol = getCurrentColors(lightId);
-            oldCol.mode = profile.mode;
+            oldCol.mode = profile.device.mode;
             ShellyColorUtils col = new ShellyColorUtils(oldCol);
 
             boolean update = true;
@@ -320,7 +320,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
 
         ShellyStatusLight status = api.getLightStatus();
-        logger.trace("{}: Updating light status in {} mode, {} channel(s)", thingName, profile.mode,
+        logger.trace("{}: Updating light status in {} mode, {} channel(s)", thingName, profile.device.mode,
                 status.lights.size());
 
         // In white mode we have multiple channels

@@ -69,6 +69,7 @@ public class ShellyHttpClient {
     protected int timeoutErrors = 0;
     protected int timeoutsRecovered = 0;
     private ShellyDeviceProfile profile;
+    protected boolean basicAuth = false;
 
     public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
         this(thingName, thing.getThingConfig(), thing.getHttpClient());
@@ -81,9 +82,6 @@ public class ShellyHttpClient {
         setConfig(thingName, config);
         this.httpClient = httpClient;
         this.httpClient.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
-    }
-
-    public void initialize() throws ShellyApiException {
     }
 
     public void setConfig(String thingName, ShellyThingConfiguration config) {
@@ -164,7 +162,7 @@ public class ShellyHttpClient {
                     authHeader = formatAuthResponse(uri,
                             buildAuthResponse(uri, auth, SHELLY2_AUTHDEF_USER, config.password));
                 } else {
-                    if (!uri.equals(SHELLYRPC_ENDPOINT)) {
+                    if (basicAuth) {
                         String bearer = config.userId + ":" + config.password;
                         authHeader = HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(bearer.getBytes());
                     }
@@ -174,7 +172,7 @@ public class ShellyHttpClient {
                 }
             }
             fillPostData(request, data);
-            logger.trace("{}: HTTP {} for {} {}\n{}", thingName, method, url, data, request.getHeaders());
+            logger.trace("{}: HTTP {} {}\n{}\n{}", thingName, method, url, request.getHeaders(), data);
 
             // Do request and get response
             ContentResponse contentResponse = request.send();
