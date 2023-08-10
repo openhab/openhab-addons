@@ -261,18 +261,17 @@ public class GardenaThingHandler extends BaseThingHandler {
         String commandName = channelUID.getIdWithoutGroup().toUpperCase();
         String groupId = channelUID.getGroupId();
         if (groupId != null) {
-            switch (groupId) {
-                case "valve_commands":
-                    return new ValveCommand(ValveControl.valueOf(commandName),
-                            getDevice().getLocalService(dataItemProperty).commandDuration);
-                case "mower_commands":
-                    return new MowerCommand(MowerControl.valueOf(commandName),
-                            getDevice().getLocalService(dataItemProperty).commandDuration);
-                case "valveSet_commands":
-                    return new ValveSetCommand(ValveSetControl.valueOf(commandName));
-                case "powerSocket_commands":
-                    return new PowerSocketCommand(PowerSocketControl.valueOf(commandName),
-                            getDevice().getLocalService(dataItemProperty).commandDuration);
+            if ("valveSet_commands".equals(groupId)) {
+                return new ValveSetCommand(ValveSetControl.valueOf(commandName));
+            } else if (groupId.startsWith("valve") && groupId.endsWith("_commands")) {
+                return new ValveCommand(ValveControl.valueOf(commandName),
+                        getDevice().getLocalService(dataItemProperty).commandDuration);
+            } else if ("mower_commands".equals(groupId)) {
+                return new MowerCommand(MowerControl.valueOf(commandName),
+                        getDevice().getLocalService(dataItemProperty).commandDuration);
+            } else if ("powerSocket_commands".equals(groupId)) {
+                return new PowerSocketCommand(PowerSocketControl.valueOf(commandName),
+                        getDevice().getLocalService(dataItemProperty).commandDuration);
             }
         }
         throw new GardenaException("Command " + channelUID.getId() + " not found or groupId null");
