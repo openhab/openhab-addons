@@ -128,11 +128,6 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         this.translationProvider = handler.getTranslationProvider();
         this.discoveryServiceRegistry = handler.getDiscoveryServiceRegistry();
         this.stateDescriptionProvider = handler.getStateDescriptionProvider();
-
-        if (!config.useUpnpDiscovery && isSchedulerInitializable()) {
-            startRefreshScheduler();
-        }
-
         initialize();
     }
 
@@ -311,6 +306,10 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             }
         }
 
+        if (!config.useUpnpDiscovery && isSchedulerInitializable()) {
+            startRefreshScheduler();
+        }
+
         CloseableHttpClient httpClient;
 
         try {
@@ -448,7 +447,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     private boolean isSchedulerInitializable() {
         String username = this.username;
         String password = this.password;
-        return (!username.isEmpty()) && (password.isEmpty())
+        return (!username.isEmpty()) && (!password.isEmpty())
                 && ((refreshScheduler == null) || refreshScheduler.isDone());
     }
 
