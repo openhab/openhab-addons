@@ -733,10 +733,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2DeviceSettings device = callApi("/shelly", Shelly2DeviceSettings.class);
         ShellySettingsDevice info = new ShellySettingsDevice();
         info.hostname = getString(device.id);
-        info.fw = getString(device.firmware);
+        info.name = getString(device.name);
+        info.fw = getString(device.fw);
         info.type = getString(device.model);
         info.mac = getString(device.mac);
-        info.auth = getBool(device.authEnable);
+        info.auth = getBool(device.auth);
         info.gen = getInteger(device.gen);
         info.mode = mapValue(MAP_PROFILE, device.profile);
         return info;

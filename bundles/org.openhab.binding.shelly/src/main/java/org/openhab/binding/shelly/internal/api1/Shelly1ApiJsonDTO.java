@@ -262,6 +262,8 @@ public class Shelly1ApiJsonDTO {
     public static class ShellySettingsDevice {
         public String type;
         public String mode; // Gen 1
+        public String id; // Gen2: service name
+        public String name; // Gen2: configured device name
         public String profile; // Gen 2
         public String mac;
         public String hostname;

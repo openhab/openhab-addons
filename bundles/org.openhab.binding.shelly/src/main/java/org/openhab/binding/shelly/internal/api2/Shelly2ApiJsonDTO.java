@@ -186,11 +186,11 @@ public class Shelly2ApiJsonDTO {
         public String profile;
         public Integer gen;
         @SerializedName("fw_id")
-        public String firmware;
+        public String fw;
         public String ver;
         public String app;
         @SerializedName("auth_en")
-        public Boolean authEnable;
+        public Boolean auth;
         @SerializedName("auth_domain")
         public String authDomain;
     }
