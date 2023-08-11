@@ -44,6 +44,7 @@ import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
+import org.openhab.binding.hue.internal.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
@@ -97,6 +98,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             THING_TYPE_ZONE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
+    private static final Duration DEFAULT_TIMED_EFFECT_DURATION = Duration.ofMinutes(15);
 
     private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
 
@@ -347,8 +349,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_EFFECT:
-                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache);
-                putResource.setOnOff(OnOffType.ON);
+                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache)
+                        .setTimedEffectsDuration(DEFAULT_TIMED_EFFECT_DURATION).setOnOff(OnOffType.ON);
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
@@ -497,6 +499,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     && !dynamicsDuration.isNegative()) {
                 if (ResourceType.SCENE == putResource.getType()) {
                     putResource.setRecallDuration(dynamicsDuration);
+                } else if (channelId == CHANNEL_2_EFFECT) {
+                    putResource.setTimedEffectsDuration(dynamicsDuration);
                 } else {
                     putResource.setDynamicsDuration(dynamicsDuration);
                 }
@@ -940,21 +944,26 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Process the incoming Resource to initialize the effects channel.
+     * Process the incoming Resource to initialize the effects resp. timed effects channel.
      *
-     * @param resource a Resource possibly with an Effects element.
+     * @param resource a Resource possibly containing an effects or timed effects element or both.
      */
     public void updateEffectChannel(Resource resource) {
+        Set<StateOption> stateOptions = new HashSet<>();
         Effects effects = resource.getEffects();
         if (Objects.nonNull(effects)) {
-            List<StateOption> stateOptions = effects.getStatusValues().stream()
-                    .map(effect -> EffectType.of(effect).name()).map(effectId -> new StateOption(effectId, effectId))
-                    .collect(Collectors.toList());
-            if (!stateOptions.isEmpty()) {
-                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT),
-                        stateOptions);
-                logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
-            }
+            stateOptions.addAll(effects.getStatusValues().stream().map(effect -> EffectType.of(effect).name())
+                    .map(effectId -> new StateOption(effectId, effectId)).collect(Collectors.toList()));
+        }
+        TimedEffects timedEffects = resource.getTimedEffects();
+        if (Objects.nonNull(timedEffects)) {
+            stateOptions.addAll(timedEffects.getStatusValues().stream().map(effect -> EffectType.of(effect).name())
+                    .map(effectId -> new StateOption(effectId, effectId)).collect(Collectors.toList()));
+        }
+        if (!stateOptions.isEmpty()) {
+            stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT),
+                    List.copyOf(stateOptions));
+            logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
         }
     }
 

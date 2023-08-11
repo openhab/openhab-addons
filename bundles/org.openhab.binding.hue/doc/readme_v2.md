@@ -140,6 +140,7 @@ When you set a value for the `dynamics` channel (e.g. 2000 milliseconds) and the
 When the `dynamics` channel value is changed, it triggers a time window of ten seconds during which the value is active.
 If the second command is sent within the active time window, it will be executed gradually according to the `dynamics` channel value.
 However, if the second command is sent after the active time window has expired, then it will be executed immediately.
+If the second command is a 'timed' effect, then the dynamics duration will be applied to that effect.
 
 ### Advanced Channels for Devices, Rooms and Zones
 

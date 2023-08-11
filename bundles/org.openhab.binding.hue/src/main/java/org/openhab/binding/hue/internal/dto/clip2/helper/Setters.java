@@ -29,6 +29,7 @@ import org.openhab.binding.hue.internal.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.dto.clip2.OnState;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
+import org.openhab.binding.hue.internal.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.core.library.types.DecimalType;
@@ -198,8 +199,8 @@ public class Setters {
 
     /**
      * Setter for Effect field:
-     * Use the given command value to set the target resource DTO value based on the attributes of the source resource
-     * (if any).
+     * Use the given command value to set the target 'effects' or 'timedEffects' resource DTO value based on the
+     * attributes of the source resource (if any).
      *
      * @param target the target resource.
      * @param command the new state command should be a StringType.
@@ -209,11 +210,17 @@ public class Setters {
      */
     public static Resource setEffect(Resource target, Command command, @Nullable Resource source) {
         if ((command instanceof StringType) && Objects.nonNull(source)) {
-            Effects otherEffects = source.getEffects();
-            if (Objects.nonNull(otherEffects)) {
-                EffectType effectType = EffectType.of(((StringType) command).toString());
-                if (otherEffects.allows(effectType)) {
+            EffectType effectType = EffectType.of(((StringType) command).toString());
+            Effects sourceEffects = source.getEffects();
+            if (Objects.nonNull(sourceEffects)) {
+                if (sourceEffects.allows(effectType)) {
                     target.setEffects(new Effects().setEffect(effectType));
+                }
+            }
+            TimedEffects sourceTimedEffects = source.getTimedEffects();
+            if (Objects.nonNull(sourceTimedEffects)) {
+                if (sourceTimedEffects.allows(effectType)) {
+                    target.setTimedEffects((TimedEffects) new TimedEffects().setEffect(effectType));
                 }
             }
         }
@@ -306,6 +313,21 @@ public class Setters {
         if (Objects.isNull(targetStatusValues) && Objects.nonNull(sourceStatusValues)) {
             targetEffects = Objects.nonNull(targetEffects) ? targetEffects : new Effects();
             targetEffects.setStatusValues(sourceStatusValues);
+        }
+        // timed effects
+        TimedEffects tgtTimedEffects = target.getTimedEffects();
+        TimedEffects srcTimedEffects = source.getTimedEffects();
+        if (Objects.isNull(tgtTimedEffects) && Objects.nonNull(srcTimedEffects)) {
+            tgtTimedEffects = srcTimedEffects;
+            target.setTimedEffects(srcTimedEffects);
+            tgtTimedEffects = target.getTimedEffects();
+        }
+        // timed effects values
+        List<String> tgtTimedStatusValues = Objects.nonNull(tgtTimedEffects) ? tgtTimedEffects.getStatusValues() : null;
+        List<String> srcTimedStatusValues = Objects.nonNull(srcTimedEffects) ? srcTimedEffects.getStatusValues() : null;
+        if (Objects.isNull(tgtTimedStatusValues) && Objects.nonNull(srcTimedStatusValues)) {
+            tgtTimedEffects = Objects.nonNull(tgtTimedEffects) ? tgtTimedEffects : new TimedEffects();
+            tgtTimedEffects.setStatusValues(srcTimedStatusValues);
         }
         return target;
     }

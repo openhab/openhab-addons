@@ -24,6 +24,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
@@ -324,9 +325,29 @@ public class Resource {
         return effects;
     }
 
+    /**
+     * Get the amalgamated effect state. The result may be either from an 'effects' field or from a 'timedEffects'
+     * field. If both fields are missing it returns UnDefType.NULL, otherwise if either field is present and has an
+     * active value (other than EffectType.NO_EFFECT) it returns a StringType of the name of the respective active
+     * effect; and if none of the above apply, it returns a StringType of 'NO_EFFECT'.
+     *
+     * @return either a StringType value or UnDefType.NULL
+     */
     public State getEffectState() {
         Effects effects = this.effects;
-        return Objects.nonNull(effects) ? new StringType(effects.getStatus().name()) : UnDefType.NULL;
+        TimedEffects timedEffects = this.timedEffects;
+        if (Objects.isNull(effects) && Objects.isNull(timedEffects)) {
+            return UnDefType.NULL;
+        }
+        EffectType effect = Objects.nonNull(effects) ? effects.getStatus() : null;
+        if (Objects.nonNull(effect) && (effect != EffectType.NO_EFFECT)) {
+            return new StringType(effect.name());
+        }
+        EffectType timedEffect = Objects.nonNull(timedEffects) ? timedEffects.getStatus() : null;
+        if (Objects.nonNull(timedEffect) && (timedEffect != EffectType.NO_EFFECT)) {
+            return new StringType(timedEffect.name());
+        }
+        return new StringType(EffectType.NO_EFFECT.name());
     }
 
     public @Nullable Boolean getEnabled() {
@@ -517,7 +538,7 @@ public class Resource {
         return Objects.nonNull(temperature) ? temperature.getTemperatureValidState() : UnDefType.NULL;
     }
 
-    public @Nullable Effects getTimedEffects() {
+    public @Nullable TimedEffects getTimedEffects() {
         return timedEffects;
     }
 
@@ -637,6 +658,19 @@ public class Resource {
     public Resource setRecallDuration(Duration recallDuration) {
         Recall recall = this.recall;
         this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
+        return this;
+    }
+
+    public Resource setTimedEffects(TimedEffects timedEffects) {
+        this.timedEffects = timedEffects;
+        return this;
+    }
+
+    public Resource setTimedEffectsDuration(Duration dynamicsDuration) {
+        TimedEffects timedEffects = this.timedEffects;
+        if (Objects.nonNull(timedEffects)) {
+            timedEffects.setDuration(dynamicsDuration);
+        }
         return this;
     }
 
