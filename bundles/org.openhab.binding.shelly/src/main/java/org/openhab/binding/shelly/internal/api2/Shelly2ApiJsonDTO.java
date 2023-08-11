@@ -179,8 +179,8 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceSettings {
-        public String name;
         public String id;
+        public String name;
         public String mac;
         public String model;
         public String profile;

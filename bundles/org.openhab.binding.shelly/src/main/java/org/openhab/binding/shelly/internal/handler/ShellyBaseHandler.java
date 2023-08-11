@@ -191,7 +191,26 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         config.eventsSensorReport, config.eventsCoIoT, bindingConfig.autoCoIoT);
                 start = initializeThing();
             } catch (ShellyApiException e) {
+<<<<<<< HEAD
                 start = handleApiException(e);
+=======
+                ShellyApiResult res = e.getApiResult();
+                String mid = "";
+                if (e.isJsonError()) { // invalid JSON format
+                    mid = "offline.status-error-unexpected-error";
+                    start = false;
+                } else if (isAuthorizationFailed(res)) {
+                    mid = "offline.conf-error-access-denied";
+                    start = false;
+                } else if (profile.alwaysOn && e.isConnectionError()) {
+                    mid = "offline.status-error-connect";
+                }
+                if (!mid.isEmpty()) {
+                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, mid, e.toString());
+                } else {
+                    logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
+                }
+>>>>>>> aa60a436f4 (Implement channel upgrade when typeId or acceptedItemType doesn't match)
             } catch (IllegalArgumentException e) {
                 logger.debug("{}: Unable to initialize, retrying later", thingName, e);
             } finally {
@@ -1305,63 +1324,67 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return; // already done
         }
 
-        List<Channel> existingChannels = getThing().getChannels();
-        ThingHandlerCallback callback = getCallback();
+        List<Channel> channelMap = new ArrayList<>(this.getThing().getChannels());
+        List<Channel> removeChannels = new ArrayList<>();
         List<Channel> upgradeChannels = new ArrayList<>();
-        for (Channel channel : existingChannels) {
+
+        // Step 1: Replace existing channels with dynamically created ones
+        for (Map.Entry<String, Channel> channel : dynChannels.entrySet()) {
+            String id = channel.getKey();
+            channelMap.removeIf(c -> (c.getUID().getId().equals(id)));
+            channelMap.add(channel.getValue());
+        }
+
+        // Step 2: check channel definition s for all channels to be up-to-date
+        for (Channel channel : channelMap) {
             try {
+                boolean upgrade = false;
                 String channelId = channel.getUID().getId();
                 ChannelTypeUID uid = channel.getChannelTypeUID();
-                String typeId = uid.getBindingId().equals("system") ? uid.toString() : uid.getId();
-                if (!ShellyChannelDefinitions.hasDefinition(channelId)) {
+                if (!ShellyChannelDefinitions.hasDefinition(channelId) || uid == null) {
                     continue;
                 }
+                String typeId = uid.getBindingId().equals("system") ? uid.toString() : uid.getId();
                 ShellyChannel channelDef = ShellyChannelDefinitions.getDefinition(channelId);
-                if (channelDef != null) {
-                    boolean upgrade = false;
-                    ChannelBuilder builder = callback.editChannel(thing, channel.getUID());
+                ThingHandlerCallback callback = getCallback();
+                if (channelDef != null && getThing().getChannel(channel.getUID().getId()) != null && callback != null) {
+                    ChannelBuilder channelBuilder = callback.editChannel(thing, channel.getUID());
                     if (!channelDef.typeId.equals(typeId)) {
-                        logger.debug("{}: Updating typeId for channel {}, from {} to {}", thingName, channelId, typeId,
-                                channelDef.typeId);
-                        builder.withType(channelDef.getChannelTypeUID());
+                        channelBuilder.withType(channelDef.getChannelTypeUID());
                         upgrade = true;
                     }
-                    String acceptedItemType = channel.getAcceptedItemType();
-                    if (acceptedItemType != null && !channelDef.itemType.equals(acceptedItemType)) {
-                        logger.debug("{}: Updating acceptedItemType for channel {}, from {} to {}", thingName,
-                                channelId, acceptedItemType, channelDef.itemType);
-                        builder.withAcceptedItemType(acceptedItemType);
+                    String acceptedItemType = getString(channel.getAcceptedItemType());
+                    if (!acceptedItemType.isEmpty() && !channelDef.itemType.equals(acceptedItemType)) {
+                        channelBuilder.withAcceptedItemType(channelDef.itemType);
                         upgrade = true;
                     }
                     if (upgrade) {
-                        upgradeChannels.add(builder.build());
+                        logger.debug(
+                                "{}: Updating channel definition for channel {} (typeId {} -> {}, acceptedItemType {} -> {})",
+                                thingName, channelId, typeId, channelDef.typeId, acceptedItemType, channelDef.itemType);
+                        removeChannels.add(channel);
+                        upgradeChannels.add(channelBuilder.build());
                     }
                 }
-            } catch (IllegalArgumentException e) {
-                // channel not found
+            } catch (Exception e) {
+                logger.debug("failed", e);
             }
-        }
-        if (!upgradeChannels.isEmpty()) {
-            ThingBuilder thingBuilder = editThing();
-            thingBuilder.withChannels(upgradeChannels);
-            updateThing(thingBuilder.build());
         }
 
-        // Get subset of those channels that currently do not exist
-        for (Channel channel : existingChannels) {
-            String id = channel.getUID().getId();
-            if (dynChannels.containsKey(id)) {
-                dynChannels.remove(id);
+        // Step 3:
+        // - remove channels from channelMap, which gets replaced by the dynamic channels
+        // - add channels, which will get a new definition
+        channelMap.removeAll(removeChannels);
+        channelMap.addAll(upgradeChannels);
+
+        // Step 4: Update thing definition with new channel list+definitions
+        if (!channelMap.isEmpty()) {
+            if (!upgradeChannels.isEmpty()) {
+                logger.debug("{}: Updating channel definitions for {}/{} channels", thingName, upgradeChannels.size(),
+                        channelMap.size());
             }
-        }
-        if (!dynChannels.isEmpty()) {
-            logger.debug("{}: Updating channel definitions, {} channels", thingName, dynChannels.size());
             ThingBuilder thingBuilder = editThing();
-            for (Map.Entry<String, Channel> channel : dynChannels.entrySet()) {
-                Channel c = channel.getValue();
-                logger.debug("{}: Adding channel {}", thingName, c.getUID().getId());
-                thingBuilder.withChannel(c);
-            }
+            thingBuilder.withChannels(channelMap);
             updateThing(thingBuilder.build());
             logger.debug("{}: Channel definitions updated", thingName);
         }
