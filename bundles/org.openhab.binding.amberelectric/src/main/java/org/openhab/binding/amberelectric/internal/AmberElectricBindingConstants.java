@@ -34,10 +34,14 @@ public class AmberElectricBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_AMBERELECTRIC_ELECPRICE = "elecprice";
+    public static final String CHANNEL_AMBERELECTRIC_CLPRICE = "clprice";
+    public static final String CHANNEL_AMBERELECTRIC_FEEDINPRICE = "feedinprice";
+    public static final String CHANNEL_AMBERELECTRIC_ELECSTATUS = "elecstatus";
+    public static final String CHANNEL_AMBERELECTRIC_CLSTATUS = "clstatus";
+    public static final String CHANNEL_AMBERELECTRIC_FEEDINSTATUS = "feedinstatus";
     public static final String CHANNEL_AMBERELECTRIC_NEMTIME = "nemtime";
     public static final String CHANNEL_AMBERELECTRIC_RENEWABLES = "renewables";
     public static final String CHANNEL_AMBERELECTRIC_SPIKE = "spike";
-    public static final String CHANNEL_AMBERELECTRIC_SPOTPRICE = "spotprice";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(AMBERELECTRIC_THING);
 }

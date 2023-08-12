@@ -10,9 +10,13 @@
 
 		<channels>
 			<channel id="elecprice" typeId="amberelectric-elecprice"/>
+			<channel id="elecstatus" typeId="amberelectric-elecstatus"/>
+			<channel id="clprice" typeId="amberelectric-clprice"/>
+			<channel id="clstatus" typeId="amberelectric-clstatus"/>
+			<channel id="feedinprice" typeId="amberelectric-feedinprice"/>
+			<channel id="feedinstatus" typeId="amberelectric-feedinstatus"/>
 			<channel id="nemtime" typeId="amberelectric-nemtime"/>
 			<channel id="spike" typeId="amberelectric-spike"/>
-			<channel id="spotprice" typeId="amberelectric-spotprice"/>
 			<channel id="renewables" typeId="amberelectric-renewables"/>
 		</channels>
 
@@ -38,6 +42,36 @@
 		<item-type>Number</item-type>
 		<label>Current Electricity Price</label>
 		<description>Current price to import power from the grid</description>
+		<state readOnly="true" pattern="%.1f c/kWh"/>
+	</channel-type>
+	<channel-type id="amberelectric-clprice">
+		<item-type>Number</item-type>
+		<label>Current Controlled Load Price</label>
+		<description>Current price to import power for Controlled Load</description>
+		<state readOnly="true" pattern="%.1f c/kWh"/>
+	</channel-type>
+	<channel-type id="amberelectric-feedinprice">
+		<item-type>Number</item-type>
+		<label>Current Feed-In Price</label>
+		<description>Current price to export power to the grid</description>
+		<state readOnly="true" pattern="%.1f c/kWh"/>
+	</channel-type>
+	<channel-type id="amberelectric-elecstatus">
+		<item-type>String</item-type>
+		<label>Current Electricity Status</label>
+		<description>Current price status of grid import</description>
+		<state readOnly="true" pattern="%d c/kWh"/>
+	</channel-type>
+	<channel-type id="amberelectric-clstatus">
+		<item-type>String</item-type>
+		<label>Current Controlled Load Status</label>
+		<description>Current price status of Controlled Load</description>
+		<state readOnly="true" pattern="%d c/kWh"/>
+	</channel-type>
+	<channel-type id="amberelectric-feedinstatus">
+		<item-type>String</item-type>
+		<label>Current Feed-In Status</label>
+		<description>Current price status of Feed-In</description>
 		<state readOnly="true" pattern="%d c/kWh"/>
 	</channel-type>
 	<channel-type id="amberelectric-nemtime">
@@ -57,12 +91,6 @@
 		<label>Energy Price Spike</label>
 		<description>Report if the grid has a current price spike</description>
 		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="amberelectric-spotprice">
-		<item-type>Number</item-type>
-		<label>Current Spot Price</label>
-		<description>Current price to export power to the grid</description>
-		<state readOnly="true" pattern="%d c/kWh"/>
 	</channel-type>
 
 </thing:thing-descriptions>

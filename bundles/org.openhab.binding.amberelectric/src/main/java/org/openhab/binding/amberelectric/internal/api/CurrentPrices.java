@@ -28,9 +28,13 @@ import com.google.gson.JsonParser;
 public class CurrentPrices {
     private static Logger LOGGER = LoggerFactory.getLogger(CurrentPrices.class);
 
-    public Double perKwh;
+    public Double elecPerKwh;
+    public Double clPerKwh;
+    public Double feedInPerKwh;
+    public String elecStatus;
+    public String clStatus;
+    public String feedInStatus;
     public Double renewables;
-    public Double spotPerKwh;
     public String spikeStatus;
     public String nemTime;
 
@@ -44,11 +48,23 @@ public class CurrentPrices {
         JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
         CurrentPrices currentprices = new CurrentPrices();
         currentprices.nemTime = jsonObject.get("nemTime").getAsString();
-        currentprices.perKwh = jsonObject.get("perKwh").getAsDouble();
         currentprices.renewables = jsonObject.get("renewables").getAsDouble();
-        currentprices.spotPerKwh = jsonObject.get("spotPerKwh").getAsDouble();
         currentprices.spikeStatus = jsonObject.get("spikeStatus").getAsString();
-
+        for (int i = 0; i < jsonArray.size(); i++) {
+            jsonObject = jsonArray.get(i).getAsJsonObject();
+            if ("general".equals(jsonObject.get("channelType").getAsString())) {
+                currentprices.elecPerKwh = jsonObject.get("perKwh").getAsDouble();
+                currentprices.elecStatus = jsonObject.get("descriptor").getAsString();
+            }
+            if ("feedIn".equals(jsonObject.get("channelType").getAsString())) {
+                currentprices.feedInPerKwh = jsonObject.get("perKwh").getAsDouble();
+                currentprices.feedInStatus = jsonObject.get("descriptor").getAsString();
+            }
+            if ("controlledLoad".equals(jsonObject.get("channelType").getAsString())) {
+                currentprices.clPerKwh = jsonObject.get("perKwh").getAsDouble();
+                currentprices.clStatus = jsonObject.get("descriptor").getAsString();
+            }
+        }
         return currentprices;
     }
 }

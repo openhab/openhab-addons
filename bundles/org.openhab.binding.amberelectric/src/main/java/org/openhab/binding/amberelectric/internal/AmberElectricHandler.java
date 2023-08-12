@@ -123,13 +123,23 @@ public class AmberElectricHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         if (currentPrices != null) {
             updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECPRICE,
-                    new DecimalType(currentPrices.perKwh));
+                    new DecimalType(currentPrices.elecPerKwh));
+            if (currentPrices.clPerKwh != null) {
+                updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLPRICE,
+                        new DecimalType(currentPrices.clPerKwh));
+                updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLSTATUS,
+                        new StringType(currentPrices.clStatus));
+            }
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINPRICE,
+                    new DecimalType(currentPrices.feedInPerKwh));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECSTATUS,
+                    new StringType(currentPrices.elecStatus));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINSTATUS,
+                    new StringType(currentPrices.feedInStatus));
             updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_NEMTIME,
                     new StringType(currentPrices.nemTime));
             updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_RENEWABLES,
                     new DecimalType(currentPrices.renewables));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPOTPRICE,
-                    new DecimalType(currentPrices.spotPerKwh));
             switch (currentPrices.spikeStatus) {
                 case "none":
                     updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.OFF);
