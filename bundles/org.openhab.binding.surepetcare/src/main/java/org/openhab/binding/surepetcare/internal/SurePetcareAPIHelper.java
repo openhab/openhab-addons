@@ -109,7 +109,8 @@ public class SurePetcareAPIHelper {
             setConnectionHeaders(request);
             request.content(new StringContentProvider(SurePetcareConstants.GSON
                     .toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString()))));
-            ContentResponse response = request.timeout(SurePetcareConstants.DEFAULT_HTTP_TIMEOUT, TimeUnit.SECONDS).send();
+            ContentResponse response = request.timeout(SurePetcareConstants.DEFAULT_HTTP_TIMEOUT, TimeUnit.SECONDS)
+                    .send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                 SurePetcareLoginResponse loginResponse = SurePetcareConstants.GSON
                         .fromJson(response.getContentAsString(), SurePetcareLoginResponse.class);
@@ -451,7 +452,8 @@ public class SurePetcareAPIHelper {
         while (retries > 0) {
             try {
                 setConnectionHeaders(request);
-                ContentResponse response = request.timeout(SurePetcareConstants.DEFAULT_HTTP_TIMEOUT, TimeUnit.SECONDS).send();
+                ContentResponse response = request.timeout(SurePetcareConstants.DEFAULT_HTTP_TIMEOUT, TimeUnit.SECONDS)
+                        .send();
                 if ((response.getStatus() == HttpURLConnection.HTTP_OK)
                         || (response.getStatus() == HttpURLConnection.HTTP_CREATED)) {
                     return response;
