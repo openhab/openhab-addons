@@ -175,21 +175,23 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
         config.headers.removeIf(String::isBlank);
 
         // configure authentication
-        if (!config.username.isEmpty() || !config.password.isEmpty()) {
-            try {
-                AuthenticationStore authStore = rateLimitedHttpClient.getAuthenticationStore();
-                URI uri = new URI(config.baseURL);
-                Authentication.Result authResult = authStore.findAuthenticationResult(uri);
-                if (authResult != null) {
-                    authStore.removeAuthenticationResult(authResult);
+        try {
+            AuthenticationStore authStore = rateLimitedHttpClient.getAuthenticationStore();
+            URI uri = new URI(config.baseURL);
+
+            // clear old auths if available
+            Authentication.Result authResult = authStore.findAuthenticationResult(uri);
+            if (authResult != null) {
+                authStore.removeAuthenticationResult(authResult);
+            }
+            for (String authType : List.of("Basic", "Digest")) {
+                Authentication authentication = authStore.findAuthentication(authType, uri, Authentication.ANY_REALM);
+                if (authentication != null) {
+                    authStore.removeAuthentication(authentication);
                 }
-                for (String authType : List.of("Basic", "Digest")) {
-                    Authentication authentication = authStore.findAuthentication(authType, uri,
-                            Authentication.ANY_REALM);
-                    if (authentication != null) {
-                        authStore.removeAuthentication(authentication);
-                    }
-                }
+            }
+
+            if (!config.username.isEmpty() || !config.password.isEmpty()) {
                 switch (config.authMode) {
                     case BASIC_PREEMPTIVE:
                         config.headers.add("Authorization=Basic " + Base64.getEncoder()
@@ -219,12 +221,11 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
                         logger.warn("Unknown authentication method '{}' for thing '{}'", config.authMode,
                                 thing.getUID());
                 }
-            } catch (URISyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "failed to create authentication: baseUrl is invalid");
+            } else {
+                logger.debug("No authentication configured for thing '{}'", thing.getUID());
             }
-        } else {
-            logger.debug("No authentication configured for thing '{}'", thing.getUID());
+        } catch (URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot create URI from baseUrl.");
         }
 
         // create channels
