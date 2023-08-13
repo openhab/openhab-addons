@@ -58,14 +58,17 @@ public class RefreshingUrlCache {
     private final Map<String, String> headers;
     private final HttpMethod httpMethod;
     private final String httpContent;
+    private final @Nullable String httpContentType;
     private final HttpStatusListener httpStatusListener;
 
     private final ScheduledFuture<?> future;
     private @Nullable ChannelHandlerContent lastContent;
 
     public RefreshingUrlCache(ScheduledExecutorService executor, RateLimitedHttpClient httpClient, String url,
-            boolean escapedUrl, HttpThingConfig thingConfig, String httpContent,
-            HttpStatusListener httpStatusListener) {
+            boolean escapedUrl, HttpThingConfig thingConfig, String httpContent, @Nullable String httpContentType,
+            HttpStatusListener httpStatusListener)
+
+    {
         this.httpClient = httpClient;
         this.url = url;
         this.escapedUrl = escapedUrl;
@@ -75,6 +78,7 @@ public class RefreshingUrlCache {
         this.httpMethod = thingConfig.stateMethod;
         this.headers = thingConfig.getHeaders();
         this.httpContent = httpContent;
+        this.httpContentType = httpContentType;
         this.httpStatusListener = httpStatusListener;
         fallbackEncoding = thingConfig.encoding;
 
@@ -98,7 +102,7 @@ public class RefreshingUrlCache {
             URI uri = escapedUrl ? URI.create(formattedUrl) : Util.uriFromString(formattedUrl);
             logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
-            httpClient.newRequest(uri, httpMethod, httpContent, null).thenAccept(request -> {
+            httpClient.newRequest(uri, httpMethod, httpContent, httpContentType).thenAccept(request -> {
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
                 headers.forEach(request::header);
 

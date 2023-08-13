@@ -318,10 +318,9 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
             // we need a key consisting of stateContent and URL, only if both are equal, we can use the same cache
             String key = channelConfig.stateContent + "$" + stateUrl;
             channelUrls.put(channelUID, key);
-            Objects.requireNonNull(
-                    urlHandlers.computeIfAbsent(key,
-                            k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl,
-                                    channelConfig.escapedUrl, config, channelConfig.stateContent, this)))
+            Objects.requireNonNull(urlHandlers.computeIfAbsent(key,
+                    k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl, channelConfig.escapedUrl,
+                            config, channelConfig.stateContent, config.contentType, this)))
                     .addConsumer(channelHandler::process);
         }
 

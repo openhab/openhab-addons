@@ -205,7 +205,7 @@ public class RateLimitedHttpClient {
          */
         public void completeFuture(HttpClient httpClient) {
             Request request = httpClient.newRequest(finalUrl).method(method);
-            if (method != HttpMethod.GET && !content.isEmpty()) {
+            if ((method == HttpMethod.POST || method == HttpMethod.PUT) && !content.isEmpty()) {
                 if (contentType == null) {
                     request.content(new StringContentProvider(content));
                 } else {
