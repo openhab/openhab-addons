@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -178,6 +179,17 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
             try {
                 AuthenticationStore authStore = rateLimitedHttpClient.getAuthenticationStore();
                 URI uri = new URI(config.baseURL);
+                Authentication.Result authResult = authStore.findAuthenticationResult(uri);
+                if (authResult != null) {
+                    authStore.removeAuthenticationResult(authResult);
+                }
+                for (String authType : List.of("Basic", "Digest")) {
+                    Authentication authentication = authStore.findAuthentication(authType, uri,
+                            Authentication.ANY_REALM);
+                    if (authentication != null) {
+                        authStore.removeAuthentication(authentication);
+                    }
+                }
                 switch (config.authMode) {
                     case BASIC_PREEMPTIVE:
                         config.headers.add("Authorization=Basic " + Base64.getEncoder()
