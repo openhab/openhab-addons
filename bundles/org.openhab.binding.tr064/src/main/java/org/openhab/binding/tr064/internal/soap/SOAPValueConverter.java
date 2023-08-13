@@ -244,7 +244,7 @@ public class SOAPValueConverter {
     @SuppressWarnings("unused")
     private State processTamListURL(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
         try {
-            ContentResponse response = httpClient.newRequest(state.toString()).timeout(timeout, TimeUnit.MILLISECONDS)
+            ContentResponse response = httpClient.newRequest(state.toString()).timeout(timeout, TimeUnit.SECONDS)
                     .send();
             String responseContent = response.getContentAsString();
             int messageCount = responseContent.split("<New>1</New>").length - 1;
