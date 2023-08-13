@@ -126,41 +126,38 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         try {
             HttpClient client = httpClient;
 
-            if (client != null) {
-                Request req = client.newRequest(url);
-                ContentResponse response = req.send();
+            Request req = client.newRequest(url);
+            ContentResponse response = req.send();
 
-                // Get component List
-                String componentListString = new String(response.getContent());
+            // Get component List
+            String componentListString = new String(response.getContent());
 
-                JsonParser parser = new JsonParser();
+            JsonParser parser = new JsonParser();
 
-                JsonElement jsonTree = parser.parse(componentListString);
+            JsonElement jsonTree = parser.parse(componentListString);
 
-                // check the output
-                if (jsonTree.isJsonObject()) {
-                    JsonObject jsonObject = jsonTree.getAsJsonObject();
+            // check the output
+            if (jsonTree.isJsonObject()) {
+                JsonObject jsonObject = jsonTree.getAsJsonObject();
 
-                    // Get the main object
-                    JsonElement listOfComponents = jsonObject.get(sysApUID);
+                // Get the main object
+                JsonElement listOfComponents = jsonObject.get(sysApUID);
 
-                    if (listOfComponents != null) {
-                        JsonArray array = listOfComponents.getAsJsonArray();
+                if (listOfComponents != null) {
+                    JsonArray array = listOfComponents.getAsJsonArray();
 
-                        this.numberOfComponents = array.size();
+                    this.numberOfComponents = array.size();
 
-                        for (int i = 0; i < array.size(); i++) {
-                            JsonElement basicElement = array.get(i);
+                    for (int i = 0; i < array.size(); i++) {
+                        JsonElement basicElement = array.get(i);
 
-                            listOfComponentId.add(basicElement.getAsString());
-                        }
-
-                        ret = true;
+                        listOfComponentId.add(basicElement.getAsString());
                     }
+
+                    ret = true;
                 }
-            } else {
-                ret = false;
             }
+
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Error to build up the Component list [ {} ]", e.getMessage());
 
@@ -185,32 +182,29 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         String url = baseUrl + "/rest/device/" + sysApUID + "/" + id;
         try {
             HttpClient client = httpClient;
+            Request req = client.newRequest(url);
+            ContentResponse response;
+            response = req.send();
 
-            if (client != null) {
-                Request req = client.newRequest(url);
-                ContentResponse response;
-                response = req.send();
+            // Get component List
+            String deviceString = new String(response.getContent());
 
-                // Get component List
-                String deviceString = new String(response.getContent());
+            JsonParser parser = new JsonParser();
 
-                JsonParser parser = new JsonParser();
+            JsonElement jsonTree = parser.parse(deviceString);
 
-                JsonElement jsonTree = parser.parse(deviceString);
+            // check the output
+            if (jsonTree != null) {
+                if (jsonTree.isJsonObject()) {
+                    JsonObject jsonObject = jsonTree.getAsJsonObject();
 
-                // check the output
-                if (jsonTree != null) {
-                    if (jsonTree.isJsonObject()) {
-                        JsonObject jsonObject = jsonTree.getAsJsonObject();
+                    jsonObject = jsonObject.getAsJsonObject(sysApUID);
 
-                        jsonObject = jsonObject.getAsJsonObject(sysApUID);
+                    if (jsonObject != null) {
+                        jsonObject = jsonObject.getAsJsonObject("devices");
 
                         if (jsonObject != null) {
-                            jsonObject = jsonObject.getAsJsonObject("devices");
-
-                            if (jsonObject != null) {
-                                device = new FreeAtHomeDeviceDescription(jsonObject, id);
-                            }
+                            device = new FreeAtHomeDeviceDescription(jsonObject, id);
                         }
                     }
                 }
@@ -704,7 +698,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         }
 
         @Override
-        @SuppressWarnings("null")
         public void run() {
             // set initial connect delay to 0
             reconnectDelay.set(0);
