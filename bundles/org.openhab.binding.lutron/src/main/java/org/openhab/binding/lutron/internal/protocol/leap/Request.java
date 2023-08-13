@@ -91,12 +91,24 @@ public class Request {
         return request(CommuniqueType.READREQUEST, "/device");
     }
 
+    public static String getRA3Devices() {
+        return request(CommuniqueType.READREQUEST, "/device?where=IsThisDevice:false");
+    }
+
+    public static String getDevice(int deviceNumber) {
+        return request(CommuniqueType.READREQUEST, String.format("/device/%d", deviceNumber));
+    }
+
     public static String getVirtualButtons() {
         return request(CommuniqueType.READREQUEST, "/virtualbutton");
     }
 
     public static String getButtonGroups() {
         return request(CommuniqueType.READREQUEST, BUTTON_GROUP_URL);
+    }
+
+    public static String getProject() {
+        return request(CommuniqueType.READREQUEST, "/project");
     }
 
     public static String getAreas() {
@@ -117,5 +129,9 @@ public class Request {
 
     public static String subscribeOccupancyGroupStatus() {
         return request(CommuniqueType.SUBSCRIBEREQUEST, "/occupancygroup/status");
+    }
+
+    public static String subscribeZoneStatus() {
+        return request(CommuniqueType.SUBSCRIBEREQUEST, "/zone/status");
     }
 }
