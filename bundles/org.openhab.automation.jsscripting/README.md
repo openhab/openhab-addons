@@ -1319,11 +1319,11 @@ var { ON, OFF, QuantityType } = require("@runtime");
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `State`                 | [`org.openhab.core.types.State`](https://www.openhab.org/javadoc/latest/org/openhab/core/types/state)                                                 |
 | `Command`               | [`org.openhab.core.types.Command`](https://www.openhab.org/javadoc/latest/org/openhab/core/types/command)                                             |
-| `URLEncoder`            | [`java.net.URLEncoder`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URLEncoder.html)                                        |
-| `File`                  | [`java.io.File`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html)                                                      |
-| `Files`                 | [`java.nio.file.Files`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Files.html)                                        |
-| `Path`                  | [`java.nio.file.Path`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Path.html)                                          |
-| `Paths`                 | [`java.nio.file.Paths`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/file/Paths.html)                                        |
+| `URLEncoder`            | [`java.net.URLEncoder`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URLEncoder.html)                                        |
+| `File`                  | [`java.io.File`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html)                                                      |
+| `Files`                 | [`java.nio.file.Files`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Files.html)                                        |
+| `Path`                  | [`java.nio.file.Path`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html)                                          |
+| `Paths`                 | [`java.nio.file.Paths`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Paths.html)                                        |
 | `IncreaseDecreaseType`  | [`org.openhab.core.library.types.IncreaseDecreaseType`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/types/increasedecreasetype)   |
 | `DECREASE`              | `IncreaseDecreaseType` enum item                                                                                                                      |
 | `INCREASE`              | `IncreaseDecreaseType` enum item                                                                                                                      |
@@ -1367,10 +1367,10 @@ var { ON, OFF, QuantityType } = require("@runtime");
 | `MetricPrefix`          | [`org.openhab.core.library.unit.MetricPrefix`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/metricprefix)                     |
 | `Units`                 | [`org.openhab.core.library.unit.Units`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/units)                                   |
 | `BinaryPrefix`          | [`org.openhab.core.library.unit.BinaryPrefix`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/unit/binaryprefix)                     |
-| `ChronoUnit`            | [`java.time.temporal.ChronoUnit`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/temporal/ChronoUnit.html)                    |
-| `Duration`              | [`java.time.Duration`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html)                                          |
-| `ZoneId`                | [`java.time.ZoneId`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneId.html)                                              |
-| `ZonedDateTime`         | [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZonedDateTime.html)                                |
+| `ChronoUnit`            | [`java.time.temporal.ChronoUnit`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/temporal/ChronoUnit.html)                    |
+| `Duration`              | [`java.time.Duration`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html)                                          |
+| `ZoneId`                | [`java.time.ZoneId`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZoneId.html)                                              |
+| `ZonedDateTime`         | [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZonedDateTime.html)                                |
 
 `require("@runtime")` also defines "services" such as `items`, `things`, `rules`, `events`, `actions`, `ir`, `itemRegistry`.
 You can use these services for backwards compatibility purposes or ease migration from JSR223 scripts.
