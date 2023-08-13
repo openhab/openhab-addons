@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverter.ValueStateConverter;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
@@ -68,16 +67,14 @@ public class ChannelUpdateHandler {
         return true;
     }
 
-    public boolean registerChannel(@Nullable String deviceID, @Nullable String deviceChannel,
-            @Nullable String deviceDatapoint, FreeAtHomeDeviceHandler thingHandler, ChannelUID channelUID,
-            ValueStateConverter valueConverter) {
+    public boolean registerChannel(String deviceID, String deviceChannel, String deviceDatapoint,
+            FreeAtHomeDeviceHandler thingHandler, ChannelUID channelUID, ValueStateConverter valueConverter) {
         String eventDatapointID = new String(deviceID + "/" + deviceChannel + "/" + deviceDatapoint);
 
         return registerChannel(eventDatapointID, thingHandler, channelUID, valueConverter);
     }
 
-    public boolean unregisterChannel(@Nullable String deviceID, @Nullable String deviceChannel,
-            @Nullable String deviceDatapoint) {
+    public boolean unregisterChannel(String deviceID, String deviceChannel, String deviceDatapoint) {
         String eventDatapointID = new String(deviceID + "/" + deviceChannel + "/" + deviceDatapoint);
 
         return unregisterChannel(eventDatapointID);

@@ -32,10 +32,23 @@ public class PIdContainerClass {
     PIdContainerClass(String pValueType, String pCategory, String pMin, String pMax, String pLabel,
             String pDescription) {
         this.valueType = pValueType;
+
         this.category = pCategory;
-        this.min = 0;// Integer.getInteger(pMin);
-        this.max = 100;// Integer.getInteger(pMax);
+
+        if (pMax.isEmpty()) {
+            this.min = 0;
+        } else {
+            this.min = Integer.parseInt(pMin);
+        }
+
+        if (pMax.isEmpty()) {
+            this.max = 100;
+        } else {
+            this.max = Integer.parseInt(pMax);
+        }
+
         this.label = pLabel;
+
         this.descprition = pDescription;
     }
 }

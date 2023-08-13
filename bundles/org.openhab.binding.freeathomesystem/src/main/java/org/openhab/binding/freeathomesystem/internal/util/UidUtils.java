@@ -32,7 +32,7 @@ public class UidUtils {
     public static ChannelGroupTypeUID generateChannelGroupTypeUID(String groupLabel) {
         String channelNameString;
 
-        channelNameString = groupLabel + "_channelgroupstype";
+        channelNameString = groupLabel + "-channelgroupstype";
 
         ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(BINDING_ID, channelNameString);
 
@@ -43,9 +43,9 @@ public class UidUtils {
         String channelNameString;
 
         if (isReadOnly) {
-            channelNameString = valueType + "_channeltype" + "_ro";
+            channelNameString = valueType + "-channeltype" + "_ro";
         } else {
-            channelNameString = valueType + "_channeltype";
+            channelNameString = valueType + "-channeltype";
         }
 
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelNameString);
