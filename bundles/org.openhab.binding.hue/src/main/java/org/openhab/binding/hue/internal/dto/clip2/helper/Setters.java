@@ -198,9 +198,9 @@ public class Setters {
     }
 
     /**
-     * Setter for Effect field:
-     * Use the given command value to set the target 'effects' or 'timedEffects' resource DTO value based on the
-     * attributes of the source resource (if any).
+     * Setter for fixed or timed effect field:
+     * Use the given command value to set the target fixed or timed effects resource DTO value based on the attributes
+     * of the source resource (if any).
      *
      * @param target the target resource.
      * @param command the new state command should be a StringType.
@@ -210,18 +210,14 @@ public class Setters {
      */
     public static Resource setEffect(Resource target, Command command, @Nullable Resource source) {
         if ((command instanceof StringType) && Objects.nonNull(source)) {
-            EffectType effectType = EffectType.of(((StringType) command).toString());
-            Effects sourceEffects = source.getEffects();
-            if (Objects.nonNull(sourceEffects)) {
-                if (sourceEffects.allows(effectType)) {
-                    target.setEffects(new Effects().setEffect(effectType));
-                }
+            EffectType commandEffectType = EffectType.of(((StringType) command).toString());
+            Effects sourceFixedEffects = source.getFixedEffects();
+            if (Objects.nonNull(sourceFixedEffects) && sourceFixedEffects.allows(commandEffectType)) {
+                target.setFixedEffects(new Effects().setEffect(commandEffectType));
             }
             TimedEffects sourceTimedEffects = source.getTimedEffects();
-            if (Objects.nonNull(sourceTimedEffects)) {
-                if (sourceTimedEffects.allows(effectType)) {
-                    target.setTimedEffects((TimedEffects) new TimedEffects().setEffect(effectType));
-                }
+            if (Objects.nonNull(sourceTimedEffects) && sourceTimedEffects.allows(commandEffectType)) {
+                target.setTimedEffects((TimedEffects) new TimedEffects().setEffect(commandEffectType));
             }
         }
         return target;
@@ -299,35 +295,41 @@ public class Setters {
         if (Objects.isNull(targetAlerts) && Objects.nonNull(sourceAlerts)) {
             target.setAlerts(sourceAlerts);
         }
-        // effects
-        Effects targetEffects = target.getEffects();
-        Effects sourceEffects = source.getEffects();
-        if (Objects.isNull(targetEffects) && Objects.nonNull(sourceEffects)) {
-            targetEffects = sourceEffects;
-            target.setEffects(sourceEffects);
-            targetEffects = target.getEffects();
+        // fixed effects
+        Effects targetFixedEffects = target.getFixedEffects();
+        Effects sourceFixedEffects = source.getFixedEffects();
+        if (Objects.isNull(targetFixedEffects) && Objects.nonNull(sourceFixedEffects)) {
+            target.setFixedEffects(sourceFixedEffects);
+            targetFixedEffects = target.getFixedEffects();
         }
-        // effects values
-        List<String> targetStatusValues = Objects.nonNull(targetEffects) ? targetEffects.getStatusValues() : null;
-        List<String> sourceStatusValues = Objects.nonNull(sourceEffects) ? sourceEffects.getStatusValues() : null;
-        if (Objects.isNull(targetStatusValues) && Objects.nonNull(sourceStatusValues)) {
-            targetEffects = Objects.nonNull(targetEffects) ? targetEffects : new Effects();
-            targetEffects.setStatusValues(sourceStatusValues);
+        // fixed effects values
+        List<String> targetFixedStatusValues = Objects.nonNull(targetFixedEffects)
+                ? targetFixedEffects.getStatusValues()
+                : null;
+        List<String> sourceFixedStatusValues = Objects.nonNull(sourceFixedEffects)
+                ? sourceFixedEffects.getStatusValues()
+                : null;
+        if (Objects.isNull(targetFixedStatusValues) && Objects.nonNull(sourceFixedStatusValues)) {
+            targetFixedEffects = Objects.nonNull(targetFixedEffects) ? targetFixedEffects : new Effects();
+            targetFixedEffects.setStatusValues(sourceFixedStatusValues);
         }
         // timed effects
-        TimedEffects tgtTimedEffects = target.getTimedEffects();
-        TimedEffects srcTimedEffects = source.getTimedEffects();
-        if (Objects.isNull(tgtTimedEffects) && Objects.nonNull(srcTimedEffects)) {
-            tgtTimedEffects = srcTimedEffects;
-            target.setTimedEffects(srcTimedEffects);
-            tgtTimedEffects = target.getTimedEffects();
+        TimedEffects targetTimedEffects = target.getTimedEffects();
+        TimedEffects sourceTimedEffects = source.getTimedEffects();
+        if (Objects.isNull(targetTimedEffects) && Objects.nonNull(sourceTimedEffects)) {
+            target.setTimedEffects(sourceTimedEffects);
+            targetTimedEffects = target.getTimedEffects();
         }
         // timed effects values
-        List<String> tgtTimedStatusValues = Objects.nonNull(tgtTimedEffects) ? tgtTimedEffects.getStatusValues() : null;
-        List<String> srcTimedStatusValues = Objects.nonNull(srcTimedEffects) ? srcTimedEffects.getStatusValues() : null;
-        if (Objects.isNull(tgtTimedStatusValues) && Objects.nonNull(srcTimedStatusValues)) {
-            tgtTimedEffects = Objects.nonNull(tgtTimedEffects) ? tgtTimedEffects : new TimedEffects();
-            tgtTimedEffects.setStatusValues(srcTimedStatusValues);
+        List<String> targetTimedStatusValues = Objects.nonNull(targetTimedEffects)
+                ? targetTimedEffects.getStatusValues()
+                : null;
+        List<String> sourceTimedStatusValues = Objects.nonNull(sourceTimedEffects)
+                ? sourceTimedEffects.getStatusValues()
+                : null;
+        if (Objects.isNull(targetTimedStatusValues) && Objects.nonNull(sourceTimedStatusValues)) {
+            targetTimedEffects = Objects.nonNull(targetTimedEffects) ? targetTimedEffects : new TimedEffects();
+            targetTimedEffects.setStatusValues(sourceTimedStatusValues);
         }
         return target;
     }

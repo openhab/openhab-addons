@@ -321,7 +321,7 @@ public class Resource {
         return UnDefType.NULL;
     }
 
-    public @Nullable Effects getEffects() {
+    public @Nullable Effects getFixedEffects() {
         return effects;
     }
 
@@ -598,7 +598,7 @@ public class Resource {
         return this;
     }
 
-    public Resource setEffects(Effects effect) {
+    public Resource setFixedEffects(Effects effect) {
         this.effects = effect;
         return this;
     }

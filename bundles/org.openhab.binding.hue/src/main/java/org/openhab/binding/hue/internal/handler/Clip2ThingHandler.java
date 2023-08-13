@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -944,25 +945,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Process the incoming Resource to initialize the effects resp. timed effects channel.
+     * Process the incoming Resource to initialize the fixed resp. timed effects channel.
      *
-     * @param resource a Resource possibly containing an effects or timed effects element or both.
+     * @param resource a Resource possibly containing a fixed and/or timed effects element.
      */
     public void updateEffectChannel(Resource resource) {
-        Set<StateOption> stateOptions = new HashSet<>();
-        Effects effects = resource.getEffects();
-        if (Objects.nonNull(effects)) {
-            stateOptions.addAll(effects.getStatusValues().stream().map(effect -> EffectType.of(effect).name())
-                    .map(effectId -> new StateOption(effectId, effectId)).collect(Collectors.toList()));
-        }
+        Effects fixedEffects = resource.getFixedEffects();
         TimedEffects timedEffects = resource.getTimedEffects();
-        if (Objects.nonNull(timedEffects)) {
-            stateOptions.addAll(timedEffects.getStatusValues().stream().map(effect -> EffectType.of(effect).name())
-                    .map(effectId -> new StateOption(effectId, effectId)).collect(Collectors.toList()));
-        }
+        List<StateOption> stateOptions = Stream
+                .concat(Objects.nonNull(fixedEffects) ? fixedEffects.getStatusValues().stream() : Stream.empty(),
+                        Objects.nonNull(timedEffects) ? timedEffects.getStatusValues().stream() : Stream.empty())
+                .map(effect -> {
+                    String effectName = EffectType.of(effect).name();
+                    return new StateOption(effectName, effectName);
+                }).distinct().collect(Collectors.toList());
         if (!stateOptions.isEmpty()) {
-            stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT),
-                    List.copyOf(stateOptions));
+            stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT), stateOptions);
             logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
         }
     }
