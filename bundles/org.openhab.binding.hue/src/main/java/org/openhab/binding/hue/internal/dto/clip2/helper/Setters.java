@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.dto.clip2.helper;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
@@ -217,7 +218,9 @@ public class Setters {
             }
             TimedEffects sourceTimedEffects = source.getTimedEffects();
             if (Objects.nonNull(sourceTimedEffects) && sourceTimedEffects.allows(commandEffectType)) {
-                target.setTimedEffects((TimedEffects) new TimedEffects().setEffect(commandEffectType));
+                Duration duration = sourceTimedEffects.getDuration();
+                target.setTimedEffects(((TimedEffects) new TimedEffects().setEffect(commandEffectType))
+                        .setDuration(Objects.nonNull(duration) ? duration : TimedEffects.DEFAULT_DURATION));
             }
         }
         return target;
@@ -241,96 +244,93 @@ public class Setters {
         if (Objects.isNull(targetOnOff) && Objects.nonNull(sourceOnOff)) {
             target.setOnState(sourceOnOff);
         }
+
         // dimming
         Dimming targetDimming = target.getDimming();
         Dimming sourceDimming = source.getDimming();
         if (Objects.isNull(targetDimming) && Objects.nonNull(sourceDimming)) {
             target.setDimming(sourceDimming);
             targetDimming = target.getDimming();
+        } // minimum dimming level
+        if (Objects.nonNull(targetDimming)) {
+            Double sourceMinDimLevel = Objects.isNull(sourceDimming) ? null : sourceDimming.getMinimumDimmingLevel();
+            if (Objects.nonNull(sourceMinDimLevel)) {
+                targetDimming.setMinimumDimmingLevel(sourceMinDimLevel);
+            }
         }
-        // minimum dimming level
-        Double targetMinDimmingLevel = Objects.nonNull(targetDimming) ? targetDimming.getMinimumDimmingLevel() : null;
-        Double sourceMinDimmingLevel = Objects.nonNull(sourceDimming) ? sourceDimming.getMinimumDimmingLevel() : null;
-        if (Objects.isNull(targetMinDimmingLevel) && Objects.nonNull(sourceMinDimmingLevel)) {
-            targetDimming = Objects.nonNull(targetDimming) ? targetDimming : new Dimming();
-            targetDimming.setMinimumDimmingLevel(sourceMinDimmingLevel);
-        }
+
         // color
         ColorXy targetColor = target.getColorXy();
         ColorXy sourceColor = source.getColorXy();
         if (Objects.isNull(targetColor) && Objects.nonNull(sourceColor)) {
             target.setColorXy(sourceColor);
             targetColor = target.getColorXy();
-        }
-        // color gamut
-        Gamut targetGamut = Objects.nonNull(targetColor) ? targetColor.getGamut() : null;
-        Gamut sourceGamut = Objects.nonNull(sourceColor) ? sourceColor.getGamut() : null;
-        if (Objects.isNull(targetGamut) && Objects.nonNull(sourceGamut)) {
-            targetColor = Objects.nonNull(targetColor) ? targetColor : new ColorXy();
+        } // color gamut
+        Gamut sourceGamut = Objects.isNull(sourceColor) ? null : sourceColor.getGamut();
+        if (Objects.nonNull(targetColor) && Objects.nonNull(sourceGamut)) {
             targetColor.setGamut(sourceGamut);
         }
+
         // color temperature
         ColorTemperature targetColorTemp = target.getColorTemperature();
         ColorTemperature sourceColorTemp = source.getColorTemperature();
         if (Objects.isNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
             target.setColorTemperature(sourceColorTemp);
             targetColorTemp = target.getColorTemperature();
+        } // mirek schema
+        if (Objects.nonNull(targetColorTemp)) {
+            MirekSchema sourceMirekSchema = Objects.isNull(sourceColorTemp) ? null : sourceColorTemp.getMirekSchema();
+            if (Objects.nonNull(sourceMirekSchema)) {
+                targetColorTemp.setMirekSchema(sourceMirekSchema);
+            }
         }
-        // mirek schema
-        MirekSchema targetMirekSchema = Objects.nonNull(targetColorTemp) ? targetColorTemp.getMirekSchema() : null;
-        MirekSchema sourceMirekSchema = Objects.nonNull(sourceColorTemp) ? sourceColorTemp.getMirekSchema() : null;
-        if (Objects.isNull(targetMirekSchema) && Objects.nonNull(sourceMirekSchema)) {
-            targetColorTemp = Objects.nonNull(targetColorTemp) ? targetColorTemp : new ColorTemperature();
-            targetColorTemp.setMirekSchema(sourceMirekSchema);
-        }
+
         // metadata
         MetaData targetMetaData = target.getMetaData();
         MetaData sourceMetaData = source.getMetaData();
         if (Objects.isNull(targetMetaData) && Objects.nonNull(sourceMetaData)) {
             target.setMetadata(sourceMetaData);
         }
+
         // alerts
         Alerts targetAlerts = target.getAlerts();
         Alerts sourceAlerts = source.getAlerts();
         if (Objects.isNull(targetAlerts) && Objects.nonNull(sourceAlerts)) {
             target.setAlerts(sourceAlerts);
         }
+
         // fixed effects
         Effects targetFixedEffects = target.getFixedEffects();
         Effects sourceFixedEffects = source.getFixedEffects();
         if (Objects.isNull(targetFixedEffects) && Objects.nonNull(sourceFixedEffects)) {
             target.setFixedEffects(sourceFixedEffects);
             targetFixedEffects = target.getFixedEffects();
+        } // fixed effects allowed values
+        if (Objects.nonNull(targetFixedEffects)) {
+            List<String> values = Objects.isNull(sourceFixedEffects) ? List.of() : sourceFixedEffects.getStatusValues();
+            if (!values.isEmpty()) {
+                targetFixedEffects.setStatusValues(values);
+            }
         }
-        // fixed effects values
-        List<String> targetFixedStatusValues = Objects.nonNull(targetFixedEffects)
-                ? targetFixedEffects.getStatusValues()
-                : null;
-        List<String> sourceFixedStatusValues = Objects.nonNull(sourceFixedEffects)
-                ? sourceFixedEffects.getStatusValues()
-                : null;
-        if (Objects.isNull(targetFixedStatusValues) && Objects.nonNull(sourceFixedStatusValues)) {
-            targetFixedEffects = Objects.nonNull(targetFixedEffects) ? targetFixedEffects : new Effects();
-            targetFixedEffects.setStatusValues(sourceFixedStatusValues);
-        }
+
         // timed effects
         TimedEffects targetTimedEffects = target.getTimedEffects();
         TimedEffects sourceTimedEffects = source.getTimedEffects();
         if (Objects.isNull(targetTimedEffects) && Objects.nonNull(sourceTimedEffects)) {
             target.setTimedEffects(sourceTimedEffects);
             targetTimedEffects = target.getTimedEffects();
+        } // timed effects allowed values and duration
+        if (Objects.nonNull(targetTimedEffects)) {
+            List<String> values = Objects.isNull(sourceTimedEffects) ? List.of() : sourceTimedEffects.getStatusValues();
+            if (!values.isEmpty()) {
+                targetTimedEffects.setStatusValues(values);
+            }
+            Duration duration = Objects.isNull(sourceTimedEffects) ? null : sourceTimedEffects.getDuration();
+            if (Objects.nonNull(duration)) {
+                targetTimedEffects.setDuration(duration);
+            }
         }
-        // timed effects values
-        List<String> targetTimedStatusValues = Objects.nonNull(targetTimedEffects)
-                ? targetTimedEffects.getStatusValues()
-                : null;
-        List<String> sourceTimedStatusValues = Objects.nonNull(sourceTimedEffects)
-                ? sourceTimedEffects.getStatusValues()
-                : null;
-        if (Objects.isNull(targetTimedStatusValues) && Objects.nonNull(sourceTimedStatusValues)) {
-            targetTimedEffects = Objects.nonNull(targetTimedEffects) ? targetTimedEffects : new TimedEffects();
-            targetTimedEffects.setStatusValues(sourceTimedStatusValues);
-        }
+
         return target;
     }
 }

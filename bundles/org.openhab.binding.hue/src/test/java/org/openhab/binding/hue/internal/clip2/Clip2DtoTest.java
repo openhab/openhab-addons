@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -632,7 +633,7 @@ class Clip2DtoTest {
         resultEffect = target.getFixedEffects();
         assertNotNull(resultEffect);
         assertNotEquals(EffectType.SPARKLE, resultEffect.getEffect());
-        assertEquals(2, resultEffect.getStatusValues().size());
+        assertEquals(3, resultEffect.getStatusValues().size());
 
         // partly valid source fixed effects
         source = new Resource(ResourceType.LIGHT).setFixedEffects(new Effects().setStatusValues(List.of("SPARKLE"))
@@ -670,15 +671,18 @@ class Clip2DtoTest {
         assertEquals(2, resultEffect.getStatusValues().size());
 
         // valid but different source and target timed effects
-        source = new Resource(ResourceType.LIGHT).setTimedEffects((TimedEffects) new TimedEffects()
-                .setStatusValues(List.of("NO_EFFECT", "SPARKLE", "CANDLE")).setEffect(EffectType.SPARKLE));
+        source = new Resource(ResourceType.LIGHT)
+                .setTimedEffects((TimedEffects) new TimedEffects().setDuration(Duration.ofMinutes(11))
+                        .setStatusValues(List.of("NO_EFFECT", "SPARKLE", "CANDLE")).setEffect(EffectType.SPARKLE));
         target = new Resource(ResourceType.LIGHT).setTimedEffects((TimedEffects) new TimedEffects()
                 .setStatusValues(List.of("NO_EFFECT", "FIRE")).setEffect(EffectType.FIRE));
         Setters.setResource(target, source);
         resultEffect = target.getTimedEffects();
         assertNotNull(resultEffect);
         assertNotEquals(EffectType.SPARKLE, resultEffect.getEffect());
-        assertEquals(2, resultEffect.getStatusValues().size());
+        assertEquals(3, resultEffect.getStatusValues().size());
+        assertTrue(resultEffect instanceof TimedEffects);
+        assertEquals(Duration.ofMinutes(11), ((TimedEffects) resultEffect).getDuration());
 
         // partly valid source timed effects
         source = new Resource(ResourceType.LIGHT).setTimedEffects((TimedEffects) new TimedEffects()
@@ -691,5 +695,21 @@ class Clip2DtoTest {
         assertEquals(0, resultEffect.getStatusValues().size());
         assertFalse(resultEffect.allows(EffectType.SPARKLE));
         assertFalse(resultEffect.allows(EffectType.NO_EFFECT));
+        assertTrue(resultEffect instanceof TimedEffects);
+        assertNull(((TimedEffects) resultEffect).getDuration());
+
+        target.setTimedEffectsDuration(Duration.ofSeconds(22));
+        assertEquals(Duration.ofSeconds(22), ((TimedEffects) resultEffect).getDuration());
+
+        // source timed effect with duration
+        source = new Resource(ResourceType.LIGHT)
+                .setTimedEffects((TimedEffects) new TimedEffects().setDuration(Duration.ofMillis(44))
+                        .setStatusValues(List.of("SUNRISE")).setEffect(EffectType.SUNRISE).setStatusValues(List.of()));
+        target = new Resource(ResourceType.LIGHT);
+        Setters.setResource(target, source);
+        resultEffect = target.getTimedEffects();
+        assertNotNull(resultEffect);
+        assertTrue(resultEffect instanceof TimedEffects);
+        assertEquals(Duration.ofMillis(44), ((TimedEffects) resultEffect).getDuration());
     }
 }

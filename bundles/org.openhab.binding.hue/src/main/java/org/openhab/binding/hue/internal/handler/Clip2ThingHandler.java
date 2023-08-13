@@ -99,7 +99,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             THING_TYPE_ZONE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
-    private static final Duration DEFAULT_TIMED_EFFECT_DURATION = Duration.ofMinutes(15);
 
     private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
 
@@ -350,8 +349,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_EFFECT:
-                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache)
-                        .setTimedEffectsDuration(DEFAULT_TIMED_EFFECT_DURATION).setOnOff(OnOffType.ON);
+                putResource = Setters.setEffect(new Resource(lightResourceType), command, cache).setOnOff(OnOffType.ON);
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
