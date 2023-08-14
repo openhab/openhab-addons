@@ -306,7 +306,6 @@ public class VolumioHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-
         String hostname = (String) getThing().getConfiguration().get(VolumioBindingConstants.CONFIG_PROPERTY_HOSTNAME);
         int port = ((BigDecimal) getThing().getConfiguration().get(VolumioBindingConstants.CONFIG_PROPERTY_PORT))
                 .intValueExact();
