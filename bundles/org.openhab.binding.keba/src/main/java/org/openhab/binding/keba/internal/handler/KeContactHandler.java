@@ -528,8 +528,8 @@ public class KeContactHandler extends BaseThingHandler {
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> value = ((QuantityType<?>) command).toUnit("mA");
+                    if (command instanceof QuantityType<?> commandAsQuantityType) {
+                        QuantityType<?> value = commandAsQuantityType.toUnit("mA");
 
                         transceiver.send(
                                 "curr " + String.valueOf(Math.min(Math.max(6000, value.intValue()), maxSystemCurrent)),
@@ -549,8 +549,8 @@ public class KeContactHandler extends BaseThingHandler {
                             newValue = maxSystemCurrent;
                         } else if (command == OnOffType.OFF) {
                             newValue = 6000;
-                        } else if (command instanceof QuantityType<?>) {
-                            QuantityType<?> value = ((QuantityType<?>) command).toUnit("%");
+                        } else if (command instanceof QuantityType<?> commandAsQuantityType) {
+                            QuantityType<?> value = commandAsQuantityType.toUnit("%");
                             newValue = Math.round(6000 + (maxSystemCurrent - 6000) * value.doubleValue() / 100.0);
                         } else {
                             return;
@@ -596,8 +596,8 @@ public class KeContactHandler extends BaseThingHandler {
                     break;
                 }
                 case CHANNEL_SETENERGY: {
-                    if (command instanceof QuantityType<?>) {
-                        QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.WATT_HOUR);
+                    if (command instanceof QuantityType<?> commandAsQuantityType) {
+                        QuantityType<?> value = commandAsQuantityType.toUnit(Units.WATT_HOUR);
                         transceiver.send(
                                 "setenergy " + String.valueOf(
                                         Math.min(Math.max(0, Math.round(value.doubleValue() * 10.0)), 999999999)),
