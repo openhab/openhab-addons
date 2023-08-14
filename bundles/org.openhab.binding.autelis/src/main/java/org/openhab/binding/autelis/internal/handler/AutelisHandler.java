@@ -214,8 +214,8 @@ public class AutelisHandler extends BaseThingHandler {
                         value = 0;
                     } else if (command == OnOffType.ON) {
                         value = 1;
-                    } else if (command instanceof DecimalType) {
-                        value = ((DecimalType) command).intValue();
+                    } else if (command instanceof DecimalType commandAsDecimalType) {
+                        value = commandAsDecimalType.intValue();
                         if (!isJandy() && value >= 3) {
                             // this is an autelis dim type. not sure what 2 does
                             cmd = "dim";
