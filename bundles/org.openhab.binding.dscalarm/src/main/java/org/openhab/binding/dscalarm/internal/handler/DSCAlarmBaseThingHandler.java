@@ -150,8 +150,8 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
 
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof DSCAlarmBaseBridgeHandler) {
-                this.dscAlarmBridgeHandler = (DSCAlarmBaseBridgeHandler) handler;
+            if (handler instanceof DSCAlarmBaseBridgeHandler dscAlarmBridgeHandler) {
+                this.dscAlarmBridgeHandler = dscAlarmBridgeHandler;
             } else {
                 logger.debug("getDSCAlarmBridgeHandler(): Unable to get bridge handler!");
             }
