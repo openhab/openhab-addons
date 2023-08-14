@@ -15,7 +15,8 @@ package org.openhab.binding.denonmarantz.internal;
 import org.openhab.core.types.State;
 
 /**
- * Interface to notify the {@link org.openhab.binding.denonmarantz.internal.handler.DenonMarantzHandler} about state changes.
+ * Interface to notify the {@link org.openhab.binding.denonmarantz.internal.handler.DenonMarantzHandler} about state
+ * changes.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  *

@@ -13,7 +13,8 @@
 package org.openhab.binding.denonmarantz.internal.connector.telnet;
 
 /**
- * Listener interface used to notify the {@link org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector} about received messages over Telnet
+ * Listener interface used to notify the
+ * {@link org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector} about received messages over Telnet
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  *
