@@ -225,12 +225,11 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         }
 
         if (hasColorChannel) {
-            listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID), colorValue.getChannelState());
+            listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
         } else if (brightnessChannel != null) {
-            listener.updateChannelState(new ChannelUID(getGroupUID(), BRIGHTNESS_CHANNEL_ID),
-                    brightnessValue.getChannelState());
+            listener.updateChannelState(buildChannelUID(BRIGHTNESS_CHANNEL_ID), brightnessValue.getChannelState());
         } else {
-            listener.updateChannelState(new ChannelUID(getGroupUID(), ON_OFF_CHANNEL_ID), onOffValue.getChannelState());
+            listener.updateChannelState(buildChannelUID(ON_OFF_CHANNEL_ID), onOffValue.getChannelState());
         }
     }
 }
