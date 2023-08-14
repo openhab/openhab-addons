@@ -306,7 +306,6 @@ public class VolumioHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        VolumioService volumioLocal = volumio;
 
         String hostname = (String) getThing().getConfiguration().get(VolumioBindingConstants.CONFIG_PROPERTY_HOSTNAME);
         int port = ((BigDecimal) getThing().getConfiguration().get(VolumioBindingConstants.CONFIG_PROPERTY_PORT))
@@ -325,6 +324,14 @@ public class VolumioHandler extends BaseThingHandler {
             logger.debug("Trying to connect to Volumio on {}://{}:{}", protocol, hostname, port);
             try {
                 volumio = new VolumioService(protocol, hostname, port, timeout);
+                VolumioService volumioLocal = volumio;
+                if (volumioLocal == null) {
+                    if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Error during volumio service initialization.");
+                    }
+                    return;
+                }
                 clearChannels();
                 bindDefaultListener();
                 updateStatus(ThingStatus.OFFLINE);
