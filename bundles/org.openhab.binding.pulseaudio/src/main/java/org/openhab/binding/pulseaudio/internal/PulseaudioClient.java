@@ -637,7 +637,6 @@ public class PulseaudioClient {
                         lc++;
                         if (retRead > 0) {
                             String line = new String(buff, 0, retRead);
-                            // System.out.println("'"+line+"'");
                             if (line.endsWith(">>> ") && lc > 1) {
                                 result += line.substring(0, line.length() - 4);
                                 break;

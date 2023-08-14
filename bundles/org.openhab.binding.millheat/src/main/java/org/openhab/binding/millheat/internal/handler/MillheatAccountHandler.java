@@ -362,7 +362,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
 
         return req.header("Connection", "Keep-Alive").header("X-Zc-Major-Domain", "seanywell")
                 .header("X-Zc-Msg-Name", "millService").header("X-Zc-Sub-Domain", "milltype").header("X-Zc-Seq-Id", "1")
-                .header("X-Zc-Version", "1").method(HttpMethod.POST).timeout(5, TimeUnit.SECONDS)
+                .header("X-Zc-Version", "1").method(HttpMethod.POST).timeout(30, TimeUnit.SECONDS)
                 .content(new BytesContentProvider(gson.toJson(payload).getBytes(StandardCharsets.UTF_8)), CONTENT_TYPE);
     }
 

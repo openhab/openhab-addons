@@ -36,7 +36,7 @@ Fragment-Host: org.openhab.binding.hue
 	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
 	org.eclipse.jdt.annotation;version='[2.2.100,2.2.101)',\
 	javax.jmdns;version='[3.5.8,3.5.9)',\
-	org.jupnp;version='[2.7.0,2.7.1)',\
+	org.jupnp;version='[2.7.1,2.7.2)',\
 	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
 	ch.qos.logback.core;version='[1.2.11,1.2.12)',\
 	biz.aQute.tester.junit-platform;version='[6.4.0,6.4.1)',\
@@ -86,4 +86,6 @@ Fragment-Host: org.openhab.binding.hue
 	org.openhab.core.io.transport.mdns;version='[4.1.0,4.1.1)',\
 	org.openhab.core.test;version='[4.1.0,4.1.1)',\
 	org.openhab.core.thing;version='[4.1.0,4.1.1)',\
-	org.openhab.core.transform;version='[4.1.0,4.1.1)'
+	org.openhab.core.transform;version='[4.1.0,4.1.1)',\
+	org.openhab.base-fixes;version='[1.0.0,1.0.1)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'
