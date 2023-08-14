@@ -16,6 +16,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,15 +44,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EnvoyEntrezConnector extends EnvoyConnector {
 
-    private static final String SESSION_ID = "sessionId";
+    // private static final String SESSION = "session";
     private static final String HTTPS = "https://";
     private static final String LOGIN_URL = "/auth/check_jwt";
-    private static final Object SESSION_ID_COOKIE_NAME = SESSION_ID;
+    private static final String SESSION_COOKIE_NAME = "session";
 
     private final Logger logger = LoggerFactory.getLogger(EnvoyEntrezConnector.class);
 
     private final EntrezConnector entrezConnector;
 
+    private @Nullable String sessionKey;
     private @Nullable String sessionId;
     private String jwt = "";
     private Instant jwtExpirationTime = Instant.now();
@@ -96,7 +98,7 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
             sessionId = getNewSessionId();
         }
         logger.trace("Retrieving data from '{}' with sessionID '{}'", request.getURI(), sessionId);
-        request.cookie(new HttpCookie(SESSION_ID, sessionId));
+        request.cookie(new HttpCookie(sessionKey, sessionId));
     }
 
     private boolean checkSessionId() {
@@ -106,7 +108,7 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
         final URI uri = URI.create(HTTPS + configuration.hostname + LOGIN_URL);
 
         final Request request = httpClient.newRequest(uri).method(HttpMethod.GET)
-                .cookie(new HttpCookie(SESSION_ID, this.sessionId)).timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                .cookie(new HttpCookie(sessionKey, this.sessionId)).timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         final ContentResponse response;
 
         try {
@@ -158,11 +160,18 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
             final List<HttpCookie> cookies = HttpCookie.parse(response.getHeaders().get(HttpHeader.SET_COOKIE));
 
             for (final HttpCookie c : cookies) {
-                if (SESSION_ID_COOKIE_NAME.equals(c.getName())) {
+                final String cookieKey = String.valueOf(c.getName());
+
+                if (SESSION_COOKIE_NAME.startsWith(cookieKey.toLowerCase(Locale.ROOT))) {
                     logger.debug("Got SessionID: {}", c.getValue());
+                    sessionKey = cookieKey;
                     return c.getValue();
                 }
             }
+            logger.debug(
+                    "Failed to find cookie with the JWT token from the Enphase portal. Maybe Enphase changed the website.");
+            throw new EntrezJwtInvalidException(
+                    "Unable to obtain jwt key from Ephase website. Manully configuring the JWT might make it work. Please report this issue.");
         }
         logger.debug("Failed to login to Envoy. Evoy returned status: {}. Response from Envoy: {}",
                 response.getStatus(), response.getContentAsString());
