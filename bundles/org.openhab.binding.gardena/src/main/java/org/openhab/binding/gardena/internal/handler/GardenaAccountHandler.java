@@ -279,11 +279,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 continue;
             }
             final ThingHandler thingHandler = gardenaThing.getHandler();
-            if (!(thingHandler instanceof GardenaThingHandler)) {
+            if (!(thingHandler instanceof GardenaThingHandler gardenaThingHandler)) {
                 logger.debug("Handler for thingUID:{} is not a 'GardenaThingHandler' ({})", thingUID, thingHandler);
                 continue;
             }
-            final GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) thingHandler;
             try {
                 gardenaThingHandler.updateProperties(device);
                 for (Channel channel : gardenaThing.getChannels()) {
