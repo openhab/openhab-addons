@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.ConfigurableService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -97,9 +98,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Modified
     protected void modified(Map<String, ?> config) {
-        Object injectionEnabled = config.get(CFG_INJECTION_ENABLED);
-        this.injectionEnabled = injectionEnabled == null || (boolean) injectionEnabled;
-        Object useIncludedLibrary = config.get(CFG_USE_INCLUDED_LIBRARY);
-        this.useIncludedLibrary = useIncludedLibrary == null || (boolean) useIncludedLibrary;
+        this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Boolean.class, true);
+        this.useIncludedLibrary = ConfigParser.valueAsOrElse(config.get(CFG_USE_INCLUDED_LIBRARY), Boolean.class, true);
     }
 }

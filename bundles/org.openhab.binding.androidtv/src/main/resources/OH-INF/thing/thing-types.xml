@@ -56,17 +56,25 @@
 				<label>Keystore Password</label>
 				<description>Password for the keystore file</description>
 			</parameter>
-			<parameter name="reconnect" type="integer">
+			<parameter name="reconnect" type="integer" min="0">
 				<label>Reconnect Delay</label>
 				<description>Delay between reconnection attempts</description>
+				<default>60</default>
 			</parameter>
-			<parameter name="heartbeat" type="integer">
-				<label>Hearbeat Frequency</label>
+			<parameter name="heartbeat" type="integer" min="0">
+				<label>Heartbeat Frequency</label>
 				<description>Frequency of heartbeats</description>
+				<default>5</default>
 			</parameter>
-			<parameter name="delay" type="integer">
+			<parameter name="delay" type="integer" min="0">
 				<label>Delay</label>
 				<description>Delay between messages</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="gtvEnabled" type="boolean">
+				<label>Enable GoogleTV</label>
+				<description>Enable the GoogleTV Protocol</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 
@@ -119,17 +127,25 @@
 				<label>Keystore Password</label>
 				<description>Password for the keystore file</description>
 			</parameter>
-			<parameter name="reconnect" type="integer">
+			<parameter name="reconnect" type="integer" min="0">
 				<label>Reconnect Delay</label>
 				<description>Delay between reconnection attempts</description>
+				<default>60</default>
 			</parameter>
-			<parameter name="heartbeat" type="integer">
+			<parameter name="heartbeat" type="integer" min="0">
 				<label>Heartbeat Frequency</label>
 				<description>Frequency of heartbeats</description>
+				<default>5</default>
 			</parameter>
-			<parameter name="delay" type="integer">
+			<parameter name="delay" type="integer" min="0">
 				<label>Delay</label>
 				<description>Delay between messages</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="gtvEnabled" type="boolean">
+				<label>Enable GoogleTV</label>
+				<description>Enable the GoogleTV Protocol</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 

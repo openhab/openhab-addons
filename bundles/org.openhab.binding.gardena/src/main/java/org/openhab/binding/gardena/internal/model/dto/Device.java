@@ -113,38 +113,37 @@ public class Device {
     public void setDataItem(DataItem<?> dataItem) throws GardenaException {
         if (dataItem instanceof DeviceDataItem) {
             // ignore
-        } else if (dataItem instanceof LocationDataItem) {
-            LocationDataItem locationDataItem = (LocationDataItem) dataItem;
+        } else if (dataItem instanceof LocationDataItem locationDataItem) {
             Location locationAttributes = locationDataItem.attributes;
             if (locationAttributes != null) {
                 location = locationAttributes.name;
             }
-        } else if (dataItem instanceof CommonServiceDataItem) {
-            common = (CommonServiceDataItem) dataItem;
-        } else if (dataItem instanceof MowerServiceDataItem) {
-            mower = (MowerServiceDataItem) dataItem;
-        } else if (dataItem instanceof PowerSocketServiceDataItem) {
-            powerSocket = (PowerSocketServiceDataItem) dataItem;
-        } else if (dataItem instanceof SensorServiceDataItem) {
-            sensor = (SensorServiceDataItem) dataItem;
-        } else if (dataItem instanceof ValveSetServiceDataItem) {
-            valveSet = (ValveSetServiceDataItem) dataItem;
-        } else if (dataItem instanceof ValveServiceDataItem) {
+        } else if (dataItem instanceof CommonServiceDataItem commonServiceItem) {
+            common = commonServiceItem;
+        } else if (dataItem instanceof MowerServiceDataItem mowerServiceItemm) {
+            mower = mowerServiceItemm;
+        } else if (dataItem instanceof PowerSocketServiceDataItem powerSocketItem) {
+            powerSocket = powerSocketItem;
+        } else if (dataItem instanceof SensorServiceDataItem sensorServiceItem) {
+            sensor = sensorServiceItem;
+        } else if (dataItem instanceof ValveSetServiceDataItem valveSetServiceItem) {
+            valveSet = valveSetServiceItem;
+        } else if (dataItem instanceof ValveServiceDataItem valveServiceItem) {
             String valveNumber = StringUtils.substringAfterLast(dataItem.id, ":");
             if ("".equals(valveNumber) || "wc".equals(valveNumber) || "0".equals(valveNumber)) {
-                valve = (ValveServiceDataItem) dataItem;
+                valve = valveServiceItem;
             } else if ("1".equals(valveNumber)) {
-                valveOne = (ValveServiceDataItem) dataItem;
+                valveOne = valveServiceItem;
             } else if ("2".equals(valveNumber)) {
-                valveTwo = (ValveServiceDataItem) dataItem;
+                valveTwo = valveServiceItem;
             } else if ("3".equals(valveNumber)) {
-                valveThree = (ValveServiceDataItem) dataItem;
+                valveThree = valveServiceItem;
             } else if ("4".equals(valveNumber)) {
-                valveFour = (ValveServiceDataItem) dataItem;
+                valveFour = valveServiceItem;
             } else if ("5".equals(valveNumber)) {
-                valveFive = (ValveServiceDataItem) dataItem;
+                valveFive = valveServiceItem;
             } else if ("6".equals(valveNumber)) {
-                valveSix = (ValveServiceDataItem) dataItem;
+                valveSix = valveServiceItem;
             } else {
                 throw new GardenaException("Unknown valveNumber in dataItem with id: " + dataItem.id);
             }

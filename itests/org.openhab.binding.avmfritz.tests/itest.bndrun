@@ -55,7 +55,7 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.ops4j.pax.logging.pax-logging-api;version='[2.2.0,2.2.1)',\
 	org.ops4j.pax.web.pax-web-api;version='[8.0.15,8.0.16)',\
 	org.osgi.service.component;version='[1.5.0,1.5.1)',\
-	org.jupnp;version='[2.7.0,2.7.1)',\
+	org.jupnp;version='[2.7.1,2.7.2)',\
 	junit-jupiter-api;version='[5.9.2,5.9.3)',\
 	junit-jupiter-engine;version='[5.9.2,5.9.3)',\
 	junit-platform-commons;version='[1.9.2,1.9.3)',\
@@ -80,4 +80,6 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.openhab.core.io.net;version='[4.1.0,4.1.1)',\
 	org.openhab.core.test;version='[4.1.0,4.1.1)',\
 	org.openhab.core.thing;version='[4.1.0,4.1.1)',\
-	org.openhab.core.transform;version='[4.1.0,4.1.1)'
+	org.openhab.core.transform;version='[4.1.0,4.1.1)',\
+	org.openhab.base-fixes;version='[1.0.0,1.0.1)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'
