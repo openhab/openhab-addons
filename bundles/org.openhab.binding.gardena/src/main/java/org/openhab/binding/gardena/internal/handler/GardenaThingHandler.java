@@ -261,14 +261,14 @@ public class GardenaThingHandler extends BaseThingHandler {
         String commandName = channelUID.getIdWithoutGroup().toUpperCase();
         String groupId = channelUID.getGroupId();
         if (groupId != null) {
-            if (groupId.startsWith("valve") && groupId.endsWith("_commands")) {
+            if ("valveSet_commands".equals(groupId)) {
+                return new ValveSetCommand(ValveSetControl.valueOf(commandName));
+            } else if (groupId.startsWith("valve") && groupId.endsWith("_commands")) {
                 return new ValveCommand(ValveControl.valueOf(commandName),
                         getDevice().getLocalService(dataItemProperty).commandDuration);
             } else if ("mower_commands".equals(groupId)) {
                 return new MowerCommand(MowerControl.valueOf(commandName),
                         getDevice().getLocalService(dataItemProperty).commandDuration);
-            } else if ("valveSet_commands".equals(groupId)) {
-                return new ValveSetCommand(ValveSetControl.valueOf(commandName));
             } else if ("powerSocket_commands".equals(groupId)) {
                 return new PowerSocketCommand(PowerSocketControl.valueOf(commandName),
                         getDevice().getLocalService(dataItemProperty).commandDuration);

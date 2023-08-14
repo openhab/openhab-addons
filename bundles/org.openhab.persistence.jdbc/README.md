@@ -15,7 +15,7 @@ The following databases are currently supported and tested:
 | [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client) |
 | [MySQL](https://www.mysql.com/)              | [mysql-connector-j-8.0.33.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j) |
 | [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.3.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
-| [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.16.1.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc) |
+| [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.42.0.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc) |
 | [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.3.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
 
 ## Table of Contents
