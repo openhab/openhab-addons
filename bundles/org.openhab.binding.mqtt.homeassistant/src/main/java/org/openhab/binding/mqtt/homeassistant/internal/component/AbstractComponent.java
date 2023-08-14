@@ -181,7 +181,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     /**
      * Each HomeAssistant component corresponds to a Channel Group Type.
      */
-    protected @Nullable ChannelGroupTypeUID getGroupTypeUID() {
+    public @Nullable ChannelGroupTypeUID getGroupTypeUID() {
         return channelGroupTypeUID;
     }
 
