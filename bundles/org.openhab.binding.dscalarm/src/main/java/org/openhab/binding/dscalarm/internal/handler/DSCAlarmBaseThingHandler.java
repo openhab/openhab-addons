@@ -106,7 +106,7 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
                 logger.debug("initializeThingHandler(): Initialize Thing Handler - {}", thing.getUID());
 
                 for (Channel channel : channels) {
-                    if (channel.getAcceptedItemType().equals("DateTime")) {
+                    if ("DateTime".equals(channel.getAcceptedItemType())) {
                         updateChannel(channel.getUID(), 0, "0000010100");
                     } else {
                         updateChannel(channel.getUID(), 0, "");
