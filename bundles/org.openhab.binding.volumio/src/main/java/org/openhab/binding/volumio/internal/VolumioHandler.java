@@ -66,12 +66,12 @@ public class VolumioHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("channelUID: {}", channelUID);
+        VolumioService volumioLocal = volumio;
 
-        if (volumio == null) {
-            logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(), command);
+        if (volumioLocal == null) {
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle command.");
             }
             return;
         }
@@ -94,7 +94,7 @@ public class VolumioHandler extends BaseThingHandler {
                 case VolumioBindingConstants.CHANNEL_PLAY_RADIO_STREAM:
                     if (command instanceof StringType) {
                         final String uri = command.toFullString();
-                        volumio.replacePlay(uri, "Radio", VolumioServiceTypes.WEBRADIO);
+                        volumioLocal.replacePlay(uri, "Radio", VolumioServiceTypes.WEBRADIO);
                     }
 
                     break;
@@ -102,7 +102,7 @@ public class VolumioHandler extends BaseThingHandler {
                 case VolumioBindingConstants.CHANNEL_PLAY_URI:
                     if (command instanceof StringType) {
                         final String uri = command.toFullString();
-                        volumio.replacePlay(uri, "URI", VolumioServiceTypes.WEBRADIO);
+                        volumioLocal.replacePlay(uri, "URI", VolumioServiceTypes.WEBRADIO);
                     }
 
                     break;
@@ -110,7 +110,7 @@ public class VolumioHandler extends BaseThingHandler {
                 case VolumioBindingConstants.CHANNEL_PLAY_FILE:
                     if (command instanceof StringType) {
                         final String uri = command.toFullString();
-                        volumio.replacePlay(uri, "", VolumioServiceTypes.MPD);
+                        volumioLocal.replacePlay(uri, "", VolumioServiceTypes.MPD);
                     }
 
                     break;
@@ -118,13 +118,13 @@ public class VolumioHandler extends BaseThingHandler {
                 case VolumioBindingConstants.CHANNEL_PLAY_PLAYLIST:
                     if (command instanceof StringType) {
                         final String playlistName = command.toFullString();
-                        volumio.playPlaylist(playlistName);
+                        volumioLocal.playPlaylist(playlistName);
                     }
 
                     break;
                 case VolumioBindingConstants.CHANNEL_CLEAR_QUEUE:
                     if ((command instanceof OnOffType) && (command == OnOffType.ON)) {
-                        volumio.clearQueue();
+                        volumioLocal.clearQueue();
                         // Make it feel like a toggle button ...
                         updateState(channelUID, OnOffType.OFF);
                     }
@@ -132,18 +132,18 @@ public class VolumioHandler extends BaseThingHandler {
                 case VolumioBindingConstants.CHANNEL_PLAY_RANDOM:
                     if (command instanceof OnOffType) {
                         boolean enableRandom = command == OnOffType.ON;
-                        volumio.setRandom(enableRandom);
+                        volumioLocal.setRandom(enableRandom);
                     }
                     break;
                 case VolumioBindingConstants.CHANNEL_PLAY_REPEAT:
                     if (command instanceof OnOffType) {
                         boolean enableRepeat = command == OnOffType.ON;
-                        volumio.setRepeat(enableRepeat);
+                        volumioLocal.setRepeat(enableRepeat);
                     }
                     break;
                 case "REFRESH":
                     logger.debug("Called Refresh");
-                    volumio.getState();
+                    volumioLocal.getState();
                     break;
                 case VolumioBindingConstants.CHANNEL_SYSTEM_COMMAND:
                     if (command instanceof StringType) {
@@ -170,8 +170,18 @@ public class VolumioHandler extends BaseThingHandler {
     }
 
     private void sendSystemCommand(Command command) {
+        VolumioService volumioLocal = volumio;
+
+        if (volumioLocal == null) {
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle send system command.");
+            }
+            return;
+        }
+
         if (command instanceof StringType) {
-            volumio.sendSystemCommand(command.toString());
+            volumioLocal.sendSystemCommand(command.toString());
             updateState(VolumioBindingConstants.CHANNEL_SYSTEM_COMMAND, UnDefType.UNDEF);
         } else if (command.equals(RefreshType.REFRESH)) {
             updateState(VolumioBindingConstants.CHANNEL_SYSTEM_COMMAND, UnDefType.UNDEF);
@@ -188,18 +198,38 @@ public class VolumioHandler extends BaseThingHandler {
     }
 
     private void handleVolumeCommand(Command command) {
-        if (command instanceof PercentType) {
-            volumio.setVolume((PercentType) command);
+        VolumioService volumioLocal = volumio;
+
+        if (volumioLocal == null) {
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle volume command.");
+            }
+            return;
+        }
+
+        if (command instanceof PercentType commandAsPercentType) {
+            volumioLocal.setVolume(commandAsPercentType);
         } else if (command instanceof RefreshType) {
-            volumio.getState();
+            volumioLocal.getState();
         } else {
             logger.error("Command is not handled");
         }
     }
 
     private void handleStopCommand(Command command) {
+        VolumioService volumioLocal = volumio;
+
+        if (volumioLocal == null) {
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle stop command.");
+            }
+            return;
+        }
+
         if (command instanceof StringType) {
-            volumio.stop();
+            volumioLocal.stop();
             updateState(VolumioBindingConstants.CHANNEL_STOP, UnDefType.UNDEF);
         } else if (command.equals(RefreshType.REFRESH)) {
             updateState(VolumioBindingConstants.CHANNEL_STOP, UnDefType.UNDEF);
@@ -207,22 +237,31 @@ public class VolumioHandler extends BaseThingHandler {
     }
 
     private void handlePlaybackCommands(Command command) {
+        VolumioService volumioLocal = volumio;
+
+        if (volumioLocal == null) {
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized, cannot handle playback command.");
+            }
+            return;
+        }
         if (command instanceof PlayPauseType playPauseCmd) {
             switch (playPauseCmd) {
                 case PLAY:
-                    volumio.play();
+                    volumioLocal.play();
                     break;
                 case PAUSE:
-                    volumio.pause();
+                    volumioLocal.pause();
                     break;
             }
         } else if (command instanceof NextPreviousType nextPreviousType) {
             switch (nextPreviousType) {
                 case PREVIOUS:
-                    volumio.previous();
+                    volumioLocal.previous();
                     break;
                 case NEXT:
-                    volumio.next();
+                    volumioLocal.next();
                     break;
             }
         } else if (command instanceof RewindFastforwardType fastForwardType) {
@@ -233,7 +272,7 @@ public class VolumioHandler extends BaseThingHandler {
                     break;
             }
         } else if (command instanceof RefreshType) {
-            volumio.getState();
+            volumioLocal.getState();
         } else {
             logger.error("Command is not handled: {}", command);
         }
@@ -246,9 +285,19 @@ public class VolumioHandler extends BaseThingHandler {
      * - PUSH.STATE -
      */
     private void bindDefaultListener() {
-        volumio.on(Socket.EVENT_CONNECT, connectListener());
-        volumio.on(Socket.EVENT_DISCONNECT, disconnectListener());
-        volumio.on(VolumioEvents.PUSH_STATE, pushStateListener());
+        VolumioService volumioLocal = volumio;
+
+        if (volumioLocal == null) {
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Volumio service was not yet initialized.");
+            }
+            return;
+        }
+
+        volumioLocal.on(Socket.EVENT_CONNECT, connectListener());
+        volumioLocal.on(Socket.EVENT_DISCONNECT, disconnectListener());
+        volumioLocal.on(VolumioEvents.PUSH_STATE, pushStateListener());
     }
 
     /**
@@ -273,11 +322,12 @@ public class VolumioHandler extends BaseThingHandler {
         } else {
             logger.debug("Trying to connect to Volumio on {}://{}:{}", protocol, hostname, port);
             try {
-                volumio = new VolumioService(protocol, hostname, port, timeout);
+                VolumioService volumioLocal = new VolumioService(protocol, hostname, port, timeout);
+                volumio = volumioLocal;
                 clearChannels();
                 bindDefaultListener();
                 updateStatus(ThingStatus.OFFLINE);
-                volumio.connect();
+                volumioLocal.connect();
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -286,17 +336,18 @@ public class VolumioHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (volumio != null) {
+        VolumioService volumioLocal = volumio;
+        if (volumioLocal != null) {
             scheduler.schedule(() -> {
-                if (volumio.isConnected()) {
+                if (volumioLocal.isConnected()) {
                     logger.warn("Timeout during disconnect event");
                 } else {
-                    volumio.close();
+                    volumioLocal.close();
                 }
                 clearChannels();
             }, 30, TimeUnit.SECONDS);
 
-            volumio.disconnect();
+            volumioLocal.disconnect();
         }
     }
 
