@@ -43,11 +43,17 @@
 			</channel>
 			<channel id="powerflowautonomy" typeId="powerflow_rel_autonomy"/>
 			<channel id="powerflowselfconsumption" typeId="powerflow_rel_selfconsumption"/>
+			<channel id="powerflowinverterpower" typeId="inverterPower">
+				<label>Inverter Power</label>
+			</channel>
+			<channel id="powerflowinvertersoc" typeId="inverterSoc">
+				<label>State of Charge</label>
+			</channel>
 			<channel id="powerflowinverter1power" typeId="inverter1Power">
-				<label>Power Flow (Inverter 1)</label>
+				<label>Power Flow (Inverter 1) - DEPRECATED</label>
 			</channel>
 			<channel id="powerflowinverter1soc" typeId="inverter1Soc">
-				<label>State of Charge (Inverter 1)</label>
+				<label>State of Charge (Inverter 1) - DEPRECATED</label>
 			</channel>
 		</channels>
 
@@ -301,16 +307,28 @@
 		<description>The current relative self consumption in %, NULL if no smart meter is connected</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="inverterPower">
+		<item-type>Number:Power</item-type>
+		<label>Inverter Power</label>
+		<description>Inverter Power</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="inverterSoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Inverter State of Charge</label>
+		<description>Inverter State of Charge</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="inverter1Power">
 		<item-type>Number:Power</item-type>
-		<label>Inverter 1 Power</label>
-		<description>Inverter 1 Power</description>
+		<label>Inverter 1 Power (DEPRECATED)</label>
+		<description>Inverter 1 Power - DEPRECATED. Please use Inverter Power instead.</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="inverter1Soc">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Inverter 1 State of Charge</label>
-		<description>Inverter 1 State of Charge</description>
+		<label>Inverter 1 State of Charge (DEPRECATED)</label>
+		<description>Inverter 1 State of Charge - DEPRECATED. Please use Inverter State of Charge instead</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 

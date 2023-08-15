@@ -85,8 +85,8 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerflowchannelppv`                | Number:Power             | Solar Power (+ production)                                                                                        |
 | `powerflowautonomy`                  | Number:Dimensionless     | The current relative autonomy in %                                                                                |
 | `powerflowselfconsumption`           | Number:Dimensionless     | The current relative self consumption in %                                                                        |
-| `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import)                             |
-| `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent                                                                  |
+| `powerflowinverterpower`             | Number:Power             | Current power of the inverter, null if not running (+ produce/export, - consume/import)                           |
+| `powerflowinvertersoc`               | Number:Dimensionless     | Current state of charge of the inverter in percent                                                                |
 
 ### Channels for `meter` Thing
 
