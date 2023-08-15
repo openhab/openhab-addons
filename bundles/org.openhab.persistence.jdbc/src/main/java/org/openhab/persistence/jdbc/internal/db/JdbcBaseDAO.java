@@ -686,13 +686,17 @@ public class JdbcBaseDAO {
         } else if (item instanceof ImageItem) {
             return RawType.valueOf(objectAsString(v));
         } else if (item instanceof ContactItem || item instanceof PlayerItem || item instanceof SwitchItem) {
-            State state = TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v).trim());
+            State state = TypeParser.parseState(item.getAcceptedDataTypes(), objectAsString(v).trim());
             if (state == null) {
                 throw new UnsupportedOperationException("Unable to parse state for item " + item.toString());
             }
             return state;
         } else {
-            State state = TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v));
+            if (!(v instanceof String objectAsString)) {
+                throw new UnsupportedOperationException(
+                        "Type '" + v.getClass().getName() + "' is not supported for item " + item.toString());
+            }
+            State state = TypeParser.parseState(item.getAcceptedDataTypes(), objectAsString);
             if (state == null) {
                 throw new UnsupportedOperationException("Unable to parse state for item " + item.toString());
             }
@@ -703,33 +707,37 @@ public class JdbcBaseDAO {
     protected ZonedDateTime objectAsZonedDateTime(Object v) {
         if (v instanceof Long) {
             return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((Number) v).longValue()), ZoneId.systemDefault());
-        } else if (v instanceof java.sql.Date) {
-            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((java.sql.Date) v).getTime()), ZoneId.systemDefault());
-        } else if (v instanceof LocalDateTime) {
-            return ((LocalDateTime) v).atZone(ZoneId.systemDefault());
-        } else if (v instanceof Instant) {
-            return ((Instant) v).atZone(ZoneId.systemDefault());
-        } else if (v instanceof java.sql.Timestamp) {
-            return ((java.sql.Timestamp) v).toInstant().atZone(ZoneId.systemDefault());
-        } else if (v instanceof java.lang.String) {
-            return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(v.toString()).toInstant(),
+        } else if (v instanceof java.sql.Date objectAsDate) {
+            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsDate.getTime()), ZoneId.systemDefault());
+        } else if (v instanceof LocalDateTime objectAsLocalDateTime) {
+            return objectAsLocalDateTime.atZone(ZoneId.systemDefault());
+        } else if (v instanceof Instant objectAsInstant) {
+            return objectAsInstant.atZone(ZoneId.systemDefault());
+        } else if (v instanceof java.sql.Timestamp objectAsTimestamp) {
+            return objectAsTimestamp.toInstant().atZone(ZoneId.systemDefault());
+        } else if (v instanceof java.lang.String objectAsString) {
+            return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(objectAsString).toInstant(),
                     ZoneId.systemDefault());
         }
-        throw new UnsupportedOperationException("Date of type " + v.getClass().getName() + " is not supported");
+        throw new UnsupportedOperationException("Date of type '" + v.getClass().getName() + "' is not supported");
     }
 
     protected Integer objectAsInteger(Object v) {
         if (v instanceof Byte) {
             return ((Byte) v).intValue();
+        } else if (v instanceof Integer) {
+            return (Integer) v;
         }
-        return ((Integer) v).intValue();
+        throw new UnsupportedOperationException("Integer of type '" + v.getClass().getName() + "' is not supported");
     }
 
     protected String objectAsString(Object v) {
-        if (v instanceof byte[]) {
-            return new String((byte[]) v);
+        if (v instanceof byte[] objectAsBytes) {
+            return new String(objectAsBytes);
+        } else if (v instanceof String objectAsString) {
+            return objectAsString;
         }
-        return ((String) v);
+        throw new UnsupportedOperationException("String of type '" + v.getClass().getName() + "' is not supported");
     }
 
     public String getItemType(Item i) {
