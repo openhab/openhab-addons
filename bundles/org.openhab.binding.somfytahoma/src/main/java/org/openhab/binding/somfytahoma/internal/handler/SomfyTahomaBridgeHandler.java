@@ -195,7 +195,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.debug("Cannot start http client for: {}", thing.getBridgeUID().getId(), e);
+            logger.debug("Cannot start http client for: {}", thing.getUID(), e);
             return;
         }
         // Remove the WWWAuth protocol handler since Tahoma is not fully compliant
