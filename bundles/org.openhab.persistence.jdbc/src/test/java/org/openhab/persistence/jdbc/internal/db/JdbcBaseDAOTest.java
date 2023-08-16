@@ -24,10 +24,19 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.stream.Stream;
+
+import javax.measure.Quantity;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.core.items.Item;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
@@ -79,188 +88,72 @@ public class JdbcBaseDAOTest {
         filter = new FilterCriteria();
     }
 
-    @Test
-    void objectAsStateWhenNumberItemReturnsValidDecimalTypeForFloat() {
-        State decimalType = jdbcBaseDAO.objectAsState(new NumberItem("testNumberItem"), null, 7.3);
-        assertInstanceOf(DecimalType.class, decimalType);
-        assertEquals(DecimalType.valueOf("7.3"), decimalType);
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForObjectAsStateValid")
+    void objectAsStateReturnsValidStateForCompatibleType(Item item, Object value,
+            @Nullable Unit<? extends Quantity<?>> unit, Object expected) {
+        State actual = jdbcBaseDAO.objectAsState(item, unit, value);
+        assertInstanceOf(expected.getClass(), actual, item.getName());
+        assertEquals(expected, actual, item.getName());
     }
 
-    @Test
-    void objectAsStateWhenNumberItemReturnsValidQuantityTypeForUnitAndFloat() {
-        State quantityType = jdbcBaseDAO.objectAsState(new NumberItem("testNumberItem"), SIUnits.CELSIUS, 7.3);
-        assertInstanceOf(QuantityType.class, quantityType);
-        assertEquals(QuantityType.valueOf("7.3 °C"), quantityType);
+    private static Stream<Arguments> provideTestCasesForObjectAsStateValid() {
+        return Stream.of( //
+                Arguments.of(new ImageItem("String_ImageItem"),
+                        new RawType(new byte[0], "application/octet-stream").toFullString(), null,
+                        new RawType(new byte[0], "application/octet-stream")),
+                Arguments.of(new NumberItem("Float_NumberItem"), 7.3, null, DecimalType.valueOf("7.3")),
+                Arguments.of(new NumberItem("Float_NumberItem_Unit"), 7.3, SIUnits.CELSIUS,
+                        QuantityType.valueOf("7.3 °C")),
+                Arguments.of(new ContactItem("String_ContactItem"), "OPEN", null, OpenClosedType.OPEN),
+                Arguments.of(new PlayerItem("String_PlayerItem_Play"), "PLAY", null, PlayPauseType.PLAY),
+                Arguments.of(new PlayerItem("String_PlayerItem_Rewind"), "REWIND", null, RewindFastforwardType.REWIND),
+                Arguments.of(new CallItem("String_CallItem"), "0699222222,0179999998", null,
+                        StringListType.valueOf("0699222222,0179999998")),
+                Arguments.of(new StringItem("String_StringItem"), "String", null, StringType.valueOf("String")),
+                Arguments.of(new SwitchItem("String_SwitchItem"), "ON", null, OnOffType.ON),
+                Arguments.of(new DimmerItem("Integer_DimmerItem"), 52, null, PercentType.valueOf("52")),
+                Arguments.of(new RollershutterItem("Integer_RollershutterItem"), 39, null, PercentType.valueOf("39")),
+                Arguments.of(new ColorItem("CharArray_ColorItem"),
+                        new byte[] { (byte) '1', (byte) '8', (byte) '4', (byte) ',', (byte) '1', (byte) '0', (byte) '0',
+                                (byte) ',', (byte) '5', (byte) '2' },
+                        null, HSBType.valueOf("184,100,52")),
+                Arguments.of(new ColorItem("String_ColorItem"), "184,100,52", null, HSBType.valueOf("184,100,52")),
+                Arguments.of(new LocationItem("String_LocationItem"), "1,2,3", null, PointType.valueOf("1,2,3")),
+                Arguments.of(new DateTimeItem("Timestamp_DateTimeItem"),
+                        java.sql.Timestamp.valueOf("2021-02-01 23:30:02.049"), null,
+                        DateTimeType.valueOf("2021-02-01T23:30:02.049")),
+                Arguments.of(new DateTimeItem("LocalDateTime_DateTimeItem"),
+                        LocalDateTime.parse("2021-02-01T23:30:02.049"), null,
+                        DateTimeType.valueOf("2021-02-01T23:30:02.049")),
+                Arguments.of(new DateTimeItem("Long_DateTimeItem"), Long.valueOf("1612222202049"), null,
+                        new DateTimeType(ZonedDateTime.ofInstant(Instant.parse("2021-02-01T23:30:02.049Z"),
+                                ZoneId.systemDefault()))),
+                Arguments.of(new DateTimeItem("Date_DateTimeItem"), java.sql.Date.valueOf("2021-02-01"), null,
+                        DateTimeType.valueOf("2021-02-01T00:00:00.000")),
+                Arguments.of(new DateTimeItem("Instant_DateTimeItem"), Instant.parse("2021-02-01T23:30:02.049Z"), null,
+                        new DateTimeType(ZonedDateTime.ofInstant(Instant.parse("2021-02-01T23:30:02.049Z"),
+                                ZoneId.systemDefault()))),
+                Arguments.of(new DateTimeItem("String_DateTimeItem"), "2021-02-01 23:30:02.049", null,
+                        DateTimeType.valueOf("2021-02-01T23:30:02.049")));
     }
 
-    @Test
-    void objectAsStateWhenContactItemReturnsValidOpenClosedTypeForString() {
-        State openClosedType = jdbcBaseDAO.objectAsState(new ContactItem("testContactItem"), null, "OPEN");
-        assertInstanceOf(OpenClosedType.class, openClosedType);
-        assertThat(openClosedType, is(OpenClosedType.OPEN));
-    }
-
-    @Test
-    void objectAsStateWhenPlayerItemReturnsValidPlayPauseTypeForPlay() {
-        State playPauseType = jdbcBaseDAO.objectAsState(new PlayerItem("testPlayerItem"), null, "PLAY");
-        assertInstanceOf(PlayPauseType.class, playPauseType);
-        assertThat(playPauseType, is(PlayPauseType.PLAY));
-    }
-
-    @Test
-    void objectAsStateWhenPlayerItemReturnsValidRewindFastforwardTypeForRewind() {
-        State rewindFastforwardType = jdbcBaseDAO.objectAsState(new PlayerItem("testPlayerItem"), null, "REWIND");
-        assertInstanceOf(RewindFastforwardType.class, rewindFastforwardType);
-        assertThat(rewindFastforwardType, is(RewindFastforwardType.REWIND));
-    }
-
-    @Test
-    void objectAsStateWhenCallItemReturnsValidStringListTypeForWellFormattedString() {
-        State stringListType = jdbcBaseDAO.objectAsState(new CallItem("testCallItem"), null, "0699222222,0179999998");
-        assertInstanceOf(StringListType.class, stringListType);
-        assertEquals(StringListType.valueOf("0699222222,0179999998"), stringListType);
-    }
-
-    @Test
-    void objectAsStateWhenImageItemReturnsValidRawTypeForOctetStream() {
-        State expectedRawType = new RawType(new byte[0], "application/octet-stream");
-        State rawType = jdbcBaseDAO.objectAsState(new ImageItem("testImageItem"), null, expectedRawType.toFullString());
-        assertInstanceOf(RawType.class, rawType);
-        assertThat(rawType, is(expectedRawType));
-    }
-
-    @Test
-    void objectAsStateWhenStringItemReturnsValidStringTypeForString() {
-        State stringType = jdbcBaseDAO.objectAsState(new StringItem("testStringItem"), null, "String");
-        assertInstanceOf(StringType.class, stringType);
-        assertEquals(StringType.valueOf("String"), stringType);
-    }
-
-    @Test
-    void objectAsStateWhenSwitchItemReturnsValidOnOffTypeForString() {
-        State onOffType = jdbcBaseDAO.objectAsState(new SwitchItem("testSwitchItem"), null, "ON");
-        assertInstanceOf(OnOffType.class, onOffType);
-        assertThat(onOffType, is(OnOffType.ON));
-    }
-
-    @Test
-    void objectAsStateWhenSwitchItemThrowsUnsupportedOperationExceptionForInteger() {
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForObjectAsStateInvalid")
+    void objectAsStateThrowsUnsupportedOperationExceptionForIncompatibleType(Item item, Object value,
+            @Nullable Unit<? extends Quantity<?>> unit) {
         assertThrows(UnsupportedOperationException.class, () -> {
-            jdbcBaseDAO.objectAsState(new SwitchItem("testSwitchItem"), null, 1);
-        });
+            jdbcBaseDAO.objectAsState(item, unit, value);
+        }, item.getName());
     }
 
-    @Test
-    void objectAsStateWhenDimmerItemReturnsValidPercentTypeForInteger() {
-        State percentType = jdbcBaseDAO.objectAsState(new DimmerItem("testDimmerItem"), null, 52);
-        assertInstanceOf(PercentType.class, percentType);
-        assertEquals(PercentType.valueOf("52"), percentType);
-    }
-
-    @Test
-    void objectAsStateWhenRollershutterItemReturnsValidPercentTypeForInteger() {
-        State percentType = jdbcBaseDAO.objectAsState(new RollershutterItem("testRollershutterItem"), null, 39);
-        assertInstanceOf(PercentType.class, percentType);
-        assertEquals(PercentType.valueOf("39"), percentType);
-    }
-
-    @Test
-    void objectAsStateWhenRollershutterItemThrowsUnsupportedOperationExceptionForString() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            jdbcBaseDAO.objectAsState(new RollershutterItem("testRollershutterItem"), null, "39");
-        });
-    }
-
-    @Test
-    void objectAsStateWhenColorItemReturnsValidHSBTypeForWellFormattedCharArray() {
-        State hsbType = jdbcBaseDAO.objectAsState(new ColorItem("testColorItem"), null,
-                new byte[] { (byte) '1', (byte) '8', (byte) '4', (byte) ',', (byte) '1', (byte) '0', (byte) '0',
-                        (byte) ',', (byte) '5', (byte) '2' });
-        assertInstanceOf(HSBType.class, hsbType);
-        assertEquals(HSBType.valueOf("184,100,52"), hsbType);
-    }
-
-    @Test
-    void objectAsStateWhenColorItemReturnsValidHSBTypeForWellFormattedString() {
-        State hsbType = jdbcBaseDAO.objectAsState(new ColorItem("testColorItem"), null, "184,100,52");
-        assertInstanceOf(HSBType.class, hsbType);
-        assertEquals(HSBType.valueOf("184,100,52"), hsbType);
-    }
-
-    @Test
-    void objectAsStateWhenColorItemThrowsUnsupportedOperationExceptionForInteger() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            jdbcBaseDAO.objectAsState(new ColorItem("testColorItem"), null, 5);
-        });
-    }
-
-    @Test
-    void objectAsStateWhenLocationItemReturnsValidPointTypeForWellFormattedString() {
-        State pointType = jdbcBaseDAO.objectAsState(new LocationItem("testLocationItem"), null, "1,2,3");
-        assertInstanceOf(PointType.class, pointType);
-        assertEquals(PointType.valueOf("1,2,3"), pointType);
-    }
-
-    @Test
-    void objectAsStateWhenLocationItemThrowsUnsupportedOperationExceptionForIncompatibleTimestampType() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            jdbcBaseDAO.objectAsState(new LocationItem("testLocationItem"), null,
-                    java.sql.Timestamp.valueOf("2023-08-15 21:02:06"));
-        });
-    }
-
-    @Test
-    void objectAsStateReturnsValidDateTimeTypeForTimestamp() {
-        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
-                java.sql.Timestamp.valueOf("2021-02-01 23:30:02.049"));
-        assertInstanceOf(DateTimeType.class, dateTimeType);
-        assertEquals(DateTimeType.valueOf("2021-02-01T23:30:02.049"), dateTimeType);
-    }
-
-    @Test
-    void objectAsStateReturnsValidDateTimeTypeForLocalDateTime() {
-        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
-                LocalDateTime.parse("2021-02-01T23:30:02.049"));
-        assertInstanceOf(DateTimeType.class, dateTimeType);
-        assertEquals(DateTimeType.valueOf("2021-02-01T23:30:02.049"), dateTimeType);
-    }
-
-    @Test
-    void objectAsStateReturnsValidDateTimeTypeForLong() {
-        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
-                Long.valueOf("1612222202049"));
-        assertInstanceOf(DateTimeType.class, dateTimeType);
-        assertEquals(
-                new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.parse("2021-02-01T23:30:02.049Z"), ZoneId.systemDefault())),
-                dateTimeType);
-    }
-
-    @Test
-    void objectAsStateReturnsValidDateTimeTypeForSqlDate() {
-        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
-                java.sql.Date.valueOf("2021-02-01"));
-        assertInstanceOf(DateTimeType.class, dateTimeType);
-        assertEquals(DateTimeType.valueOf("2021-02-01T00:00:00.000"), dateTimeType);
-    }
-
-    @Test
-    void objectAsStateReturnsValidDateTimeTypeForInstant() {
-        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
-                Instant.parse("2021-02-01T23:30:02.049Z"));
-        assertInstanceOf(DateTimeType.class, dateTimeType);
-        assertEquals(
-                new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.parse("2021-02-01T23:30:02.049Z"), ZoneId.systemDefault())),
-                dateTimeType);
-    }
-
-    @Test
-    void objectAsStateReturnsValidDateTimeTypeForString() {
-        State dateTimeType = jdbcBaseDAO.objectAsState(new DateTimeItem("testDateTimeItem"), null,
-                "2021-02-01 23:30:02.049");
-        assertInstanceOf(DateTimeType.class, dateTimeType);
-        assertEquals(DateTimeType.valueOf("2021-02-01T23:30:02.049"), dateTimeType);
+    private static Stream<Arguments> provideTestCasesForObjectAsStateInvalid() {
+        return Stream.of( //
+                Arguments.of(new SwitchItem("Integer_SwitchItem"), 1, null),
+                Arguments.of(new RollershutterItem("String_RollershutterItem"), "39", null),
+                Arguments.of(new ColorItem("Integer_ColorItem"), 5, null), //
+                Arguments.of(new LocationItem("Timestamp_LocationItem"),
+                        java.sql.Timestamp.valueOf("2023-08-15 21:02:06"), null));
     }
 
     @Test
