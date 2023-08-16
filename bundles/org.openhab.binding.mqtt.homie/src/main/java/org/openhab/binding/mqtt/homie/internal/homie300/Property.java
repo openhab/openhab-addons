@@ -33,6 +33,7 @@ import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.OpenCloseValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
@@ -185,7 +186,11 @@ public class Property implements AttributeChanged {
 
         switch (attributes.datatype) {
             case boolean_:
-                value = new OnOffValue("true", "false");
+                if (attributes.settable) {
+                    value = new OnOffValue("true", "false");
+                } else {
+                    value = new OpenCloseValue("true", "false");
+                }
                 break;
             case color_:
                 if (attributes.format.equals("hsv")) {
