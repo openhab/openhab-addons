@@ -7,7 +7,7 @@
 	<channel-type id="frequency">
 		<item-type>Number:Frequency</item-type>
 		<label>Electric Frequency</label>
-		<description>Electric frequency of the input/output voltage of the inverter</description>
+		<description>Frequency of the electricity to/from the inverter</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Frequency</tag>
