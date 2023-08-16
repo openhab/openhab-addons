@@ -34,7 +34,7 @@
 	<channel-type id="raw-data-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw Data</label>
-		<description>Raw data retrieved from the system as a JSON</description>
+		<description>The raw JSON data retrieved from the inverter's Wi-Fi module.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
