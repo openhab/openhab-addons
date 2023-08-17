@@ -103,36 +103,52 @@ public class Response implements IResponse {
         byte highNibble = ParadoxUtil.getHighNibble(receivedCommand);
         RequestType requestType = request.getType();
 
-        // For EPROM and RAM messages received command must be 0x5x
-        if (requestType == RequestType.EPROM || requestType == RequestType.RAM) {
-            if (highNibble == 0x5) {
-                header = Arrays.copyOfRange(packetBytes, 0, 22);
-                payload = Arrays.copyOfRange(packetBytes, 22, packetBytes.length - 1);
-                return;
-            }
+        switch (requestType) {
+            // For EPROM and RAM messages received command must be 0x5x
+            case EPROM:
+            case RAM:
+                if (highNibble == 0x5) {
+                    header = Arrays.copyOfRange(packetBytes, 0, 22);
+                    payload = Arrays.copyOfRange(packetBytes, 22, packetBytes.length - 1);
+                    return;
+                }
+                break;
+
             // For logon sequence packets there are various commands but their high nibbles should be either 0x0, 0x1 or
             // 0x7
-        } else if (requestType == RequestType.LOGON_SEQUENCE) {
-            switch (highNibble) {
-                case 0x0:
-                case 0x1:
-                case 0x7:
+            case LOGON_SEQUENCE:
+                switch (highNibble) {
+                    case 0x0:
+                    case 0x1:
+                    case 0x7:
+                        header = Arrays.copyOfRange(packetBytes, 0, 16);
+                        payload = Arrays.copyOfRange(packetBytes, 16, packetBytes.length);
+                        return;
+                }
+                break;
+
+            case PARTITION_COMMAND:
+                if (highNibble == 0x4) {
                     header = Arrays.copyOfRange(packetBytes, 0, 16);
-                    payload = Arrays.copyOfRange(packetBytes, 16, packetBytes.length);
+                    payload = Arrays.copyOfRange(packetBytes, 16, 16 + packetBytes[1]);
+                    logger.debug("Received a valid response for partition command");
                     return;
-            }
-        } else if (requestType == RequestType.PARTITION_COMMAND) {
-            if (highNibble == 0x4) {
-                header = Arrays.copyOfRange(packetBytes, 0, 16);
-                payload = Arrays.copyOfRange(packetBytes, 16, 16 + packetBytes[1]);
-                logger.debug("Received valid response for partition command");
-                return;
-            }
+                }
+                break;
+
+            case ZONE_COMMAND:
+                if (highNibble == 0xD) {
+                    header = Arrays.copyOfRange(packetBytes, 0, 16);
+                    payload = Arrays.copyOfRange(packetBytes, 16, 16 + packetBytes[1]);
+                    logger.debug("Received a valid response for zone command");
+                    return;
+                }
+                break;
         }
 
         // All other cases are considered wrong results for the parser and are probably live events which cannot be
         // parsed currently
-        logger.debug("Message command not expected. Received command={}", receivedCommand);
+        logger.debug("Message command not expected. Received command={}", String.format("0x%08X", receivedCommand));
         header = null;
         payload = null;
     }

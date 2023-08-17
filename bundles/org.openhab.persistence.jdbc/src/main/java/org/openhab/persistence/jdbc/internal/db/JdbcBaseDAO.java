@@ -542,15 +542,15 @@ public class JdbcBaseDAO {
 
     protected String resolveTimeFilter(FilterCriteria filter, ZoneId timeZone) {
         String filterString = "";
-        if (filter.getBeginDate() != null) {
+        ZonedDateTime beginDate = filter.getBeginDate();
+        if (beginDate != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
-                    + "'";
+            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(beginDate.withZoneSameInstant(timeZone)) + "'";
         }
-        if (filter.getEndDate() != null) {
+        ZonedDateTime endDate = filter.getEndDate();
+        if (endDate != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
-                    + "'";
+            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(endDate.withZoneSameInstant(timeZone)) + "'";
         }
         return filterString;
     }

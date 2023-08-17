@@ -165,17 +165,14 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     public void initialize() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "trying to connect to gateway...");
 
-        ScheduledFuture<?> localConnectorTask = connectorTask;
-        if (localConnectorTask == null || localConnectorTask.isDone()) {
-            localConnectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    if (thing.getStatus() != ThingStatus.ONLINE) {
-                        initTransceiver();
-                    }
+        connectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                if (thing.getStatus() != ThingStatus.ONLINE) {
+                    initTransceiver();
                 }
-            }, 0, 60, TimeUnit.SECONDS);
-        }
+            }
+        }, 0, 60, TimeUnit.SECONDS);
     }
 
     private synchronized void initTransceiver() {
@@ -208,7 +205,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             }
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
-            localTransceiver.initilize();
+            localTransceiver.initialize();
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "starting rx thread...");
             localTransceiver.startReceiving(scheduler);
@@ -303,16 +300,16 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     @Override
     public synchronized void dispose() {
-        EnOceanTransceiver localTransceiver = transceiver;
-        if (localTransceiver != null) {
-            localTransceiver.shutDown();
-            transceiver = null;
+        EnOceanTransceiver transceiver = this.transceiver;
+        if (transceiver != null) {
+            transceiver.shutDown();
+            this.transceiver = null;
         }
 
-        ScheduledFuture<?> localConnectorTask = connectorTask;
-        if (localConnectorTask != null && !localConnectorTask.isDone()) {
-            localConnectorTask.cancel(true);
-            connectorTask = null;
+        ScheduledFuture<?> connectorTask = this.connectorTask;
+        if (connectorTask != null) {
+            connectorTask.cancel(true);
+            this.connectorTask = null;
         }
 
         super.dispose();

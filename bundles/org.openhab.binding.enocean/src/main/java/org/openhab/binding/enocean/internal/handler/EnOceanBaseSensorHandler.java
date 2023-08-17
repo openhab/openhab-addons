@@ -189,13 +189,10 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                                 break;
                             case TRIGGER:
                                 String lastEvent = lastEvents.get(channelId);
-                                if (lastEvent != null) {
-                                    String event = eep.convertToEvent(channelId, channelTypeId, lastEvent,
-                                            channelConfig);
-                                    if (event != null) {
-                                        triggerChannel(channel.getUID(), event);
-                                        lastEvents.put(channelId, event);
-                                    }
+                                String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig);
+                                if (event != null) {
+                                    triggerChannel(channel.getUID(), event);
+                                    lastEvents.put(channelId, event);
                                 }
                                 break;
                         }
@@ -205,9 +202,9 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                 // fire trigger for receive
                 triggerChannel(prepareAnswer, "requestAnswer");
                 // Send response after 100ms
-                ScheduledFuture<?> localResponseFuture = responseFuture;
-                if (localResponseFuture == null || localResponseFuture.isDone()) {
-                    localResponseFuture = scheduler.schedule(this::sendRequestResponse, 100, TimeUnit.MILLISECONDS);
+                ScheduledFuture<?> responseFuture = this.responseFuture;
+                if (responseFuture == null || responseFuture.isDone()) {
+                    this.responseFuture = scheduler.schedule(this::sendRequestResponse, 100, TimeUnit.MILLISECONDS);
                 }
             }
         }

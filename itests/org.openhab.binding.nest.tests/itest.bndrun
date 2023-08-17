@@ -110,4 +110,6 @@ Fragment-Host: org.openhab.binding.nest
 	org.openhab.core.io.net;version='[4.1.0,4.1.1)',\
 	org.openhab.core.test;version='[4.1.0,4.1.1)',\
 	org.openhab.core.thing;version='[4.1.0,4.1.1)',\
-	org.openhab.core.transform;version='[4.1.0,4.1.1)'
+	org.openhab.core.transform;version='[4.1.0,4.1.1)',\
+	org.openhab.base-fixes;version='[1.0.0,1.0.1)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'

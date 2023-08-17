@@ -27,6 +27,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Markus Michels - Initial contribution
  */
 public class Shelly2ApiJsonDTO {
+    public static final String SHELLYRPC_ENDPOINT = "/rpc";
+
     public static final String SHELLYRPC_METHOD_CLASS_SHELLY = "Shelly";
     public static final String SHELLYRPC_METHOD_CLASS_SWITCH = "Switch";
 
@@ -1004,7 +1006,7 @@ public class Shelly2ApiJsonDTO {
         public Object params;
         public String event;
         public Object result;
-        public Shelly2AuthRequest auth;
+        public Shelly2AuthRsp auth;
         public Shelly2RpcMessageError error;
     }
 
@@ -1022,31 +1024,32 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
+    public static String SHELLY2_AUTHDEF_USER = "admin";
     public static String SHELLY2_AUTHTTYPE_DIGEST = "digest";
     public static String SHELLY2_AUTHTTYPE_STRING = "string";
     public static String SHELLY2_AUTHALG_SHA256 = "SHA-256";
     // = ':auth:'+HexHash("dummy_method:dummy_uri");
     public static String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
 
-    public static class Shelly2AuthRequest {
+    public static class Shelly2AuthChallenge { // on 401 message contains the auth info
+        @SerializedName("auth_type")
+        public String authType;
+        public String nonce;
+        public String nc;
+        public String realm;
+        public String algorithm;
+    }
+
+    public static class Shelly2AuthRsp {
         public String username;
-        public Long nonce;
-        public Long cnonce;
-        public Integer nc;
+        public String nonce;
+        public String cnonce;
+        public String nc;
         public String realm;
         public String algorithm;
         public String response;
         @SerializedName("auth_type")
         public String authType;
-    }
-
-    public static class Shelly2AuthResponse { // on 401 message contains the auth info
-        @SerializedName("auth_type")
-        public String authType;
-        public Long nonce;
-        public Integer nc;
-        public String realm;
-        public String algorithm;
     }
 
     // BTHome samples
