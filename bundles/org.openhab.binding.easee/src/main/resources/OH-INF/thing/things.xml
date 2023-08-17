@@ -23,7 +23,7 @@
 			<channel-group typeId="circuit-settings" id="settings"/>
 		</channel-groups>
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<config-description-ref uri="thing-type:easee:mastercharger"/>
 	</thing-type>
@@ -40,7 +40,7 @@
 			<channel-group typeId="charger-latestSession" id="latestSession"/>
 		</channel-groups>
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<config-description-ref uri="thing-type:easee:charger"/>
 	</thing-type>
