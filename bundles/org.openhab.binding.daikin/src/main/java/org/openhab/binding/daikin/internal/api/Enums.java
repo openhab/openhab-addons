@@ -33,6 +33,8 @@ public class Enums {
         HEAT(4),
         FAN(6);
 
+        public final static int AUTO_ALT = 1;
+
         private static final Logger LOGGER = LoggerFactory.getLogger(Mode.class);
         private final int value;
 

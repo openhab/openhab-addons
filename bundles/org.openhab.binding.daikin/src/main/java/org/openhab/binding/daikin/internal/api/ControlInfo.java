@@ -38,6 +38,8 @@ public class ControlInfo {
 
     public String ret = "";
     public boolean power = false;
+    // Some models (e.g. BRP069A81) uses `1` for its Auto mode instead of `0`
+    public int autoModeValue = Mode.AUTO.getValue();
     public Mode mode = Mode.AUTO;
     /** Degrees in Celsius. */
     public Optional<Double> temp = Optional.empty();
@@ -59,8 +61,13 @@ public class ControlInfo {
         ControlInfo info = new ControlInfo();
         info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
         info.power = "1".equals(responseMap.get("pow"));
-        info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
-                .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);
+        int modeValue = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
+                .orElse(Mode.AUTO.getValue());
+        if (modeValue == Mode.AUTO_ALT) {
+            info.autoModeValue = Mode.AUTO_ALT;
+            modeValue = Mode.AUTO.getValue();
+        }
+        info.mode = Mode.fromValue(modeValue);
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
         info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> FanSpeed.fromValue(value))
                 .orElse(FanSpeed.AUTO);
@@ -90,7 +97,7 @@ public class ControlInfo {
     public Map<String, String> getParamString() {
         Map<String, String> params = new HashMap<>();
         params.put("pow", power ? "1" : "0");
-        params.put("mode", Integer.toString(mode.getValue()));
+        params.put("mode", Integer.toString(mode == Mode.AUTO ? autoModeValue : mode.getValue()));
         params.put("f_rate", fanSpeed.getValue());
         if (separatedDirectionParams) {
             params.put("f_dir_lr",

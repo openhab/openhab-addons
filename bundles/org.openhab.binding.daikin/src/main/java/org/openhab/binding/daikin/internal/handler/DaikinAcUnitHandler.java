@@ -57,6 +57,8 @@ import org.slf4j.LoggerFactory;
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
 
+    private Optional<Integer> autoModeValue = Optional.empty();
+
     public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
             @Nullable HttpClient httpClient) {
         super(thing, stateDescriptionProvider, httpClient);
@@ -68,6 +70,12 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         if (!"OK".equals(controlInfo.ret)) {
             throw new DaikinCommunicationException("Invalid response from host");
         }
+
+        if (controlInfo.mode == Mode.AUTO && autoModeValue.isEmpty()) {
+            autoModeValue = Optional.of(controlInfo.autoModeValue);
+            logger.debug("AUTO uses mode={}", controlInfo.autoModeValue);
+        }
+
         updateState(DaikinBindingConstants.CHANNEL_AC_POWER, OnOffType.from(controlInfo.power));
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
@@ -202,7 +210,20 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         }
         ControlInfo info = webTargets.getControlInfo();
         info.mode = newMode;
+        if (autoModeValue.isPresent()) {
+            info.autoModeValue = autoModeValue.get();
+        }
         webTargets.setControlInfo(info);
+
+        if (newMode == Mode.AUTO && autoModeValue.isEmpty()) {
+            // When setting the mode to AUTO, perform an automatic deduction of autoModeValue and save it for future use
+            info = webTargets.getControlInfo();
+
+            if (info.mode != Mode.AUTO) {
+                info.autoModeValue = Mode.AUTO_ALT; // try the alternative autoModeValue
+                webTargets.setControlInfo(info);
+            }
+        }
     }
 
     @Override
