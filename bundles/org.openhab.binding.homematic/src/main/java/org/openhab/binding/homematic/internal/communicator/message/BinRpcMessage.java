@@ -351,13 +351,11 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         } else if (object.getClass() == Date.class) {
             addInt(5);
             addInt((int) ((Date) object).getTime() / 1000);
-        } else if (object instanceof List<?>) {
-            Collection<?> list = (Collection<?>) object;
+        } else if (object instanceof List<?> list) {
             addInt(0x100);
             addInt(list.size());
             addList(list);
-        } else if (object instanceof Map<?, ?>) {
-            Map<?, ?> map = (Map<?, ?>) object;
+        } else if (object instanceof Map<?, ?> map) {
             addInt(0x101);
             addInt(map.size());
             for (Map.Entry<?, ?> entry : map.entrySet()) {

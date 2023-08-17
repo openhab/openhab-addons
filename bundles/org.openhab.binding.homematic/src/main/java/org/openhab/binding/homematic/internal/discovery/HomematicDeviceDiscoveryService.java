@@ -59,8 +59,8 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HomematicBridgeHandler) {
-            this.bridgeHandler = (HomematicBridgeHandler) handler;
+        if (handler instanceof HomematicBridgeHandler bridgeHandler) {
+            this.bridgeHandler = bridgeHandler;
             this.bridgeHandler.setDiscoveryService(this);
         }
     }
