@@ -12,9 +12,9 @@ In case the parsed information that comes with the binding out of the box differ
 
 ## Supported Things
 
-| Thing                | Thing Type | Description                                                                         |
-|----------------------|------------|-------------------------------------------------------------------------------------|
-| localConnectInverter | Thing      | This is model representation of inverter with all the data available as a channels  |
+| Thing                  | Thing Type | Description                                                                         |
+|------------------------|------------|-------------------------------------------------------------------------------------|
+| local-connect-inverter | Thing      | This is model representation of inverter with all the data available as a channels  |
 
 ## Thing Configuration
 
