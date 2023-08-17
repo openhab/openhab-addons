@@ -413,10 +413,10 @@ public class HomekitCharacteristicFactory {
     private static int getIntFromItem(HomekitTaggedItem taggedItem, int defaultValue) {
         int value = defaultValue;
         final State state = taggedItem.getItem().getState();
-        if (state instanceof PercentType) {
-            value = ((PercentType) state).intValue();
-        } else if (state instanceof DecimalType) {
-            value = ((DecimalType) state).intValue();
+        if (state instanceof PercentType stateAsPercentType) {
+            value = stateAsPercentType.intValue();
+        } else if (state instanceof DecimalType stateAsDecimalType) {
+            value = stateAsDecimalType.intValue();
         } else if (state instanceof UnDefType) {
             logger.debug("Item state {} is UNDEF {}. Returning default value {}", state, taggedItem.getName(),
                     defaultValue);
@@ -432,8 +432,8 @@ public class HomekitCharacteristicFactory {
     private static int getAngleFromItem(HomekitTaggedItem taggedItem, int defaultValue) {
         int value = defaultValue;
         final State state = taggedItem.getItem().getState();
-        if (state instanceof PercentType) {
-            value = (int) ((((PercentType) state).intValue() * 90.0) / 50.0 - 90.0);
+        if (state instanceof PercentType stateAsPercentType) {
+            value = (int) ((stateAsPercentType.intValue() * 90.0) / 50.0 - 90.0);
         } else {
             value = getIntFromItem(taggedItem, defaultValue);
         }
@@ -450,8 +450,7 @@ public class HomekitCharacteristicFactory {
             return null;
         }
 
-        if (state instanceof QuantityType<?>) {
-            final QuantityType<?> qt = (QuantityType<?>) state;
+        if (state instanceof QuantityType<?> qt) {
             if (qt.getDimension().equals(SIUnits.CELSIUS.getDimension())) {
                 return qt.toUnit(SIUnits.CELSIUS).doubleValue();
             }
@@ -525,12 +524,12 @@ public class HomekitCharacteristicFactory {
         return () -> {
             final State state = taggedItem.getItem().getState();
             double value = defaultValue;
-            if (state instanceof PercentType) {
-                value = ((PercentType) state).doubleValue();
-            } else if (state instanceof DecimalType) {
-                value = ((DecimalType) state).doubleValue();
-            } else if (state instanceof QuantityType) {
-                value = ((QuantityType) state).doubleValue();
+            if (state instanceof PercentType stateAsPercentType) {
+                value = stateAsPercentType.doubleValue();
+            } else if (state instanceof DecimalType stateAsDecimalType) {
+                value = stateAsDecimalType.doubleValue();
+            } else if (state instanceof QuantityType stateAsQuantityType) {
+                value = stateAsQuantityType.doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         };
@@ -647,10 +646,10 @@ public class HomekitCharacteristicFactory {
                 return;
             }
 
-            if (item instanceof SwitchItem) {
-                ((SwitchItem) item).send(OnOffType.ON);
-            } else if (item instanceof RollershutterItem) {
-                ((RollershutterItem) item).send(StopMoveType.STOP);
+            if (item instanceof SwitchItem switchItem) {
+                switchItem.send(OnOffType.ON);
+            } else if (item instanceof RollershutterItem rollerShutterItem) {
+                rollerShutterItem.send(StopMoveType.STOP);
             }
         });
     }
@@ -742,8 +741,8 @@ public class HomekitCharacteristicFactory {
         return new HueCharacteristic(() -> {
             double value = 0.0;
             State state = taggedItem.getItem().getState();
-            if (state instanceof HSBType) {
-                value = ((HSBType) state).getHue().doubleValue();
+            if (state instanceof HSBType stateAsHSBType) {
+                value = stateAsHSBType.getHue().doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (hue) -> {
@@ -761,10 +760,10 @@ public class HomekitCharacteristicFactory {
         return new BrightnessCharacteristic(() -> {
             int value = 0;
             final State state = taggedItem.getItem().getState();
-            if (state instanceof HSBType) {
-                value = ((HSBType) state).getBrightness().intValue();
-            } else if (state instanceof PercentType) {
-                value = ((PercentType) state).intValue();
+            if (state instanceof HSBType stateAsHSBType) {
+                value = stateAsHSBType.getBrightness().intValue();
+            } else if (state instanceof PercentType stateAsPercentType) {
+                value = stateAsPercentType.intValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (brightness) -> {
@@ -782,10 +781,10 @@ public class HomekitCharacteristicFactory {
         return new SaturationCharacteristic(() -> {
             double value = 0.0;
             State state = taggedItem.getItem().getState();
-            if (state instanceof HSBType) {
-                value = ((HSBType) state).getSaturation().doubleValue();
-            } else if (state instanceof PercentType) {
-                value = ((PercentType) state).doubleValue();
+            if (state instanceof HSBType stateAsHSBType) {
+                value = stateAsHSBType.getSaturation().doubleValue();
+            } else if (state instanceof PercentType stateAsPercentType) {
+                value = stateAsPercentType.doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (saturation) -> {
@@ -825,17 +824,16 @@ public class HomekitCharacteristicFactory {
         return new ColorTemperatureCharacteristic(minValue, maxValue, () -> {
             int value = finalMinValue;
             final State state = taggedItem.getItem().getState();
-            if (state instanceof QuantityType<?>) {
+            if (state instanceof QuantityType<?> qt) {
                 // Number:Temperature
-                QuantityType<?> qt = (QuantityType<?>) state;
                 qt = qt.toInvertibleUnit(Units.MIRED);
                 if (qt == null) {
                     logger.warn("Item {}'s state '{}' is not convertible to mireds.", taggedItem.getName(), state);
                 } else {
                     value = qt.intValue();
                 }
-            } else if (state instanceof PercentType) {
-                double percent = ((PercentType) state).doubleValue();
+            } else if (state instanceof PercentType stateAsPercentType) {
+                double percent = stateAsPercentType.doubleValue();
                 // invert so that 0% == coolest
                 if (inverted) {
                     percent = 100.0 - percent;
@@ -844,8 +842,8 @@ public class HomekitCharacteristicFactory {
                 // Dimmer
                 // scale to the originally configured range
                 value = (int) (percent * range / 100) + finalMinValue;
-            } else if (state instanceof DecimalType) {
-                value = ((DecimalType) state).intValue();
+            } else if (state instanceof DecimalType stateAsDecimalType) {
+                value = stateAsDecimalType.intValue();
             }
             return CompletableFuture.completedFuture(value);
         }, (value) -> {
@@ -926,10 +924,10 @@ public class HomekitCharacteristicFactory {
             final @Nullable Map<String, Object> itemConfiguration = taggedItem.getConfiguration();
             if ((value == 0) && (itemConfiguration != null)) { // check for default duration
                 final Object duration = itemConfiguration.get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
-                if (duration instanceof BigDecimal) {
-                    value = ((BigDecimal) duration).intValue();
-                    if (taggedItem.getItem() instanceof NumberItem) {
-                        ((NumberItem) taggedItem.getItem()).setState(new DecimalType(value));
+                if (duration instanceof BigDecimal durationAsBigDecimal) {
+                    value = durationAsBigDecimal.intValue();
+                    if (taggedItem.getItem() instanceof NumberItem taggedNumberItem) {
+                        taggedNumberItem.setState(new DecimalType(value));
                     }
                 }
             }

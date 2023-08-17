@@ -111,8 +111,8 @@ public class HomekitMetadataCharacteristicFactory {
 
     private static Supplier<CompletableFuture<Integer>> getInteger(Object value) {
         int intValue;
-        if (value instanceof BigDecimal) {
-            intValue = ((BigDecimal) value).intValue();
+        if (value instanceof BigDecimal valueAsBigDecimal) {
+            intValue = valueAsBigDecimal.intValue();
         } else if (value instanceof Float) {
             intValue = ((Float) value).intValue();
         } else if (value instanceof Integer) {

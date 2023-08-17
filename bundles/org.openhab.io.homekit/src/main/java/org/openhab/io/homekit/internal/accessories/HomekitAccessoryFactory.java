@@ -281,9 +281,9 @@ public class HomekitAccessoryFactory {
     public static List<GroupItem> getAccessoryGroups(Item item, ItemRegistry itemRegistry,
             MetadataRegistry metadataRegistry) {
         return item.getGroupNames().stream().flatMap(name -> {
-            final @Nullable Item groupItem = itemRegistry.get(name);
-            if (groupItem instanceof GroupItem) {
-                return Stream.of((GroupItem) groupItem);
+            final @Nullable Item itemFromRegistry = itemRegistry.get(name);
+            if (itemFromRegistry instanceof GroupItem groupItem) {
+                return Stream.of(groupItem);
             } else {
                 return Stream.empty();
             }
