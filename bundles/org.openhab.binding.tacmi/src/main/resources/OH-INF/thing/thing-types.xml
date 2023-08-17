@@ -71,7 +71,7 @@
 	<channel-type id="coe-analog-out">
 		<item-type>Number</item-type>
 		<label>Analog Output Channel (OH -> C.M.I.)</label>
-		<description>A Analog Channel sent to the C.M.I.</description>
+		<description>An Analog Channel sent to the C.M.I.</description>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
 				<label>Output</label>

@@ -328,7 +328,7 @@
 	<channel-type id="visibility" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Visibility</label>
-		<description>Visibility.</description>
+		<description>Visibility in nautical miles.</description>
 		<category>Sun_Clouds</category>
 		<tags>
 			<tag>Measurement</tag>
