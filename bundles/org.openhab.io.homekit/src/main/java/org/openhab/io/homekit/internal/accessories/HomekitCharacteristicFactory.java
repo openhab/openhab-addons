@@ -151,7 +151,6 @@ import io.github.hapjava.characteristics.impl.windowcovering.CurrentVerticalTilt
 import io.github.hapjava.characteristics.impl.windowcovering.HoldPositionCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.TargetHorizontalTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltAngleCharacteristic;
-import tech.units.indriya.unit.UnitDimension;
 
 /**
  * Creates an optional characteristics .
@@ -453,7 +452,7 @@ public class HomekitCharacteristicFactory {
 
         if (state instanceof QuantityType<?>) {
             final QuantityType<?> qt = (QuantityType<?>) state;
-            if (qt.getDimension().equals(UnitDimension.TEMPERATURE)) {
+            if (qt.getDimension().equals(SIUnits.CELSIUS.getDimension())) {
                 return qt.toUnit(SIUnits.CELSIUS).doubleValue();
             }
         }
