@@ -390,7 +390,7 @@ public class HomekitTaggedItem {
             return valueAsBoolean;
         }
         if (value instanceof String valueString) {
-            return valueString.equalsIgnoreCase("yes") || valueString.equalsIgnoreCase("true");
+            return "yes".equalsIgnoreCase(valueString) || "true".equalsIgnoreCase(valueString);
         }
         return defaultValue;
     }
