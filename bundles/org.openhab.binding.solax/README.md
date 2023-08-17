@@ -86,7 +86,7 @@ Here are some file based examples.
 
 ```java
 // The local connect inverter thing 
-Thing solax:localConnectInverter:localInverter  [ refreshInterval=10, password="<SERIAL NUMBER OF THE WIFI MODULE>", hostname="<local IP/hostname in the network>" ] 
+Thing solax:local-connect-inverter:localInverter  [ refreshInterval=10, password="<SERIAL NUMBER OF THE WIFI MODULE>", hostname="<local IP/hostname in the network>" ] 
 ```
 
 ### Item Configuration
