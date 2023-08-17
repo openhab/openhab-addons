@@ -129,7 +129,20 @@ public class HaywardDiscoveryService extends AbstractThingHandlerDiscoveryServic
         final List<String> colorLogicProperty1 = thingHandler.evaluateXPath("//Backyard//ColorLogic-Light/Type/text()",
                 xmlResponse);
 
+<<<<<<< HEAD
         discoverDevices(thingHandler, xmlResponse, "ColorLogic-Light", HaywardTypeToRequest.COLORLOGIC,
+=======
+        final List<String> colorLogicProperty2 = bridgehandler
+                .evaluateXPath("//Backyard//ColorLogic-Light/V2-Active/text()", xmlResponse);
+
+        for (int i = 0; i < colorLogicProperty2.size(); i++) {
+            if (colorLogicProperty1.get(i).equals("COLOR_LOGIC_UCL") && colorLogicProperty2.get(i).equals("yes")) {
+                colorLogicProperty1.set(i, "COLOR_LOGIC_UCL_V2");
+            }
+        }
+
+        discoverDevices(bridgehandler, xmlResponse, "ColorLogic-Light", HaywardTypeToRequest.COLORLOGIC,
+>>>>>>> ecd634f525 (Added support for Hayward ColorLogic V2 Lights (Speed, Brightness & Additional Shows))
                 HaywardBindingConstants.THING_TYPE_COLORLOGIC, (props, i) -> {
                     props.put(HaywardBindingConstants.PROPERTY_COLORLOGIC_TYPE, colorLogicProperty1.get(i));
                 });
