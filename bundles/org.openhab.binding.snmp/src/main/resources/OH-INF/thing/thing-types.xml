@@ -163,7 +163,8 @@
 			</parameter>
 			<parameter name="unit" type="text">
 				<label>Unit Of Measurement</label>
-				<description>Unit of measurement (optional). The unit is used for representing the value in the GUI as well as for converting incoming values (like from '°F' to '°C'). Examples: "°C", "°F"</description>
+				<description>Unit of measurement (optional). The unit is used for representing the value in the GUI as well as for
+					converting incoming values (like from '°F' to '°C'). Examples: "°C", "°F"</description>
 			</parameter>
 			<parameter name="datatype" type="text">
 				<label>Datatype</label>
