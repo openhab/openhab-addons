@@ -744,7 +744,8 @@ public class VehicleHandler extends BaseThingHandler {
         ChargingSettings cs = cpw.getChargingSettings();
         if (cs != null) {
             updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_TARGET,
-                    DecimalType.valueOf(Integer.toString(cs.getTargetSoc())), channelToBeUpdated);
+                    QuantityType.valueOf(cs.getTargetSoc(), Units.PERCENT), channelToBeUpdated);
+
             updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_LIMIT,
                     OnOffType.from(cs.isAcCurrentLimitActive()), channelToBeUpdated);
         }
