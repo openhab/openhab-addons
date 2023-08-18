@@ -36,7 +36,7 @@ public interface InverterData extends RawDataBean {
 
     short getInverterCurrent();
 
-    short getInvertеrOutputPower();
+    short getInverterOutputPower();
 
     short getInverterFrequency();
 
@@ -83,7 +83,7 @@ public interface InverterData extends RawDataBean {
     default String toStringDetailed() {
         return "WifiSerial = " + getWifiSerial() + ", WifiVersion = " + getWifiVersion() + ", InverterType = "
                 + getInverterType() + ", InverterVoltage = " + getInverterVoltage() + "V, InverterCurrent = "
-                + getInverterCurrent() + "A, InverterPower = " + getInvertеrOutputPower() + "W, BatteryPower = "
+                + getInverterCurrent() + "A, InverterPower = " + getInverterOutputPower() + "W, BatteryPower = "
                 + getBatteryPower() + "W, Battery SoC = " + getBatterySoC() + "%, FeedIn Power = " + getFeedInPower()
                 + "W, Total PV Power = " + (getPV1Power() + getPV2Power()) + "W, Total Consumption = "
                 + getTotalConsumption() + "kWh, Total Feed-in Energy = " + getTotalFeedInEnergy()

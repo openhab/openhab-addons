@@ -33,7 +33,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class LocalConnectRawDataBean implements RawDataBean, InverterData {
 
-    private final static Logger logger = LoggerFactory.getLogger(LocalConnectRawDataBean.class);
+    private final Logger logger = LoggerFactory.getLogger(LocalConnectRawDataBean.class);
 
     private @Nullable String sn;
     private @Nullable String ver;
@@ -132,7 +132,7 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
     }
 
     @Override
-    public short getInvertеrOutputPower() {
+    public short getInverterOutputPower() {
         return getData(2);
     }
 

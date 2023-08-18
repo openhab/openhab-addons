@@ -119,7 +119,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         updateProperty(SolaxBindingConstants.PROPERTY_INVERTER_TYPE, data.getInverterType().name());
 
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER,
-                new QuantityType<>(data.getInvertеrOutputPower(), Units.WATT));
+                new QuantityType<>(data.getInverterOutputPower(), Units.WATT));
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT,
                 new QuantityType<>(data.getInverterCurrent(), Units.AMPERE));
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE,
