@@ -47,8 +47,9 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
      * @param config
      */
     public AbstractWriteCommand(EaseeThingHandler handler, Channel channel, Command command,
-            RetryOnFailure retryOnFailure, ProcessFailureResponse processFailureResponse) {
-        super(handler, retryOnFailure, processFailureResponse);
+            RetryOnFailure retryOnFailure, ProcessFailureResponse processFailureResponse,
+            JsonResultProcessor resultProcessor) {
+        super(handler, retryOnFailure, processFailureResponse, resultProcessor);
         this.channel = channel;
         this.command = command;
     }

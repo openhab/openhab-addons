@@ -57,8 +57,8 @@ public class EaseeMasterChargerHandler extends EaseeChargerHandler {
             String circuitId = getConfig().get(EaseeBindingConstants.THING_CONFIG_CIRCUIT_ID).toString();
             logger.debug("polling circuit data for {}", circuitId);
 
-            enqueueCommand(new DynamicCircuitCurrent(this, circuitId));
-            enqueueCommand(new CircuitSettings(this, circuitId));
+            enqueueCommand(new DynamicCircuitCurrent(this, circuitId, this::updateOnlineStatus));
+            enqueueCommand(new CircuitSettings(this, circuitId, this::updateOnlineStatus));
         }
     }
 
@@ -68,13 +68,13 @@ public class EaseeMasterChargerHandler extends EaseeChargerHandler {
 
         switch (Utils.getWriteCommand(channel)) {
             case COMMAND_SET_CIRCUIT_SETTINGS:
-                return new SetCircuitSettings(this, channel, command, circuitId);
+                return new SetCircuitSettings(this, channel, command, circuitId, this::updateOnlineStatus);
             case COMMAND_SET_DYNAMIC_CIRCUIT_CURRENTS:
-                return new SetDynamicCircuitCurrents(this, channel, command, circuitId);
+                return new SetDynamicCircuitCurrents(this, channel, command, circuitId, this::updateOnlineStatus);
             case COMMAND_SET_MAX_CIRCUIT_CURRENTS:
-                return new SetMaxCircuitCurrents(this, channel, command, circuitId);
+                return new SetMaxCircuitCurrents(this, channel, command, circuitId, this::updateOnlineStatus);
             case COMMAND_SET_OFFLINE_MAX_CIRCUIT_CURRENTS:
-                return new SetOfflineMaxCircuitCurrents(this, channel, command, circuitId);
+                return new SetOfflineMaxCircuitCurrents(this, channel, command, circuitId, this::updateOnlineStatus);
             default:
                 return super.buildEaseeCommand(command, channel);
         }

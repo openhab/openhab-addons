@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
+import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
 /**
@@ -29,8 +30,8 @@ import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 public class DynamicCircuitCurrent extends AbstractCommand {
     private final String url;
 
-    public DynamicCircuitCurrent(EaseeThingHandler handler, String circuitId) {
-        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES);
+    public DynamicCircuitCurrent(EaseeThingHandler handler, String circuitId, JsonResultProcessor resultProcessor) {
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES, resultProcessor);
         String siteId = handler.getBridgeConfiguration().getSiteId();
         this.url = DYNAMIC_CIRCUIT_CURRENT_URL.replaceAll("\\{siteId\\}", siteId).replaceAll("\\{circuitId\\}",
                 circuitId);
