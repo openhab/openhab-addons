@@ -41,6 +41,6 @@ public class MemoryMap {
     }
 
     public synchronized void updateElement(int index, byte[] elementValue) {
-        ramCache.set(index - 1, elementValue);
+        ramCache.set(index, elementValue);
     }
 }

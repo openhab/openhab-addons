@@ -333,7 +333,11 @@ public class HttpTransportImpl implements HttpTransport {
     }
 
     private boolean checkNeededSessionToken(String request) {
-        String requestFirstPart = request.substring(0, request.indexOf("?"));
+        String requestFirstPart = request;
+        int indexOfSeparator = request.indexOf("?");
+        if (indexOfSeparator >= 0) {
+            requestFirstPart = request.substring(0, request.indexOf("?"));
+        }
         String functionName = requestFirstPart.substring(requestFirstPart.lastIndexOf("/") + 1);
         return !DsAPIImpl.METHODS_MUST_NOT_BE_LOGGED_IN.contains(functionName);
     }
@@ -349,7 +353,10 @@ public class HttpTransportImpl implements HttpTransport {
         } else {
             String strippedRequest = correctedRequest
                     .substring(correctedRequest.indexOf(ParameterKeys.TOKEN + "=") + ParameterKeys.TOKEN.length() + 1);
-            strippedRequest = strippedRequest.substring(0, strippedRequest.lastIndexOf("&"));
+            int indexOfSeparator = strippedRequest.indexOf("&");
+            if (indexOfSeparator >= 0) {
+                strippedRequest = strippedRequest.substring(0, indexOfSeparator);
+            }
             correctedRequest = correctedRequest.replaceFirst(strippedRequest, sessionToken);
         }
         return correctedRequest;

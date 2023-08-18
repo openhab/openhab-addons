@@ -136,8 +136,8 @@ public class GoogleTTSService extends AbstractCachedTTSService {
     @Deactivate
     protected void dispose() {
         apiImpl.dispose();
-        audioFormats.clear();
-        allVoices.clear();
+        audioFormats = new HashSet<>();
+        allVoices = new HashSet<>();
     }
 
     /**
