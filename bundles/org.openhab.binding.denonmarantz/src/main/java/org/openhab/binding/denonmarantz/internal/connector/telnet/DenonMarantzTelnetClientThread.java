@@ -67,6 +67,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
             do {
                 try {
                     String line = null;
+                    BufferedReader in = this.in;
                     if (in != null) {
                         line = in.readLine();
                     }
