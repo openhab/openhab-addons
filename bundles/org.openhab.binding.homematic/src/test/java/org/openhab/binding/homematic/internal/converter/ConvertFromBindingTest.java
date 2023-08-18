@@ -16,8 +16,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Temperature;
 
 import org.junit.jupiter.api.Test;
@@ -78,8 +76,7 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         floatQuantityDp.setUnit("°C");
         convertedState = temperatureConverter.convertFromBinding(floatQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertEquals(((QuantityType<?>) convertedState).getDimension(),
-                new QuantityType<Temperature>(0, SIUnits.CELSIUS).getDimension());
+        assertEquals(((QuantityType<?>) convertedState).getDimension(), SIUnits.CELSIUS.getDimension());
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(10.5));
         assertThat(((QuantityType<?>) convertedState).toUnit(ImperialUnits.FAHRENHEIT).doubleValue(), is(50.9));
 
@@ -92,8 +89,7 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         integerQuantityDp.setUnit("mHz");
         convertedState = frequencyConverter.convertFromBinding(integerQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertEquals(((QuantityType<?>) convertedState).getDimension(),
-                new QuantityType<Frequency>(0, Units.HERTZ).getDimension());
+        assertEquals(((QuantityType<?>) convertedState).getDimension(), Units.HERTZ.getDimension());
         assertThat(((QuantityType<?>) convertedState).intValue(), is(50000));
         assertThat(((QuantityType<?>) convertedState).toUnit(Units.HERTZ).intValue(), is(50));
 
@@ -101,8 +97,7 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         floatQuantityDp.setUnit("100%");
         convertedState = timeConverter.convertFromBinding(floatQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertEquals(((QuantityType<?>) convertedState).getDimension(),
-                new QuantityType<Dimensionless>(0, Units.ONE).getDimension());
+        assertEquals(((QuantityType<?>) convertedState).getDimension(), Units.ONE.getDimension());
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(70.0));
         assertThat(((QuantityType<?>) convertedState).getUnit(), is(Units.PERCENT));
         assertThat(((QuantityType<?>) convertedState).toUnit(Units.ONE).doubleValue(), is(0.7));
