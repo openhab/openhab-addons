@@ -65,6 +65,9 @@ public class AndroidTVHandler extends BaseThingHandler {
     private final ThingTypeUID thingTypeUID;
     private final String thingID;
 
+    private String currentThingStatus = "";
+    private boolean currentThingFailed = false;
+
     public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
             AndroidTVTranslationProvider translationProvider, ThingTypeUID thingTypeUID) {
         super(thing);
@@ -111,6 +114,9 @@ public class AndroidTVHandler extends BaseThingHandler {
     }
 
     public void checkThingStatus() {
+        String currentThingStatus = this.currentThingStatus;
+        boolean currentThingFailed = this.currentThingFailed;
+
         String statusMessage = "";
         boolean failed = false;
 
@@ -133,11 +139,16 @@ public class AndroidTVHandler extends BaseThingHandler {
             }
         }
 
-        if (failed) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
-        } else {
-            updateStatus(ThingStatus.ONLINE);
+        if (!currentThingStatus.equals(statusMessage) || (currentThingFailed != failed)) {
+            if (failed) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
+
+        this.currentThingStatus = statusMessage;
+        this.currentThingFailed = failed;
     }
 
     @Override
@@ -146,6 +157,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
         String ipAddress = googletvConfig.ipAddress;
+        boolean gtvEnabled = googletvConfig.gtvEnabled;
 
         if (ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -153,7 +165,9 @@ public class AndroidTVHandler extends BaseThingHandler {
             return;
         }
 
-        googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
+        if (THING_TYPE_GOOGLETV.equals(thingTypeUID) || gtvEnabled) {
+            googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
+        }
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
@@ -228,6 +242,9 @@ public class AndroidTVHandler extends BaseThingHandler {
                     shieldtvConnectionManager.handleCommand(channelUID, command);
                     return;
                 }
+            } else if (googletvConnectionManager == null) {
+                shieldtvConnectionManager.handleCommand(channelUID, command);
+                return;
             }
         }
 

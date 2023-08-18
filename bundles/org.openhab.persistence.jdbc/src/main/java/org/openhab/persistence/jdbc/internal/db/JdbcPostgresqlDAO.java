@@ -260,15 +260,15 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
                 filter.toString(), numberDecimalcount, table, simpleName);
 
         String filterString = "";
-        if (filter.getBeginDate() != null) {
+        ZonedDateTime beginDate = filter.getBeginDate();
+        if (beginDate != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
-                    + "'";
+            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(beginDate.withZoneSameInstant(timeZone)) + "'";
         }
-        if (filter.getEndDate() != null) {
+        ZonedDateTime endDate = filter.getEndDate();
+        if (endDate != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
-                    + "'";
+            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(endDate.withZoneSameInstant(timeZone)) + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
         if (filter.getPageSize() != 0x7fffffff) {

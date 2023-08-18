@@ -55,7 +55,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_TYPE_VOLT = "Number:ElectricPotential";
     public static final String CHANNEL_TYPE_AMPERE = "Number:ElectricCurrent";
     public static final String CHANNEL_TYPE_KWH = "Number:Energy";
-    public static final String CHANNEL_TYPE_KW = "Number:Power";
+    public static final String CHANNEL_TYPE_POWER = "Number:Power";
     public static final String CHANNEL_TYPE_DATE = "DateTime";
     public static final String CHANNEL_TYPE_STRING = "String";
     public static final String CHANNEL_TYPE_NUMBER = "Number";
@@ -63,6 +63,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_TYPEPREFIX_RW = "rw";
 
     public static final String CHANNEL_TYPENAME_INTEGER = "type-integer";
+    public static final String CHANNEL_TYPENAME_RSSI = "type-rssi";
 
     // Channels with specific handling
     public static final String CHANNEL_CHARGER_OP_MODE = "chargerOpMode";
@@ -88,6 +89,7 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_GENERIC_NAME = "name";
     public static final String JSON_KEY_CIRCUIT_NAME = "panelName";
     public static final String JSON_KEY_CIRCUIT_ID = "circuitId";
+    public static final String JSON_KEY_CHARGER_ID = "chargerID";
     public static final String JSON_KEY_CIRCUITS = "circuits";
     public static final String JSON_KEY_CHARGERS = "chargers";
     public static final String JSON_KEY_BACK_PLATE = "backPlate";
@@ -99,6 +101,9 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_AUTH_ACCESS_TOKEN = "accessToken";
     public static final String JSON_KEY_AUTH_REFRESH_TOKEN = "refreshToken";
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expiresIn";
+    public static final String JSON_KEY_CIRCUIT_STATES = "circuitStates";
+    public static final String JSON_KEY_CHARGER_STATES = "chargerStates";
+    public static final String JSON_KEY_CHARGER_STATE = "chargerState";
 
     // Write Commands
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
@@ -130,7 +135,7 @@ public class EaseeBindingConstants {
     public static final String REFRESH_TOKEN_URL = API_BASE_URL + "/accounts/refresh_token";
     public static final String GET_SITE_URL = API_BASE_URL + "/sites/{siteId}";
     public static final String CHARGER_URL = API_BASE_URL + "/chargers/{id}";
-    public static final String STATE_URL = API_BASE_URL + "/chargers/{id}/state";
+    public static final String SITE_STATE_URL = API_BASE_URL + "/sites/{siteId}/state";
     public static final String GET_CONFIGURATION_URL = API_BASE_URL + "/chargers/{id}/config";
     public static final String CHANGE_CONFIGURATION_URL = API_BASE_URL + "/chargers/{id}/settings";
     public static final String COMMANDS_URL = API_BASE_URL + "/chargers/{id}/commands/{command}";
