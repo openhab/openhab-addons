@@ -94,12 +94,14 @@ public class AppService implements PhilipsTVService {
                 Optional<Map.Entry<String, AbstractMap.SimpleEntry<String, String>>> app = availableApps.entrySet()
                         .stream().filter(e -> e.getValue().getKey().equalsIgnoreCase(packageName)).findFirst();
                 if (app.isPresent()) {
+                    handler.postUpdateChannel(CHANNEL_APP, new StringType(packageName));
                     Map.Entry<String, AbstractMap.SimpleEntry<String, String>> appEntry = app.get();
                     handler.postUpdateChannel(CHANNEL_APPNAME, new StringType(appEntry.getKey()));
                     // Get icon for current App
                     RawType image = getIconForApp(appEntry.getValue().getKey(), appEntry.getValue().getValue());
                     handler.postUpdateChannel(CHANNEL_APP_ICON, (image != null) ? image : UnDefType.UNDEF);
                 } else { // NA
+                    handler.postUpdateChannel(CHANNEL_APP, new StringType(packageName));
                     handler.postUpdateChannel(CHANNEL_APPNAME, new StringType(packageName));
                     handler.postUpdateChannel(CHANNEL_APP_ICON, UnDefType.UNDEF);
                 }

@@ -375,6 +375,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         services.put(CHANNEL_PLAYER, keyPressService);
 
         PhilipsTVService appService = new AppService(this, connectionManager);
+        services.put(CHANNEL_APP, appService);
         services.put(CHANNEL_APPNAME, appService);
         services.put(CHANNEL_APP_ICON, appService);
 
