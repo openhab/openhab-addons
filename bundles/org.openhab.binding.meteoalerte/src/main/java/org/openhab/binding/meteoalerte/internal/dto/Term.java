@@ -10,18 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meteoalerte.internal;
+package org.openhab.binding.meteoalerte.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link MeteoAlerteConfiguration} is the class used to match the
- * thing configuration.
- *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class MeteoAlerteConfiguration {
-    public String department = "";
-    public int refresh = 1440;
+public enum Term {
+    @SerializedName("J")
+    TODAY,
+    @SerializedName("J1")
+    TOMORROW,
+    @SerializedName("J+J1")
+    TODAY_AND_TOMORROW,
+    UNKNOWN;
 }
