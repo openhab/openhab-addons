@@ -61,13 +61,13 @@ public class ControlInfo {
         ControlInfo info = new ControlInfo();
         info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
         info.power = "1".equals(responseMap.get("pow"));
-        int modeValue = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
-                .orElse(Mode.AUTO.getValue());
-        if (modeValue == Mode.AUTO_ALT) {
-            info.autoModeValue = Mode.AUTO_ALT;
-            modeValue = Mode.AUTO.getValue();
+        info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
+                .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);
+        // Normalize AUTO1 and AUTO7 to AUTO, but remember the actual value to be sent back to the adapter
+        if (info.mode == Mode.AUTO1 || info.mode == Mode.AUTO7) {
+            info.autoModeValue = info.mode.getValue();
+            info.mode = Mode.AUTO;
         }
-        info.mode = Mode.fromValue(modeValue);
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
         info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> FanSpeed.fromValue(value))
                 .orElse(FanSpeed.AUTO);

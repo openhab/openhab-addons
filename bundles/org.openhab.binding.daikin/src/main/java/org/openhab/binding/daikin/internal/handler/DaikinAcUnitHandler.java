@@ -218,9 +218,8 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         if (newMode == Mode.AUTO && autoModeValue.isEmpty()) {
             // When setting the mode to AUTO, perform an automatic deduction of autoModeValue and save it for future use
             info = webTargets.getControlInfo();
-
             if (info.mode != Mode.AUTO) {
-                info.autoModeValue = Mode.AUTO_ALT; // try the alternative autoModeValue
+                info.autoModeValue = Mode.AUTO1.getValue(); // try the alternative autoModeValue
                 webTargets.setControlInfo(info);
             }
         }

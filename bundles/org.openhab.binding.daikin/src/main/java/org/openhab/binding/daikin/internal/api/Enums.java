@@ -28,12 +28,12 @@ public class Enums {
     public enum Mode {
         UNKNOWN(-1),
         AUTO(0),
+        AUTO1(1),
+        AUTO7(7),
         DEHUMIDIFIER(2),
         COLD(3),
         HEAT(4),
         FAN(6);
-
-        public final static int AUTO_ALT = 1;
 
         private static final Logger LOGGER = LoggerFactory.getLogger(Mode.class);
         private final int value;
