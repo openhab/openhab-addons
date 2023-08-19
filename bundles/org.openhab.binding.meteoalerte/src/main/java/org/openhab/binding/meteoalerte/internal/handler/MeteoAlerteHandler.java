@@ -18,17 +18,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meteoalerte.internal.MeteoAlertIconProvider;
-import org.openhab.binding.meteoalerte.internal.MeteoAlerteConfiguration;
+import org.openhab.binding.meteoalerte.internal.config.MeteoAlerteConfiguration;
 import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
 import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.RawType;
@@ -44,8 +41,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link MeteoAlerteHandler} is responsible for updating channels
@@ -64,14 +59,11 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     private final MeteoAlertIconProvider iconProvider;
-    private final Gson gson;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private String queryUrl = "";
 
-    public MeteoAlerteHandler(Thing thing, Gson gson, MeteoAlertIconProvider iconProvider) {
+    public MeteoAlerteHandler(Thing thing, MeteoAlertIconProvider iconProvider) {
         super(thing);
-        this.gson = gson;
         this.iconProvider = iconProvider;
     }
 
@@ -81,12 +73,12 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
         MeteoAlerteConfiguration config = getConfigAs(MeteoAlerteConfiguration.class);
         logger.debug("config department = {}", config.department);
-        logger.debug("config refresh = {}", config.refresh);
+        // logger.debug("config refresh = {}", config.refresh);
 
         updateStatus(ThingStatus.UNKNOWN);
-        queryUrl = URL.formatted(config.department);
-        refreshJob = Optional
-                .of(scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES));
+        // queryUrl = URL.formatted(config.department);
+        // refreshJob = Optional
+        // .of(scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES));
     }
 
     @Override
@@ -106,18 +98,18 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
     private void updateAndPublish() {
         try {
-            if (queryUrl.isEmpty()) {
-                throw new MalformedURLException("queryUrl not initialized");
-            }
-            String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
+            // if (queryUrl.isEmpty()) {
+            // throw new MalformedURLException("queryUrl not initialized");
+            // }
+            String response = null; // HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
             if (response == null) {
                 throw new IOException("Empty response");
             }
             updateStatus(ThingStatus.ONLINE);
-            updateChannels(Objects.requireNonNull(gson.fromJson(response, ApiResponse.class)));
+            // updateChannels(Objects.requireNonNull(gson.fromJson(response, ApiResponse.class)));
         } catch (MalformedURLException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Querying '%s' error : %s".formatted(queryUrl, e.getMessage()));
+            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            // "Querying '%s' error : %s".formatted(queryUrl, e.getMessage()));
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meteoalerte.internal.db.Department;
+import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
 import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.ui.icon.IconProvider;
@@ -47,16 +49,19 @@ public class MeteoAlertIconProvider implements IconProvider {
     private static final String DEFAULT_LABEL = "Météo Alerte Icons";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather events provided by Météo Alerte";
     private static final Set<String> ICONS = Set.of(WAVE, AVALANCHE, HEAT, FREEZE, FLOOD, SNOW, STORM, RAIN, WIND,
-            "meteo_france");
+            "meteo_france", "dept");
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
     private final BundleContext context;
     private final TranslationProvider i18nProvider;
+    private final DepartmentDbService dbService;
 
     @Activate
-    public MeteoAlertIconProvider(final BundleContext context, final @Reference TranslationProvider i18nProvider) {
+    public MeteoAlertIconProvider(final BundleContext context, final @Reference TranslationProvider i18nProvider,
+            @Reference DepartmentDbService dbService) {
         this.context = context;
         this.i18nProvider = i18nProvider;
+        this.dbService = dbService;
     }
 
     @Override
@@ -92,7 +97,17 @@ public class MeteoAlertIconProvider implements IconProvider {
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-        String icon = getResource(category);
+        String icon = null;
+        if (category.startsWith("dept_")) {
+            icon = getResource(category);
+            String deptId = category.split("_")[1];
+            Department department = dbService.getDept(deptId);
+            if (department != null) {
+                icon = icon.replaceAll("%shape%", department.shape);
+            }
+        } else {
+            icon = getResource(category);
+        }
         if (icon.isEmpty()) {
             return null;
         }

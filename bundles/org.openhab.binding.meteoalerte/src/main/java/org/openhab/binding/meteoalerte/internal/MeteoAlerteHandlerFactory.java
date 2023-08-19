@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.meteoalerte.internal;
 
-import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.THING_TYPE_METEO_ALERT;
+import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
+import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteBridgeHandler;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteHandler;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -29,6 +33,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -43,27 +48,35 @@ import com.google.gson.JsonDeserializer;
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson;
     private final MeteoAlertIconProvider iconProvider;
+    private final LocationProvider locationProvider;
+    private final DepartmentDbService dbService;
 
     @Activate
     public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
+            @Reference LocationProvider locationProvider, @Reference DepartmentDbService dbService,
             @Reference MeteoAlertIconProvider iconProvider) {
         this.iconProvider = iconProvider;
-        this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
-                (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                        .parse(json.getAsJsonPrimitive().getAsString())
-                        .withZoneSameInstant(timeZoneProvider.getTimeZone()))
-                .create();
+        this.locationProvider = locationProvider;
+        this.dbService = dbService;
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(ZonedDateTime.class,
+                        (JsonDeserializer<ZonedDateTime>) (json, type, context) -> ZonedDateTime
+                                .parse(json.getAsJsonPrimitive().getAsString())
+                                .withZoneSameInstant(timeZoneProvider.getTimeZone()))
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_METEO_ALERT.equals(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return supportsThingType(thingTypeUID) ? new MeteoAlerteHandler(thing, gson, iconProvider) : null;
+        return BRIDGE_TYPE_API.equals(thingTypeUID)
+                ? new MeteoAlerteBridgeHandler((Bridge) thing, gson, locationProvider, dbService)
+                : THING_TYPE_DEPARTEMENT.equals(thingTypeUID) ? new MeteoAlerteHandler(thing, iconProvider) : null;
     }
 }
