@@ -49,7 +49,6 @@ import org.apache.http.util.EntityUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManagerUtil;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.AuthDto;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.DeviceDto;

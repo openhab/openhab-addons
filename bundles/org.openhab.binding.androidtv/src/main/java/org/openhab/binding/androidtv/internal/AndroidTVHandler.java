@@ -272,10 +272,18 @@ public class AndroidTVHandler extends BaseThingHandler {
                     ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
                     shieldtvConfig.shim = true;
                     shieldtvConnectionManager = new ShieldTVConnectionManager(this, shieldtvConfig);
+                } else if (command.toString().equals("PHILIPSTV_HALT") && (philipstvConnectionManager != null)) {
+                    philipstvConnectionManager.dispose();
+                    philipstvConnectionManager = null;
+                } else if (command.toString().equals("PHILIPSTV_START")) {
+                    PhilipsTVConfiguration philipstvConfig = getConfigAs(PhilipsTVConfiguration.class);
+                    philipstvConnectionManager = new PhilipsTVConnectionManager(this, philipstvConfig);
                 } else if (command.toString().startsWith("GOOGLETV") && (googletvConnectionManager != null)) {
                     googletvConnectionManager.handleCommand(channelUID, command);
                 } else if (command.toString().startsWith("SHIELDTV") && (shieldtvConnectionManager != null)) {
                     shieldtvConnectionManager.handleCommand(channelUID, command);
+                } else if (command.toString().startsWith("PHILIPSTV") && (philipstvConnectionManager != null)) {
+                    philipstvConnectionManager.handleCommand(channelUID, command);
                 }
             }
             return;
@@ -301,7 +309,22 @@ public class AndroidTVHandler extends BaseThingHandler {
         }
 
         if (THING_TYPE_PHILIPSTV.equals(thingTypeUID) && (philipstvConnectionManager != null)) {
-            philipstvConnectionManager.handleCommand(channelUID, command);
+            if (CHANNEL_PINCODE.equals(channelUID.getId())) {
+                if (command instanceof StringType) {
+                    if (!philipstvConnectionManager.getLoggedIn()) {
+                        philipstvConnectionManager.handleCommand(channelUID, command);
+                        return;
+                    }
+                }
+            } else if (CHANNEL_APP.equals(channelUID.getId()) || CHANNEL_APPNAME.equals(channelUID.getId())) {
+                if (command instanceof StringType) {
+                    philipstvConnectionManager.handleCommand(channelUID, command);
+                    return;
+                }
+            } else if (googletvConnectionManager == null) {
+                philipstvConnectionManager.handleCommand(channelUID, command);
+                return;
+            }
         }
 
         if (googletvConnectionManager != null) {
