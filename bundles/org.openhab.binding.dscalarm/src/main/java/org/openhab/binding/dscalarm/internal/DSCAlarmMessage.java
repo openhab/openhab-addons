@@ -219,13 +219,13 @@ public class DSCAlarmMessage {
 
                     case PartitionArmed: /* 652 */
                         mode = message.substring(4);
-                        if (mode.equals("0")) {
+                        if ("0".equals(mode)) {
                             name += " (Away)";
-                        } else if (mode.equals("1")) {
+                        } else if ("1".equals(mode)) {
                             name += " (Stay)";
-                        } else if (mode.equals("2")) {
+                        } else if ("2".equals(mode)) {
                             name += " (ZEA)";
-                        } else if (mode.equals("3")) {
+                        } else if ("3".equals(mode)) {
                             name += " (ZES)";
                         }
                         messageType = DSCAlarmMessageType.PARTITION_EVENT;
@@ -343,37 +343,37 @@ public class DSCAlarmMessage {
         sb.append(description);
         sb.append("\"");
 
-        if (!timeStamp.equals("")) {
+        if (!"".equals(timeStamp)) {
             sb.append(", Time Stamp: ");
             sb.append(timeStamp);
         }
 
-        if (!partition.equals("0")) {
+        if (!"0".equals(partition)) {
             sb.append(", Partition: ");
             sb.append(partition);
         }
 
-        if (!zone.equals("0")) {
+        if (!"0".equals(zone)) {
             sb.append(", Zone: ");
             sb.append(zone);
         }
 
-        if (!data.equals("")) {
+        if (!"".equals(data)) {
             sb.append(", Data: ");
             sb.append(data);
         }
 
-        if (!mode.equals("")) {
+        if (!"".equals(mode)) {
             sb.append(", Mode: ");
             sb.append(mode);
         }
 
-        if (!user.equals("")) {
+        if (!"".equals(user)) {
             sb.append(", user: ");
             sb.append(user);
         }
 
-        if (!error.equals("")) {
+        if (!"".equals(error)) {
             sb.append(", error: ");
             sb.append(error);
         }
