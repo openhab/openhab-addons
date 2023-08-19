@@ -32,6 +32,9 @@ public class AmbilightPowerDto {
     @JsonProperty
     private String power = "";
 
+    public AmbilightPowerDto() {
+    }
+
     public String getPower() {
         return power;
     }

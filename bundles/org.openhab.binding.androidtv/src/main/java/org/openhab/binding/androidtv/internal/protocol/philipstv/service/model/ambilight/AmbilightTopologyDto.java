@@ -54,6 +54,9 @@ public class AmbilightTopologyDto {
     @JsonProperty("right")
     private int right;
 
+    public AmbilightTopologyDto() {
+    }
+
     public void setTop(int top) {
         this.top = top;
     }
