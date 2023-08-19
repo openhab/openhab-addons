@@ -152,6 +152,10 @@ public class JdbcBaseDAOTest {
                 Arguments.of(new SwitchItem("Integer_SwitchItem"), 1, null),
                 Arguments.of(new RollershutterItem("String_RollershutterItem"), "39", null),
                 Arguments.of(new ColorItem("Integer_ColorItem"), 5, null), //
+                Arguments.of(new NumberItem("Timestamp_NumberItem"), java.sql.Timestamp.valueOf("2023-08-15 21:02:06"),
+                        null),
+                Arguments.of(new NumberItem("Timestamp_NumberItem_Unit"),
+                        java.sql.Timestamp.valueOf("2023-08-15 21:02:06"), SIUnits.CELSIUS),
                 Arguments.of(new LocationItem("Timestamp_LocationItem"),
                         java.sql.Timestamp.valueOf("2023-08-15 21:02:06"), null));
     }
