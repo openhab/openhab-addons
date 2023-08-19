@@ -25,9 +25,9 @@
 				<label>API Key</label>
 				<description>API key from the Amber website</description>
 			</parameter>
-			<parameter name="site" type="text">
-				<label>Site</label>
-				<description>Site ID for your address (Optional)</description>
+			<parameter name="nmi" type="text">
+				<label>NMI</label>
+				<description>NMI for your address (Optional)</description>
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>

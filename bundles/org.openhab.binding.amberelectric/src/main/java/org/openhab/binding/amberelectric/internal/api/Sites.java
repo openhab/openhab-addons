@@ -34,14 +34,24 @@ public class Sites {
     private Sites() {
     }
 
-    public static Sites parse(String response) {
+    public static Sites parse(String response, String nem) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
-        JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
         Sites sites = new Sites();
-        sites.siteid = jsonObject.get("id").getAsString();
-        sites.nmi = jsonObject.get("nmi").getAsString();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+            if (nem.equals(jsonObject.get("nmi").getAsString())) {
+                sites.siteid = jsonObject.get("id").getAsString();
+                sites.nmi = jsonObject.get("nmi").getAsString();
+            }
+        }
+        if ((nem == null) || (sites.siteid == null)) { // nem not specified, or not found so we take the first siteid
+                                                       // found
+            JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
+            sites.siteid = jsonObject.get("id").getAsString();
+            sites.nmi = jsonObject.get("nmi").getAsString();
+        }
         return sites;
     }
 }

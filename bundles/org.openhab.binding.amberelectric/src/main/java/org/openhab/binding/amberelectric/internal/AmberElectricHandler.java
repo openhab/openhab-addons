@@ -45,8 +45,9 @@ public class AmberElectricHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AmberElectricHandler.class);
 
     private long refreshInterval;
-    private @Nullable String siteID;
     private @Nullable String apikey;
+    private @Nullable String nmi;
+    private @Nullable String siteID;
 
     private @NonNullByDefault({}) AmberElectricWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
@@ -66,9 +67,9 @@ public class AmberElectricHandler extends BaseThingHandler {
         if (config.apikey == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key must be set");
         } else {
-            webTargets = new AmberElectricWebTargets(config.site);
+            webTargets = new AmberElectricWebTargets();
             refreshInterval = config.refresh;
-            siteID = config.site;
+            nmi = config.nmi;
             apikey = config.apikey;
 
             schedulePoll();
@@ -113,10 +114,10 @@ public class AmberElectricHandler extends BaseThingHandler {
     private void pollStatus() throws IOException {
 
         if (siteID == null) {
-            Sites sites = webTargets.getSites(apikey);
+            Sites sites = webTargets.getSites(apikey, nmi);
             // add error handling
             siteID = sites.siteid;
-            logger.debug("Detected amber siteid is {}", sites.siteid);
+            logger.debug("Detected amber siteid is {}, for nmi {}", sites.siteid, sites.nmi);
         }
 
         CurrentPrices currentPrices = webTargets.getCurrentPrices(siteID, apikey);

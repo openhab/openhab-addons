@@ -35,15 +35,14 @@ public class AmberElectricWebTargets {
     private String getCurrentPricesUri;
     private final Logger logger = LoggerFactory.getLogger(AmberElectricWebTargets.class);
 
-    public AmberElectricWebTargets(String siteid) {
+    public AmberElectricWebTargets() {
         String getSitesUri = "https://api.amber.com.au/v1/sites";
-        String getCurrentPricesUri = getSitesUri + "/" + siteid + "/prices/current";
     }
 
-    public Sites getSites(String apikey) throws AmberElectricCommunicationException {
+    public Sites getSites(String apikey, String nmi) throws AmberElectricCommunicationException {
         String getSitesUri = "https://api.amber.com.au/v1/sites";
         String response = invoke("GET", getSitesUri, apikey);
-        return Sites.parse(response);
+        return Sites.parse(response, nmi);
     }
 
     public CurrentPrices getCurrentPrices(String siteid, String apikey) throws AmberElectricCommunicationException {

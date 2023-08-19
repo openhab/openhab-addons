@@ -19,6 +19,6 @@ package org.openhab.binding.amberelectric.internal;
  */
 public class AmberElectricConfiguration {
     public String apikey;
-    public String site;
+    public String nmi = "";
     public long refresh = 60;
 }

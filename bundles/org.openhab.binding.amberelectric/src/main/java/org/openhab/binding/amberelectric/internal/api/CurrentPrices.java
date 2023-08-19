@@ -57,7 +57,8 @@ public class CurrentPrices {
                 currentprices.elecStatus = jsonObject.get("descriptor").getAsString();
             }
             if ("feedIn".equals(jsonObject.get("channelType").getAsString())) {
-                currentprices.feedInPerKwh = jsonObject.get("perKwh").getAsDouble();
+                // Multiple value from API by -1 to make the value match the app
+                currentprices.feedInPerKwh = -1 * jsonObject.get("perKwh").getAsDouble();
                 currentprices.feedInStatus = jsonObject.get("descriptor").getAsString();
             }
             if ("controlledLoad".equals(jsonObject.get("channelType").getAsString())) {
