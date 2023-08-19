@@ -5,10 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="department">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="api"/>
-        </supported-bridge-type-refs>
-        
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
 		<label>Alertes Département</label>
 		<description>Fournit les niveaux d'alerte météo pour un département.</description>
 
@@ -61,7 +61,7 @@
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
-		
+
 		<representation-property>department</representation-property>
 
 		<config-description>

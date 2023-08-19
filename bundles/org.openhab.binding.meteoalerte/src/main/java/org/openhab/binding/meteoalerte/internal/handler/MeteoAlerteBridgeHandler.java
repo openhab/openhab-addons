@@ -133,5 +133,4 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
     public DepartmentDbService getDbService() {
         return dbService;
     }
-
 }
