@@ -115,8 +115,8 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     private Optional<Double> getOptionalDoubleFromConfig(Configuration config, String key) {
         Object o = config.get(key);
 
-        if (o instanceof BigDecimal) {
-            return Optional.of(((BigDecimal) o).doubleValue());
+        if (o instanceof BigDecimal decimal) {
+            return Optional.of(decimal.doubleValue());
         }
 
         return Optional.empty();
@@ -207,16 +207,16 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
 
     private TriggerHandlerCallback getCallback() {
         ModuleHandlerCallback localCallback = callback;
-        if (localCallback != null && localCallback instanceof TriggerHandlerCallback) {
-            return (TriggerHandlerCallback) localCallback;
+        if (localCallback != null && localCallback instanceof TriggerHandlerCallback handlerCallback) {
+            return handlerCallback;
         }
 
         throw new IllegalStateException();
     }
 
     private double getDutyCycleValueInPercent(State state) throws PWMException {
-        if (state instanceof DecimalType) {
-            return ((DecimalType) state).doubleValue();
+        if (state instanceof DecimalType type) {
+            return type.doubleValue();
         } else if (state instanceof StringType) {
             try {
                 return Integer.parseInt(state.toString());

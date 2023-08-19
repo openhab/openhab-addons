@@ -92,8 +92,8 @@ public abstract class ScriptDisposalAwareScriptExtensionProvider
 
         if (forScript != null) {
             for (Object o : forScript.values()) {
-                if (o instanceof ScriptDisposalAware) {
-                    ((ScriptDisposalAware) o).unload(scriptIdentifier);
+                if (o instanceof ScriptDisposalAware script) {
+                    script.unload(scriptIdentifier);
                 }
             }
         }
