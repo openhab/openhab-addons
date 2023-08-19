@@ -425,7 +425,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         PhilipsTVPairing pairing = new PhilipsTVPairing();
         try {
             if (pincode.isEmpty()) {
-                pairing.finishPairingWithTv(config, this, target);
+                pairing.finishPairingWithTv(config.pairingCode, this, target);
             } else {
                 pairing.finishPairingWithTv(pincode, this, target);
             }

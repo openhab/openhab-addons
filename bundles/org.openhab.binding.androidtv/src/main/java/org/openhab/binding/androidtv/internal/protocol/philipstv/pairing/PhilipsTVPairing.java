@@ -99,12 +99,6 @@ public class PhilipsTVPairing {
         logger.info("The pairing code is valid for {} seconds.", pairingDto.getTimeout());
     }
 
-    public void finishPairingWithTv(PhilipsTVConfiguration config, PhilipsTVConnectionManager handler, HttpHost target)
-            throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
-            KeyManagementException {
-        finishPairingWithTv(config.pairingCode, handler, target);
-    }
-
     public void finishPairingWithTv(String pairingCode, PhilipsTVConnectionManager handler, HttpHost target)
             throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
             KeyManagementException {
