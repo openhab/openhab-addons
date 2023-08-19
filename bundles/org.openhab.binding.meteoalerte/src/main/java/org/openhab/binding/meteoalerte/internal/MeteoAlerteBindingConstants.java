@@ -47,6 +47,5 @@ public class MeteoAlerteBindingConstants {
     public static final String END_TIME = "end-time";
     public static final String COMMENT = "comment";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_API,
-            THING_TYPE_DEPARTEMENT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_API, THING_TYPE_DEPARTEMENT);
 }
