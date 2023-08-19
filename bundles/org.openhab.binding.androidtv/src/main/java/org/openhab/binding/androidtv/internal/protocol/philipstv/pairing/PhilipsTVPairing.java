@@ -102,7 +102,12 @@ public class PhilipsTVPairing {
     public void finishPairingWithTv(PhilipsTVConfiguration config, PhilipsTVConnectionManager handler, HttpHost target)
             throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
             KeyManagementException {
-        String pairingCode = config.pairingCode;
+        finishPairingWithTv(config.pairingCode, handler, target);
+    }
+
+    public void finishPairingWithTv(String pairingCode, PhilipsTVConnectionManager handler, HttpHost target)
+            throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
+            KeyManagementException {
 
         AuthDto authDto = new AuthDto();
         authDto.setAuthAppId("1");

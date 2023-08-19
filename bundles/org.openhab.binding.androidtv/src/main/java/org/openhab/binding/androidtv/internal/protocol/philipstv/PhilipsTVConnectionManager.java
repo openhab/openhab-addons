@@ -58,6 +58,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -235,6 +236,28 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
         String username = this.username;
         String password = this.password;
+
+        if (channelUID.getId().equals(CHANNEL_PINCODE)) {
+            if (command instanceof StringType) {
+                HttpHost target = new HttpHost(config.ipAddress, config.port, HTTPS);
+                if (command.toString().equals("REQUEST")) {
+                    try {
+                        initPairingCodeRetrieval(target);
+                    } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Error occurred while trying to present a Pairing Code on TV.");
+                    }
+                } else {
+                    boolean hasFailed = initCredentialsRetrieval(target, command.toString());
+                    if (hasFailed) {
+                        postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Error occurred during retrieval of credentials.");
+                    }
+                }
+            }
+            return;
+        }
+
         if ((username.isEmpty()) || (password.isEmpty())) {
             return; // pairing process is not finished
         }
@@ -283,27 +306,26 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         String password = this.password;
         String macAddress = this.macAddress;
 
-        if ((config.pairingCode.isEmpty()) && (username.isEmpty()) && (password.isEmpty())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Pairing is not configured yet, trying to present a Pairing Code on TV.");
-            try {
-                initPairingCodeRetrieval(target); // TODO wirft keine Exception wenn URL auf Grund anderer Version nicht
-                // gefunden wird
-            } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error occurred while trying to present a Pairing Code on TV.");
+        if ((username.isEmpty()) || (password.isEmpty())) {
+            if (config.pairingCode.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "Pairing is not configured yet, trying to present a Pairing Code on TV.");
+                try {
+                    initPairingCodeRetrieval(target);
+                } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Error occurred while trying to present a Pairing Code on TV.");
+                }
+            } else if (!config.pairingCode.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "Pairing Code is available, but credentials missing. Trying to retrieve them.");
+                boolean hasFailed = initCredentialsRetrieval(target);
+                if (hasFailed) {
+                    postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Error occurred during retrieval of credentials.");
+                }
             }
             return;
-        } else if ((!config.pairingCode.isEmpty()) && ((username.isEmpty()) || (password.isEmpty()))) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Pairing Code is available, but credentials missing. Trying to retrieve them.");
-            boolean hasFailed = initCredentialsRetrieval(target); // TODO hier fehlt authTimeStamp falls zu lange Zeit
-            // vergangen ist - man MUSS von vorne anfangen
-            if (hasFailed) {
-                postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Error occurred during retrieval of credentials.");
-                return;
-            }
         }
 
         if (!config.useUpnpDiscovery && isSchedulerInitializable()) {
@@ -393,12 +415,20 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     }
 
     private boolean initCredentialsRetrieval(HttpHost target) {
+        return initCredentialsRetrieval(target, "");
+    }
+
+    private boolean initCredentialsRetrieval(HttpHost target, String pincode) {
         boolean hasFailed = false;
         logger.info(
                 "Pairing code is available, but username and/or password is missing. Therefore we try to grant authorization and retrieve username and password.");
         PhilipsTVPairing pairing = new PhilipsTVPairing();
         try {
-            pairing.finishPairingWithTv(config, this, target);
+            if (pincode.isEmpty()) {
+                pairing.finishPairingWithTv(config, this, target);
+            } else {
+                pairing.finishPairingWithTv(pincode, this, target);
+            }
             postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Authentication with Philips TV device was successful. Continuing initialization of the tv.");
         } catch (Exception e) {
