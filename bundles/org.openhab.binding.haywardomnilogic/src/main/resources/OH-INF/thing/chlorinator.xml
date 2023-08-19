@@ -67,7 +67,7 @@
 	</channel-type>
 
 	<channel-type id="chlorError">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Chlorinator Error</label>
 		<state readOnly="true"/>
 	</channel-type>
@@ -77,10 +77,6 @@
 		<label>Chlorinator Alert</label>
 		<description>Chlorinator Alert</description>
 		<state readOnly="true">
-			<options>
-				<option value="0">None</option>
-				<option value="16">Low T-Cell Temperature</option>
-			</options>
 		</state>
 	</channel-type>
 
@@ -99,9 +95,9 @@
 	</channel-type>
 
 	<channel-type id="status">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Status</description>
-		<state pattern="%d" readOnly="true"/>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

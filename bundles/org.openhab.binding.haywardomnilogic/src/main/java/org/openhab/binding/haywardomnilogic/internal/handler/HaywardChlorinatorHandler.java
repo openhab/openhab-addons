@@ -77,13 +77,17 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                         data = bridgehandler.evaluateXPath("//Chlorinator/@scMode", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_SCMODE, data.get(i));
 
-                        // Error
+                        // Error Bit Array
                         data = bridgehandler.evaluateXPath("//Chlorinator/@chlrError", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ERROR, data.get(i));
+                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ERROR,
+                                String.format("%16s", Integer.toBinaryString(Integer.parseInt(data.get(i))))
+                                        .replace(" ", "0"));
 
-                        // Alert
+                        // Alert Bit Array
                         data = bridgehandler.evaluateXPath("//Chlorinator/@chlrAlert", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ALERT, data.get(i));
+                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ALERT,
+                                String.format("%16s", Integer.toBinaryString(Integer.parseInt(data.get(i))))
+                                        .replace(" ", "0"));
 
                         // Average Salt Level
                         data = bridgehandler.evaluateXPath("//Chlorinator/@avgSaltLevel", xmlResponse);
@@ -93,19 +97,11 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                         data = bridgehandler.evaluateXPath("//Chlorinator/@instantSaltLevel", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_INSTANTSALTLEVEL, data.get(i));
 
-                        // Status
+                        // Status Bit Array
                         data = bridgehandler.evaluateXPath("//Chlorinator/@status", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(i));
-
-                        if ("0".equals(data.get(i))) {
-                            updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0");
-                            // chlorState is used to set the chlorinator cfgState in the timedPercent command
-                            this.chlorState = "2";
-                        } else {
-                            updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1");
-                            // chlorState is used to set the chlorinator cfgState in the timedPercent command
-                            this.chlorState = "3";
-                        }
+                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS,
+                                String.format("%16s", Integer.toBinaryString(Integer.parseInt(data.get(i))))
+                                        .replace(" ", "0"));
                     }
                 }
                 this.updateStatus(ThingStatus.ONLINE);
