@@ -14,6 +14,7 @@ package org.openhab.binding.ipcamera.internal;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -117,7 +118,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         // create the MD5 hashes
         String ha1 = username + ":" + realm + ":" + password;
         ha1 = calcMD5Hash(ha1);
-        Random random = new Random();
+        Random random = new SecureRandom();
         String cnonce = Integer.toHexString(random.nextInt());
         ncCounter = (ncCounter > 125) ? 1 : ++ncCounter;
         String nc = String.format("%08X", ncCounter); // 8 digit hex number

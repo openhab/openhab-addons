@@ -18,6 +18,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -478,7 +479,7 @@ public class OnvifConnection {
     }
 
     String createNonce() {
-        Random nonce = new Random();
+        Random nonce = new SecureRandom();
         return "" + nonce.nextInt();
     }
 

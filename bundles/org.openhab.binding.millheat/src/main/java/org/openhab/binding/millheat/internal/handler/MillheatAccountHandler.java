@@ -15,6 +15,7 @@ package org.openhab.binding.millheat.internal.handler;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -107,7 +108,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) MillheatAccountConfiguration config;
 
     private static String getRandomString(final int sizeOfRandomString) {
-        final Random random = new Random();
+        final Random random = new SecureRandom();
         final StringBuilder sb = new StringBuilder(sizeOfRandomString);
         for (int i = 0; i < sizeOfRandomString; ++i) {
             sb.append(ALLOWED_NONCE_CHARACTERS.charAt(random.nextInt(ALLOWED_NONCE_CHARACTERS_LENGTH)));

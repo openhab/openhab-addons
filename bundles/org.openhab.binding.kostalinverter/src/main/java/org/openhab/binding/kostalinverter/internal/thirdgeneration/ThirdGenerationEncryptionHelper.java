@@ -17,6 +17,7 @@ import static org.openhab.binding.kostalinverter.internal.thirdgeneration.ThirdG
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Random;
@@ -105,7 +106,7 @@ final class ThirdGenerationEncryptionHelper {
      * @return nonce
      */
     static String createClientNonce() {
-        Random generator = new Random();
+        Random generator = new SecureRandom();
 
         // Randomize the random generator
         byte[] randomizeArray = new byte[1024];
