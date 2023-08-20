@@ -71,11 +71,6 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             throw new DaikinCommunicationException("Invalid response from host");
         }
 
-        if (controlInfo.mode == Mode.AUTO && autoModeValue.isEmpty()) {
-            autoModeValue = Optional.of(controlInfo.autoModeValue);
-            logger.debug("AUTO uses mode={}", controlInfo.autoModeValue);
-        }
-
         updateState(DaikinBindingConstants.CHANNEL_AC_POWER, OnOffType.from(controlInfo.power));
         updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
 
@@ -218,7 +213,12 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         // If mode=0 is not accepted try AUTO1 (mode=1)
         if (!accepted && newMode == Mode.AUTO && autoModeValue.isEmpty()) {
             info.autoModeValue = Mode.AUTO1.getValue();
-            webTargets.setControlInfo(info);
+            if (webTargets.setControlInfo(info)) {
+                autoModeValue = Optional.of(info.autoModeValue);
+                logger.debug("AUTO uses mode={}", info.autoModeValue);
+            } else {
+                logger.warn("AUTO mode not accepted with mode=0 or mode=1");
+            }
         }
     }
 

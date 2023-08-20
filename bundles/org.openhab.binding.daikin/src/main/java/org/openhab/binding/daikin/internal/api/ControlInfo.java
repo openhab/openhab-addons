@@ -38,14 +38,14 @@ public class ControlInfo {
 
     public String ret = "";
     public boolean power = false;
-    // Some models (e.g. BRP069A81) uses `1` for its Auto mode instead of `0`
+    // Store the accepted auto mode for later use.
     public int autoModeValue = Mode.AUTO.getValue();
     public Mode mode = Mode.AUTO;
-    /** Degrees in Celsius. */
+    // Degrees in Celsius.
     public Optional<Double> temp = Optional.empty();
     public FanSpeed fanSpeed = FanSpeed.AUTO;
     public FanMovement fanMovement = FanMovement.STOPPED;
-    /* Not supported by all units. Sets the target humidity for dehumidifying. */
+    // Not supported by all units. Sets the target humidity for dehumidifying.
     public Optional<Integer> targetHumidity = Optional.empty();
     public AdvancedMode advancedMode = AdvancedMode.UNKNOWN;
     public boolean separatedDirectionParams = false;
@@ -63,9 +63,8 @@ public class ControlInfo {
         info.power = "1".equals(responseMap.get("pow"));
         info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
                 .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);
-        // Normalize AUTO1 and AUTO7 to AUTO, but remember the actual value to be sent back to the adapter
+        // Normalize AUTO1 and AUTO7 to AUTO
         if (info.mode == Mode.AUTO1 || info.mode == Mode.AUTO7) {
-            info.autoModeValue = info.mode.getValue();
             info.mode = Mode.AUTO;
         }
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
