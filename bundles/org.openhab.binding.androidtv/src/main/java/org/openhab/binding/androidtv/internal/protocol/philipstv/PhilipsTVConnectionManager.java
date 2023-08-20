@@ -17,6 +17,12 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsT
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyManagementException;
@@ -111,9 +117,14 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     private String statusMessage = "";
 
+    private HttpHost target;
+
     private String username = "";
     private String password = "";
     private String macAddress = "";
+
+    private @Nullable ScheduledFuture<?> deviceHealthJob;
+    private boolean isOnline = true;
 
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -129,6 +140,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         this.translationProvider = handler.getTranslationProvider();
         this.discoveryServiceRegistry = handler.getDiscoveryServiceRegistry();
         this.stateDescriptionProvider = handler.getStateDescriptionProvider();
+        this.target = new HttpHost(config.ipAddress, config.port, HTTPS);
         initialize();
     }
 
@@ -232,6 +244,37 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         saveConfigs();
     }
 
+    private boolean servicePing() {
+        int timeout = 500;
+
+        SocketAddress socketAddress = new InetSocketAddress(config.ipAddress, config.port);
+        try (Socket socket = new Socket()) {
+            socket.connect(socketAddress, timeout);
+            return true;
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
+            return false;
+        } catch (IOException ignored) {
+            // IOException is thrown by automatic close() of the socket.
+            // This should actually never return a value as we should return true above already
+            return true;
+        }
+    }
+
+    private void checkHealth() {
+        boolean isOnline = servicePing();
+        logger.debug("{} - Device Health - Online: {} - Logged In: {}", handler.getThingID(), isOnline, isLoggedIn);
+        if (isOnline != this.isOnline) {
+            this.isOnline = isOnline;
+            if (isOnline) {
+                logger.debug("{} - Device is back online.  Attempting reconnection.", handler.getThingID());
+                connect();
+            } else {
+                logger.debug("{} - Device is offline.", handler.getThingID());
+                this.isLoggedIn = false;
+            }
+        }
+    }
+
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
         String username = this.username;
@@ -300,7 +343,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             return;
         }
 
-        HttpHost target = new HttpHost(config.ipAddress, config.port, HTTPS);
+        HttpHost target = this.target;
+
         readConfigs();
         String username = this.username;
         String password = this.password;
@@ -316,6 +360,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error occurred while trying to present a Pairing Code on TV.");
                 }
+                return;
             } else if (!config.pairingCode.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "Pairing Code is available, but credentials missing. Trying to retrieve them.");
@@ -323,10 +368,27 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 if (hasFailed) {
                     postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Error occurred during retrieval of credentials.");
+                    return;
                 }
             }
-            return;
+
+            if ((username.isEmpty()) || (password.isEmpty())) {
+                postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Pairing was unsuccessful.");
+                return;
+            }
         }
+
+        connect();
+
+        deviceHealthJob = scheduler.scheduleWithFixedDelay(this::checkHealth, 5, 5, TimeUnit.SECONDS);
+    }
+
+    private void connect() {
+        HttpHost target = this.target;
+        String username = this.username;
+        String password = this.password;
+        String macAddress = this.macAddress;
 
         if (!config.useUpnpDiscovery && isSchedulerInitializable()) {
             startRefreshScheduler();
@@ -359,6 +421,18 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             }
         }
 
+        startServices(connectionManager);
+
+        if (discoveryServiceRegistry != null) {
+            discoveryServiceRegistry.addDiscoveryListener(this);
+        }
+
+        // Thing is initialized, check power state and available communication of the TV and set ONLINE or OFFLINE
+        postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, EMPTY);
+        channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
+    }
+
+    private void startServices(ConnectionManager connectionManager) {
         Map<String, PhilipsTVService> services = new HashMap<>();
 
         PhilipsTVService volumeService = new VolumeService(this, connectionManager);
@@ -394,14 +468,6 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         services.put(CHANNEL_POWER, new PowerService(this, connectionManager));
         services.put(CHANNEL_SEARCH_CONTENT, new SearchContentService(this, connectionManager));
         channelServices = Collections.unmodifiableMap(services);
-
-        if (discoveryServiceRegistry != null) {
-            discoveryServiceRegistry.addDiscoveryListener(this);
-        }
-
-        // Thing is initialized, check power state and available communication of the TV and set ONLINE or OFFLINE
-        postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, EMPTY);
-        channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
     }
 
     /**
@@ -485,7 +551,14 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     private void startRefreshScheduler() {
         int configuredRefreshRateOrDefault = Optional.ofNullable(config.refreshRate).orElse(10);
         if (configuredRefreshRateOrDefault > 0) { // If value equals zero, refreshing should not be scheduled
-            logger.info("Starting Refresh Scheduler for Philips TV {} with refresh rate of {}.", handler.getThingID(),
+            ScheduledFuture<?> refreshScheduler = this.refreshScheduler;
+            if (refreshScheduler != null) {
+                logger.debug("Refresh Scheduler already started for Philips TV {}, terminating.", handler.getThingID());
+                if (isRefreshSchedulerRunning.test(refreshScheduler)) {
+                    stopRefreshScheduler();
+                }
+            }
+            logger.debug("Starting Refresh Scheduler for Philips TV {} with refresh rate of {}.", handler.getThingID(),
                     configuredRefreshRateOrDefault);
             refreshScheduler = scheduler.scheduleWithFixedDelay(this::refreshTvProperties, 10,
                     configuredRefreshRateOrDefault, TimeUnit.SECONDS);
@@ -493,7 +566,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     }
 
     private void stopRefreshScheduler() {
-        logger.info("Stopping Refresh Scheduler for Philips TV: {}", handler.getThingID());
+        logger.debug("Stopping Refresh Scheduler for Philips TV: {}", handler.getThingID());
         refreshScheduler.cancel(true);
     }
 
@@ -561,6 +634,10 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             if (isRefreshSchedulerRunning.test(refreshScheduler)) {
                 stopRefreshScheduler();
             }
+        }
+        ScheduledFuture<?> deviceHealthJob = this.deviceHealthJob;
+        if (deviceHealthJob != null) {
+            deviceHealthJob.cancel(true);
         }
     }
 }
