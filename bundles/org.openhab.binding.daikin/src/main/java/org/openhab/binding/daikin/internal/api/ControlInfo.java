@@ -65,6 +65,7 @@ public class ControlInfo {
                 .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);
         // Normalize AUTO1 and AUTO7 to AUTO
         if (info.mode == Mode.AUTO1 || info.mode == Mode.AUTO7) {
+            info.autoModeValue = info.mode.getValue();
             info.mode = Mode.AUTO;
         }
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
