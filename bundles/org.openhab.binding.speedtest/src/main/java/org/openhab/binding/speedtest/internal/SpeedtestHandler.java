@@ -22,17 +22,26 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.speedtest.internal.dto.ResultContainer;
 import org.openhab.binding.speedtest.internal.dto.ResultsContainerServerList;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -62,6 +71,8 @@ public class SpeedtestHandler extends BaseThingHandler {
     private static Runtime rt = Runtime.getRuntime();
     private long pollingInterval = 60;
     private String serverID = "";
+    private static final long API_REQUEST_TIMEOUT_SECONDS = 16L;
+    private @Nullable HttpClient httpClient;
 
     private @Nullable ScheduledFuture<?> pollingJob;
     public volatile boolean isRunning = false;
@@ -100,8 +111,9 @@ public class SpeedtestHandler extends BaseThingHandler {
         NOT_SET
     }
 
-    public SpeedtestHandler(Thing thing) {
+    public SpeedtestHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -387,9 +399,40 @@ public class SpeedtestHandler extends BaseThingHandler {
                 new StringType(interfaceInternalIp));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.ISP), new StringType(isp));
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_URL),
-                new StringType(resultUrl));
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER), new StringType(server));
-    }
+        HttpClient client = httpClient;
+        if (client == null) {
+            logger.debug("Unable to download image because httpClient is not set");
+        } else {
+            try {
+                String url = String.valueOf(resultUrl) + ".png";
+                logger.debug("Downloading result image from: {}", url);
+                Request request = client.newRequest(url);
+                request.method(HttpMethod.GET);
+                request.timeout(API_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+                ContentResponse contentResponse = request.send();
+                switch (contentResponse.getStatus()) {
+                    case HttpStatus.OK_200:
+                        RawType image = new RawType(contentResponse.getContent(),
+                                contentResponse.getHeaders().get(HttpHeader.CONTENT_TYPE));
+
+                        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_IMAGE), image);
+                    default:
+                        logger.debug("HTTP GET failed: {}, {}", contentResponse.getStatus(),
+                                contentResponse.getReason());
+                        break;
+                }
+            } catch (TimeoutException e) {
+                logger.debug("TimeoutException: Download of result image timed out");
+            } catch (ExecutionException e) {
+                logger.debug("ExecutionException: {}", e.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug("InterruptedException: {}", e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        }
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER),
+                new StringType(String.valueOf(server)));    }
 
     /**
      * Checks to make sure the executable for speedtest is valid

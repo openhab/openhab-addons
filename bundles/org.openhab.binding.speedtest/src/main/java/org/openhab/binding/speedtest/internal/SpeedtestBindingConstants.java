@@ -53,6 +53,7 @@ public class SpeedtestBindingConstants {
     public static final String INTERFACE_INTERNALIP = "interfaceInternalIp";
     public static final String INTERFACE_EXTERNALIP = "interfaceExternalIp";
     public static final String RESULT_URL = "resultUrl";
+    public static final String RESULT_IMAGE = "resultImage";
     public static final String TRIGGER_TEST = "triggerTest";
 
     public static final String PROPERTY_SERVER_LIST1 = "Server List 1";
@@ -66,7 +67,7 @@ public class SpeedtestBindingConstants {
     public static final String PROPERTY_SERVER_LIST9 = "Server List 9";
     public static final String PROPERTY_SERVER_LIST10 = "Server List 10";
 
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(SERVER, PING_JITTER, PING_LATENCY,
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(SERVER, TIMESTAMP, PING_JITTER, PING_LATENCY,
             DOWNLOAD_BANDWIDTH, DOWNLOAD_BYTES, DOWNLOAD_ELAPSED, UPLOAD_BANDWIDTH, UPLOAD_BYTES, UPLOAD_ELAPSED, ISP,
-            INTERFACE_INTERNALIP, INTERFACE_EXTERNALIP, RESULT_URL);
+            INTERFACE_INTERNALIP, INTERFACE_EXTERNALIP, RESULT_URL, TRIGGER_TEST);
 }

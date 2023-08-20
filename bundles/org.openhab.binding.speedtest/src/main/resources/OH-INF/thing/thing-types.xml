@@ -28,6 +28,7 @@
 			<channel id="interfaceExternalIp" typeId="interfaceExternalIp"/>
 
 			<channel id="resultUrl" typeId="resultUrl"/>
+			<channel id="resultImage" typeId="resultImage"/>
 
 			<channel id="triggerTest" typeId="triggerTest"/>
 		</channels>
@@ -155,6 +156,12 @@
 		<item-type>String</item-type>
 		<label>Result URL</label>
 		<description>The URL to the Speedtest results in HTML on the Ookla webserver</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="resultImage">
+		<item-type>Image</item-type>
+		<label>Result Image</label>
+		<description>The Speedtest results as image</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="triggerTest" advanced="true">

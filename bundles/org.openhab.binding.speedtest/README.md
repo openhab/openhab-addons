@@ -89,6 +89,7 @@ Ensure that the user that openHAB is running with, has the permissions to access
 | `interfaceInternalIp` | `String`                  | IP address of the internal interface that was used for the test   |
 | `interfaceExternalIp` | `String`                  | IP address of the external interface that was used for the test   |
 | `resultUrl`           | `String`                  | The URL to the Speedtest results in HTML on the Ookla webserver   |
+| `resultImage`         | `Image `                  | The Speedtest results as image                                    |
 | `triggerTest`         | `Switch`                  | Trigger in order to run Speedtest manually                        |
 
 ## Full Example
@@ -116,5 +117,6 @@ String                    Speedtest_ISP                   "ISP"                 
 String                    Speedtest_Interface_InternalIP  "Internal IP Address"   { channel="speedtest:speedtest:myspeedtest:interfaceInternalIp" }
 String                    Speedtest_Interface_ExternalIP  "External IP Address"   { channel="speedtest:speedtest:myspeedtest:interfaceExternalIp" }
 String                    Speedtest_ResultURL             "Result URL"            { channel="speedtest:speedtest:myspeedtest:resultUrl" }
+Image                     Speedtest_ResultImage           "Result Image"          { channel="speedtest:speedtest:myspeedtest:resultImage" }
 Switch                    Speedtest_TriggerTest           "Trigger Test"          { channel="speedtest:speedtest:myspeedtest:triggerTest" }
 ```
