@@ -122,8 +122,8 @@ public class BaseIntegrationTest extends JavaTest {
 
     @Override
     protected void waitForAssert(Runnable runnable) {
-        // Longer timeouts and slower polling with real dynamodb
-        // Non-CI tests against local server are with lower timeout.
+        // Use longer timeouts and slower polling with real dynamodb when credentials are set.
+        // Otherwise, test against a local server with lower timeouts.
         waitForAssert(runnable, hasFakeServer() ? 30_000L : 120_000L, hasFakeServer() ? 500 : 1000L);
     }
 
