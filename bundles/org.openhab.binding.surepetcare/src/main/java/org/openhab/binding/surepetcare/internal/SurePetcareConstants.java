@@ -54,6 +54,7 @@ public class SurePetcareConstants {
 
     public static final long DEFAULT_REFRESH_INTERVAL_TOPOLOGY = 36000; // 10 hours
     public static final long DEFAULT_REFRESH_INTERVAL_STATUS = 300; // 5 mins
+    public static final int DEFAULT_HTTP_TIMEOUT = 8;
 
     public static final String PROPERTY_NAME_ID = "id";
 

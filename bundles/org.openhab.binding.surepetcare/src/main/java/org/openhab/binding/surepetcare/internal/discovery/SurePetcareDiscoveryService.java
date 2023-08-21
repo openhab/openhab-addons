@@ -89,8 +89,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SurePetcareBridgeHandler) {
-            bridgeHandler = (SurePetcareBridgeHandler) handler;
+        if (handler instanceof SurePetcareBridgeHandler bridgeHandler) {
             bridgeUID = bridgeHandler.getUID();
         }
     }
