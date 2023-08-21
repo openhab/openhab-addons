@@ -218,7 +218,6 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         } else {
             logger.warn("Mandatory characteristic {} not found at accessory {}. ", characteristic,
                     accessory.getItem().getName());
-
         }
         return Optional.empty();
     }
