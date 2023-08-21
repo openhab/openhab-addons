@@ -371,6 +371,10 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                     return;
                 }
             }
+            readConfigs();
+            username = this.username;
+            password = this.password;
+            macAddress = this.macAddress;
 
             if ((username.isEmpty()) || (password.isEmpty())) {
                 postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

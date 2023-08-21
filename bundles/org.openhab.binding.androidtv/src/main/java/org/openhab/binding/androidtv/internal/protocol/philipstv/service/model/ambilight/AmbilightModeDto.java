@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ambilight;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -31,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Benjamin Meyer - Initial contribution
  * @author Ben Rosenblum - Merged into AndroidTV
  */
-@NonNullByDefault
 public class AmbilightModeDto {
 
     @JsonProperty("current")

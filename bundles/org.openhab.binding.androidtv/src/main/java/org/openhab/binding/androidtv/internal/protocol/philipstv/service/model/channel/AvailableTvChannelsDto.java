@@ -14,7 +14,6 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Benjamin Meyer - Initial contribution
  * @author Ben Rosenblum - Merged into AndroidTV
  */
-@NonNullByDefault
 public class AvailableTvChannelsDto {
 
     @JsonProperty("Channel")
@@ -49,9 +47,6 @@ public class AvailableTvChannelsDto {
 
     @JsonProperty
     private String installCountry = "";
-
-    public AvailableTvChannelsDto() {
-    }
 
     public void setChannel(List<ChannelDto> channel) {
         this.channel = channel;

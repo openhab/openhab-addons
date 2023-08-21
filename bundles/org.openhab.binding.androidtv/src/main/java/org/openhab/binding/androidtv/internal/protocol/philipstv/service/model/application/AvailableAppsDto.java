@@ -14,7 +14,6 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,7 +25,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Benjamin Meyer - Initial contribution
  * @author Ben Rosenblum - Merged into AndroidTV
  */
-@NonNullByDefault
 public class AvailableAppsDto {
 
     @JsonProperty
@@ -34,9 +32,6 @@ public class AvailableAppsDto {
 
     @JsonProperty
     private @Nullable List<ApplicationsDto> applications;
-
-    public AvailableAppsDto() {
-    }
 
     public void setVersion(int version) {
         this.version = version;
