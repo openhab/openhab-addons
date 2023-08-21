@@ -56,16 +56,16 @@
 
 	<channel-type id="filterSpeedPercent">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Filter Speed %</label>
-		<description>Filter Speed (%)</description>
-		<state min="0" max="100" step="5" pattern="%d %unit%" readOnly="false"/>
+		<label>Filter Speed % </label>
+		<description>Filter Speed %</description>
+		<state min="0" max="100" step="5" pattern="%1.0f %" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterSpeedRpm">
-		<item-type>Number</item-type>
-		<label>Filter Speed RPM</label>
-		<description>Filter Speed (RPM)</description>
-		<state min="0" max="3600" step="200" pattern="%d" readOnly="false"/>
+		<item-type>Number:Frequency</item-type>
+		<label>Filter Speed rpm</label>
+		<description>Filter Speed rpm</description>
+		<state min="0" max="3600" step="200" pattern="%1.0f rpm" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterSpeedSelect">
@@ -107,9 +107,9 @@
 
 	<channel-type id="filterLastSpeed">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Last Speed</label>
-		<description>Last Speed (%)</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<label>Last Speed % </label>
+		<description>Last Speed %</description>
+		<state pattern="%1.0f %" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

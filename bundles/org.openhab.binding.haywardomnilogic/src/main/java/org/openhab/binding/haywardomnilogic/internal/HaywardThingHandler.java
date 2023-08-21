@@ -79,14 +79,19 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
                     case HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT:
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
-                    case HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM:
                     case HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED:
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
                     case HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT:
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
-                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
                 }
                 return StringType.valueOf(value);
+            case "Number:Frequency":
+                switch (channelID) {
+                    case HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM:
+                        return new QuantityType<>(Integer.parseInt(value), Units.RPM);
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
+                        return new QuantityType<>(Integer.parseInt(value), Units.RPM);
+                }
             case "Number:Temperature":
                 Bridge bridge = getBridge();
                 if (bridge != null) {

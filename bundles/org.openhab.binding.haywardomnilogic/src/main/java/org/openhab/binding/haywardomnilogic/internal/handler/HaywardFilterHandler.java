@@ -80,7 +80,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINSPEED)))
                             .withMaximum(new BigDecimal(
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXSPEED)))
-                            .build();
+                            .withPattern("%1.0f %").withStep(new BigDecimal(5)).withReadOnly(false).build();
                     bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
 
@@ -92,7 +92,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINRPM)))
                             .withMaximum(new BigDecimal(
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM)))
-                            .build();
+                            .withPattern("%1.0f rpm").withStep(new BigDecimal(200)).withReadOnly(false).build();
                     bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
 
