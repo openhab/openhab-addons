@@ -30,6 +30,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * The {@link LightStateConverter} is responsible for mapping to/from jue types.
@@ -276,7 +277,7 @@ public class LightStateConverter {
 
     private static HSBType fromXYtoHSBType(State lightState) {
         float[] xy = lightState.getXY();
-        HSBType hsb = HSBType.fromXY(xy[0], xy[1]);
+        HSBType hsb = ColorUtil.xyToHsb(new double[] { xy[0], xy[1] });
 
         int brightnessInPercent = (int) Math.ceil(lightState.getBrightness() / BRIGHTNESS_FACTOR);
         brightnessInPercent = restrictToBounds(brightnessInPercent);

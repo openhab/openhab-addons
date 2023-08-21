@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,15 +51,15 @@ import org.openhab.core.thing.ThingUID;
  * @author Michael Grammling - Initial contribution
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  */
+@NonNullByDefault
 public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
 
     private static final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "bridge");
     private static final String TEST_USER_NAME = "eshTestUser";
     private static final String DUMMY_HOST = "1.2.3.4";
 
-    private ThingRegistry thingRegistry;
-
-    private ScheduledExecutorService scheduler;
+    private @NonNullByDefault({}) ThingRegistry thingRegistry;
+    private @NonNullByDefault({}) ScheduledExecutorService scheduler;
 
     @BeforeEach
     public void setUp() {

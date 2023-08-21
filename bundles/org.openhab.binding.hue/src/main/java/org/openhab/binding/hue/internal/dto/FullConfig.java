@@ -35,8 +35,9 @@ public class FullConfig {
     public List<FullLight> getLights() {
         ArrayList<FullLight> lightsList = new ArrayList<>();
 
-        for (String id : lights.keySet()) {
-            FullLight light = lights.get(id);
+        for (Map.Entry<String, FullLight> entry : lights.entrySet()) {
+            String id = entry.getKey();
+            FullLight light = entry.getValue();
             light.setId(id);
             lightsList.add(light);
         }
@@ -52,8 +53,9 @@ public class FullConfig {
     public List<FullGroup> getGroups() {
         ArrayList<FullGroup> groupsList = new ArrayList<>();
 
-        for (String id : groups.keySet()) {
-            FullGroup group = groups.get(id);
+        for (Map.Entry<String, FullGroup> entry : groups.entrySet()) {
+            String id = entry.getKey();
+            FullGroup group = entry.getValue();
             group.setId(id);
             groupsList.add(group);
         }

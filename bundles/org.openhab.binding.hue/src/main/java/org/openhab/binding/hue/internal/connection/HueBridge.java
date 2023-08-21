@@ -996,7 +996,12 @@ public class HueBridge {
     // Methods that convert gson exceptions into ApiExceptions
     private <T> T safeFromJson(String json, Type typeOfT) throws ApiException {
         try {
-            return gson.fromJson(json, typeOfT);
+            @Nullable
+            T safe = gson.fromJson(json, typeOfT);
+            if (safe == null) {
+                throw new ApiException("JSON is null or empty");
+            }
+            return safe;
         } catch (JsonParseException e) {
             throw new ApiException("API returned unexpected result: " + e.getMessage());
         }
@@ -1004,7 +1009,12 @@ public class HueBridge {
 
     private <T> T safeFromJson(String json, Class<T> classOfT) throws ApiException {
         try {
-            return gson.fromJson(json, classOfT);
+            @Nullable
+            T safe = gson.fromJson(json, classOfT);
+            if (safe == null) {
+                throw new ApiException("JSON is null or empty");
+            }
+            return safe;
         } catch (JsonParseException e) {
             throw new ApiException("API returned unexpected result: " + e.getMessage());
         }

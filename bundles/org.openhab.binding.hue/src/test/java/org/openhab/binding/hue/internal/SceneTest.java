@@ -15,7 +15,6 @@ package org.openhab.binding.hue.internal;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +38,7 @@ public class SceneTest {
     @Test
     public void testIsApplicableToHasGroupIdMatchingGroup() {
         String groupId = "groupId";
-        List<String> lights = Arrays.asList("1", "2");
+        List<String> lights = List.of("1", "2");
 
         Scene scene = new Scene(PLACEHOLDER, PLACEHOLDER, groupId, lights, false);
         FullGroup group = new FullGroup(groupId, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER_STATE, lights,
@@ -56,8 +55,8 @@ public class SceneTest {
     public void testIsApplicableToHasGroupIdNotMatchingGroup() {
         String groupId = "groupId";
         String otherGroupId = "otherGroupId";
-        List<String> lights = Arrays.asList("1", "2");
-        List<String> otherLights = Arrays.asList("1", "2", "3");
+        List<String> lights = List.of("1", "2");
+        List<String> otherLights = List.of("1", "2", "3");
 
         Scene scene = new Scene(PLACEHOLDER, PLACEHOLDER, groupId, lights, false);
 
@@ -76,8 +75,8 @@ public class SceneTest {
      */
     @Test
     public void testIsApplicableToNoGroupIdSceneLightsContainedInGroup() {
-        List<String> lights = Arrays.asList("1", "2");
-        List<String> moreLights = Arrays.asList("1", "2", "3");
+        List<String> lights = List.of("1", "2");
+        List<String> moreLights = List.of("1", "2", "3");
 
         Scene scene = new Scene(PLACEHOLDER, PLACEHOLDER, null, lights, false);
 
@@ -96,9 +95,9 @@ public class SceneTest {
      */
     @Test
     public void testIsApplicableToNoGroupIdSceneLightsNotContainedInGroup() {
-        List<String> lights = Arrays.asList("1", "2");
-        List<String> lessLights = Arrays.asList("1");
-        List<String> differentLights = Arrays.asList("3");
+        List<String> lights = List.of("1", "2");
+        List<String> lessLights = List.of("1");
+        List<String> differentLights = List.of("3");
 
         Scene scene = new Scene(PLACEHOLDER, PLACEHOLDER, null, lights, false);
 

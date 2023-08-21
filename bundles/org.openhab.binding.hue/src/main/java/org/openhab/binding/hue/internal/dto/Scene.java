@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.dto;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class Scene {
     private @NonNullByDefault({}) String id;
     private @NonNullByDefault({}) String name;
     @SerializedName("lights")
-    private @NonNullByDefault({}) List<String> lightIds;
+    private @Nullable List<String> lightIds;
     @SerializedName("group")
     private @Nullable String groupId;
     private boolean recycle;
@@ -84,7 +85,8 @@ public class Scene {
      * @return list of lights that the scene applies to
      */
     public List<String> getLightIds() {
-        return lightIds;
+        List<String> lightIds = this.lightIds;
+        return lightIds != null ? lightIds : new ArrayList<String>();
     }
 
     /**
@@ -141,11 +143,11 @@ public class Scene {
      * </ol>
      */
     public boolean isApplicableTo(FullGroup group) {
-        if (getGroupId() == null) {
+        String groupId = this.groupId;
+        if (groupId == null) {
             return getLightIds().stream().allMatch(id -> group.getLightIds().contains(id));
         } else {
-            String groupId = getGroupId();
-            return groupId != null ? group.getId().contentEquals(groupId) : false;
+            return group.getId().contentEquals(groupId);
         }
     }
 

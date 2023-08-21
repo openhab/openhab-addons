@@ -13,7 +13,6 @@
 package org.openhab.binding.hue.internal.dto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +44,6 @@ public class SetAttributesRequest {
         }
 
         this.name = name;
-        this.lights = lights == null ? null : lights.stream().map(l -> l.getId()).collect(Collectors.toList());
+        this.lights = lights == null ? null : lights.stream().map(l -> l.getId()).toList();
     }
 }
