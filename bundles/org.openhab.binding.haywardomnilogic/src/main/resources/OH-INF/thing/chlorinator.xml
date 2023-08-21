@@ -40,7 +40,6 @@
 		<description>Operating Mode</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">Off</option>
 				<option value="1">Timed Percent</option>
 				<option value="2">ORP Autosense</option>
 			</options>
@@ -51,7 +50,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Salt Output (%)</label>
 		<description>Current salt output setting for the chlorinator (%).</description>
-		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
+		<state min="0" max="100" step="1.0" pattern="%d %" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="scMode">
@@ -84,14 +83,14 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Average Salt Level</label>
 		<description>Average Salt Level</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d ppm" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="instantSaltLevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Instant Salt Level</label>
 		<description>Instant Salt Level</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d ppm" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="status">

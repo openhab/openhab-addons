@@ -65,7 +65,7 @@ Hayward OmniLogic Connection Parameters:
 |-----------------------|----------------------|----------------------------------------------------------|:----------:|
 | chlorEnable           | Switch               | Chlorinator enable                                       |     R/W    |
 | chlorOperatingMode    | String               | Chlorinator operating mode                               |      R     |
-| chlorTimedPercent     | Number:Dimensionless | Chlorinator timed percent                                |     R/W    |
+| chlorTimedPercent     | Number:Dimensionless | Chlorinator salt output (%)                              |     R/W    |
 | chlorOperatingState   | Number               | Chlorinator operating state                              |      R     |
 | chlorScMode           | String               | Chlorinator super chlorinate mode                        |      R     |
 | chlorError            | String               | Chlorinator error bit array                              |      R     |
@@ -129,11 +129,13 @@ Hayward OmniLogic Connection Parameters:
 |---------------------|----------------------|------------------------|:----------:|
 | filterEnable        | Switch               | Filter enable          |     R/W    |
 | filterValvePosition | String               | Filter valve position  |      R     |
-| filterSpeedPercent  | Number:Dimensionless | Filter speed in %      |     R/W    |
-| filterSpeedRpm      | Number               | Filter speed in RPM    |     R/W    |
+| filterSpeedPercent  | Number:Dimensionless | Filter speed (%)       |     R/W    |
+| filterSpeedRpm      | Number:Frequency     | Filter speed (rpm)     |     R/W    |
 | filterSpeedSelect   | String               | Filter speed presets   |     R/W    |
 | filterState         | String               | Filter state           |      R     |
-| filterLastSpeed     | Number:Dimensionless | Filter last speed in % |      R     |
+| filterLastSpeed     | Number:Dimensionless | Filter last speed (%)  |      R     |
+
+**Item Types Number:Dimensionless should have the units (i.e. %) defined in the Unit metadata 
 
 ### Heater Channels
 
@@ -147,11 +149,13 @@ Hayward OmniLogic Connection Parameters:
 | Channel Type ID  | Item Type            | Description          | Read Write |
 |------------------|----------------------|----------------------|:----------:|
 | pumpEnable       | Switch               | Pump enable          |     R/W    |
-| pumpSpeedPercent | Number:Dimensionless | Pump speed in %      |     R/W    |
-| pumpSpeedRpm     | Number               | Pump speed in RPM    |     R/W    |
+| pumpSpeedPercent | Number:Dimensionless | Pump speed (%)       |     R/W    |
+| pumpSpeedRpm     | Number: Frequency    | Pump speed in rpm    |     R/W    |
 | pumpSpeedSelect  | String               | Pump speed presets   |     R/W    |
 | pumpState        | String               | Pump state           |      R     |
-| pumpLastSpeed    | Number:Dimensionless | Pump last speed in % |      R     |
+| pumpLastSpeed    | Number:Dimensionless | Pump last speed (%)  |      R     |
+
+**Item Types Number:Dimensionless should have the units (i.e. %) defined in the Unit metadata 
 
 ### Relay Channels
 
