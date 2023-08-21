@@ -702,9 +702,9 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Method that is called back in case of fatal stream or session events. The error is only processed if the the
-     * bridge is online, not closing, and the identities of the current session and the session that caused the error
-     * are the same. In other words it ignores errors relating to expired sessions.
+     * Method that is called back in case of fatal stream or session events. The error is only processed if the
+     * connection is online, not in process of closing, and the identities of the current session and the session that
+     * caused the error are the same. In other words it ignores errors relating to expired sessions.
      *
      * @param listener the entity that caused this method to be called.
      * @param cause the type of exception that caused the error.
