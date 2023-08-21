@@ -13,8 +13,12 @@
 package org.openhab.binding.hue.internal.dto;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -25,13 +29,14 @@ import com.google.gson.reflect.TypeToken;
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  * @author Laurent Garnier - field state added
  */
+@NonNullByDefault
 public class FullGroup extends Group {
     public static final Type GSON_TYPE = new TypeToken<Map<String, FullGroup>>() {
     }.getType();
 
-    private State action;
-    private List<String> lights;
-    private State groupState; // Will not be set by hue API
+    private @Nullable State action;
+    private @Nullable List<String> lights;
+    private @Nullable State groupState; // Will not be set by hue API
 
     FullGroup() {
         super();
@@ -53,7 +58,7 @@ public class FullGroup extends Group {
      *
      * @return last state update
      */
-    public State getAction() {
+    public @Nullable State getAction() {
         return action;
     }
 
@@ -63,7 +68,8 @@ public class FullGroup extends Group {
      * @return lights in the group
      */
     public List<String> getLightIds() {
-        return lights;
+        List<String> lights = this.lights;
+        return lights != null ? lights : new ArrayList<>();
     }
 
     /**
@@ -72,6 +78,10 @@ public class FullGroup extends Group {
      * @return current state
      */
     public State getState() {
+        State groupState = this.groupState;
+        if (groupState == null) {
+            throw new IllegalStateException("Group state not initialized when requested");
+        }
         return groupState;
     }
 
