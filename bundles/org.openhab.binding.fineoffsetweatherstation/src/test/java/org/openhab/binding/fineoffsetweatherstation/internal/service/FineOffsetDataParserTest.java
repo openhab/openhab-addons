@@ -17,13 +17,13 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
-import org.bouncycastle.util.encoders.Hex;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
+import org.openhab.core.util.HexUtils;
 
 /**
  * @author Andreas Berger - Initial contribution
@@ -32,7 +32,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Mea
 class FineOffsetDataParserTest {
     @Test
     void testLiveDataWH45() {
-        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(Hex.decode(
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(HexUtils.hexToBytes(
                 "FFFF2700510100D306280827EF0927EF020045074F0A00150B00000C0000150000000016000117001900000E0000100000110021120000002113000005850D00007000D12E0060005A005B005502AE028F0633"),
                 new ConversionContext(ZoneOffset.UTC));
         Assertions.assertThat(data)
@@ -56,7 +56,7 @@ class FineOffsetDataParserTest {
 
     @Test
     void testLiveDataELV() {
-        byte[] data = Hex.decode(
+        byte[] data = HexUtils.hexToBytes(
                 "FFFF0B00500401010B0201120300620401120501120629072108254B09254B0A01480B00040C000A0E000000001000000021110000002E120000014F130000100714000012FD15000B4BB816086917056D35");
         List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.ELV).getMeasuredValues(data,
                 new ConversionContext(ZoneOffset.UTC));
@@ -77,8 +77,8 @@ class FineOffsetDataParserTest {
 
     @Test
     void testRainData() {
-        byte[] data = Hex
-                .decode("FFFF5700290E000010000000001100000024120000003113000005030D00000F0064880000017A017B0030");
+        byte[] data = HexUtils
+                .hexToBytes("FFFF5700290E000010000000001100000024120000003113000005030D00000F0064880000017A017B0030");
         List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getRainData(data,
                 new ConversionContext(ZoneOffset.UTC));
         Assertions.assertThat(measuredValues)
@@ -91,7 +91,7 @@ class FineOffsetDataParserTest {
 
     @Test
     void testRainDataW90() {
-        byte[] data = Hex.decode(
+        byte[] data = HexUtils.hexToBytes(
                 "FFFF5700398000008300000009840000000985000000C786000000C7810000870064006400640064006400640064006400640064880900007A02BF");
         Assertions.assertThat(Command.CMD_READ_RAIN.isResponseValid(data)).isTrue();
         List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getRainData(data,
@@ -105,7 +105,7 @@ class FineOffsetDataParserTest {
 
     @Test
     void testFirmware() {
-        byte[] data = Hex.decode("FFFF501511456173795765617468657256312E362E3400");
+        byte[] data = HexUtils.hexToBytes("FFFF501511456173795765617468657256312E362E3400");
         String firmware = new FineOffsetDataParser(Protocol.ELV).getFirmwareVersion(data);
         Assertions.assertThat(firmware).isEqualTo("EasyWeatherV1.6.4");
     }
