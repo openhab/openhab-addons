@@ -217,7 +217,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     private void createZoneLowbatteryFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
         int pageOffset = panelType == PanelType.EVO48 ? 58 : 64;
         byte[] firstBlock = Arrays.copyOfRange(firstPage, 52, pageOffset);
-        if (PanelType.isBigRamEvo(panelType)) {
+        if (!PanelType.isBigRamEvo(panelType)) {
             result.setZonesLowBattery(firstBlock);
         } else {
             byte[] secondBlock = Arrays.copyOfRange(secondPage, 24, 36);
