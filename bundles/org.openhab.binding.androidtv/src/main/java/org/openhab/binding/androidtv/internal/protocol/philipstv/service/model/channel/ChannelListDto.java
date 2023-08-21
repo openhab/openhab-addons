@@ -25,10 +25,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NonNullByDefault
 public class ChannelListDto {
 
-    @JsonProperty
+    @JsonProperty("id")
     private String id = "";
 
-    @JsonProperty
+    @JsonProperty("version")
     private String version = "";
 
     public String getId() {

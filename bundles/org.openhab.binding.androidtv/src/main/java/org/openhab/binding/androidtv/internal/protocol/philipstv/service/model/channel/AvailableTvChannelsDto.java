@@ -30,22 +30,22 @@ public class AvailableTvChannelsDto {
     @JsonProperty("Channel")
     private @Nullable List<ChannelDto> channel;
 
-    @JsonProperty
+    @JsonProperty("id")
     private String id = "";
 
-    @JsonProperty
+    @JsonProperty("medium")
     private String medium = "";
 
-    @JsonProperty
+    @JsonProperty("version")
     private int version;
 
-    @JsonProperty
+    @JsonProperty("listType")
     private String listType = "";
 
-    @JsonProperty
+    @JsonProperty("operator")
     private String operator = "";
 
-    @JsonProperty
+    @JsonProperty("installCountry")
     private String installCountry = "";
 
     public void setChannel(List<ChannelDto> channel) {

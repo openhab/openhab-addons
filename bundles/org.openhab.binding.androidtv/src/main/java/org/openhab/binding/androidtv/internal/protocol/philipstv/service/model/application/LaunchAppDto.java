@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NonNullByDefault
 public class LaunchAppDto {
 
-    @JsonProperty
+    @JsonProperty("intent")
     private IntentDto intent;
 
     public LaunchAppDto(IntentDto intent) {

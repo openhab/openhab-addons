@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NonNullByDefault
 public class ExtrasDto {
 
-    @JsonProperty
+    @JsonProperty("query")
     private String query = "";
 
     public void setQuery(String query) {

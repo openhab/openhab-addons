@@ -22,19 +22,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ApplicationsDto {
 
-    @JsonProperty
+    @JsonProperty("label")
     private String label = "";
 
-    @JsonProperty
+    @JsonProperty("id")
     private String id = "";
 
-    @JsonProperty
+    @JsonProperty("type")
     private String type = "";
 
-    @JsonProperty
+    @JsonProperty("intent")
     private IntentDto intent;
 
-    @JsonProperty
+    @JsonProperty("order")
     private int order;
 
     public ApplicationsDto(IntentDto intent) {

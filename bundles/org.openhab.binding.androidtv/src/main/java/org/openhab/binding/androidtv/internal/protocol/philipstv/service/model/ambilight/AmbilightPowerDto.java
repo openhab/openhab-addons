@@ -29,11 +29,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NonNullByDefault
 public class AmbilightPowerDto {
 
-    @JsonProperty
+    @JsonProperty("power")
     private String power = "";
-
-    public AmbilightPowerDto() {
-    }
 
     public String getPower() {
         return power;

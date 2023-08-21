@@ -25,10 +25,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NonNullByDefault
 public class ComponentDto {
 
-    @JsonProperty
+    @JsonProperty("className")
     private String className = "";
 
-    @JsonProperty
+    @JsonProperty("packageName")
     private String packageName = "";
 
     public void setClassName(String className) {

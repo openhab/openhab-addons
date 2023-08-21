@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class CurrentAppDto {
 
-    @JsonProperty
+    @JsonProperty("component")
     private ComponentDto component;
 
     public CurrentAppDto(ComponentDto component) {

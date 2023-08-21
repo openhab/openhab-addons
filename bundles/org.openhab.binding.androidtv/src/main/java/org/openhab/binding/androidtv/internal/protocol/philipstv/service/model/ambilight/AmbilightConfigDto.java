@@ -23,13 +23,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class AmbilightConfigDto {
 
-    @JsonProperty
+    @JsonProperty("isExpert")
     private boolean isExpert;
 
-    @JsonProperty
+    @JsonProperty("menuSetting")
     private String menuSetting = "";
 
-    @JsonProperty
+    @JsonProperty("styleName")
     private String styleName = "";
 
     @JsonProperty("colorSettings")

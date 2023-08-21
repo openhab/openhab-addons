@@ -26,7 +26,7 @@ public class VolumeDto {
     @JsonProperty("current")
     private int currentVolume;
 
-    @JsonProperty
+    @JsonProperty("muted")
     private boolean muted;
 
     public int getCurrentVolume() {

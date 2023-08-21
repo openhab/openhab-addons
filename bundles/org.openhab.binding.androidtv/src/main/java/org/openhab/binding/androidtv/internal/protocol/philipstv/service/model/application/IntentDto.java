@@ -25,13 +25,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NonNullByDefault
 public class IntentDto {
 
-    @JsonProperty
+    @JsonProperty("component")
     private ComponentDto component;
 
-    @JsonProperty
+    @JsonProperty("action")
     private String action = "";
 
-    @JsonProperty
+    @JsonProperty("extras")
     private ExtrasDto extras;
 
     public IntentDto(ComponentDto component, ExtrasDto extras) {

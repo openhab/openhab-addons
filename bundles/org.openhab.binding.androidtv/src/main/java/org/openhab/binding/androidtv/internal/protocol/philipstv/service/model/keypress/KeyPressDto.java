@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NonNullByDefault
 public class KeyPressDto {
 
-    @JsonProperty
+    @JsonProperty("key")
     private KeyPress key;
 
     public KeyPressDto(KeyPress key) {

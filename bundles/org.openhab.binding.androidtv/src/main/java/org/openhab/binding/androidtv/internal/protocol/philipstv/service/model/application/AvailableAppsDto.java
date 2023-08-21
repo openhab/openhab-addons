@@ -27,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class AvailableAppsDto {
 
-    @JsonProperty
+    @JsonProperty("version")
     private int version;
 
-    @JsonProperty
+    @JsonProperty("applications")
     private @Nullable List<ApplicationsDto> applications;
 
     public void setVersion(int version) {

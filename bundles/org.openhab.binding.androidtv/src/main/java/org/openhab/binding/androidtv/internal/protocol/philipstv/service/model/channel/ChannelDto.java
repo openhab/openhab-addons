@@ -26,31 +26,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NonNullByDefault
 public class ChannelDto {
 
-    @JsonProperty
+    @JsonProperty("serviceType")
     private String serviceType = "";
 
-    @JsonProperty
+    @JsonProperty("logoVersion")
     private int logoVersion;
 
-    @JsonProperty
+    @JsonProperty("ccid")
     private String ccid = "";
 
-    @JsonProperty
+    @JsonProperty("name")
     private String name = "";
 
-    @JsonProperty
+    @JsonProperty("preset")
     private String preset = "";
 
-    @JsonProperty
+    @JsonProperty("tsid")
     private int tsid;
 
-    @JsonProperty
+    @JsonProperty("type")
     private String type = "";
 
-    @JsonProperty
+    @JsonProperty("onid")
     private int onid;
 
-    @JsonProperty
+    @JsonProperty("sid")
     private int sid;
 
     public void setServiceType(String serviceType) {

@@ -23,10 +23,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class TvChannelDto {
 
-    @JsonProperty
+    @JsonProperty("channel")
     private ChannelDto channel;
 
-    @JsonProperty
+    @JsonProperty("channelList")
     private ChannelListDto channelList;
 
     public TvChannelDto(ChannelDto channel, ChannelListDto channelList) {
