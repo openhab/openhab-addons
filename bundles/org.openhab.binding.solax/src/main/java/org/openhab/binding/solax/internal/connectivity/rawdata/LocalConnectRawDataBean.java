@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link LocalConnectRawDataBean} collects the raw data and the specific implementation to return the parsed data.
@@ -38,14 +39,16 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
     private @Nullable String sn;
     private @Nullable String ver;
     private int type;
-    private short @Nullable [] Data;
-    private String @Nullable [] Information;
+    @SerializedName("Data")
+    private short @Nullable [] data;
+    @SerializedName("Information")
+    private String @Nullable [] information;
     private @Nullable String rawData;
 
     @Override
     public String toString() {
         return "LocalConnectRawDataBean [sn=" + sn + ", ver=" + ver + ", type=" + type + ", Information="
-                + Arrays.toString(Information) + ", Data=" + Arrays.toString(Data) + "]";
+                + Arrays.toString(information) + ", Data=" + Arrays.toString(data) + "]";
     }
 
     public @Nullable String getSn() {
@@ -73,19 +76,19 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
     }
 
     public short @Nullable [] getData() {
-        return Data;
+        return data;
     }
 
     public void setData(short @Nullable [] data) {
-        Data = data;
+        this.data = data;
     }
 
     public String @Nullable [] getInformation() {
-        return Information;
+        return information;
     }
 
     public void setInformation(String @Nullable [] information) {
-        Information = information;
+        this.information = information;
     }
 
     @Override
@@ -98,6 +101,10 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
     }
 
     public static LocalConnectRawDataBean fromJson(String json) {
+        if (json.isEmpty()) {
+            throw new IllegalStateException("Argument should be not null or empty.");
+        }
+
         Gson gson = GsonSupplier.getInstance();
         LocalConnectRawDataBean deserializedObject = gson.fromJson(json, LocalConnectRawDataBean.class);
         deserializedObject.setRawData(json);
@@ -223,9 +230,9 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
 
     private short getData(int index) {
         try {
-            short[] data = Data;
-            if (data != null) {
-                return data[index];
+            short[] dataArray = data;
+            if (dataArray != null) {
+                return dataArray[index];
             }
         } catch (IndexOutOfBoundsException e) {
             logger.debug("Tried to get data out of bounds of the raw data array.", e);
