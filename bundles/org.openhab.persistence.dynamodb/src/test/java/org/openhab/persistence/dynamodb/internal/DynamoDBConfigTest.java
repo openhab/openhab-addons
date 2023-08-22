@@ -60,12 +60,12 @@ public class DynamoDBConfigTest {
 
     @Test
     public void testInvalidRegion() throws Exception {
-        assertNull(DynamoDBConfig.fromConfig(Collections.singletonMap("region", "foobie")));
+        assertNull(DynamoDBConfig.fromConfig(Map.of("region", "foobie")));
     }
 
     @Test
     public void testRegionOnly() throws Exception {
-        assertNull(DynamoDBConfig.fromConfig(Collections.singletonMap("region", "eu-west-1")));
+        assertNull(DynamoDBConfig.fromConfig(Map.of("region", "eu-west-1")));
     }
 
     @Test
