@@ -29,6 +29,9 @@ public class TvSettingsUpdateDto {
     @JsonProperty
     private List<ValuesDto> values;
 
+    public TvSettingsUpdateDto() {
+    }
+
     public TvSettingsUpdateDto(List<ValuesDto> values) {
         this.values = values;
     }

@@ -38,6 +38,9 @@ public class AmbilightConfigDto {
     @JsonProperty("algorithm")
     private String algorithm = "";
 
+    public AmbilightConfigDto() {
+    }
+
     public AmbilightConfigDto(AmbilightColorSettingsDto colorSettings) {
         this.colorSettings = colorSettings;
     }

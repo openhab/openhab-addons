@@ -48,6 +48,9 @@ public class AvailableTvChannelsDto {
     @JsonProperty("installCountry")
     private String installCountry = "";
 
+    public AvailableTvChannelsDto() {
+    }
+
     public void setChannel(List<ChannelDto> channel) {
         this.channel = channel;
     }

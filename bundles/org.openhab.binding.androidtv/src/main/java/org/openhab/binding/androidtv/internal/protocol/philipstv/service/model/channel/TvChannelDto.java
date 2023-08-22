@@ -29,6 +29,9 @@ public class TvChannelDto {
     @JsonProperty("channelList")
     private ChannelListDto channelList;
 
+    public TvChannelDto() {
+    }
+
     public TvChannelDto(ChannelDto channel, ChannelListDto channelList) {
         this.channel = channel;
         this.channelList = channelList;

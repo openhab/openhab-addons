@@ -37,6 +37,9 @@ public class ApplicationsDto {
     @JsonProperty("order")
     private int order;
 
+    public ApplicationsDto() {
+    }
+
     public ApplicationsDto(IntentDto intent) {
         this.intent = intent;
     }

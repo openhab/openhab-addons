@@ -34,6 +34,9 @@ public class AmbilightModeDto {
     @JsonProperty("current")
     private String current = "";
 
+    public AmbilightModeDto() {
+    }
+
     public void setCurrent(String current) {
         this.current = current;
     }

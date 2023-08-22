@@ -26,6 +26,9 @@ public class CurrentAppDto {
     @JsonProperty("component")
     private ComponentDto component;
 
+    public CurrentAppDto() {
+    }
+
     public CurrentAppDto(ComponentDto component) {
         this.component = component;
     }

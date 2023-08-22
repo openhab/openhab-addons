@@ -33,6 +33,9 @@ public class AvailableAppsDto {
     @JsonProperty("applications")
     private @Nullable List<ApplicationsDto> applications;
 
+    public AvailableAppsDto() {
+    }
+
     public void setVersion(int version) {
         this.version = version;
     }

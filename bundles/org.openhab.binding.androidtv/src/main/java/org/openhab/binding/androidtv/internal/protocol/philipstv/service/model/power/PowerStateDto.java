@@ -30,6 +30,9 @@ public class PowerStateDto {
     @JsonProperty("powerstate")
     private String powerState = "";
 
+    public PowerStateDto() {
+    }
+
     public String getPowerState() {
         return powerState;
     }
