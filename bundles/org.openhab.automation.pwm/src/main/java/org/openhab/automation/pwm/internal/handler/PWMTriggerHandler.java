@@ -15,7 +15,7 @@ package org.openhab.automation.pwm.internal.handler;
 import static org.openhab.automation.pwm.internal.PWMConstants.*;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -202,7 +202,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     }
 
     private void setOutput(boolean enable) {
-        getCallback().triggered(module, Collections.singletonMap(OUTPUT, OnOffType.from(enable)));
+        getCallback().triggered(module, Map.of(OUTPUT, OnOffType.from(enable)));
     }
 
     private TriggerHandlerCallback getCallback() {
