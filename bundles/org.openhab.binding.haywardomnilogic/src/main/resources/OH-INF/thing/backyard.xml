@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Backyard</label>
-		<description>The Hayward Backyard</description>
+		<description>Backyard</description>
 		<channels>
 			<channel id="backyardAirTemp" typeId="airTemp"/>
 			<channel id="backyardStatus" typeId="backyardstatus"/>
