@@ -432,4 +432,23 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             return response.getContentAsString();
         }
     }
+
+    @Override
+    public int getQueuedZones() {
+        return state.jcReply.nq;
+    }
+
+    @Override
+    public int getCloudConnected() {
+        return state.jcReply.otcs;
+    }
+
+    @Override
+    public int getPausedState() {
+        return state.jcReply.pt;
+    }
+
+    @Override
+    public void setPausePrograms(int seconds) throws UnauthorizedApiException, CommunicationApiException {
+    }
 }
