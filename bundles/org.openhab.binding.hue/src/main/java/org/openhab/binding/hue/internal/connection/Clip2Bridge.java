@@ -527,7 +527,7 @@ public class Clip2Bridge implements Closeable {
      * streamId limit to trigger an internal recycle of the session before this GO_AWAY streamId is reached.
      */
     private static final int NGINX_MAX_REQUEST_COUNT = 1000;
-    private static final int STREAM_ID_LIMIT = ((NGINX_MAX_REQUEST_COUNT - 1) * 2) + 1 - (MAX_CONCURRENT_STREAMS * 2);
+    private static final int STREAM_ID_LIMIT = ((NGINX_MAX_REQUEST_COUNT - 1 - (MAX_CONCURRENT_STREAMS * 2)) * 2) + 1;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
