@@ -59,6 +59,10 @@ public enum PanelType {
         }
     }
 
+    public static boolean isBigRamEvo(PanelType panelType) {
+        return panelType == EVO192 || panelType == EVOHD;
+    }
+
     public int getPartitions() {
         return partitions;
     }
