@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Body of Water</label>
-		<description>The Hayward Body of Water</description>
+		<description>Body of Water</description>
 		<channels>
 			<channel id="bowFlow" typeId="waterFlow"/>
 			<channel id="bowWaterTemp" typeId="waterTemp"/>
