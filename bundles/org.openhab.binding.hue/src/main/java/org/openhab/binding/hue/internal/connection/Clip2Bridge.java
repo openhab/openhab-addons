@@ -392,7 +392,7 @@ public class Clip2Bridge implements Closeable {
         public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
             if (http2Session == session) {
-                bridgeHandler.getScheduler().submit(() -> recycleSession());
+                recycleSession();
             }
         }
 
@@ -521,6 +521,14 @@ public class Clip2Bridge implements Closeable {
     private static final int REQUEST_INTERVAL_MILLISECS = 50;
     private static final int MAX_CONCURRENT_STREAMS = 3;
 
+    /*
+     * The Hue bridge 'nginx' server has a maximum request count of 1000, and it triggers a GO_AWAY when the penultimate
+     * stream before that limit is opened; i.e. the GO_AWAY is triggered when streamId 1999 is opened. So we set a
+     * streamId limit to trigger an internal recycle of the session before this GO_AWAY streamId is reached.
+     */
+    private static final int NGINX_MAX_REQUEST_COUNT = 1000;
+    private static final int STREAM_ID_LIMIT = ((NGINX_MAX_REQUEST_COUNT - 1) * 2) + 1 - (MAX_CONCURRENT_STREAMS * 2);
+
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
     /**
@@ -575,6 +583,7 @@ public class Clip2Bridge implements Closeable {
     private @Nullable Session http2Session;
 
     private @Nullable Future<?> checkAliveTask;
+    private @Nullable Future<?> recycleTask;
 
     /**
      * Constructor.
@@ -645,6 +654,7 @@ public class Clip2Bridge implements Closeable {
     @Override
     public void close() {
         closing = true;
+        cancelTask(recycleTask, true);
         close2();
         try {
             stopHttp2Client();
@@ -699,6 +709,23 @@ public class Clip2Bridge implements Closeable {
             session.close(ErrorCode.NO_ERROR.code, "closeSession", Callback.NOOP);
         }
         http2Session = null;
+    }
+
+    /**
+     * Close the given stream and, if its streamId exceeds the limit, schedule to recycle the session.
+     *
+     * @param stream the stream to be closed.
+     */
+    private void closeStream(@Nullable Stream stream) {
+        if (Objects.nonNull(stream)) {
+            int streamId = stream.getId();
+            if (!stream.isReset()) {
+                stream.reset(new ResetFrame(streamId, ErrorCode.NO_ERROR.code), Callback.NOOP);
+            }
+            if (streamId > STREAM_ID_LIMIT) {
+                recycleSession();
+            }
+        }
     }
 
     /**
@@ -834,9 +861,7 @@ public class Clip2Bridge implements Closeable {
         } catch (TimeoutException e) {
             throw new ApiException("Error sending request", e);
         } finally {
-            if (Objects.nonNull(stream) && !stream.isReset()) {
-                stream.reset(new ResetFrame(stream.getId(), ErrorCode.NO_ERROR.code), Callback.NOOP);
-            }
+            closeStream(stream);
         }
     }
 
@@ -1116,36 +1141,40 @@ public class Clip2Bridge implements Closeable {
         } catch (ExecutionException | TimeoutException e) {
             throw new ApiException("Error sending PUT request", e);
         } finally {
-            if (Objects.nonNull(stream) && !stream.isReset()) {
-                stream.reset(new ResetFrame(stream.getId(), ErrorCode.NO_ERROR.code), Callback.NOOP);
-            }
+            closeStream(stream);
         }
     }
 
     /**
-     * Close and re-open the session. Triggered by a GO_AWAY message. Acquires a SessionSynchronizer 'write' lock to
-     * ensure single thread access while the new session is being created. Therefore it waits for any already running
-     * GET/PUT method calls, (having a 'read' lock), to complete. And so causes any new GET/PUT method calls to wait
-     * until this method releases the 'write' lock again.
+     * Schedule a task to close and re-open the session. Triggered if the streamId exceeds a given limit, or if the
+     * server sends a GO_AWAY message. The task acquires a SessionSynchronizer 'write' lock to ensure single thread
+     * access while the new session is being created. Therefore it waits for any already running GET/PUT method calls,
+     * which have a 'read' lock, to complete. And so causes any new GET/PUT method calls to wait until this method
+     * releases the 'write' lock again.
      */
     private synchronized void recycleSession() {
-        try (SessionSynchronizer sessionSynchronizer = new SessionSynchronizer(true)) {
-            LOGGER.debug("recycleSession()");
-            muteNotifications = true;
-            close2();
-            stopHttp2Client();
-            //
-            startHttp2Client();
-            open();
-        } catch (ApiException | InterruptedException e) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("recycleSession() exception", e);
-            } else {
-                LOGGER.warn("recycleSession() {}: {}", e.getClass().getSimpleName(), e.getMessage());
-            }
-        } finally {
-            muteNotifications = false;
-            LOGGER.debug("recycleSession() done");
+        Future<?> recycleTask = this.recycleTask;
+        if (Objects.isNull(recycleTask) || recycleTask.isDone()) {
+            this.recycleTask = bridgeHandler.getScheduler().submit(() -> {
+                try (SessionSynchronizer sessionSynchronizer = new SessionSynchronizer(true)) {
+                    LOGGER.debug("recycleSession()");
+                    muteNotifications = true;
+                    close2();
+                    stopHttp2Client();
+                    //
+                    startHttp2Client();
+                    open();
+                } catch (ApiException | InterruptedException e) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("recycleSession() exception", e);
+                    } else {
+                        LOGGER.warn("recycleSession() {}: {}", e.getClass().getSimpleName(), e.getMessage());
+                    }
+                } finally {
+                    muteNotifications = false;
+                    LOGGER.debug("recycleSession() done");
+                }
+            });
         }
     }
 
