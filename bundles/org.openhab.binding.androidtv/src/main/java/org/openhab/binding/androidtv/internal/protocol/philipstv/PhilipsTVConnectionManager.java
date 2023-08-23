@@ -288,13 +288,13 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                         initPairingCodeRetrieval(target);
                     } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Error occurred while trying to present a Pairing Code on TV.");
+                                "offline.error-occured-while-presenting-pairing-code");
                     }
                 } else {
                     boolean hasFailed = initCredentialsRetrieval(target, command.toString());
                     if (hasFailed) {
                         postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Error occurred during retrieval of credentials.");
+                                "offline.error-occured-during-retrieval-of-credentials");
                     }
                 }
             }
@@ -339,7 +339,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
         if ((config.ipAddress == null) || (config.port == null)) {
             postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Cannot connect to Philips TV. Host and/or port are not set.");
+                    "offline.cannot-connect-to-philipstv-host-port-not-set");
             return;
         }
 
@@ -353,21 +353,21 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         if ((username.isEmpty()) || (password.isEmpty())) {
             if (config.pairingCode.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Pairing is not configured yet, trying to present a Pairing Code on TV.");
+                        "offline.pairing-is-not-configured-yet-trying-to-present-a-pairing-code-on-tv");
                 try {
                     initPairingCodeRetrieval(target);
                 } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error occurred while trying to present a Pairing Code on TV.");
+                            "offline.error-occurred-while-trying-to-present-a-pairing-code-on-tv");
                 }
                 return;
             } else if (!config.pairingCode.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Pairing Code is available, but credentials missing. Trying to retrieve them.");
+                        "offline.pairing-code-is-available-but-credentials-missing");
                 boolean hasFailed = initCredentialsRetrieval(target);
                 if (hasFailed) {
                     postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Error occurred during retrieval of credentials.");
+                            "offline.error-occurred-during-retrieval-of-credentials");
                     return;
                 }
             }
@@ -378,7 +378,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
             if ((username.isEmpty()) || (password.isEmpty())) {
                 postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Pairing was unsuccessful.");
+                        "offline.pairing-was-unsuccessful");
                 return;
             }
         }
@@ -404,7 +404,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             httpClient = ConnectionManagerUtil.createSharedHttpClient(target, username, password);
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
             postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("Error occurred during creation of HTTP client: %s", e.getMessage()));
+                    String.format("offline.error-occurred-during-creation-of-http-client: %s", e.getMessage()));
             return;
         }
 
@@ -432,7 +432,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         }
 
         // Thing is initialized, check power state and available communication of the TV and set ONLINE or OFFLINE
-        postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, EMPTY);
+        postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.online");
         channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
     }
 
@@ -501,10 +501,10 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 pairing.finishPairingWithTv(pincode, this, target);
             }
             postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Authentication with Philips TV device was successful. Continuing initialization of the tv.");
+                    "offline.authentication-with-philips-tv-device-was-successful-continuing-initialization-of-the-tv");
         } catch (Exception e) {
             postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Could not successfully finish pairing process with the TV.");
+                    "offline.could-not-successfully-finish-pairing-process-with-the-tv");
             logger.warn("Error during finishing pairing process with the TV: {}", e.getMessage(), e);
             hasFailed = true;
         }
@@ -619,7 +619,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         logger.debug("thingRemoved: {}", thingUID);
 
         if (thingUID.equals(upnpThingUID)) {
-            postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
+            postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.online");
         }
     }
 
