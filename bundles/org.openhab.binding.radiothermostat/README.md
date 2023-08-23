@@ -66,6 +66,7 @@ curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}' -X POST
 - The `override` flag is not reported correctly on older thermostat versions (i.e. /tstat/model reports v1.09)
 - The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
 - Humidity information is available only when using a CT80 thermostat.
+- If `remote_temp` or `message` channels are used, their values in the thermostat will be removed during binding shutdown.
 
 ## Channels
 
