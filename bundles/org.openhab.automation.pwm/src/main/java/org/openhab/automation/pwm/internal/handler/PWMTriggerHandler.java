@@ -215,8 +215,8 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     }
 
     private double getDutyCycleValueInPercent(State state) throws PWMException {
-        if (state instanceof DecimalType type) {
-            return type.doubleValue();
+        if (state instanceof DecimalType decimal) {
+            return decimal.doubleValue();
         } else if (state instanceof StringType) {
             try {
                 return Integer.parseInt(state.toString());
