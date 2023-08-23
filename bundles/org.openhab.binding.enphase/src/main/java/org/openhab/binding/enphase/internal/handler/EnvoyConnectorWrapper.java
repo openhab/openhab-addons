@@ -112,12 +112,12 @@ public class EnvoyConnectorWrapper {
             final int majorVersionNumber = determineMajorVersionNumber();
 
             if (majorVersionNumber > 0 && majorVersionNumber < 7) {
-                logger.info(
+                logger.debug(
                         "Connection to Envoy determined by getting a reply from the Envoy using the prior to version 7 method.");
                 return envoyConnector;
             }
             if (majorVersionNumber >= 7) {
-                logger.info(
+                logger.debug(
                         "Connection to Envoy determined by getting a reply from the Envoy using version 7 connection method.");
                 return new EnvoyEntrezConnector(httpClient);
             }
@@ -144,10 +144,10 @@ public class EnvoyConnectorWrapper {
         if (majorVersionNumber < 0) {
             return null;
         } else if (majorVersionNumber < 7) {
-            logger.info("Connect to Envoy based on version number {} using standard connector", version);
+            logger.debug("Connect to Envoy based on version number {} using standard connector", version);
             return new EnvoyConnector(httpClient);
         } else {
-            logger.info("Connect to Envoy based on version number {} using entrez connector", version);
+            logger.debug("Connect to Envoy based on version number {} using entrez connector", version);
             return new EnvoyEntrezConnector(httpClient);
         }
     }

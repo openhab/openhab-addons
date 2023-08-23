@@ -23,7 +23,7 @@ The binding auto detects which data is available and will report this in the log
 
 The binding can discover Envoy gateways, micro inverters and relays.
 If login access is needed the Bridge `envoy` needs to be configured after discovering and adding before other things can be discovered.
-In that case after configuring the login run discovery again.
+In that case, after configuring the login, run discovery again.
 
 ## Thing Configuration
 

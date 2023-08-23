@@ -67,8 +67,8 @@ public class EnvoyConnector {
     private static final String INVERTERS_URL = PRODUCTION_URL + "/inverters";
     private static final String INFO_XML = "/info.xml";
 
-    private static final String INFO_SOTFWARE_BEGIN = "<software>";
-    private static final String INFO_SOTFWARE_END = "</software>";
+    private static final String INFO_SOFTWARE_BEGIN = "<software>";
+    private static final String INFO_SOFTWARE_END = "</software>";
 
     protected final HttpClient httpClient;
 
@@ -94,7 +94,7 @@ public class EnvoyConnector {
      * Sets the Envoy connection configuration.
      *
      * @param configuration the configuration to set
-     * @return Returns configuration error message or empty string if no configuration errors present
+     * @return configuration error message or empty string if no configuration errors present
      */
     public String setConfiguration(final EnvoyConfiguration configuration) {
         this.configuration = configuration;
@@ -136,11 +136,11 @@ public class EnvoyConnector {
             logger.debug("Checkconnection status from request is: {}", response.getStatus());
             if (response.getStatus() == HttpStatus.OK_200) {
                 final String content = response.getContentAsString();
-                final int begin = content.indexOf(INFO_SOTFWARE_BEGIN);
-                final int end = content.lastIndexOf(INFO_SOTFWARE_END);
+                final int begin = content.indexOf(INFO_SOFTWARE_BEGIN);
+                final int end = content.lastIndexOf(INFO_SOFTWARE_END);
 
                 if (begin > 0 && end > 0) {
-                    final String version = content.substring(begin + INFO_SOTFWARE_BEGIN.length(), end);
+                    final String version = content.substring(begin + INFO_SOFTWARE_BEGIN.length(), end);
 
                     logger.debug("Found Envoy version number '{}' in info.xml", version);
                     return Character.isDigit(version.charAt(0)) ? version : version.substring(1);
