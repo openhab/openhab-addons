@@ -472,7 +472,7 @@ public class JdbcBaseDAO {
         }
         // we already retrieve the unit here once as it is a very costly operation
         String itemName = item.getName();
-        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
+        Unit<? extends Quantity<?>> unit = item instanceof NumberItem numberItem ? numberItem.getUnit() : null;
         return m.stream()
                 .map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0])))
                 .collect(Collectors.<HistoricItem> toList());
