@@ -19,8 +19,10 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +141,12 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     // Cloud fallback
     private boolean cloudFallback = false;
 
+    // Communication errors counter
+    private int errorsCounter = 0;
+
+    // Last login timestamp
+    private Instant lastLoginTimestamp = new Date(0).toInstant();
+
     /**
      * Our configuration
      */
@@ -240,8 +248,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (tooManyRequests) {
-            logger.debug("Skipping login due to too many requests");
+        if (tooManyRequests || new Date().toInstant().minusSeconds(LOGIN_LIMIT_TIME).isBefore(lastLoginTimestamp)) {
+            logger.debug("Postponing login to avoid throttling");
             return;
         }
 
@@ -276,6 +284,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
             SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
                     SomfyTahomaLoginResponse.class);
+
+            lastLoginTimestamp = new Date().toInstant();
 
             if (data == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -844,7 +854,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private Request sendRequestBuilderLocal(String subUrl, HttpMethod method) {
         return httpClient.newRequest(getApiFullUrl(subUrl)).method(method).accept("application/json")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + localToken);
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).header(HttpHeader.AUTHORIZATION, "Bearer " + localToken);
     }
 
     /**
@@ -1123,6 +1133,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                     response = sendDeleteToTahomaWithCookie(url);
                 default:
             }
+            errorsCounter = 0;
             return classOfT != null ? gson.fromJson(response, classOfT) : null;
         } catch (JsonSyntaxException e) {
             logger.debug("Received data: {} is not JSON", response, e);
@@ -1132,14 +1143,26 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Temporarily banned");
                 setTooManyRequests();
             } else if (isEventListenerTimeout(e)) {
+                logger.debug("Event listener timeout occured", e);
                 reLogin();
+            } else if (isDevModeReady()) {
+                // the local gateway is unreachable
+                errorsCounter++;
+                logger.debug("Local gateway communication error", e);
+                discoverGateway();
+                if (errorsCounter > MAX_ERRORS) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             } else {
                 logger.debug("Cannot call url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (TimeoutException e) {
+            errorsCounter++;
             logger.debug("Timeout when calling url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (errorsCounter > MAX_ERRORS) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             Thread.currentThread().interrupt();
