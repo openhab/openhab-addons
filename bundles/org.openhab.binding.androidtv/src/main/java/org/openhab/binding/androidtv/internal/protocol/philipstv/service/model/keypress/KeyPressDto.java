@@ -29,6 +29,9 @@ public class KeyPressDto {
     @JsonProperty("key")
     private KeyPress key;
 
+    public KeyPressDto() {
+    }
+
     public KeyPressDto(KeyPress key) {
         this.key = key;
     }

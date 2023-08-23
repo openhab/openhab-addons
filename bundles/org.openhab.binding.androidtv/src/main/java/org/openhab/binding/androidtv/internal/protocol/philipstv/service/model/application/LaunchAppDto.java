@@ -27,6 +27,9 @@ public class LaunchAppDto {
     @JsonProperty("intent")
     private IntentDto intent;
 
+    public LaunchAppDto() {
+    }
+
     public LaunchAppDto(IntentDto intent) {
         this.intent = intent;
     }

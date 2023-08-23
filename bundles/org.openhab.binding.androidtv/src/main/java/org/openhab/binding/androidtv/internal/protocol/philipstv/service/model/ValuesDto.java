@@ -25,6 +25,9 @@ public class ValuesDto {
     @JsonProperty
     private ValueDto value;
 
+    public ValuesDto() {
+    }
+
     public ValuesDto(ValueDto value) {
         this.value = value;
     }

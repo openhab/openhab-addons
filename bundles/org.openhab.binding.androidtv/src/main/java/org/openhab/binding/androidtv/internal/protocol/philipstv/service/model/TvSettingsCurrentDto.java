@@ -29,6 +29,9 @@ public class TvSettingsCurrentDto {
     @JsonProperty("nodes")
     private List<NodesDto> nodes;
 
+    public TvSettingsCurrentDto() {
+    }
+
     public TvSettingsCurrentDto(List<NodesDto> nodes) {
         this.nodes = nodes;
     }

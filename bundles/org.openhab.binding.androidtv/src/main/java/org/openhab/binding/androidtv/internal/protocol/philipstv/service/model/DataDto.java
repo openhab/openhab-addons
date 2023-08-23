@@ -25,6 +25,9 @@ public class DataDto {
     @JsonProperty
     private Object value; // can be int or string
 
+    public DataDto() {
+    }
+
     public DataDto(Object value) {
         this.value = value;
     }

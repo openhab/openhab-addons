@@ -32,6 +32,9 @@ public class IntentDto {
     @JsonProperty("extras")
     private ExtrasDto extras;
 
+    public IntentDto() {
+    }
+
     public IntentDto(ComponentDto component, ExtrasDto extras) {
         this.component = component;
         this.extras = extras;

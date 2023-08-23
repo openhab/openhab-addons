@@ -34,6 +34,9 @@ public class ValueDto {
     @JsonProperty("Available")
     private String available = "";
 
+    public ValueDto() {
+    }
+
     public ValueDto(DataDto data) {
         this.data = data;
     }
