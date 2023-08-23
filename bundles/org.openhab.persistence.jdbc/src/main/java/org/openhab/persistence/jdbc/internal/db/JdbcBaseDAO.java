@@ -474,7 +474,7 @@ public class JdbcBaseDAO {
         }
         // we already retrieve the unit here once as it is a very costly operation
         String itemName = item.getName();
-        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ni ? ni.getUnit() : null;
+        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
         return m.stream()
                 .map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0])))
                 .collect(Collectors.<HistoricItem> toList());
@@ -590,10 +590,10 @@ public class JdbcBaseDAO {
                 break;
             case "NUMBERITEM":
                 State convertedState = itemState;
-                if (item instanceof NumberItem numberItem && itemState instanceof QuantityType type) {
-                    Unit<? extends Quantity<?>> unit = numberItem.getUnit();
+                if (item instanceof NumberItem && itemState instanceof QuantityType) {
+                    Unit<? extends Quantity<?>> unit = ((NumberItem) item).getUnit();
                     if (unit != null && !Units.ONE.equals(unit)) {
-                        convertedState = type.toUnit(unit);
+                        convertedState = ((QuantityType<?>) itemState).toUnit(unit);
                         if (convertedState == null) {
                             logger.warn(
                                     "JDBC::storeItemValueProvider: Failed to convert state '{}' to unit '{}'. Please check your item definition for correctness.",
@@ -705,14 +705,14 @@ public class JdbcBaseDAO {
     protected ZonedDateTime objectAsZonedDateTime(Object v) {
         if (v instanceof Long) {
             return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((Number) v).longValue()), ZoneId.systemDefault());
-        } else if (v instanceof java.sql.Date date) {
-            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
-        } else if (v instanceof LocalDateTime time) {
-            return time.atZone(ZoneId.systemDefault());
-        } else if (v instanceof Instant instant) {
-            return instant.atZone(ZoneId.systemDefault());
-        } else if (v instanceof java.sql.Timestamp timestamp) {
-            return timestamp.toInstant().atZone(ZoneId.systemDefault());
+        } else if (v instanceof java.sql.Date) {
+            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((java.sql.Date) v).getTime()), ZoneId.systemDefault());
+        } else if (v instanceof LocalDateTime) {
+            return ((LocalDateTime) v).atZone(ZoneId.systemDefault());
+        } else if (v instanceof Instant) {
+            return ((Instant) v).atZone(ZoneId.systemDefault());
+        } else if (v instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) v).toInstant().atZone(ZoneId.systemDefault());
         } else if (v instanceof java.lang.String) {
             return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(v.toString()).toInstant(),
                     ZoneId.systemDefault());
@@ -728,8 +728,8 @@ public class JdbcBaseDAO {
     }
 
     protected String objectAsString(Object v) {
-        if (v instanceof byte[] bytes) {
-            return new String(bytes);
+        if (v instanceof byte[]) {
+            return new String((byte[]) v);
         }
         return ((String) v).toString();
     }
@@ -737,14 +737,14 @@ public class JdbcBaseDAO {
     public String getItemType(Item i) {
         Item item = i;
         String def = "STRINGITEM";
-        if (i instanceof GroupItem groupItem) {
-            item = groupItem.getBaseItem();
+        if (i instanceof GroupItem) {
+            item = ((GroupItem) i).getBaseItem();
             if (item == null) {
                 // if GroupItem:<ItemType> is not defined in *.items using StringType
                 logger.debug(
                         "JDBC::getItemType: Cannot detect ItemType for {} because the GroupItems' base type isn't set in *.items File.",
                         i.getName());
-                Iterator<Item> iterator = groupItem.getMembers().iterator();
+                Iterator<Item> iterator = ((GroupItem) i).getMembers().iterator();
                 if (!iterator.hasNext()) {
                     logger.debug(
                             "JDBC::getItemType: No Child-Members of GroupItem {}, use ItemType for STRINGITEM as Fallback",
