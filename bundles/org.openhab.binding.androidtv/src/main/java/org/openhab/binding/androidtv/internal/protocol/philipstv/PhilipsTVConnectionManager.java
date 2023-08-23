@@ -270,7 +270,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 connect();
             } else {
                 logger.debug("{} - Device is offline.", handler.getThingID());
-                this.isLoggedIn = false;
+                postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "offline.communication-error-will-try-to-reconnect");
             }
         }
     }
@@ -619,7 +620,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         logger.debug("thingRemoved: {}", thingUID);
 
         if (thingUID.equals(upnpThingUID)) {
-            postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.online");
+            postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
         }
     }
 
