@@ -1151,7 +1151,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Local gateway communication error", e);
                 discoverGateway();
                 if (errorsCounter > MAX_ERRORS) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Too many communication errors");
                 }
             } else {
                 logger.debug("Cannot call url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
@@ -1161,7 +1162,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             errorsCounter++;
             logger.debug("Timeout when calling url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
             if (errorsCounter > MAX_ERRORS) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Too many timeouts");
             }
         } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
