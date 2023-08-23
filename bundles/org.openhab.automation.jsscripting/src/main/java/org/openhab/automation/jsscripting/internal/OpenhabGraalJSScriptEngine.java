@@ -30,7 +30,6 @@ import java.nio.file.attribute.FileAttribute;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -209,7 +208,7 @@ public class OpenhabGraalJSScriptEngine
                             public Map<String, Object> readAttributes(Path path, String attributes,
                                     LinkOption... options) throws IOException {
                                 if (isRootNodePath(path)) {
-                                    return Collections.singletonMap("isRegularFile", true);
+                                    return Map.of("isRegularFile", true);
                                 }
                                 return super.readAttributes(path, attributes, options);
                             }

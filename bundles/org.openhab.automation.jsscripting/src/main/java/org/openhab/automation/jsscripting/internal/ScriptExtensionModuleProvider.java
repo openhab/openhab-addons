@@ -78,10 +78,15 @@ public class ScriptExtensionModuleProvider {
     private Value toValue(Context ctx, Map<String, Object> map) {
         try {
             return ctx.eval(Source.newBuilder( // convert to Map to JS Object
-                    "js",
-                    "(function (mapOfValues) {\n" + "let rv = {};\n" + "for (var key in mapOfValues) {\n"
-                            + "    rv[key] = mapOfValues.get(key);\n" + "}\n" + "return rv;\n" + "})",
-                    "<generated>").build()).execute(map);
+                    "js", """
+                            (function (mapOfValues) {
+                            let rv = {};
+                            for (var key in mapOfValues) {
+                                rv[key] = mapOfValues.get(key);
+                            }
+                            return rv;
+                            })\
+                            """, "<generated>").build()).execute(map);
         } catch (IOException e) {
             throw new IllegalArgumentException("Failed to generate exports", e);
         }
