@@ -22,7 +22,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +144,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private int errorsCounter = 0;
 
     // Last login timestamp
-    private Instant lastLoginTimestamp = new Date(0).toInstant();
+    private Instant lastLoginTimestamp = Instant.MIN;
 
     /**
      * Our configuration
@@ -248,7 +247,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (tooManyRequests || new Date().toInstant().minusSeconds(LOGIN_LIMIT_TIME).isBefore(lastLoginTimestamp)) {
+        if (tooManyRequests || Instant.now().minusSeconds(LOGIN_LIMIT_TIME).isBefore(lastLoginTimestamp)) {
             logger.debug("Postponing login to avoid throttling");
             return;
         }
@@ -285,7 +284,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
                     SomfyTahomaLoginResponse.class);
 
-            lastLoginTimestamp = new Date().toInstant();
+            lastLoginTimestamp = Instant.now();
 
             if (data == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -1143,7 +1142,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Temporarily banned");
                 setTooManyRequests();
             } else if (isEventListenerTimeout(e)) {
-                logger.debug("Event listener timeout occured", e);
+                logger.debug("Event listener timeout occurred", e);
                 reLogin();
             } else if (isDevModeReady()) {
                 // the local gateway is unreachable
