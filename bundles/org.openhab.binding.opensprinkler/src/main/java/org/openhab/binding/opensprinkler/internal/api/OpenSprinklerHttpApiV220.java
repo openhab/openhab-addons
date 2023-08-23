@@ -67,6 +67,6 @@ public class OpenSprinklerHttpApiV220 extends OpenSprinklerHttpApiV219 {
 
     @Override
     public void setPausePrograms(int seconds) throws UnauthorizedApiException, CommunicationApiException {
-        http.sendHttpGet(getBaseUrl() + "pq", "dur=" + seconds);
+        http.sendHttpGet(getBaseUrl() + "pq", getRequestRequiredOptions() + "&dur=" + seconds);
     }
 }
