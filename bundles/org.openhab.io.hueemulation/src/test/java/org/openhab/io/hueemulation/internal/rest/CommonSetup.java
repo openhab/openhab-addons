@@ -22,13 +22,17 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -61,7 +65,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 public class CommonSetup {
 
     public String basePath;
-    public Client client;
+    public HttpClient client;
     public ConfigStore cs;
     public HttpServer server;
 
@@ -150,17 +154,51 @@ public class CommonSetup {
         log2.setLevel(Level.OFF);
 
         server = GrizzlyHttpServerFactory.createHttpServer(URI.create(basePath), rc);
-        client = ClientBuilder.newClient();
+        client = new HttpClient();
+        try {
+            client.start();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to start HttpClient", e);
+        }
     }
 
     public void dispose() throws Exception {
         if (client != null) {
-            client.close();
+            client.stop();
         }
         if (server != null) {
             server.shutdownNow();
         }
 
         mocksCloseable.close();
+    }
+
+    public ContentResponse sendDelete(String path) throws InterruptedException, TimeoutException, ExecutionException {
+        return client.newRequest(basePath + path).method(HttpMethod.DELETE).send();
+    }
+
+    public ContentResponse sendGet() throws InterruptedException, TimeoutException, ExecutionException {
+        return client.newRequest(basePath).method(HttpMethod.GET).send();
+    }
+
+    public ContentResponse sendGet(String path) throws InterruptedException, TimeoutException, ExecutionException {
+        return client.newRequest(basePath + path).method(HttpMethod.GET).send();
+    }
+
+    public ContentResponse sendPost(String content) throws InterruptedException, TimeoutException, ExecutionException {
+        return client.newRequest(basePath).method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/json")
+                .content(new StringContentProvider(content)).send();
+    }
+
+    public ContentResponse sendPost(String path, String content)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        return client.newRequest(basePath + path).method(HttpMethod.POST)
+                .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(content)).send();
+    }
+
+    public ContentResponse sendPut(String path, String content)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        return client.newRequest(basePath + path).method(HttpMethod.PUT)
+                .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(content)).send();
     }
 }
