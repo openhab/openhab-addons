@@ -160,9 +160,9 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
             final List<HttpCookie> cookies = HttpCookie.parse(response.getHeaders().get(HttpHeader.SET_COOKIE));
 
             for (final HttpCookie c : cookies) {
-                final String cookieKey = String.valueOf(c.getName());
+                final String cookieKey = String.valueOf(c.getName()).toLowerCase(Locale.ROOT);
 
-                if (SESSION_COOKIE_NAME.startsWith(cookieKey.toLowerCase(Locale.ROOT))) {
+                if (cookieKey.startsWith(SESSION_COOKIE_NAME)) {
                     logger.debug("Got SessionID: {}", c.getValue());
                     sessionKey = cookieKey;
                     return c.getValue();
