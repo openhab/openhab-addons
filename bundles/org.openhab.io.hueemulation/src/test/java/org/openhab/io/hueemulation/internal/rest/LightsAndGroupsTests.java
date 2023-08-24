@@ -20,10 +20,8 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -196,14 +194,13 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeSwitchState() {
+    public void changeSwitchState() throws Exception {
         assertThat(((HueStatePlug) cs.ds.lights.get("1").state).on, is(false));
 
         String body = "{'on':true}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/1/state").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/1/state", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("success"));
         assertThat(((HueStatePlug) cs.ds.lights.get("1").state).on, is(true));
         verify(commonSetup.eventPublisher).post(argThat((Event t) -> {
             assertThat(t.getPayload(), is("{\"type\":\"OnOff\",\"value\":\"ON\"}"));
@@ -212,14 +209,13 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeGroupItemSwitchState() {
+    public void changeGroupItemSwitchState() throws Exception {
         assertThat(((HueStatePlug) cs.ds.groups.get("10").action).on, is(false));
 
         String body = "{'on':true}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/groups/10/action").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/groups/10/action", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("success"));
         assertThat(((HueStatePlug) cs.ds.groups.get("10").action).on, is(true));
         verify(commonSetup.eventPublisher).post(argThat((Event t) -> {
             assertThat(t.getPayload(), is("{\"type\":\"OnOff\",\"value\":\"ON\"}"));
@@ -228,43 +224,40 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeOnValue() {
+    public void changeOnValue() throws Exception {
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
 
         String body = "{'on':true}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
         assertEquals(200, response.getStatus());
-        String entity = response.readEntity(String.class);
+        String entity = response.getContentAsString();
         assertThat(entity, is("[{\"success\":{\"/lights/2/state/on\":true}}]"));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
     }
 
     @Test
-    public void changeOnAndBriValues() {
+    public void changeOnAndBriValues() throws Exception {
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
 
         String body = "{'on':true,'bri':200}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("success"));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(200));
     }
 
     @Test
-    public void changeHueSatValues() {
+    public void changeHueSatValues() throws Exception {
         HueLightEntry hueDevice = cs.ds.lights.get("2");
         hueDevice.item.setState(OnOffType.ON);
         hueDevice.state.as(HueStateColorBulb.class).on = true;
 
         String body = "{'hue':1000,'sat':50}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("success"));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).hue, is(1000));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).sat, is(50));
@@ -276,16 +269,15 @@ public class LightsAndGroupsTests {
      * Amazon echos are setting ct only, if commanded to turn a light white.
      */
     @Test
-    public void changeCtValue() {
+    public void changeCtValue() throws Exception {
         HueLightEntry hueDevice = cs.ds.lights.get("2");
         hueDevice.item.setState(OnOffType.ON);
         hueDevice.state.as(HueStateColorBulb.class).on = true;
 
         String body = "{'ct':500}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
         assertEquals(200, response.getStatus());
-        body = response.readEntity(String.class);
+        body = response.getContentAsString();
         assertThat(body, containsString("success"));
         assertThat(body, containsString("ct"));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
@@ -297,16 +289,15 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void switchOnWithXY() {
+    public void switchOnWithXY() throws Exception {
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
 
         String body = "{'on':true,'bri':200,'xy':[0.5119,0.4147]}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
-        assertThat(response.readEntity(String.class), containsString("xy"));
+        assertThat(response.getContentAsString(), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("xy"));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(200));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).xy[0], is(0.5119));
@@ -319,20 +310,20 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void allLightsAndSingleLight() {
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights").request().get();
+    public void allLightsAndSingleLight() throws Exception {
+        ContentResponse response = commonSetup.sendGet("/testuser/lights");
         assertEquals(200, response.getStatus());
 
-        String body = response.readEntity(String.class);
+        String body = response.getContentAsString();
 
         assertThat(body, containsString("switch"));
         assertThat(body, containsString("color"));
         assertThat(body, containsString("white"));
 
         // Single light access test
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2").request().get();
+        response = commonSetup.sendGet("/testuser/lights/2");
         assertEquals(200, response.getStatus());
-        body = response.readEntity(String.class);
+        body = response.getContentAsString();
         assertThat(body, containsString("color"));
     }
 

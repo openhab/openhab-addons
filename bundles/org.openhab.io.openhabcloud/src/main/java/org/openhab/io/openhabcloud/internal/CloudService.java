@@ -211,8 +211,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         exposedItems = new HashSet<>();
         Object expCfg = config.get(CFG_EXPOSE);
-        if (expCfg instanceof String) {
-            String value = (String) expCfg;
+        if (expCfg instanceof String value) {
             while (value.startsWith("[")) {
                 value = value.substring(1);
             }
@@ -222,8 +221,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             for (String itemName : Arrays.asList((value).split(","))) {
                 exposedItems.add(itemName.trim());
             }
-        } else if (expCfg instanceof Iterable) {
-            for (Object entry : ((Iterable<?>) expCfg)) {
+        } else if (expCfg instanceof Iterable iterable) {
+            for (Object entry : iterable) {
                 exposedItems.add(entry.toString());
             }
         }
