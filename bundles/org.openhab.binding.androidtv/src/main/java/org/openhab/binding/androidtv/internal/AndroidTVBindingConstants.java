@@ -54,6 +54,7 @@ public class AndroidTVBindingConstants {
     public static final String CHANNEL_SHARPNESS = "sharpness";
     public static final String CHANNEL_TV_CHANNEL = "tvChannel";
     public static final String CHANNEL_SEARCH_CONTENT = "searchContent";
+    public static final String CHANNEL_AMBILIGHT = "ambilight";
     public static final String CHANNEL_AMBILIGHT_POWER = "ambilightPower";
     public static final String CHANNEL_AMBILIGHT_HUE_POWER = "ambilightHuePower";
     public static final String CHANNEL_AMBILIGHT_LOUNGE_POWER = "ambilightLoungePower";

@@ -154,6 +154,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     private void setStatus(boolean isLoggedIn, String statusMessage) {
         String translatedMessage = translationProvider.getText(statusMessage);
+        logger.trace("setStatus to {} {} {}", isLoggedIn, statusMessage, translatedMessage);
         if ((this.isLoggedIn != isLoggedIn) || (!this.statusMessage.equals(translatedMessage))) {
             this.isLoggedIn = isLoggedIn;
             this.statusMessage = translatedMessage;
@@ -179,6 +180,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         if (thingStatus == ThingStatus.ONLINE) {
             setLoggedIn(true);
         } else {
+            logger.trace("Updating status to {} {} {}", thingStatus, thingStatusDetail, thingStatusMessage);
             setStatus(false, thingStatusMessage);
         }
     }
