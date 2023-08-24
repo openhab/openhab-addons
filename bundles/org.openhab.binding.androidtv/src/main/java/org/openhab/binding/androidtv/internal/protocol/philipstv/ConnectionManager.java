@@ -21,6 +21,7 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -65,11 +66,13 @@ public class ConnectionManager {
         String uri = httpHost.toURI() + path;
         logger.debug(TARGET_URI_MSG, uri);
         HttpGet httpGet = new HttpGet(uri);
-        String jsonContent;
+        String jsonContent = "";
         try (CloseableHttpClient client = httpClient; //
                 CloseableHttpResponse response = client.execute(httpHost, httpGet)) {
             validateResponse(response, uri);
             jsonContent = getJsonFromResponse(response);
+        } catch (HttpHostConnectException e) {
+            logger.debug("HttpHostConnectException when getting {}", uri);
         }
         return jsonContent;
     }
@@ -80,11 +83,13 @@ public class ConnectionManager {
         HttpPost httpPost = new HttpPost(uri);
         httpPost.setHeader("Content-type", "application/json");
         httpPost.setEntity(new StringEntity(json));
-        String jsonContent;
+        String jsonContent = "";
         try (CloseableHttpClient client = httpClient; //
                 CloseableHttpResponse response = client.execute(httpHost, httpPost)) {
             validateResponse(response, uri);
             jsonContent = getJsonFromResponse(response);
+        } catch (HttpHostConnectException e) {
+            logger.debug("HttpHostConnectException when getting {}", uri);
         }
         return jsonContent;
     }

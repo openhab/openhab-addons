@@ -580,15 +580,12 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             boolean isLockAcquired = lock.tryLock(1, TimeUnit.SECONDS);
             if (isLockAcquired) {
                 try {
-                    if (!isLoggedIn || !config.useUpnpDiscovery) {
+                    if (isOnline) {
                         channelServices.get(CHANNEL_POWER).handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
-                        if (!isLoggedIn) {
-                            return;
-                        }
+                        channelServices.get(CHANNEL_VOLUME).handleCommand(CHANNEL_VOLUME, RefreshType.REFRESH);
+                        channelServices.get(CHANNEL_APPNAME).handleCommand(CHANNEL_APPNAME, RefreshType.REFRESH);
+                        channelServices.get(CHANNEL_TV_CHANNEL).handleCommand(CHANNEL_TV_CHANNEL, RefreshType.REFRESH);
                     }
-                    channelServices.get(CHANNEL_VOLUME).handleCommand(CHANNEL_VOLUME, RefreshType.REFRESH);
-                    channelServices.get(CHANNEL_APPNAME).handleCommand(CHANNEL_APPNAME, RefreshType.REFRESH);
-                    channelServices.get(CHANNEL_TV_CHANNEL).handleCommand(CHANNEL_TV_CHANNEL, RefreshType.REFRESH);
                 } finally {
                     lock.unlock();
                 }
