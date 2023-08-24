@@ -52,7 +52,7 @@ public class PhilipsTVBindingConstants {
 
     public static final String POWER_OFF = "Off";
 
-    public static final String STANDBY = "online.standby";
+    public static final String STANDBY = "Standby";
 
     public static final String EMPTY = "";
 

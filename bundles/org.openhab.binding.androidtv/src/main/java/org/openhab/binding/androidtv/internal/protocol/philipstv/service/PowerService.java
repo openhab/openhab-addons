@@ -63,18 +63,18 @@ public class PowerService implements PhilipsTVService {
             if (command instanceof RefreshType) {
                 PowerStateDto powerStateDto = getPowerState();
                 if (powerStateDto.isPoweredOn()) {
-                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, EMPTY);
+                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.online");
                 } else if (powerStateDto.isStandby()) {
-                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
+                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.standby");
                 } else {
                     handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, EMPTY);
                 }
             } else if (command instanceof OnOffType) {
                 setPowerState((OnOffType) command);
                 if (command == OnOffType.ON) {
-                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Tv turned on.");
+                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.online");
                 } else {
-                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, STANDBY);
+                    handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.standby");
                 }
             } else {
                 logger.warn("Unknown command: {} for Channel {}", command, channel);
