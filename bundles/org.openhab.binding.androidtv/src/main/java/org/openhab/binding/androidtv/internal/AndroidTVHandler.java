@@ -323,12 +323,15 @@ public class AndroidTVHandler extends BaseThingHandler {
                         return;
                     }
                 }
+                return;
             } else if (CHANNEL_APP.equals(channelUID.getId()) || CHANNEL_APPNAME.equals(channelUID.getId())
+                    || CHANNEL_TV_CHANNEL.equals(channelUID.getId())
+                    || CHANNEL_SEARCH_CONTENT.equals(channelUID.getId())
+                    || CHANNEL_BRIGHTNESS.equals(channelUID.getId()) || CHANNEL_SHARPNESS.equals(channelUID.getId())
+                    || CHANNEL_CONTRAST.equals(channelUID.getId())
                     || channelUID.getId().startsWith(CHANNEL_AMBILIGHT)) {
-                if (command instanceof StringType) {
-                    philipstvConnectionManager.handleCommand(channelUID, command);
-                    return;
-                }
+                philipstvConnectionManager.handleCommand(channelUID, command);
+                return;
             } else if (googletvConnectionManager == null) {
                 philipstvConnectionManager.handleCommand(channelUID, command);
                 return;
