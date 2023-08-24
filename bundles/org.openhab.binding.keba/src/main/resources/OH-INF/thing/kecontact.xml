@@ -9,7 +9,8 @@
 		<description>A KeContact EV Charging Station</description>
 
 		<channels>
-			<channel id="enabled" typeId="enabled"/>
+			<channel id="enabledsystem" typeId="enabled"/>
+			<channel id="enableduser" typeId="enabled"/>
 			<channel id="state" typeId="state"/>
 			<channel id="maxpresetcurrent" typeId="current_settable"/>
 			<channel id="maxpresetcurrentrange" typeId="range"/>
@@ -119,7 +120,7 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Activation state of the wallbox</description>
-		<state readOnly="false"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="x1" advanced="true">
 		<item-type>Switch</item-type>

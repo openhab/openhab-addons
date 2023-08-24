@@ -325,11 +325,25 @@ public class KeContactHandler extends BaseThingHandler {
                         int state = entry.getValue().getAsInt();
                         switch (state) {
                             case 1: {
-                                updateState(CHANNEL_ENABLED, OnOffType.ON);
+                                updateState(CHANNEL_ENABLED_SYSTEM, OnOffType.ON);
                                 break;
                             }
                             default: {
-                                updateState(CHANNEL_ENABLED, OnOffType.OFF);
+                                updateState(CHANNEL_ENABLED_SYSTEM, OnOffType.OFF);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "Enable user": {
+                        int state = entry.getValue().getAsInt();
+                        switch (state) {
+                            case 1: {
+                                updateState(CHANNEL_ENABLED_USER, OnOffType.ON);
+                                break;
+                            }
+                            default: {
+                                updateState(CHANNEL_ENABLED_USER, OnOffType.OFF);
                                 break;
                             }
                         }
@@ -557,7 +571,7 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     break;
                 }
-                case CHANNEL_ENABLED: {
+                case CHANNEL_ENABLED_USER: {
                     if (command instanceof OnOffType) {
                         if (command == OnOffType.ON) {
                             transceiver.send("ena 1", this);
