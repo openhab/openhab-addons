@@ -72,11 +72,11 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
         } else {
             switch (channelUID.getId()) {
                 case DEVICE_CHANNEL_LOCKING_MODE:
-                    if (command instanceof StringType) {
+                    if (command instanceof StringType commandAsStringType) {
                         synchronized (petcareAPI) {
                             SurePetcareDevice device = petcareAPI.getDevice(thing.getUID().getId());
                             if (device != null) {
-                                String newLockingModeIdStr = ((StringType) command).toString();
+                                String newLockingModeIdStr = commandAsStringType.toString();
                                 try {
                                     Integer newLockingModeId = Integer.valueOf(newLockingModeIdStr);
                                     petcareAPI.setDeviceLockingMode(device, newLockingModeId);
@@ -212,7 +212,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                     logger.debug("Enabling curfew slot: {}", slot);
                                     requiresUpdate = true;
                                 }
-                                curfew.enabled = (command.equals(OnOffType.ON));
+                                curfew.enabled = command.equals(OnOffType.ON);
                             }
                             break;
                         case DEVICE_CHANNEL_CURFEW_LOCK_TIME:
