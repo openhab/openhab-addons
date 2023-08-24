@@ -407,7 +407,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
      */
     @Override
     public Set<String> getSubscribedEventTypes() {
-        return Collections.singleton(ItemStateChangedEvent.TYPE);
+        return Set.of(ItemStateChangedEvent.TYPE);
     }
 
     @Override

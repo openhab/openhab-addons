@@ -404,10 +404,9 @@ public class NeeoBrainService extends DefaultServletService {
                 }
 
             } else {
-                if (channel instanceof NeeoDeviceChannelDirectory) {
+                if (channel instanceof NeeoDeviceChannelDirectory directoryChannel) {
                     final NeeoDirectoryRequest discoveryRequest = gson.fromJson(req.getReader(),
                             NeeoDirectoryRequest.class);
-                    final NeeoDeviceChannelDirectory directoryChannel = (NeeoDeviceChannelDirectory) channel;
                     NeeoUtil.write(resp, gson.toJson(new NeeoDirectoryResult(discoveryRequest, directoryChannel)));
                 } else {
                     logger.debug("Channel definition for '{}' not found to directory set value ({})",
