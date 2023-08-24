@@ -107,6 +107,9 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
 
         Gson gson = GsonSupplier.getInstance();
         LocalConnectRawDataBean deserializedObject = gson.fromJson(json, LocalConnectRawDataBean.class);
+        if (deserializedObject == null) {
+            throw new IllegalStateException("Unexpected null result when deserializing JSON");
+        }
         deserializedObject.setRawData(json);
         return deserializedObject;
     }
