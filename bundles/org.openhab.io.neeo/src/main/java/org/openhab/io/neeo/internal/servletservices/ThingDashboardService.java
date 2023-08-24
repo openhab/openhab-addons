@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +53,9 @@ public class ThingDashboardService extends DefaultServletService {
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(ThingDashboardService.class);
 
+    private static final Set<String> STARTERS = Set.of("thingstatus", "getchannel", "getvirtualdevice", "restoredevice",
+            "refreshdevice", "deletedevice", "exportrules", "updatedevice");
+
     /** The gson used for json manipulation */
     private final Gson gson;
 
@@ -83,14 +88,7 @@ public class ThingDashboardService extends DefaultServletService {
      */
     @Override
     public boolean canHandleRoute(String[] paths) {
-        return paths.length >= 1 && ("thingstatus".equalsIgnoreCase(paths[0]) //
-                || "getchannel".equalsIgnoreCase(paths[0]) //
-                || "getvirtualdevice".equalsIgnoreCase(paths[0]) //
-                || "restoredevice".equalsIgnoreCase(paths[0]) //
-                || "refreshdevice".equalsIgnoreCase(paths[0]) //
-                || "deletedevice".equalsIgnoreCase(paths[0]) //
-                || "exportrules".equalsIgnoreCase(paths[0]) //
-                || "updatedevice".equalsIgnoreCase(paths[0]));
+        return paths.length >= 1 && STARTERS.contains(paths[0].toLowerCase(Locale.ROOT));
     }
 
     /**
