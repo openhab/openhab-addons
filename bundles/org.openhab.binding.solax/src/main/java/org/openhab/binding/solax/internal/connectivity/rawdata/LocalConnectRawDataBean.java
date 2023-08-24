@@ -102,7 +102,7 @@ public class LocalConnectRawDataBean implements RawDataBean, InverterData {
 
     public static LocalConnectRawDataBean fromJson(String json) {
         if (json.isEmpty()) {
-            throw new IllegalStateException("Argument should be not null or empty.");
+            throw new IllegalArgumentException("JSON payload should not be empty");
         }
 
         Gson gson = GsonSupplier.getInstance();
