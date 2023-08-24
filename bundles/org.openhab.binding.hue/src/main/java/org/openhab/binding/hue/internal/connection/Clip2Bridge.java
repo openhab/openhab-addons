@@ -37,6 +37,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -147,10 +148,9 @@ public class Clip2Bridge implements Closeable {
          * Handle an HTTP2 error.
          *
          * @param error the type of error.
-         * @param sessionId the identity of the session on which the error occurred.
-         * @param streamId the identity of the stream on which the error occurred.
+         * @param session the session on which the error occurred.
          */
-        protected void handleHttp2Error(Http2Error error, int sessionId, int streamId) {
+        protected void handleHttp2Error(Http2Error error, Session session) {
             Http2Exception e = new Http2Exception(error);
             if (Http2Error.UNAUTHORIZED.equals(error)) {
                 // for external error handling, abstract authorization errors into a separate exception
@@ -158,7 +158,7 @@ public class Clip2Bridge implements Closeable {
             } else {
                 completable.completeExceptionally(e);
             }
-            fatalErrorDelayed(this, e, sessionId, streamId);
+            fatalErrorDelayed(this, e, session);
         }
 
         /**
@@ -176,7 +176,7 @@ public class Clip2Bridge implements Closeable {
                 switch (status) {
                     case HttpStatus.UNAUTHORIZED_401:
                     case HttpStatus.FORBIDDEN_403:
-                        handleHttp2Error(Http2Error.UNAUTHORIZED, stream.getSession().hashCode(), stream.getId());
+                        handleHttp2Error(Http2Error.UNAUTHORIZED, stream.getSession());
                     default:
                 }
             }
@@ -215,14 +215,14 @@ public class Clip2Bridge implements Closeable {
         @Override
         public boolean onIdleTimeout(@Nullable Stream stream, @Nullable Throwable x) {
             Objects.requireNonNull(stream);
-            handleHttp2Error(Http2Error.IDLE, stream.getSession().hashCode(), stream.getId());
+            handleHttp2Error(Http2Error.IDLE, stream.getSession());
             return true;
         }
 
         @Override
         public void onTimeout(@Nullable Stream stream, @Nullable Throwable x) {
             Objects.requireNonNull(stream);
-            handleHttp2Error(Http2Error.TIMEOUT, stream.getSession().hashCode(), stream.getId());
+            handleHttp2Error(Http2Error.TIMEOUT, stream.getSession());
         }
     }
 
@@ -279,7 +279,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onClosed(@Nullable Stream stream) {
             Objects.requireNonNull(stream);
-            handleHttp2Error(Http2Error.CLOSED, stream.getSession().hashCode(), stream.getId());
+            handleHttp2Error(Http2Error.CLOSED, stream.getSession());
         }
 
         @Override
@@ -325,7 +325,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onReset(@Nullable Stream stream, @Nullable ResetFrame frame) {
             Objects.requireNonNull(stream);
-            handleHttp2Error(Http2Error.RESET, stream.getSession().hashCode(), stream.getId());
+            handleHttp2Error(Http2Error.RESET, stream.getSession());
         }
     }
 
@@ -375,25 +375,25 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onClose(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
-            fatalErrorDelayed(this, new Http2Exception(Http2Error.CLOSED), session.hashCode(), -1);
+            fatalErrorDelayed(this, new Http2Exception(Http2Error.CLOSED), session);
         }
 
         @Override
         public void onFailure(@Nullable Session session, @Nullable Throwable failure) {
             Objects.requireNonNull(session);
-            fatalErrorDelayed(this, new Http2Exception(Http2Error.FAILURE), session.hashCode(), -1);
+            fatalErrorDelayed(this, new Http2Exception(Http2Error.FAILURE), session);
         }
 
         /**
          * The Hue bridge uses the 'nginx' web server which sends HTTP2 GO_AWAY frames after a certain number (normally
-         * 999) of GET/PUT calls. This is normal behaviour so we just start a new thread to close and reopen (recycle)
-         * the session.
+         * 999) of GET/PUT calls. This is normal behaviour so we just start a new thread to close and reopen the
+         * session.
          */
         @Override
         public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
             if (http2Session == session) {
-                new Thread(() -> recycleSession()).start();
+                new Thread(() -> recreateSession()).start();
             }
         }
 
@@ -417,7 +417,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onReset(@Nullable Session session, @Nullable ResetFrame frame) {
             Objects.requireNonNull(session);
-            fatalErrorDelayed(this, new Http2Exception(Http2Error.RESET), session.hashCode(), -1);
+            fatalErrorDelayed(this, new Http2Exception(Http2Error.RESET), session);
         }
     }
 
@@ -427,27 +427,16 @@ public class Clip2Bridge implements Closeable {
      * forced to wait if the session is being created via its single thread access 'write' lock.
      */
     private class SessionSynchronizer implements AutoCloseable {
-        private final boolean exclusive;
-        private final boolean locked;
+        private final Optional<Lock> lockOptional;
 
         SessionSynchronizer(boolean requireExclusiveAccess) throws InterruptedException {
-            exclusive = requireExclusiveAccess;
-            if (exclusive) {
-                locked = sessionUseCreateLock.writeLock().tryLock(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            } else {
-                locked = sessionUseCreateLock.readLock().tryLock(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            }
+            Lock lock = requireExclusiveAccess ? sessionUseCreateLock.writeLock() : sessionUseCreateLock.readLock();
+            lockOptional = lock.tryLock(TIMEOUT_SECONDS, TimeUnit.SECONDS) ? Optional.of(lock) : Optional.empty();
         }
 
         @Override
         public void close() {
-            if (locked) {
-                if (exclusive) {
-                    sessionUseCreateLock.writeLock().unlock();
-                } else {
-                    sessionUseCreateLock.readLock().unlock();
-                }
-            }
+            lockOptional.ifPresent(lock -> lock.unlock());
         }
     }
 
@@ -568,7 +557,7 @@ public class Clip2Bridge implements Closeable {
     private final ReadWriteLock sessionUseCreateLock = new ReentrantReadWriteLock(true); // i.e. fair
     private final Map<Integer, Future<?>> fatalErrorTasks = new ConcurrentHashMap<>();
 
-    private boolean recycling;
+    private boolean recreatingSession;
     private boolean closing;
     private State onlineState = State.CLOSED;
     private Optional<Instant> lastRequestTime = Optional.empty();
@@ -626,7 +615,7 @@ public class Clip2Bridge implements Closeable {
         if (Objects.nonNull(session)) {
             session.ping(new PingFrame(false), Callback.NOOP);
             if (Instant.now().isAfter(sessionExpireTime)) {
-                fatalError(this, new Http2Exception(Http2Error.TIMEOUT), session.hashCode(), -1);
+                fatalError(this, new Http2Exception(Http2Error.TIMEOUT), session.hashCode());
             }
         }
     }
@@ -659,7 +648,7 @@ public class Clip2Bridge implements Closeable {
     private void close2() {
         synchronized (this) {
             LOGGER.debug("close2()");
-            boolean notifyHandler = onlineState == State.ACTIVE && !closing && !recycling;
+            boolean notifyHandler = onlineState == State.ACTIVE && !closing && !recreatingSession;
             onlineState = State.CLOSED;
             synchronized (fatalErrorTasks) {
                 fatalErrorTasks.values().forEach(task -> cancelTask(task, true));
@@ -681,10 +670,12 @@ public class Clip2Bridge implements Closeable {
     private void closeEventStream() {
         Session session = http2Session;
         if (Objects.nonNull(session)) {
+            final int sessionId = session.hashCode();
             session.getStreams().stream().filter(s -> Objects.nonNull(s.getAttribute(EVENT_STREAM_ID)) && !s.isReset())
                     .forEach(s -> {
-                        LOGGER.debug("closeEventStream() sessionId:{}, streamId:{}", session.hashCode(), s.getId());
-                        s.reset(new ResetFrame(s.getId(), ErrorCode.CANCEL_STREAM_ERROR.code), Callback.NOOP);
+                        int streamId = s.getId();
+                        LOGGER.debug("closeEventStream() sessionId:{}, streamId:{}", sessionId, streamId);
+                        s.reset(new ResetFrame(streamId, ErrorCode.CANCEL_STREAM_ERROR.code), Callback.NOOP);
                     });
         }
     }
@@ -721,9 +712,8 @@ public class Clip2Bridge implements Closeable {
      * @param listener the entity that caused this method to be called.
      * @param cause the type of exception that caused the error.
      * @param sessionId the identity of the session on which the error occurred.
-     * @param streamId the identity of the stream on which the error occurred.
      */
-    private synchronized void fatalError(Object listener, Http2Exception cause, int sessionId, int streamId) {
+    private synchronized void fatalError(Object listener, Http2Exception cause, int sessionId) {
         if (onlineState == State.CLOSED || closing) {
             return;
         }
@@ -734,12 +724,12 @@ public class Clip2Bridge implements Closeable {
         String listenerId = listener.getClass().getSimpleName();
         if (listener instanceof ContentStreamListenerAdapter) {
             // on GET / PUT requests the caller handles errors and closes the stream; the session is still OK
-            LOGGER.debug("fatalError() listener:{}, sessionId:{}, streamId:{}, error:{} => ignoring", listenerId,
-                    sessionId, streamId, cause.error);
+            LOGGER.debug("fatalError() listener:{}, sessionId:{}, error:{} => ignoring", listenerId, sessionId,
+                    cause.error);
         } else {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("fatalError() listener:{}, sessionId:{}, streamId:{}, error:{} => closing", listenerId,
-                        sessionId, streamId, cause.error, cause);
+                LOGGER.debug("fatalError() listener:{}, sessionId:{}, error:{} => closing", listenerId, sessionId,
+                        cause.error, cause);
             } else {
                 LOGGER.warn("Fatal error '{}' from '{}' => closing session.", cause.error, listenerId);
             }
@@ -753,14 +743,14 @@ public class Clip2Bridge implements Closeable {
      *
      * @param listener the entity that caused this method to be called.
      * @param cause the type of exception that caused the error.
-     * @param sessionId the identity of the session on which the error occurred.
-     * @param streamId the identity of the stream on which the error occurred.
+     * @param session the session on which the error occurred.
      */
-    protected void fatalErrorDelayed(Object listener, Http2Exception cause, int sessionId, int streamId) {
+    protected void fatalErrorDelayed(Object listener, Http2Exception cause, Session session) {
         synchronized (fatalErrorTasks) {
             final int index = fatalErrorTasks.size();
+            final int sessionId = session.hashCode();
             fatalErrorTasks.put(index, bridgeHandler.getScheduler().schedule(() -> {
-                fatalError(listener, cause, sessionId, streamId);
+                fatalError(listener, cause, sessionId);
                 fatalErrorTasks.remove(index);
             }, 1, TimeUnit.SECONDS));
         }
@@ -781,7 +771,7 @@ public class Clip2Bridge implements Closeable {
      * @throws InterruptedException
      */
     public Resources getResources(ResourceReference reference) throws ApiException, InterruptedException {
-        if ((onlineState == State.CLOSED) && !recycling) {
+        if ((onlineState == State.CLOSED) && !recreatingSession) {
             throw new ApiException("Connection is closed");
         }
         return getResourcesImpl(reference);
@@ -790,7 +780,7 @@ public class Clip2Bridge implements Closeable {
     /**
      * Internal method to send an HTTP 2 GET request to the Hue Bridge and process its response. Uses a Throttler to
      * prevent too many concurrent calls, and to prevent too frequent calls on the Hue bridge server. Also uses a
-     * SessionSynchronizer to delay accessing the session while it is being recycled.
+     * SessionSynchronizer to delay accessing the session while it is being recreated.
      *
      * @param reference the Reference class to get.
      * @return a Resource object containing either a list of Resources or a list of Errors.
@@ -887,7 +877,7 @@ public class Clip2Bridge implements Closeable {
      * @param data the incoming (presumed to be JSON) text.
      */
     protected void onEventData(String data) {
-        if (onlineState != State.ACTIVE) {
+        if ((onlineState != State.ACTIVE) && !recreatingSession) {
             return;
         }
         if (LOGGER.isTraceEnabled()) {
@@ -1080,7 +1070,7 @@ public class Clip2Bridge implements Closeable {
     /**
      * Use an HTTP/2 PUT command to send a resource to the server. Uses a Throttler to prevent too many concurrent
      * calls, and to prevent too frequent calls on the Hue bridge server. Also uses a SessionSynchronizer to delay
-     * accessing the session while it is being recycled.
+     * accessing the session while it is being recreated.
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
@@ -1137,10 +1127,10 @@ public class Clip2Bridge implements Closeable {
      * method calls to wait until this method releases the 'write' lock again. Whereby such GET/PUT calls are postponed
      * to the new session.
      */
-    private synchronized void recycleSession() {
+    private synchronized void recreateSession() {
         try (SessionSynchronizer sessionSynchronizer = new SessionSynchronizer(true)) {
-            LOGGER.debug("recycleSession()");
-            recycling = true;
+            LOGGER.debug("recreateSession()");
+            recreatingSession = true;
             close2();
             stopHttp2Client();
             //
@@ -1148,13 +1138,13 @@ public class Clip2Bridge implements Closeable {
             open();
         } catch (ApiException | InterruptedException e) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("recycleSession() exception", e);
+                LOGGER.debug("recreateSession() exception", e);
             } else {
-                LOGGER.warn("recycleSession() {}: {}", e.getClass().getSimpleName(), e.getMessage());
+                LOGGER.warn("recreateSession() {}: {}", e.getClass().getSimpleName(), e.getMessage());
             }
         } finally {
-            recycling = false;
-            LOGGER.debug("recycleSession() done");
+            recreatingSession = false;
+            LOGGER.debug("recreateSession() done");
         }
     }
 
