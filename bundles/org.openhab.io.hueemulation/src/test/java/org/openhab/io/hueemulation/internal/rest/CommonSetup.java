@@ -19,9 +19,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeoutException;
@@ -126,10 +127,10 @@ public class CommonSetup {
         } else {
             cs = new ConfigStoreWithoutMetadata(networkAddressService, configAdmin, scheduler);
         }
-        cs.activate(Collections.singletonMap("uuid", "a668dc9b-7172-49c3-832f-acb07dda2a20"));
-        cs.switchFilter = Collections.singleton("Switchable");
-        cs.whiteFilter = Collections.singleton("Switchable");
-        cs.colorFilter = Collections.singleton("ColorLighting");
+        cs.activate(Map.of("uuid", "a668dc9b-7172-49c3-832f-acb07dda2a20"));
+        cs.switchFilter = Set.of("Switchable");
+        cs.whiteFilter = Set.of("Switchable");
+        cs.colorFilter = Set.of("ColorLighting");
 
         userManagement = Mockito.spy(new UserManagement(storageService, cs));
 

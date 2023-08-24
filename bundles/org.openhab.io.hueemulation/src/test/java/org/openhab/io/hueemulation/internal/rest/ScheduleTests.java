@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -341,7 +341,7 @@ public class ScheduleTests {
         configuration.put("time", "12:12:00");
         trigger = TriggerBuilder.create().withId("absolutetrigger").withTypeUID("timer.AbsoluteDateTimeTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("2020-02-01T12:12:00"));
 
@@ -352,7 +352,7 @@ public class ScheduleTests {
         configuration.put("randomizeTime", "14:12:34");
         trigger = TriggerBuilder.create().withId("absolutetrigger").withTypeUID("timer.AbsoluteDateTimeTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("2020-02-01T12:12:00A14:12:34"));
 
@@ -362,7 +362,7 @@ public class ScheduleTests {
         configuration.put("cronExpression", "15 12 * * 6,7");
         trigger = TriggerBuilder.create().withId("crontrigger").withTypeUID("timer.GenericCronTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("W3/T12:15:00"));
 
@@ -371,7 +371,7 @@ public class ScheduleTests {
         configuration.put("cronExpression", "15 14 * * 1,2,3,4,5,6,7");
         trigger = TriggerBuilder.create().withId("crontrigger").withTypeUID("timer.GenericCronTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("W127/T14:15:00"));
 
@@ -380,7 +380,7 @@ public class ScheduleTests {
         configuration.put("time", "12:12:00");
         trigger = TriggerBuilder.create().withId("timertrigger").withTypeUID("timer.TimerTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("PT12:12:00"));
 
@@ -390,7 +390,7 @@ public class ScheduleTests {
         configuration.put("randomizeTime", "14:12:34");
         trigger = TriggerBuilder.create().withId("timertrigger").withTypeUID("timer.TimerTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("PT12:12:00A14:12:34"));
 
@@ -400,7 +400,7 @@ public class ScheduleTests {
         configuration.put("repeat", -1);
         trigger = TriggerBuilder.create().withId("timertrigger").withTypeUID("timer.TimerTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("R/PT12:12:00"));
 
@@ -411,7 +411,7 @@ public class ScheduleTests {
         configuration.put("repeat", 12);
         trigger = TriggerBuilder.create().withId("timertrigger").withTypeUID("timer.TimerTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("R12/PT12:12:00A14:12:34"));
     }

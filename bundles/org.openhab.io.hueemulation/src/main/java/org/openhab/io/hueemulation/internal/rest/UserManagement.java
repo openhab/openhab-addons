@@ -14,8 +14,8 @@ package org.openhab.io.hueemulation.internal.rest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.ws.rs.DELETE;
@@ -172,7 +172,7 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
         String clientKey = UUID.randomUUID().toString();
         addUser(apiKey, clientKey, userRequest.devicetype);
         HueSuccessResponseCreateUser h = new HueSuccessResponseCreateUser(apiKey, clientKey);
-        String result = cs.gson.toJson(Collections.singleton(new HueResponse(h)), new TypeToken<List<?>>() {
+        String result = cs.gson.toJson(Set.of(new HueResponse(h)), new TypeToken<List<?>>() {
         }.getType());
 
         return Response.ok(result).build();
