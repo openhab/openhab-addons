@@ -302,8 +302,8 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         } else if (item instanceof NumberItem) {
             return new DynamoDBBigDecimalItem(name, convert(state, DecimalType.class).toBigDecimal(), time, expireDays);
         } else if (item instanceof PlayerItem) {
-            if (state instanceof PlayPauseType type) {
-                switch (type) {
+            if (state instanceof PlayPauseType pauseType) {
+                switch (pauseType) {
                     case PLAY:
                         return new DynamoDBBigDecimalItem(name, PLAY_BIGDECIMAL, time, expireDays);
                     case PAUSE:
@@ -311,8 +311,8 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                     default:
                         throw new IllegalArgumentException("Unexpected enum with PlayPauseType: " + state.toString());
                 }
-            } else if (state instanceof RewindFastforwardType type) {
-                switch (type) {
+            } else if (state instanceof RewindFastforwardType rewindType) {
+                switch (rewindType) {
                     case FASTFORWARD:
                         return new DynamoDBBigDecimalItem(name, FAST_FORWARD_BIGDECIMAL, time, expireDays);
                     case REWIND:
@@ -329,11 +329,11 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
             // Normalize UP/DOWN to %
             return new DynamoDBBigDecimalItem(name, convert(state, PercentType.class).toBigDecimal(), time, expireDays);
         } else if (item instanceof StringItem) {
-            if (state instanceof StringType type) {
-                return new DynamoDBStringItem(name, type.toString(), time, expireDays);
-            } else if (state instanceof DateTimeType type) {
-                return new DynamoDBStringItem(name, ZONED_DATE_TIME_CONVERTER_STRING.toString(type.getZonedDateTime()),
-                        time, expireDays);
+            if (state instanceof StringType stringType) {
+                return new DynamoDBStringItem(name, stringType.toString(), time, expireDays);
+            } else if (state instanceof DateTimeType dateType) {
+                return new DynamoDBStringItem(name,
+                        ZONED_DATE_TIME_CONVERTER_STRING.toString(dateType.getZonedDateTime()), time, expireDays);
             } else {
                 throw new IllegalStateException(
                         String.format("Unexpected state type %s with StringItem", state.getClass().getSimpleName()));
@@ -410,8 +410,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                     if (numberState == null) {
                         return null;
                     }
-                    if (item instanceof NumberItem numberItem1) {
-                        NumberItem numberItem = numberItem1;
+                    if (item instanceof NumberItem numberItem) {
                         Unit<? extends Quantity<?>> unit = targetUnit == null ? numberItem.getUnit() : targetUnit;
                         if (unit != null) {
                             return new QuantityType<>(numberState, unit);
