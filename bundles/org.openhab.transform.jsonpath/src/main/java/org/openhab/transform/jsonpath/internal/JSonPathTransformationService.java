@@ -68,8 +68,8 @@ public class JSonPathTransformationService implements TransformationService {
             logger.debug("transformation resulted in '{}'", transformationResult);
             if (transformationResult == null) {
                 return null;
-            } else if (transformationResult instanceof List) {
-                return flattenList((List<?>) transformationResult);
+            } else if (transformationResult instanceof List list) {
+                return flattenList(list);
             } else {
                 return transformationResult.toString();
             }

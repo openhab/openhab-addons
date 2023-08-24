@@ -64,9 +64,9 @@ public class ScaleTransformationProfile implements StateProfile {
         if (paramSource == null) {
             paramSource = "%s";
         }
-        if (paramFunction instanceof String && paramSource instanceof String) {
-            function = (String) paramFunction;
-            sourceFormat = (String) paramSource;
+        if (paramFunction instanceof String pFunction && paramSource instanceof String pFormat) {
+            function = pFunction;
+            sourceFormat = pFormat;
         } else {
             logger.error("Parameter '{}' and '{}' have to be Strings. Profile will be inactive.", FUNCTION_PARAM,
                     SOURCE_FORMAT_PARAM);
