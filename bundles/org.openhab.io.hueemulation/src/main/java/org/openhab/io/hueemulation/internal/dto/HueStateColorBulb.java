@@ -38,7 +38,7 @@ public class HueStateColorBulb extends HueStateBulb {
     /** time for transition in centiseconds. */
     public int transitiontime;
 
-    public static enum ColorMode {
+    public enum ColorMode {
         ct,
         hs,
         xy

@@ -129,7 +129,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
         List<String> items = new ArrayList<>();
 
         for (Action a : scene.getActions()) {
-            if (!a.getTypeUID().equals("core.ItemCommandAction")) {
+            if (!"core.ItemCommandAction".equals(a.getTypeUID())) {
                 continue;
             }
             ItemCommandActionConfig config = a.getConfiguration().as(ItemCommandActionConfig.class);

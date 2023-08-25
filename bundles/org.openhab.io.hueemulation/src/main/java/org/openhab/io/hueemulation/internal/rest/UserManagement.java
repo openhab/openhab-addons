@@ -120,7 +120,7 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
             return;
         }
         logger.debug("APIKey {} added", apiKey);
-        String l[] = label.split("#");
+        String[] l = label.split("#");
         HueUserAuthWithSecrets hueUserAuth = new HueUserAuthWithSecrets(l[0], l.length == 2 ? l[1] : "openhab", apiKey,
                 clientKey);
         cs.ds.config.whitelist.put(apiKey, hueUserAuth);
