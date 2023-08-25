@@ -158,13 +158,17 @@
 		<description>A Philips TV device</description>
 
 		<channels>
+			<channel id="debug" typeId="debug"/>
+			<channel id="keypress" typeId="keypress"/>
+			<channel id="keyboard" typeId="keyboard"/>
+			<channel id="keycode" typeId="keycode"/>
+			<channel id="pincode" typeId="pincode"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="power" typeId="system.power"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
 			<channel id="sharpness" typeId="sharpness"/>
-			<channel id="keypress" typeId="keypress"/>
 			<channel id="app" typeId="app"/>
 			<channel id="appname" typeId="appname"/>
 			<channel id="appicon" typeId="appicon"/>
