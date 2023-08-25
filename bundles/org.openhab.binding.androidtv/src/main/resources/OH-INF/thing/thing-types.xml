@@ -43,9 +43,15 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="port" type="integer">
-				<label>Port</label>
+			<parameter name="googletvPort" type="integer">
+				<label>GoogleTV Port</label>
 				<description>Port to connect to</description>
+				<default>6466</default>
+			</parameter>
+			<parameter name="shieldtvPort" type="integer">
+				<label>ShieldTV Port</label>
+				<description>Port to connect to</description>
+				<default>8987</default>
 			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
@@ -114,9 +120,10 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="port" type="integer">
-				<label>Port</label>
+			<parameter name="googletvPort" type="integer">
+				<label>GoogleTV Port</label>
 				<description>Port to connect to</description>
+				<default>6466</default>
 			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
@@ -141,11 +148,6 @@
 				<label>Delay</label>
 				<description>Delay between messages</description>
 				<default>0</default>
-			</parameter>
-			<parameter name="gtvEnabled" type="boolean">
-				<label>Enable GoogleTV</label>
-				<description>Enable the GoogleTV Protocol</description>
-				<default>true</default>
 			</parameter>
 		</config-description>
 
@@ -186,8 +188,13 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="port" type="integer">
-				<label>Port</label>
+			<parameter name="googletvPort" type="integer">
+				<label>GoogleTV Port</label>
+				<description>Port to connect to</description>
+				<default>6466</default>
+			</parameter>
+			<parameter name="philipstvPort" type="integer">
+				<label>PhilipsTV Port</label>
 				<description>Port to connect to</description>
 				<default>1926</default>
 			</parameter>
@@ -214,7 +221,7 @@
 			<parameter name="gtvEnabled" type="boolean">
 				<label>Enable GoogleTV</label>
 				<description>Enable the GoogleTV Protocol</description>
-				<default>true</default>
+				<default>false</default>
 			</parameter>
 		</config-description>
 

@@ -27,7 +27,7 @@ public class PhilipsTVBindingConstants {
     // Config Parameters
     public static final String HOST = "host";
 
-    public static final String PORT = "port";
+    public static final String PORT = "philipstvPort";
 
     public static final String MAC_ADDRESS = "macAddress";
 

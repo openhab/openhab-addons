@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PhilipsTVConfiguration {
 
     public String ipAddress = "";
-    public Integer port = 1926;
+    public Integer philipstvPort = 1926;
     public Integer refreshRate = 10;
     public boolean useUpnpDiscovery = true;
     public String pairingCode = "";

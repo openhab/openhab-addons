@@ -140,7 +140,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         this.translationProvider = handler.getTranslationProvider();
         this.discoveryServiceRegistry = handler.getDiscoveryServiceRegistry();
         this.stateDescriptionProvider = handler.getStateDescriptionProvider();
-        this.target = new HttpHost(config.ipAddress, config.port, HTTPS);
+        this.target = new HttpHost(config.ipAddress, config.philipstvPort, HTTPS);
         initialize();
     }
 
@@ -249,7 +249,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     private boolean servicePing() {
         int timeout = 500;
 
-        SocketAddress socketAddress = new InetSocketAddress(config.ipAddress, config.port);
+        SocketAddress socketAddress = new InetSocketAddress(config.ipAddress, config.philipstvPort);
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
             return true;
@@ -285,7 +285,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
         if (channelUID.getId().equals(CHANNEL_PINCODE)) {
             if (command instanceof StringType) {
-                HttpHost target = new HttpHost(config.ipAddress, config.port, HTTPS);
+                HttpHost target = new HttpHost(config.ipAddress, config.philipstvPort, HTTPS);
                 if (command.toString().equals("REQUEST")) {
                     try {
                         initPairingCodeRetrieval(target);
@@ -340,7 +340,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     public void initialize() {
         logger.debug("Init of handler for Thing: {}", handler.getThingID());
 
-        if ((config.ipAddress == null) || (config.port == null)) {
+        if ((config.ipAddress == null) || (config.philipstvPort == null)) {
             postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "offline.cannot-connect-to-philipstv-host-port-not-set");
             return;
