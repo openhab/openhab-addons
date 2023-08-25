@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public class DeviceSidePostRtUpdateDTO {
     /** A MD5 hash of password to the remote server (and hence the UI) */
     public final String passwordHash;
 
-    /** The CPU_ID (unique & immutable HVAC identifier) send by the device */
+    /** The CPU_ID (unique and immutable HVAC identifier) send by the device */
     public final String cpuId;
 
     /** Unknown purpose, seems to be set to 1 in all requests observed. DEL is for delta? */

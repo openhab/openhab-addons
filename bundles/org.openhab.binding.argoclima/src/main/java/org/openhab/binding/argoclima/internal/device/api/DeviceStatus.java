@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.argoclima.internal.device.api;
 
 import java.net.URL;
-import java.text.MessageFormat;
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.Instant;
@@ -27,9 +26,10 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationRemote;
 import org.openhab.binding.argoclima.internal.device.passthrough.requests.DeviceSideUpdateDTO;
-import org.openhab.binding.argoclima.internal.exception.ArgoLocalApiCommunicationException;
+import org.openhab.binding.argoclima.internal.exception.ArgoApiCommunicationException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,7 +139,7 @@ class DeviceStatus {
         }
 
         /**
-         * Return the properties in a map (ready to pass on to OpenHab engine)
+         * Return the properties in a map (ready to pass on to openHAB engine)
          *
          * @param timeZoneProvider TZ provider, for parsing date/time values
          * @return Properties map
@@ -166,6 +166,7 @@ class DeviceStatus {
     //////////////
     // FIELDS
     //////////////
+    private final ArgoClimaTranslationProvider i18nProvider;
     private String commandString;
     private DeviceProperties properties;
 
@@ -174,11 +175,13 @@ class DeviceStatus {
      *
      * @param commandString The device-side {@code HMI} string, carrying its updates and commands
      * @param properties The parsed device-side properties
+     * @param i18nProvider Framework's translation provider
      * @implNote Consider: rewrite to a factory instead of this
      */
-    public DeviceStatus(String commandString, DeviceProperties properties) {
+    public DeviceStatus(String commandString, DeviceProperties properties, ArgoClimaTranslationProvider i18nProvider) {
         this.commandString = commandString;
         this.properties = properties;
+        this.i18nProvider = i18nProvider;
     }
 
     /**
@@ -186,9 +189,11 @@ class DeviceStatus {
      *
      * @param commandString The command string received
      * @param lastSeenDateTime The date/time when the request has been received
+     * @param i18nProvider Framework's translation provider
      */
-    public DeviceStatus(String commandString, OffsetDateTime lastSeenDateTime) {
-        this(commandString, new DeviceProperties(lastSeenDateTime));
+    public DeviceStatus(String commandString, OffsetDateTime lastSeenDateTime,
+            ArgoClimaTranslationProvider i18nProvider) {
+        this(commandString, new DeviceProperties(lastSeenDateTime), i18nProvider);
     }
 
     /**
@@ -213,14 +218,17 @@ class DeviceStatus {
      * Throw exception if last update time is older than
      * {@link ArgoClimaConfigurationRemote#LAST_SEEN_UNAVAILABILITY_THRESHOLD the threshold}
      *
-     * @throws ArgoLocalApiCommunicationException If status is stale
+     * @throws ArgoApiCommunicationException If status is stale
      */
-    public void throwIfStatusIsStale() throws ArgoLocalApiCommunicationException {
+    public void throwIfStatusIsStale() throws ArgoApiCommunicationException {
         var delta = this.properties.getLastSeenDelta();
         if (delta.toSeconds() > ArgoClimaConfigurationRemote.LAST_SEEN_UNAVAILABILITY_THRESHOLD.toSeconds()) {
-            throw new ArgoLocalApiCommunicationException(MessageFormat.format(
-                    "Device was last seen {0} mins ago (threshold is set at {1} min). Please ensure the HVAC is connected to WiFi and communicating with Argo servers",
-                    delta.toMinutes(), ArgoClimaConfigurationRemote.LAST_SEEN_UNAVAILABILITY_THRESHOLD.toMinutes()));
+            throw new ArgoApiCommunicationException(
+                    // "or more", since this message is also used in thing status (and we're not updating
+                    // offline->offline). Actual "Last seen" can always be retrieved from properties
+                    "Device was last seen {0} (or more) mins ago (threshold is set at {1} min). Please ensure the HVAC is connected to Wi-Fi and communicating with Argo servers",
+                    "thing-status.cause.argoclima.remote-device-stale", i18nProvider, delta.toMinutes(),
+                    ArgoClimaConfigurationRemote.LAST_SEEN_UNAVAILABILITY_THRESHOLD.toMinutes());
         }
     }
 }

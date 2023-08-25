@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.argoclima.internal.device.api.protocol;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,7 +43,7 @@ import org.openhab.binding.argoclima.internal.device.api.types.FanLevel;
 import org.openhab.binding.argoclima.internal.device.api.types.FlapLevel;
 import org.openhab.binding.argoclima.internal.device.api.types.OperationMode;
 import org.openhab.binding.argoclima.internal.device.api.types.TemperatureScale;
-import org.openhab.binding.argoclima.internal.exception.ArgoApiCommunicationException;
+import org.openhab.binding.argoclima.internal.exception.ArgoApiProtocolViolationException;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,14 +178,14 @@ public class ArgoDeviceStatus implements IArgoSettingProvider {
      * Update *this* state from device-side update
      *
      * @param deviceOutput The device-side 'HMI' update
-     * @throws ArgoApiCommunicationException If API response doesn't match protocol format
+     * @throws ArgoApiProtocolViolationException If API response doesn't match protocol format
      */
-    public void fromDeviceString(String deviceOutput) throws ArgoApiCommunicationException {
+    public void fromDeviceString(String deviceOutput) throws ArgoApiProtocolViolationException {
         var values = Arrays.asList(deviceOutput.split(HMI_ELEMENT_SEPARATOR));
         if (values.size() != HMI_UPDATE_ELEMENT_COUNT) {
-            throw new ArgoApiCommunicationException(
-                    "Invalid device API response: [%s]. Expected to contain %d elements while has %d."
-                            .formatted(deviceOutput, HMI_UPDATE_ELEMENT_COUNT, values.size()));
+            throw new ArgoApiProtocolViolationException(MessageFormat.format(
+                    "Invalid device API response: [{0}]. Expected to contain {1} elements while has {2}.", deviceOutput,
+                    HMI_UPDATE_ELEMENT_COUNT, values.size()));
         }
         synchronized (this) {
             dataElements.entrySet().stream().forEach(v -> v.getValue().fromDeviceResponse(values));
@@ -207,8 +208,16 @@ public class ArgoDeviceStatus implements IArgoSettingProvider {
                 Objects.requireNonNull(Collections.nCopies(HMI_COMMAND_ELEMENT_COUNT, NO_VALUE)));
 
         var itemsToSend = dataElements.entrySet().stream().filter(x -> x.getValue().shouldBeSentToDevice()).toList();
-        logger.debug("Sending {} updates to device {}", itemsToSend.size(),
-                itemsToSend.stream().map(x -> x.getKey().toString()).collect(Collectors.joining(", ")));
+
+        if (logger.isDebugEnabled() || logger.isTraceEnabled()) {
+            var stringifiedItemsToSend = itemsToSend.stream().map(x -> x.getKey().toString())
+                    .collect(Collectors.joining(", "));
+            if (hasUpdatesPending()) {
+                logger.debug("Sending {} updates to device {}", itemsToSend.size(), stringifiedItemsToSend);
+            } else {
+                logger.trace("Sending {} updates to device {}", itemsToSend.size(), stringifiedItemsToSend);
+            }
+        }
 
         itemsToSend.stream().map(x -> x.getValue().toDeviceResponse()).forEach(p -> {
             try {

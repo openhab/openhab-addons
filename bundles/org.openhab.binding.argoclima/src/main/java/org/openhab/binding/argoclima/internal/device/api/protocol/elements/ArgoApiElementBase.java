@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,7 @@ public abstract class ArgoApiElementBase implements IArgoElement {
 
         /**
          * Check if this command is stale (has been issued before
-         * {@link ArgoClimaBindingConstants.PENDING_COMMAND_EXPIRE_TIME} ago.
+         * {@link ArgoClimaBindingConstants#PENDING_COMMAND_EXPIRE_TIME} ago.
          *
          * @implNote This class does NOT track actual command completion (only their issuance), hence it is expected
          *           that a completed command will be simply removed by the caller.
@@ -147,7 +147,7 @@ public abstract class ArgoApiElementBase implements IArgoElement {
         /**
          * Set deferred status (update from default: false)
          *
-         * @see {@link #isDeferred()}
+         * @see #isDeferred()
          * @param deferred New {@code deferred} value
          * @return This object (for chaining)
          */
@@ -177,7 +177,7 @@ public abstract class ArgoApiElementBase implements IArgoElement {
         ABORTED,
         /**
          * Pending (confirmable) command has not received confirmation within
-         * {@link ArgoClimaBindingConstants.PENDING_COMMAND_EXPIRE_TIME}
+         * {@link ArgoClimaBindingConstants#PENDING_COMMAND_EXPIRE_TIME}
          */
         EXPIRED
     }

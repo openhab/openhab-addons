@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.argoclima.internal.exception;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 
 /**
  * The class {@code ArgoApiCommunicationException} is thrown in case of any issues with communication with the Argo HVAC
@@ -24,29 +23,48 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Mateusz Bronk - Initial contribution
  */
 @NonNullByDefault
-public class ArgoApiCommunicationException extends Exception {
+public class ArgoApiCommunicationException extends ArgoLocalizedException {
 
     private static final long serialVersionUID = -6618438267962155601L;
 
-    public ArgoApiCommunicationException(@Nullable String message) {
-        super(message);
+    public ArgoApiCommunicationException(String defaultMessage, String localizedMessageKey,
+            ArgoClimaTranslationProvider i18nProvider, @Nullable Throwable cause,
+            Object @Nullable... messageFormatArguments) {
+        super(defaultMessage, localizedMessageKey, i18nProvider, cause, messageFormatArguments);
     }
 
-    public ArgoApiCommunicationException(@Nullable String message, @Nullable Throwable cause) {
-        super(message, cause);
+    public ArgoApiCommunicationException(String defaultMessage, String localizedMessageKey,
+            ArgoClimaTranslationProvider i18nProvider, @Nullable Throwable cause) {
+        super(defaultMessage, localizedMessageKey, i18nProvider, cause);
     }
 
+    public ArgoApiCommunicationException(String defaultMessage, String localizedMessageKey,
+            ArgoClimaTranslationProvider i18nProvider, Object @Nullable... messageFormatArguments) {
+        super(defaultMessage, localizedMessageKey, i18nProvider, messageFormatArguments);
+    }
+
+    public ArgoApiCommunicationException(String defaultMessage, String localizedMessageKey,
+            ArgoClimaTranslationProvider i18nProvider) {
+        super(defaultMessage, localizedMessageKey, i18nProvider);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @implNote We want cause of all these exceptions included in the message by default
+     */
     @Override
     public @Nullable String getMessage() {
-        var msg = super.getMessage();
-        if (msg != null && this.getCause() != null) {
-            var causeMessage = Objects.requireNonNull(this.getCause()).getMessage();
-            if (causeMessage != null && !(msg.endsWith(causeMessage))) {
-                // Sometimes the cause is already embedded in the message at throw site. If it isn't though... let's add
-                // it
-                msg += ". Caused by: " + causeMessage;
-            }
-        }
-        return msg;
+        return super.getMessage(true);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @implNote We want cause of all these exceptions included in the message by default
+     */
+    @Override
+    public @Nullable String getLocalizedMessage() {
+        return super.getLocalizedMessage(true);
     }
 }

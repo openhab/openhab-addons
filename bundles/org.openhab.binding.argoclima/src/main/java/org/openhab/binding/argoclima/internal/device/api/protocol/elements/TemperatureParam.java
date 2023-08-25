@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,11 +116,12 @@ public class TemperatureParam extends ArgoApiElementBase {
     protected HandleCommandResult handleCommandInternalEx(Command command) {
         double newRawValue;
 
-        if (command instanceof Number) {
-            newRawValue = ((Number) command).doubleValue(); // Raw value, not unit-aware
+        if (command instanceof Number numberCommand) {
+            newRawValue = numberCommand.doubleValue(); // Raw value, not unit-aware
 
-            if (command instanceof QuantityType<?>) { // let's try to get it with unit (opportunistically)
-                var inCelsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+            if (command instanceof QuantityType<?> quantityTypeCommand) { // let's try to get it with unit
+                                                                          // (opportunistically)
+                var inCelsius = quantityTypeCommand.toUnit(SIUnits.CELSIUS);
                 if (null != inCelsius) {
                     newRawValue = inCelsius.doubleValue();
                 }

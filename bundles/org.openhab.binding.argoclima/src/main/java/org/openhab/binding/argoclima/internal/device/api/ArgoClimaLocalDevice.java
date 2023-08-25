@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.argoclima.internal.device.api;
 
 import java.net.InetAddress;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Objects;
@@ -25,11 +24,13 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationLocal;
 import org.openhab.binding.argoclima.internal.device.api.types.ArgoDeviceSettingType;
 import org.openhab.binding.argoclima.internal.device.passthrough.requests.DeviceSidePostRtUpdateDTO;
 import org.openhab.binding.argoclima.internal.device.passthrough.requests.DeviceSideUpdateDTO;
 import org.openhab.binding.argoclima.internal.exception.ArgoApiCommunicationException;
+import org.openhab.binding.argoclima.internal.exception.ArgoApiProtocolViolationException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
@@ -68,10 +69,11 @@ public class ArgoClimaLocalDevice extends ArgoClimaDeviceApiBase {
      * @param localDeviceIpAddress Optional, local subnet IP of the device (ex. if behind NAT). Used to match
      *            intercepted responses (in indirect mode) to this thing. This may be
      *            {@link ArgoClimaConfigurationLocal#getMatchAnyIncomingDeviceIp() bypassed}
-     * @param cpuId Optional, CPUID of the WiFi chip of the device. If provided, will be used to match intercepted
+     * @param cpuId Optional, CPUID of the Wi-Fi chip of the device. If provided, will be used to match intercepted
      *            responses (in indirect mode) to this thing
      * @param client The common HTTP client used for issuing direct requests
      * @param timeZoneProvider System-wide TZ provider, for parsing/displaying local dates
+     * @param i18nProvider Framework's translation provider
      * @param onStateUpdate Callback to be invoked when device status gets updated(device-side channel updates)
      * @param onReachableStatusChange Callback to be invoked when device's reachability status (online) changes
      * @param onDevicePropertiesUpdate Callback to invoke when device properties get refreshed
@@ -79,10 +81,10 @@ public class ArgoClimaLocalDevice extends ArgoClimaDeviceApiBase {
      */
     public ArgoClimaLocalDevice(ArgoClimaConfigurationLocal config, InetAddress targetDeviceIpAddress, int port,
             Optional<InetAddress> localDeviceIpAddress, Optional<String> cpuId, HttpClient client,
-            TimeZoneProvider timeZoneProvider, Consumer<Map<ArgoDeviceSettingType, State>> onStateUpdate,
-            Consumer<ThingStatus> onReachableStatusChange, Consumer<SortedMap<String, String>> onDevicePropertiesUpdate,
-            String thingUid) {
-        super(config, client, timeZoneProvider, onDevicePropertiesUpdate, "");
+            TimeZoneProvider timeZoneProvider, ArgoClimaTranslationProvider i18nProvider,
+            Consumer<Map<ArgoDeviceSettingType, State>> onStateUpdate, Consumer<ThingStatus> onReachableStatusChange,
+            Consumer<SortedMap<String, String>> onDevicePropertiesUpdate, String thingUid) {
+        super(config, client, timeZoneProvider, i18nProvider, onDevicePropertiesUpdate, "");
         this.ipAddress = targetDeviceIpAddress;
         this.port = port;
         this.localIpAddress = localDeviceIpAddress;
@@ -111,26 +113,31 @@ public class ArgoClimaLocalDevice extends ArgoClimaDeviceApiBase {
         try {
             var status = extractDeviceStatusFromResponse(pollForCurrentStatusFromDeviceSync(getDeviceStateQueryUrl()));
 
-            this.deviceStatus.fromDeviceString(status.getCommandString());
+            try {
+                this.deviceStatus.fromDeviceString(status.getCommandString());
+            } catch (ArgoApiProtocolViolationException e) {
+                throw new ArgoApiCommunicationException("Unrecognized API response",
+                        "thing-status.cause.argoclima.exception.unrecognized-response", i18nProvider, e);
+            }
             this.updateDevicePropertiesFromDeviceResponse(status.getProperties(), this.deviceStatus);
 
             return new ReachabilityStatus(true, "");
         } catch (ArgoApiCommunicationException e) {
             logger.debug("Device not reachable: {}", e.getMessage());
             return new ReachabilityStatus(false,
-                    Objects.requireNonNull(MessageFormat.format(
+                    Objects.requireNonNull(i18nProvider.getText("thing-status.argoclima.local-unreachable",
                             "Failed to communicate with Argo HVAC device at [http://{0}:{1,number,#}{2}]. {3}",
                             this.getDeviceStateQueryUrl().getHost(),
                             this.getDeviceStateQueryUrl().getPort() != -1 ? this.getDeviceStateQueryUrl().getPort()
                                     : this.getDeviceStateQueryUrl().getDefaultPort(),
-                            this.getDeviceStateQueryUrl().getPath(), e.getMessage())));
+                            this.getDeviceStateQueryUrl().getPath(), e.getLocalizedMessage())));
         }
     }
 
     @Override
     protected DeviceStatus extractDeviceStatusFromResponse(String apiResponse) {
         // local device response does not have all properties, but is always fresh
-        return new DeviceStatus(apiResponse, OffsetDateTime.now());
+        return new DeviceStatus(apiResponse, OffsetDateTime.now(), i18nProvider);
     }
 
     /**
@@ -142,7 +149,7 @@ public class ArgoClimaLocalDevice extends ArgoClimaDeviceApiBase {
      */
     public void updateDeviceStateFromPostRtRequest(DeviceSidePostRtUpdateDTO fromDevice) {
         if (this.cpuId.isEmpty()) {
-            logger.debug(
+            logger.trace(
                     "Got post update confirmation from device {}, but was not able to match it to this device b/c no CPUID is configured. Configure {} setting to allow this mode...",
                     fromDevice.cpuId, ArgoClimaBindingConstants.PARAMETER_DEVICE_CPU_ID);
             return;
@@ -211,7 +218,12 @@ public class ArgoClimaLocalDevice extends ArgoClimaDeviceApiBase {
 
         this.onReachableStatusChange.accept(ThingStatus.ONLINE); // Device communicated with us, so we consider it
                                                                  // ONLINE
-        this.deviceStatus.fromDeviceString(hmiStringFromDevice);
+        try {
+            this.deviceStatus.fromDeviceString(hmiStringFromDevice);
+        } catch (ArgoApiProtocolViolationException e) {
+            throw new ArgoApiCommunicationException("Unrecognized API response",
+                    "thing-status.cause.argoclima.exception.unrecognized-response", i18nProvider, e);
+        }
         this.onStateUpdate.accept(this.deviceStatus.getCurrentStateMap()); // Update channels from device's state
 
         var properties = new DeviceStatus.DeviceProperties(OffsetDateTime.now(), deviceUpdate);

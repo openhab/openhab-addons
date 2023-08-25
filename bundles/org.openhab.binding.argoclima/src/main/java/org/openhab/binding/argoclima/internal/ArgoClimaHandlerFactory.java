@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,15 +42,18 @@ import org.osgi.service.component.annotations.Reference;
 public class ArgoClimaHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final TimeZoneProvider timeZoneProvider;
+    private final ArgoClimaTranslationProvider i18nProvider;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ARGOCLIMA_LOCAL,
             THING_TYPE_ARGOCLIMA_REMOTE);
 
     @Activate
     public ArgoClimaHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference ArgoClimaTranslationProvider i18nProvider) {
         this.httpClientFactory = httpClientFactory;
         this.timeZoneProvider = timeZoneProvider;
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -63,10 +66,10 @@ public class ArgoClimaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ARGOCLIMA_LOCAL.equals(thingTypeUID)) {
-            return new ArgoClimaHandlerLocal(thing, httpClientFactory, timeZoneProvider);
+            return new ArgoClimaHandlerLocal(thing, httpClientFactory, timeZoneProvider, i18nProvider);
         }
         if (THING_TYPE_ARGOCLIMA_REMOTE.equals(thingTypeUID)) {
-            return new ArgoClimaHandlerRemote(thing, httpClientFactory, timeZoneProvider);
+            return new ArgoClimaHandlerRemote(thing, httpClientFactory, timeZoneProvider, i18nProvider);
         }
 
         return null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Weekdays element (accepting sets of days for schedule to run on)
  *
- * @see {@link TimeParam}
+ * @see TimeParam
  * @author Mateusz Bronk - Initial contribution
  */
 @NonNullByDefault
@@ -194,11 +194,11 @@ public class WeekdayParam extends ArgoApiElementBase {
     protected HandleCommandResult handleCommandInternalEx(Command command) {
         EnumSet<Weekday> newValue;
 
-        if (command instanceof Number) {
-            var rawValue = ((Number) command).intValue();
+        if (command instanceof Number numberCommand) {
+            var rawValue = numberCommand.intValue();
             newValue = fromRawValue(rawValue);
-        } else if (command instanceof StringType) {
-            var toParse = StringUtils.strip(((StringType) command).toFullString(), "[]{}()");
+        } else if (command instanceof StringType stringTypeCommand) {
+            var toParse = StringUtils.strip(stringTypeCommand.toFullString(), "[]{}()");
             EnumSet<Weekday> parsed = EnumSet.noneOf(Weekday.class);
             for (String s : toParse.split(",")) {
                 parsed.add(Weekday.valueOf(s.strip()));

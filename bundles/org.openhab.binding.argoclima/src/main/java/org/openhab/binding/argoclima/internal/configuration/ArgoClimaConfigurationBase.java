@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
 import org.openhab.binding.argoclima.internal.ArgoClimaConfigProvider;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.device.api.types.Weekday;
 import org.openhab.binding.argoclima.internal.exception.ArgoConfigurationException;
 import org.openhab.binding.argoclima.internal.utils.StringUtils;
@@ -47,12 +50,14 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
     }
 
     /////////////////////
-    // Configuration parameters (defined in thing-types.xml or ArgoClimaConfigProvider)
+    // Configuration parameters
+    // These names are defined in thing-types.xml and/or ArgoClimaConfigProvider and get injected on instantiation
+    // through {@link org.openhab.core.thing.binding.BaseThingHandler#getConfigAs getConfigAs}
     /////////////////////
+    private int refreshInterval = 30; // in seconds
     private String deviceCpuId = "";
-    private int refreshInterval = -1;
-    private int oemServerPort = -1;
-    private String oemServerAddress = "";
+    private int oemServerPort = 80;
+    private String oemServerAddress = "31.14.128.210";
 
     // Note this boilerplate is actually necessary as these values are injected by framework!
     private Set<Weekday> schedule1DayOfWeek = ArgoClimaConfigProvider.getScheduleDefaults(ScheduleTimerType.SCHEDULE_1)
@@ -75,7 +80,23 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
             .endTime();
 
     public boolean resetToFactoryDefaults = false;
+
+    /////////////////////
+    // Other fields
+    /////////////////////
     private static final DateTimeFormatter SCHEDULE_ON_OFF_TIME_FORMATTER = DateTimeFormatter.ofPattern("H:mm[:ss]");
+    protected @Nullable ArgoClimaTranslationProvider i18nProvider;
+
+    /**
+     * Initializes the configuration class post construction, injecting i18n provider for localized configuration
+     * exceptions
+     *
+     * @implNote This class requires default/parameterless c-tor for framework-side initialization (from file)
+     * @param i18nProvider Framework's translation provider
+     */
+    public void initialize(ArgoClimaTranslationProvider i18nProvider) {
+        this.i18nProvider = i18nProvider;
+    }
 
     /**
      * Get the user-configured CPUID of the Argo device (used in matching to a concrete device in a stub mode)
@@ -109,13 +130,13 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
      *
      * @implNote While this is configured by its dedicated settings (for better UX) and valid only for Local Thing
      *           types, internal implementation uses {@code refreshInterval == 0} to signify no comms. This is because
-     *           without a refresh, the binding would have to function in a fire&forget mode sending commands back to
-     *           HVAC and never receiving any ACK... which makes little sense, hence is not supported
+     *           without a refresh, the binding would have to function in a fire and forget mode sending commands back
+     *           to HVAC and never receiving any ACK... which makes little sense, hence is not supported
      *
      * @return True if the Thing is allowed to communicate outwards on its own, False otherwise
      */
     public boolean useDirectConnection() {
-        return this.refreshInterval > 0;
+        return getRefreshInterval() > 0; // Uses virtual method overridden for local device!
     }
 
     /**
@@ -128,7 +149,8 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
         try {
             return Objects.requireNonNull(InetAddress.getByName(oemServerAddress));
         } catch (UnknownHostException e) {
-            throw new ArgoConfigurationException("Invalid oemServerAddress configuration", oemServerAddress, e);
+            throw ArgoConfigurationException.forInvalidParamValue(
+                    ArgoClimaBindingConstants.PARAMETER_OEM_SERVER_ADDRESS, oemServerAddress, i18nProvider, e);
         }
     }
 
@@ -174,7 +196,7 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
                 return EnumSet.copyOf(rawInput);
             }
         } catch (ClassCastException | IllegalArgumentException e) {
-            throw new ArgoConfigurationException(String.format("Invalid %s format", paramName), rawInput.toString(), e);
+            throw ArgoConfigurationException.forInvalidParamValue(paramName, rawInput.toString(), i18nProvider, e);
         }
     }
 
@@ -186,13 +208,16 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
         ConfigParam<Set<Weekday>> configValue;
         switch (scheduleType) {
             case SCHEDULE_1:
-                configValue = new ConfigParam<>(schedule1DayOfWeek, "schedule1DayOfWeek");
+                configValue = new ConfigParam<>(schedule1DayOfWeek,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_DAYS.formatted(1));
                 break;
             case SCHEDULE_2:
-                configValue = new ConfigParam<>(schedule2DayOfWeek, "schedule2DayOfWeek");
+                configValue = new ConfigParam<>(schedule2DayOfWeek,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_DAYS.formatted(2));
                 break;
             case SCHEDULE_3:
-                configValue = new ConfigParam<>(schedule3DayOfWeek, "schedule3DayOfWeek");
+                configValue = new ConfigParam<>(schedule3DayOfWeek,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_DAYS.formatted(3));
                 break;
             default:
                 throw new IllegalArgumentException("Invalid schedule timer: " + scheduleType.toString());
@@ -209,13 +234,16 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
         ConfigParam<String> configValue;
         switch (scheduleType) {
             case SCHEDULE_1:
-                configValue = new ConfigParam<>(schedule1OnTime, "schedule1OnTime");
+                configValue = new ConfigParam<>(schedule1OnTime,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_ON_TIME.formatted(1));
                 break;
             case SCHEDULE_2:
-                configValue = new ConfigParam<>(schedule2OnTime, "schedule2OnTime");
+                configValue = new ConfigParam<>(schedule2OnTime,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_ON_TIME.formatted(2));
                 break;
             case SCHEDULE_3:
-                configValue = new ConfigParam<>(schedule3OnTime, "schedule3OnTime");
+                configValue = new ConfigParam<>(schedule3OnTime,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_ON_TIME.formatted(3));
                 break;
             default:
                 throw new IllegalArgumentException("Invalid schedule timer: " + scheduleType.toString());
@@ -224,8 +252,8 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
         try {
             return LocalTime.parse(configValue.paramValue(), SCHEDULE_ON_OFF_TIME_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new ArgoConfigurationException(String.format("Invalid %s format", configValue.paramName()),
-                    configValue.paramValue(), e);
+            throw ArgoConfigurationException.forInvalidParamValue(configValue.paramName(), configValue.paramValue(),
+                    i18nProvider, e);
         }
     }
 
@@ -234,13 +262,16 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
         ConfigParam<String> configValue;
         switch (scheduleType) {
             case SCHEDULE_1:
-                configValue = new ConfigParam<>(schedule1OffTime, "schedule1OffTime");
+                configValue = new ConfigParam<>(schedule1OffTime,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_OFF_TIME.formatted(1));
                 break;
             case SCHEDULE_2:
-                configValue = new ConfigParam<>(schedule2OffTime, "schedule2OffTime");
+                configValue = new ConfigParam<>(schedule2OffTime,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_OFF_TIME.formatted(2));
                 break;
             case SCHEDULE_3:
-                configValue = new ConfigParam<>(schedule3OffTime, "schedule3OffTime");
+                configValue = new ConfigParam<>(schedule3OffTime,
+                        ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_OFF_TIME.formatted(3));
                 break;
             default:
                 throw new IllegalArgumentException("Invalid schedule timer: " + scheduleType.toString());
@@ -249,8 +280,8 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
         try {
             return LocalTime.parse(configValue.paramValue(), SCHEDULE_ON_OFF_TIME_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new ArgoConfigurationException(String.format("Invalid %s format", configValue.paramName()),
-                    configValue.paramValue(), e);
+            throw ArgoConfigurationException.forInvalidParamValue(configValue.paramName(), configValue.paramValue(),
+                    i18nProvider, e);
         }
     }
 
@@ -313,15 +344,17 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
      * @return Error message if config is invalid. Empty string - otherwise
      */
     public final String validate() {
-        if (refreshInterval < 0) {
-            return "Refresh interval must be >= 0";
-        }
-
-        if (oemServerPort < 0 || oemServerPort >= 65536) {
-            return "OEM server port must be in range [0..65536]";
-        }
-
         try {
+            if (refreshInterval < 0) {
+                throw ArgoConfigurationException.forParamBelowMin(ArgoClimaBindingConstants.PARAMETER_REFRESH_INTERNAL,
+                        oemServerPort, i18nProvider, 0);
+            }
+
+            if (oemServerPort < 0 || oemServerPort > 65535) {
+                throw ArgoConfigurationException.forParamOutOfRange(ArgoClimaBindingConstants.PARAMETER_OEM_SERVER_PORT,
+                        oemServerPort, i18nProvider, 0, 65535);
+            }
+
             // want the side-effect of these calls
             getOemServerAddress();
 
@@ -340,10 +373,13 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
             validateInternal();
             return "";
         } catch (Exception e) {
-            var msg = Optional.ofNullable(e.getMessage());
+            var msg = Optional.ofNullable(e.getLocalizedMessage());
             var cause = Optional.ofNullable(e.getCause());
-            return msg.orElse("Null exception message")
-                    .concat(cause.map(c -> "\n\tCause: " + c.getMessage()).orElse(""));
+            return msg.orElse("Unknown exception, message is null") // The message theoretically can be null
+                                                                    // (Exception's i-face) but in practice never is, so
+                                                                    // keeping cryptic non-i18nized text instead of
+                                                                    // throwing
+                    .concat(cause.map(c -> "\n\t[" + c.getClass().getSimpleName() + "]").orElse(""));
         }
     }
 }

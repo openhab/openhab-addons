@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,8 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
+import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationLocal.DeviceSidePasswordDisplayMode;
 import org.openhab.binding.argoclima.internal.device.api.ArgoClimaLocalDevice;
 import org.openhab.binding.argoclima.internal.device.passthrough.requests.DeviceSidePostRtUpdateDTO;
 import org.openhab.binding.argoclima.internal.device.passthrough.requests.DeviceSideUpdateDTO;
@@ -62,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * targeting Argo remote server are instead targeted at OpenHAB instance!
  * <p>
  * IMPORTANT: Argo HVAC, even when functioning in full-local mode (controlled directly, via local IP), **requires**
- * connection to a "remote" server, and will drop WiFi connection if it doesn't receive a valid protocolar response.
+ * connection to a "remote" server, and will drop Wi-Fi connection if it doesn't receive a valid protocolar response.
  * Hence in order to isolate HVAC from OEM's server, having a simulated/stubbed local API server is required even for
  * using the local APIs only
  *
@@ -94,7 +96,7 @@ public class RemoteArgoApiServerStub {
         /** UI Update? - NOTE: Not known when the device sends this... */
         GET_UI_UPD,
 
-        /** WiFi firmware update request */
+        /** Wi-Fi firmware update request */
         GET_OU_FW,
 
         /** Unit firmware update request */
@@ -113,16 +115,17 @@ public class RemoteArgoApiServerStub {
      * @author Mateusz Bronk - Initial contribution
      */
     public class ArgoDeviceRequestHandler extends AbstractHandler {
-        private final boolean showCleartextPasswords;
+        private final DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties;
 
         /**
          * C-tor
          *
-         * @param showCleartextPasswords If true, do not replace device-send passwords with **** (this is for OH
-         *            display side only. Plain passwords are ALWAYS sent to Argo as-is in a passthrough mode!)
+         * @param includeDeviceSidePasswordsInProperties Whether to include the device-sent passwords as thing
+         *            properties and how (masked vs. cleartext). Note this affects OH display side only. Plain passwords
+         *            are ALWAYS sent to Argo as-is in a passthrough mode!)
          */
-        public ArgoDeviceRequestHandler(boolean showCleartextPasswords) {
-            this.showCleartextPasswords = showCleartextPasswords;
+        public ArgoDeviceRequestHandler(DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties) {
+            this.includeDeviceSidePasswordsInProperties = includeDeviceSidePasswordsInProperties;
         }
 
         /**
@@ -144,7 +147,8 @@ public class RemoteArgoApiServerStub {
             // Stage1: Use the sniffed response to update internal state
             switch (requestType) {
                 case GET_UI_FLG:
-                    var updateDto = DeviceSideUpdateDTO.fromDeviceRequest(request, this.showCleartextPasswords);
+                    var updateDto = DeviceSideUpdateDTO.fromDeviceRequest(request,
+                            this.includeDeviceSidePasswordsInProperties);
                     logger.trace("Got device-side update: {}", updateDto);
                     deviceApi.ifPresent(x -> {
                         try {
@@ -170,12 +174,12 @@ public class RemoteArgoApiServerStub {
             if (passthroughClient.isPresent()) {
                 if (requestType.equals(DeviceRequestType.UNKNOWN)) {
                     logger.trace(
-                            "The request received byt Argo server stub has unknown syntax. Not forwarding it to upstream server as a precaution");
+                            "The request received by the Argo server stub has unknown syntax. Not forwarding it to upstream server as a precaution");
                     // fall-through to default (canned) response
                 } else {
                     Optional<ContentResponse> upstreamResponse = Optional.empty();
                     try {
-                        // CONSIDER: This implementation does NOT do any request pre-processing (ex. scrambling WiFi
+                        // CONSIDER: This implementation does NOT do any request pre-processing (ex. scrambling Wi-Fi
                         // password Argo has no need of knowing). It may be a nice enhancement in the future
                         upstreamResponse = Optional.of(passthroughClient.get().passthroughRequest(baseRequest, body));
                     } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -209,9 +213,14 @@ public class RemoteArgoApiServerStub {
             if (baseRequest.getOriginalURI().contains("UI_NTP")) { // a little more lax parsing than request type (just
                                                                    // in case of syntax variances)
                 response.getWriter().println(getNtpResponse(Instant.now()));
+            } else if (deviceApi.isPresent() && DeviceRequestType.GET_UI_FLG.equals(requestType)) {
+                // handle GET_UI_FLG always feeding "our" status
+                response.getWriter().println(createSyntheticGetUiFlgResponse(deviceApi.orElseThrow()));
             } else {
-                response.getWriter().println(getFakeResponse()); // Reply with this canned text to ALL other device
-                                                                 // requests (it doesn't seem to care :))
+                // all other commands are NOT handled
+                response.getWriter().println(getFakeResponse(requestType)); // Reply with this canned text to ALL other
+                                                                            // device requests (it doesn't seem to care
+                                                                            // :))
             }
         }
     }
@@ -227,7 +236,8 @@ public class RemoteArgoApiServerStub {
     private final Set<InetAddress> listenIpAddresses;
     private final int listenPort;
     private final String id;
-    private final boolean showCleartextPasswords;
+    private final DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties;
+    private final ArgoClimaTranslationProvider i18nProvider;
     private final Optional<ArgoClimaLocalDevice> deviceApi;
     private Optional<Server> server = Optional.empty();
     private Optional<PassthroughHttpClient> passthroughClient = Optional.empty();
@@ -243,19 +253,22 @@ public class RemoteArgoApiServerStub {
      *            pass-through)
      * @param deviceApi The current device API state tracked by the binding (used to update state from intercepted
      *            responses, and injecting commands)
-     * @param showCleartextPasswords If false (default config option), sniffed cleartext passwords sent by the device
-     *            will be replaced with *** in properties. Note this does NOT prevent sending these values to Argo
-     *            servers in a pass-through mode (not a remote security feature!)
+     * @param includeDeviceSidePasswordsInProperties Whether to include the device-sent passwords as thing properties
+     *            and how (masked vs. cleartext). Note this does NOT prevent sending these values to Argo servers in a
+     *            pass-through mode (not a remote security feature!)
+     * @param i18nProvider Framework's translation provider
      */
     public RemoteArgoApiServerStub(Set<InetAddress> listenIpAddresses, int listenPort, String thingUid,
             Optional<PassthroughHttpClient> passthroughClient, Optional<ArgoClimaLocalDevice> deviceApi,
-            boolean showCleartextPasswords) {
+            DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties,
+            ArgoClimaTranslationProvider i18nProvider) {
         this.listenIpAddresses = listenIpAddresses;
         this.listenPort = listenPort;
         this.id = thingUid;
         this.passthroughClient = passthroughClient;
         this.deviceApi = deviceApi;
-        this.showCleartextPasswords = showCleartextPasswords;
+        this.includeDeviceSidePasswordsInProperties = includeDeviceSidePasswordsInProperties;
+        this.i18nProvider = i18nProvider;
     }
 
     /**
@@ -294,8 +307,9 @@ public class RemoteArgoApiServerStub {
                             stopThreadStartException.getMessage());
                 }
             });
-            throw new ArgoRemoteServerStubStartupException(
-                    String.format("Starting stub server at port %d failed. %s", this.listenPort, e.getMessage()), e);
+            throw new ArgoRemoteServerStubStartupException("Server startup failure: {0}",
+                    "thing-status.argoclima.stub-server.start-failure.internal", i18nProvider, e,
+                    e.getLocalizedMessage());
         }
 
         if (this.passthroughClient.isPresent()) {
@@ -313,10 +327,10 @@ public class RemoteArgoApiServerStub {
                     }
                 });
                 throw new ArgoRemoteServerStubStartupException(
-                        String.format("Starting passthrough API client for host=%s, port=%d failed. %s",
-                                this.passthroughClient.get().upstreamTargetHost,
-                                this.passthroughClient.get().upstreamTargetPort, e.getMessage()),
-                        e);
+                        "Passthrough API client (for host={0}, port={1,number,#}) failed to start: {2}",
+                        "thing-status.argoclima.passtrough-client.start-failure", i18nProvider, e,
+                        this.passthroughClient.get().upstreamTargetHost,
+                        this.passthroughClient.get().upstreamTargetPort, e.getLocalizedMessage());
             }
         }
     }
@@ -372,12 +386,12 @@ public class RemoteArgoApiServerStub {
         server.setConnectors(connectors);
 
         var tp = server.getThreadPool();
-        if (tp instanceof QueuedThreadPool) {
-            ((QueuedThreadPool) tp).setName(RPC_POOL_NAME);
-            ((QueuedThreadPool) tp).setDaemon(true); // Lower our priority (just in case)
+        if (tp instanceof QueuedThreadPool qtp) {
+            qtp.setName(RPC_POOL_NAME);
+            qtp.setDaemon(true); // Lower our priority (just in case)
         }
 
-        server.setHandler(new ArgoDeviceRequestHandler(this.showCleartextPasswords));
+        server.setHandler(new ArgoDeviceRequestHandler(this.includeDeviceSidePasswordsInProperties));
         server.start();
     }
 
@@ -408,12 +422,20 @@ public class RemoteArgoApiServerStub {
     /**
      * Return a harmless Argo protocol response, causing the device parsing to be happy
      *
-     * @implNote Note this is NOT a valid protocolar response to any request, just happens to be good enough to keep
+     * @param requestType the request type
+     *
+     * @implNote Note this is NOT a valid protocolar response to any particular request, just happens to be good enough
+     *           to keep
      *           device happy-enough to continue the conversation
      * @return The default API response (fake)
      */
-    private String getFakeResponse() {
-        return "{|0|0|1|0|0|0|N,N,N,N,N,N,N,N,N,N,N,N,3,N,N,N,N,N,1,2,1360,N,0,NaN,N,N,N,N,N,N,N,N,N,N,N,N|}[|0|||]ACN_FREE <br>\t\t";
+    private String getFakeResponse(DeviceRequestType requestType) {
+        switch (requestType) {
+            case POST_UI_RT:
+                return "|}|}";
+            default:
+                return "{|0|0|1|0|0|0|N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,2,N,592,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N|}[|0|||]ACN_FREE <br>\t\t";
+        }
     }
 
     /**
@@ -503,7 +525,7 @@ public class RemoteArgoApiServerStub {
                                                                                                    // anything for
                                                                                                    // us on its own
                         String before = "";
-                        if (logger.isDebugEnabled()) {
+                        if (logger.isTraceEnabled()) {
                             before = responseDto.toResponseString();
                         }
 
@@ -516,7 +538,7 @@ public class RemoteArgoApiServerStub {
                         // overkill)
                         responseDto.commands = UiFlgResponseCommmands.fromResponseString(api.getCurrentCommandString());
 
-                        if (logger.isDebugEnabled()) {
+                        if (logger.isTraceEnabled()) {
                             var after = responseDto.toResponseString();
                             logger.trace("REPLACING the response body from [{}] to [{}]", before, after);
                         }
@@ -532,5 +554,31 @@ public class RemoteArgoApiServerStub {
             default:
                 return originalResponseBody;
         }
+    }
+
+    /**
+     * Create a synthetic response to GET UI_FLG device-side request (factoring current device state)
+     * <p>
+     * This is *always* sending the {@code ACN_FREE <br>
+     * \t\t} suffix (seems to be a Connection:close equivalent of sorts). The real Argo server doesn't do that on all
+     * occasions and tends to keep the connection open, though implementing this way seems working (and more robust not
+     * to have to manage server-side socket lifespan)
+     *
+     * @param devApi The device API
+     * @return UI_FLG response body (string)
+     */
+    private String createSyntheticGetUiFlgResponse(ArgoClimaLocalDevice devApi) {
+        var responseDto = new RemoteGetUiFlgResponseDTO();
+
+        if (devApi.hasPendingCommands()) {
+            responseDto.preamble.flag0requestPostUiRt = 1;
+            responseDto.preamble.flag5hasNewUpdate = 1;
+        }
+        responseDto.commands = UiFlgResponseCommmands.fromResponseString(devApi.getCurrentCommandString());
+        devApi.notifyCommandsPassedToDevice(); // Notify the withstanding commands are about to be consumed by the
+                                               // device
+
+        // responseDto.acnSuffix is always the default (see impl. note)
+        return responseDto.toResponseString();
     }
 }

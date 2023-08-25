@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 public class ArgoClimaConfigProvider implements ConfigDescriptionProvider {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ThingRegistry thingRegistry;
+    private final ArgoClimaTranslationProvider i18nProvider;
     private static final int SCHEDULE_TIMERS_COUNT = 3;
 
     public record ScheduleDefaults(String startTime, String endTime, EnumSet<Weekday> weekdays) {
@@ -87,8 +88,10 @@ public class ArgoClimaConfigProvider implements ConfigDescriptionProvider {
     }
 
     @Activate
-    public ArgoClimaConfigProvider(final @Reference ThingRegistry thingRegistry) {
+    public ArgoClimaConfigProvider(final @Reference ThingRegistry thingRegistry,
+            final @Reference ArgoClimaTranslationProvider i18nProvider) {
         this.thingRegistry = thingRegistry;
+        this.i18nProvider = i18nProvider;
     }
 
     /**
@@ -107,7 +110,7 @@ public class ArgoClimaConfigProvider implements ConfigDescriptionProvider {
      * Provides a {@link ConfigDescription} for the given URI.
      *
      * @param uri URI of the config description (may be either thing or thing-type URI)
-     * @param locale locale
+     * @param locale locale (not using this value, as our i18n provider comes with it pre-populated!)
      * @return config description or null if no config description could be found
      *
      * @implNote {@code ConfigDescriptionParameterBuilder} doesn't have non-null-defaults, while
@@ -117,7 +120,7 @@ public class ArgoClimaConfigProvider implements ConfigDescriptionProvider {
     @Override
     @Nullable
     public ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
-        if (!uri.getScheme().equalsIgnoreCase("thing")) {
+        if (!"thing".equalsIgnoreCase(uri.getScheme())) {
             return null; // Deliberately not supporting "thing-type" (no dynamic parameters there)
         }
         ThingUID thingUID = new ThingUID(Objects.requireNonNull(uri.getSchemeSpecificPart()));
@@ -135,24 +138,35 @@ public class ArgoClimaConfigProvider implements ConfigDescriptionProvider {
         for (int i = 1; i <= SCHEDULE_TIMERS_COUNT; ++i) {
             paramGroups.add(ConfigDescriptionParameterGroupBuilder
                     .create(String.format(ArgoClimaBindingConstants.PARAMETER_SCHEDULE_GROUP_NAME, i))
-                    .withLabel(String.format("Schedule %d", i))
-                    .withDescription(String.format("Schedule timer - profile %d.", i)).build());
+                    .withLabel(
+                            i18nProvider.getText("dynamic-config.argoclima.group.schedule.label", "Schedule {0} ", i))
+                    .withDescription(i18nProvider.getText("dynamic-config.argoclima.group.schedule.description",
+                            "Schedule timer - profile {0}.", i))
+                    .build());
         }
         if (thing.isEnabled()) {
-            // Note: Do not localize the label & description (ref: https://github.com/openhab/openhab-webui/issues/1491)
-            paramGroups.add(ConfigDescriptionParameterGroupBuilder.create("actions").withLabel("Actions")
-                    .withDescription("Actions").build());
+            paramGroups.add(ConfigDescriptionParameterGroupBuilder.create("actions").withContext("actions")
+                    .withLabel(i18nProvider.getText("dynamic-config.argoclima.group.actions.label", "Actions"))
+                    .build());
         }
 
         var parameters = new ArrayList<ConfigDescriptionParameter>();
 
-        var daysOfWeek = List.<@Nullable ParameterOption> of(new ParameterOption(Weekday.MON.toString(), "Monday"),
-                new ParameterOption(Weekday.TUE.toString(), "Tuesday"),
-                new ParameterOption(Weekday.WED.toString(), "Wednesday"),
-                new ParameterOption(Weekday.THU.toString(), "Thursday"),
-                new ParameterOption(Weekday.FRI.toString(), "Friday"),
-                new ParameterOption(Weekday.SAT.toString(), "Saturday"),
-                new ParameterOption(Weekday.SUN.toString(), "Sunday"));
+        var daysOfWeek = List.<@Nullable ParameterOption> of(
+                new ParameterOption(Weekday.MON.toString(),
+                        i18nProvider.getText("dynamic-config.argoclima.schedule.days.monday", "Monday")),
+                new ParameterOption(Weekday.TUE.toString(),
+                        i18nProvider.getText("dynamic-config.argoclima.schedule.days.tuesday", "Tuesday")),
+                new ParameterOption(Weekday.WED.toString(),
+                        i18nProvider.getText("dynamic-config.argoclima.schedule.days.wednesday", "Wednesday")),
+                new ParameterOption(Weekday.THU.toString(),
+                        i18nProvider.getText("dynamic-config.argoclima.schedule.days.thursday", "Thursday")),
+                new ParameterOption(Weekday.FRI.toString(),
+                        i18nProvider.getText("dynamic-config.argoclima.schedule.days.friday", "Friday")),
+                new ParameterOption(Weekday.SAT.toString(),
+                        i18nProvider.getText("dynamic-config.argoclima.schedule.days.saturday", "Saturday")),
+                new ParameterOption(Weekday.SUN.toString(),
+                        i18nProvider.getText("dynamic-config.argoclima.schedule.days.sunday", "Sunday")));
 
         for (int i = 1; i <= SCHEDULE_TIMERS_COUNT; ++i) {
             // NOTE: Deliberately *not* using .withContext("dayOfWeek") - doesn't seem to work correctly :(
@@ -160,7 +174,10 @@ public class ArgoClimaConfigProvider implements ConfigDescriptionProvider {
                     .create(String.format(ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_DAYS, i), Type.TEXT)
                     .withRequired(true)
                     .withGroupName(String.format(ArgoClimaBindingConstants.PARAMETER_SCHEDULE_GROUP_NAME, i))//
-                    .withLabel("Days").withDescription("Days when the schedule is run").withOptions(daysOfWeek)
+                    .withLabel(i18nProvider.getText("dynamic-config.argoclima.schedule.days.label", "Days"))
+                    .withDescription(i18nProvider.getText("dynamic-config.argoclima.schedule.days.description",
+                            "Days when the schedule is run"))
+                    .withOptions(daysOfWeek)
                     .withDefault(getScheduleDefaults(ScheduleTimerType.fromInt(i)).weekdays().toString())
                     .withMultiple(true).withMultipleLimit(7).build()));
 
@@ -170,25 +187,30 @@ public class ArgoClimaConfigProvider implements ConfigDescriptionProvider {
                     .create(String.format(ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_ON_TIME, i), Type.TEXT)
                     .withRequired(true)
                     .withGroupName(String.format(ArgoClimaBindingConstants.PARAMETER_SCHEDULE_GROUP_NAME, i))
-                    .withPattern("\\d{1-2}:\\d{1-2}").withLabel("On time").withDescription("Time when the A/C turns on")
+                    .withPattern("\\d{1-2}:\\d{1-2}")
+                    .withLabel(i18nProvider.getText("dynamic-config.argoclima.schedule.on-time.label", "On Time"))
+                    .withDescription(i18nProvider.getText("dynamic-config.argoclima.schedule.on-time.description",
+                            "Time when the A/C turns on"))
                     .withDefault(getScheduleDefaults(ScheduleTimerType.fromInt(i)).startTime()).build()));
             parameters.add(Objects.requireNonNull(ConfigDescriptionParameterBuilder
                     .create(String.format(ArgoClimaBindingConstants.PARAMETER_SCHEDULE_X_OFF_TIME, i), Type.TEXT)
                     .withRequired(true)
                     .withGroupName(String.format(ArgoClimaBindingConstants.PARAMETER_SCHEDULE_GROUP_NAME, i))
-                    .withLabel("Off time").withDescription("Time when the A/C turns off")
+                    .withLabel(i18nProvider.getText("dynamic-config.argoclima.schedule.off-time.label", "Off Time"))
+                    .withDescription(i18nProvider.getText("dynamic-config.argoclima.schedule.off-time.description",
+                            "Time when the A/C turns off"))
                     .withDefault(getScheduleDefaults(ScheduleTimerType.fromInt(i)).endTime()).build()));
         }
         if (thing.isEnabled()) {
             parameters.add(Objects.requireNonNull(ConfigDescriptionParameterBuilder
                     .create(ArgoClimaBindingConstants.PARAMETER_RESET_TO_FACTORY_DEFAULTS, Type.BOOLEAN)
                     .withRequired(false).withGroupName(ArgoClimaBindingConstants.PARAMETER_ACTIONS_GROUP_NAME)
-                    .withLabel("Reset settings").withDescription("Reset device settings to factory defaults")
+                    .withLabel(i18nProvider.getText("dynamic-config.argoclima.schedule.reset.label", "Reset Settings"))
+                    .withDescription(i18nProvider.getText("dynamic-config.argoclima.schedule.reset.description",
+                            "Reset device settings to factory defaults"))
                     .withDefault("false").withVerify(true).build()));
         }
 
-        var config = ConfigDescriptionBuilder.create(uri).withParameterGroups(paramGroups).withParameters(parameters)
-                .build();
-        return config;
+        return ConfigDescriptionBuilder.create(uri).withParameterGroups(paramGroups).withParameters(parameters).build();
     }
 }

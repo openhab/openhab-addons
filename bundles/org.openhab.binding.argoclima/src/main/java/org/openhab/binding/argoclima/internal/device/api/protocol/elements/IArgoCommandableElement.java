@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.openhab.core.types.State;
  * Interface for Argo API parameter (individual HMI element)
  * Carries high-level command-management options
  *
- * @see {@link IArgoElement}
+ * @see IArgoElement
  *
  * @author Mateusz Bronk - Initial contribution
  */
@@ -39,8 +39,9 @@ public interface IArgoCommandableElement {
         /**
          * Returns the raw Argo command to be sent to the device (if update is pending)
          *
-         * @return Command to send to device (if update pending), or {@link ArgoApiElementBase#NO_VALUE NO_VALUE} -
-         *         otherwise
+         * @return Command to send to device (if update pending), or
+         *         {@link org.openhab.binding.argoclima.internal.device.api.protocol.ArgoDeviceStatus#NO_VALUE NO_VALUE}
+         *         - otherwise
          */
         public String getDeviceApiValue();
 
@@ -92,7 +93,7 @@ public interface IArgoCommandableElement {
      * Notify that the withstanding command has just been sent to the device (and is now pending device-side
      * confirmation - if confirmable)
      *
-     * @note Used for write-only params, to indicate they have been (hopefully) correctly sent to the device
+     * @implNote Used for write-only params, to indicate they have been (hopefully) correctly sent to the device
      */
     public void notifyCommandSent();
 

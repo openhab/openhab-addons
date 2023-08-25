@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.argoclima.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationRemote;
 import org.openhab.binding.argoclima.internal.device.api.ArgoClimaRemoteDevice;
 import org.openhab.binding.argoclima.internal.device.api.IArgoClimaDeviceAPI;
@@ -45,13 +46,15 @@ public class ArgoClimaHandlerRemote extends ArgoClimaHandlerBase<ArgoClimaConfig
      *            {@code ArgoClimaHandlerFactory})
      * @param timeZoneProvider The framework's time zone provider (injected by the runtime to the
      *            {@code ArgoClimaHandlerFactory})
+     * @param i18nProvider Framework's translation provider
      */
-    public ArgoClimaHandlerRemote(Thing thing, HttpClientFactory clientFactory, TimeZoneProvider timeZoneProvider) {
+    public ArgoClimaHandlerRemote(Thing thing, HttpClientFactory clientFactory, TimeZoneProvider timeZoneProvider,
+            final ArgoClimaTranslationProvider i18nProvider) {
         super(thing, ArgoClimaBindingConstants.AWAIT_DEVICE_CONFIRMATIONS_AFTER_COMMANDS,
                 ArgoClimaBindingConstants.POLL_FREQUENCY_AFTER_COMMAND_SENT_REMOTE,
                 ArgoClimaBindingConstants.SEND_COMMAND_RETRY_FREQUENCY_REMOTE,
                 ArgoClimaBindingConstants.SEND_COMMAND_MAX_WAIT_TIME_REMOTE,
-                ArgoClimaBindingConstants.SEND_COMMAND_MAX_WAIT_TIME_REMOTE);
+                ArgoClimaBindingConstants.SEND_COMMAND_MAX_WAIT_TIME_REMOTE, i18nProvider);
         this.client = clientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
     }
@@ -59,9 +62,14 @@ public class ArgoClimaHandlerRemote extends ArgoClimaHandlerBase<ArgoClimaConfig
     @Override
     protected ArgoClimaConfigurationRemote getConfigInternal() throws ArgoConfigurationException {
         try {
-            return getConfigAs(ArgoClimaConfigurationRemote.class);
+            var ret = getConfigAs(ArgoClimaConfigurationRemote.class); // This can **theoretically** return null if
+                                                                       // class is not default-constructible (but this
+                                                                       // one is, so not handling!)
+            ret.initialize(i18nProvider);
+            return ret;
         } catch (IllegalArgumentException ex) {
-            throw new ArgoConfigurationException("Error loading thing configuration", "", ex);
+            throw ArgoConfigurationException.forInvalidParamValue("Error loading thing configuration",
+                    "thing-status.argoclima.configuration.load-error", i18nProvider, ex);
         }
     }
 
@@ -74,7 +82,7 @@ public class ArgoClimaHandlerRemote extends ArgoClimaHandlerBase<ArgoClimaConfig
     @Override
     protected IArgoClimaDeviceAPI initializeDeviceApi(ArgoClimaConfigurationRemote config)
             throws ArgoConfigurationException {
-        return new ArgoClimaRemoteDevice(config, this.client, this.timeZoneProvider, config.getOemServerAddress(),
+        return new ArgoClimaRemoteDevice(config, client, timeZoneProvider, i18nProvider, config.getOemServerAddress(),
                 config.getOemServerPort(), config.getUsername(), config.getPasswordMD5Hash(),
                 this::updateThingProperties);
     }

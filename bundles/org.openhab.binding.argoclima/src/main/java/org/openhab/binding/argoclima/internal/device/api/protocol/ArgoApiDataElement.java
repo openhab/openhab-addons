@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -175,6 +175,13 @@ public class ArgoApiDataElement<T extends IArgoElement> implements IArgoCommanda
         return UnDefType.NULL; // Write-only elements do not have any state reported
     }
 
+    public State fromDeviceCommand(List<String> responseElements) {
+        if (this.type == DataElementType.READ_WRITE || this.type == DataElementType.WRITE_ONLY) {
+            return this.rawValue.updateFromApiResponse(responseElements.get(statusUpdateRequestIndex));
+        }
+        return UnDefType.NULL; // Write-only elements do not have any state reported
+    }
+
     /**
      * Output this element's currently-stored value in OH framework-compatible representation
      *
@@ -189,8 +196,8 @@ public class ArgoApiDataElement<T extends IArgoElement> implements IArgoCommanda
      *
      * @param command The command to handle
      * @return Status on whether the command has been handled (accepted). Note "handled" here doesn't mean
-     *         sent&confirmed by the device, merely recognized by the framework and accepted for subsequent device-side
-     *         communication (which happens asynchronously to this call)
+     *         sent and confirmed by the device, merely recognized by the framework and accepted for subsequent
+     *         device-side communication (which happens asynchronously to this call)
      */
     public boolean handleCommand(Command command) {
         if (this.type != DataElementType.WRITE_ONLY && this.type != DataElementType.READ_WRITE) {

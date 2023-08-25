@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,12 +29,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationBase;
 import org.openhab.binding.argoclima.internal.device.api.IArgoClimaDeviceAPI;
 import org.openhab.binding.argoclima.internal.device.api.types.ArgoDeviceSettingType;
 import org.openhab.binding.argoclima.internal.exception.ArgoApiCommunicationException;
+import org.openhab.binding.argoclima.internal.exception.ArgoApiProtocolViolationException;
 import org.openhab.binding.argoclima.internal.exception.ArgoConfigurationException;
-import org.openhab.binding.argoclima.internal.exception.ArgoLocalApiCommunicationException;
 import org.openhab.binding.argoclima.internal.exception.ArgoRemoteServerStubStartupException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -52,8 +53,8 @@ import org.slf4j.LoggerFactory;
  * The {@code ArgoClimaHandlerBase} is an abstract base class for common logic (across local and remote thing
  * implementations) responsible for handling commands, which are sent to one of the channels.
  *
- * @see {@link ArgoClimaHandlerLocal}
- * @see {@link ArgoClimaHandlerRemote}
+ * @see ArgoClimaHandlerLocal
+ * @see ArgoClimaHandlerRemote
  *
  * @param <ConfigT> Type of configuration class used:
  *            {@link org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationLocal
@@ -75,6 +76,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
     private final Duration sendCommandResubmitFrequency;
     private final Duration sendCommandMaxWaitTime;
     private final Duration sendCommandMaxWaitTimeIndirectMode;
+    protected final ArgoClimaTranslationProvider i18nProvider;
 
     // Set-up through initialize()
     private Optional<IArgoClimaDeviceAPI> deviceApi = Optional.empty();
@@ -104,15 +106,18 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
      *            is only sniffing/intercepting the comms and injecting commands into a server replies). Typically
      *            longer than {@code sendMaxRetryTimeDirect}. Relevant only if
      *            {@code awaitConfirmationAfterSend == true})
+     * @param i18nProvider Framework's translation provider
      */
     public ArgoClimaHandlerBase(Thing thing, boolean awaitConfirmationAfterSend, Duration poolFrequencyAfterSend,
-            Duration sendRetryFrequency, Duration sendMaxRetryTimeDirect, Duration sendMaxWaitTimeIndirect) {
+            Duration sendRetryFrequency, Duration sendMaxRetryTimeDirect, Duration sendMaxWaitTimeIndirect,
+            final ArgoClimaTranslationProvider i18nProvider) {
         super(thing);
         this.awaitConfirmationUponSendingCommands = awaitConfirmationAfterSend;
         this.sendCommandStatusPollFrequency = poolFrequencyAfterSend;
         this.sendCommandResubmitFrequency = sendRetryFrequency;
         this.sendCommandMaxWaitTime = sendMaxRetryTimeDirect;
         this.sendCommandMaxWaitTimeIndirectMode = sendMaxWaitTimeIndirect;
+        this.i18nProvider = i18nProvider;
     }
 
     /**
@@ -132,7 +137,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
      * @return Initialized Device API
      * @throws ArgoConfigurationException In case the API initialization fails due to Thing configuration issues
      * @throws ArgoRemoteServerStubStartupException In case the Device API startup involved launching an intercepting
-     *             server (thing type && configuration-dependent), and the startup has failed
+     *             server (thing type and configuration-dependent), and the startup has failed
      */
     protected abstract IArgoClimaDeviceAPI initializeDeviceApi(ConfigT config)
             throws ArgoRemoteServerStubStartupException, ArgoConfigurationException;
@@ -164,16 +169,18 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
             config = getConfigInternal();
             this.config = Optional.of(config);
         } catch (ArgoConfigurationException ex) {
-            logger.warn("[{}] {}", getThing().getUID().getId(), ex.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+            logger.debug("[{}] {}", getThing().getUID().getId(), ex.getMessage()); // the non-i18nzed message is logged
+                                                                                   // explicitly (not redundant with
+                                                                                   // updateStatus's logging)
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getLocalizedMessage());
             return;
         }
         logger.debug("[{}] Running with config: {}", getThing().getUID(), config.toString());
 
         var configValidationError = config.validate();
         if (!configValidationError.isEmpty()) {
-            var message = "Invalid thing configuration. " + configValidationError;
-            logger.warn("[{}] {}", getThing().getUID(), message);
+            var message = i18nProvider.getText("thing-status.argoclima.invalid-config",
+                    "Invalid thing configuration. {0}", configValidationError);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
             return;
         }
@@ -181,9 +188,27 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
         // Step2: Init device API (this will start passthrough server & client threads, if configured)
         try {
             this.deviceApi = Optional.of(initializeDeviceApi(config));
+        } catch (ArgoRemoteServerStubStartupException | ArgoConfigurationException e) {
+            logger.debug("[{}] Failed to initialize Device API. Error: {}", getThing().getUID(), e.getMessage()); // the
+                                                                                                                  // non-i18nzed
+                                                                                                                  // message
+                                                                                                                  // is
+                                                                                                                  // logged
+                                                                                                                  // explicitly
+                                                                                                                  // (not
+                                                                                                                  // redundant
+                                                                                                                  // with
+                                                                                                                  // updateStatus's
+                                                                                                                  // logging)
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getLocalizedMessage());
+            return;
         } catch (Exception e) {
-            logger.warn("[{}] Failed to initialize Device API. Error: {}", getThing().getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+            logger.debug("[{}] Failed to initialize Device API. Unknown Error: {}", getThing().getUID(),
+                    e.getMessage()); // the non-i18nzed message is logged explicitly (not redundant with updateStatus's
+                                     // logging)
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    i18nProvider.getText("thing-status.argoclima.handler-init-failure",
+                            "Error while initializing Thing: {0}", e.getLocalizedMessage()));
             return;
         }
 
@@ -462,9 +487,9 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
      *
      * @param entries The new properties to append/replace (this does not clear existing properties!)
      *
-     * @implNote Unfortunately framework's {@link BaseThingHandler#updateProperties()} implementation clones the map
-     *           into a {@code HashMap}, which means the edited properties will lose their sorting, yet still providing
-     *           it via a {@code TreeMap} in hopes framework may respect the ordering some day ;)
+     * @implNote Unfortunately framework's {@link BaseThingHandler#updateProperties(Map<String, String>)} implementation
+     *           clones the map into a {@code HashMap}, which means the edited properties will lose their sorting, yet
+     *           still providing it via a {@code TreeMap} in hopes framework may respect the ordering some day ;)
      * @apiNote This method is also called asynchronously from an intercepting/stub server
      */
     protected final void updateThingProperties(SortedMap<String, String> entries) {
@@ -548,10 +573,11 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
                 logger.trace("[{}] Polling for device-side update for HVAC device failed [{} of {}]. Error=[{}]",
                         getThing().getUID(), retryCount, ArgoClimaBindingConstants.MAX_API_RETRIES, e.getMessage());
                 if (retryCount >= ArgoClimaBindingConstants.MAX_API_RETRIES) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Polling for device-side update failed. Unable to communicate with HVAC device for past "
-                                    + ArgoClimaBindingConstants.MAX_API_RETRIES + " refresh cycles. Last error: "
-                                    + e.getMessage());
+                    var statusMsg = i18nProvider.getText("thing-status.argoclima.poll-failed",
+                            "Polling for device-side update failed. Unable to communicate with HVAC device for past {0} refresh cycles. Last error: {1}",
+                            ArgoClimaBindingConstants.MAX_API_RETRIES, e.getLocalizedMessage());
+
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
                     // Not resetting the counter here (will track every failure till we reinitialize & poll successfully
                 }
             }
@@ -596,7 +622,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
     private final void initializeThing() {
         if (this.config.get().getRefreshInterval() == 0) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
-                    "Direct communication with device is disabled. Awaiting device-side request");
+                    "@text/thing-status.argoclima.awaiting-request");
             return;
         }
 
@@ -639,7 +665,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
             // Since isReachable is a no-throw, hitting an exception (ex. during device-side message parsing) is very
             // unlikely, though in case a stray one happens -> let's embed it in the user-facing message
             logger.debug("{}: Initialization exception", getThing().getUID(), e);
-            message = e.getMessage();
+            message = e.getLocalizedMessage();
         }
 
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
@@ -757,7 +783,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
                         if (this.deviceApi.get().hasPendingCommands()) {
                             // No biggie, we just didn't get the confirmation yet. This exception will be swallowed (on
                             // next try) or logged (if we run out of tries)
-                            throw new ArgoLocalApiCommunicationException("Update not confirmed. Value was not set");
+                            throw new ArgoApiProtocolViolationException("Update not confirmed. Value was not set");
                         }
                         return; // Woo-hoo! Device is happy, we're A-OK!
                     }
@@ -777,14 +803,22 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
                     continue;
                 }
 
+                // 2.3B: Out of tries. Do one last check before we fail
+                if (!this.deviceApi.get().hasPendingCommands()) {
+                    logger.trace("All pending commands got confirmed on last try!");
+                    return; // Woo-hoo! Device is happy, we're DONE!
+                }
+
                 // 2.4: Max time exceeded and update failed to send or not confirmed. Giving up :(
                 valuesToUpdate.stream().forEach(x -> x.abortPendingCommand());
+                updateChannelsFromDevice(deviceApi.getLastStateReadFromDevice()); // Update channels back to device
+                                                                                  // values upon abort
 
                 // The device wasn't nice with us, so we're going to consider it offline
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not control HVAC device. Command(s): "
-                                + (valuesToUpdate.isEmpty() ? "REFRESH" : valuesToUpdate.toString())
-                                + " were not confirmed by the device within " + maxWorkTime.toSeconds() + "s");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, i18nProvider.getText(
+                        "thing-status.argoclima.confirmation-not-received",
+                        "Could not control HVAC device. Command(s): {0} were not confirmed by the device within {1} s",
+                        valuesToUpdate.isEmpty() ? "REFRESH" : valuesToUpdate.toString(), maxWorkTime.toSeconds()));
                 logger.debug("[{}] Device command failed: {}", this.getThing().getUID().toString(),
                         lastException.map(ex -> ex.getMessage()).orElse("No error details"));
                 break;
