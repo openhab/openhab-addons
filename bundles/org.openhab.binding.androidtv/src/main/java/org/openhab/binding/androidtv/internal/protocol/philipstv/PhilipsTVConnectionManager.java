@@ -396,8 +396,10 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         String username = this.username;
         String password = this.password;
         String macAddress = this.macAddress;
+        logger.debug("Starting connection to {} {} {}", username, password, macAddress);
 
         if (!config.useUpnpDiscovery && isSchedulerInitializable()) {
+            logger.debug("connect starting refresh scheduler");
             startRefreshScheduler();
         }
 
@@ -568,7 +570,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             }
             logger.debug("Starting Refresh Scheduler for Philips TV {} with refresh rate of {}.", handler.getThingID(),
                     configuredRefreshRateOrDefault);
-            refreshScheduler = scheduler.scheduleWithFixedDelay(this::refreshTvProperties, 10,
+            this.refreshScheduler = scheduler.scheduleWithFixedDelay(this::refreshTvProperties, 10,
                     configuredRefreshRateOrDefault, TimeUnit.SECONDS);
         }
     }
