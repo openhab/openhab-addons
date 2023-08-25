@@ -298,7 +298,18 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                     if (hasFailed) {
                         postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "offline.error-occured-during-retrieval-of-credentials");
+                        return;
                     }
+                    readConfigs();
+                    username = this.username;
+                    password = this.password;
+
+                    if ((username.isEmpty()) || (password.isEmpty())) {
+                        postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "offline.pairing-was-unsuccessful");
+                        return;
+                    }
+
                 }
             }
             return;
@@ -354,36 +365,9 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         String macAddress = this.macAddress;
 
         if ((username.isEmpty()) || (password.isEmpty())) {
-            if (config.pairingCode.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "offline.pairing-is-not-configured-yet-trying-to-present-a-pairing-code-on-tv");
-                try {
-                    initPairingCodeRetrieval(target);
-                } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "offline.error-occurred-while-trying-to-present-a-pairing-code-on-tv");
-                }
-                return;
-            } else if (!config.pairingCode.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "offline.pairing-code-is-available-but-credentials-missing");
-                boolean hasFailed = initCredentialsRetrieval(target);
-                if (hasFailed) {
-                    postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "offline.error-occurred-during-retrieval-of-credentials");
-                    return;
-                }
-            }
-            readConfigs();
-            username = this.username;
-            password = this.password;
-            macAddress = this.macAddress;
-
-            if ((username.isEmpty()) || (password.isEmpty())) {
-                postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "offline.pairing-was-unsuccessful");
-                return;
-            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "offline.pairing-is-not-configured-yet");
+            return;
         }
 
         connect();
