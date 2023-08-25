@@ -393,7 +393,9 @@ public class Clip2Bridge implements Closeable {
         public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
             if (http2Session == session) {
-                new Thread(() -> recreateSession()).start();
+                Thread recreateThread = new Thread(() -> recreateSession());
+                Clip2Bridge.this.recreateThread = recreateThread;
+                recreateThread.start();
             }
         }
 
@@ -562,8 +564,9 @@ public class Clip2Bridge implements Closeable {
     private State onlineState = State.CLOSED;
     private Optional<Instant> lastRequestTime = Optional.empty();
     private Instant sessionExpireTime = Instant.MAX;
-    private @Nullable Session http2Session;
 
+    private @Nullable Session http2Session;
+    private @Nullable Thread recreateThread;
     private @Nullable Future<?> checkAliveTask;
 
     /**
@@ -635,6 +638,10 @@ public class Clip2Bridge implements Closeable {
     @Override
     public void close() {
         closing = true;
+        Thread recreateThread = this.recreateThread;
+        if (Objects.nonNull(recreateThread) && recreateThread.isAlive()) {
+            recreateThread.interrupt();
+        }
         close2();
         try {
             stopHttp2Client();
@@ -771,7 +778,7 @@ public class Clip2Bridge implements Closeable {
      * @throws InterruptedException
      */
     public Resources getResources(ResourceReference reference) throws ApiException, InterruptedException {
-        if ((onlineState == State.CLOSED) && !recreatingSession) {
+        if (onlineState == State.CLOSED && !recreatingSession) {
             throw new ApiException("Connection is closed");
         }
         return getResourcesImpl(reference);
@@ -790,9 +797,9 @@ public class Clip2Bridge implements Closeable {
      */
     private Resources getResourcesImpl(ResourceReference reference)
             throws HttpUnauthorizedException, ApiException, InterruptedException {
-        // temporary work around for issue #15468
+        // work around for issue #15468
         if (reference.getType() == ResourceType.ERROR) {
-            LOGGER.warn("Resource '{}' type unknown (issue #15468) => GET aborted", reference.getId());
+            LOGGER.debug("Resource '{}' type unknown (issue #15468) => GET aborted", reference.getId());
             return new Resources();
         }
         Stream stream = null;
@@ -877,7 +884,7 @@ public class Clip2Bridge implements Closeable {
      * @param data the incoming (presumed to be JSON) text.
      */
     protected void onEventData(String data) {
-        if ((onlineState != State.ACTIVE) && !recreatingSession) {
+        if (onlineState != State.ACTIVE && !recreatingSession) {
             return;
         }
         if (LOGGER.isTraceEnabled()) {
