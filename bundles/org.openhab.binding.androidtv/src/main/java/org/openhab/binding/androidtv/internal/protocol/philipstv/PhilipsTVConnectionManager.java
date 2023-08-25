@@ -521,9 +521,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
 
     public synchronized void postUpdateThing(ThingStatus status, ThingStatusDetail statusDetail, String msg) {
         logger.trace("postUpdateThing {} {} {}", status, statusDetail, msg);
-        updateStatus(status, statusDetail, msg);
         if (status == ThingStatus.ONLINE) {
-            if (msg.equalsIgnoreCase(STANDBY)) {
+            if (msg.equalsIgnoreCase("online.standby")) {
                 handler.updateChannelState(CHANNEL_POWER, OnOffType.OFF);
             } else {
                 handler.updateChannelState(CHANNEL_POWER, OnOffType.ON);
@@ -547,6 +546,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                 }
             }
         }
+        updateStatus(status, statusDetail, msg);
     }
 
     private boolean isSchedulerInitializable() {
