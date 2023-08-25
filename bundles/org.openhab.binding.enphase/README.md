@@ -39,7 +39,7 @@ The following options are relevant for all envoy versions:
 |--------------|----------|-------------------------------------------------------------------------------------------------------------|
 | serialNumber | yes      | The serial number of the Envoy gateway which can be found on the gateway                                    |
 | hostname     | no       | The host name/ip address of the Envoy gateway. Leave empty to auto detect                                   |
-| refresh      | no       | Period between data updates. The default is the same 5 minutes the data is actual refreshed on the Envoy    |
+| refresh      | no       | Period between data updates. The default is the same 5 minutes the data is actually refreshed on the Envoy  |
 
 #### Envoy below version 7
 
