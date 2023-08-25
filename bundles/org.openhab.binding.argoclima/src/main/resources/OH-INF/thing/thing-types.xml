@@ -5,15 +5,15 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="argoclima-local">
-		<label>ArgoClima A/C - local</label>
+		<label>ArgoClima A/C - Local</label>
 		<description><![CDATA[ArgoClima Ulisse Eco 13-compatible Air Conditioner <i>(local LAN connection)</i>
 		<br/>
-		Independent mode - does not require Internet connectivity (see <b>connectionMode</b> advanced setting for more options).
+		Independent mode - does not require Internet connectivity (see <b>connectionMode</b> setting for more options).
 		]]></description>
 		<category>HVAC</category>
 
 		<channel-groups>
-			<channel-group id="acControls" typeId="acControls-group"/>
+			<channel-group id="ac-controls" typeId="ac-controls-group"/>
 			<channel-group id="modes" typeId="modes-group"/>
 			<channel-group id="timers" typeId="timers-group"/>
 			<channel-group id="unsupported" typeId="unsupported-group"/>
@@ -23,7 +23,7 @@
 		<properties>
 			<property name="vendor">ArgoClima</property>
 			<property name="modelId">Ulisse Eco 13 DCI - compatible device</property>
-			<property name="protocol">WiFi - local network</property>
+			<property name="protocol">Wi-Fi - local network</property>
 		</properties>
 
 		<representation-property>hostname</representation-property>
@@ -34,8 +34,8 @@
 				<description>Connection settings.</description>
 			</parameter-group>
 			<parameter-group name="serverStub">
-				<label>Argo server stub</label>
-				<description><![CDATA[Configuration of OpenHab acting as Argo API server (requires proxying device-side traffic to this OH instance).
+				<label>Argo Server Stub</label>
+				<description><![CDATA[Configuration of openHAB acting as Argo API server (requires proxying device-side traffic to this OH instance).
 				<i>These settings are effective only for <code>REMOTE_API_STUB | REMOTE_API_PROXY</code> connection modes.</i>]]></description>
 			</parameter-group>
 			<!-- Note: dynamic parameters are also in use (see ArgoClimaConfigProvider) -->
@@ -46,9 +46,8 @@
 				<description><![CDATA[Hostname or IP address of the HVAC device.<br/><i>If <b>useLocalConnection</b> setting is <b>enabled</b>, this address will be used for (command push + status polling) communication with the device.</i>]]></description>
 			</parameter>
 
-			<parameter name="localDevicePort" type="integer" min="0" max="65536" required="false"
-				groupName="serverStub">
-				<label>Device API listen port</label>
+			<parameter name="hvacListenPort" type="integer" min="0" max="65535" required="false" groupName="connection">
+				<label>Device API Listen Port</label>
 				<description><![CDATA[Port at which the local device listens on.<br/>
 				<i>This setting is effective only if <code>Use Local Connection</code> is <code>true</code>. The default value 1001 is hard-coded in Argo Firmware. You would only need to override it if the device is behind NAT, and you have configured a custom port forwarding rule using port other than 1001</i>]]>
 				</description>
@@ -58,7 +57,7 @@
 
 			<parameter name="localDeviceIP" type="text" required="false" readOnly="false" groupName="connection">
 				<context>network-address</context>
-				<label>Local IP address (behind NAT)</label>
+				<label>Local IP Address</label>
 				<description><![CDATA[Local IP address of the device in its local subnet (may be different from <b>hostname</b>, if behind NAT).<br/>
 				Optional, value is used for detecting device-side updates in one of the <code>REMOTE</code> modes.]]></description>
 				<advanced>true</advanced>
@@ -71,20 +70,20 @@
 			</parameter>
 
 			<parameter name="connectionMode" type="text" required="true" groupName="connection">
-				<label>Connection mode</label>
+				<label>Connection Mode</label>
 				<description><![CDATA[Type of connection to use.<br/>
 				<b>- <code>LOCAL_CONNECTION</code></b> - Directly communicates with the AC device over LAN (default mode).<br/>
-				<b>- <code>REMOTE_API_STUB</code></b> - OpenHab simulates vendor's remote server <i>(most functionality implemented, w/o FW update support)</i>. Requires traffic from the AC re-routed to this OH instance (network-level configuration, see README). Allows <u>full-local control</u> (w/o Internet access to the device). Can also control units which are not directly reachable over LAN, e.g. behind NAT (set <code>Local IP address</code>).<br />
-				<b>- <code>REMOTE_API_PROXY</code></b> - OpenHab behaves as a proxy to the remote Manufacturer's server (injects OH-side commands). Allows to still use the Vendor's application. WARNING: This mode (similarly to using vanilla Argo WebApp) may be considered insecure <i>(plain HTTP communications, passwords transmitted in the clear, unsigned FW updates...)</i>.<br />
+				<b>- <code>REMOTE_API_STUB</code></b> - openHAB simulates vendor's remote server <i>(most functionality implemented, w/o FW update support)</i>. Requires traffic from the AC re-routed to this OH instance (network-level configuration, see README). Allows <u>full-local control</u> (w/o Internet access to the device). Can also control units which are not directly reachable over LAN, e.g. behind NAT (set <code>Local IP address</code>).<br />
+				<b>- <code>REMOTE_API_PROXY</code></b> - openHAB behaves as a proxy to the remote Manufacturer's server (injects OH-side commands). Allows to still use the Vendor's application. WARNING: This mode (similarly to using vanilla Argo WebApp) may be considered insecure <i>(plain HTTP communications, passwords transmitted in the clear, unsigned FW updates...)</i>.<br />
 				]]>
 				</description>
 				<default>LOCAL_CONNECTION</default>
 				<options>
 					<option value="LOCAL_CONNECTION">LOCAL_CONNECTION - Local only (no remote server stub). (**Default**)</option>
-					<option value="REMOTE_API_STUB">REMOTE_API_STUB - OpenHab as ArgoClima server stub. [Advanced] (**Recommended**)</option>
-					<option value="REMOTE_API_PROXY">REMOTE_API_PROXY - OpenHab as ArgoClima server w/ pass-through to OEM app. [Advanced]</option>
+					<option value="REMOTE_API_STUB">REMOTE_API_STUB - openHAB as ArgoClima server stub. [Advanced] (**Recommended**)</option>
+					<option value="REMOTE_API_PROXY">REMOTE_API_PROXY - openHAB as ArgoClima server w/ pass-through to OEM app. [Advanced]</option>
 				</options>
-				<advanced>true</advanced>
+				<advanced>false</advanced>
 			</parameter>
 
 			<parameter name="useLocalConnection" type="boolean" required="false" groupName="connection">
@@ -103,8 +102,8 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="stubServerPort" type="integer" min="0" max="65536" required="false" groupName="serverStub">
-				<label>Stub server listen port</label>
+			<parameter name="stubServerPort" type="integer" min="0" max="65535" required="false" groupName="serverStub">
+				<label>Stub Server Listen Port</label>
 				<description><![CDATA[Port at which the Stub server will listen on.<br/>
 				<i>This setting is effective only for <code>REMOTE_*</code> connection modes</i>
 				]]>
@@ -116,7 +115,7 @@
 			<parameter name="stubServerListenAddresses" type="text" multiple="true" required="false"
 				groupName="serverStub">
 				<context>network-address</context>
-				<label>Stub server listen interfaces</label>
+				<label>Stub Server Listen Adresses</label>
 				<description><![CDATA[List of interfaces the stub server will listen on<br/>
 				<i>This setting is effective only for <code>REMOTE_API_STUB | REMOTE_API_PROXY</code> connection modes</i>
 				]]>
@@ -127,7 +126,7 @@
 
 			<parameter name="oemServerAddress" type="text" required="false" groupName="serverStub">
 				<context>network-address</context>
-				<label>Argo remote server address</label>
+				<label>Argo Remote Server Address</label>
 				<description><![CDATA[The OEM server's port, used to pass through the communications to. <br/>
 				<i>This setting is effective only for <code>REMOTE_API_PROXY</code> connection mode</i>
 				]]>
@@ -136,8 +135,8 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="oemServerPort" type="integer" min="0" max="65536" required="false" groupName="serverStub">
-				<label>Argo remote server port</label>
+			<parameter name="oemServerPort" type="integer" min="0" max="65535" required="false" groupName="serverStub">
+				<label>Argo Remote Server Port</label>
 				<description><![CDATA[The OEM server's port, used to pass through the communications to<br/>
 				<i>This setting is effective only for <code>REMOTE_API_PROXY</code> connection mode</i>
 				]]>
@@ -146,19 +145,26 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="showCleartextPasswords" type="boolean" required="false" groupName="serverStub">
-				<label>Show passwords in clear text</label>
-				<description><![CDATA[If enabled, the DeviceProperties will show <b>WiFi</b> and <b>UI</b> passwords in cleartext (the way they are sent to Argo servers).
-				When disabled (default), the property values will be replaced with <code>***</code>.
-				<i> <- (applicable only to <code>REMOTE_*</code> connection modes)</i>
-				<br/><b>IMPORTANT:</b> Regardless of this setting, the values ARE sent in the clear (and w/o HTTPS) by the device to the vendor servers.
-				To prevent them from leaking, you may want to create a firewall rule redirecting HVAC traffic to OpenHab <i>(instead of talking to Argo servers)</i>, and use <code>REMOTE_API_STUB</code> mode of this binding.]]></description>
-				<default>false</default>
+			<parameter name="includeDeviceSidePasswordsInProperties" type="text" required="false"
+				groupName="serverStub">
+				<label>Include Device-Side Passwords</label>
+				<description><![CDATA[Whether to include the intercepted passwords to the HVAC as well as the Wi-Fi (sent by the device to Argo servers) as Thing propertis.<br/>
+				<i> (applicable only to <code>REMOTE_*</code> connection modes)</i><br/>
+				<b>IMPORTANT:</b> Regardless of this setting, the values ARE sent in the clear (and w/o HTTPS) by the device to the vendor servers.
+				To prevent them from leaking, you may want to create a firewall rule redirecting HVAC traffic to openHAB <i>(instead of talking to Argo servers)</i>, and use <code>REMOTE_API_STUB</code> mode of this binding.]]></description>
+				<default>NEVER</default>
+				<options>
+					<option value="NEVER">NEVER - The passwords are not exposed as Thing properties. (**Default**)</option>
+					<option value="MASKED">MASKED - Intercepted Wi-Fi and HVAC passwords are displayed as properties, but masked with
+						***.</option>
+					<option value="CLEARTEXT">CLEARTEXT - Intercepted Wi-Fi and HVAC passwords are displayed as Thing properties, in
+						cleartext.</option>
+				</options>
 				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="matchAnyIncomingDeviceIp" type="boolean" required="false" groupName="serverStub">
-				<label>Match ANY incoming device IP</label>
+				<label>Match ANY Incoming Device IP</label>
 				<description><![CDATA[If enabled, will <b>not</b> attempt to match the incoming Argo requests by IP (neither <code>'Local IP address (behind NAT)'</code> nor <code>'Hostname'</code>),
 				and instead accept <b>ANY</b> device-side Argo protocol request as matching <b>THIS</b> Thing.
 				<br/> Applicable only to <code>REMOTE_*</code> modes.
@@ -171,13 +177,13 @@
 	</thing-type>
 
 	<thing-type id="argoclima-remote">
-		<label>ArgoClima A/C - remote</label>
+		<label>ArgoClima A/C - Remote</label>
 		<description><![CDATA[ArgoClima Ulisse Eco 13-compatible Air Conditioner <i>(remote connection via Argo servers)</i>
-		<br/><i>Requires Internet connectivity for <b>both</b> OpenHab and the HVAC device separately.</i>
+		<br/><i>Requires Internet connectivity for <b>both</b> openHAB and the HVAC device separately.</i>
 		]]></description>
 		<category>HVAC</category>
 		<channel-groups>
-			<channel-group id="acControls" typeId="acControls-group"/>
+			<channel-group id="ac-controls" typeId="ac-controls-group"/>
 			<channel-group id="modes" typeId="modes-group"/>
 			<channel-group id="timers" typeId="timers-group"/>
 			<channel-group id="unsupported" typeId="unsupported-group"/>
@@ -198,7 +204,7 @@
 				<description>Connection settings.</description>
 			</parameter-group>
 			<parameter-group name="oemServerConnection">
-				<label>Argo server connection details</label>
+				<label>Argo Server Connection Details</label>
 				<description><![CDATA[Configuration of Argo remote server.]]></description>
 			</parameter-group>
 
@@ -222,7 +228,7 @@
 
 			<parameter name="oemServerAddress" type="text" required="false" groupName="oemServerConnection">
 				<context>network-address</context>
-				<label>Argo remote server address</label>
+				<label>Argo Remote Server Address</label>
 				<description><![CDATA[The OEM server's hostname, used for communications.<br/>
 				<i>This is the same host as for the Web Application (address provided in device's user manual). Example: uisetup.ddns.net</i>
 				]]>
@@ -231,9 +237,9 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="oemServerPort" type="integer" min="0" max="65536" required="false"
+			<parameter name="oemServerPort" type="integer" min="0" max="65535" required="false"
 				groupName="oemServerConnection">
-				<label>Argo remote server port</label>
+				<label>Argo Remote Server Port</label>
 				<description><![CDATA[The OEM server's port. <i>Default 80.</i>]]>
 				</description>
 				<default>80</default>
@@ -242,28 +248,28 @@
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="acControls-group">
+	<channel-group-type id="ac-controls-group">
 		<label>A/C Controls</label>
 		<category>HVAC</category>
 		<channels>
 			<channel id="power" typeId="system.power"/>
-			<channel id="mode" typeId="modeBasic-channel"/>
-			<channel id="setTemperature" typeId="setTemperature-channel"/>
-			<channel id="currentTemperature" typeId="system.indoor-temperature"/>
-			<channel id="fanSpeed" typeId="fanSpeed-channel"/>
+			<channel id="mode" typeId="mode-basic-channel"/>
+			<channel id="set-temperature" typeId="set-temperature-channel"/>
+			<channel id="current-temperature" typeId="system.indoor-temperature"/>
+			<channel id="fan-speed" typeId="fan-speed-channel"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="modes-group">
 		<label>Operation Modes</label>
 		<channels>
-			<channel id="ecoMode" typeId="ecoModeModifier-channel">
+			<channel id="eco-mode" typeId="eco-mode-modifier-channel">
 				<label>Eco Mode</label>
 			</channel>
-			<channel id="turboMode" typeId="turboModeModifier-channel">
+			<channel id="turbo-mode" typeId="turbo-mode-modifier-channel">
 				<label>Turbo Mode</label>
 			</channel>
-			<channel id="nightMode" typeId="nightModeModifier-channel">
+			<channel id="night-mode" typeId="night-mode-modifier-channel">
 				<label>Night Mode</label>
 			</channel>
 		</channels>
@@ -273,18 +279,18 @@
 		<label>Timers</label>
 		<category>Time</category>
 		<channels>
-			<channel id="activeTimer" typeId="activeTimer-channel"/>
-			<channel id="delayTimer" typeId="delayTimer-channel"/>
+			<channel id="active-timer" typeId="active-timer-channel"/>
+			<channel id="delay-timer" typeId="delay-timer-channel"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="unsupported-group">
-		<label>Unsupported modes</label>
+		<label>Unsupported Modes</label>
 		<description><![CDATA[These channels are available on the original Argo remote (and app), but the Ulisse DCI device does not support it.]]></description>
 		<channels>
-			<channel id="modeEx" typeId="modeExtended-channel"/>
-			<channel id="swingMode" typeId="swingMode-channel"/>
-			<channel id="filterMode" typeId="filterModeModifier-channel">
+			<channel id="mode-ex" typeId="mode-extended-channel"/>
+			<channel id="swing-mode" typeId="swing-mode-channel"/>
+			<channel id="filter-mode" typeId="filter-mode-modifier-channel">
 				<label>Filter Mode</label>
 			</channel>
 		</channels>
@@ -293,10 +299,10 @@
 	<channel-group-type id="settings-group">
 		<label>Settings</label>
 		<channels>
-			<channel id="iFeelEnabled" typeId="iFeel-channel"/>
-			<channel id="deviceLights" typeId="deviceLights-channel"/>
-			<channel id="temperatureDisplayUnit" typeId="temperatureDisplayUnit-channel"/>
-			<channel id="ecoPowerLimit" typeId="ecoPowerLimit-channel"/>
+			<channel id="ifeel-enabled" typeId="ifeel-channel"/>
+			<channel id="device-lights" typeId="device-lights-channel"/>
+			<channel id="temperature-display-unit" typeId="temperature-display-unit-channel"/>
+			<channel id="eco-power-limit" typeId="eco-power-limit-channel"/>
 		</channels>
 	</channel-group-type>
 
@@ -304,7 +310,7 @@
 	<!--
 		*** CHANNELS ***
 	-->
-	<channel-type id="modeBasic-channel">
+	<channel-type id="mode-basic-channel">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<category>Climate</category>
@@ -322,7 +328,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="setTemperature-channel">
+	<channel-type id="set-temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature</label>
 		<description>The device's target temperature</description>
@@ -334,9 +340,9 @@
 		<state min="10" max="36" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="currentTemperature-channel">
+	<channel-type id="current-temperature-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Actual temperature</label>
+		<label>Actual Temperature</label>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -345,9 +351,9 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="fanSpeed-channel">
+	<channel-type id="fan-speed-channel">
 		<item-type>String</item-type>
-		<label>Fan speed</label>
+		<label>Fan Speed</label>
 		<category>Fan</category>
 		<state readOnly="false">
 			<options>
@@ -363,37 +369,37 @@
 	</channel-type>
 
 
-	<channel-type id="ecoModeModifier-channel">
+	<channel-type id="eco-mode-modifier-channel">
 		<item-type>Switch</item-type>
 		<label>Eco Mode</label>
 		<category>Vacation</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="turboModeModifier-channel">
+	<channel-type id="turbo-mode-modifier-channel">
 		<item-type>Switch</item-type>
 		<label>Turbo Mode</label>
 		<category>Party</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="filterModeModifier-channel" advanced="true">
+	<channel-type id="filter-mode-modifier-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Filter Mode</label>
 		<category>Switch</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="nightModeModifier-channel">
+	<channel-type id="night-mode-modifier-channel">
 		<item-type>Switch</item-type>
 		<label>Night Mode</label>
 		<category>Moon</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="activeTimer-channel" advanced="true">
+	<channel-type id="active-timer-channel" advanced="true">
 		<item-type>String</item-type>
-		<label>Active timer</label>
+		<label>Active Timer</label>
 		<category>Calendar</category>
 		<state readOnly="false">
 			<options>
@@ -406,9 +412,9 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="delayTimer-channel" advanced="true">
+	<channel-type id="delay-timer-channel" advanced="true">
 		<item-type>Number:Time</item-type> <!-- Number:Time -->
-		<label>Delay timer value</label>
+		<label>Delay Timer Value</label>
 		<category>Time</category>
 		<!-- Argo remote supports a delay param in range of 0:10...19:50 (in 10-minute increments)
 			Note we're not using %unit% here, as default time unit is seconds... which won't be too readable here
@@ -422,7 +428,7 @@
 
 
 
-	<channel-type id="modeExtended-channel" advanced="true">
+	<channel-type id="mode-extended-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Extended Mode</label>
 		<category>Heating</category>
@@ -437,7 +443,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="swingMode-channel" advanced="true">
+	<channel-type id="swing-mode-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Airflow Direction</label>
 		<category>Flow</category>
@@ -455,21 +461,21 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="iFeel-channel">
+	<channel-type id="ifeel-channel">
 		<item-type>Switch</item-type>
 		<label>Use iFeel Temperature</label>
 		<category>Network</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="deviceLights-channel">
+	<channel-type id="device-lights-channel">
 		<item-type>Switch</item-type>
 		<label>Device Lights</label>
 		<category>Light</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="temperatureDisplayUnit-channel" advanced="true">
+	<channel-type id="temperature-display-unit-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Temperature Display Unit</label>
 		<category>Settings</category>
@@ -481,9 +487,9 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="ecoPowerLimit-channel" advanced="true">
+	<channel-type id="eco-power-limit-channel" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Power limit in eco mode</label>
+		<label>Power Limit In Eco Mode</label>
 		<category>Price</category>
 		<tags>
 			<tag>Setpoint</tag>

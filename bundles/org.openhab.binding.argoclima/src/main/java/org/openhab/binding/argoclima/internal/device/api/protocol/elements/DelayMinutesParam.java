@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -186,21 +186,21 @@ public class DelayMinutesParam extends ArgoApiElementBase {
     protected HandleCommandResult handleCommandInternalEx(Command command) {
         int newRawValue;
 
-        if (command instanceof Number) {
-            newRawValue = ((Number) command).intValue(); // Raw value, not unit-aware
+        if (command instanceof Number numberCommand) {
+            newRawValue = numberCommand.intValue(); // Raw value, not unit-aware
 
-            if (command instanceof QuantityType<?>) { // let's try to get it with unit (opportunistically)
-                var inMinutes = ((QuantityType<?>) command).toUnit(Units.MINUTE);
+            if (command instanceof QuantityType<?> quantityTypeCommand) { // let's try to get it with unit
+                                                                          // (opportunistically)
+                var inMinutes = quantityTypeCommand.toUnit(Units.MINUTE);
                 if (null != inMinutes) {
                     newRawValue = inMinutes.intValue();
                 }
             }
-        } else if (command instanceof IncreaseDecreaseType) {
-            var asCommand = (IncreaseDecreaseType) command;
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseTypeCommand) {
             var base = this.currentValue.orElse(adjustRange((this.minValue + this.maxValue) / 2));
-            if (asCommand.equals(IncreaseDecreaseType.INCREASE)) {
+            if (IncreaseDecreaseType.INCREASE.equals(increaseDecreaseTypeCommand)) {
                 base += step;
-            } else if (asCommand.equals(IncreaseDecreaseType.DECREASE)) {
+            } else if (IncreaseDecreaseType.DECREASE.equals(increaseDecreaseTypeCommand)) {
                 base -= step;
             }
             newRawValue = base;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationLocal.DeviceSidePasswordDisplayMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,10 +58,10 @@ public class DeviceSideUpdateDTO {
         /** The binary value upon conversion (empty on conversion failure) */
         private Optional<byte[]> bytes = Optional.empty();
 
-        /** The WiFi SSID embedded on bytes 0..31 of the blob (or empty - on parse failure) */
+        /** The Wi-Fi SSID embedded on bytes 0..31 of the blob (or empty - on parse failure) */
         public Optional<String> wifiSSID = Optional.empty();
 
-        /** The WiFi password embedded on bytes 32..63 of the blob (or empty - on parse failure) */
+        /** The Wi-Fi password embedded on bytes 32..63 of the blob (or empty - on parse failure) */
         public Optional<String> wifiPassword = Optional.empty();
 
         /** The UI username embedded on bytes 64..79 of the blob (or empty - on parse failure) */
@@ -73,12 +74,12 @@ public class DeviceSideUpdateDTO {
         public Optional<String> localIP = Optional.empty();
 
         /**
-         * The installed(?) WiFi firmware version embedded on bytes 132-137 of the blob (or empty - on parse failure)
+         * The installed(?) Wi-Fi firmware version embedded on bytes 132-137 of the blob (or empty - on parse failure)
          */
         public Optional<String> wifiVersionInstalled = Optional.empty();
 
         /**
-         * The available(?) WiFi firmware version embedded on bytes 138-143 of the blob (or empty - on parse failure)
+         * The available(?) Wi-Fi firmware version embedded on bytes 138-143 of the blob (or empty - on parse failure)
          */
         public Optional<String> wifiVersionAvailable = Optional.empty();
 
@@ -104,10 +105,11 @@ public class DeviceSideUpdateDTO {
          * C-tor
          *
          * @param rawString The raw 'setup' param string send by device
-         * @param showCleartextPasswords If true, do not mask passwords the device sends with {@code ***}
-         *            Note this is not a security feature (passwords are still sent!)
+         * @param includeDeviceSidePasswordsInProperties Whether to include the device-sent passwords as thing
+         *            properties and how (masked with {@code ***} vs. cleartext). Note this is not a security feature
+         *            (passwords are still sent!)
          */
-        public UiFlgSetupParam(String rawString, boolean showCleartextPasswords) {
+        public UiFlgSetupParam(String rawString, DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties) {
             this.rawString = rawString;
             try {
                 this.bytes = Optional.ofNullable(DatatypeConverter.parseHexBinary(rawString));
@@ -122,21 +124,40 @@ public class DeviceSideUpdateDTO {
                 this.wifiSSID = Optional.of(new String(byte32arr).trim());
 
                 bb.get(byte32arr);
-                this.wifiPassword = Optional.of(new String(byte32arr).trim()); // yep, it is passed through to vendor's
-                                                                               // servers **as plaintext**. Over plain
-                                                                               // HTTP! :///
-                if (!showCleartextPasswords) {
-                    this.wifiPassword = Optional.of(this.wifiPassword.get().replaceAll(".", "*"));
+                switch (includeDeviceSidePasswordsInProperties) {
+                    case CLEARTEXT:
+                        this.wifiPassword = Optional.of(new String(byte32arr).trim()); // yep, it is passed through to
+                                                                                       // vendor's servers **as
+                                                                                       // plaintext**. Over plain HTTP!
+                                                                                       // :///
+                        break;
+                    case MASKED:
+                        this.wifiPassword = Optional.of(new String(byte32arr).trim().replaceAll(".", "*"));
+                        break;
+                    case NEVER:
+                    default:
+                        this.wifiPassword = Optional.empty();
+                        break;
                 }
 
                 bb.position(0x40);
                 bb.get(byte16arr);
                 this.username = Optional.of(new String(byte16arr).trim());
+
                 bb.get(byte32arr);
-                this.password = Optional.of(new String(byte32arr).trim());
-                if (!showCleartextPasswords) {
-                    this.password = Optional.of(this.password.get().replaceAll(".", "*"));
+                switch (includeDeviceSidePasswordsInProperties) {
+                    case CLEARTEXT:
+                        this.password = Optional.of(new String(byte32arr).trim());
+                        break;
+                    case MASKED:
+                        this.password = Optional.of(new String(byte32arr).trim().replaceAll(".", "*"));
+                        break;
+                    case NEVER:
+                    default:
+                        this.password = Optional.empty();
+                        break;
                 }
+
                 bb.get(byte16arr);
                 this.localIP = Optional.of(new String(byte16arr).trim());
 
@@ -192,7 +213,7 @@ public class DeviceSideUpdateDTO {
     /** The {@code FW_OU} part of the request. Carries current version of unit's firmware */
     public final String unitFirmware;
 
-    /** The {@code FW_UI} part of the request. Carries current version of WiFi firmware */
+    /** The {@code FW_UI} part of the request. Carries current version of Wi-Fi firmware */
     public final String wifiFirmware;
 
     /** The {@code CPU_ID} part of the request. Carries a unique HVAC device chip ID */
@@ -217,10 +238,11 @@ public class DeviceSideUpdateDTO {
      * Private c-tor (from pre-parsed request)
      *
      * @param parameterMap The body parameters converted to a K->V map
-     * @param showCleartextPasswords If true, do not mask passwords the device sends with {@code ***}
-     *            Note this is not a security feature (passwords are still sent!)
+     * @param includeDeviceSidePasswordsInProperties Whe. Note this is not a security feature (passwords are still
+     *            sent!)
      */
-    private DeviceSideUpdateDTO(Map<String, String> parameterMap, boolean showCleartextPasswords) {
+    private DeviceSideUpdateDTO(Map<String, String> parameterMap,
+            DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties) {
         this.command = Objects.requireNonNullElse(parameterMap.get("CM"), "");
         this.username = Objects.requireNonNullElse(parameterMap.get("USN"), "");
         this.passwordHash = Objects.requireNonNullElse(parameterMap.get("PSW"), "");
@@ -231,7 +253,7 @@ public class DeviceSideUpdateDTO {
         this.currentValues = Objects.requireNonNullElse(parameterMap.get("HMI"), "");
         this.timezoneId = Objects.requireNonNullElse(parameterMap.get("TZ"), "");
         this.setup = new UiFlgSetupParam(Objects.requireNonNullElse(parameterMap.get("SETUP"), ""),
-                showCleartextPasswords);
+                includeDeviceSidePasswordsInProperties);
         this.remoteServerId = Objects.requireNonNullElse(parameterMap.get("SERVER_ID"), "");
     }
 
@@ -239,17 +261,18 @@ public class DeviceSideUpdateDTO {
      * Named c-tor (from device-side request)
      *
      * @param request The request sent by the device
-     * @param showCleartextPasswords If true, do not mask passwords the device sends with {@code ***}
+     * @param includeDeviceSidePasswordsInProperties If true, do not mask passwords the device sends with {@code ***}
      *            Note this is not a security feature (passwords are still sent!)
      * @return Parsed DTO
      */
-    public static DeviceSideUpdateDTO fromDeviceRequest(HttpServletRequest request, boolean showCleartextPasswords) {
+    public static DeviceSideUpdateDTO fromDeviceRequest(HttpServletRequest request,
+            DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties) {
         Map<String, String> flattenedParams = request.getParameterMap().entrySet().stream()
                 .collect(TreeMap::new,
                         (m, v) -> m.put(Objects.requireNonNull(v.getKey()),
                                 (v.getValue().length < 1) ? "" : Objects.requireNonNull(v.getValue()[0])),
                         TreeMap::putAll);
-        return new DeviceSideUpdateDTO(flattenedParams, showCleartextPasswords);
+        return new DeviceSideUpdateDTO(flattenedParams, includeDeviceSidePasswordsInProperties);
     }
 
     @Override

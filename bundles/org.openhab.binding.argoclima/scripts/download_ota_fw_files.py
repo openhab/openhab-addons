@@ -4,7 +4,7 @@ Downloads current Argo Ulisse firmware binary files from manufacturer's servers
 """
 
 __author__ = "Mateusz Bronk"
-__copyright__ = """Copyright (c) 2010-2022 Contributors to the openHAB project
+__copyright__ = """Copyright (c) 2010-2024 Contributors to the openHAB project
 
 See the NOTICE file(s) distributed with this work for additional
 information.

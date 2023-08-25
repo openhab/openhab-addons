@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.MultiException;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationLocal;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationLocal.ConnectionMode;
 import org.openhab.binding.argoclima.internal.device.api.ArgoClimaLocalDevice;
@@ -60,13 +61,15 @@ public class ArgoClimaHandlerLocal extends ArgoClimaHandlerBase<ArgoClimaConfigu
      *            {@code ArgoClimaHandlerFactory})
      * @param timeZoneProvider The framework's time zone provider (injected by the runtime to the
      *            {@code ArgoClimaHandlerFactory})
+     * @param i18nProvider Framework's translation provider
      */
-    public ArgoClimaHandlerLocal(Thing thing, HttpClientFactory clientFactory, TimeZoneProvider timeZoneProvider) {
+    public ArgoClimaHandlerLocal(Thing thing, HttpClientFactory clientFactory, TimeZoneProvider timeZoneProvider,
+            final ArgoClimaTranslationProvider i18nProvider) {
         super(thing, ArgoClimaBindingConstants.AWAIT_DEVICE_CONFIRMATIONS_AFTER_COMMANDS,
                 ArgoClimaBindingConstants.POLL_FREQUENCY_AFTER_COMMAND_SENT_LOCAL,
                 ArgoClimaBindingConstants.SEND_COMMAND_RETRY_FREQUENCY_LOCAL,
                 ArgoClimaBindingConstants.SEND_COMMAND_MAX_WAIT_TIME_LOCAL_DIRECT,
-                ArgoClimaBindingConstants.SEND_COMMAND_MAX_WAIT_TIME_LOCAL_INDIRECT);
+                ArgoClimaBindingConstants.SEND_COMMAND_MAX_WAIT_TIME_LOCAL_INDIRECT, i18nProvider);
         this.commonHttpClient = clientFactory.getCommonHttpClient();
         this.clientFactory = clientFactory;
         this.timeZoneProvider = timeZoneProvider;
@@ -75,18 +78,21 @@ public class ArgoClimaHandlerLocal extends ArgoClimaHandlerBase<ArgoClimaConfigu
     @Override
     protected ArgoClimaConfigurationLocal getConfigInternal() throws ArgoConfigurationException {
         try {
-            return getConfigAs(ArgoClimaConfigurationLocal.class); // This can **theoretically** return null if class is
-                                                                   // not default-constructible (but this one is, so not
-                                                                   // handling!)
+            var ret = getConfigAs(ArgoClimaConfigurationLocal.class); // This can **theoretically** return null if class
+                                                                      // is not default-constructible (but this one is,
+                                                                      // so not handling!)
+            ret.initialize(i18nProvider);
+            return ret;
         } catch (IllegalArgumentException ex) {
-            throw new ArgoConfigurationException("Error loading thing configuration", "", ex);
+            throw ArgoConfigurationException.forInvalidParamValue("Error loading thing configuration",
+                    "thing-status.argoclima.configuration.load-error", i18nProvider, ex);
         }
     }
 
     /**
      * {@inheritDoc}
      * <p>
-     * For any {@code REMOTE_API_*} <b>Connection mode<b>, this starts a new HTTP server (with its own thread pool!)
+     * For any {@code REMOTE_API_*} <b>Connection mode</b>, this starts a new HTTP server (with its own thread pool!)
      * listening for HVAC connections.
      * <p>
      * Additionally for a {@code REMOTE_API_PROXY}, a custom HTTP client is also created, proxying the calls from device
@@ -99,8 +105,8 @@ public class ArgoClimaHandlerLocal extends ArgoClimaHandlerBase<ArgoClimaConfigu
     @Override
     protected IArgoClimaDeviceAPI initializeDeviceApi(ArgoClimaConfigurationLocal config)
             throws ArgoRemoteServerStubStartupException, ArgoConfigurationException {
-        var deviceApi = new ArgoClimaLocalDevice(config, config.getHostname(), config.getLocalDevicePort(),
-                config.getLocalDeviceIP(), config.getDeviceCpuId(), this.commonHttpClient, this.timeZoneProvider,
+        var deviceApi = new ArgoClimaLocalDevice(config, config.getHostname(), config.getHvacListenPort(),
+                config.getLocalDeviceIP(), config.getDeviceCpuId(), commonHttpClient, timeZoneProvider, i18nProvider,
                 this::updateChannelsFromDevice, this::updateThingStatusToOnline, this::updateThingProperties,
                 thing.getUID().toString());
 
@@ -116,22 +122,23 @@ public class ArgoClimaHandlerLocal extends ArgoClimaHandlerBase<ArgoClimaConfigu
 
             var simulatedServer = new RemoteArgoApiServerStub(config.getStubServerListenAddresses(),
                     config.getStubServerPort(), this.getThing().getUID().toString(), passthroughClient,
-                    Optional.of(deviceApi), config.getShowCleartextPasswords());
+                    Optional.of(deviceApi), config.getIncludeDeviceSidePasswordsInProperties(), i18nProvider);
             serverStub = Optional.of(simulatedServer);
 
             try {
                 simulatedServer.start();
             } catch (Exception e1) {
-                var message = e1.getMessage();
-                if (e1.getCause() instanceof MultiException) {
+                var message = e1.getLocalizedMessage();
+                if (e1.getCause() instanceof MultiException multiEx) {
                     // This may cause multiple exceptions in case multiple bind addresses are in use
-                    var multiCause = Objects.requireNonNull((MultiException) e1.getCause());
-                    message = multiCause.toString();
+                    var multiCause = Objects.requireNonNull(multiEx.getCause());
+                    message = multiCause.toString(); // deliberately not using getLocalizedMessage, as we want the list
                 }
 
                 throw new ArgoRemoteServerStubStartupException(
-                        String.format("[%s mode] Failed to start RPC server at port: %d. Error: %s",
-                                config.getConnectionMode(), config.getStubServerPort(), message));
+                        "[{0} mode] Failed to start RPC server at port: {1,number,#}. Error: {2}",
+                        "thing-status.argoclima.stub-server.start-failure", i18nProvider, config.getConnectionMode(),
+                        config.getStubServerPort(), message);
             }
         }
         return deviceApi;

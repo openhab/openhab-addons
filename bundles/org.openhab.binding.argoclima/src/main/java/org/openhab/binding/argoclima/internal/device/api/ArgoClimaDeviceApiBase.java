@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,13 +31,14 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.util.URIUtil;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
+import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationBase;
 import org.openhab.binding.argoclima.internal.device.api.protocol.ArgoApiDataElement;
 import org.openhab.binding.argoclima.internal.device.api.protocol.ArgoDeviceStatus;
 import org.openhab.binding.argoclima.internal.device.api.protocol.elements.IArgoCommandableElement.IArgoElement;
 import org.openhab.binding.argoclima.internal.device.api.types.ArgoDeviceSettingType;
 import org.openhab.binding.argoclima.internal.exception.ArgoApiCommunicationException;
-import org.openhab.binding.argoclima.internal.exception.ArgoLocalApiCommunicationException;
+import org.openhab.binding.argoclima.internal.exception.ArgoApiProtocolViolationException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -54,6 +55,7 @@ public abstract class ArgoClimaDeviceApiBase implements IArgoClimaDeviceAPI {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final HttpClient client;
     protected final TimeZoneProvider timeZoneProvider;
+    protected final ArgoClimaTranslationProvider i18nProvider;
     protected final ArgoDeviceStatus deviceStatus;
     protected Consumer<SortedMap<String, String>> onDevicePropertiesUpdate;
     protected SortedMap<String, String> deviceProperties;
@@ -67,12 +69,14 @@ public abstract class ArgoClimaDeviceApiBase implements IArgoClimaDeviceAPI {
      * @param timeZoneProvider The common TZ provider
      * @param onDevicePropertiesUpdate Callback to invoke on device-side dynamic property update (ex. lastSeen)
      * @param remoteEndName The name of the "remote end" party, for use in logging
+     * @param i18nProvider Framework's translation provider
      */
     public ArgoClimaDeviceApiBase(ArgoClimaConfigurationBase config, HttpClient client,
-            TimeZoneProvider timeZoneProvider, Consumer<SortedMap<String, String>> onDevicePropertiesUpdate,
-            String remoteEndName) {
+            TimeZoneProvider timeZoneProvider, ArgoClimaTranslationProvider i18nProvider,
+            Consumer<SortedMap<String, String>> onDevicePropertiesUpdate, String remoteEndName) {
         this.client = client;
         this.timeZoneProvider = timeZoneProvider;
+        this.i18nProvider = i18nProvider;
         this.deviceStatus = new ArgoDeviceStatus(config);
         this.onDevicePropertiesUpdate = onDevicePropertiesUpdate;
         this.deviceProperties = new TreeMap<String, String>();
@@ -99,10 +103,10 @@ public abstract class ArgoClimaDeviceApiBase implements IArgoClimaDeviceAPI {
      * @param apiResponse The response received from device (body of the response, ex. one obtained through
      *            {@link #pollForCurrentStatusFromDeviceSync(URL)}.
      * @return The {@link DeviceStatus} parsed from response (with properties pre-parsed)
-     * @throws ArgoLocalApiCommunicationException If the response body was not recognized as a valid protocol message
+     * @throws ArgoApiCommunicationException If the response body was not recognized as a valid protocol message
      */
     protected abstract DeviceStatus extractDeviceStatusFromResponse(String apiResponse)
-            throws ArgoLocalApiCommunicationException;
+            throws ArgoApiCommunicationException;
 
     /**
      * Helper class method for converting strings to URIs (assumes HTTP for the protocol)
@@ -141,23 +145,24 @@ public abstract class ArgoClimaDeviceApiBase implements IArgoClimaDeviceAPI {
      * @param url URL to call (should contain full protocol message to send to the device through HTTP GET (such as ones
      *            obtained through {@link #getDeviceStateQueryUrl} or {@link #getDeviceStateUpdateUrl()}
      * @return The device-side reply (HTTP response body)
-     * @throws ArgoLocalApiCommunicationException Thrown in case of communication issues (including timeouts) or if the
+     * @throws ArgoApiCommunicationException Thrown in case of communication issues (including timeouts) or if the
      *             API returned a response different from {@code HTTP 200 OK}
      */
-    protected String pollForCurrentStatusFromDeviceSync(URL url) throws ArgoLocalApiCommunicationException {
+    protected String pollForCurrentStatusFromDeviceSync(URL url) throws ArgoApiCommunicationException {
         try {
-            logger.debug("Communication: OPENHAB --> {}: [GET {}]", remoteEndName, url);
+            logger.trace("Communication: OPENHAB --> {}: [GET {}]", remoteEndName, url);
 
             ContentResponse resp = this.client.GET(url.toString()); // sync
 
-            logger.debug("   [response]: OPENHAB <-- {}: [{} {} {} - {} bytes], body=[{}]", remoteEndName,
+            logger.trace("   [response]: OPENHAB <-- {}: [{} {} {} - {} bytes], body=[{}]", remoteEndName,
                     resp.getVersion(), resp.getStatus(), resp.getReason(), resp.getContent().length,
                     resp.getContentAsString());
 
             if (resp.getStatus() != 200) {
-                throw new ArgoLocalApiCommunicationException(String.format(
-                        "API request yielded invalid response status %d %s (expected HTTP 200 OK). URL was: %s",
-                        resp.getStatus(), resp.getReason(), url));
+                throw new ArgoApiCommunicationException(
+                        "API request yielded invalid response status {0} {1} (expected HTTP 200 OK). URL was: {2}",
+                        "thing-status.cause.argoclima.invalid-api-response-status", i18nProvider, resp.getStatus(),
+                        resp.getReason(), url);
             }
             return Objects.requireNonNull(resp.getContentAsString());
         } catch (InterruptedException ex) {
@@ -166,14 +171,18 @@ public abstract class ArgoClimaDeviceApiBase implements IArgoClimaDeviceAPI {
         } catch (ExecutionException ex) {
             var cause = Optional.ofNullable(ex.getCause());
             if (cause.isPresent() && cause.get() instanceof EOFException) {
-                throw new ArgoLocalApiCommunicationException(
-                        "Device did not respond on its socket (EOF). Check that the device is correctly communicating with Argo servers (or OpenHab stub server)");
+                throw new ArgoApiCommunicationException(
+                        "Device did not respond on its socket (EOF). Check that the device is correctly communicating with Argo servers (or openHAB stub server)",
+                        "thing-status.cause.argoclima.device-eof", i18nProvider);
             }
-            throw new ArgoLocalApiCommunicationException(
-                    "Device communication error: " + Objects.requireNonNullElse(ex.getCause(), ex).getMessage(),
-                    ex.getCause());
+
+            throw new ArgoApiCommunicationException("Device communication error: {0}",
+                    "thing-status.cause.argoclima.communication-error", i18nProvider, ex.getCause(),
+                    Objects.requireNonNullElse(ex.getCause(), ex).getLocalizedMessage());
+
         } catch (TimeoutException e) {
-            throw new ArgoLocalApiCommunicationException("Timeout: " + e.getMessage(), e);
+            throw new ArgoApiCommunicationException("Timeout: {0}",
+                    "thing-status.cause.argoclima.communication-error.timeout", i18nProvider, e.getLocalizedMessage());
         }
     }
 
@@ -207,7 +216,12 @@ public abstract class ArgoClimaDeviceApiBase implements IArgoClimaDeviceAPI {
     public Map<ArgoDeviceSettingType, State> queryDeviceForUpdatedState() throws ArgoApiCommunicationException {
         var deviceResponse = extractDeviceStatusFromResponse(
                 pollForCurrentStatusFromDeviceSync(getDeviceStateQueryUrl()));
-        this.deviceStatus.fromDeviceString(deviceResponse.getCommandString());
+        try {
+            this.deviceStatus.fromDeviceString(deviceResponse.getCommandString());
+        } catch (ArgoApiProtocolViolationException e) {
+            throw new ArgoApiCommunicationException("Unrecognized API response",
+                    "thing-status.cause.argoclima.exception.unrecognized-response", i18nProvider, e);
+        }
         this.updateDevicePropertiesFromDeviceResponse(deviceResponse.getProperties(), this.deviceStatus);
         deviceResponse.throwIfStatusIsStale();
         return this.deviceStatus.getCurrentStateMap();
@@ -219,7 +233,7 @@ public abstract class ArgoClimaDeviceApiBase implements IArgoClimaDeviceAPI {
     }
 
     @Override
-    public void sendCommandsToDevice() throws ArgoLocalApiCommunicationException {
+    public void sendCommandsToDevice() throws ArgoApiCommunicationException {
         var deviceResponse = pollForCurrentStatusFromDeviceSync(getDeviceStateUpdateUrl());
 
         notifyCommandsPassedToDevice(); // Just sent directly

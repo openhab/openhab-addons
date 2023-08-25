@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
 import org.openhab.binding.argoclima.internal.exception.ArgoConfigurationException;
 
 /**
@@ -31,10 +32,16 @@ import org.openhab.binding.argoclima.internal.exception.ArgoConfigurationExcepti
  */
 @NonNullByDefault
 public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
-    public static enum ConnectionMode {
+    public enum ConnectionMode {
         LOCAL_CONNECTION,
         REMOTE_API_STUB,
         REMOTE_API_PROXY
+    }
+
+    public enum DeviceSidePasswordDisplayMode {
+        NEVER,
+        MASKED,
+        CLEARTEXT
     }
 
     /**
@@ -43,13 +50,15 @@ public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
      * through {@link org.openhab.core.thing.binding.BaseThingHandler#getConfigAs getConfigAs}
      */
     private String hostname = "";
-    private String localDeviceIP = "";
-    private int localDevicePort = 1001;
     private ConnectionMode connectionMode = ConnectionMode.LOCAL_CONNECTION;
+    private int hvacListenPort = 1001;
+    private String localDeviceIP = "";
     private boolean useLocalConnection = true;
-    private int stubServerPort = -1;
-    private List<String> stubServerListenAddresses = List.of();
-    private boolean showCleartextPasswords = false;
+    private int stubServerPort = 8239; // Note the original Argo server listens on '80', but picking a non privileged
+                                       // port (>1024) as a default, since this needs remapping on firewall, and openHAB
+                                       // is typically listening on 80 or 8080
+    private List<String> stubServerListenAddresses = List.of("0.0.0.0");
+    private DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties = DeviceSidePasswordDisplayMode.NEVER;
     private boolean matchAnyIncomingDeviceIp = false;
 
     /**
@@ -62,7 +71,8 @@ public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
         try {
             return Objects.requireNonNull(InetAddress.getByName(hostname));
         } catch (UnknownHostException e) {
-            throw new ArgoConfigurationException("Invalid hostname configuration", hostname, e);
+            throw ArgoConfigurationException.forInvalidParamValue(ArgoClimaBindingConstants.PARAMETER_HOSTNAME,
+                    hostname, i18nProvider, e);
         }
     }
 
@@ -86,7 +96,8 @@ public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
                                                                               // check spares us one compiler warning
                                                                               // (yay! ;))
         } catch (UnknownHostException e) {
-            throw new ArgoConfigurationException("Invalid localDeviceIP configuration", this.localDeviceIP, e);
+            throw ArgoConfigurationException.forInvalidParamValue(ArgoClimaBindingConstants.PARAMETER_LOCAL_DEVICE_IP,
+                    localDeviceIP, i18nProvider, e);
         }
     }
 
@@ -95,8 +106,8 @@ public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
      *
      * @return device's local port
      */
-    public int getLocalDevicePort() {
-        return this.localDevicePort;
+    public int getHvacListenPort() {
+        return this.hvacListenPort;
     }
 
     /**
@@ -130,8 +141,8 @@ public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
             try {
                 addresses.add(Objects.requireNonNull(InetAddress.getByName(t)));
             } catch (UnknownHostException e) {
-                throw new ArgoConfigurationException(
-                        "Invalid Stub server listen address configuration: " + e.getMessage(), t, e);
+                throw ArgoConfigurationException.forInvalidParamValue(
+                        ArgoClimaBindingConstants.PARAMETER_STUB_SERVER_LISTEN_ADDRESSES, t, i18nProvider, e);
             }
         }
         return addresses;
@@ -146,12 +157,13 @@ public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
     }
 
     /**
-     * Returns information whether the passwords are to be shown in the clear or replaced with ***
+     * Returns information whether the device-side incoming passwords are to be shown as properties (and if so: in the
+     * clear or replaced with ***)
      *
      * @return Configured value
      */
-    public boolean getShowCleartextPasswords() {
-        return this.showCleartextPasswords;
+    public DeviceSidePasswordDisplayMode getIncludeDeviceSidePasswordsInProperties() {
+        return this.includeDeviceSidePasswordsInProperties;
     }
 
     /**
@@ -167,35 +179,39 @@ public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
     @Override
     protected String getExtraFieldDescription() {
         return String.format(
-                "hostname=%s, localDeviceIP=%s, localDevicePort=%d, connectionMode=%s, useLocalConnection=%s, stubServerPort=%d, stubServerListenAddresses=%s, showCleartextPasswords=%s, matchAnyIncomingDeviceIp=%s",
-                getOrDefault(this::getHostname), getOrDefault(this::getLocalDeviceIP), localDevicePort, connectionMode,
+                "hostname=%s, localDeviceIP=%s, hvacListenPort=%d, connectionMode=%s, useLocalConnection=%s, stubServerPort=%d, stubServerListenAddresses=%s, includeDeviceSidePasswordsInProperties=%s, matchAnyIncomingDeviceIp=%s",
+                getOrDefault(this::getHostname), getOrDefault(this::getLocalDeviceIP), hvacListenPort, connectionMode,
                 useLocalConnection, stubServerPort, getOrDefault(this::getStubServerListenAddresses),
-                showCleartextPasswords, matchAnyIncomingDeviceIp);
+                includeDeviceSidePasswordsInProperties, matchAnyIncomingDeviceIp);
     }
 
     @Override
     protected void validateInternal() throws ArgoConfigurationException {
         if (hostname.isEmpty()) {
-            throw new ArgoConfigurationException(
-                    "Hostname is empty. Must be set to Argo Air Conditioner's local address");
+            throw ArgoConfigurationException.forEmptyRequiredParam(ArgoClimaBindingConstants.PARAMETER_HOSTNAME,
+                    i18nProvider);
         }
 
         if (!useLocalConnection && connectionMode == ConnectionMode.LOCAL_CONNECTION) {
-            throw new ArgoConfigurationException(
-                    "Cannot set Use Local Connection to OFF, when connection mode is LOCAL_CONNECTION");
+            throw ArgoConfigurationException.forConflictingParams(
+                    ArgoClimaBindingConstants.PARAMETER_USE_LOCAL_CONNECTION, "OFF",
+                    ArgoClimaBindingConstants.PARAMETER_CONNECTION_MODE, ConnectionMode.LOCAL_CONNECTION, i18nProvider);
         }
 
         if (getRefreshInterval() == 0 && connectionMode == ConnectionMode.LOCAL_CONNECTION) {
-            throw new ArgoConfigurationException(
-                    "Cannot set refresh interval to 0, when connection mode is LOCAL_CONNECTION");
+            throw ArgoConfigurationException.forConflictingParams(ArgoClimaBindingConstants.PARAMETER_REFRESH_INTERNAL,
+                    getRefreshInterval(), ArgoClimaBindingConstants.PARAMETER_CONNECTION_MODE,
+                    ConnectionMode.LOCAL_CONNECTION, i18nProvider);
         }
 
-        if (localDevicePort < 0 || localDevicePort >= 65536) {
-            throw new ArgoConfigurationException("Local Device Port must be in range [0..65536]");
+        if (hvacListenPort < 0 || hvacListenPort > 65535) {
+            throw ArgoConfigurationException.forParamOutOfRange(ArgoClimaBindingConstants.PARAMETER_HVAC_LISTEN_PORT,
+                    hvacListenPort, i18nProvider, 0, 65535);
         }
 
-        if (stubServerPort < 0 || stubServerPort >= 65536) {
-            throw new ArgoConfigurationException("Stub server port must be in range [0..65536]");
+        if (stubServerPort < 0 || stubServerPort > 65535) {
+            throw ArgoConfigurationException.forParamOutOfRange(ArgoClimaBindingConstants.PARAMETER_STUB_SERVER_PORT,
+                    stubServerPort, i18nProvider, 0, 65535);
         }
 
         // want the side-effect of these calls!

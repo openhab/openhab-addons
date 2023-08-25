@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Time element (accepting values in HH:MM) - eg. for schedule timers on/off
  *
- * @see {@link CurrentTimeParam}, {@link DelayMinutesParam}
+ * @see CurrentTimeParam
+ * @see DelayMinutesParam
  * @implNote These other "time" params could technically be sharing common codebase, though for simplicity sake it was
  *           easier to implement them as unrelated (possible future refactor oppty)
  *
@@ -45,7 +46,7 @@ public class TimeParam extends ArgoApiElementBase {
     /**
      * Kind of schedule parameter (on or off)
      */
-    public static enum TimeParamType {
+    public enum TimeParamType {
         ON,
         OFF
     }
@@ -57,7 +58,7 @@ public class TimeParam extends ArgoApiElementBase {
     private Optional<Integer> currentValue = Optional.empty();
 
     /**
-     * C-tor (allows full range of values: 0:00 <> 25:59)
+     * C-tor (allows full range of values: {@code 0:00 <> 25:59})
      *
      * @implNote Even though the Argo HVAC supports 3 schedule timers, when sent to a device, there's only one
      *           on/off/weekday option, hence value of this setting changes indirectly (when changing Schedule timer
@@ -220,17 +221,18 @@ public class TimeParam extends ArgoApiElementBase {
     protected HandleCommandResult handleCommandInternalEx(Command command) {
         int newRawValue;
 
-        if (command instanceof Number) {
-            newRawValue = ((Number) command).intValue(); // Raw value, not unit-aware
+        if (command instanceof Number numberCommand) {
+            newRawValue = numberCommand.intValue(); // Raw value, not unit-aware
 
-            if (command instanceof QuantityType<?>) { // let's try to get it with unit (opportunistically)
-                var inMinutes = ((QuantityType<?>) command).toUnit(Units.MINUTE);
+            if (command instanceof QuantityType<?> quantityTypeCommand) { // let's try to get it with unit
+                                                                          // (opportunistically)
+                var inMinutes = quantityTypeCommand.toUnit(Units.MINUTE);
                 if (null != inMinutes) {
                     newRawValue = inMinutes.intValue();
                 }
             }
-        } else if (command instanceof StringType) {
-            var asTime = LocalTime.parse(((StringType) command).toFullString());
+        } else if (command instanceof StringType stringTypeCommand) {
+            var asTime = LocalTime.parse(stringTypeCommand.toFullString());
             newRawValue = fromHhMm(asTime.getHour(), asTime.getMinute());
         } else {
             return HandleCommandResult.rejected(); // unsupported type of command

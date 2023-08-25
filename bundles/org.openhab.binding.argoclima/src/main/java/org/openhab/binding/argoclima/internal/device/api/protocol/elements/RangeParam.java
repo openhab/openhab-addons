@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,16 +106,16 @@ public class RangeParam extends ArgoApiElementBase {
 
     @Override
     protected HandleCommandResult handleCommandInternalEx(Command command) {
-        if (!(command instanceof Number)) {
-            return HandleCommandResult.rejected();
+        if (command instanceof Number numberCommand) {
+            final int newValue = normalizeValue(numberCommand.intValue());
+
+            if (currentValue.map(cv -> (cv.intValue() == newValue)).orElse(false)) {
+                return HandleCommandResult.rejected(); // Current value is the same as requested - nothing to do
+            }
+            this.currentValue = Optional.of(newValue);
+            return HandleCommandResult.accepted(Integer.toString(newValue), valueToState(this.currentValue));
         }
 
-        final int newValue = normalizeValue(((Number) command).intValue());
-
-        if (currentValue.map(cv -> (cv.intValue() == newValue)).orElse(false)) {
-            return HandleCommandResult.rejected(); // Current value is the same as requested - nothing to do
-        }
-        this.currentValue = Optional.of(newValue);
-        return HandleCommandResult.accepted(Integer.toString(newValue), valueToState(this.currentValue));
+        return HandleCommandResult.rejected();
     }
 }

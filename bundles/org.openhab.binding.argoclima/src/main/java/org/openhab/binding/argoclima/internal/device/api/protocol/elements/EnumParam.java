@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class EnumParam<E extends Enum<E> & IArgoApiEnum> extends ArgoApiElementB
     /**
      * Gets the raw enum value from {@link Type} ({@link Command} or {@link State}) which are themselves strings
      *
-     * @see {@link #valueToState(Optional)} for a reverse conversion
+     * @see #valueToState(Optional) for a reverse conversion
      *
      * @param <E> The type of underlying enum - implementing {@link IArgoApiEnum}
      * @param value Value to convert
@@ -65,8 +65,8 @@ public class EnumParam<E extends Enum<E> & IArgoApiEnum> extends ArgoApiElementB
      * @return Converted value (or empty, on conversion failure)
      */
     public static <E extends Enum<E> & IArgoApiEnum> Optional<E> fromType(Type value, Class<E> cls) {
-        if (value instanceof StringType) {
-            String newValue = ((StringType) value).toFullString();
+        if (value instanceof StringType stringTypeCommand) {
+            String newValue = stringTypeCommand.toFullString();
             try {
                 return Optional.of(Enum.valueOf(cls, newValue));
             } catch (IllegalArgumentException ex) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,12 +75,12 @@ public class OnOffParam extends ArgoApiElementBase {
 
     @Override
     protected HandleCommandResult handleCommandInternalEx(Command command) {
-        if (command instanceof OnOffType) {
-            if (((OnOffType) command).equals(OnOffType.ON)) {
+        if (command instanceof OnOffType onOffTypeCommand) {
+            if (OnOffType.ON.equals(onOffTypeCommand)) {
                 var targetValue = Optional.of(true);
                 currentValue = targetValue;
                 return HandleCommandResult.accepted(VALUE_ON, valueToState(targetValue));
-            } else if (((OnOffType) command).equals(OnOffType.OFF)) {
+            } else if (OnOffType.OFF.equals(onOffTypeCommand)) {
                 var targetValue = Optional.of(false);
                 currentValue = targetValue;
                 return HandleCommandResult.accepted(VALUE_OFF, valueToState(targetValue));

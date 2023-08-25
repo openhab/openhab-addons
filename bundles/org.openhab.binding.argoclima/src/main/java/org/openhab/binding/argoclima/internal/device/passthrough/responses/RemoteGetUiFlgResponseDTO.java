@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public class RemoteGetUiFlgResponseDTO {
         /** Unknown purpose, always one */
         public int flag2alwaysOne = 1;
 
-        /** Request to update WiFi firmware of the device */
+        /** Request to update Wi-Fi firmware of the device */
         public int flag3updateWifiFW = 0;
 
         /** Request to update Unit firmware of the device */

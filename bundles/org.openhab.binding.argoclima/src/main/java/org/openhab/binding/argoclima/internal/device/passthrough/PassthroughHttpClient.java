@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.HttpCookieStore;
+import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +127,9 @@ public class PassthroughHttpClient {
         var request = this.rawHttpClient.newRequest(this.upstreamTargetHost, this.upstreamTargetPort)
                 .method(downstreamHttpRequest.getMethod()).path(downstreamHttpRequest.getOriginalURI())
                 .version(downstreamHttpRequest.getHttpVersion())
-                .content(new StringContentProvider(downstreamHttpRequestBody));
+                .content(new StringContentProvider(downstreamHttpRequestBody))
+                .timeout(ArgoClimaBindingConstants.UPSTREAM_PROXY_HTTP_REQUEST_TIMEOUT.toMillis(),
+                        TimeUnit.MILLISECONDS);
 
         // re-add headers from downstream request to this one (except explicitly-ignored list)
         for (var headerName : Collections.list(downstreamHttpRequest.getHeaderNames())) {
@@ -134,7 +138,7 @@ public class PassthroughHttpClient {
             }
         }
 
-        LOGGER.debug("Pass-through: DEVICE --> UPSTREAM_API: [{} {}], body=[{}]", request.getMethod(), request.getURI(),
+        LOGGER.trace("Pass-through: DEVICE --> UPSTREAM_API: [{} {}], body=[{}]", request.getMethod(), request.getURI(),
                 downstreamHttpRequestBody);
 
         return Objects.requireNonNull(request.send());
@@ -171,7 +175,7 @@ public class PassthroughHttpClient {
         String responseBodyToReturn = overrideBodyToReturn.orElse(response.getContentAsString());
         targetResponse.getWriter().write(responseBodyToReturn);
         targetResponse.setStatus(response.getStatus());
-        LOGGER.debug("  [response]: DEVICE <-- UPSTREAM_API: [{} {} {} - {} bytes], body=[{}]", response.getVersion(),
+        LOGGER.trace("  [response]: DEVICE <-- UPSTREAM_API: [{} {} {} - {} bytes], body=[{}]", response.getVersion(),
                 response.getStatus(), response.getReason(), response.getContent().length, responseBodyToReturn);
     }
 }

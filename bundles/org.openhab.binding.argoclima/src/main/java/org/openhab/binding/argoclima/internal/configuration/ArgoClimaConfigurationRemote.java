@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.argoclima.internal.configuration;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
 import org.openhab.binding.argoclima.internal.exception.ArgoConfigurationException;
+import org.openhab.binding.argoclima.internal.utils.PasswordUtils;
 
 /**
  * The {@link ArgoClimaConfigurationRemote} class contains fields mapping thing configuration parameters
@@ -54,14 +53,11 @@ public class ArgoClimaConfigurationRemote extends ArgoClimaConfigurationBase {
 
     /**
      * Get the masked password used in authenticating to Argo server (for logging)
-     *
-     * @implNote Password length is preserved (which may be considered a security weakness, but is useful for
-     *           troubleshooting
-     *           and given state of Argo API's security... likely is an overkill already :)
+     * 
      * @return {@code ***}-masked string instead of the same length as configured password
      */
-    public String getPasswordMasked() {
-        return this.password.replaceAll(".", "*");
+    private final String getPasswordMasked() {
+        return PasswordUtils.maskPassword(password);
     }
 
     /**
@@ -70,15 +66,15 @@ public class ArgoClimaConfigurationRemote extends ArgoClimaConfigurationBase {
      * @return MD5 hash of password
      * @throws ArgoConfigurationException In case MD5 is not available in the security provider
      */
-    public String getPasswordMD5Hash() throws ArgoConfigurationException {
-        MessageDigest md;
+    public String getPasswordHashed() throws ArgoConfigurationException {
         try {
-            md = MessageDigest.getInstance("MD5");
-            md.update(password.getBytes());
-            byte[] digest = md.digest();
-            return DatatypeConverter.printHexBinary(digest).toLowerCase();
+            return PasswordUtils.md5HashPassword(password);
         } catch (NoSuchAlgorithmException e) {
-            throw new ArgoConfigurationException("Unable to calculate MD5 hash of password", getPasswordMasked(), e);
+            throw ArgoConfigurationException.forInvalidParamValue(ArgoClimaBindingConstants.PARAMETER_PASSWORD,
+                    PasswordUtils.maskPassword(password), i18nProvider, e); // User-provided value is likely NOT at
+                                                                            // fault, but using this exception for
+                                                                            // generic error messaging (cause will be
+                                                                            // displayed anyway)
         }
     }
 
@@ -90,10 +86,12 @@ public class ArgoClimaConfigurationRemote extends ArgoClimaConfigurationBase {
     @Override
     protected void validateInternal() throws ArgoConfigurationException {
         if (username.isBlank()) {
-            throw new ArgoConfigurationException("Username is empty. Must be set to Argo login");
+            throw ArgoConfigurationException.forEmptyRequiredParam(ArgoClimaBindingConstants.PARAMETER_USERNAME,
+                    i18nProvider);
         }
         if (password.isBlank()) {
-            throw new ArgoConfigurationException("Password is empty. Must be set to Argo password");
+            throw ArgoConfigurationException.forEmptyRequiredParam(ArgoClimaBindingConstants.PARAMETER_PASSWORD,
+                    i18nProvider);
         }
     }
 }

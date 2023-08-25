@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import org.openhab.binding.argoclima.internal.device.api.protocol.ArgoApiDataEle
 import org.openhab.binding.argoclima.internal.device.api.protocol.elements.IArgoCommandableElement.IArgoElement;
 import org.openhab.binding.argoclima.internal.device.api.types.ArgoDeviceSettingType;
 import org.openhab.binding.argoclima.internal.exception.ArgoApiCommunicationException;
-import org.openhab.binding.argoclima.internal.exception.ArgoLocalApiCommunicationException;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
@@ -41,7 +40,7 @@ public interface IArgoClimaDeviceAPI {
      * For local connection the checking is live (and synchronous!).
      * For remote connection, the status is updated based off of last device's communication
      *
-     * @return A 2-tuple with status: {@code <REACHABLE, ERROR (if unreachable)>}
+     * @return A 2-tuple with status: {@code <REACHABLE, LOCALIZED_ERROR (if unreachable)>}
      */
     ReachabilityStatus isReachable();
 
@@ -51,7 +50,7 @@ public interface IArgoClimaDeviceAPI {
      * This ALWAYS triggers new device communication
      *
      * @return A map of {@code Setting->Value} read from device
-     * @throws ArgoLocalApiCommunicationException thrown when unable to communicate with the Argo device
+     * @throws ArgoApiCommunicationException thrown when unable to communicate with the Argo device
      */
     Map<ArgoDeviceSettingType, State> queryDeviceForUpdatedState() throws ArgoApiCommunicationException;
 
@@ -77,9 +76,9 @@ public interface IArgoClimaDeviceAPI {
     /**
      * Directly send any pending commands to the device (upon synchronizing with freshest device-side state)
      *
-     * @throws ArgoLocalApiCommunicationException thrown when unable to communicate with the Argo device
+     * @throws ArgoApiCommunicationException thrown when unable to communicate with the Argo device
      */
-    void sendCommandsToDevice() throws ArgoLocalApiCommunicationException;
+    void sendCommandsToDevice() throws ArgoApiCommunicationException;
 
     /**
      * Notify that the pending commands have been passed to the device and are now pending confirmation from its end

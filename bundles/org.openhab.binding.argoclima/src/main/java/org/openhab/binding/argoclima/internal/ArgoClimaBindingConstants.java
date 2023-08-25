@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,9 +37,9 @@ public class ArgoClimaBindingConstants {
     /////////////
     // Thing configuration parameters
     /////////////
-    public static final String PARAMETER_HOSTNAME = "hostname"; // not used
+    public static final String PARAMETER_HOSTNAME = "hostname";
     public static final String PARAMETER_LOCAL_DEVICE_IP = "localDeviceIP";
-    public static final String PARAMETER_LOCAL_DEVICE_PORT = "localDevicePort"; // not used
+    public static final String PARAMETER_HVAC_LISTEN_PORT = "hvacListenPort";
     public static final String PARAMETER_DEVICE_CPU_ID = "deviceCpuId";
     public static final String PARAMETER_CONNECTION_MODE = "connectionMode"; // LOCAL_CONNECTION | REMOTE_API_STUB |
                                                                              // REMOTE_API_PROXY
@@ -49,7 +49,7 @@ public class ArgoClimaBindingConstants {
     public static final String PARAMETER_STUB_SERVER_LISTEN_ADDRESSES = "stubServerListenAddresses";
     public static final String PARAMETER_OEM_SERVER_PORT = "oemServerPort";
     public static final String PARAMETER_OEM_SERVER_ADDRESS = "oemServerAddress";
-    public static final String PARAMETER_SHOW_CLEARTEXT_PASSWORDS = "showCleartextPasswords";
+    public static final String PARAMETER_INCLUDE_DEVICE_SIDE_PASSWORDS_IN_PROPERTIES = "includeDeviceSidePasswordsInProperties";
     public static final String PARAMETER_MATCH_ANY_INCOMING_DEVICE_IP = "matchAnyIncomingDeviceIp";
 
     public static final String PARAMETER_USERNAME = "username";
@@ -80,26 +80,26 @@ public class ArgoClimaBindingConstants {
     /////////////
     // List of all Channel IDs
     /////////////
-    public static final String CHANNEL_POWER = "acControls#power";
-    public static final String CHANNEL_MODE = "acControls#mode";
-    public static final String CHANNEL_SET_TEMPERATURE = "acControls#setTemperature";
-    public static final String CHANNEL_CURRENT_TEMPERATURE = "acControls#currentTemperature";
-    public static final String CHANNEL_FAN_SPEED = "acControls#fanSpeed";
-    public static final String CHANNEL_ECO_MODE = "modes#ecoMode";
-    public static final String CHANNEL_TURBO_MODE = "modes#turboMode";
-    public static final String CHANNEL_NIGHT_MODE = "modes#nightMode";
-    public static final String CHANNEL_ACTIVE_TIMER = "timers#activeTimer";
-    public static final String CHANNEL_DELAY_TIMER = "timers#delayTimer";
+    public static final String CHANNEL_POWER = "ac-controls#power";
+    public static final String CHANNEL_MODE = "ac-controls#mode";
+    public static final String CHANNEL_SET_TEMPERATURE = "ac-controls#set-temperature";
+    public static final String CHANNEL_CURRENT_TEMPERATURE = "ac-controls#current-temperature";
+    public static final String CHANNEL_FAN_SPEED = "ac-controls#fan-speed";
+    public static final String CHANNEL_ECO_MODE = "modes#eco-mode";
+    public static final String CHANNEL_TURBO_MODE = "modes#turbo-mode";
+    public static final String CHANNEL_NIGHT_MODE = "modes#night-mode";
+    public static final String CHANNEL_ACTIVE_TIMER = "timers#active-timer";
+    public static final String CHANNEL_DELAY_TIMER = "timers#delay-timer";
     // Note: schedule timers day of week/time setting not currently supported as channels (YAGNI), and moved to config
-    public static final String CHANNEL_MODE_EX = "unsupported#modeEx";
-    public static final String CHANNEL_SWING_MODE = "unsupported#swingMode";
-    public static final String CHANNEL_FILTER_MODE = "unsupported#filterMode";
+    public static final String CHANNEL_MODE_EX = "unsupported#mode-ex";
+    public static final String CHANNEL_SWING_MODE = "unsupported#swing-mode";
+    public static final String CHANNEL_FILTER_MODE = "unsupported#filter-mode";
 
-    public static final String CHANNEL_I_FEEL_ENABLED = "settings#iFeelEnabled";
-    public static final String CHANNEL_DEVICE_LIGHTS = "settings#deviceLights";
+    public static final String CHANNEL_I_FEEL_ENABLED = "settings#ifeel-enabled";
+    public static final String CHANNEL_DEVICE_LIGHTS = "settings#device-lights";
 
-    public static final String CHANNEL_TEMPERATURE_DISPLAY_UNIT = "settings#temperatureDisplayUnit";
-    public static final String CHANNEL_ECO_POWER_LIMIT = "settings#ecoPowerLimit";
+    public static final String CHANNEL_TEMPERATURE_DISPLAY_UNIT = "settings#temperature-display-unit";
+    public static final String CHANNEL_ECO_POWER_LIMIT = "settings#eco-power-limit";
 
     /////////////
     // Binding's hard-coded configuration (not parameterized)
@@ -124,16 +124,6 @@ public class ArgoClimaBindingConstants {
     public static final Duration SEND_COMMAND_DUTY_CYCLE = Duration.ofSeconds(1);
 
     /**
-     * Whether the binding shall wait for the device confirming commands have been received (by flipping to the desired
-     * state) or work in a fire&forget mode and stop tracking upon first send.
-     * <p>
-     * This applies only to confirmable commands (read-write) and is a default behavior of Argo's own web implementation
-     *
-     * @implNote This is a debug-only switch (makes little to no sense to disable it in real-world usage)
-     */
-    public static final boolean AWAIT_DEVICE_CONFIRMATIONS_AFTER_COMMANDS = true;
-
-    /**
      * The frequency to poll the device with, waiting for the command confirmation
      */
     public static final Duration POLL_FREQUENCY_AFTER_COMMAND_SENT_LOCAL = Duration.ofSeconds(3);
@@ -148,8 +138,8 @@ public class ArgoClimaBindingConstants {
      * Aka. the optimistic time when the device "should acknowledge. Should be greater than
      * {@link #POLL_FREQUENCY_AFTER_COMMAND_SENT_LOCAL}
      *
-     * @see {@link #SEND_COMMAND_MAX_WAIT_TIME_LOCAL_DIRECT}
-     * @see {@link #SEND_COMMAND_MAX_WAIT_TIME_LOCAL_INDIRECT}
+     * @see #SEND_COMMAND_MAX_WAIT_TIME_LOCAL_DIRECT
+     * @see #SEND_COMMAND_MAX_WAIT_TIME_LOCAL_INDIRECT
      */
     public static final Duration SEND_COMMAND_RETRY_FREQUENCY_LOCAL = Duration.ofSeconds(10);
 
@@ -158,7 +148,7 @@ public class ArgoClimaBindingConstants {
      * Aka. the optimistic time when the server "should acknowledge. Should be greater than
      * {@link #POLL_FREQUENCY_AFTER_COMMAND_SENT_REMOTE}
      *
-     * @see {@link #SEND_COMMAND_MAX_WAIT_TIME_REMOTE}
+     * @see #SEND_COMMAND_MAX_WAIT_TIME_REMOTE
      */
     public static final Duration SEND_COMMAND_RETRY_FREQUENCY_REMOTE = Duration.ofSeconds(20);
 
@@ -166,8 +156,9 @@ public class ArgoClimaBindingConstants {
      * Max time to wait for a pending command to be confirmed by the device in a local-direct mode (when we are issuing
      * communications to a device in local LAN).
      * <p>
-     * During this time, the commands may get {@link SEND_COMMAND_RETRY_FREQUENCY retried} and the device status may be
-     * {@link POLL_FREQUENCY_AFTER_COMMAND_SENT re-fetched}
+     * During this time, the commands may get {@link #SEND_COMMAND_RETRY_FREQUENCY_LOCAL retried} and the device status
+     * may be
+     * {@link #POLL_FREQUENCY_AFTER_COMMAND_SENT_LOCAL re-fetched}
      */
     public static final Duration SEND_COMMAND_MAX_WAIT_TIME_LOCAL_DIRECT = Duration.ofSeconds(20); // 60-remote
 
@@ -200,4 +191,22 @@ public class ArgoClimaBindingConstants {
      */
     public static final Duration PENDING_COMMAND_EXPIRE_TIME = SEND_COMMAND_MAX_WAIT_TIME_LOCAL_INDIRECT
             .plus(Duration.ofSeconds(1));
+
+    /**
+     * Timeout for getting the HTTP response from Argo servers in pass-through(proxy) mode
+     */
+    public static final Duration UPSTREAM_PROXY_HTTP_REQUEST_TIMEOUT = Duration.ofSeconds(30);
+
+    /////////////
+    // R&D-only switches
+    /////////////
+    /**
+     * Whether the binding shall wait for the device confirming commands have been received (by flipping to the desired
+     * state) or work in a fire and forget mode and stop tracking upon first send.
+     * <p>
+     * This applies only to confirmable commands (read-write) and is a default behavior of Argo's own web implementation
+     *
+     * @implNote This is a debug-only switch (makes little to no sense to disable it in real-world usage)
+     */
+    public static final boolean AWAIT_DEVICE_CONFIRMATIONS_AFTER_COMMANDS = true;
 }
