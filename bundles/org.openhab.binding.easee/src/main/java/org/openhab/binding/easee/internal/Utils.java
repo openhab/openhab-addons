@@ -14,6 +14,7 @@ package org.openhab.binding.easee.internal;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -74,9 +75,13 @@ public final class Utils {
      * @return
      */
     public static String formatDate(Instant date) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                .withZone(ZoneId.systemDefault());
-        return formatter.format(date);
+        try {
+            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    .withZone(ZoneId.systemDefault());
+            return formatter.format(date);
+        } catch (DateTimeException ex) {
+            return date.toString();
+        }
     }
 
     /**
