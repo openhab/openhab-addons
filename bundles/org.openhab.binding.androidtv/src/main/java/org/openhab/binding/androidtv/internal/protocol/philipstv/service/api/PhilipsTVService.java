@@ -13,6 +13,7 @@
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service.api;
 
 import java.net.NoRouteToHostException;
+import java.util.Optional;
 
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
@@ -37,14 +38,24 @@ public interface PhilipsTVService {
     void handleCommand(String channel, Command command);
 
     default boolean isTvOfflineException(Exception exception) {
-        if ((exception instanceof NoRouteToHostException) && exception.getMessage().contains("Host unreachable")) {
-            return true;
+        String message = Optional.ofNullable(exception.getMessage()).orElse("");
+        if (!message.isEmpty()) {
+            if ((exception instanceof NoRouteToHostException) && message.contains("Host unreachable")) {
+                return true;
+            } else {
+                return (exception instanceof ConnectTimeoutException) && message.contains("timed out");
+            }
         } else {
-            return (exception instanceof ConnectTimeoutException) && exception.getMessage().contains("timed out");
+            return false;
         }
     }
 
     default boolean isTvNotListeningException(Exception exception) {
-        return (exception instanceof HttpHostConnectException) && exception.getMessage().contains("Connection refused");
+        String message = Optional.ofNullable(exception.getMessage()).orElse("");
+        if (!message.isEmpty()) {
+            return (exception instanceof HttpHostConnectException) && message.contains("Connection refused");
+        } else {
+            return false;
+        }
     }
 }

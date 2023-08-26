@@ -80,8 +80,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GoogleTVConnectionManager {
-    private static final int DEFAULT_RECONNECT_SECONDS = 60;
-    private static final int DEFAULT_HEARTBEAT_SECONDS = 5;
     private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
     private static final String DEFAULT_KEYSTORE_PASSWORD = "secret";
     private static final String DEFAULT_MODE = "NORMAL";

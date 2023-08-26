@@ -21,6 +21,7 @@ import java.net.NoRouteToHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 import javax.net.ssl.SSLContext;
 
@@ -76,9 +77,11 @@ public final class ConnectionManagerUtil {
             if (exception instanceof NoRouteToHostException) {
                 return false;
             }
-            if ((exception instanceof HttpHostConnectException)
-                    && exception.getMessage().contains("Connection refused")) {
-                return false;
+            String message = Optional.ofNullable(exception.getMessage()).orElse("");
+            if (!message.isEmpty()) {
+                if ((exception instanceof HttpHostConnectException) && message.contains("Connection refused")) {
+                    return false;
+                }
             }
             return executionCount < MAX_REQUEST_RETRIES;
         };

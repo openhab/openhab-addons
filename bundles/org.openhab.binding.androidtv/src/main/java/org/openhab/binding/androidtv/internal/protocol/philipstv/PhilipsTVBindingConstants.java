@@ -54,6 +54,8 @@ public class PhilipsTVBindingConstants {
 
     public static final String STANDBY = "Standby";
 
+    public static final String STANDBY_MSG = "online.standby";
+
     public static final String EMPTY = "";
 
     // REST Paths
