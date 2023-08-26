@@ -15,6 +15,7 @@ package org.openhab.binding.electroluxair.internal.api;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,6 +56,7 @@ public class ElectroluxDeltaAPI {
 
     private static final String JSON_CONTENT_TYPE = "application/json";
     private static final int MAX_RETRIES = 3;
+    private static final int REQUEST_TIMEOUT_MS = 10000;
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxDeltaAPI.class);
     private final Gson gson;
@@ -177,7 +179,7 @@ public class ElectroluxDeltaAPI {
 
     private Request createRequest(String uri, HttpMethod httpMethod) {
         Request request = httpClient.newRequest(uri).method(httpMethod);
-
+        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
         request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
         request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
 
