@@ -321,7 +321,6 @@ public class AndroidTVHandler extends BaseThingHandler {
                         return;
                     }
                 }
-                return;
             } else if (CHANNEL_APP.equals(channelUID.getId()) || CHANNEL_APPNAME.equals(channelUID.getId())
                     || CHANNEL_TV_CHANNEL.equals(channelUID.getId())
                     || CHANNEL_SEARCH_CONTENT.equals(channelUID.getId())
