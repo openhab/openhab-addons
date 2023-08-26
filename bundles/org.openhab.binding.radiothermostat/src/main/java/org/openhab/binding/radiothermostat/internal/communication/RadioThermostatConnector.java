@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class RadioThermostatConnector {
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatConnector.class);
 
+    private static final int REQUEST_TIMEOUT_MS = 10000;
     private static final String URL = "http://%s/%s";
 
     private final HttpClient httpClient;
@@ -124,7 +125,8 @@ public class RadioThermostatConnector {
         String postJson = cmdJson != null ? cmdJson : "{\"" + cmdKey + "\":" + cmdVal + "}";
 
         try {
-            Request request = httpClient.POST(buildRequestURL(resource));
+            Request request = httpClient.POST(buildRequestURL(resource)).timeout(REQUEST_TIMEOUT_MS,
+                    TimeUnit.MICROSECONDS);
             request.header(HttpHeader.ACCEPT, "text/plain");
             request.header(HttpHeader.CONTENT_TYPE, "text/plain");
             request.content(new StringContentProvider(postJson), "application/json");
