@@ -25,6 +25,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class A5_10_10 extends A5_10 {
 
+    // max 40 degree divided on a range of 0...250
     protected final double tempFactor = 40.0 / 250.0;
 
     public A5_10_10(ERP1Message packet) {

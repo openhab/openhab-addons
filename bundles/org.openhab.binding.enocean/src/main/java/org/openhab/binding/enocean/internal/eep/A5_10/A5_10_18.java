@@ -29,8 +29,8 @@ public class A5_10_18 extends A5_10 {
     }
 
     @Override
-    protected int getMaxUnscaledValue() {
-        return 250;
+    protected double getMaxUnscaledValue() {
+        return 250.0;
     }
 
     @Override

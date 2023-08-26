@@ -25,6 +25,9 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class A5_10_15 extends A5_10 {
 
+    private final double maxScaledTemp = 41.2;
+    private final double minScaledTemp = -10.0;
+
     public A5_10_15(ERP1Message packet) {
         super(packet);
     }
@@ -35,9 +38,14 @@ public class A5_10_15 extends A5_10 {
     }
 
     @Override
+    protected double getMaxUnscaledValue() {
+        return 1023.0;
+    }
+
+    @Override
     protected State getTemperature() {
         int value = ((getDB2Value() & 0b11) << 8) + getDB1Value();
-        double temp = 41.2 - (value * (41.2 + 10.0) / 1023.0);
+        double temp = maxScaledTemp - (value * (maxScaledTemp - minScaledTemp) / getMaxUnscaledValue());
         return new QuantityType<>(temp, SIUnits.CELSIUS);
     }
 }

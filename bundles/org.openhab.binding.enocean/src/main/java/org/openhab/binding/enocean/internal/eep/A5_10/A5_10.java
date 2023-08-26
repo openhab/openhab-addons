@@ -46,8 +46,8 @@ public abstract class A5_10 extends _4BSMessage {
         return getDB2Value();
     }
 
-    protected int getMaxUnscaledValue() {
-        return 255;
+    protected double getMaxUnscaledValue() {
+        return 255.0;
     }
 
     protected double getTempScalingFactor() {
