@@ -506,7 +506,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * Performs a java ping. It is not recommended to use this, as it is not interruptible,
      * and will not work on windows systems reliably and will fall back from ICMP pings to
      * the TCP echo service on port 7 which barely no device or server supports nowadays.
-     * (http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29)
+     * (https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/InetAddress.html#isReachable%28int%29)
      */
     protected void performJavaPing() {
         logger.trace("Perform java ping presence detection for {}", hostname);
