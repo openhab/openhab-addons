@@ -75,6 +75,9 @@ public final class Utils {
      * @return
      */
     public static String formatDate(Instant date) {
+        if (date == OUTDATED_DATE) {
+            return "(expired)";
+        }
         try {
             final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                     .withZone(ZoneId.systemDefault());
