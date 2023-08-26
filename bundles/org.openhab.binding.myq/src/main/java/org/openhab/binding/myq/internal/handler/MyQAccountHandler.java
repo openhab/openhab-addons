@@ -92,6 +92,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
+    private static final int REQUEST_TIMEOUT_MS = 10000;
+
     /*
      * MyQ oAuth relate fields
      */
@@ -418,8 +420,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             needsLogin = false;
         }
 
-        Request request = httpClient.newRequest(url).method(method).agent(userAgent).timeout(10, TimeUnit.SECONDS)
-                .header("Authorization", authTokenHeader(tokenResponse));
+        Request request = httpClient.newRequest(url).method(method).agent(userAgent)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.SECONDS).header("Authorization", authTokenHeader(tokenResponse));
         if (content != null & contentType != null) {
             request = request.content(content, contentType);
         }
@@ -486,6 +488,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             throws InterruptedException, ExecutionException, TimeoutException {
         try {
             Request request = httpClient.newRequest(LOGIN_AUTHORIZE_URL) //
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS) //
                     .param("client_id", CLIENT_ID) //
                     .param("code_challenge", generateCodeChallange(codeVerifier)) //
                     .param("code_challenge_method", "S256") //
@@ -530,6 +533,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         fields.add("ReturnUrl", returnURL);
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST) //
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.SECONDS) //
                 .content(new FormContentProvider(fields)) //
                 .agent(userAgent) //
                 .followRedirects(false);
@@ -556,7 +560,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 location = loc;
                 break;
             }
-            request = httpClient.newRequest(LOGIN_BASE_URL + loc).agent(userAgent).followRedirects(false);
+            request = httpClient.newRequest(LOGIN_BASE_URL + loc).timeout(REQUEST_TIMEOUT_MS, TimeUnit.SECONDS)
+                    .agent(userAgent).followRedirects(false);
             setCookies(request);
             response = request.send();
         }
@@ -588,11 +593,11 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             fields.add("scope", params.get("scope"));
 
             Request request = httpClient.newRequest(LOGIN_TOKEN_URL) //
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS) //
                     .content(new FormContentProvider(fields)) //
                     .method(HttpMethod.POST) //
                     .agent(userAgent).followRedirects(true);
             setCookies(request);
-
             ContentResponse response = request.send();
             if (logger.isTraceEnabled()) {
                 logger.trace("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
