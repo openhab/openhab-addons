@@ -59,7 +59,7 @@ public class IndegoController {
 
     private static final String BASE_URL = "https://api.indego-cloud.iot.bosch-si.com/api/v1/";
     private static final String CONTENT_TYPE_HEADER = "application/json";
-    private static final int REQUEST_TIMEOUT_MS = 10_000;
+    private static final int REQUEST_TIMEOUT_MS = 30_000;
 
     private final Logger logger = LoggerFactory.getLogger(IndegoController.class);
     private final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer()).create();
