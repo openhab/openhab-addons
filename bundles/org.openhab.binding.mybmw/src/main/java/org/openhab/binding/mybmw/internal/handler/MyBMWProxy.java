@@ -304,7 +304,8 @@ public class MyBMWProxy {
              */
             String authValuesUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                     + BimmerConstants.API_OAUTH_CONFIG;
-            Request authValuesRequest = httpClient.newRequest(authValuesUrl);
+            Request authValuesRequest = httpClient.newRequest(authValuesUrl).timeout(HTTP_TIMEOUT_SEC,
+                    TimeUnit.SECONDS);
             authValuesRequest.header(ACP_SUBSCRIPTION_KEY, BimmerConstants.OCP_APIM_KEYS.get(configuration.region));
             authValuesRequest.header(X_USER_AGENT,
                     String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
@@ -343,7 +344,7 @@ public class MyBMWProxy {
              * Step 3) Authorization with username and password
              */
             String loginUrl = aqr.gcdmBaseUrl + BimmerConstants.OAUTH_ENDPOINT;
-            Request loginRequest = httpClient.POST(loginUrl);
+            Request loginRequest = httpClient.POST(loginUrl).timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS);
             loginRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
 
             MultiMap<String> loginParams = new MultiMap<String>(baseParams);
@@ -363,7 +364,8 @@ public class MyBMWProxy {
             /**
              * Step 4) Authorize with code
              */
-            Request authRequest = httpClient.POST(loginUrl).followRedirects(false);
+            Request authRequest = httpClient.POST(loginUrl).followRedirects(false).timeout(HTTP_TIMEOUT_SEC,
+                    TimeUnit.SECONDS);
             MultiMap<String> authParams = new MultiMap<String>(baseParams);
             authParams.put(AUTHORIZATION, authCode);
             authRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
@@ -379,7 +381,7 @@ public class MyBMWProxy {
             /**
              * Step 5) Request token
              */
-            Request codeRequest = httpClient.POST(aqr.tokenEndpoint);
+            Request codeRequest = httpClient.POST(aqr.tokenEndpoint).timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS);
             String basicAuth = "Basic "
                     + Base64.getUrlEncoder().encodeToString((aqr.clientId + ":" + aqr.clientSecret).getBytes());
             codeRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
@@ -443,7 +445,7 @@ public class MyBMWProxy {
              */
             String publicKeyUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
                     + BimmerConstants.CHINA_PUBLIC_KEY;
-            Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl);
+            Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl).timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS);
             oauthQueryRequest.header(HttpHeader.USER_AGENT, BimmerConstants.USER_AGENT);
             oauthQueryRequest.header(X_USER_AGENT,
                     String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
@@ -479,7 +481,7 @@ public class MyBMWProxy {
              */
             String tokenUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
                     + BimmerConstants.CHINA_LOGIN;
-            Request loginRequest = httpClient.POST(tokenUrl);
+            Request loginRequest = httpClient.POST(tokenUrl).timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS);
             loginRequest.header(X_USER_AGENT,
                     String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
             String jsonContent = "{ \"mobile\":\"" + configuration.userName + "\", \"password\":\"" + encodedPassword
