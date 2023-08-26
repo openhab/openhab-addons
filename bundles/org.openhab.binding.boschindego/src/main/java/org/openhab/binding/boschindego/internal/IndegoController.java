@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.boschindego.internal;
 
-import java.net.http.HttpClient;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,9 +21,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -40,9 +41,9 @@ import org.openhab.binding.boschindego.internal.exceptions.IndegoInvalidResponse
 import org.openhab.binding.boschindego.internal.exceptions.IndegoTimeoutException;
 import org.openhab.core.library.types.RawType;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.azul.crs.client.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
