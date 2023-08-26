@@ -797,9 +797,10 @@ public class Clip2Bridge implements Closeable {
      */
     private Resources getResourcesImpl(ResourceReference reference)
             throws HttpUnauthorizedException, ApiException, InterruptedException {
-        // work around for issue #15468
-        if (reference.getType() == ResourceType.ERROR) {
-            LOGGER.debug("Resource '{}' type unknown (issue #15468) => GET aborted", reference.getId());
+        // work around for issue #15468 (and similar)
+        ResourceType resourceType = reference.getType();
+        if (resourceType == ResourceType.ERROR) {
+            LOGGER.warn("Resource '{}' type '{}' unknown => GET aborted", reference.getId(), resourceType);
             return new Resources();
         }
         Stream stream = null;
