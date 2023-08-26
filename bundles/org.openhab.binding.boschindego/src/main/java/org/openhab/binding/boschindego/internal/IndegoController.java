@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,6 +60,7 @@ public class IndegoController {
 
     private static final String BASE_URL = "https://api.indego-cloud.iot.bosch-si.com/api/v1/";
     private static final String CONTENT_TYPE_HEADER = "application/json";
+    private static final int REQUEST_TIMEOUT_MS = 10000;
 
     private final Logger logger = LoggerFactory.getLogger(IndegoController.class);
     private final Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer()).create();
@@ -119,6 +121,7 @@ public class IndegoController {
         int status = 0;
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS)
                     .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader()).agent(userAgent);
             if (logger.isTraceEnabled()) {
                 logger.trace("GET request for {}", BASE_URL + path);
@@ -185,6 +188,7 @@ public class IndegoController {
         int status = 0;
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS)
                     .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader()).agent(userAgent);
             if (logger.isTraceEnabled()) {
                 logger.trace("GET request for {}", BASE_URL + path);
@@ -271,6 +275,7 @@ public class IndegoController {
             throws IndegoAuthenticationException, IndegoException {
         try {
             Request request = httpClient.newRequest(BASE_URL + path).method(method)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS)
                     .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader())
                     .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER).agent(userAgent);
             if (requestDto != null) {
