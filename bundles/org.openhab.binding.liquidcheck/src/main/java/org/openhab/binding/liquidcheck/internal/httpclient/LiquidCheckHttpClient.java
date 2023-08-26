@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LiquidCheckHttpClient {
-
+    private static final int REQUEST_TIMEOUT_MS = 10000;
     private final Logger logger = LoggerFactory.getLogger(LiquidCheckHttpClient.class);
     private final HttpClient client;
     private final LiquidCheckConfiguration config;
@@ -62,7 +62,8 @@ public class LiquidCheckHttpClient {
     public String pollData() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/infos.json";
         Request request = client.newRequest(uri).method(HttpMethod.GET)
-                .timeout(config.connectionTimeout, TimeUnit.SECONDS).followRedirects(false);
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).timeout(config.connectionTimeout, TimeUnit.SECONDS)
+                .followRedirects(false);
         logger.debug("Polling for data");
         ContentResponse response = request.send();
         return response.getContentAsString();
@@ -78,7 +79,7 @@ public class LiquidCheckHttpClient {
      */
     public String measureCommand() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/command";
-        Request request = client.newRequest(uri);
+        Request request = client.newRequest(uri).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "applicaton/json");
         request.content(new StringContentProvider(
