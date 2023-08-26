@@ -17,6 +17,7 @@ import static org.openhab.binding.mcd.internal.McdBindingConstants.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,7 +54,9 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class SensorThingHandler extends BaseThingHandler {
 
+    private static final int REQUEST_TIMEOUT_MS = 10000;
     private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
+
     private final HttpClient httpClient;
     private final @Nullable Gson gson;
     private @Nullable McdBridgeHandler mcdBridgeHandler;
@@ -237,7 +240,9 @@ public class SensorThingHandler extends BaseThingHandler {
             Request request = httpClient.newRequest(urlString).method(HttpMethod.GET)
                     .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
                     .header(HttpHeader.ACCEPT, "application/json")
-                    .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+                    .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+
             request.send(new BufferingResponseListener() {
                 @NonNullByDefault({})
                 @Override
@@ -265,7 +270,8 @@ public class SensorThingHandler extends BaseThingHandler {
             String accessToken = localMcdBridgeHandler.getAccessToken();
             Request request = httpClient
                     .newRequest("https://cunds-syncapi.azurewebsites.net/api/Device?serialNumber=" + serialNumber)
-                    .method(HttpMethod.GET).header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).method(HttpMethod.GET)
+                    .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
                     .header(HttpHeader.ACCEPT, "application/json")
                     .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
             request.send(new BufferingResponseListener() {
@@ -297,7 +303,8 @@ public class SensorThingHandler extends BaseThingHandler {
         if (localMcdBridgeHandler != null) {
             String accessToken = localMcdBridgeHandler.getAccessToken();
             Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetEventDef")
-                    .method(HttpMethod.GET).header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).method(HttpMethod.GET)
+                    .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
                     .header(HttpHeader.ACCEPT, "application/json")
                     .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
             request.send(new BufferingResponseListener() {
@@ -397,7 +404,8 @@ public class SensorThingHandler extends BaseThingHandler {
                 Date date = new Date();
                 String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
                 Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor")
-                        .method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/json")
+                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).method(HttpMethod.POST)
+                        .header(HttpHeader.CONTENT_TYPE, "application/json")
                         .header(HttpHeader.ACCEPT, "application/json")
                         .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
                 JsonObject jsonObject = new JsonObject();
