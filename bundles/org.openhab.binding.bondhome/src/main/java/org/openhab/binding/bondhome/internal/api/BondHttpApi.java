@@ -218,7 +218,7 @@ public class BondHttpApi {
                 final Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("BOND-Token",
                         bridgeHandler.getBridgeToken());
                 ContentResponse response;
-                response = request.send();
+                response = request.timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
                 String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
                         : StandardCharsets.UTF_8.name();
                 try {
