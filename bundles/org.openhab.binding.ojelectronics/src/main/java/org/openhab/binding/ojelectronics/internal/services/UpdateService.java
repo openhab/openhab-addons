@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ojelectronics.internal.services;
 
-import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +19,9 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
@@ -31,6 +32,7 @@ import org.openhab.binding.ojelectronics.internal.models.SimpleResponseModel;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModel;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.UpdateThermostatRequestModel;
 import org.openhab.core.thing.Thing;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;

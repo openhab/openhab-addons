@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.juicenet.internal.api;
 
-import java.net.http.HttpClient;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -34,6 +34,7 @@ import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiDeviceStatus;
 import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiInfo;
 import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiTouSchedule;
 import org.openhab.core.thing.ThingUID;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;

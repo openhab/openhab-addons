@@ -14,8 +14,6 @@ package org.openhab.binding.chatgpt.internal;
 
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.*;
 
-import java.net.http.HttpClient;
-import java.nio.channels.Channel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -33,6 +32,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.chatgpt.internal.dto.ChatResponse;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -41,6 +41,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;

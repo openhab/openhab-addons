@@ -13,7 +13,6 @@
 package org.openhab.binding.generacmobilelink.internal.handler;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +26,14 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
 import org.openhab.binding.generacmobilelink.internal.config.GeneracMobileLinkAccountConfiguration;
 import org.openhab.binding.generacmobilelink.internal.config.GeneracMobileLinkGeneratorConfiguration;
@@ -50,6 +52,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;

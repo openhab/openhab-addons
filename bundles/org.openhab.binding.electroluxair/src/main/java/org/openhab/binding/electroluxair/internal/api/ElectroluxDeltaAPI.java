@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.electroluxair.internal.api;
 
-import java.net.http.HttpClient;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -20,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -29,6 +29,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirBridgeConfiguration;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirException;
 import org.openhab.binding.electroluxair.internal.dto.ElectroluxPureA9DTO;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;

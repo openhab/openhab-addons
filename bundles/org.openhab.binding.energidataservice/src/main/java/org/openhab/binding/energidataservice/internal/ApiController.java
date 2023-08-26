@@ -14,7 +14,6 @@ package org.openhab.binding.energidataservice.internal;
 
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
-import java.net.http.HttpClient;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +30,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
@@ -49,6 +49,7 @@ import org.openhab.binding.energidataservice.internal.api.serialization.LocalDat
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
