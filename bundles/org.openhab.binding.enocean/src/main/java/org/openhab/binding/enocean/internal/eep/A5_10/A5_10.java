@@ -23,9 +23,10 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -40,32 +41,91 @@ public abstract class A5_10 extends _4BSMessage {
         super(packet);
     }
 
+    protected int getSetPointValue() {
+        // this is the default one
+        return getDB2Value();
+    }
+
+    protected int getMaxUnscaledValue() {
+        return 255;
+    }
+
+    protected double getTempScalingFactor() {
+        return -6.375; // 255/40
+    }
+
+    protected State getTemperature() {
+        double temp = (getDB1Value() - getMaxUnscaledValue()) / getTempScalingFactor();
+        return new QuantityType<>(temp, SIUnits.CELSIUS);
+    }
+
+    protected State getFanSpeedStage() {
+        if (getDB3Value() > 209) {
+            return new DecimalType(-1);
+        } else if (getDB3Value() > 189) {
+            return new DecimalType(0);
+        } else if (getDB3Value() > 164) {
+            return new DecimalType(1);
+        } else if (getDB3Value() > 144) {
+            return new DecimalType(2);
+        } else {
+            return new DecimalType(3);
+        }
+    }
+
+    protected int getIlluminationValue() {
+        return getDB3Value();
+    }
+
+    protected State getIllumination() {
+        return new QuantityType<>(getIlluminationValue() * 4, Units.LUX);
+    }
+
+    protected double getHumidityValue() {
+        return getDB2Value();
+    }
+
+    protected State getSupplyVoltage() {
+        double voltage = ((double) getDB3Value()) / 50.0;
+        return new QuantityType<>(voltage, Units.VOLT);
+    }
+
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+
         switch (channelId) {
+
+            case CHANNEL_BATTERY_VOLTAGE:
+                return getSupplyVoltage();
+
+            case CHANNEL_ILLUMINATION:
+                return getIllumination();
+
             case CHANNEL_FANSPEEDSTAGE:
-                if (getDB3Value() > 209) {
-                    return new StringType("-1");
-                } else if (getDB3Value() > 189) {
-                    return new StringType("0");
-                } else if (getDB3Value() > 164) {
-                    return new StringType("1");
-                } else if (getDB3Value() > 144) {
-                    return new StringType("2");
-                } else {
-                    return new StringType("3");
-                }
+                return getFanSpeedStage();
 
             case CHANNEL_SETPOINT:
-                return new DecimalType(getDB2Value());
+                return new DecimalType(getSetPointValue());
+
+            case CHANNEL_HUMIDITY:
+                return new DecimalType(getHumidityValue() / 2.5);
 
             case CHANNEL_TEMPERATURE:
-                double temp = (getDB1Value() - 255) / -6.375;
-                return new QuantityType<>(temp, SIUnits.CELSIUS);
+                return getTemperature();
+
+            case CHANNEL_BATTERYLOW:
+                return getBit(getDB0(), 4) ? OnOffType.ON : OnOffType.OFF;
 
             case CHANNEL_OCCUPANCY:
                 return getBit(getDB0(), 0) ? OnOffType.OFF : OnOffType.ON;
+
+            case CHANNEL_DAYNIGHTMODESTATE:
+                return new DecimalType(getDB0Value() & 0x01);
+
+            case CHANNEL_CONTACT:
+                return getBit(getDB0(), 0) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+
         }
 
         return UnDefType.UNDEF;

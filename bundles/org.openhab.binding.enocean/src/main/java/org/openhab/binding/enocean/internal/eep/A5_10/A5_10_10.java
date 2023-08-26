@@ -14,6 +14,9 @@ package org.openhab.binding.enocean.internal.eep.A5_10;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.types.State;
 
 /**
  *
@@ -22,7 +25,20 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 @NonNullByDefault
 public class A5_10_10 extends A5_10 {
 
+    protected final double tempFactor = 40.0 / 250.0;
+
     public A5_10_10(ERP1Message packet) {
         super(packet);
+    }
+
+    @Override
+    protected int getSetPointValue() {
+        return getDB3Value();
+    }
+
+    @Override
+    protected State getTemperature() {
+        double temp = (getDB1Value()) * tempFactor;
+        return new QuantityType<>(temp, SIUnits.CELSIUS);
     }
 }
