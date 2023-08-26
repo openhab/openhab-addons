@@ -104,7 +104,7 @@ public class NeeoDeviceChannelSerializer
                 }
 
                 for (Class<? extends Command> cmd : item.getAcceptedCommandTypes()) {
-                    if (!cmd.getSimpleName().equalsIgnoreCase("refreshtype")) {
+                    if (!"refreshtype".equalsIgnoreCase(cmd.getSimpleName())) {
                         commandTypes.add(cmd.getSimpleName().toLowerCase());
                     }
                 }
