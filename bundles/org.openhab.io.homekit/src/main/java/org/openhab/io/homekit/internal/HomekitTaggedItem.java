@@ -506,6 +506,7 @@ public class HomekitTaggedItem {
         return id;
     }
 
+    @Override
     public String toString() {
         return "Item:" + proxyItem.getItem() + "  HomeKit type: '" + homekitAccessoryType.getTag()
                 + "' characteristic: '" + homekitCharacteristicType.getTag() + "'";

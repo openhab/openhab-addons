@@ -71,9 +71,8 @@ public class PicoTTSService extends AbstractCachedTTSService {
             throw new TTSException("The passed voice is unsupported");
         }
 
-        boolean isAudioFormatSupported = this.audioFormats.stream().anyMatch(audioFormat -> {
-            return audioFormat.isCompatible(requestedFormat);
-        });
+        boolean isAudioFormatSupported = this.audioFormats.stream()
+                .anyMatch(audioFormat -> audioFormat.isCompatible(requestedFormat));
 
         if (!isAudioFormatSupported) {
             throw new TTSException("The passed AudioFormat is unsupported");

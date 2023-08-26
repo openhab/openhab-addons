@@ -380,6 +380,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     private boolean supportsUpdates() {
-        return cloudBaseUrl.indexOf(CFG_BASE_URL) >= 0;
+        return cloudBaseUrl.contains(CFG_BASE_URL);
     }
 }
