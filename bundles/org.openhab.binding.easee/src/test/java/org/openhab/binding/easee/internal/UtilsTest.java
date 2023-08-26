@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class UtilsTest {
 
     @Test
