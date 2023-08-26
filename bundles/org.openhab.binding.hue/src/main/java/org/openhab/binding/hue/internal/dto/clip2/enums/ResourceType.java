@@ -66,12 +66,20 @@ public enum ResourceType {
                 // fall through
             }
         }
-        return ERROR;
+        return ERROR.setUnknownTypeId(value);
+    }
+
+    private @Nullable String unknownTypeId;
+
+    private ResourceType setUnknownTypeId(@Nullable String value) {
+        unknownTypeId = value;
+        return this;
     }
 
     @Override
     public String toString() {
         String s = this.name().replace("_", " ");
-        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+        s = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+        return unknownTypeId == null ? s : s + String.format(" (%s)", unknownTypeId);
     }
 }
