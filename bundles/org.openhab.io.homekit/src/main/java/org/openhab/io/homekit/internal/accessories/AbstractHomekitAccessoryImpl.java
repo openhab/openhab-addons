@@ -437,7 +437,7 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                         // Need to copy over everything except the current value, which we instead
                         // reach in and get the default value
                         cJson.forEach((k, v) -> {
-                            if (k.equals("value")) {
+                            if ("value".equals(k)) {
                                 Object defaultValue = ((BaseCharacteristic) c).getDefault();
                                 if (defaultValue instanceof Boolean) {
                                     cBuilder.add("value", (boolean) defaultValue);

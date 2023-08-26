@@ -43,15 +43,18 @@ public class JSDependencyTracker extends AbstractScriptDependencyTracker {
     }
 
     @Deactivate
+    @Override
     public void deactivate() {
         super.deactivate();
     }
 
+    @Override
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "removeChangeTracker")
     public void addChangeTracker(ScriptDependencyTracker.Listener listener) {
         super.addChangeTracker(listener);
     }
 
+    @Override
     public void removeChangeTracker(ScriptDependencyTracker.Listener listener) {
         super.removeChangeTracker(listener);
     }

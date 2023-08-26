@@ -540,7 +540,7 @@ public class CloudClient {
             try {
                 headerValue = requestHeadersJson.getString(headerName);
                 logger.debug("Jetty set header {} = {}", headerName, headerValue);
-                if (!headerName.equalsIgnoreCase("Content-Length")) {
+                if (!"Content-Length".equalsIgnoreCase(headerName)) {
                     request.header(headerName, headerValue);
                 }
             } catch (JSONException e) {

@@ -134,8 +134,8 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         ITEM_CLASS_MAP_NEW.put(PlayerItem.class, DynamoDBBigDecimalItem.class); // Different from LEGACY
     }
 
-    public static final Class<? extends DynamoDBItem<?>> getDynamoItemClass(Class<? extends Item> itemClass,
-            boolean legacy) throws NullPointerException {
+    public static Class<? extends DynamoDBItem<?>> getDynamoItemClass(Class<? extends Item> itemClass, boolean legacy)
+            throws NullPointerException {
         Class<? extends DynamoDBItem<?>> dtoclass = (legacy ? ITEM_CLASS_MAP_LEGACY : ITEM_CLASS_MAP_NEW)
                 .get(itemClass);
         if (dtoclass == null) {

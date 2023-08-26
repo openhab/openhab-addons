@@ -720,7 +720,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         public void addArchives(String archivesString) {
-            String splitArchives[] = archivesString.split(":");
+            String[] splitArchives = archivesString.split(":");
             for (String archiveString : splitArchives) {
                 String[] opts = archiveString.split(",");
                 if (opts.length != 4) { // check if correct number of parameters

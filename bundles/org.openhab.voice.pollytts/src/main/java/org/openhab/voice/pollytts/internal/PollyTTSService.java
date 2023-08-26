@@ -166,8 +166,7 @@ public class PollyTTSService extends AbstractCachedTTSService {
                 throw new TTSException("Could not read from PollyTTS service");
             }
             logger.debug("Audio Stream for '{}' in format {}", text, requestedFormat);
-            AudioStream audioStream = new PollyTTSAudioStream(pollyAudioStream, requestedFormat);
-            return audioStream;
+            return new PollyTTSAudioStream(pollyAudioStream, requestedFormat);
         } catch (AmazonPollyException ex) {
             throw new TTSException("Could not read from PollyTTS service: " + ex.getMessage(), ex);
         }

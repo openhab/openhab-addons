@@ -287,9 +287,8 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         String tableName = localTableNameResolver.fromClass(dtoClass);
         final TableSchema<T> schema = getDynamoDBTableSchema(dtoClass, expectedTableSchemaRevision);
         @SuppressWarnings("unchecked") // OK since this is the only place tableCache is populated
-        DynamoDbAsyncTable<T> table = (DynamoDbAsyncTable<T>) tableCache.computeIfAbsent(dtoClass, clz -> {
-            return localClient.table(tableName, schema);
-        });
+        DynamoDbAsyncTable<T> table = (DynamoDbAsyncTable<T>) tableCache.computeIfAbsent(dtoClass,
+                clz -> localClient.table(tableName, schema));
         if (table == null) {
             // Invariant. To make null checker happy
             throw new IllegalStateException();

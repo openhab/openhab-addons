@@ -41,7 +41,7 @@ public class StringUtilsExt {
      * @param separators Array will be merged to str
      * @return
      */
-    public static final String replaceArrayMerge(String str, String separate, Object[] separators) {
+    public static String replaceArrayMerge(String str, String separate, Object[] separators) {
         String s = str;
         for (int i = 0; i < separators.length; i++) {
             s = s.replaceFirst(separate, (String) separators[i]);
@@ -52,7 +52,7 @@ public class StringUtilsExt {
     /**
      * @see #replaceArrayMerge(String str, String separate, Object[] separators)
      */
-    public static final String replaceArrayMerge(String str, String[] separate, String[] separators) {
+    public static String replaceArrayMerge(String str, String[] separate, String[] separators) {
         String s = str;
         for (int i = 0; i < separators.length; i++) {
             s = s.replaceFirst(separate[i], separators[i]);
@@ -115,7 +115,7 @@ public class StringUtilsExt {
             // replace first ; with ?
             url = url.replaceFirst(";", "?");
             // replace other ; with &
-            url = url.replaceAll(";", "&");
+            url = url.replace(";", "&");
         }
 
         if (url.split(":").length < 3 || url.indexOf("/") == -1) {
