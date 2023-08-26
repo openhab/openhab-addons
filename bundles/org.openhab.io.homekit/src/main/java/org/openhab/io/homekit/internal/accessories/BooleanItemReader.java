@@ -98,7 +98,7 @@ public class BooleanItemReader {
         } else if (state instanceof OpenClosedType) {
             return state.equals(trueOpenClosedValue);
         } else if (state instanceof StringType) {
-            return state.toString().equalsIgnoreCase("Open") || state.toString().equalsIgnoreCase("Opened");
+            return "Open".equalsIgnoreCase(state.toString()) || "Opened".equalsIgnoreCase(state.toString());
         } else if (localTrueThresheold != null) {
             if (state instanceof DecimalType stateAsDecimalType) {
                 final boolean result = stateAsDecimalType.toBigDecimal().compareTo(localTrueThresheold) > 0;

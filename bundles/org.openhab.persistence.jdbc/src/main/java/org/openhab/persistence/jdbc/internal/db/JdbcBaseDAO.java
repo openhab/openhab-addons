@@ -255,8 +255,7 @@ public class JdbcBaseDAO {
      **************/
     public @Nullable Integer doPingDB() throws JdbcSQLException {
         try {
-            final @Nullable Integer result = Yank.queryScalar(sqlPingDB, Integer.class, null);
-            return result;
+            return Yank.queryScalar(sqlPingDB, Integer.class, null);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }
@@ -264,8 +263,7 @@ public class JdbcBaseDAO {
 
     public @Nullable String doGetDB() throws JdbcSQLException {
         try {
-            final @Nullable String result = Yank.queryScalar(sqlGetDB, String.class, null);
-            return result;
+            return Yank.queryScalar(sqlGetDB, String.class, null);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }
@@ -688,13 +686,13 @@ public class JdbcBaseDAO {
         } else if (item instanceof ImageItem) {
             return RawType.valueOf(objectAsString(v));
         } else if (item instanceof ContactItem || item instanceof PlayerItem || item instanceof SwitchItem) {
-            State state = TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v).toString().trim());
+            State state = TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v).trim());
             if (state == null) {
                 throw new UnsupportedOperationException("Unable to parse state for item " + item.toString());
             }
             return state;
         } else {
-            State state = TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v).toString());
+            State state = TypeParser.parseState(item.getAcceptedDataTypes(), ((String) v));
             if (state == null) {
                 throw new UnsupportedOperationException("Unable to parse state for item " + item.toString());
             }
@@ -731,7 +729,7 @@ public class JdbcBaseDAO {
         if (v instanceof byte[]) {
             return new String((byte[]) v);
         }
-        return ((String) v).toString();
+        return ((String) v);
     }
 
     public String getItemType(Item i) {
