@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,6 +58,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class ChatGPTHandler extends BaseThingHandler {
 
+    private static final int REQUEST_TIMEOUT_MS = 10000;
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
     private HttpClient httpClient;
@@ -124,8 +126,8 @@ public class ChatGPTHandler extends BaseThingHandler {
 
         String queryJson = gson.toJson(root);
         Request request = httpClient.newRequest(OPENAI_API_URL).method(HttpMethod.POST)
-                .header("Content-Type", "application/json").header("Authorization", "Bearer " + apiKey)
-                .content(new StringContentProvider(queryJson));
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + apiKey).content(new StringContentProvider(queryJson));
         logger.trace("Query '{}'", queryJson);
         try {
             ContentResponse response = request.send();
@@ -163,7 +165,7 @@ public class ChatGPTHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             try {
                 Request request = httpClient.newRequest(OPENAI_MODELS_URL).method(HttpMethod.GET)
-                        .header("Authorization", "Bearer " + apiKey);
+                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).header("Authorization", "Bearer " + apiKey);
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
                     updateStatus(ThingStatus.ONLINE);
