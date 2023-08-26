@@ -14,11 +14,11 @@ package org.openhab.binding.tellstick.internal.local;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.http.HttpClient;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
@@ -31,8 +31,6 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.JNA;
 import org.tellstick.device.TellstickDevice;
@@ -70,7 +68,7 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
     static final String HTTP_LOCAL_API_DEVICE_TURNOFF = HTTP_LOCAL_API + "device/turnOff?id=%d";
     static final String HTTP_LOCAL_DEVICE_TURNON = HTTP_LOCAL_API + "device/turnOn?id=%d";
     private static final int MAX_RETRIES = 3;
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     public TelldusLocalDeviceController(TelldusLocalConfiguration configuration, HttpClient httpClient) {
         this.httpClient = httpClient;

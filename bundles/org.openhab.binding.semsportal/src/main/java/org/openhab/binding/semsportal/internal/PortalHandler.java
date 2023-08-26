@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.semsportal.internal;
 
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.naming.CommunicationException;
+import javax.naming.ConfigurationException;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -44,7 +46,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -70,7 +71,7 @@ public class PortalHandler extends BaseBridgeHandler {
     private static final String LIST_URL = BASE_URL + "api/PowerStationMonitor/QueryPowerStationMonitorForApp";
     // the token holds the credential information for the portal
     private static final String HTTP_HEADER_TOKEN = "Token";
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     // used to parse json from / to the SEMS portal API
     private final Gson gson;
@@ -149,7 +150,7 @@ public class PortalHandler extends BaseBridgeHandler {
 
     private @Nullable String sendPost(String url, String payload) {
         try {
-            Request request = httpClient.POST(url).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS)
+            Request request = httpClient.POST(url).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .header(HTTP_HEADER_TOKEN, gson.toJson(sessionToken))
                     .content(new StringContentProvider(payload, StandardCharsets.UTF_8.name()),

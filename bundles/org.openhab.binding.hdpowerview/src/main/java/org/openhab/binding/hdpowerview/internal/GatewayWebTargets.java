@@ -14,6 +14,7 @@ package org.openhab.binding.hdpowerview.internal;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,14 +25,12 @@ import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -39,7 +38,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets.Query;
-import org.openhab.binding.hdpowerview.internal.dto.gen3.Info;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Scene;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Shade;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.ShadeEvent;
@@ -49,9 +47,9 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingExceptio
 import org.openhab.binding.hdpowerview.internal.handler.GatewayBridgeHandler;
 import org.openhab.core.thing.Thing;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.azul.crs.client.Client;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -66,7 +64,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
     private static final String IDS = "ids";
     private static final int SLEEP_SECONDS = 360;
     private static final Set<Integer> HTTP_OK_CODES = Set.of(HttpStatus.OK_200, HttpStatus.NO_CONTENT_204);
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(GatewayWebTargets.class);
     private final Gson jsonParser = new Gson();
@@ -250,7 +248,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
             }
         }
         Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*")
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (query != null) {
             request.param(query.getKey(), query.getValue());
         }

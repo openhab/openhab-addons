@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.vizio.internal.communication;
 
+import java.net.http.HttpClient;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -33,7 +33,6 @@ import org.openhab.binding.vizio.internal.dto.inputlist.InputList;
 import org.openhab.binding.vizio.internal.dto.pairing.PairingComplete;
 import org.openhab.binding.vizio.internal.dto.pairing.PairingStart;
 import org.openhab.binding.vizio.internal.dto.power.PowerMode;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -52,7 +51,7 @@ public class VizioCommunicator {
     private static final String AUTH_HEADER = "AUTH";
     private static final String JSON_CONTENT_TYPE = "application/json";
     private static final String JSON_VALUE = "{\"VALUE\": %s}";
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final HttpClient httpClient;
     private final Gson gson = new GsonBuilder().serializeNulls().create();
@@ -232,7 +231,7 @@ public class VizioCommunicator {
     private String getCommand(String url) throws VizioException {
         try {
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET);
-            request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+            request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             request.header(AUTH_HEADER, authToken);
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
 
@@ -257,7 +256,7 @@ public class VizioCommunicator {
     private String putCommand(String url, String commandJSON) throws VizioException {
         try {
             final Request request = httpClient.newRequest(url).method(HttpMethod.PUT);
-            request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+            request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (!url.contains("pairing")) {
                 request.header(AUTH_HEADER, authToken);
             }

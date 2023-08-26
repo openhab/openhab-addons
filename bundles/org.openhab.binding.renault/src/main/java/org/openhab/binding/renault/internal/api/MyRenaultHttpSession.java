@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.renault.internal.api;
 
+import java.net.http.HttpClient;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -33,7 +33,6 @@ import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultUpdateException;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
@@ -53,7 +52,7 @@ public class MyRenaultHttpSession {
 
     private static final String CHARGING_MODE_SCHEDULE = "schedule_mode";
     private static final String CHARGING_MODE_ALWAYS = "always_charging";
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private RenaultConfiguration config;
     private HttpClient httpClient;
@@ -290,7 +289,7 @@ public class MyRenaultHttpSession {
     private void postKamereonRequest(final String path, final String content) throws RenaultForbiddenException,
             RenaultNotImplementedException, RenaultActionException, RenaultAPIGatewayException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.POST)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).header("Content-type", "application/vnd.api+json")
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-type", "application/vnd.api+json")
                 .header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt)
                 .content(new StringContentProvider(content, "utf-8"));
@@ -309,7 +308,7 @@ public class MyRenaultHttpSession {
     private @Nullable JsonObject getKamereonResponse(String path) throws RenaultForbiddenException,
             RenaultNotImplementedException, RenaultUpdateException, RenaultAPIGatewayException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.GET)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).header("Content-type", "application/vnd.api+json")
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-type", "application/vnd.api+json")
                 .header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
         try {

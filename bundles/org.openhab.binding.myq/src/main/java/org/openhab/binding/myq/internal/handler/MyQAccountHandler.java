@@ -19,6 +19,7 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -40,21 +41,16 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpContentResponse;
 import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.openhab.binding.myq.internal.MyQDiscoveryService;
 import org.openhab.binding.myq.internal.config.MyQAccountConfiguration;
 import org.openhab.binding.myq.internal.dto.AccountDTO;
@@ -77,9 +73,9 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.azul.crs.client.Response;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -92,7 +88,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     /*
      * MyQ oAuth relate fields
@@ -488,7 +484,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             throws InterruptedException, ExecutionException, TimeoutException {
         try {
             Request request = httpClient.newRequest(LOGIN_AUTHORIZE_URL) //
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS) //
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
                     .param("client_id", CLIENT_ID) //
                     .param("code_challenge", generateCodeChallange(codeVerifier)) //
                     .param("code_challenge_method", "S256") //
@@ -593,7 +589,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             fields.add("scope", params.get("scope"));
 
             Request request = httpClient.newRequest(LOGIN_TOKEN_URL) //
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS) //
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
                     .content(new FormContentProvider(fields)) //
                     .method(HttpMethod.POST) //
                     .agent(userAgent).followRedirects(true);

@@ -12,19 +12,18 @@
  */
 package org.openhab.binding.liquidcheck.internal.httpclient;
 
+import java.net.http.HttpClient;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.liquidcheck.internal.LiquidCheckConfiguration;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -34,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LiquidCheckHttpClient {
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(LiquidCheckHttpClient.class);
     private final HttpClient client;
     private final LiquidCheckConfiguration config;
@@ -62,7 +61,7 @@ public class LiquidCheckHttpClient {
     public String pollData() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/infos.json";
         Request request = client.newRequest(uri).method(HttpMethod.GET)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).timeout(config.connectionTimeout, TimeUnit.SECONDS)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).timeout(config.connectionTimeout, TimeUnit.SECONDS)
                 .followRedirects(false);
         logger.debug("Polling for data");
         ContentResponse response = request.send();
@@ -79,7 +78,7 @@ public class LiquidCheckHttpClient {
      */
     public String measureCommand() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/command";
-        Request request = client.newRequest(uri).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+        Request request = client.newRequest(uri).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "applicaton/json");
         request.content(new StringContentProvider(

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.meater.internal.api;
 
+import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -20,11 +21,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -35,9 +34,9 @@ import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Device;
 import org.openhab.binding.meater.internal.exceptions.MeaterAuthenticationException;
 import org.openhab.binding.meater.internal.exceptions.MeaterException;
 import org.openhab.core.i18n.LocaleProvider;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.azul.crs.client.Response;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -57,7 +56,7 @@ public class MeaterRestAPI {
     private static final String LOGIN = "login";
     private static final String DEVICES = "devices";
     private static final int MAX_RETRIES = 3;
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(MeaterRestAPI.class);
     private final Gson gson;
@@ -102,7 +101,7 @@ public class MeaterRestAPI {
             String json = "{ \"email\": \"" + configuration.email + "\",  \"password\": \"" + configuration.password
                     + "\" }";
             Request request = httpClient.newRequest(API_ENDPOINT + LOGIN).method(HttpMethod.POST)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
             request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
@@ -136,7 +135,7 @@ public class MeaterRestAPI {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
                     Request request = httpClient.newRequest(API_ENDPOINT + uri).method(HttpMethod.GET)
-                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                     request.header(HttpHeader.AUTHORIZATION, "Bearer " + authToken);
                     request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
                     request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);

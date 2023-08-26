@@ -15,19 +15,18 @@ package org.openhab.binding.miele.internal;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -45,7 +44,7 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class MieleGatewayCommunicationController {
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final URI uri;
     private final Random rand = new Random();
@@ -85,7 +84,7 @@ public class MieleGatewayCommunicationController {
 
         String requestBody = requestBodyAsJson.toString();
         Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .content(new StringContentProvider(requestBody), "application/json");
 
         String responseData = null;

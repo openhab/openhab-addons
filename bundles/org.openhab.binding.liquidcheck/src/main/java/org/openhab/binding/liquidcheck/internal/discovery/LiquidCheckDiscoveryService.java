@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
@@ -43,7 +43,6 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -59,7 +58,7 @@ import com.google.gson.JsonSyntaxException;
 public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final HttpClient httpClient;
@@ -99,7 +98,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
                 List<InetAddress> hosts = findActiveHosts(addresses);
                 for (InetAddress host : hosts) {
                     Request request = httpClient.newRequest("http://" + host.getHostAddress() + "/infos.json")
-                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).method(HttpMethod.GET)
+                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.GET)
                             .followRedirects(false);
                     try {
                         ContentResponse response = request.send();

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ojelectronics.internal.services;
 
+import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -19,9 +20,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
@@ -32,7 +31,6 @@ import org.openhab.binding.ojelectronics.internal.models.SimpleResponseModel;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModel;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.UpdateThermostatRequestModel;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -44,7 +42,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public final class UpdateService {
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private final Gson gson = OJGSonBuilder.getGSon();
     private final Logger logger = LoggerFactory.getLogger(UpdateService.class);
 
@@ -84,7 +82,7 @@ public final class UpdateService {
         }
         String jsonPayload = gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey));
         Request request = httpClient.POST(configuration.getRestApiUrl() + "/Thermostat/UpdateThermostat")
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).param("sessionid", sessionId)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).param("sessionid", sessionId)
                 .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(jsonPayload));
         logger.trace("updateThermostat payload for themostat with serial {} is {}", thermostat.serialNumber,
                 jsonPayload);

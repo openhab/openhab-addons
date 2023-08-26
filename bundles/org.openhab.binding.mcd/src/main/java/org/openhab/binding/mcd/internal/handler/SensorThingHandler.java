@@ -14,21 +14,21 @@ package org.openhab.binding.mcd.internal.handler;
 
 import static org.openhab.binding.mcd.internal.McdBindingConstants.*;
 
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.security.auth.callback.Callback;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.mcd.internal.util.Callback;
 import org.openhab.binding.mcd.internal.util.SensorEventDef;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -39,7 +39,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -54,7 +53,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class SensorThingHandler extends BaseThingHandler {
 
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
 
     private final HttpClient httpClient;
@@ -241,7 +240,7 @@ public class SensorThingHandler extends BaseThingHandler {
                     .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
                     .header(HttpHeader.ACCEPT, "application/json")
                     .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
             request.send(new BufferingResponseListener() {
                 @NonNullByDefault({})
@@ -270,7 +269,7 @@ public class SensorThingHandler extends BaseThingHandler {
             String accessToken = localMcdBridgeHandler.getAccessToken();
             Request request = httpClient
                     .newRequest("https://cunds-syncapi.azurewebsites.net/api/Device?serialNumber=" + serialNumber)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.GET)
                     .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
                     .header(HttpHeader.ACCEPT, "application/json")
                     .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
@@ -303,7 +302,7 @@ public class SensorThingHandler extends BaseThingHandler {
         if (localMcdBridgeHandler != null) {
             String accessToken = localMcdBridgeHandler.getAccessToken();
             Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetEventDef")
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.GET)
                     .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
                     .header(HttpHeader.ACCEPT, "application/json")
                     .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
@@ -404,7 +403,7 @@ public class SensorThingHandler extends BaseThingHandler {
                 Date date = new Date();
                 String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
                 Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor")
-                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).method(HttpMethod.POST)
+                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.POST)
                         .header(HttpHeader.CONTENT_TYPE, "application/json")
                         .header(HttpHeader.ACCEPT, "application/json")
                         .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);

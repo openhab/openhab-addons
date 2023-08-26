@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ExecutionException;
@@ -28,10 +29,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
@@ -39,8 +38,9 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
 import org.openhab.binding.icalendar.internal.logic.CalendarException;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.azul.crs.client.Response;
 
 /**
  * The Job for pulling an update of a calendar. Fires
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class PullJob implements Runnable {
     private static final String TMP_FILE_PREFIX = "icalendardld";
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Authentication.@Nullable Result authentication;
     private final File destination;
@@ -91,7 +91,7 @@ class PullJob implements Runnable {
     @Override
     public void run() {
         final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         final Authentication.Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);

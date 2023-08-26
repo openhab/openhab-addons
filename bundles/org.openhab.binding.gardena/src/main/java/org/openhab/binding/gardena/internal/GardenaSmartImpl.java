@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gardena.internal;
 
+import java.net.http.HttpClient;
+import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,7 +30,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.AbstractTypedContentProvider;
@@ -45,12 +46,10 @@ import org.openhab.binding.gardena.internal.model.DataItemDeserializer;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.model.dto.api.CreateWebSocketRequest;
 import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
-import org.openhab.binding.gardena.internal.model.dto.api.Location;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationDataItem;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationResponse;
 import org.openhab.binding.gardena.internal.model.dto.api.LocationsResponse;
 import org.openhab.binding.gardena.internal.model.dto.api.PostOAuth2Response;
-import org.openhab.binding.gardena.internal.model.dto.api.WebSocket;
 import org.openhab.binding.gardena.internal.model.dto.api.WebSocketCreatedResponse;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommandRequest;
@@ -58,7 +57,6 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.util.ThingWebClientUtil;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -73,7 +71,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(DataItem.class, new DataItemDeserializer()).create();
 
@@ -213,7 +211,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             }
 
             Request request = httpClient.newRequest(url).method(method).header(HttpHeader.CONTENT_TYPE, contentType)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .header(HttpHeader.ACCEPT, "application/vnd.api+json").header(HttpHeader.ACCEPT_ENCODING, "gzip");
 
             if (!URL_API_TOKEN.equals(url)) {

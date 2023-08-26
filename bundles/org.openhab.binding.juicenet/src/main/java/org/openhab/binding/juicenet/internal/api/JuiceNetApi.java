@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.juicenet.internal.api;
 
+import java.net.http.HttpClient;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -34,7 +34,6 @@ import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiDeviceStatus;
 import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiInfo;
 import org.openhab.binding.juicenet.internal.api.dto.JuiceNetApiTouSchedule;
 import org.openhab.core.thing.ThingUID;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -55,7 +54,7 @@ public class JuiceNetApi {
     private static final String API_HOST = "https://jbv1-api.emotorwerks.com/";
     private static final String API_ACCOUNT = API_HOST + "box_pin";
     private static final String API_DEVICE = API_HOST + "box_api_secure";
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private String apiToken = "";
     private HttpClient httpClient;
@@ -182,7 +181,7 @@ public class JuiceNetApi {
     public JsonObject postApiCommand(ApiCommand cmd, @Nullable String token, Map<String, Object> params)
             throws InterruptedException, JuiceNetApiException {
         Request request = httpClient.POST(cmd.uri);
-        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
 
         // Add required params

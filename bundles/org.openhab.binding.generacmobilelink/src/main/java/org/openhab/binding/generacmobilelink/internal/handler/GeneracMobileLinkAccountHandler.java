@@ -13,6 +13,7 @@
 package org.openhab.binding.generacmobilelink.internal.handler;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,14 +27,11 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
 import org.openhab.binding.generacmobilelink.internal.config.GeneracMobileLinkAccountConfiguration;
 import org.openhab.binding.generacmobilelink.internal.config.GeneracMobileLinkGeneratorConfiguration;
@@ -52,7 +50,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -69,7 +66,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(GeneracMobileLinkAccountHandler.class);
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private static final String API_BASE = "https://app.mobilelinkgen.com/api";
     private static final String LOGIN_BASE = "https://generacconnectivity.b2clogin.com/generacconnectivity.onmicrosoft.com/B2C_1A_MobileLink_SignIn";
@@ -287,7 +284,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             fields.put("password", config.password);
 
             Request selfAssertedRequest = httpClient.POST(LOGIN_BASE + "/SelfAsserted")
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).header("X-Csrf-Token", signInConfig.csrf)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("X-Csrf-Token", signInConfig.csrf)
                     .param("tx", "StateProperties=" + signInConfig.transId).param("p", "B2C_1A_SignUpOrSigninOnline")
                     .content(new FormContentProvider(fields));
 
@@ -311,7 +308,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             }
 
             Request confirmedRequest = httpClient.newRequest(LOGIN_BASE + "/api/CombinedSigninAndSignup/confirmed")
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).param("csrf_token", signInConfig.csrf)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).param("csrf_token", signInConfig.csrf)
                     .param("tx", "StateProperties=" + signInConfig.transId).param("p", "B2C_1A_SignUpOrSigninOnline");
 
             ContentResponse confirmedResponse = confirmedRequest.send();
@@ -364,7 +361,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
         fields.put("state", loginState.attr("value"));
         fields.put("code", loginCode.attr("value"));
 
-        Request loginRequest = httpClient.POST(action).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS)
+        Request loginRequest = httpClient.POST(action).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .content(new FormContentProvider(fields));
 
         ContentResponse loginResponse = loginRequest.send();

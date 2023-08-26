@@ -19,6 +19,7 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -43,8 +43,6 @@ import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO;
@@ -62,7 +60,6 @@ import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO;
 import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -89,7 +86,7 @@ public class VerisureSession {
             "https://m-api02.verisure.com");
     private int apiServerInUseIndex = 0;
     private int numberOfEvents = 15;
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private static final String USER_NAME = "username";
     private static final String VID = "vid";
     private static final String VS_STEPUP = "vs-stepup";
@@ -335,7 +332,7 @@ public class VerisureSession {
         logger.debug("postVerisureAPI URL: {} Data:{}", url, data);
 
         Request request = httpClient.newRequest(url).method(HttpMethod.POST);
-        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (isJSON) {
             request.header("content-type", "application/json");
         } else {

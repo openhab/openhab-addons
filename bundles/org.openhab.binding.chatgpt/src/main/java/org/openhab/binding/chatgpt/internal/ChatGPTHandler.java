@@ -14,6 +14,8 @@ package org.openhab.binding.chatgpt.internal;
 
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.*;
 
+import java.net.http.HttpClient;
+import java.nio.channels.Channel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +25,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -32,7 +33,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.chatgpt.internal.dto.ChatResponse;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -41,7 +41,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -58,7 +57,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class ChatGPTHandler extends BaseThingHandler {
 
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
     private HttpClient httpClient;
@@ -126,7 +125,7 @@ public class ChatGPTHandler extends BaseThingHandler {
 
         String queryJson = gson.toJson(root);
         Request request = httpClient.newRequest(OPENAI_API_URL).method(HttpMethod.POST)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).header("Content-Type", "application/json")
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiKey).content(new StringContentProvider(queryJson));
         logger.trace("Query '{}'", queryJson);
         try {
@@ -165,7 +164,7 @@ public class ChatGPTHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             try {
                 Request request = httpClient.newRequest(OPENAI_MODELS_URL).method(HttpMethod.GET)
-                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).header("Authorization", "Bearer " + apiKey);
+                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + apiKey);
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
                     updateStatus(ThingStatus.ONLINE);

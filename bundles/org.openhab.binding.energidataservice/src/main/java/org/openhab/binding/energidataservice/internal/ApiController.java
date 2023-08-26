@@ -14,6 +14,7 @@ package org.openhab.binding.energidataservice.internal;
 
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
+import java.net.http.HttpClient;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,7 +31,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
@@ -49,7 +49,6 @@ import org.openhab.binding.energidataservice.internal.api.serialization.LocalDat
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.osgi.framework.FrameworkUtil;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -77,7 +76,7 @@ public class ApiController {
 
     private static final String HEADER_REMAINING_CALLS = "RemainingCalls";
     private static final String HEADER_TOTAL_CALLS = "TotalCalls";
-    private static final int REQUEST_TIMEOUT_MS = 10000;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(ApiController.class);
     private final Gson gson = new GsonBuilder() //
@@ -112,7 +111,7 @@ public class ApiController {
         }
 
         Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + DATASET_NAME_SPOT_PRICES)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).param("start", start.toString()) //
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).param("start", start.toString()) //
                 .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
                 .param("columns", "HourUTC,SpotPrice" + currency) //
                 .agent(userAgent) //
@@ -200,7 +199,7 @@ public class ApiController {
         }
 
         Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + DATASET_NAME_DATAHUB_PRICELIST)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS).param("filter", mapToFilter(filterMap)) //
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).param("filter", mapToFilter(filterMap)) //
                 .param("columns", columns) //
                 .agent(userAgent) //
                 .method(HttpMethod.GET);

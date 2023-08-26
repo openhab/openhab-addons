@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.kostalinverter.internal.secondgeneration;
 
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,12 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
@@ -80,7 +79,7 @@ public class SecondGenerationConfigurationHandler {
                     + "\"}";
 
             Request loginPostJsonResponse = httpClient.POST(urlLogin + "?sessionId=" + sessionId)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             loginPostJsonResponse.header(HttpHeader.CONTENT_TYPE, "application/json");
             loginPostJsonResponse.content(new StringContentProvider(loginPostJsonData));
             ContentResponse loginPostJsonDataContentResponse = loginPostJsonResponse.send();
@@ -97,7 +96,7 @@ public class SecondGenerationConfigurationHandler {
             String postJsonData = "{\"dxsEntries\":[{\"dxsId\":" + dxsId + ",\"value\":" + value + "}]}";
 
             Request postJsonDataRequest = httpClient.POST(url + "/api/dxs.json?sessionId=" + sessionId)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MICROSECONDS);
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             postJsonDataRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
             postJsonDataRequest.content(new StringContentProvider(postJsonData));
             postJsonDataRequest.send();
