@@ -199,12 +199,12 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     private Object convertValue(State state) {
         Object value;
-        if (state instanceof PercentType) {
-            value = ((PercentType) state).toBigDecimal().doubleValue();
-        } else if (state instanceof DateTimeType) {
-            value = Date.from(((DateTimeType) state).getZonedDateTime().toInstant());
-        } else if (state instanceof DecimalType) {
-            value = ((DecimalType) state).toBigDecimal().doubleValue();
+        if (state instanceof PercentType type) {
+            value = type.toBigDecimal().doubleValue();
+        } else if (state instanceof DateTimeType type) {
+            value = Date.from(type.getZonedDateTime().toInstant());
+        } else if (state instanceof DecimalType type) {
+            value = type.toBigDecimal().doubleValue();
         } else {
             value = state.toString();
         }

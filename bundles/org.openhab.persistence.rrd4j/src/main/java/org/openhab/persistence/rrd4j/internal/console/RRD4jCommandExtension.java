@@ -87,8 +87,8 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
 
     private @Nullable RRD4jPersistenceService getPersistenceService() {
         for (PersistenceService persistenceService : persistenceServiceRegistry.getAll()) {
-            if (persistenceService instanceof RRD4jPersistenceService) {
-                return (RRD4jPersistenceService) persistenceService;
+            if (persistenceService instanceof RRD4jPersistenceService service) {
+                return service;
             }
         }
         return null;

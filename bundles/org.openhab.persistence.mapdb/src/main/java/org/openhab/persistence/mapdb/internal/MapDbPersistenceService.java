@@ -101,8 +101,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
             map = db.createTreeMap("itemStore").makeOrGet();
         } catch (RuntimeException re) {
             Throwable cause = re.getCause();
-            if (cause instanceof ClassNotFoundException) {
-                ClassNotFoundException cnf = (ClassNotFoundException) cause;
+            if (cause instanceof ClassNotFoundException cnf) {
                 logger.warn(
                         "The MapDB in {} is incompatible with openHAB {}: {}. A new and empty MapDB will be used instead.",
                         dbFile, OpenHAB.getVersion(), cnf.getMessage());
