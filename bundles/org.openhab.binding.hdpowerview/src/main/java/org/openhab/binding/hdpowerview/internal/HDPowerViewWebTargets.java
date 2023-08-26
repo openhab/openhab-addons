@@ -76,7 +76,7 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {
-    private static final int REQUEST_TIMEOUT_MS = 20_000;
+    private static final int REQUEST_TIMEOUT_MS = 30_000;
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
 
