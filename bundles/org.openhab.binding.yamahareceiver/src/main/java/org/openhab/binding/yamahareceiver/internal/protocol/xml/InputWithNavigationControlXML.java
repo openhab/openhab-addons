@@ -43,8 +43,8 @@ import org.w3c.dom.Node;
  * menu.goToPath(menuDir);
  * menu.selectItem(stationName);
  *
+ * @author Dennis Frommknecht - Initial contribution
  * @author David Graeff - Completely refactored class
- * @author Dennis Frommknecht - Initial idea and implementaton
  * @author Tomasz Maruszak - Refactor
  */
 public class InputWithNavigationControlXML extends AbstractInputControlXML implements InputWithNavigationControl {
