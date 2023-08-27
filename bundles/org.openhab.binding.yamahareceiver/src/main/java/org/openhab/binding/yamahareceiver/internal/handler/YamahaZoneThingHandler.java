@@ -739,7 +739,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                 stateUpdatable.update();
             } catch (IOException e) {
                 logger.debug("State update error. Changing thing to offline", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (ReceivedMessageParseException e) {
                 String message = e.getMessage();
                 updateProperty(PROPERTY_LAST_PARSE_ERROR, message != null ? message : "");
