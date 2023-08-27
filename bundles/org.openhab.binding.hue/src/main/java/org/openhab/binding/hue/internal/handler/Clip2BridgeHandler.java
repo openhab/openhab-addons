@@ -555,14 +555,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Execute an HTTP PUT to send a Resource object to the server.
      *
      * @param resource the resource to put.
+     * @return the resource, which may contain errors.
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
      * @throws InterruptedException
      */
-    public void putResource(Resource resource) throws ApiException, AssetNotLoadedException, InterruptedException {
+    public Resources putResource(Resource resource) throws ApiException, AssetNotLoadedException, InterruptedException {
         logger.debug("putResource() {}", resource);
         checkAssetsLoaded();
-        getClip2Bridge().putResource(resource);
+        return getClip2Bridge().putResource(resource);
     }
 
     /**

@@ -1081,10 +1081,11 @@ public class Clip2Bridge implements Closeable {
      * accessing the session while it is being recreated.
      *
      * @param resource the resource to put.
+     * @return the resource, which may contain errors.
      * @throws ApiException if something fails.
      * @throws InterruptedException
      */
-    public void putResource(Resource resource) throws ApiException, InterruptedException {
+    public Resources putResource(Resource resource) throws ApiException, InterruptedException {
         Stream stream = null;
         try (Throttler throttler = new Throttler(MAX_CONCURRENT_STREAMS);
                 SessionSynchronizer sessionSynchronizer = new SessionSynchronizer(false)) {
@@ -1112,11 +1113,11 @@ public class Clip2Bridge implements Closeable {
             if (!MediaType.APPLICATION_JSON.equals(contentType)) {
                 throw new ApiException("Unexpected Content-Type: " + contentType);
             }
+            if (contentJson.isEmpty()) {
+                throw new ApiException("Response payload is empty");
+            }
             try {
-                Resources resources = Objects.requireNonNull(jsonParser.fromJson(contentJson, Resources.class));
-                if (resources.hasErrors()) {
-                    throw new ApiException(String.join("; ", resources.getErrors()));
-                }
+                return Objects.requireNonNull(jsonParser.fromJson(contentJson, Resources.class));
             } catch (JsonParseException e) {
                 LOGGER.debug("putResource() parsing error json:{}", contentJson, e);
                 throw new ApiException("Parsing error", e);
