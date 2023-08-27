@@ -287,11 +287,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                     zoneControl.setVolumeDB(((DecimalType) command).floatValue());
                     break;
                 case CHANNEL_VOLUME:
-                    if (command instanceof DecimalType decimalType) {
-                        zoneControl.setVolume(decimalType.floatValue());
-                    } else if (command instanceof IncreaseDecreaseType castedCommand) {
+                    if (command instanceof DecimalType decimalCommand) {
+                        zoneControl.setVolume(decimalCommand.floatValue());
+                    } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                         zoneControl.setVolumeRelative(zoneState,
-                                (castedCommand == IncreaseDecreaseType.INCREASE ? 1 : -1)
+                                (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1)
                                         * zoneConfig.getVolumeRelativeChangeFactor());
                     }
                     break;
@@ -377,11 +377,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                         return;
                     }
 
-                    if (command instanceof DecimalType commandAsDecimalType) {
-                        inputWithPresetControl.selectItemByPresetNumber(commandAsDecimalType.intValue());
-                    } else if (command instanceof StringType commandAsString) {
+                    if (command instanceof DecimalType decimalCommand) {
+                        inputWithPresetControl.selectItemByPresetNumber(decimalCommand.intValue());
+                    } else if (command instanceof StringType stringCommand) {
                         try {
-                            int v = Integer.valueOf(commandAsString.toString());
+                            int v = Integer.valueOf(stringCommand.toString());
                             inputWithPresetControl.selectItemByPresetNumber(v);
                         } catch (NumberFormatException e) {
                             logger.warn("Provide a number for {}", id);
@@ -426,15 +426,15 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                                 inputWithPlayControl.previousTrack();
                                 break;
                         }
-                    } else if (command instanceof DecimalType decimalType) {
-                        int v = decimalType.intValue();
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        int v = decimalCommand.intValue();
                         if (v < 0) {
                             inputWithPlayControl.skipREV();
                         } else if (v > 0) {
                             inputWithPlayControl.skipFF();
                         }
-                    } else if (command instanceof StringType stringType) {
-                        String v = stringType.toFullString();
+                    } else if (command instanceof StringType stringCommand) {
+                        String v = stringCommand.toFullString();
                         switch (v) {
                             case "Play":
                                 inputWithPlayControl.play();
