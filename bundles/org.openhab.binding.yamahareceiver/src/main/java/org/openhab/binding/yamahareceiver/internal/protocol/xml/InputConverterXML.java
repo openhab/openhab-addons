@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * XML implementation of {@link InputConverter}.
  *
- * @author Tomasz Maruszak - Initial contribution.
+ * @author Tomasz Maruszak - Initial contribution
  *
  */
 public class InputConverterXML implements InputConverter {

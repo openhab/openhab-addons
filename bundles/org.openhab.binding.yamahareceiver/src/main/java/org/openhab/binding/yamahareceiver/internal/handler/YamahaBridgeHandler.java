@@ -167,9 +167,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
                     systemControl.setPartyModeMute(((OnOffType) command) == OnOffType.ON);
                     break;
                 case CHANNEL_PARTY_MODE_VOLUME:
-                    if (command instanceof IncreaseDecreaseType) {
-                        systemControl
-                                .setPartyModeVolume(((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE);
+                    if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                        systemControl.setPartyModeVolume(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE);
                     } else {
                         logger.warn("Only {} and {} commands are supported for {}", IncreaseDecreaseType.DECREASE,
                                 IncreaseDecreaseType.DECREASE, id);
