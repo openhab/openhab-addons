@@ -1216,7 +1216,8 @@ public class GoogleTVConnectionManager {
                         message = "5204085b" + suffix;
                         break;
                     default:
-                        logger.debug("Unknown Key {}", command);
+                        logger.debug("Unknown Key {} - sending to vendor protocol", command);
+                        handler.sendCommandToProtocol(channelUID, command);
                         return;
                 }
                 sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(message)));

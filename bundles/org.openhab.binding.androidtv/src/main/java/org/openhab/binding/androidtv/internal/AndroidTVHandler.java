@@ -242,6 +242,14 @@ public class AndroidTVHandler extends BaseThingHandler {
                 TimeUnit.MILLISECONDS);
     }
 
+    public void sendCommandToProtocol(ChannelUID channelUID, Command command) {
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID) && (shieldtvConnectionManager != null)) {
+            shieldtvConnectionManager.handleCommand(channelUID, command);
+        } else if (THING_TYPE_PHILIPSTV.equals(thingTypeUID) && (philipstvConnectionManager != null)) {
+            philipstvConnectionManager.handleCommand(channelUID, command);
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId(), command);
@@ -321,9 +329,12 @@ public class AndroidTVHandler extends BaseThingHandler {
                         return;
                     }
                 }
+            } else if (CHANNEL_POWER.equals(channelUID.getId()) && !googletvConnectionManager.getLoggedIn()) {
+                philipstvConnectionManager.handleCommand(channelUID, command);
+                return;
             } else if (CHANNEL_APP.equals(channelUID.getId()) || CHANNEL_APPNAME.equals(channelUID.getId())
-                    || CHANNEL_TV_CHANNEL.equals(channelUID.getId())
-                    || CHANNEL_SEARCH_CONTENT.equals(channelUID.getId())
+                    || CHANNEL_TV_CHANNEL.equals(channelUID.getId()) || CHANNEL_VOLUME.equals(channelUID.getId())
+                    || CHANNEL_MUTE.equals(channelUID.getId()) || CHANNEL_SEARCH_CONTENT.equals(channelUID.getId())
                     || CHANNEL_BRIGHTNESS.equals(channelUID.getId()) || CHANNEL_SHARPNESS.equals(channelUID.getId())
                     || CHANNEL_CONTRAST.equals(channelUID.getId())
                     || channelUID.getId().startsWith(CHANNEL_AMBILIGHT)) {
