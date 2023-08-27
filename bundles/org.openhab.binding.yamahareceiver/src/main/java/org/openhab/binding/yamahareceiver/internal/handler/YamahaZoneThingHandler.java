@@ -287,11 +287,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                     zoneControl.setVolumeDB(((DecimalType) command).floatValue());
                     break;
                 case CHANNEL_VOLUME:
-                    if (command instanceof DecimalType) {
-                        zoneControl.setVolume(((DecimalType) command).floatValue());
-                    } else if (command instanceof IncreaseDecreaseType) {
+                    if (command instanceof DecimalType decimalType) {
+                        zoneControl.setVolume(decimalType.floatValue());
+                    } else if (command instanceof IncreaseDecreaseType castedCommand) {
                         zoneControl.setVolumeRelative(zoneState,
-                                (((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE ? 1 : -1)
+                                (castedCommand == IncreaseDecreaseType.INCREASE ? 1 : -1)
                                         * zoneConfig.getVolumeRelativeChangeFactor());
                     }
                     break;
@@ -377,11 +377,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                         return;
                     }
 
-                    if (command instanceof DecimalType) {
-                        inputWithPresetControl.selectItemByPresetNumber(((DecimalType) command).intValue());
-                    } else if (command instanceof StringType) {
+                    if (command instanceof DecimalType commandAsDecimalType) {
+                        inputWithPresetControl.selectItemByPresetNumber(commandAsDecimalType.intValue());
+                    } else if (command instanceof StringType commandAsString) {
                         try {
-                            int v = Integer.valueOf(((StringType) command).toString());
+                            int v = Integer.valueOf(commandAsString.toString());
                             inputWithPresetControl.selectItemByPresetNumber(v);
                         } catch (NumberFormatException e) {
                             logger.warn("Provide a number for {}", id);
@@ -408,8 +408,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                         return;
                     }
 
-                    if (command instanceof PlayPauseType) {
-                        PlayPauseType t = ((PlayPauseType) command);
+                    if (command instanceof PlayPauseType t) {
                         switch (t) {
                             case PAUSE:
                                 inputWithPlayControl.pause();
@@ -418,8 +417,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                                 inputWithPlayControl.play();
                                 break;
                         }
-                    } else if (command instanceof NextPreviousType) {
-                        NextPreviousType t = ((NextPreviousType) command);
+                    } else if (command instanceof NextPreviousType t) {
                         switch (t) {
                             case NEXT:
                                 inputWithPlayControl.nextTrack();
@@ -428,15 +426,15 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                                 inputWithPlayControl.previousTrack();
                                 break;
                         }
-                    } else if (command instanceof DecimalType) {
-                        int v = ((DecimalType) command).intValue();
+                    } else if (command instanceof DecimalType decimalType) {
+                        int v = decimalType.intValue();
                         if (v < 0) {
                             inputWithPlayControl.skipREV();
                         } else if (v > 0) {
                             inputWithPlayControl.skipFF();
                         }
-                    } else if (command instanceof StringType) {
-                        String v = ((StringType) command).toFullString();
+                    } else if (command instanceof StringType stringType) {
+                        String v = stringType.toFullString();
                         switch (v) {
                             case "Play":
                                 inputWithPlayControl.play();
