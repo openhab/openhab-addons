@@ -14,19 +14,17 @@ package org.openhab.binding.enocean.internal.eep.A5_10;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.types.State;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
+ * 
+ *         From A5_10_10 up to A5_10_14 temperature is given as a 8Bit value (range: 0..250!).
+ *         Therefore higher values mean higher temperatures.
+ *         Temperature range 0..40.
  */
 @NonNullByDefault
 public class A5_10_10 extends A5_10 {
-
-    // max 40 degree divided on a range of 0...250
-    protected final double tempFactor = 40.0 / 250.0;
 
     public A5_10_10(ERP1Message packet) {
         super(packet);
@@ -38,8 +36,22 @@ public class A5_10_10 extends A5_10 {
     }
 
     @Override
-    protected State getTemperature() {
-        double temp = (getDB1Value()) * tempFactor;
-        return new QuantityType<>(temp, SIUnits.CELSIUS);
+    protected double getMinTemperatureValue() {
+        return 0.0;
+    }
+
+    @Override
+    protected double getMinUnscaledTemperatureValue() {
+        return 0.0;
+    }
+
+    @Override
+    protected double getMaxTemperatureValue() {
+        return 40.0;
+    }
+
+    @Override
+    protected double getMaxUnscaledTemperatureValue() {
+        return 250.0;
     }
 }

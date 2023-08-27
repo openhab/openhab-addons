@@ -18,6 +18,7 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -33,6 +34,10 @@ import org.openhab.core.types.UnDefType;
 /**
  *
  * @author Daniel Weber - Initial contribution
+ * 
+ *         From A5_10_01 up to A5_10_0D temperature is given as a 8Bit value (range: 255..0).
+ *         Therefore higher values mean lower temperatures.
+ *         Temperature range 0..40.
  */
 @NonNullByDefault
 public abstract class A5_10 extends _4BSMessage {
@@ -46,17 +51,31 @@ public abstract class A5_10 extends _4BSMessage {
         return getDB2Value();
     }
 
-    protected double getMaxUnscaledValue() {
+    protected double getMinTemperatureValue() {
+        return 0.0;
+    }
+
+    protected double getMinUnscaledTemperatureValue() {
         return 255.0;
     }
 
-    protected double getTempScalingFactor() {
-        return -6.375; // 255/40
+    protected double getMaxTemperatureValue() {
+        return 40.0;
+    }
+
+    protected double getMaxUnscaledTemperatureValue() {
+        return 0.0;
+    }
+
+    protected double getTemperatureValue() {
+        return getDB1Value();
     }
 
     protected State getTemperature() {
-        double temp = (getDB1Value() - getMaxUnscaledValue()) / getTempScalingFactor();
-        return new QuantityType<>(temp, SIUnits.CELSIUS);
+        return new QuantityType<>(
+                Helper.scaleValue(getTemperatureValue(), getMinUnscaledTemperatureValue(),
+                        getMaxUnscaledTemperatureValue(), getMinTemperatureValue(), getMaxTemperatureValue()),
+                SIUnits.CELSIUS);
     }
 
     protected State getFanSpeedStage() {
