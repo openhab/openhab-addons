@@ -494,7 +494,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         } else if (id.equals(grpZone(CHANNEL_SURROUND))) {
             updateState(channelUID, new StringType(zoneState.surroundProgram));
         } else if (id.equals(grpZone(CHANNEL_SCENE))) {
-            logger.debug("no state updates available");
+            logger.debug("No state updates available");
         } else if (id.equals(grpZone(CHANNEL_DIALOGUE_LEVEL))) {
             updateState(channelUID, new DecimalType(zoneState.dialogueLevel));
         } else if (id.equals(grpZone(CHANNEL_HDMI1OUT))) {
