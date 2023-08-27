@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.Instant;
+import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -34,12 +35,19 @@ public class UtilsTest {
 
     @Test
     public void formatDateTest2() {
-        assertThat(Utils.formatDate(Instant.EPOCH), startsWith("1970-01-01 "));
-        assertThat(Utils.formatDate(Instant.EPOCH), endsWith(":00"));
+        assertThat(Utils.formatDate(Instant.EPOCH), is("(expired)"));
     }
 
     @Test
     public void formatDateTest3() {
+        // 2012-04-06 13:56:11 CEST
+        Instant customDate = new Date(1333713371337L).toInstant();
+        assertThat(Utils.formatDate(customDate), startsWith("2012-04-06 "));
+        assertThat(Utils.formatDate(customDate), endsWith(":11"));
+    }
+
+    @Test
+    public void formatDateTest4() {
         // formatter cannot handle this date (at least in timezone CEST but should return default toString()
         assertThat(Utils.formatDate(Instant.MIN), startsWith("-1000000000-01-01"));
     }
