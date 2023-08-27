@@ -1106,7 +1106,7 @@ public class Clip2Bridge implements Closeable {
             String contentType = contentStreamListener.getContentType();
             int status = contentStreamListener.getStatus();
             LOGGER.trace("HTTP/2 {} (Content-Type: {}) << {}", status, contentType, contentJson);
-            if (status != HttpStatus.OK_200) {
+            if (!HttpStatus.isSuccess(status)) {
                 throw new ApiException(String.format("Unexpected HTTP status '%d'", status));
             }
             if (!MediaType.APPLICATION_JSON.equals(contentType)) {
@@ -1114,8 +1114,8 @@ public class Clip2Bridge implements Closeable {
             }
             try {
                 Resources resources = Objects.requireNonNull(jsonParser.fromJson(contentJson, Resources.class));
-                if (LOGGER.isDebugEnabled()) {
-                    resources.getErrors().forEach(error -> LOGGER.debug("putResource() resources error:{}", error));
+                if (resources.hasErrors()) {
+                    throw new ApiException(String.join("; ", resources.getErrors()));
                 }
             } catch (JsonParseException e) {
                 LOGGER.debug("putResource() parsing error json:{}", contentJson, e);

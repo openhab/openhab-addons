@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.dto.clip2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -29,7 +28,11 @@ public class Resources {
     private List<Resource> data = new ArrayList<>();
 
     public List<String> getErrors() {
-        return errors.stream().map(Error::getDescription).collect(Collectors.toList());
+        return errors.stream().map(Error::getDescription).toList();
+    }
+
+    public boolean hasErrors() {
+        return !errors.isEmpty();
     }
 
     public List<Resource> getResources() {
