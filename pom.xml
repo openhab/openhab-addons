@@ -301,11 +301,11 @@ Import-Package: \\
           <version>3.10.1</version>
           <configuration>
             <compilerId>eclipse</compilerId>
-            <compilerArguments>
-              <annotationpath>CLASSPATH</annotationpath>
-              <classpath>${project.build.directory}/dependency</classpath>
-            </compilerArguments>
             <compilerArgs>
+              <arg>-annotationpath</arg>
+              <arg>CLASSPATH</arg>
+              <arg>-classpath</arg>
+              <arg>${project.build.directory}/dependency</arg>
               <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion</arg>
               <arg>-warn:+null,+inheritNullAnnot,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
               <arg>-nowarn:[${project.build.directory}/generated-sources]</arg>
