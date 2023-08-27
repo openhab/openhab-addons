@@ -219,7 +219,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                             // Convert cmdString from RPM to Percent
                             if (pumpMaxRpm != null && pumpMaxSpeed != null && pumpMinSpeed != null) {
                                 cmdString = Integer
-                                        .toString((Integer.parseInt(cmdString) * 100 / Integer.parseInt(pumpMaxSpeed)));
+                                        .toString((Integer.parseInt(cmdString) * 100 / Integer.parseInt(pumpMaxRpm)));
                                 if (Integer.parseInt(cmdString) > 0
                                         && Integer.parseInt(cmdString) < Integer.parseInt(pumpMinSpeed)) {
                                     cmdString = pumpMinSpeed;
