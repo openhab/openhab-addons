@@ -32,12 +32,11 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- *
- * @author Daniel Weber - Initial contribution
+ * From A5_10_01 up to A5_10_0D temperature is given as a 8Bit value (range: 255..0).
+ * Therefore higher values mean lower temperatures.
+ * Temperature range 0..40.
  * 
- *         From A5_10_01 up to A5_10_0D temperature is given as a 8Bit value (range: 255..0).
- *         Therefore higher values mean lower temperatures.
- *         Temperature range 0..40.
+ * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
 public abstract class A5_10 extends _4BSMessage {

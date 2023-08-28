@@ -16,12 +16,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
- *
- * @author Daniel Weber - Initial contribution
+ * From A5_10_15 up to A5_10_17 temperature is given as a 10Bit value (range: 1023..0).
+ * Therefore higher values mean lower temperatures.
+ * Temperature range -10..41.2.
  * 
- *         From A5_10_15 up to A5_10_17 temperature is given as a 10Bit value (range: 1023..0).
- *         Therefore higher values mean lower temperatures.
- *         Temperature range -10..41.2.
+ * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
 public class A5_10_15 extends A5_10 {

@@ -18,12 +18,11 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
- *
- * @author Daniel Weber - Initial contribution
+ * From A5_10_18 up to A5_10_17 temperature is given as a 8Bit value (range: 250(!)..0).
+ * Therefore higher values mean lower temperatures.
+ * Temperature range 0..40.
  * 
- *         From A5_10_18 up to A5_10_17 temperature is given as a 8Bit value (range: 250(!)..0).
- *         Therefore higher values mean lower temperatures.
- *         Temperature range 0..40.
+ * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
 public class A5_10_18 extends A5_10 {
