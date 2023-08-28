@@ -322,25 +322,27 @@ public class AndroidTVHandler extends BaseThingHandler {
         }
 
         if (THING_TYPE_PHILIPSTV.equals(thingTypeUID) && (philipstvConnectionManager != null)) {
-            if (CHANNEL_PINCODE.equals(channelUID.getId())) {
-                if (command instanceof StringType) {
-                    if (!philipstvConnectionManager.getLoggedIn()) {
-                        philipstvConnectionManager.handleCommand(channelUID, command);
-                        return;
+            if (googletvConnectionManager != null) {
+                if (CHANNEL_PINCODE.equals(channelUID.getId())) {
+                    if (command instanceof StringType) {
+                        if (!philipstvConnectionManager.getLoggedIn()) {
+                            philipstvConnectionManager.handleCommand(channelUID, command);
+                            return;
+                        }
                     }
+                } else if (CHANNEL_POWER.equals(channelUID.getId()) && !googletvConnectionManager.getLoggedIn()) {
+                    philipstvConnectionManager.handleCommand(channelUID, command);
+                    return;
+                } else if (CHANNEL_APP.equals(channelUID.getId()) || CHANNEL_APPNAME.equals(channelUID.getId())
+                        || CHANNEL_TV_CHANNEL.equals(channelUID.getId()) || CHANNEL_VOLUME.equals(channelUID.getId())
+                        || CHANNEL_MUTE.equals(channelUID.getId()) || CHANNEL_SEARCH_CONTENT.equals(channelUID.getId())
+                        || CHANNEL_BRIGHTNESS.equals(channelUID.getId()) || CHANNEL_SHARPNESS.equals(channelUID.getId())
+                        || CHANNEL_CONTRAST.equals(channelUID.getId())
+                        || channelUID.getId().startsWith(CHANNEL_AMBILIGHT)) {
+                    philipstvConnectionManager.handleCommand(channelUID, command);
+                    return;
                 }
-            } else if (CHANNEL_POWER.equals(channelUID.getId()) && !googletvConnectionManager.getLoggedIn()) {
-                philipstvConnectionManager.handleCommand(channelUID, command);
-                return;
-            } else if (CHANNEL_APP.equals(channelUID.getId()) || CHANNEL_APPNAME.equals(channelUID.getId())
-                    || CHANNEL_TV_CHANNEL.equals(channelUID.getId()) || CHANNEL_VOLUME.equals(channelUID.getId())
-                    || CHANNEL_MUTE.equals(channelUID.getId()) || CHANNEL_SEARCH_CONTENT.equals(channelUID.getId())
-                    || CHANNEL_BRIGHTNESS.equals(channelUID.getId()) || CHANNEL_SHARPNESS.equals(channelUID.getId())
-                    || CHANNEL_CONTRAST.equals(channelUID.getId())
-                    || channelUID.getId().startsWith(CHANNEL_AMBILIGHT)) {
-                philipstvConnectionManager.handleCommand(channelUID, command);
-                return;
-            } else if (googletvConnectionManager == null) {
+            } else {
                 philipstvConnectionManager.handleCommand(channelUID, command);
                 return;
             }
