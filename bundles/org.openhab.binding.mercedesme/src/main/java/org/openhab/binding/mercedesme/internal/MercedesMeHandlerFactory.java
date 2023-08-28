@@ -23,6 +23,7 @@ import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.StorageService;
@@ -54,6 +55,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(MercedesMeHandlerFactory.class);
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
+    private final LocaleProvider localeProvider;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final StorageService storageService;
@@ -61,10 +63,12 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public MercedesMeHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory hcf,
-            @Reference StorageService storageService, final @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop, final @Reference TimeZoneProvider tzp) {
+            @Reference StorageService storageService, final @Reference LocaleProvider lp,
+            @Reference MercedesMeCommandOptionProvider cop, final @Reference MercedesMeStateOptionProvider sop,
+            final @Reference TimeZoneProvider tzp) {
         this.oAuthFactory = oAuthFactory;
         this.storageService = storageService;
+        localeProvider = lp;
         mmcop = cop;
         mmsop = sop;
         timeZoneProvider = tzp;
@@ -87,7 +91,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClient, oAuthFactory);
+            return new AccountHandler((Bridge) thing, httpClient, oAuthFactory, localeProvider);
         }
         return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop,
                 timeZoneProvider);

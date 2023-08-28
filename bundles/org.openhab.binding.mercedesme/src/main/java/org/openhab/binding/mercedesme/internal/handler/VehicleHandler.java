@@ -18,15 +18,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -42,8 +37,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.util.MultiMap;
-import org.eclipse.jetty.util.UrlEncoded;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -56,7 +49,6 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -68,10 +60,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,13 +171,6 @@ public class VehicleHandler extends BaseThingHandler {
             if (handler != null) {
                 accountHandler = Optional.of((AccountHandler) handler);
                 startSchedule(config.get().refreshInterval);
-                if (!config.get().vin.equals(NOT_SET)) {
-                    imageStorage = Optional.of(storageService.getStorage(BINDING_ID + "_" + config.get().vin));
-                    if (!imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
-                        getImageResources();
-                    }
-                    setImageOtions();
-                }
                 updateState(new ChannelUID(thing.getUID(), GROUP_IMAGE, "clear-cache"), OnOffType.OFF);
             } else {
                 throw new IllegalStateException("BridgeHandler is null");
@@ -231,11 +214,6 @@ public class VehicleHandler extends BaseThingHandler {
         // Mileage for all cars
         String odoUrl = String.format(ODO_URL, config.get().vin);
         if (accountConfigAvailable()) {
-            if (accountHandler.get().config.get().odoScope) {
-                call(odoUrl);
-            } else {
-                logger.trace("{} Odo scope not activated", this.getThing().getLabel());
-            }
         } else {
             logger.trace("{} Account not properly configured", this.getThing().getLabel());
         }
@@ -244,11 +222,6 @@ public class VehicleHandler extends BaseThingHandler {
         if (uid.equals(BEV) || uid.equals(HYBRID)) {
             String evUrl = String.format(EV_URL, config.get().vin);
             if (accountConfigAvailable()) {
-                if (accountHandler.get().config.get().evScope) {
-                    call(evUrl);
-                } else {
-                    logger.trace("{} Electric Status scope not activated", this.getThing().getLabel());
-                }
             } else {
                 logger.trace("{} Account not properly configured", this.getThing().getLabel());
             }
@@ -258,11 +231,6 @@ public class VehicleHandler extends BaseThingHandler {
         if (uid.equals(COMBUSTION) || uid.equals(HYBRID)) {
             String fuelUrl = String.format(FUEL_URL, config.get().vin);
             if (accountConfigAvailable()) {
-                if (accountHandler.get().config.get().fuelScope) {
-                    call(fuelUrl);
-                } else {
-                    logger.trace("{} Fuel scope not activated", this.getThing().getLabel());
-                }
             } else {
                 logger.trace("{} Account not properly configured", this.getThing().getLabel());
             }
@@ -271,21 +239,11 @@ public class VehicleHandler extends BaseThingHandler {
         // Status and Lock for all
         String statusUrl = String.format(STATUS_URL, config.get().vin);
         if (accountConfigAvailable()) {
-            if (accountHandler.get().config.get().vehicleScope) {
-                call(statusUrl);
-            } else {
-                logger.trace("{} Vehicle Status scope not activated", this.getThing().getLabel());
-            }
         } else {
             logger.trace("{} Account not properly configured", this.getThing().getLabel());
         }
         String lockUrl = String.format(LOCK_URL, config.get().vin);
         if (accountConfigAvailable()) {
-            if (accountHandler.get().config.get().lockScope) {
-                call(lockUrl);
-            } else {
-                logger.trace("{} Lock scope not activated", this.getThing().getLabel());
-            }
         } else {
             logger.trace("{} Account not properly configured", this.getThing().getLabel());
         }

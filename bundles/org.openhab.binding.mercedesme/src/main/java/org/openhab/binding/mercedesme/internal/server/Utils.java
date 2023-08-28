@@ -25,6 +25,8 @@ import org.openhab.binding.mercedesme.internal.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link Utils} class defines an HTTP Server for authentication callbacks
  *
@@ -35,6 +37,8 @@ public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
     private static final List<Integer> PORTS = new ArrayList<>();
     private static int port = 8090;
+
+    public static final Gson GSON = new Gson();
 
     /**
      * Get free port without other Thread interference
@@ -88,5 +92,94 @@ public class Utils {
 
     public static String getCallbackAddress(String callbackIP, int callbackPort) {
         return "http://" + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
+    }
+
+    public static String getRestAPIServer(String region) {
+        switch (region) {
+            case Constants.REGION_APAC:
+                return Constants.REST_API_BASE_PA;
+            case Constants.REGION_CHINA:
+                return Constants.REST_API_BASE_CN;
+            case Constants.REGION_NORAM:
+                return Constants.REST_API_BASE_NA;
+            default:
+                return Constants.REST_API_BASE;
+        }
+    }
+
+    public static String getLoginServer(String region) {
+        switch (region) {
+            case Constants.REGION_APAC:
+                return Constants.LOGIN_BASE_URI_PA;
+            case Constants.REGION_CHINA:
+                return Constants.LOGIN_BASE_URI_CN;
+            case Constants.REGION_NORAM:
+                return Constants.LOGIN_BASE_URI_NA;
+            default:
+                return Constants.LOGIN_BASE_URI;
+        }
+    }
+
+    public static String getApplication(String region) {
+        switch (region) {
+            case Constants.REGION_APAC:
+                return Constants.X_APPLICATIONNAME_AP;
+            case Constants.REGION_CHINA:
+                return Constants.X_APPLICATIONNAME_CN;
+            case Constants.REGION_NORAM:
+                return Constants.X_APPLICATIONNAME_US;
+            default:
+                return Constants.X_APPLICATIONNAME;
+        }
+    }
+
+    public static String getRisApplicationVersion(String region) {
+        switch (region) {
+            case Constants.REGION_APAC:
+                return Constants.RIS_APPLICATION_VERSION_PA;
+            case Constants.REGION_CHINA:
+                return Constants.RIS_APPLICATION_VERSION_CN;
+            case Constants.REGION_NORAM:
+                return Constants.RIS_APPLICATION_VERSION_NA;
+            default:
+                return Constants.RIS_APPLICATION_VERSION;
+        }
+    }
+
+    public static String getUserAgent(String region) {
+        switch (region) {
+            case Constants.REGION_APAC:
+                return Constants.WEBSOCKET_USER_AGENT_PA;
+            case Constants.REGION_CHINA:
+                return Constants.WEBSOCKET_USER_AGENT_CN;
+            default:
+                return Constants.WEBSOCKET_USER_AGENT;
+        }
+    }
+
+    public static String getRisSDKVersion(String region) {
+        switch (region) {
+            case Constants.REGION_CHINA:
+                return Constants.RIS_SDK_VERSION_CN;
+            default:
+                return Constants.RIS_SDK_VERSION;
+        }
+    }
+
+    public static String getAuthURL(String region) {
+        return getRestAPIServer(region) + "/v1/login";
+    }
+
+    public static String getTokenUrl(String region) {
+        return getLoginServer(region) + "/as/token.oauth2";
+    }
+
+    public static String getLoginAppId(String region) {
+        switch (region) {
+            case Constants.REGION_CHINA:
+                return Constants.LOGIN_APP_ID_CN;
+            default:
+                return Constants.LOGIN_APP_ID;
+        }
     }
 }
