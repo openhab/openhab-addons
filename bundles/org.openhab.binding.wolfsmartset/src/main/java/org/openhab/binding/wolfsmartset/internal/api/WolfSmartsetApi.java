@@ -125,7 +125,6 @@ public class WolfSmartsetApi {
                 logger.trace("Login succeeded but failed to create session {}", loginFailedCounter);
                 return false;
             }
-
         } catch (WolfSmartsetCloudException e) {
             logger.debug("Error logging on to Wolf Smartset ({}): {}", loginFailedCounter, e.getMessage());
             loginFailedCounter++;
