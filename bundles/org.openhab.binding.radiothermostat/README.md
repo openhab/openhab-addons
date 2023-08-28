@@ -257,8 +257,13 @@ when
 then
   // Display up to 5 numbers in the thermostat's Price Message Area (PMA)
   // A decimal point can be used. CT80 can display a negative '-' number
-  // Send null or empty string to clear the number and restore the time display
-  var Number temp = Math.round((OutsideTemp.state as DecimalType).doubleValue).intValue
+  // Sends empty string to clear the number and restore the time display if OutsideTemp is undefined
+  var temp = ""
+
+  if (newState != null && newState != UNDEF) {
+      temp = Math.round((newState as DecimalType).doubleValue).intValue.toString
+  }
+
   Therm_Message.sendCommand(temp)
 end
 ```
