@@ -339,7 +339,7 @@ public class Clip2Bridge implements Closeable {
         RESET,
         IDLE,
         GO_AWAY,
-        UNAUTHORIZED;
+        UNAUTHORIZED
     }
 
     /**
@@ -445,7 +445,7 @@ public class Clip2Bridge implements Closeable {
     /**
      * Enum showing the online state of the session connection.
      */
-    private static enum State {
+    private enum State {
         /**
          * Session closed
          */
@@ -457,7 +457,7 @@ public class Clip2Bridge implements Closeable {
         /**
          * Session open for HTTP calls and actively receiving SSE events
          */
-        ACTIVE;
+        ACTIVE
     }
 
     /**
@@ -837,8 +837,8 @@ public class Clip2Bridge implements Closeable {
             }
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof HttpUnauthorizedException) {
-                throw (HttpUnauthorizedException) cause;
+            if (cause instanceof HttpUnauthorizedException httpUnAuthorizedException) {
+                throw httpUnAuthorizedException;
             }
             throw new ApiException("Error sending request", e);
         } catch (TimeoutException e) {

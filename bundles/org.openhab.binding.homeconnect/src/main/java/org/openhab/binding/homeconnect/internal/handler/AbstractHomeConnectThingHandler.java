@@ -453,8 +453,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof HomeConnectBridgeHandler) {
-                return Optional.of((HomeConnectBridgeHandler) bridgeHandler);
+            if (bridgeHandler instanceof HomeConnectBridgeHandler handler) {
+                return Optional.of(handler);
             }
         }
         return Optional.empty();
@@ -537,7 +537,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * @param channelUID channel UID
      */
     protected void updateChannel(ChannelUID channelUID) {
-        if (!getApiClient().isPresent()) {
+        if (getApiClient().isEmpty()) {
             logger.error("Cannot update channel. No instance of api client found! thing={}, haId={}", getThingLabel(),
                     getThingHaId());
             return;
@@ -1206,8 +1206,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected void handleTemperatureCommand(final ChannelUID channelUID, final Command command,
             final HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        if (command instanceof QuantityType) {
-            QuantityType<?> quantity = (QuantityType<?>) command;
+        if (command instanceof QuantityType quantity) {
 
             String value;
             String unit;
@@ -1272,10 +1271,10 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     } else {
                         newBrightness = currentBrightness - BRIGHTNESS_DIM_STEP;
                     }
-                } else if (command instanceof PercentType) {
-                    newBrightness = (int) Math.floor(((PercentType) command).doubleValue());
-                } else if (command instanceof DecimalType) {
-                    newBrightness = ((DecimalType) command).intValue();
+                } else if (command instanceof PercentType type) {
+                    newBrightness = (int) Math.floor(type.doubleValue());
+                } else if (command instanceof DecimalType type) {
+                    newBrightness = type.intValue();
                 }
 
                 // check in in range
@@ -1308,8 +1307,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     apiClient.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
                 }
 
-                if (command instanceof HSBType) {
-                    apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor((HSBType) command));
+                if (command instanceof HSBType type) {
+                    apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor(type));
                 } else if (command instanceof StringType) {
                     apiClient.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
                 }
@@ -1546,9 +1545,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     .filter(option -> OPTION_DRYER_DRYING_TARGET.equals(option.getKey())).findFirst();
 
             // Save options in cache only if we got options for all expected channels
-            if (cacheToSet && (!channelSpinSpeed.isPresent() || optionsSpinSpeed.isPresent())
-                    && (!channelTemperature.isPresent() || optionsTemperature.isPresent())
-                    && (!channelDryingTarget.isPresent() || optionsDryingTarget.isPresent())) {
+            if (cacheToSet && (channelSpinSpeed.isEmpty() || optionsSpinSpeed.isPresent())
+                    && (channelTemperature.isEmpty() || optionsTemperature.isPresent())
+                    && (channelDryingTarget.isEmpty() || optionsDryingTarget.isPresent())) {
                 logger.debug("Saving options in cache for program '{}'.", programKey);
                 availableProgramOptionsCache.put(programKey, availableProgramOptions);
             }
@@ -1673,7 +1672,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private boolean addUnsupportedProgramInCache(String programKey) {
         Optional<AvailableProgram> prog = programsCache.stream().filter(program -> programKey.equals(program.getKey()))
                 .findFirst();
-        if (!prog.isPresent()) {
+        if (prog.isEmpty()) {
             programsCache.add(new AvailableProgram(programKey, false));
             logger.debug("{} added in programs cache as an unsupported program", programKey);
             return true;

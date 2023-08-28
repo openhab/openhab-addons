@@ -131,7 +131,7 @@ public class MiCloudConnector {
     }
 
     private String getApiUrl(String country) {
-        return "https://" + (country.trim().equalsIgnoreCase("cn") ? "" : country.trim().toLowerCase() + ".")
+        return "https://" + ("cn".equalsIgnoreCase(country.trim()) ? "" : country.trim().toLowerCase() + ".")
                 + "api.io.mi.com/app";
     }
 
@@ -180,8 +180,7 @@ public class MiCloudConnector {
     }
 
     public String getDeviceStatus(String device, String country) throws MiCloudException {
-        final String response = request("/home/device_list", country, "{\"dids\":[\"" + device + "\"]}");
-        return response;
+        return request("/home/device_list", country, "{\"dids\":[\"" + device + "\"]}");
     }
 
     public String sendRPCCommand(String device, String country, String command) throws MiCloudException {
@@ -195,12 +194,11 @@ public class MiCloudConnector {
         try {
             id = String.valueOf(Long.parseUnsignedLong(device, 16));
         } catch (NumberFormatException e) {
-            String err = "Could not parse device ID ('" + device.toString() + "')";
+            String err = "Could not parse device ID ('" + device + "')";
             logger.debug("{}", err);
             throw new MiCloudException(err, e);
         }
-        final String response = request("/home/rpc/" + id, country, command);
-        return response;
+        return request("/home/rpc/" + id, country, command);
     }
 
     public List<CloudDeviceDTO> getDevices(String country) {
@@ -476,8 +474,14 @@ public class MiCloudConnector {
         if (0 != jsonResp.getSecurityStatus()) {
             logger.debug("Xiaomi Cloud Step2 response: {}", parseJson(content2));
             logger.debug(
-                    "Xiaomi Login code: {} \r\nSecurityStatus: {}\r\nPwd code: {}\r\nLocation logon URL: {}\r\nIn case of login issues check userId/password details are correct.\r\n"
-                            + "If login details are correct, try to logon using browser from the openHAB ip using the browser. Alternatively try to complete logon with above URL.",
+                    """
+                            Xiaomi Login code: {}
+                            SecurityStatus: {}
+                            Pwd code: {}
+                            Location logon URL: {}
+                            In case of login issues check userId/password details are correct.
+                            If login details are correct, try to logon using browser from the openHAB ip using the browser. Alternatively try to complete logon with above URL.\
+                            """,
                     jsonResp.getCode(), jsonResp.getSecurityStatus(), jsonResp.getPwd(), jsonResp.getLocation());
         }
         if (logger.isTraceEnabled()) {

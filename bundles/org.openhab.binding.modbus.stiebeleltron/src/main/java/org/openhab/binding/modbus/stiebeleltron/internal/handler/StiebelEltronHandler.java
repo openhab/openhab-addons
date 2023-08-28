@@ -220,16 +220,15 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *         the stiebel eltron modbus documentation)
      */
     private short getScaledInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof QuantityType) {
-            QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
+        if (command instanceof QuantityType temperature) {
+            QuantityType<?> c = temperature.toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
             } else {
                 throw new StiebelEltronException("Unsupported unit");
             }
         }
-        if (command instanceof DecimalType) {
-            DecimalType c = (DecimalType) command;
+        if (command instanceof DecimalType c) {
             return (short) (c.doubleValue() * 10);
         }
         throw new StiebelEltronException("Unsupported command type");
@@ -240,8 +239,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @return short the value of the command as short
      */
     private short getInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof DecimalType) {
-            DecimalType c = (DecimalType) command;
+        if (command instanceof DecimalType c) {
             return c.shortValue();
         }
         throw new StiebelEltronException("Unsupported command type");
@@ -479,9 +477,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             throw new IllegalStateException("Unexpected bridge handler: " + handler.toString());
         }

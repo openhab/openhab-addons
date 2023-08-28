@@ -122,6 +122,7 @@ public class DishwasherHandler extends MieleApplianceHandler<DishwasherChannelSe
         updateSwitchStartStopFromState(dp);
     }
 
+    @Override
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
         if (extendedDeviceState.length < EXTENDED_STATE_MIN_SIZE_BYTES) {
             logger.debug("Insufficient extended state data to extract consumption values: {}", extendedDeviceState);

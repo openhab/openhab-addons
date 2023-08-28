@@ -94,7 +94,7 @@ public class MiotJsonFileCreator {
                         }
                     }
                     miotParser.writeDevice(fileName, device);
-                    String channelsJson = GSON.toJson(device.getDevice().getChannels()).toString();
+                    String channelsJson = GSON.toJson(device.getDevice().getChannels());
                     checksums.put(model, checksumMD5(channelsJson));
                 }
                 LOGGER.info("Finished");

@@ -83,15 +83,15 @@ public class ColorValue extends Value {
     @Override
     public HSBType parseCommand(Command command) throws IllegalArgumentException {
         HSBType oldvalue = (state == UnDefType.UNDEF) ? new HSBType() : (HSBType) state;
-        if (command instanceof HSBType) {
-            return (HSBType) command;
-        } else if (command instanceof OnOffType) {
-            OnOffType boolValue = ((OnOffType) command);
+        if (command instanceof HSBType hsb) {
+            return hsb;
+        } else if (command instanceof OnOffType sw) {
+            OnOffType boolValue = sw;
             PercentType minOn = new PercentType(Math.max(oldvalue.getBrightness().intValue(), onBrightness));
             return new HSBType(oldvalue.getHue(), oldvalue.getSaturation(),
                     boolValue == OnOffType.ON ? minOn : new PercentType(0));
-        } else if (command instanceof PercentType) {
-            return new HSBType(oldvalue.getHue(), oldvalue.getSaturation(), (PercentType) command);
+        } else if (command instanceof PercentType brightness) {
+            return new HSBType(oldvalue.getHue(), oldvalue.getSaturation(), brightness);
         } else {
             final String updatedValue = command.toString();
             if (onValue.equals(updatedValue)) {

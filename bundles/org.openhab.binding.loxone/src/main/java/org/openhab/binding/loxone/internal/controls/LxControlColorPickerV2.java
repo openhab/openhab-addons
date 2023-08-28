@@ -70,20 +70,20 @@ class LxControlColorPickerV2 extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (command instanceof HSBType) {
-            setColor((HSBType) command);
+        if (command instanceof HSBType hsb) {
+            setColor(hsb);
         } else if (command instanceof OnOffType) {
             if (command == OnOffType.ON) {
                 on();
             } else {
                 off();
             }
-        } else if (command instanceof DecimalType) {
-            setBrightness((DecimalType) command);
-        } else if (command instanceof PercentType) {
-            setBrightness((PercentType) command);
-        } else if (command instanceof IncreaseDecreaseType) {
-            if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
+        } else if (command instanceof DecimalType brightness) {
+            setBrightness(brightness);
+        } else if (command instanceof PercentType brightness) {
+            setBrightness(brightness);
+        } else if (command instanceof IncreaseDecreaseType incdec) {
+            if (incdec.equals(IncreaseDecreaseType.INCREASE)) {
                 increaseDecreaseBrightness(1);
             } else {
                 increaseDecreaseBrightness(-1);

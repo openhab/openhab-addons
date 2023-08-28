@@ -583,8 +583,8 @@ public class Resource {
     }
 
     public Resource setEnabled(Command command) {
-        if (command instanceof OnOffType) {
-            this.enabled = ((OnOffType) command) == OnOffType.ON;
+        if (command instanceof OnOffType sw) {
+            this.enabled = sw == OnOffType.ON;
         }
         return this;
     }
@@ -614,8 +614,7 @@ public class Resource {
      * @return this resource instance.
      */
     public Resource setOnOff(Command command) {
-        if (command instanceof OnOffType) {
-            OnOffType onOff = (OnOffType) command;
+        if (command instanceof OnOffType onOff) {
             OnState on = this.on;
             on = Objects.nonNull(on) ? on : new OnState();
             on.setOn(OnOffType.ON.equals(onOff));

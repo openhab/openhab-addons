@@ -386,7 +386,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(miot ? MiotParser.toJson(device) : GSONP.toJson(device));
             logger.debug("Experimental database file created: {}", dataFile.getAbsolutePath());
-            return dataFile.getAbsolutePath().toString();
+            return dataFile.getAbsolutePath();
         } catch (IOException e) {
             logger.info("Error writing database file {}: {}", dataFile.getAbsolutePath(), e.getMessage());
         }
@@ -402,7 +402,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(sb.toString());
             logger.debug("Saved device testing file to {}", dataFile.getAbsolutePath());
-            return dataFile.getAbsolutePath().toString();
+            return dataFile.getAbsolutePath();
         } catch (IOException e) {
             logger.info("Error writing file {}: {}", dataFile.getAbsolutePath(), e.getMessage());
         }

@@ -107,8 +107,7 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HueBridgeHandler) {
-            HueBridgeHandler localHandler = (HueBridgeHandler) handler;
+        if (handler instanceof HueBridgeHandler localHandler) {
             hueBridgeHandler = localHandler;
             bridgeUID = handler.getThing().getUID();
             i18nProvider = localHandler.getI18nProvider();

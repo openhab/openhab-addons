@@ -174,8 +174,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 }
                 break;
             case CHANNEL_TYPE_TARGETTEMP:
-                if (command instanceof QuantityType) {
-                    QuantityType<?> celsiusTemperature = (QuantityType<?>) command;
+                if (command instanceof QuantityType celsiusTemperature) {
                     celsiusTemperature = celsiusTemperature.toUnit(SIUnits.CELSIUS);
                     if (celsiusTemperature != null) {
                         double doubleValue = celsiusTemperature.doubleValue();

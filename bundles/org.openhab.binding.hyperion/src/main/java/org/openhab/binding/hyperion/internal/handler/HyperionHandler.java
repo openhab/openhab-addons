@@ -255,8 +255,7 @@ public class HyperionHandler extends BaseThingHandler {
     }
 
     private void handleBrightness(Command command) throws IOException, CommandUnsuccessfulException {
-        if (command instanceof PercentType) {
-            PercentType percent = (PercentType) command;
+        if (command instanceof PercentType percent) {
             Transform transform = new Transform();
             transform.setLuminanceGain(percent.doubleValue() / 100);
             TransformCommand transformCommand = new TransformCommand(transform);
@@ -267,8 +266,7 @@ public class HyperionHandler extends BaseThingHandler {
     }
 
     private void handleColor(Command command) throws IOException, CommandUnsuccessfulException {
-        if (command instanceof HSBType) {
-            HSBType color = (HSBType) command;
+        if (command instanceof HSBType color) {
             Color c = new Color(color.getRGB());
             int r = c.getRed();
             int g = c.getGreen();

@@ -103,10 +103,10 @@ public class ValueConverter extends Converter {
      */
     @Override
     public State onStateUpdateFromHandler(State state) throws LcnException {
-        if (state instanceof DecimalType) {
+        if (state instanceof DecimalType type) {
             Unit<?> localUnit = unit;
             if (localUnit != null) {
-                return QuantityType.valueOf(toHumanReadable(((DecimalType) state).longValue()), localUnit);
+                return QuantityType.valueOf(toHumanReadable(type.longValue()), localUnit);
             }
 
             return state;

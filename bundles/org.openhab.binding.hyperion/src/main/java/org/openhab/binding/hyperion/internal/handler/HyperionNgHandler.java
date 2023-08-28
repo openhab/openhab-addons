@@ -422,8 +422,7 @@ public class HyperionNgHandler extends BaseThingHandler {
     }
 
     private void handleBrightness(Command command) throws IOException, CommandUnsuccessfulException {
-        if (command instanceof PercentType) {
-            PercentType percent = (PercentType) command;
+        if (command instanceof PercentType percent) {
             int brightnessValue = percent.intValue();
 
             Adjustment adjustment = new Adjustment();
@@ -437,8 +436,7 @@ public class HyperionNgHandler extends BaseThingHandler {
     }
 
     private void handleColor(Command command) throws IOException, CommandUnsuccessfulException {
-        if (command instanceof HSBType) {
-            HSBType color = (HSBType) command;
+        if (command instanceof HSBType color) {
             Color c = new Color(color.getRGB());
             int r = c.getRed();
             int g = c.getGreen();

@@ -185,7 +185,7 @@ public class GenericThingHandlerTests {
                         textValue, thingHandler));
         doReturn(channelConfig).when(thingHandler).createChannelState(any(), any(), any());
         thingHandler.initialize();
-        byte payload[] = "UPDATE".getBytes();
+        byte[] payload = "UPDATE".getBytes();
         // Test process message
         channelConfig.processMessage("test/state", payload);
 

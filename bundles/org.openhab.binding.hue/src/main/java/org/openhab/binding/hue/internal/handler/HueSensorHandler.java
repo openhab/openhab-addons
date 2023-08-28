@@ -148,8 +148,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof HueBridgeHandler) {
-                HueClient bridgeHandler = (HueClient) handler;
+            if (handler instanceof HueBridgeHandler bridgeHandler) {
                 hueClient = bridgeHandler;
                 bridgeHandler.registerSensorStatusListener(this);
             } else {

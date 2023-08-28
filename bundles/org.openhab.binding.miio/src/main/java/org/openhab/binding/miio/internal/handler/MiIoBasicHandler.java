@@ -160,13 +160,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     String cmd = action.getCommand();
                     CommandParameterType paramType = action.getparameterType();
-                    if (command instanceof QuantityType) {
+                    if (command instanceof QuantityType type) {
                         QuantityType<?> qtc = null;
                         try {
                             if (!miIoBasicChannel.getUnit().isBlank()) {
                                 Unit<?> unit = MiIoQuantiyTypes.get(miIoBasicChannel.getUnit());
                                 if (unit != null) {
-                                    qtc = ((QuantityType<?>) command).toUnit(unit);
+                                    qtc = type.toUnit(unit);
                                 }
                             }
                         } catch (MeasurementParseException e) {
@@ -176,7 +176,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             command = new DecimalType(qtc.toBigDecimal());
                         } else {
                             logger.debug("Could not convert QuantityType to '{}'", miIoBasicChannel.getUnit());
-                            command = new DecimalType(((QuantityType<?>) command).toBigDecimal());
+                            command = new DecimalType(type.toBigDecimal());
                         }
                     }
                     if (paramType == CommandParameterType.OPENCLOSE) {
@@ -204,15 +204,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         }
                     }
                     if (paramType == CommandParameterType.COLOR) {
-                        if (command instanceof HSBType) {
-                            HSBType hsb = (HSBType) command;
+                        if (command instanceof HSBType hsb) {
                             Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
                                     hsb.getSaturation().floatValue() / 100, hsb.getBrightness().floatValue() / 100);
                             value = new JsonPrimitive(
                                     (color.getRed() << 16) + (color.getGreen() << 8) + color.getBlue());
-                        } else if (command instanceof DecimalType) {
+                        } else if (command instanceof DecimalType type) {
                             // actually brightness is being set instead of a color
-                            value = new JsonPrimitive(((DecimalType) command).toBigDecimal());
+                            value = new JsonPrimitive(type.toBigDecimal());
                         } else if (command instanceof OnOffType) {
                             value = new JsonPrimitive(command == OnOffType.ON ? 100 : 0);
                         } else {
@@ -232,8 +231,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         } else if (paramType == CommandParameterType.ONOFFNUMBER) {
                             value = new JsonPrimitive(command == OnOffType.ON ? 1 : 0);
                         }
-                    } else if (command instanceof DecimalType) {
-                        value = new JsonPrimitive(((DecimalType) command).toBigDecimal());
+                    } else if (command instanceof DecimalType decimal) {
+                        value = new JsonPrimitive(decimal.toBigDecimal());
                     } else if (command instanceof StringType) {
                         if (paramType == CommandParameterType.STRING) {
                             value = new JsonPrimitive(command.toString().toLowerCase());
@@ -508,7 +507,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 for (Channel cn : getThing().getChannels()) {
                     logger.trace("Channel '{}' for thing {} already exist... removing", cn.getUID(),
                             getThing().getUID());
-                    if (!PERSISTENT_CHANNELS.contains(cn.getUID().getId().toString())) {
+                    if (!PERSISTENT_CHANNELS.contains(cn.getUID().getId())) {
                         thingBuilder.withoutChannels(cn);
                     }
                 }

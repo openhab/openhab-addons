@@ -96,25 +96,24 @@ class LxControlValueSelector extends LxControl {
             logger.debug("Value selector min or max value missing or min>max.");
             return;
         }
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType sw) {
+            if (sw == OnOffType.ON) {
                 sendAction(maxValue.toString());
             } else {
                 sendAction(minValue.toString());
             }
-        } else if (command instanceof IncreaseDecreaseType) {
+        } else if (command instanceof IncreaseDecreaseType incdec) {
             if (stepValue == null) {
                 logger.debug("Value selector step value missing.");
                 return;
             }
-            IncreaseDecreaseType type = (IncreaseDecreaseType) command;
-            if (increaseOnly != null && type == IncreaseDecreaseType.DECREASE && increaseOnly) {
+            if (increaseOnly != null && incdec == IncreaseDecreaseType.DECREASE && increaseOnly) {
                 logger.debug("Value selector configured to allow increase only.");
                 return;
             }
             Double currentValue = getStateDoubleValue(STATE_VALUE);
             if (currentValue != null) {
-                Double nextValue = currentValue + (type == IncreaseDecreaseType.INCREASE ? stepValue : -stepValue);
+                Double nextValue = currentValue + (incdec == IncreaseDecreaseType.INCREASE ? stepValue : -stepValue);
                 if (nextValue > maxValue) {
                     nextValue = maxValue;
                 }
@@ -123,8 +122,8 @@ class LxControlValueSelector extends LxControl {
                 }
                 sendAction(nextValue.toString());
             }
-        } else if (command instanceof PercentType) {
-            Double value = ((PercentType) command).doubleValue() * (maxValue - minValue) / 100.0 + minValue;
+        } else if (command instanceof PercentType percent) {
+            Double value = percent.doubleValue() * (maxValue - minValue) / 100.0 + minValue;
             sendAction(value.toString());
         }
     }
@@ -134,8 +133,8 @@ class LxControlValueSelector extends LxControl {
             logger.debug("Value selector min or max value missing or min>max.");
             return;
         }
-        if (command instanceof DecimalType) {
-            Double value = ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType number) {
+            Double value = number.doubleValue();
             if (value < minValue || value > maxValue) {
                 logger.debug("Value {} out of {}-{} range", value, minValue, maxValue);
                 return;

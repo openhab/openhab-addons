@@ -94,7 +94,7 @@ class LxControlMeter extends LxControl {
     }
 
     private void handleResetCommands(Command command) throws IOException {
-        if (command instanceof OnOffType && (OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType sw && sw == OnOffType.ON) {
             sendAction(CMD_RESET);
         }
     }

@@ -52,9 +52,8 @@ public class SwitchHandler extends LutronHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         RS232Handler bridgeHandler = getRS232Handler();
         if (LutronBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())) {
-            if (command instanceof OnOffType) {
-                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), (OnOffType) command,
-                        config.system);
+            if (command instanceof OnOffType sw) {
+                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), sw, config.system);
 
                 if (bridgeHandler != null) {
                     bridgeHandler.sendCommand(cmd);
@@ -65,10 +64,10 @@ public class SwitchHandler extends LutronHandler {
 
     @Override
     public void handleFeedback(RadioRAFeedback feedback) {
-        if (feedback instanceof LocalZoneChangeFeedback) {
-            handleLocalZoneChangeFeedback((LocalZoneChangeFeedback) feedback);
-        } else if (feedback instanceof ZoneMapFeedback) {
-            handleZoneMapFeedback((ZoneMapFeedback) feedback);
+        if (feedback instanceof LocalZoneChangeFeedback feedbackCommand) {
+            handleLocalZoneChangeFeedback(feedbackCommand);
+        } else if (feedback instanceof ZoneMapFeedback feedbackCommand) {
+            handleZoneMapFeedback(feedbackCommand);
         }
     }
 

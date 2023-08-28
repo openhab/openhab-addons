@@ -1006,23 +1006,17 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     public List<FullLight> getFullLights() {
-        List<FullLight> ret = withReAuthentication("search for new lights", () -> {
-            return hueBridge.getFullLights();
-        });
+        List<FullLight> ret = withReAuthentication("search for new lights", () -> hueBridge.getFullLights());
         return ret != null ? ret : List.of();
     }
 
     public List<FullSensor> getFullSensors() {
-        List<FullSensor> ret = withReAuthentication("search for new sensors", () -> {
-            return hueBridge.getSensors();
-        });
+        List<FullSensor> ret = withReAuthentication("search for new sensors", () -> hueBridge.getSensors());
         return ret != null ? ret : List.of();
     }
 
     public List<FullGroup> getFullGroups() {
-        List<FullGroup> ret = withReAuthentication("search for new groups", () -> {
-            return hueBridge.getGroups();
-        });
+        List<FullGroup> ret = withReAuthentication("search for new groups", () -> hueBridge.getGroups());
         return ret != null ? ret : List.of();
     }
 

@@ -14,12 +14,12 @@ package org.openhab.binding.lcn.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -117,8 +117,8 @@ public class LcnModuleHandler extends BaseThingHandler {
                 Object invertUpDown = channel.getConfiguration().get("invertUpDown");
 
                 // Initialize value converters
-                if (unitObject instanceof String) {
-                    switch ((String) unitObject) {
+                if (unitObject instanceof String str) {
+                    switch (str) {
                         case "power":
                         case "energy":
                             converters.put(channel.getUID(), new S0Converter(parameterObject));
@@ -207,35 +207,33 @@ public class LcnModuleHandler extends BaseThingHandler {
             if (command instanceof RefreshType) {
                 number.ifPresent(n -> subHandler.handleRefresh(channelGroup, n));
                 subHandler.handleRefresh(channelUid.getIdWithoutGroup());
-            } else if (command instanceof OnOffType) {
-                subHandler.handleCommandOnOff((OnOffType) command, channelGroup, number.get());
-            } else if (command instanceof DimmerOutputCommand) {
-                subHandler.handleCommandDimmerOutput((DimmerOutputCommand) command, number.get());
-            } else if (command instanceof PercentType && number.isPresent()) {
-                subHandler.handleCommandPercent((PercentType) command, channelGroup, number.get());
-            } else if (command instanceof HSBType) {
-                subHandler.handleCommandHsb((HSBType) command, channelUid.getIdWithoutGroup());
-            } else if (command instanceof PercentType) {
-                subHandler.handleCommandPercent((PercentType) command, channelGroup, channelUid.getIdWithoutGroup());
-            } else if (command instanceof StringType) {
-                subHandler.handleCommandString((StringType) command, number.orElse(0));
-            } else if (command instanceof DecimalType) {
-                DecimalType decimalType = (DecimalType) command;
+            } else if (command instanceof OnOffType sw) {
+                subHandler.handleCommandOnOff(sw, channelGroup, number.get());
+            } else if (command instanceof DimmerOutputCommand outputCommand) {
+                subHandler.handleCommandDimmerOutput(outputCommand, number.get());
+            } else if (command instanceof PercentType type && number.isPresent()) {
+                subHandler.handleCommandPercent(type, channelGroup, number.get());
+            } else if (command instanceof HSBType hsb) {
+                subHandler.handleCommandHsb(hsb, channelUid.getIdWithoutGroup());
+            } else if (command instanceof PercentType type) {
+                subHandler.handleCommandPercent(type, channelGroup, channelUid.getIdWithoutGroup());
+            } else if (command instanceof StringType str) {
+                subHandler.handleCommandString(str, number.orElse(0));
+            } else if (command instanceof DecimalType decimalType) {
                 DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-            } else if (command instanceof QuantityType) {
-                QuantityType<?> quantityType = (QuantityType<?>) command;
+            } else if (command instanceof QuantityType quantityType) {
                 DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-            } else if (command instanceof UpDownType) {
+            } else if (command instanceof UpDownType upDown) {
                 Channel channel = thing.getChannel(channelUid);
                 if (channel != null) {
                     Object invertConfig = channel.getConfiguration().get("invertUpDown");
-                    boolean invertUpDown = invertConfig instanceof Boolean && (boolean) invertConfig;
-                    subHandler.handleCommandUpDown((UpDownType) command, channelGroup, number.get(), invertUpDown);
+                    boolean invertUpDown = invertConfig instanceof Boolean bool && bool;
+                    subHandler.handleCommandUpDown(upDown, channelGroup, number.get(), invertUpDown);
                 }
-            } else if (command instanceof StopMoveType) {
-                subHandler.handleCommandStopMove((StopMoveType) command, channelGroup, number.get());
+            } else if (command instanceof StopMoveType stopMove) {
+                subHandler.handleCommandStopMove(stopMove, channelGroup, number.get());
             } else {
                 throw new LcnException("Unsupported command type");
             }
@@ -397,7 +395,7 @@ public class LcnModuleHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(LcnModuleActions.class);
+        return Set.of(LcnModuleActions.class);
     }
 
     /**

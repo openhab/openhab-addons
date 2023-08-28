@@ -60,9 +60,9 @@ public class MeaterCommandExtension extends AbstractConsoleCommandExtension impl
 
         for (Thing thing : thingRegistry.getAll()) {
             ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof MeaterBridgeHandler) {
+            if (thingHandler instanceof MeaterBridgeHandler handler) {
                 console.println("API bridge: " + thing.getLabel());
-                ((MeaterBridgeHandler) thingHandler).getMeaterThings().entrySet().stream().forEach(t -> {
+                handler.getMeaterThings().entrySet().stream().forEach(t -> {
                     console.println("    - ID: " + t.getKey() + " (ambient temperature: "
                             + t.getValue().temperature.ambient + ")");
                 });

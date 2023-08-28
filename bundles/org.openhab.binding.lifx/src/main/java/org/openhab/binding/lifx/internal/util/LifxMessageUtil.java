@@ -106,12 +106,12 @@ public final class LifxMessageUtil {
     }
 
     public static int commandToKelvin(Command temperature, TemperatureRange temperatureRange) {
-        if (temperature instanceof PercentType) {
-            return percentTypeToKelvin((PercentType) temperature, temperatureRange);
-        } else if (temperature instanceof QuantityType) {
-            return quantityTypeToKelvin((QuantityType) temperature, temperatureRange);
-        } else if (temperature instanceof DecimalType) {
-            return decimalTypeToKelvin((DecimalType) temperature, temperatureRange);
+        if (temperature instanceof PercentType percent) {
+            return percentTypeToKelvin(percent, temperatureRange);
+        } else if (temperature instanceof QuantityType quantity) {
+            return quantityTypeToKelvin(quantity, temperatureRange);
+        } else if (temperature instanceof DecimalType decimal) {
+            return decimalTypeToKelvin(decimal, temperatureRange);
         } else {
             throw new IllegalStateException(
                     "Unexpected command type " + temperature.getClass().getName() + " for color temperature command.");
