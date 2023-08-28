@@ -58,8 +58,7 @@ public class DynamicStateDescriptionSmartHome implements DynamicStateDescription
         if (!(handler instanceof SmartHomeDeviceHandler)) {
             return null;
         }
-        SmartHomeDeviceHandler smartHomeHandler = (SmartHomeDeviceHandler) handler;
-        return smartHomeHandler;
+        return (SmartHomeDeviceHandler) handler;
     }
 
     @Override

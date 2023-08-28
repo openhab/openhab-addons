@@ -156,20 +156,20 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             throws DaikinCommunicationException {
         switch (channelUID.getId()) {
             case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
-                if (command instanceof StringType) {
-                    changeFanDir(((StringType) command).toString());
+                if (command instanceof StringType type) {
+                    changeFanDir(type.toString());
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_SPECIALMODE:
-                if (command instanceof StringType) {
-                    changeSpecialMode(((StringType) command).toString());
+                if (command instanceof StringType type) {
+                    changeSpecialMode(type.toString());
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_STREAMER:
-                if (command instanceof OnOffType) {
-                    changeStreamer(((OnOffType) command).equals(OnOffType.ON));
+                if (command instanceof OnOffType type) {
+                    changeStreamer(type.equals(OnOffType.ON));
                     return true;
                 }
                 break;

@@ -79,8 +79,8 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     public void setQueryParameters(@ActionInput(name = "parameters") Map<String, @Nullable Object> parameters) {
         logger.debug("setQueryParameters {}", parameters);
         var queryHandler = getThingHandler();
-        if (queryHandler instanceof QueryHandler) {
-            ((QueryHandler) queryHandler).setParameters(parameters);
+        if (queryHandler instanceof QueryHandler handler) {
+            handler.setParameters(parameters);
         } else {
             logger.warn("setQueryParameters called on wrong Thing, it must be a Query Thing");
         }
@@ -100,10 +100,10 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
 
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof QueryHandler) {
-            this.queryHandler = ((QueryHandler) thingHandler);
-        } else if (thingHandler instanceof DatabaseBridgeHandler) {
-            this.databaseBridgeHandler = ((DatabaseBridgeHandler) thingHandler);
+        if (thingHandler instanceof QueryHandler handler) {
+            this.queryHandler = handler;
+        } else if (thingHandler instanceof DatabaseBridgeHandler handler) {
+            this.databaseBridgeHandler = handler;
         } else {
             throw new UnnexpectedCondition("Not expected thing handler " + thingHandler);
         }

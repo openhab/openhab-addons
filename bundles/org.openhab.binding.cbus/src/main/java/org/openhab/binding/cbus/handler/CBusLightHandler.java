@@ -88,8 +88,7 @@ public class CBusLightHandler extends CBusGroupHandler {
                         } else if (command == OnOffType.OFF) {
                             group.off();
                         }
-                    } else if (command instanceof PercentType) {
-                        PercentType value = (PercentType) command;
+                    } else if (command instanceof PercentType value) {
                         group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
                     } else if (command instanceof IncreaseDecreaseType) {
                         int level = group.getLevel();
@@ -109,6 +108,7 @@ public class CBusLightHandler extends CBusGroupHandler {
         }
     }
 
+    @Override
     public void updateGroup(int updateApplicationId, int updateGroupId, String value) {
         if (updateGroupId == groupId && updateApplicationId == applicationId) {
             Thing thing = getThing();

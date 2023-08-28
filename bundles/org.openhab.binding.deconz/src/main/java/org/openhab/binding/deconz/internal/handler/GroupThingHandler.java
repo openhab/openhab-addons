@@ -119,10 +119,10 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                         newGroupAction.xy = new double[] { xy[0], xy[1] };
                         newGroupAction.bri = (int) (xy[2] * BRIGHTNESS_MAX);
                     }
-                } else if (command instanceof PercentType) {
-                    newGroupAction.bri = Util.fromPercentType((PercentType) command);
-                } else if (command instanceof DecimalType) {
-                    newGroupAction.bri = ((DecimalType) command).intValue();
+                } else if (command instanceof PercentType type) {
+                    newGroupAction.bri = Util.fromPercentType(type);
+                } else if (command instanceof DecimalType type) {
+                    newGroupAction.bri = type.intValue();
                 } else {
                     return;
                 }

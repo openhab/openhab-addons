@@ -257,8 +257,8 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
             }
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof BridgeHandler) {
-                dssBridgeHandler = (BridgeHandler) handler;
+            if (handler instanceof BridgeHandler bridge) {
+                dssBridgeHandler = bridge;
             } else {
                 return null;
             }

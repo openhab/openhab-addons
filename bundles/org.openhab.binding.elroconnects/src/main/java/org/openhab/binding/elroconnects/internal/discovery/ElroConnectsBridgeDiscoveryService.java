@@ -85,7 +85,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
                 String firmwareVersion = c.getValue().binVersion;
                 boolean legacy = false;
                 try {
-                    legacy = !(Integer.valueOf(firmwareVersion.substring(firmwareVersion.lastIndexOf(".") + 1)) > 14);
+                    legacy = Integer.valueOf(firmwareVersion.substring(firmwareVersion.lastIndexOf(".") + 1)) <= 14;
                 } catch (NumberFormatException e) {
                     // Assume new firmware if we cannot decode firmwareVersion
                     logger.debug("Cannot get firmware version from {}, assume new firmware", firmwareVersion);
@@ -142,8 +142,8 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         ElroConnectsAccountHandler account = null;
-        if (handler instanceof ElroConnectsAccountHandler) {
-            account = (ElroConnectsAccountHandler) handler;
+        if (handler instanceof ElroConnectsAccountHandler ahandler) {
+            account = ahandler;
             accountHandler = account;
         }
 

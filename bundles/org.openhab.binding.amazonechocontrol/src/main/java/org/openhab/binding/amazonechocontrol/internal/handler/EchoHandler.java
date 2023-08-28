@@ -293,8 +293,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             // Notification commands
             if (channelId.equals(CHANNEL_NOTIFICATION_VOLUME)) {
-                if (command instanceof PercentType) {
-                    int volume = ((PercentType) command).intValue();
+                if (command instanceof PercentType percent) {
+                    int volume = percent.intValue();
                     connection.notificationVolume(device, volume);
                     this.notificationVolumeLevel = volume;
                     waitForUpdate = -1;
@@ -318,19 +318,16 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Media progress commands
             Long mediaPosition = null;
             if (channelId.equals(CHANNEL_MEDIA_PROGRESS)) {
-                if (command instanceof PercentType) {
-                    PercentType value = (PercentType) command;
+                if (command instanceof PercentType value) {
                     int percent = value.intValue();
                     mediaPosition = Math.round((mediaLengthMs / 1000d) * (percent / 100d));
                 }
             }
             if (channelId.equals(CHANNEL_MEDIA_PROGRESS_TIME)) {
-                if (command instanceof DecimalType) {
-                    DecimalType value = (DecimalType) command;
+                if (command instanceof DecimalType value) {
                     mediaPosition = value.longValue();
                 }
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> value = (QuantityType<?>) command;
+                if (command instanceof QuantityType<?> value) {
                     @Nullable
                     QuantityType<?> seconds = value.toUnit(Units.SECOND);
                     if (seconds != null) {
@@ -353,8 +350,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Volume commands
             if (channelId.equals(CHANNEL_VOLUME)) {
                 Integer volume = null;
-                if (command instanceof PercentType) {
-                    PercentType value = (PercentType) command;
+                if (command instanceof PercentType value) {
                     volume = value.intValue();
                 } else if (command == OnOffType.OFF) {
                     volume = 0;
@@ -393,8 +389,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             // shuffle command
             if (channelId.equals(CHANNEL_SHUFFLE)) {
-                if (command instanceof OnOffType) {
-                    OnOffType value = (OnOffType) command;
+                if (command instanceof OnOffType value) {
 
                     connection.command(device, "{\"type\":\"ShuffleCommand\",\"shuffle\":\""
                             + (value == OnOffType.ON ? "true" : "false") + "\"}");
@@ -429,8 +424,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // bluetooth commands
             if (channelId.equals(CHANNEL_BLUETOOTH_MAC)) {
                 needBluetoothRefresh = true;
-                if (command instanceof StringType) {
-                    String address = ((StringType) command).toFullString();
+                if (command instanceof StringType channel) {
+                    String address = channel.toFullString();
                     if (!address.isEmpty()) {
                         waitForUpdate = 4000;
                     }
@@ -566,8 +561,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             }
             if (channelId.equals(CHANNEL_TEXT_TO_SPEECH_VOLUME)) {
-                if (command instanceof PercentType) {
-                    PercentType value = (PercentType) command;
+                if (command instanceof PercentType value) {
                     textToSpeechVolume = value.intValue();
                 } else if (command == OnOffType.OFF) {
                     textToSpeechVolume = 0;
@@ -680,8 +674,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (command instanceof RefreshType) {
             this.lastKnownEqualizer = null;
         }
-        if (command instanceof DecimalType) {
-            DecimalType value = (DecimalType) command;
+        if (command instanceof DecimalType value) {
             if (this.lastKnownEqualizer == null) {
                 updateEqualizerState();
             }

@@ -235,18 +235,19 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
         }
         switch (channelUID.getId()) {
             case AM43BindingConstants.CHANNEL_ID_POSITION:
-                if (command instanceof PercentType) {
+                if (command instanceof PercentType percent) {
                     MotorSettings settings = motorSettings;
                     if (settings == null) {
                         logger.warn("Cannot set position before settings have been received.");
                         return;
                     }
                     if (!settings.isTopLimitSet() || !settings.isBottomLimitSet()) {
-                        logger.warn("Cannot set position of blinds. Top or bottom limits have not been set. "
-                                + "Please configure manually.");
+                        logger.warn("""
+                                Cannot set position of blinds. Top or bottom limits have not been set. \
+                                Please configure manually.\
+                                """);
                         return;
                     }
-                    PercentType percent = (PercentType) command;
                     int value = percent.intValue();
                     if (getAM43Config().invertPosition) {
                         value = 100 - value;
@@ -254,8 +255,8 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                     submitCommand(new SetPositionCommand(value));
                     return;
                 }
-                if (command instanceof StopMoveType) {
-                    switch ((StopMoveType) command) {
+                if (command instanceof StopMoveType type) {
+                    switch (type) {
                         case STOP:
                             submitCommand(new ControlCommand(ControlAction.STOP));
                             return;
@@ -264,8 +265,8 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                             return;
                     }
                 }
-                if (command instanceof UpDownType) {
-                    switch ((UpDownType) command) {
+                if (command instanceof UpDownType type) {
+                    switch (type) {
                         case UP:
                             submitCommand(new ControlCommand(ControlAction.OPEN));
                             return;
@@ -276,10 +277,9 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                 }
                 return;
             case AM43BindingConstants.CHANNEL_ID_SPEED:
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType speedType) {
                     MotorSettings settings = motorSettings;
                     if (settings != null) {
-                        DecimalType speedType = (DecimalType) command;
                         settings.setSpeed(speedType.intValue());
                         submitCommand(new SetSettingsCommand(settings));
                     } else {

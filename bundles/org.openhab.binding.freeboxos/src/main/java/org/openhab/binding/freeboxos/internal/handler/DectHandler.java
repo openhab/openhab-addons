@@ -66,8 +66,7 @@ public class DectHandler extends FxsHandler {
                 return true;
             }
         }
-        if (command instanceof PercentType) {
-            PercentType percent = (PercentType) command;
+        if (command instanceof PercentType percent) {
             if (GAIN_RX.equals(channelId)) {
                 phoneManager.setGainRx(getClientId(), percent.intValue());
                 updateIfActive(GAIN_RX, percent);

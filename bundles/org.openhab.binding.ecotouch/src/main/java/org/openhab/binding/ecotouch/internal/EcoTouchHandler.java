@@ -122,9 +122,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                     localConnector.setValue(ecoTouchTag.getTagName(), raw);
                 } else {
                     if (ecoTouchTag.getUnit() != ONE) {
-                        if (command instanceof QuantityType) {
-                            // convert from user unit to heat pump unit
-                            QuantityType<?> value = (QuantityType<?>) command;
+                        if (command instanceof QuantityType value) {
                             QuantityType<?> rawUnit = value.toUnit(ecoTouchTag.getUnit());
                             if (rawUnit != null) {
                                 int raw = (int) (rawUnit.doubleValue() * ecoTouchTag.getDivisor());

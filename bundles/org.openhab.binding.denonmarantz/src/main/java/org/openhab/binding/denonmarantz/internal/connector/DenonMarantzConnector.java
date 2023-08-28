@@ -165,10 +165,10 @@ public abstract class DenonMarantzConnector {
             cmd += "UP";
         } else if (command == IncreaseDecreaseType.DECREASE) {
             cmd += "DOWN";
-        } else if (command instanceof DecimalType) {
-            cmd += toDenonValue(((DecimalType) command));
-        } else if (command instanceof PercentType) {
-            cmd += percentToDenonValue(((PercentType) command).toBigDecimal());
+        } else if (command instanceof DecimalType type) {
+            cmd += toDenonValue(type);
+        } else if (command instanceof PercentType type) {
+            cmd += percentToDenonValue(type.toBigDecimal());
         } else {
             throw new UnsupportedCommandTypeException();
         }

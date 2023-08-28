@@ -61,10 +61,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
             shutTime = Math.min(255, config.as(EnOceanChannelRollershutterConfig.class).shutTime);
         }
 
-        if (command instanceof PercentType) {
+        if (command instanceof PercentType target) {
             State channelState = getCurrentStateFunc.apply(channelId);
-
-            PercentType target = (PercentType) command;
             if (target.intValue() == PercentType.ZERO.intValue()) {
                 setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => move completely up
             } else if (target.intValue() == PercentType.HUNDRED.intValue()) {
@@ -83,14 +81,14 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                 }
             }
 
-        } else if (command instanceof UpDownType) {
-            if ((UpDownType) command == UpDownType.UP) {
+        } else if (command instanceof UpDownType type) {
+            if (type == UpDownType.UP) {
                 setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => 0 percent
-            } else if ((UpDownType) command == UpDownType.DOWN) {
+            } else if (type == UpDownType.DOWN) {
                 setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => 100 percent
             }
-        } else if (command instanceof StopMoveType) {
-            if ((StopMoveType) command == StopMoveType.STOP) {
+        } else if (command instanceof StopMoveType type) {
+            if (type == StopMoveType.STOP) {
                 setData(ZERO, (byte) 0xFF, STOP, TEACHIN_BIT);
             }
         }

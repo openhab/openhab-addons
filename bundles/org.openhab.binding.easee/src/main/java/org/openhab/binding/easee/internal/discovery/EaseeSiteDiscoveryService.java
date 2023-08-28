@@ -57,8 +57,8 @@ public class EaseeSiteDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof EaseeSiteHandler) {
-            this.bridgeHandler = (EaseeSiteHandler) handler;
+        if (handler instanceof EaseeSiteHandler siteHandler) {
+            this.bridgeHandler = siteHandler;
             this.bridgeHandler.setDiscoveryService(this);
         }
     }

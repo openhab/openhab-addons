@@ -78,9 +78,7 @@ public class ChromecastAudioSink extends AudioSinkAsync {
             handler.stop();
         } else {
             final String url;
-            if (audioStream instanceof URLAudioStream) {
-                // it is an external URL, the speaker can access it itself and play it.
-                URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
+            if (audioStream instanceof URLAudioStream urlAudioStream) {
                 url = urlAudioStream.getURL();
                 tryClose(audioStream);
             } else {

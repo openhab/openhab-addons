@@ -269,7 +269,7 @@ public class ShieldTVMessageParser {
                         // Look for a third 0a, but only if 12 is not down the line
                         // If 12 is exactly 20 away from 0a that means that the DN was actually 10 long
                         String st2 = "" + charArray[i + 22] + "" + charArray[i + 23];
-                        if (DELIMITER_0A.equals(st.toString()) && !DELIMITER_12.equals(st2)) {
+                        if (DELIMITER_0A.equals(st) && !DELIMITER_12.equals(st2)) {
                             appSBPrepend.append(st);
                             i += 2;
                             st = "" + charArray[i] + "" + charArray[i + 1];

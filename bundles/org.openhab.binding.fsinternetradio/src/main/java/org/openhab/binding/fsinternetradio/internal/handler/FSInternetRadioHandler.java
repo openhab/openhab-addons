@@ -200,8 +200,8 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof PercentType) {
-                        radio.setVolumePercent(((PercentType) command).intValue());
+                    } else if (command instanceof PercentType type) {
+                        radio.setVolumePercent(type.intValue());
                     }
                     // absolute value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
@@ -211,20 +211,20 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof DecimalType) {
-                        radio.setVolumeAbsolute(((DecimalType) command).intValue());
+                    } else if (command instanceof DecimalType type) {
+                        radio.setVolumeAbsolute(type.intValue());
                     }
                     // percent value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
                     break;
                 case CHANNEL_MODE:
-                    if (command instanceof DecimalType) {
-                        radio.setMode(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType type) {
+                        radio.setMode(type.intValue());
                     }
                     break;
                 case CHANNEL_PRESET:
-                    if (command instanceof DecimalType) {
-                        radio.setPreset(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType type) {
+                        radio.setPreset(type.intValue());
                     }
                     break;
                 case CHANNEL_MUTE:

@@ -60,9 +60,9 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
      * @return value as String without unit.
      */
     protected String getCommandValue() {
-        if (command instanceof QuantityType<?>) {
+        if (command instanceof QuantityType<?> value) {
             // this is necessary because we must not send the unit to the backend
-            return String.valueOf(((QuantityType<?>) command).doubleValue());
+            return String.valueOf(value.doubleValue());
         } else if (command instanceof OnOffType) {
             // this is necessary because we must send booleans and not ON/OFF to the backend
             return String.valueOf(command.equals(OnOffType.ON));

@@ -238,7 +238,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
         if (value == null) {
             return Collections.emptyList();
         } else {
-            return Collections.singletonList(value.value());
+            return List.of(value.value());
         }
     }
 
@@ -254,7 +254,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
      * Returns a list containing only the given value or empty list if value is <code>null</code>.
      */
     private static List<String> singletonList(@Nullable String value) {
-        return value == null ? Collections.emptyList() : Collections.singletonList(value);
+        return value == null ? Collections.emptyList() : List.of(value);
     }
 
     private static OnOffType parseHidden(@Nullable Integer value) {
@@ -262,9 +262,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     }
 
     private static Function<Event, @Nullable Date> getDate(final Function<Event, @Nullable String> getValue) {
-        return (final Event event) -> {
-            return parseDate(getValue.apply(event));
-        };
+        return (final Event event) -> parseDate(getValue.apply(event));
     }
 
     private static BiConsumer<Event, Date> setDate(final BiConsumer<Event, String> setter) {
@@ -362,7 +360,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
         if (value == null) {
             return Collections.emptyList();
         } else {
-            return Collections.singletonList(String.valueOf(value));
+            return List.of(String.valueOf(value));
         }
     }
 
@@ -371,7 +369,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
             return Collections.emptyList();
         } else {
             synchronized (DATETIME_FORMAT) {
-                return Collections.singletonList(DATETIME_FORMAT.format(value));
+                return List.of(DATETIME_FORMAT.format(value));
             }
         }
     }

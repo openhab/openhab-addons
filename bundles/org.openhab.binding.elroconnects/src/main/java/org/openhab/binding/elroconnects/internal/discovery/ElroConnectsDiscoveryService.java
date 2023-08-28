@@ -122,8 +122,8 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         ElroConnectsBridgeHandler bridge = null;
-        if (handler instanceof ElroConnectsBridgeHandler) {
-            bridge = (ElroConnectsBridgeHandler) handler;
+        if (handler instanceof ElroConnectsBridgeHandler bhandler) {
+            bridge = bhandler;
             bridgeHandler = bridge;
         }
 

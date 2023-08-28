@@ -190,7 +190,7 @@ public class AndroidTVHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId(), command);
 
-        if (command.toString().equals("REFRESH")) {
+        if ("REFRESH".equals(command.toString())) {
             // REFRESH causes issues on some channels. Block for now until implemented.
             return;
         }
@@ -200,23 +200,23 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         if (CHANNEL_DEBUG.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                if (command.toString().equals("GOOGLETV_HALT") && (googletvConnectionManager != null)) {
+                if ("GOOGLETV_HALT".equals(command.toString()) && (googletvConnectionManager != null)) {
                     googletvConnectionManager.dispose();
                     googletvConnectionManager = null;
-                } else if (command.toString().equals("GOOGLETV_START")) {
+                } else if ("GOOGLETV_START".equals(command.toString())) {
                     GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
                     googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
-                } else if (command.toString().equals("GOOGLETV_SHIM") && (googletvConnectionManager == null)) {
+                } else if ("GOOGLETV_SHIM".equals(command.toString()) && (googletvConnectionManager == null)) {
                     GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
                     googletvConfig.shim = true;
                     googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
-                } else if (command.toString().equals("SHIELDTV_HALT") && (shieldtvConnectionManager != null)) {
+                } else if ("SHIELDTV_HALT".equals(command.toString()) && (shieldtvConnectionManager != null)) {
                     shieldtvConnectionManager.dispose();
                     shieldtvConnectionManager = null;
-                } else if (command.toString().equals("SHIELDTV_START")) {
+                } else if ("SHIELDTV_START".equals(command.toString())) {
                     ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
                     shieldtvConnectionManager = new ShieldTVConnectionManager(this, shieldtvConfig);
-                } else if (command.toString().equals("SHIELDTV_SHIM") && (shieldtvConnectionManager == null)) {
+                } else if ("SHIELDTV_SHIM".equals(command.toString()) && (shieldtvConnectionManager == null)) {
                     ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
                     shieldtvConfig.shim = true;
                     shieldtvConnectionManager = new ShieldTVConnectionManager(this, shieldtvConfig);

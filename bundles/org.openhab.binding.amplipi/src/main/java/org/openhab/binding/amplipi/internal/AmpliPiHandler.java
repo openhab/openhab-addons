@@ -99,8 +99,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
         if (CHANNEL_PRESET.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 updateState(channelUID, UnDefType.NULL);
-            } else if (command instanceof DecimalType) {
-                DecimalType preset = (DecimalType) command;
+            } else if (command instanceof DecimalType preset) {
                 try {
                     ContentResponse response = this.httpClient
                             .newRequest(url + "/api/presets/" + preset.intValue() + "/load").method(HttpMethod.POST)
@@ -115,8 +114,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                 }
             }
         } else if (channelUID.getId().startsWith(CHANNEL_INPUT)) {
-            if (command instanceof StringType) {
-                StringType input = (StringType) command;
+            if (command instanceof StringType input) {
                 int source = Integer.valueOf(channelUID.getId().substring(CHANNEL_INPUT.length())) - 1;
                 SourceUpdate update = new SourceUpdate();
                 update.setInput(input.toString());

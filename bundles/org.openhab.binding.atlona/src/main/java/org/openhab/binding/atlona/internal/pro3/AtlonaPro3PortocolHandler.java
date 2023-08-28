@@ -1253,10 +1253,10 @@ class AtlonaPro3PortocolHandler {
          */
         String getResponse() throws Exception {
             final Object lastResponse = responses.poll(5, TimeUnit.SECONDS);
-            if (lastResponse instanceof String) {
-                return (String) lastResponse;
-            } else if (lastResponse instanceof Exception) {
-                throw (Exception) lastResponse;
+            if (lastResponse instanceof String string) {
+                return string;
+            } else if (lastResponse instanceof Exception exception) {
+                throw exception;
             } else if (lastResponse == null) {
                 throw new Exception("Didn't receive response in time");
             } else {

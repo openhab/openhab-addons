@@ -107,11 +107,11 @@ public abstract class D2_01 extends _VLDMessage {
     protected void setDimmingData(Command command, byte outputChannel, Configuration config) {
         byte outputValue;
 
-        if (command instanceof DecimalType) {
-            if (((DecimalType) command).equals(DecimalType.ZERO)) {
+        if (command instanceof DecimalType type) {
+            if (type.equals(DecimalType.ZERO)) {
                 outputValue = STATUS_SWITCHING_OFF;
             } else {
-                outputValue = ((DecimalType) command).byteValue();
+                outputValue = type.byteValue();
             }
         } else if ((OnOffType) command == OnOffType.ON) {
             outputValue = STATUS_DIMMING_100;

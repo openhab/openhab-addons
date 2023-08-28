@@ -82,7 +82,7 @@ public class ArtnetBridgeHandler extends DmxOverEthernetHandler {
         }
         logger.debug("originating address is {} for {}", senderNode, this.thing.getUID());
 
-        refreshAlways = configuration.refreshmode.equals("always");
+        refreshAlways = "always".equals(configuration.refreshmode);
 
         logger.debug("refresh mode set to always: {}", refreshAlways);
 

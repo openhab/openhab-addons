@@ -45,7 +45,7 @@ public class GoogleTVUtils {
         return "";
     }
 
-    private static final byte[] processDigestArray(final byte[] array) {
+    private static byte[] processDigestArray(final byte[] array) {
         int n = 0;
         int length;
         while (true) {
@@ -61,13 +61,12 @@ public class GoogleTVUtils {
         return array2;
     }
 
-    public static final byte[] processDigest(byte[] digest, Certificate clientCert, Certificate serverCert) {
+    public static byte[] processDigest(byte[] digest, Certificate clientCert, Certificate serverCert) {
         final PublicKey clientPublicKey = clientCert.getPublicKey();
         final PublicKey serverPublicKey = serverCert.getPublicKey();
         processMag(digest);
-        if (clientPublicKey instanceof RSAPublicKey && serverPublicKey instanceof RSAPublicKey) {
-            final RSAPublicKey clientRSAPublicKey = (RSAPublicKey) clientPublicKey;
-            final RSAPublicKey serverRSAPublicKey = (RSAPublicKey) serverPublicKey;
+        if (clientPublicKey instanceof RSAPublicKey clientRSAPublicKey
+                && serverPublicKey instanceof RSAPublicKey serverRSAPublicKey) {
             try {
                 final MessageDigest instance = MessageDigest.getInstance("SHA-256");
                 final byte[] byteArray1 = clientRSAPublicKey.getModulus().abs().toByteArray();

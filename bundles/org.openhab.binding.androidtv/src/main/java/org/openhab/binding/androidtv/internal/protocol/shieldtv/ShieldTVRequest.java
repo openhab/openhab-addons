@@ -37,7 +37,7 @@ public class ShieldTVRequest {
 
     public static String decodeMessage(String message) {
         StringBuilder sb = new StringBuilder();
-        char ch[] = message.toCharArray();
+        char[] ch = message.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             String hexString = Integer.toHexString(ch[i]);
             if (hexString.length() % 2 > 0) {
@@ -50,8 +50,7 @@ public class ShieldTVRequest {
 
     public static String pinRequest(String pin) {
         if (PIN_REQUEST.equals(pin)) {
-            String message = "080a120308cd08";
-            return message;
+            return "080a120308cd08";
         } else {
             String prefix = "080a121f08d108121a0a06";
             String encodedPin = decodeMessage(pin);
@@ -61,13 +60,11 @@ public class ShieldTVRequest {
     }
 
     public static String loginRequest() {
-        String message = "0801121a0801121073616d73756e6720534d2d4739393855180128fbff04";
-        return message;
+        return "0801121a0801121073616d73756e6720534d2d4739393855180128fbff04";
     }
 
     public static String keepAlive() {
-        String message = "080028fae0a6c0d130";
-        return message;
+        return "080028fae0a6c0d130";
     }
 
     private static String fixMessage(String tempMsg) {
@@ -82,8 +79,7 @@ public class ShieldTVRequest {
         String len1 = fixMessage(Integer.toHexString(length + 6));
         String len2 = fixMessage(Integer.toHexString(length + 2));
         String len3 = fixMessage(Integer.toHexString(length));
-        String reply = "08f10712" + len1 + "080212" + len2 + "0a" + len3 + decodeMessage(message);
-        return reply;
+        return "08f10712" + len1 + "080212" + len2 + "0a" + len3 + decodeMessage(message);
     }
     // 080b120308cd08 - Longer Hostname Reply
     // 08f30712020805 - Unknown
@@ -97,7 +93,6 @@ public class ShieldTVRequest {
         String len1 = fixMessage(Integer.toHexString(length + 8));
         String len2 = fixMessage(Integer.toHexString(length));
         String len3 = fixMessage(Integer.toHexString(length * 2));
-        String reply = "08ec0712" + len1 + "080812" + len2 + decodeMessage(entry) + "3202" + len3 + len3;
-        return reply;
+        return "08ec0712" + len1 + "080812" + len2 + decodeMessage(entry) + "3202" + len3 + len3;
     }
 }

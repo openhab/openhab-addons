@@ -240,8 +240,8 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 }
             }
 
-            if (result.needSingleUpdate && smartHomeBaseDevice instanceof SmartHomeDevice && accountHandler != null) {
-                SmartHomeDevice shd = (SmartHomeDevice) smartHomeBaseDevice;
+            if (result.needSingleUpdate && smartHomeBaseDevice instanceof SmartHomeDevice shd
+                    && accountHandler != null) {
                 accountHandler.forceDelayedSmartHomeStateUpdate(shd.findId());
             }
         }
@@ -257,8 +257,8 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof AccountHandler) {
-                return (AccountHandler) bridgeHandler;
+            if (bridgeHandler instanceof AccountHandler handler) {
+                return handler;
             }
         }
 
@@ -318,8 +318,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     private static void getCapabilities(Map<String, List<SmartHomeCapability>> result, AccountHandler accountHandler,
             SmartHomeBaseDevice device) {
-        if (device instanceof SmartHomeDevice) {
-            SmartHomeDevice shd = (SmartHomeDevice) device;
+        if (device instanceof SmartHomeDevice shd) {
             for (SmartHomeCapability capability : shd.getCapabilities()) {
                 String interfaceName = capability.interfaceName;
                 if (interfaceName != null) {
@@ -342,8 +341,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             return Collections.emptySet();
         }
         Set<SmartHomeDevice> result = new HashSet<>();
-        if (baseDevice instanceof SmartHomeDevice) {
-            SmartHomeDevice shd = (SmartHomeDevice) baseDevice;
+        if (baseDevice instanceof SmartHomeDevice shd) {
             if (shd.getCapabilities().stream().map(capability -> capability.interfaceName)
                     .anyMatch(SUPPORTED_INTERFACES::contains)) {
                 result.add(shd);
@@ -351,8 +349,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         } else {
             SmartHomeGroup shg = (SmartHomeGroup) baseDevice;
             for (SmartHomeBaseDevice device : allDevices) {
-                if (device instanceof SmartHomeDevice) {
-                    SmartHomeDevice shd = (SmartHomeDevice) device;
+                if (device instanceof SmartHomeDevice shd) {
                     JsonSmartHomeTags.JsonSmartHomeTag tags = shd.tags;
                     if (tags != null) {
                         JsonSmartHomeGroupIdentity.SmartHomeGroupIdentity tagNameToValueSetMap = tags.tagNameToValueSetMap;
