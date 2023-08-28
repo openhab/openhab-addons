@@ -234,7 +234,6 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     public @Nullable Channel getChannel(String groupId, String channelId) {
         ThingUID thingUID = this.getThing().getUID();
         ChannelGroupUID channelGroupUID = new ChannelGroupUID(thingUID, groupId);
-        Channel channel = getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
-        return channel;
+        return getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
     }
 }

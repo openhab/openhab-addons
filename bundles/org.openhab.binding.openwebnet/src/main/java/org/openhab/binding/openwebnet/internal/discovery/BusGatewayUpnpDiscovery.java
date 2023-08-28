@@ -13,7 +13,6 @@
 package org.openhab.binding.openwebnet.internal.discovery;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -145,7 +144,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(OpenWebNetBindingConstants.THING_TYPE_BUS_GATEWAY);
+        return Set.of(OpenWebNetBindingConstants.THING_TYPE_BUS_GATEWAY);
     }
 
     @Override

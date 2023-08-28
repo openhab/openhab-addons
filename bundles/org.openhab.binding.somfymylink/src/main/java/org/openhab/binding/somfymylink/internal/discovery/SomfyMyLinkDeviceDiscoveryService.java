@@ -64,8 +64,8 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SomfyMyLinkBridgeHandler) {
-            this.mylinkHandler = (SomfyMyLinkBridgeHandler) handler;
+        if (handler instanceof SomfyMyLinkBridgeHandler bridgeHandler) {
+            this.mylinkHandler = bridgeHandler;
         }
     }
 

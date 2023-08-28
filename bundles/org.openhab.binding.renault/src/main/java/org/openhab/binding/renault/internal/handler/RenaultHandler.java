@@ -130,8 +130,8 @@ public class RenaultHandler extends BaseThingHandler {
                     if (command instanceof RefreshType) {
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
                                 new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
-                    } else if (command instanceof DecimalType) {
-                        car.setHvacTargetTemperature(((DecimalType) command).doubleValue());
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        car.setHvacTargetTemperature(decimalCommand.doubleValue());
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
                                 new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     } else if (command instanceof QuantityType) {

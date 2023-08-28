@@ -314,9 +314,9 @@ public class RdsHandler extends BaseThingHandler {
                     switch (channel.id) {
                         case CHA_TARGET_TEMP: {
                             Command doCommand = command;
-                            if (command instanceof QuantityType<?>) {
+                            if (command instanceof QuantityType<?> quantityCommand) {
                                 Unit<?> unit = points.getPointByClass(channel.clazz).getUnit();
-                                QuantityType<?> temp = ((QuantityType<?>) command).toUnit(unit);
+                                QuantityType<?> temp = quantityCommand.toUnit(unit);
                                 if (temp != null) {
                                     doCommand = temp;
                                 }
@@ -384,8 +384,8 @@ public class RdsHandler extends BaseThingHandler {
         @Nullable
         BridgeHandler h;
 
-        if ((b = getBridge()) != null && (h = b.getHandler()) != null && h instanceof RdsCloudHandler) {
-            return (RdsCloudHandler) h;
+        if ((b = getBridge()) != null && (b.getHandler() instanceof RdsCloudHandler cloudHandler)) {
+            return cloudHandler;
         }
         throw new RdsCloudException("no cloud handler found");
     }

@@ -172,7 +172,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             }
 
             long timeStamp = System.currentTimeMillis();
-            while (lastLineReceived.equals("")) {
+            while ("".equals(lastLineReceived)) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {

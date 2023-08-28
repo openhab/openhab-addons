@@ -246,8 +246,7 @@ public class SDS011Communicator {
     private boolean doRead() throws IOException {
         SensorReply reply = readReply();
         logger.trace("doRead(): Read reply={}", reply);
-        if (reply instanceof SensorMeasuredDataReply) {
-            SensorMeasuredDataReply sensorData = (SensorMeasuredDataReply) reply;
+        if (reply instanceof SensorMeasuredDataReply sensorData) {
             logger.trace("We received sensor data");
             if (sensorData.isValidData()) {
                 logger.trace("Sensor data is valid => updating channels");

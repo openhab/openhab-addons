@@ -166,8 +166,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             if (channel != null) {
                 Configuration config = channel.getConfiguration();
                 Object holdOnlineState = config.get(PARAM_HOLD_ONLINE_STATE);
-                if (holdOnlineState != null && (holdOnlineState instanceof Boolean)
-                        && ((Boolean) holdOnlineState).booleanValue()) {
+                if (holdOnlineState instanceof Boolean booleanValue && booleanValue.booleanValue()) {
                     /*
                      * the Configuration Parameter "holdOnlineState" is True so do NOT send a
                      * state update to OpenHAB
@@ -239,8 +238,8 @@ public class NeoBaseHandler extends BaseThingHandler {
         @Nullable
         BridgeHandler h;
 
-        if ((b = getBridge()) != null && (h = b.getHandler()) != null && h instanceof NeoHubHandler) {
-            return (NeoHubHandler) h;
+        if ((b = getBridge()) != null && (b.getHandler() instanceof NeoHubHandler neoHubHandler)) {
+            return neoHubHandler;
         }
 
         return null;

@@ -383,7 +383,7 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 }
                 break;
             case "9102": // EV, wakeupEvent, battery/button/periodic/poweron/sensor/ext_power, "unknown"=unknown
-                if (s.valueArray.size() > 0) {
+                if (!s.valueArray.isEmpty()) {
                     thingHandler.updateWakeupReason(s.valueArray);
                     lastWakeup = (String) s.valueArray.get(0);
                 }

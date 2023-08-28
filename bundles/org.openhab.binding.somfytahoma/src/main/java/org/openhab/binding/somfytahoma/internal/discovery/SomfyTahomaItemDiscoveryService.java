@@ -79,8 +79,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
-        if (handler instanceof SomfyTahomaBridgeHandler) {
-            bridgeHandler = (SomfyTahomaBridgeHandler) handler;
+        if (handler instanceof SomfyTahomaBridgeHandler tahomaBridgeHandler) {
+            bridgeHandler = tahomaBridgeHandler;
         }
     }
 
