@@ -89,7 +89,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | occupancySensor                 | A5-07             | 0x01-03                 | illumination, batteryVoltage, motionDetection               | NodON PIR-2-1-01        | Discovery |
 | lightTemperatureOccupancySensor | A5-08             | 0x01-03                 | illumination, temperature, occupancy, motionDetection       | Eltako FABH             | Discovery |
 | lightSensor                     | A5-06             | 0x01                    | illumination                                                | Eltako TF-AHDSB         | Discovery |
-| roomOperatingPanel              | A5-10             | 0x01-23                 | temperature, setPoint, fanSpeedStage, occupancy             | Thermokon SR04          | Discovery |
+| roomOperatingPanel              | A5-10             | 0x01-23                 | temperature, setPoint, fanSpeedStage, occupancy, dayNightModeState, conntact, humidity, illumination, batteryLevel, batteryLow             | Thermokon SR04          | Discovery |
 | automatedMeterSensor            | A5-12             | 0x00-03                 | counter, currentNumber, instantpower, totalusage, amrLitre, amrCubicMetre | FWZ12     | Discovery |
 | environmentalSensor             | A5-13             | 0x01-02                 | temperature, windspeed, illumination, rainStatus            | FWS61                   | Discovery |
 | centralCommand                  | A5-38             | 0x08                    | dimmer, generalSwitch                                       | Eltako FUD14, FSR14     | Teach-in  |
@@ -297,7 +297,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | occupancy                         | Switch                    | Occupancy button pressed (ON) or released (OFF) |
 | motionDetection                   | Switch                    | On=Motion detected, Off=not |
 | setPoint                          | Number                    | linear set point |
-| fanSpeedStage                     | String                    | Fan speed: -1 (Auto), 0, 1, 2, 3 |
+| fanSpeedStage                     | Number                    | Fan speed: -1 (Auto), 0, 1, 2, 3, 4, 5, 6 |
 | dimmer                            | Dimmer                    | Dimmer value in percent |
 | generalSwitch(/A/B)               | Switch                    | Switch something (channel A/B) ON/OFF |
 | rollershutter                     | Rollershutter             | Shut time (shutTime) in seconds can be configured |
@@ -350,6 +350,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | windowBreachEvent                 | Trigger                   | Emits event 'ALARM' |
 | protectionPlusEvent               | Trigger                   | Emits event 'ALARM' |
 | vacationModeToggleEvent           | Trigger                   | Emits events 'ACTIVATED', 'DEACTIVATED' |
+| dayNightModeState                 | Number                    | 0 = Night mode on, 1 = day mode on |
 
 Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
 This is especially true for Eltako rollershutter, as their position is calculated out of the current position and the moving time.

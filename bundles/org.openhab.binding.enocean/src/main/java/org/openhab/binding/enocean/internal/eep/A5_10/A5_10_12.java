@@ -20,7 +20,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
-public class A5_10_12 extends A5_10 {
+public class A5_10_12 extends A5_10_10 {
 
     public A5_10_12(ERP1Message packet) {
         super(packet);
