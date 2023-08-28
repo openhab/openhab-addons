@@ -18,6 +18,13 @@
       <version>20231013</version>
       <scope>compile</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.24.2</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <artifactId>org.openhab.binding.mercedesme</artifactId>
