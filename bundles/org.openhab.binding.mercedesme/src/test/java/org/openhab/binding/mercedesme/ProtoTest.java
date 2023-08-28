@@ -37,7 +37,7 @@ class ProtoTest {
                 System.out.println(m.get(object).getClass());
                 // VEPUpdatesByVIN update = (VEPUpdatesByVIN) m.get(object);
                 VEPUpdatesByVIN update = pm.getVepUpdates();
-                System.out.println(update.getAllFields().size());
+                // update.System.out.println(update.getAllFields().size());
                 // System.out.println(update);
                 Set keys2 = update.getAllFields().keySet();
                 for (java.util.Iterator iterator2 = keys2.iterator(); iterator2.hasNext();) {
@@ -69,5 +69,4 @@ class ProtoTest {
             e.printStackTrace();
         }
     }
-
 }

@@ -14,10 +14,12 @@ package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -31,6 +33,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.i18n.LocaleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +49,10 @@ public class CallbackServer {
     private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<>();
     private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
+    private final HttpClient httpClient;
     private final OAuthFactory oAuthFactory;
+    private final LocaleProvider localeProvider;
+    private final String oauthID;
 
     private Optional<Server> server = Optional.empty();
     private AccessTokenRefreshListener listener;
@@ -55,11 +61,14 @@ public class CallbackServer {
     private String callbackUrl;
 
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
-            AccountConfiguration config, String callbackUrl) {
+            AccountConfiguration config, String callbackUrl, LocaleProvider lp) {
         this.oAuthFactory = oAuthFactory;
-        oacs = oAuthFactory.createOAuthClientService(config.clientId, Constants.MB_TOKEN_URL, Constants.MB_AUTH_URL,
-                config.clientId, config.clientSecret, config.getScope(), false);
         listener = l;
+        httpClient = hc;
+        localeProvider = lp;
+        oauthID = Constants.BINDING_ID + "_" + config.email;
+        oacs = oAuthFactory.createOAuthClientService(oauthID, Utils.getLoginServer(config.region),
+                Utils.getAuthURL(config.region), Utils.getLoginAppId(config.region), null, Constants.SCOPE, false);
         AUTH_MAP.put(Integer.valueOf(config.callbackPort), oacs);
         SERVER_MAP.put(Integer.valueOf(config.callbackPort), this);
         this.config = config;
@@ -68,13 +77,13 @@ public class CallbackServer {
     }
 
     public void dispose() {
-        oAuthFactory.ungetOAuthService(config.clientId);
+        oAuthFactory.ungetOAuthService(oauthID);
         AUTH_MAP.remove(Integer.valueOf(config.callbackPort));
         SERVER_MAP.remove(Integer.valueOf(config.callbackPort));
     }
 
     public void deleteOAuthServiceAndAccessToken() {
-        oAuthFactory.deleteServiceAndAccessToken(config.clientId);
+        oAuthFactory.deleteServiceAndAccessToken(oauthID);
     }
 
     public String getAuthorizationUrl() {
@@ -84,10 +93,6 @@ public class CallbackServer {
             LOGGER.warn("Error creating Authorization URL {}", e.getMessage());
             return Constants.EMPTY;
         }
-    }
-
-    public String getScope() {
-        return config.getScope();
     }
 
     public boolean start() {
@@ -184,13 +189,24 @@ public class CallbackServer {
         }
     }
 
-    public static String getScope(int port) {
-        CallbackServer srv = SERVER_MAP.get(port);
-        if (srv != null) {
-            return srv.getScope();
-        } else {
-            LOGGER.debug("No Callbackserver found for {}", port);
-            return Constants.EMPTY;
-        }
+    @Nullable
+    public static CallbackServer getServer(int port) {
+        return SERVER_MAP.get(port);
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public String getRegion() {
+        return config.region;
+    }
+
+    public String getMail() {
+        return config.email;
+    }
+
+    public Locale getLocale() {
+        return localeProvider.getLocale();
     }
 }

@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.mercedesme;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
-import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
+import org.openhab.binding.mercedesme.internal.dto.PINRequest;
 import org.openhab.binding.mercedesme.internal.server.Utils;
 
 /**
@@ -31,22 +29,6 @@ import org.openhab.binding.mercedesme.internal.server.Utils;
  */
 @NonNullByDefault
 class ConfigurationTest {
-
-    @Test
-    void testScope() {
-        AccountConfiguration ac = new AccountConfiguration();
-        assertEquals(
-                "openid offline_access mb:vehicle:mbdata:payasyoudrive mb:vehicle:mbdata:vehiclestatus mb:vehicle:mbdata:vehiclelock mb:vehicle:mbdata:fuelstatus mb:vehicle:mbdata:evstatus",
-                ac.getScope());
-    }
-
-    @Test
-    void testApiUrlEndpoint() {
-        String url = Constants.FUEL_URL;
-        String[] endpoint = url.split("/");
-        String finalEndpoint = endpoint[endpoint.length - 1];
-        assertEquals("fuelstatus", finalEndpoint);
-    }
 
     @Test
     void testRound() {
@@ -60,13 +42,20 @@ class ConfigurationTest {
     }
 
     @Test
-    public void testCallbackUrl() throws SocketException {
-        String ip = Utils.getCallbackIP();
-        String message = "IP " + ip + " not reachable";
-        try {
-            assertTrue(InetAddress.getByName(ip).isReachable(10000), message);
-        } catch (IOException e) {
-            fail(message);
-        }
+    void testLocale() {
+        Locale l = Locale.GERMANY;
+        System.out.println(l.getCountry());
+        System.out.println(l.toString());
+    }
+
+    @Test
+    void testRegion() {
+        System.out.println(Utils.getLoginAppId(Constants.REGION_EUROPE));
+    }
+
+    @Test
+    void testGSON() {
+        PINRequest pr = new PINRequest("a", "b");
+        System.out.println(Utils.GSON.toJson(pr));
     }
 }
