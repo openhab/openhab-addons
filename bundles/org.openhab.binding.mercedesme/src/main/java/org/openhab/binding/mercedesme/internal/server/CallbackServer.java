@@ -58,7 +58,7 @@ public class CallbackServer {
     private AccessTokenRefreshListener listener;
     private AccountConfiguration config;
     private OAuthClientService oacs;
-    private String callbackUrl;
+    public String callbackUrl;
 
     public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
             AccountConfiguration config, String callbackUrl, LocaleProvider lp) {
@@ -208,5 +208,14 @@ public class CallbackServer {
 
     public Locale getLocale() {
         return localeProvider.getLocale();
+    }
+
+    public void newToken(AccessTokenResponse atr) {
+        LOGGER.info("Import token {}", atr);
+        try {
+            oacs.importAccessTokenResponse(atr);
+        } catch (OAuthException e) {
+            e.printStackTrace();
+        }
     }
 }

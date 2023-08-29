@@ -120,6 +120,19 @@ public class Utils {
         }
     }
 
+    public static String getWebsocketServer(String region) {
+        switch (region) {
+            case Constants.REGION_APAC:
+                return Constants.WEBSOCKET_API_BASE_PA;
+            case Constants.REGION_CHINA:
+                return Constants.WEBSOCKET_API_BASE_CN;
+            case Constants.REGION_NORAM:
+                return Constants.WEBSOCKET_API_BASE_PA;
+            default:
+                return Constants.WEBSOCKET_API_BASE;
+        }
+    }
+
     public static String getApplication(String region) {
         switch (region) {
             case Constants.REGION_APAC:

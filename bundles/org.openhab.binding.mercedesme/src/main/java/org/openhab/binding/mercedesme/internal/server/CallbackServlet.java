@@ -13,7 +13,9 @@
 package org.openhab.binding.mercedesme.internal.server;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -81,8 +83,8 @@ public class CallbackServlet extends HttpServlet {
                     response.getWriter().println("<HTML>");
                     response.getWriter().println("<BODY>");
                     response.getWriter().println("PIN received?<BR>");
-                    response.getWriter().println(
-                            "<a href=\"" + request.getLocalAddr() + "?guid=" + pr.nonce + "\">Click here to enter</a>");
+                    response.getWriter().println("<a href=\"" + Constants.CALLBACK_ENDPOINT + "?guid=" + pr.nonce
+                            + "\">Click here to enter</a>");
                     response.getWriter().println("</BODY>");
                     response.getWriter().println("</HTML>");
 
@@ -101,11 +103,12 @@ public class CallbackServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println("<HTML>");
             response.getWriter().println("<BODY>");
-            response.getWriter().println("<form action=\"" + request.getLocalAddr() + "?guid=" + guid + "\">");
+            response.getWriter().println("<form action=\"" + Constants.CALLBACK_ENDPOINT + "\">");
 
+            response.getWriter().println("<input type=\"text\" id=\"guid\" name=\"guid\" value=\"" + guid + "\">");
             response.getWriter().println("<label for=\"PIN\">PIN</label>");
-            response.getWriter().println("");
-            response.getWriter().println("<input type=\"text\" id=\"pin\" name=\"PIN\" placeholder=\"Your PIN");
+            response.getWriter().println("<input type=\"text\" id=\"pin\" name=\"pin\" placeholder=\"Your PIN\">");
+            response.getWriter().println("<input type=\"submit\" value=\"Submit\">");
             response.getWriter().println("</form>");
             response.getWriter().println("</BODY>");
             response.getWriter().println("</HTML>");
@@ -114,13 +117,14 @@ public class CallbackServlet extends HttpServlet {
 
             String url = Utils.getTokenUrl(myServer.getRegion());
             logger.info("Get Token base URL {}", url);
-            String clientid = URLEncoder.encode("client_id=" + Utils.getLoginAppId(myServer.getRegion()), "utf-8");
+            String clientid = "client_id="
+                    + URLEncoder.encode(Utils.getLoginAppId(myServer.getRegion()), StandardCharsets.UTF_8.toString());
             String grant = "grant_type=password";
-            String user = URLEncoder.encode("username=" + myServer.getMail(), "utf-8");
-            String password = URLEncoder.encode("password=" + guid + ":" + pin, "utf-8");
-            String scope = URLEncoder.encode("scope=" + Constants.SCOPE, "utf-8");
-            url = url + "?" + clientid + "&" + grant + "&" + user + "&" + password + "&" + scope;
-            logger.info("Get Token URL {}", url);
+            String user = "username=" + URLEncoder.encode(myServer.getMail(), StandardCharsets.UTF_8.toString());
+            String password = "password=" + URLEncoder.encode(guid + ":" + pin, StandardCharsets.UTF_8.toString());
+            String scope = "scope=" + URLEncoder.encode(Constants.SCOPE, StandardCharsets.UTF_8.toString());
+            String content = clientid + "&" + grant + "&" + user + "&" + password + "&" + scope;
+            logger.info("Get Token Content {}", content);
             Request req = client.POST(url);
             req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
             req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
@@ -133,6 +137,7 @@ public class CallbackServlet extends HttpServlet {
             req.header("X-Request-Id", UUID.randomUUID().toString());
             req.header("Stage", "prod");
             req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            req.content(new StringContentProvider(content));
             try {
                 ContentResponse cr = req.send();
                 if (cr.getStatus() == 200) {
@@ -146,6 +151,7 @@ public class CallbackServlet extends HttpServlet {
                     atr.setTokenType("Bearer");
                     atr.setScope(Constants.SCOPE);
                     logger.info("ATR {}", atr);
+                    myServer.newToken(atr);
                 } else {
                     logger.debug("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
                 }
@@ -155,5 +161,15 @@ public class CallbackServlet extends HttpServlet {
         }
         logger.debug("Call from {}:{} parameters {}", request.getLocalAddr(), request.getLocalPort(),
                 request.getParameterMap());
+    }
+
+    private String encodeValue(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return Constants.EMPTY;
+        }
     }
 }
