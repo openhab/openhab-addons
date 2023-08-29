@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mercedesme.internal.server;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -29,10 +28,6 @@ import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.openhab.core.auth.client.oauth2.OAuthException;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,31 +40,24 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CallbackServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CallbackServer.class);
-    private static final Map<Integer, OAuthClientService> AUTH_MAP = new HashMap<>();
-    private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<>();
+    private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<Integer, CallbackServer>();
     private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
     private final HttpClient httpClient;
-    private final OAuthFactory oAuthFactory;
     private final LocaleProvider localeProvider;
     private final String oauthID;
 
     private Optional<Server> server = Optional.empty();
     private AccessTokenRefreshListener listener;
     private AccountConfiguration config;
-    private OAuthClientService oacs;
     public String callbackUrl;
 
-    public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, OAuthFactory oAuthFactory,
-            AccountConfiguration config, String callbackUrl, LocaleProvider lp) {
-        this.oAuthFactory = oAuthFactory;
+    public CallbackServer(AccessTokenRefreshListener l, HttpClient hc, AccountConfiguration config, String callbackUrl,
+            LocaleProvider lp) {
         listener = l;
         httpClient = hc;
         localeProvider = lp;
         oauthID = Constants.BINDING_ID + "_" + config.email;
-        oacs = oAuthFactory.createOAuthClientService(oauthID, Utils.getLoginServer(config.region),
-                Utils.getAuthURL(config.region), Utils.getLoginAppId(config.region), null, Constants.SCOPE, false);
-        AUTH_MAP.put(Integer.valueOf(config.callbackPort), oacs);
         SERVER_MAP.put(Integer.valueOf(config.callbackPort), this);
         this.config = config;
         this.callbackUrl = callbackUrl;
@@ -77,22 +65,10 @@ public class CallbackServer {
     }
 
     public void dispose() {
-        oAuthFactory.ungetOAuthService(oauthID);
-        AUTH_MAP.remove(Integer.valueOf(config.callbackPort));
         SERVER_MAP.remove(Integer.valueOf(config.callbackPort));
     }
 
     public void deleteOAuthServiceAndAccessToken() {
-        oAuthFactory.deleteServiceAndAccessToken(oauthID);
-    }
-
-    public String getAuthorizationUrl() {
-        try {
-            return oacs.getAuthorizationUrl(callbackUrl, null, null);
-        } catch (OAuthException e) {
-            LOGGER.warn("Error creating Authorization URL {}", e.getMessage());
-            return Constants.EMPTY;
-        }
     }
 
     public boolean start() {
@@ -129,66 +105,6 @@ public class CallbackServer {
         }
     }
 
-    public String getToken() {
-        AccessTokenResponse atr = null;
-        try {
-            /*
-             * this will automatically trigger
-             * - return last stored token if it's still valid
-             * - refreshToken if current token is expired
-             * - inform listeners if refresh delivered new token
-             * - store new token in persistence
-             */
-            atr = oacs.getAccessTokenResponse();
-        } catch (OAuthException | IOException | OAuthResponseException e) {
-            LOGGER.warn("Exception getting token {}", e.getMessage());
-        }
-        if (atr == null) {
-            LOGGER.debug("Token empty - Manual Authorization needed at {}", callbackUrl);
-            listener.onAccessTokenResponse(INVALID_ACCESS_TOKEN);
-            return INVALID_ACCESS_TOKEN.getAccessToken();
-        }
-        listener.onAccessTokenResponse(atr);
-        return atr.getAccessToken();
-    }
-
-    /**
-     * Static callback for Servlet calls
-     *
-     * @param port
-     * @param code
-     */
-    public static void callback(int port, String code) {
-        LOGGER.trace("Callback from Servlet {} {}", port, code);
-        try {
-            OAuthClientService oacs = AUTH_MAP.get(port);
-            LOGGER.trace("Get token from code {}", code);
-            // get CallbackServer instance
-            CallbackServer srv = SERVER_MAP.get(port);
-            LOGGER.trace("Deliver token to {}", srv);
-            if (srv != null && oacs != null) {
-                // token stored and persisted inside oacs
-                AccessTokenResponse atr = oacs.getAccessTokenResponseByAuthorizationCode(code, srv.callbackUrl);
-                // inform listener - not done by oacs
-                srv.listener.onAccessTokenResponse(atr);
-            } else {
-                LOGGER.warn("Either Callbackserver  {} or Authorization Service {} not found", srv, oacs);
-            }
-        } catch (OAuthException | IOException | OAuthResponseException e) {
-            LOGGER.warn("Exception getting token from code {} {}", code, e.getMessage());
-        }
-    }
-
-    public static String getAuthorizationUrl(int port) {
-        CallbackServer srv = SERVER_MAP.get(port);
-        if (srv != null) {
-            return srv.getAuthorizationUrl();
-        } else {
-            LOGGER.debug("No Callbackserver found for {}", port);
-            return Constants.EMPTY;
-        }
-    }
-
     @Nullable
     public static CallbackServer getServer(int port) {
         return SERVER_MAP.get(port);
@@ -208,14 +124,5 @@ public class CallbackServer {
 
     public Locale getLocale() {
         return localeProvider.getLocale();
-    }
-
-    public void newToken(AccessTokenResponse atr) {
-        LOGGER.info("Import token {}", atr);
-        try {
-            oacs.importAccessTokenResponse(atr);
-        } catch (OAuthException e) {
-            e.printStackTrace();
-        }
     }
 }

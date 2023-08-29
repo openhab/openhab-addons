@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mercedesme.internal.server;
+package org.openhab.binding.mercedesme.internal.utils;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
