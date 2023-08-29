@@ -166,7 +166,8 @@ public class ShadeThingHandler extends BaseThingHandler {
                     throw new IllegalArgumentException(INVALID_COMMAND);
 
                 case CHANNEL_SHADE_COMMAND:
-                    if ((command instanceof StringType str) && COMMAND_IDENTIFY.equals(str.toString())) {
+                    if ((command instanceof StringType stringCommand)
+                            && COMMAND_IDENTIFY.equals(stringCommand.toString())) {
                         webTargets.jogShade(shadeId);
                         break;
                     }

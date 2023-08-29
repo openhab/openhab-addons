@@ -252,8 +252,8 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
         StateUpdate newState = null;
         switch (channel) {
             case CHANNEL_COLORTEMPERATURE:
-                if (command instanceof PercentType temperature) {
-                    newState = LightStateConverter.toColorTemperatureLightStateFromPercentType(temperature,
+                if (command instanceof PercentType percentCommand) {
+                    newState = LightStateConverter.toColorTemperatureLightStateFromPercentType(percentCommand,
                             colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType onOffCommand) {
