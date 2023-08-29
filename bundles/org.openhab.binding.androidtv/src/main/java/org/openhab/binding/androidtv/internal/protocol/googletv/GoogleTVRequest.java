@@ -38,7 +38,7 @@ public class GoogleTVRequest {
 
     public static String decodeMessage(String message) {
         StringBuilder sb = new StringBuilder();
-        char[] ch = message.toCharArray();
+        char ch[] = message.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             String hexString = Integer.toHexString(ch[i]);
             if (hexString.length() % 2 > 0) {

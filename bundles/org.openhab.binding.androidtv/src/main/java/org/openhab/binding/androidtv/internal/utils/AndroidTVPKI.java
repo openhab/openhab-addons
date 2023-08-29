@@ -109,7 +109,8 @@ public class AndroidTVPKI {
     }
 
     private Key convertByteToKey(byte[] keyString) {
-        return new SecretKeySpec(keyString, keyAlgorithm);
+        Key key = new SecretKeySpec(keyString, keyAlgorithm);
+        return key;
     }
 
     public String encrypt(String data, Key key) throws Exception {
@@ -165,8 +166,9 @@ public class AndroidTVPKI {
     }
 
     public Certificate getCert() throws CertificateException {
-        return CertificateFactory.getInstance("X.509")
+        Certificate cert = CertificateFactory.getInstance("X.509")
                 .generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(this.cert.getBytes())));
+        return cert;
     }
 
     public void setCaCert(String caCert) {
@@ -178,8 +180,9 @@ public class AndroidTVPKI {
     }
 
     public Certificate getCaCert() throws CertificateException {
-        return CertificateFactory.getInstance("X.509")
+        Certificate caCert = CertificateFactory.getInstance("X.509")
                 .generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(this.caCert.getBytes())));
+        return caCert;
     }
 
     public void setAlias(String alias) {

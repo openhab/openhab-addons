@@ -66,8 +66,8 @@ public class AndroidTVCommandExtension extends AbstractConsoleCommandExtension {
             AndroidTVHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof AndroidTVHandler vHandler) {
-                    handler = vHandler;
+                if (thingHandler instanceof AndroidTVHandler) {
+                    handler = (AndroidTVHandler) thingHandler;
                 }
             }
             if (thing == null) {
