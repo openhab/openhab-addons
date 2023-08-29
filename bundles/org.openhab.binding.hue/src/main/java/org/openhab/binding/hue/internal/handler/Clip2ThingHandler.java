@@ -384,9 +384,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof IncreaseDecreaseType) {
                     if (Objects.nonNull(cache)) {
                         State current = cache.getBrightnessState();
-                        if (current instanceof PercentType type) {
+                        if (current instanceof PercentType percentCommand) {
                             int sign = IncreaseDecreaseType.INCREASE == command ? 1 : -1;
-                            double percent = type.doubleValue() + (sign * Resource.PERCENT_DELTA);
+                            double percent = percentCommand.doubleValue() + (sign * Resource.PERCENT_DELTA);
                             command = new PercentType(new BigDecimal(Math.min(100f, Math.max(0f, percent)),
                                     Resource.PERCENT_MATH_CONTEXT));
                         }
@@ -1175,8 +1175,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     break;
 
                 case TRIGGER:
-                    if (state instanceof DecimalType type) {
-                        triggerChannel(channelID, String.valueOf(type.intValue()));
+                    if (state instanceof DecimalType decimalCommand) {
+                        triggerChannel(channelID, String.valueOf(decimalCommand.intValue()));
                     }
             }
         }

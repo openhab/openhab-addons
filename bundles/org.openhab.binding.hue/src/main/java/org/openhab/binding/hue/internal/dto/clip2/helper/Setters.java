@@ -128,7 +128,7 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source) {
-        if (command instanceof PercentType type) {
+        if (command instanceof PercentType percentCommand) {
             MirekSchema schema = target.getMirekSchema();
             schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
@@ -136,7 +136,7 @@ public class Setters {
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
-            double val = min + ((max - min) * type.doubleValue() / 100f);
+            double val = min + ((max - min) * percentCommand.doubleValue() / 100f);
             target.setColorTemperature(colorTemperature.setMirek(val));
         }
         return target;

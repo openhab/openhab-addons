@@ -55,8 +55,8 @@ public class DimmerItemConverter extends AbstractTransformingItemConverter {
             return string;
         }
 
-        if (command instanceof PercentType type) {
-            return type.toString();
+        if (command instanceof PercentType percentCommand) {
+            return percentCommand.toString();
         }
 
         throw new IllegalArgumentException("Command type '" + command.toString() + "' not supported");

@@ -85,8 +85,8 @@ public class ShadePosition {
                 if (shadeCapabilities.supportsPrimary() && shadeCapabilities.supportsSecondary()) {
                     // on dual rail shades constrain percent to not move the lower rail above the upper
                     State secondary = getState(shadeCapabilities, SECONDARY_POSITION);
-                    if (secondary instanceof PercentType type) {
-                        int secPercent = type.intValue();
+                    if (secondary instanceof PercentType percentage) {
+                        int secPercent = percentage.intValue();
                         if (percent < secPercent) {
                             percent = secPercent;
                         }
@@ -221,8 +221,8 @@ public class ShadePosition {
                 if (shadeCapabilities.supportsPrimary() && shadeCapabilities.supportsSecondary()) {
                     // on dual rail shades constrain percent to not move the upper rail below the lower
                     State primary = getState(shadeCapabilities, PRIMARY_POSITION);
-                    if (primary instanceof PercentType type) {
-                        int primaryPercent = type.intValue();
+                    if (primary instanceof PercentType percentage) {
+                        int primaryPercent = percentage.intValue();
                         if (percent > primaryPercent) {
                             percent = primaryPercent;
                         }

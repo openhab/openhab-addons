@@ -596,8 +596,8 @@ public class LifxLightHandler extends BaseThingHandler {
             case CHANNEL_INFRARED:
                 if (command instanceof PercentType percent) {
                     return () -> handleInfraredCommand(percent);
-                } else if (command instanceof IncreaseDecreaseType type) {
-                    return () -> handleIncreaseDecreaseInfraredCommand(type);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    return () -> handleIncreaseDecreaseInfraredCommand(increaseDecreaseCommand);
                 }
             default:
                 try {

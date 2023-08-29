@@ -1271,10 +1271,10 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     } else {
                         newBrightness = currentBrightness - BRIGHTNESS_DIM_STEP;
                     }
-                } else if (command instanceof PercentType type) {
-                    newBrightness = (int) Math.floor(type.doubleValue());
-                } else if (command instanceof DecimalType type) {
-                    newBrightness = type.intValue();
+                } else if (command instanceof PercentType percentCommand) {
+                    newBrightness = (int) Math.floor(percentCommand.doubleValue());
+                } else if (command instanceof DecimalType decimalCommand) {
+                    newBrightness = decimalCommand.intValue();
                 }
 
                 // check in in range
@@ -1307,8 +1307,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     apiClient.setAmbientLightColorState(getThingHaId(), STATE_AMBIENT_LIGHT_COLOR_CUSTOM_COLOR);
                 }
 
-                if (command instanceof HSBType type) {
-                    apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor(type));
+                if (command instanceof HSBType hsb) {
+                    apiClient.setAmbientLightCustomColorState(getThingHaId(), mapColor(hsb));
                 } else if (command instanceof StringType) {
                     apiClient.setAmbientLightCustomColorState(getThingHaId(), command.toFullString());
                 }

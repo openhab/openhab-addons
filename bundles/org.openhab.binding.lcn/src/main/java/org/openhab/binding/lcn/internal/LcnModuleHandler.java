@@ -211,12 +211,12 @@ public class LcnModuleHandler extends BaseThingHandler {
                 subHandler.handleCommandOnOff(sw, channelGroup, number.get());
             } else if (command instanceof DimmerOutputCommand outputCommand) {
                 subHandler.handleCommandDimmerOutput(outputCommand, number.get());
-            } else if (command instanceof PercentType type && number.isPresent()) {
-                subHandler.handleCommandPercent(type, channelGroup, number.get());
+            } else if (command instanceof PercentType percentCommand && number.isPresent()) {
+                subHandler.handleCommandPercent(percentCommand, channelGroup, number.get());
             } else if (command instanceof HSBType hsb) {
                 subHandler.handleCommandHsb(hsb, channelUid.getIdWithoutGroup());
-            } else if (command instanceof PercentType type) {
-                subHandler.handleCommandPercent(type, channelGroup, channelUid.getIdWithoutGroup());
+            } else if (command instanceof PercentType percentCommand) {
+                subHandler.handleCommandPercent(percentCommand, channelGroup, channelUid.getIdWithoutGroup());
             } else if (command instanceof StringType str) {
                 subHandler.handleCommandString(str, number.orElse(0));
             } else if (command instanceof DecimalType decimalType) {

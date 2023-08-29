@@ -311,12 +311,12 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             case CHANNEL_SWITCH:
-                if (command instanceof OnOffType type) {
-                    newState = LightStateConverter.toOnOffLightState(type);
+                if (command instanceof OnOffType onOffTypeCommand) {
+                    newState = LightStateConverter.toOnOffLightState(onOffTypeCommand);
                     if (isOsramPar16) {
-                        newState = addOsramSpecificCommands(newState, type);
+                        newState = addOsramSpecificCommands(newState, onOffTypeCommand);
                     } else if (isLkWiser) {
-                        newState = addLkWiserSpecificCommands(newState, type);
+                        newState = addLkWiserSpecificCommands(newState, onOffTypeCommand);
                     }
                 }
                 lastColorTemp = lastSentColorTemp;
