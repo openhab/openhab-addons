@@ -28,6 +28,8 @@ public class Enums {
     public enum Mode {
         UNKNOWN(-1),
         AUTO(0),
+        AUTO1(1), // BRP069A81 only accepts mode=1 for AUTO mode. 0 and 7 are rejected.
+        AUTO7(7), // Some adapters may return 7 as auto (heating)
         DEHUMIDIFIER(2),
         COLD(3),
         HEAT(4),

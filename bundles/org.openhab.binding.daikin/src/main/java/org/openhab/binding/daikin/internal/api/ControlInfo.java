@@ -38,12 +38,14 @@ public class ControlInfo {
 
     public String ret = "";
     public boolean power = false;
+    // Store the accepted auto mode for later use.
+    public int autoModeValue = Mode.AUTO.getValue();
     public Mode mode = Mode.AUTO;
-    /** Degrees in Celsius. */
+    // Degrees in Celsius.
     public Optional<Double> temp = Optional.empty();
     public FanSpeed fanSpeed = FanSpeed.AUTO;
     public FanMovement fanMovement = FanMovement.STOPPED;
-    /* Not supported by all units. Sets the target humidity for dehumidifying. */
+    // Not supported by all units. Sets the target humidity for dehumidifying.
     public Optional<Integer> targetHumidity = Optional.empty();
     public AdvancedMode advancedMode = AdvancedMode.UNKNOWN;
     public boolean separatedDirectionParams = false;
@@ -61,6 +63,11 @@ public class ControlInfo {
         info.power = "1".equals(responseMap.get("pow"));
         info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
                 .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);
+        // Normalize AUTO1 and AUTO7 to AUTO
+        if (info.mode == Mode.AUTO1 || info.mode == Mode.AUTO7) {
+            info.autoModeValue = info.mode.getValue();
+            info.mode = Mode.AUTO;
+        }
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
         info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> FanSpeed.fromValue(value))
                 .orElse(FanSpeed.AUTO);
@@ -90,7 +97,7 @@ public class ControlInfo {
     public Map<String, String> getParamString() {
         Map<String, String> params = new HashMap<>();
         params.put("pow", power ? "1" : "0");
-        params.put("mode", Integer.toString(mode.getValue()));
+        params.put("mode", Integer.toString(mode == Mode.AUTO ? autoModeValue : mode.getValue()));
         params.put("f_rate", fanSpeed.getValue());
         if (separatedDirectionParams) {
             params.put("f_dir_lr",
