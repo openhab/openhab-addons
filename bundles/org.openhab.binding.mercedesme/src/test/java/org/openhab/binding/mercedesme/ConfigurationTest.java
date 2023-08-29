@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.dto.PINRequest;
-import org.openhab.binding.mercedesme.internal.server.Utils;
+import org.openhab.binding.mercedesme.internal.utils.Utils;
 
 /**
  * The {@link ConfigurationTest} Test configuration settings

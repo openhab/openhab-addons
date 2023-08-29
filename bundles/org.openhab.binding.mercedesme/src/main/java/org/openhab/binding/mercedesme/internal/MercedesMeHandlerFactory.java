@@ -19,7 +19,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -68,13 +67,14 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             final @Reference TimeZoneProvider tzp) {
         this.oAuthFactory = oAuthFactory;
         this.storageService = storageService;
+
         localeProvider = lp;
         mmcop = cop;
         mmsop = sop;
         timeZoneProvider = tzp;
         httpClient = hcf.createHttpClient(Constants.BINDING_ID);
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
-        httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+        // httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
         try {
             httpClient.start();
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClient, oAuthFactory, localeProvider);
+            return new AccountHandler((Bridge) thing, httpClient, localeProvider, storageService);
         }
         return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop,
                 timeZoneProvider);
