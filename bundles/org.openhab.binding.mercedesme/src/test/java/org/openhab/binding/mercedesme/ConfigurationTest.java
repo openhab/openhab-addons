@@ -14,6 +14,9 @@ package org.openhab.binding.mercedesme;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,5 +60,15 @@ class ConfigurationTest {
     void testGSON() {
         PINRequest pr = new PINRequest("a", "b");
         System.out.println(Utils.GSON.toJson(pr));
+    }
+
+    @Test
+    void testEncoding() {
+        try {
+            System.out.println(URLEncoder.encode("bernd.w@ymann.de", StandardCharsets.UTF_8.toString()));
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
