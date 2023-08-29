@@ -229,11 +229,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 break;
 
             case CHANNEL_SHADE_COMMAND:
-                if (command instanceof StringType str) {
-                    if (COMMAND_IDENTIFY.equals(str.toString())) {
+                if (command instanceof StringType stringCommand) {
+                    if (COMMAND_IDENTIFY.equals(stringCommand.toString())) {
                         logger.debug("Identify shade {}", shadeId);
                         identifyShade(webTargets, shadeId);
-                    } else if (COMMAND_CALIBRATE.equals(str.toString())) {
+                    } else if (COMMAND_CALIBRATE.equals(stringCommand.toString())) {
                         logger.debug("Calibrate shade {}", shadeId);
                         calibrateShade(webTargets, shadeId);
                     }

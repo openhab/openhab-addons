@@ -583,8 +583,8 @@ public class Resource {
     }
 
     public Resource setEnabled(Command command) {
-        if (command instanceof OnOffType sw) {
-            this.enabled = sw == OnOffType.ON;
+        if (command instanceof OnOffType onOffCommand) {
+            this.enabled = onOffCommand == OnOffType.ON;
         }
         return this;
     }

@@ -432,8 +432,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_SCENE:
-                if (command instanceof StringType str) {
-                    putResourceId = sceneResourceIds.get(str.toString());
+                if (command instanceof StringType stringCommand) {
+                    putResourceId = sceneResourceIds.get(stringCommand.toString());
                     if (Objects.nonNull(putResourceId)) {
                         putResource = new Resource(ResourceType.SCENE).setRecallAction(RecallAction.ACTIVE);
                     }
@@ -442,8 +442,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_DYNAMICS:
                 Duration clearAfter = Duration.ZERO;
-                if (command instanceof QuantityType<?> type) {
-                    QuantityType<?> durationMs = type.toUnit(MetricPrefix.MILLI(Units.SECOND));
+                if (command instanceof QuantityType<?> quantityCommand) {
+                    QuantityType<?> durationMs = quantityCommand.toUnit(MetricPrefix.MILLI(Units.SECOND));
                     if (Objects.nonNull(durationMs) && durationMs.longValue() > 0) {
                         Duration duration = Duration.ofMillis(durationMs.longValue());
                         dynamicsDuration = duration;
@@ -582,8 +582,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof Clip2BridgeHandler handler) {
-                handler.childInitialized();
+            if (bridgeHandler instanceof Clip2BridgeHandler clip2BridgeHandler) {
+                clip2BridgeHandler.childInitialized();
             }
         }
     }

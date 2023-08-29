@@ -116,8 +116,8 @@ public class ShadeThingHandler extends BaseThingHandler {
         try {
             switch (channelUID.getId()) {
                 case CHANNEL_SHADE_POSITION:
-                    if (command instanceof PercentType pos) {
-                        position.setPosition(PRIMARY_POSITION, pos);
+                    if (command instanceof PercentType percentCommand) {
+                        position.setPosition(PRIMARY_POSITION, percentCommand);
                         webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (command instanceof UpDownType) {
@@ -134,8 +134,8 @@ public class ShadeThingHandler extends BaseThingHandler {
                     throw new IllegalArgumentException(INVALID_COMMAND);
 
                 case CHANNEL_SHADE_SECONDARY_POSITION:
-                    if (command instanceof PercentType pos) {
-                        position.setPosition(SECONDARY_POSITION, pos);
+                    if (command instanceof PercentType percentCommand) {
+                        position.setPosition(SECONDARY_POSITION, percentCommand);
                         webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (command instanceof UpDownType) {
@@ -153,8 +153,8 @@ public class ShadeThingHandler extends BaseThingHandler {
                     throw new IllegalArgumentException(INVALID_COMMAND);
 
                 case CHANNEL_SHADE_VANE:
-                    if (command instanceof PercentType vane) {
-                        position.setPosition(VANE_TILT_POSITION, vane);
+                    if (command instanceof PercentType percentCommand) {
+                        position.setPosition(VANE_TILT_POSITION, percentCommand);
                         webTargets.moveShade(shadeId, new Shade().setShadePosition(position));
                         break;
                     } else if (command instanceof UpDownType) {

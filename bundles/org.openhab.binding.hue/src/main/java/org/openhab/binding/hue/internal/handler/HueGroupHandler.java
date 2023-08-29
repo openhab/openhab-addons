@@ -201,10 +201,10 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 } else if (command instanceof PercentType percentCommand) {
                     newState = LightStateConverter.toBrightnessLightState(percentCommand);
                     newState.setTransitionTime(fadeTime);
-                } else if (command instanceof OnOffType sw) {
-                    newState = LightStateConverter.toOnOffLightState(sw);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    newState = convertBrightnessChangeToStateUpdate(incdec, group);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    newState = LightStateConverter.toOnOffLightState(onOffCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    newState = convertBrightnessChangeToStateUpdate(increaseDecreaseCommand, group);
                     if (newState != null) {
                         newState.setTransitionTime(fadeTime);
                     }
@@ -215,28 +215,28 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                     newState = LightStateConverter.toColorTemperatureLightStateFromPercentType(percentCommand,
                             colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
-                } else if (command instanceof OnOffType sw) {
-                    newState = LightStateConverter.toOnOffLightState(sw);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    newState = convertColorTempChangeToStateUpdate(incdec, group);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    newState = LightStateConverter.toOnOffLightState(onOffCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    newState = convertColorTempChangeToStateUpdate(increaseDecreaseCommand, group);
                     if (newState != null) {
                         newState.setTransitionTime(fadeTime);
                     }
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
-                if (command instanceof QuantityType temperature) {
-                    QuantityType<?> convertedCommand = temperature.toInvertibleUnit(Units.KELVIN);
+                if (command instanceof QuantityType temperatureCommand) {
+                    QuantityType<?> convertedCommand = temperatureCommand.toInvertibleUnit(Units.KELVIN);
                     if (convertedCommand != null) {
                         newState = LightStateConverter.toColorTemperatureLightState(convertedCommand.intValue(),
                                 colorTemperatureCapabilties);
                         newState.setTransitionTime(fadeTime);
                     } else {
                         logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
-                                temperature.getUnit(), Units.KELVIN);
+                                temperatureCommand.getUnit(), Units.KELVIN);
                     }
-                } else if (command instanceof DecimalType temperature) {
-                    newState = LightStateConverter.toColorTemperatureLightState(temperature.intValue(),
+                } else if (command instanceof DecimalType decimalCommand) {
+                    newState = LightStateConverter.toColorTemperatureLightState(decimalCommand.intValue(),
                             colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 }
@@ -245,10 +245,10 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 if (command instanceof PercentType percentCommand) {
                     newState = LightStateConverter.toBrightnessLightState(percentCommand);
                     newState.setTransitionTime(fadeTime);
-                } else if (command instanceof OnOffType sw) {
-                    newState = LightStateConverter.toOnOffLightState(sw);
-                } else if (command instanceof IncreaseDecreaseType incdec) {
-                    newState = convertBrightnessChangeToStateUpdate(incdec, group);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    newState = LightStateConverter.toOnOffLightState(onOffCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    newState = convertBrightnessChangeToStateUpdate(increaseDecreaseCommand, group);
                     if (newState != null) {
                         newState.setTransitionTime(fadeTime);
                     }
@@ -262,8 +262,8 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             case CHANNEL_SWITCH:
-                if (command instanceof OnOffType sw) {
-                    newState = LightStateConverter.toOnOffLightState(sw);
+                if (command instanceof OnOffType onOffCommand) {
+                    newState = LightStateConverter.toOnOffLightState(onOffCommand);
                 }
                 lastColorTemp = lastSentColorTemp;
                 if (newState != null && lastColorTemp != null) {
@@ -274,8 +274,8 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             case CHANNEL_ALERT:
-                if (command instanceof StringType str) {
-                    newState = LightStateConverter.toAlertState(str);
+                if (command instanceof StringType stringCommand) {
+                    newState = LightStateConverter.toAlertState(stringCommand);
                     if (newState == null) {
                         // Unsupported StringType is passed. Log a warning
                         // message and return.

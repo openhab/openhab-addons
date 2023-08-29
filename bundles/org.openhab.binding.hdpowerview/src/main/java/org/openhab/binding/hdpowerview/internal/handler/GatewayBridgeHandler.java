@@ -88,8 +88,8 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof ShadeThingHandler handler) {
-            refreshShade(handler.getShadeId());
+        if (childHandler instanceof ShadeThingHandler shadeThingHandler) {
+            refreshShade(shadeThingHandler.getShadeId());
         }
     }
 

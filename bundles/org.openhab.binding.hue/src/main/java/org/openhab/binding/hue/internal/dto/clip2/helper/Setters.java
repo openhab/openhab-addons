@@ -62,10 +62,10 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setAlert(Resource target, Command command, @Nullable Resource source) {
-        if ((command instanceof StringType str) && Objects.nonNull(source)) {
+        if (command instanceof StringType stringCommand && Objects.nonNull(source)) {
             Alerts otherAlert = source.getAlerts();
             if (Objects.nonNull(otherAlert)) {
-                ActionType actionType = ActionType.of(str.toString());
+                ActionType actionType = ActionType.of(stringCommand.toString());
                 if (otherAlert.getActionValues().contains(actionType)) {
                     target.setAlerts(new Alerts().setAction(actionType));
                 }
@@ -204,10 +204,10 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setEffect(Resource target, Command command, @Nullable Resource source) {
-        if ((command instanceof StringType str) && Objects.nonNull(source)) {
+        if (command instanceof StringType stringCommand && Objects.nonNull(source)) {
             Effects otherEffects = source.getEffects();
             if (Objects.nonNull(otherEffects)) {
-                EffectType effectType = EffectType.of(str.toString());
+                EffectType effectType = EffectType.of(stringCommand.toString());
                 if (otherEffects.allows(effectType)) {
                     target.setEffects(new Effects().setEffect(effectType));
                 }
