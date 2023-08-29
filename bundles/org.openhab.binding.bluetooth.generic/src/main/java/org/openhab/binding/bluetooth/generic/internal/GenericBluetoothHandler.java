@@ -307,7 +307,8 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
             }
 
             // handle write
-            if (command instanceof State state) {
+            if (command instanceof State) {
+                State state = (State) command;
                 String characteristicUUID = getCharacteristicUUID();
                 try {
                     if (gattParser.isKnownCharacteristic(characteristicUUID)) {
