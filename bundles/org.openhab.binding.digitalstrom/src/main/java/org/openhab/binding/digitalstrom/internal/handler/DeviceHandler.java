@@ -419,7 +419,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         if (device instanceof Device dev) {
             this.device = dev;
             if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                if (!device1.isPresent()) {
+                if (!dev.isPresent()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "Device is not present in the digitalSTROM-System.");
                 } else {
@@ -456,11 +456,11 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                     checkOutputChannel();
                 } else if (this.device.isBlind()) {
                     // load channel for set the angle of jalousie devices
-                    ApplicationGroup.Color color = device1.getFunctionalColorGroup() != null
-                            ? device1.getFunctionalColorGroup().getColor()
+                    ApplicationGroup.Color color = dev.getFunctionalColorGroup() != null
+                            ? dev.getFunctionalColorGroup().getColor()
                             : null;
-                    String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(color, device1.getOutputMode(),
-                            device1.getOutputChannels());
+                    String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(color, dev.getOutputMode(),
+                            dev.getOutputChannels());
                     loadOutputChannel(new ChannelTypeUID(BINDING_ID, channelTypeID),
                             DsChannelTypeProvider.getItemType(channelTypeID));
                 }

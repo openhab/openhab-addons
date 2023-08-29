@@ -170,9 +170,9 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof DWDPollenflugRegionHandler handler) {
+        if (childHandler instanceof DWDPollenflugRegionHandler regionListener) {
             logger.debug("Register region listener.");
-            if (handler.add(regionListener)) {
+            if (regionListeners.add(regionListener)) {
                 final DWDPollenflug localPollenflug = pollenflug;
                 if (localPollenflug != null) {
                     regionListener.notifyOnUpdate(localPollenflug);

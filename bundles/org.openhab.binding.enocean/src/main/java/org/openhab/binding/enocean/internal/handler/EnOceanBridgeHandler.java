@@ -117,7 +117,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                                 }
                             });
                 } else if (command instanceof StringType str) {
-                    sendMessage(ESP3PacketFactory.CO_WR_REPEATER(type),
+                    sendMessage(ESP3PacketFactory.CO_WR_REPEATER(str),
                             new ResponseListenerIgnoringTimeouts<BaseResponse>() {
                                 @Override
                                 public void responseReceived(BaseResponse response) {
