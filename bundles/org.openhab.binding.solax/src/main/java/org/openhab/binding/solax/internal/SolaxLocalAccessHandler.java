@@ -14,25 +14,34 @@ package org.openhab.binding.solax.internal;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solax.internal.connectivity.LocalHttpConnector;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterData;
+import org.openhab.binding.solax.internal.model.InverterType;
+import org.openhab.binding.solax.internal.model.SinglePhaseInverterData;
+import org.openhab.binding.solax.internal.model.ThreePhaseInverterData;
+import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +63,8 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     private @NonNullByDefault({}) LocalHttpConnector localHttpConnector;
 
     private @Nullable ScheduledFuture<?> schedule;
+
+    private boolean alreadyRemovedUnsupportedChannels;
 
     public SolaxLocalAccessHandler(Thing thing) {
         super(thing);
@@ -79,7 +90,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
             logger.debug("Raw data retrieved = {}", rawJsonData);
 
             if (rawJsonData != null && !rawJsonData.isEmpty()) {
-                updateData(rawJsonData);
+                updateFromData(rawJsonData);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         SolaxBindingConstants.I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED);
@@ -90,68 +101,192 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
         }
     }
 
-    private void updateData(String rawJsonData) {
+    private void updateFromData(String rawJsonData) {
         try {
-            LocalConnectRawDataBean inverterParsedData = parseJson(rawJsonData);
-            updateThing(inverterParsedData);
+            LocalConnectRawDataBean rawDataBean = parseJson(rawJsonData);
+            InverterType inverterType = calculateInverterType(rawDataBean);
+            RawDataParser parser = inverterType.getParser();
+            if (parser != null) {
+                if (!alreadyRemovedUnsupportedChannels) {
+                    removeUnsupportedChannels(inverterType.getSupportedChannels());
+                    alreadyRemovedUnsupportedChannels = true;
+                }
+
+                updateChannels(rawDataBean, parser);
+
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                cancelSchedule();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Parser for inverter of type " + inverterType.name() + " is not implemented.");
+            }
         } catch (JsonParseException e) {
             logger.debug("Unable to deserialize from JSON.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void updateThing(LocalConnectRawDataBean inverterParsedData) {
-        transferInverterDataToChannels(inverterParsedData);
-
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
     private LocalConnectRawDataBean parseJson(String rawJsonData) {
         LocalConnectRawDataBean inverterParsedData = LocalConnectRawDataBean.fromJson(rawJsonData);
-        logger.debug("Received a new inverter data object. Data = {}", inverterParsedData.toStringDetailed());
+        logger.debug("Received a new inverter JSON object. Data = {}", inverterParsedData.toString());
         return inverterParsedData;
     }
 
-    private void transferInverterDataToChannels(InverterData data) {
-        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, data.getWifiSerial());
-        updateProperty(SolaxBindingConstants.PROPERTY_INVERTER_TYPE, data.getInverterType().name());
+    private InverterType calculateInverterType(LocalConnectRawDataBean rawDataBean) {
+        int type = rawDataBean.getType();
+        return InverterType.fromIndex(type);
+    }
 
+    private void updateChannels(LocalConnectRawDataBean rawDataBean, RawDataParser parser) {
+        InverterData genericInverterData = parser.getData(rawDataBean);
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, genericInverterData.getWifiSerial());
+        updateProperty(SolaxBindingConstants.PROPERTY_INVERTER_TYPE, genericInverterData.getInverterType().name());
+
+        updateCommonChannels(parser, genericInverterData);
+
+        if (genericInverterData instanceof SinglePhaseInverterData singlePhaseData) {
+            updateSinglePhaseSpecificData(singlePhaseData);
+        } else if (genericInverterData instanceof ThreePhaseInverterData threePhaseData) {
+            updateThreePhaseSpecificData(threePhaseData);
+        }
+    }
+
+    private void updateCommonChannels(RawDataParser parser, InverterData genericInverterData) {
+        updateState(SolaxBindingConstants.RAW_DATA, new StringType(genericInverterData.getRawData()));
+
+        Set<String> supportedChannels = parser.getSupportedChannels();
+        updateChannel(SolaxBindingConstants.INVERTER_PV1_POWER,
+                new QuantityType<>(genericInverterData.getPV1Power(), Units.WATT), supportedChannels);
+        updateChannel(SolaxBindingConstants.INVERTER_PV1_CURRENT,
+                new QuantityType<>(genericInverterData.getPV1Current(), Units.AMPERE), supportedChannels);
+        updateChannel(SolaxBindingConstants.INVERTER_PV1_VOLTAGE,
+                new QuantityType<>(genericInverterData.getPV1Voltage(), Units.VOLT), supportedChannels);
+
+        updateChannel(SolaxBindingConstants.INVERTER_PV2_POWER,
+                new QuantityType<>(genericInverterData.getPV2Power(), Units.WATT), supportedChannels);
+        updateChannel(SolaxBindingConstants.INVERTER_PV2_CURRENT,
+                new QuantityType<>(genericInverterData.getPV2Current(), Units.AMPERE), supportedChannels);
+        updateChannel(SolaxBindingConstants.INVERTER_PV2_VOLTAGE,
+                new QuantityType<>(genericInverterData.getPV2Voltage(), Units.VOLT), supportedChannels);
+
+        updateChannel(SolaxBindingConstants.INVERTER_PV_TOTAL_POWER,
+                new QuantityType<>(genericInverterData.getPVTotalPower(), Units.WATT), supportedChannels);
+        updateChannel(SolaxBindingConstants.INVERTER_PV_TOTAL_CURRENT,
+                new QuantityType<>(genericInverterData.getPVTotalCurrent(), Units.AMPERE), supportedChannels);
+
+        updateChannel(SolaxBindingConstants.BATTERY_POWER,
+                new QuantityType<>(genericInverterData.getBatteryPower(), Units.WATT), supportedChannels);
+        updateChannel(SolaxBindingConstants.BATTERY_CURRENT,
+                new QuantityType<>(genericInverterData.getBatteryCurrent(), Units.AMPERE), supportedChannels);
+        updateChannel(SolaxBindingConstants.BATTERY_VOLTAGE,
+                new QuantityType<>(genericInverterData.getBatteryVoltage(), Units.VOLT), supportedChannels);
+        updateChannel(SolaxBindingConstants.BATTERY_TEMPERATURE,
+                new QuantityType<>(genericInverterData.getBatteryTemperature(), SIUnits.CELSIUS), supportedChannels);
+        updateChannel(SolaxBindingConstants.BATTERY_STATE_OF_CHARGE,
+                new QuantityType<>(genericInverterData.getBatteryLevel(), Units.PERCENT), supportedChannels);
+        updateChannel(SolaxBindingConstants.TIMESTAMP, new DateTimeType(ZonedDateTime.now()), supportedChannels);
+        updateChannel(SolaxBindingConstants.FEED_IN_POWER,
+                new QuantityType<>(genericInverterData.getFeedInPower(), Units.WATT), supportedChannels);
+        updateChannel(SolaxBindingConstants.POWER_USAGE,
+                new QuantityType<>(genericInverterData.getPowerUsage(), Units.WATT), supportedChannels);
+
+        // Totals
+        updateChannel(SolaxBindingConstants.TOTAL_ENERGY,
+                new QuantityType<>(genericInverterData.getTotalEnergy(), Units.KILOWATT_HOUR), supportedChannels);
+        updateChannel(SolaxBindingConstants.TOTAL_BATTERY_DISCHARGE_ENERGY,
+                new QuantityType<>(genericInverterData.getTotalBatteryDischargeEnergy(), Units.KILOWATT_HOUR),
+                supportedChannels);
+        updateChannel(SolaxBindingConstants.TOTAL_BATTERY_CHARGE_ENERGY,
+                new QuantityType<>(genericInverterData.getTotalBatteryChargeEnergy(), Units.KILOWATT_HOUR),
+                supportedChannels);
+        updateChannel(SolaxBindingConstants.TOTAL_PV_ENERGY,
+                new QuantityType<>(genericInverterData.getTotalPVEnergy(), Units.KILOWATT_HOUR), supportedChannels);
+        updateChannel(SolaxBindingConstants.TOTAL_FEED_IN_ENERGY,
+                new QuantityType<>(genericInverterData.getTotalFeedInEnergy(), Units.KILOWATT_HOUR), supportedChannels);
+        updateChannel(SolaxBindingConstants.TOTAL_CONSUMPTION,
+                new QuantityType<>(genericInverterData.getTotalConsumption(), Units.KILOWATT_HOUR), supportedChannels);
+
+        // Today's
+        updateChannel(SolaxBindingConstants.TODAY_ENERGY,
+                new QuantityType<>(genericInverterData.getTodayEnergy(), Units.KILOWATT_HOUR), supportedChannels);
+        updateChannel(SolaxBindingConstants.TODAY_BATTERY_DISCHARGE_ENERGY,
+                new QuantityType<>(genericInverterData.getTodayBatteryDischargeEnergy(), Units.KILOWATT_HOUR),
+                supportedChannels);
+        updateChannel(SolaxBindingConstants.TODAY_BATTERY_CHARGE_ENERGY,
+                new QuantityType<>(genericInverterData.getTodayBatteryChargeEnergy(), Units.KILOWATT_HOUR),
+                supportedChannels);
+        updateChannel(SolaxBindingConstants.TODAY_FEED_IN_ENERGY,
+                new QuantityType<>(genericInverterData.getTodayFeedInEnergy(), Units.KILOWATT_HOUR), supportedChannels);
+        updateChannel(SolaxBindingConstants.TODAY_CONSUMPTION,
+                new QuantityType<>(genericInverterData.getTodayConsumption(), Units.KILOWATT_HOUR), supportedChannels);
+    }
+
+    private void updateSinglePhaseSpecificData(SinglePhaseInverterData singlePhaseData) {
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER,
-                new QuantityType<>(data.getInverterOutputPower(), Units.WATT));
+                new QuantityType<>(singlePhaseData.getInverterOutputPower(), Units.WATT));
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT,
-                new QuantityType<>(data.getInverterCurrent(), Units.AMPERE));
+                new QuantityType<>(singlePhaseData.getInverterCurrent(), Units.AMPERE));
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE,
-                new QuantityType<>(data.getInverterVoltage(), Units.VOLT));
+                new QuantityType<>(singlePhaseData.getInverterVoltage(), Units.VOLT));
         updateState(SolaxBindingConstants.INVERTER_OUTPUT_FREQUENCY,
-                new QuantityType<>(data.getInverterFrequency(), Units.HERTZ));
+                new QuantityType<>(singlePhaseData.getInverterFrequency(), Units.HERTZ));
+    }
 
-        updateState(SolaxBindingConstants.INVERTER_PV1_POWER, new QuantityType<>(data.getPV1Power(), Units.WATT));
-        updateState(SolaxBindingConstants.INVERTER_PV1_CURRENT, new QuantityType<>(data.getPV1Current(), Units.AMPERE));
-        updateState(SolaxBindingConstants.INVERTER_PV1_VOLTAGE, new QuantityType<>(data.getPV1Voltage(), Units.VOLT));
+    private void updateThreePhaseSpecificData(ThreePhaseInverterData threePhaseData) {
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER_PHASE1,
+                new QuantityType<>(threePhaseData.getOutputPowerPhase1(), Units.WATT));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER_PHASE2,
+                new QuantityType<>(threePhaseData.getOutputPowerPhase2(), Units.WATT));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_POWER_PHASE3,
+                new QuantityType<>(threePhaseData.getOutputPowerPhase3(), Units.WATT));
+        updateState(SolaxBindingConstants.INVERTER_TOTAL_OUTPUT_POWER,
+                new QuantityType<>(threePhaseData.getTotalOutputPower(), Units.WATT));
 
-        updateState(SolaxBindingConstants.INVERTER_PV2_POWER, new QuantityType<>(data.getPV2Power(), Units.WATT));
-        updateState(SolaxBindingConstants.INVERTER_PV2_CURRENT, new QuantityType<>(data.getPV2Current(), Units.AMPERE));
-        updateState(SolaxBindingConstants.INVERTER_PV2_VOLTAGE, new QuantityType<>(data.getPV2Voltage(), Units.VOLT));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT_PHASE1,
+                new QuantityType<>(threePhaseData.getCurrentPhase1(), Units.AMPERE));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT_PHASE2,
+                new QuantityType<>(threePhaseData.getCurrentPhase2(), Units.AMPERE));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_CURRENT_PHASE3,
+                new QuantityType<>(threePhaseData.getCurrentPhase3(), Units.AMPERE));
 
-        updateState(SolaxBindingConstants.INVERTER_PV_TOTAL_POWER,
-                new QuantityType<>(data.getPVTotalPower(), Units.WATT));
-        updateState(SolaxBindingConstants.INVERTER_PV_TOTAL_CURRENT,
-                new QuantityType<>(data.getPVTotalCurrent(), Units.AMPERE));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE_PHASE1,
+                new QuantityType<>(threePhaseData.getVoltagePhase1(), Units.VOLT));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE_PHASE2,
+                new QuantityType<>(threePhaseData.getVoltagePhase2(), Units.VOLT));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_VOLTAGE_PHASE3,
+                new QuantityType<>(threePhaseData.getVoltagePhase3(), Units.VOLT));
 
-        updateState(SolaxBindingConstants.BATTERY_POWER, new QuantityType<>(data.getBatteryPower(), Units.WATT));
-        updateState(SolaxBindingConstants.BATTERY_CURRENT, new QuantityType<>(data.getBatteryCurrent(), Units.AMPERE));
-        updateState(SolaxBindingConstants.BATTERY_VOLTAGE, new QuantityType<>(data.getBatteryVoltage(), Units.VOLT));
-        updateState(SolaxBindingConstants.BATTERY_TEMPERATURE,
-                new QuantityType<>(data.getBatteryTemperature(), SIUnits.CELSIUS));
-        updateState(SolaxBindingConstants.BATTERY_STATE_OF_CHARGE,
-                new QuantityType<>(data.getBatterySoC(), Units.PERCENT));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_FREQUENCY_PHASE1,
+                new QuantityType<>(threePhaseData.getFrequencyPhase1(), Units.HERTZ));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_FREQUENCY_PHASE2,
+                new QuantityType<>(threePhaseData.getFrequencyPhase2(), Units.HERTZ));
+        updateState(SolaxBindingConstants.INVERTER_OUTPUT_FREQUENCY_PHASE3,
+                new QuantityType<>(threePhaseData.getFrequencyPhase3(), Units.HERTZ));
+    }
 
-        updateState(SolaxBindingConstants.FEED_IN_POWER, new QuantityType<>(data.getFeedInPower(), Units.WATT));
+    private void removeUnsupportedChannels(Set<String> supportedChannels) {
+        if (supportedChannels.isEmpty()) {
+            return;
+        }
+        List<Channel> channels = getThing().getChannels();
+        List<Channel> channelsToRemove = channels.stream()
+                .filter(channel -> !supportedChannels.contains(channel.getUID().getId())).collect(Collectors.toList());
 
-        updateState(SolaxBindingConstants.TIMESTAMP, new DateTimeType(ZonedDateTime.now()));
-        updateState(SolaxBindingConstants.RAW_DATA, new StringType(data.getRawData()));
+        if (!channelsToRemove.isEmpty()) {
+            if (logger.isDebugEnabled()) {
+                logRemovedChannels(channelsToRemove);
+            }
+            updateThing(editThing().withoutChannels(channelsToRemove).build());
+        }
+    }
+
+    private void logRemovedChannels(List<Channel> channelsToRemove) {
+        List<String> channelsToRemoveForLog = channelsToRemove.stream().map(channel -> channel.getUID().getId())
+                .collect(Collectors.toList());
+        logger.debug("Detected not supported channels for the current i. Channels to be removed:{}",
+                channelsToRemoveForLog);
     }
 
     @Override
@@ -162,10 +297,20 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         super.dispose();
+        cancelSchedule();
+    }
+
+    private void cancelSchedule() {
         ScheduledFuture<?> schedule = this.schedule;
         if (schedule != null) {
             schedule.cancel(true);
             this.schedule = null;
+        }
+    }
+
+    private void updateChannel(String channelID, State state, Set<String> supportedChannels) {
+        if (supportedChannels.contains(channelID)) {
+            updateState(channelID, state);
         }
     }
 }

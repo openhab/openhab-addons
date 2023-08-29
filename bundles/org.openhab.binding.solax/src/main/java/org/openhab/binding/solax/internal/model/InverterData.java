@@ -14,16 +14,15 @@ package org.openhab.binding.solax.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solax.internal.connectivity.rawdata.RawDataBean;
 
 /**
- * The {@link InverterData} interface should implement the interface that returns the parsed data in human readable code
- * and format.
+ * The {@link InverterData} Interface for the parsed inverter data in meaningful format
  *
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public interface InverterData extends RawDataBean {
+public interface InverterData {
+
     @Nullable
     String getWifiSerial();
 
@@ -32,25 +31,32 @@ public interface InverterData extends RawDataBean {
 
     InverterType getInverterType();
 
-    short getInverterVoltage();
+    @Nullable
+    String getRawData();
 
-    short getInverterCurrent();
+    default double getPV1Voltage() {
+        return -1;
+    }
 
-    short getInverterOutputPower();
+    default double getPV1Current() {
+        return -1;
+    }
 
-    short getInverterFrequency();
+    default short getPV1Power() {
+        return -1;
+    }
 
-    short getPV1Voltage();
+    default double getPV2Voltage() {
+        return -1;
+    }
 
-    short getPV1Current();
+    default double getPV2Current() {
+        return -1;
+    }
 
-    short getPV1Power();
-
-    short getPV2Voltage();
-
-    short getPV2Current();
-
-    short getPV2Power();
+    default short getPV2Power() {
+        return -1;
+    }
 
     default short getPVTotalPower() {
         return (short) (getPV1Power() + getPV2Power());
@@ -60,33 +66,84 @@ public interface InverterData extends RawDataBean {
         return (short) (getPV1Current() + getPV2Current());
     }
 
-    short getBatteryVoltage(); // V / 100
+    default double getBatteryVoltage() {
+        return -1;
+    };
 
-    short getBatteryCurrent(); // A / 100
+    default double getBatteryCurrent() {
+        return -1;
+    };
 
-    short getBatteryPower(); // W
+    default short getBatteryPower() {
+        return -1;
+    }
 
-    short getBatteryTemperature(); // temperature C
+    default short getBatteryTemperature() {
+        return -1;
+    }
 
-    short getBatterySoC(); // % battery SoC
+    default short getBatteryLevel() {
+        return -1;
+    }
 
-    long getOnGridTotalYield(); // KWh total Yeld from the sun (to the grid?)
+    default short getFeedInPower() {
+        return -1;
+    }
 
-    short getOnGridDailyYield(); // KWh daily Yeld from the sun (to the grid?)
+    //
 
-    long getTotalFeedInEnergy(); // KWh all times
+    default short getPowerUsage() {
+        return -1;
+    }
 
-    long getTotalConsumption(); // KWh all times
+    default double getTotalEnergy() {
+        return -1;
+    }
 
-    short getFeedInPower();
+    default short getTotalBatteryDischargeEnergy() {
+        return -1;
+    }
+
+    default short getTotalBatteryChargeEnergy() {
+        return -1;
+    }
+
+    default double getTotalPVEnergy() {
+        return -1;
+    }
+
+    default short getTotalFeedInEnergy() {
+        return -1;
+    }
+
+    default double getTotalConsumption() {
+        return -1;
+    }
+
+    default double getTodayEnergy() {
+        return -1;
+    }
+
+    default double getTodayFeedInEnergy() {
+        return -1;
+    }
+
+    default double getTodayConsumption() {
+        return -1;
+    }
+
+    default double getTodayBatteryDischargeEnergy() {
+        return -1;
+    }
+
+    default double getTodayBatteryChargeEnergy() {
+        return -1;
+    }
 
     default String toStringDetailed() {
         return "WifiSerial = " + getWifiSerial() + ", WifiVersion = " + getWifiVersion() + ", InverterType = "
-                + getInverterType() + ", InverterVoltage = " + getInverterVoltage() + "V, InverterCurrent = "
-                + getInverterCurrent() + "A, InverterPower = " + getInverterOutputPower() + "W, BatteryPower = "
-                + getBatteryPower() + "W, Battery SoC = " + getBatterySoC() + "%, FeedIn Power = " + getFeedInPower()
-                + "W, Total PV Power = " + (getPV1Power() + getPV2Power()) + "W, Total Consumption = "
-                + getTotalConsumption() + "kWh, Total Feed-in Energy = " + getTotalFeedInEnergy()
-                + "kWh, Total On-Grid Yield = " + getOnGridTotalYield() + "kWh.";
+                + getInverterType() + ", BatteryPower = " + getBatteryPower() + "W, Battery SoC = " + getBatteryLevel()
+                + "%, FeedIn Power = " + getFeedInPower() + "W, Total PV Power = " + (getPV1Power() + getPV2Power())
+                + "W";
     }
 }
