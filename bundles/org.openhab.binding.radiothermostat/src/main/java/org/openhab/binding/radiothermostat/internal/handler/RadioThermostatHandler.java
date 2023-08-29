@@ -20,7 +20,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -185,7 +184,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(RadioThermostatThingActions.class);
+        return List.of(RadioThermostatThingActions.class);
     }
 
     /**
@@ -287,6 +286,15 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     public void dispose() {
         logger.debug("Disposing the RadioThermostat handler.");
         connector.removeEventListener(this);
+
+        // Disable Remote Temp and Message Area on shutdown
+        if (isLinked(REMOTE_TEMP)) {
+            connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
+        }
+
+        if (isLinked(MESSAGE)) {
+            connector.sendCommand("mode", "0", PMA_RESOURCE);
+        }
 
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
