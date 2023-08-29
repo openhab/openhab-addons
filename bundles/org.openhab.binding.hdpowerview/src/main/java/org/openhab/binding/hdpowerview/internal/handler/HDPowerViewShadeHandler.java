@@ -193,8 +193,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             HubShadeTimeoutException {
         switch (channelId) {
             case CHANNEL_SHADE_POSITION:
-                if (command instanceof PercentType pos) {
-                    moveShade(PRIMARY_POSITION, pos.intValue(), webTargets, shadeId);
+                if (command instanceof PercentType percentCommand) {
+                    moveShade(PRIMARY_POSITION, percentCommand.intValue(), webTargets, shadeId);
                 } else if (command instanceof UpDownType) {
                     moveShade(PRIMARY_POSITION, UpDownType.UP == command ? 0 : 100, webTargets, shadeId);
                 } else if (command instanceof StopMoveType) {
@@ -207,16 +207,16 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 break;
 
             case CHANNEL_SHADE_VANE:
-                if (command instanceof PercentType vane) {
-                    moveShade(VANE_TILT_POSITION, vane.intValue(), webTargets, shadeId);
+                if (command instanceof PercentType percentCommand) {
+                    moveShade(VANE_TILT_POSITION, percentCommand.intValue(), webTargets, shadeId);
                 } else if (command instanceof OnOffType) {
                     moveShade(VANE_TILT_POSITION, OnOffType.ON == command ? 100 : 0, webTargets, shadeId);
                 }
                 break;
 
             case CHANNEL_SHADE_SECONDARY_POSITION:
-                if (command instanceof PercentType pos) {
-                    moveShade(SECONDARY_POSITION, pos.intValue(), webTargets, shadeId);
+                if (command instanceof PercentType percentCommand) {
+                    moveShade(SECONDARY_POSITION, percentCommand.intValue(), webTargets, shadeId);
                 } else if (command instanceof UpDownType) {
                     moveShade(SECONDARY_POSITION, UpDownType.UP == command ? 0 : 100, webTargets, shadeId);
                 } else if (command instanceof StopMoveType) {
