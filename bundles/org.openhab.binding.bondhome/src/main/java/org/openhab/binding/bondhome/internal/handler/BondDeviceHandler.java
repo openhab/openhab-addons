@@ -169,7 +169,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                         BondDeviceProperties devProperties = this.deviceProperties;
                         if (devProperties != null) {
                             int maxSpeed = devProperties.maxSpeed;
-                            value = (int) Math.ceil(type.intValue() * maxSpeed / 100);
+                            value = (int) Math.ceil(speed.intValue() * maxSpeed / 100);
                         } else {
                             value = 1;
                         }

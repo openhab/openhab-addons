@@ -229,8 +229,8 @@ public class BoschIndegoHandler extends BaseThingHandler implements Authorizatio
                 handleRefreshCommand(channelUID.getId());
                 return;
             }
-            if (command instanceof DecimalType type && channelUID.getId().equals(STATE)) {
-                sendCommand(type.intValue());
+            if (command instanceof DecimalType decimalCommand && channelUID.getId().equals(STATE)) {
+                sendCommand(decimalCommand.intValue());
             }
         } catch (IndegoAuthenticationException e) {
             // Ignore, will be handled by bridge
