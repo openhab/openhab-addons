@@ -357,8 +357,8 @@ public abstract class RpcClient<T> {
      *            mode)
      */
     public void setDatapointValue(HmDatapoint dp, Object value, String rxMode) throws IOException {
-        if (dp.isIntegerType() && value instanceof Double dbl) {
-            value = dbl.intValue();
+        if (dp.isIntegerType() && value instanceof Double) {
+            value = ((Number) value).intValue();
         }
 
         RpcRequest<T> request;

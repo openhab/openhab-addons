@@ -158,8 +158,8 @@ public class HmDatapoint implements Cloneable {
     }
 
     public @Nullable Integer getIntegerValue() {
-        if (value instanceof Integer integer) {
-            return integer;
+        if (value instanceof Integer) {
+            return (int) value;
         } else if (value != null) {
             return Integer.parseInt(value.toString());
         } else {
@@ -168,8 +168,8 @@ public class HmDatapoint implements Cloneable {
     }
 
     public @Nullable Double getDoubleValue() {
-        if (value instanceof Double dbl) {
-            return dbl;
+        if (value instanceof Double) {
+            return (double) value;
         } else if (value != null) {
             return Double.parseDouble(value.toString());
         } else {
