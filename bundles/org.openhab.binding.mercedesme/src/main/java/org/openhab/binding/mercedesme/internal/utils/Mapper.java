@@ -16,10 +16,9 @@ import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.JSONObject;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -39,168 +38,83 @@ import org.slf4j.LoggerFactory;
 public class Mapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(Mapper.class);
 
-    public static final ChannelStateMap INVALID_MAP = new ChannelStateMap(EMPTY, EMPTY, UnDefType.UNDEF, -1);
-    public static final Map<String, String[]> CHANNELS = new HashMap<>();
+    public static final ChannelStateMap INVALID_MAP = new ChannelStateMap(EMPTY, EMPTY, UnDefType.UNDEF);
+    public static final Map<String, String[]> CHANNELS = new HashMap<String, String[]>();
     public static final String TIMESTAMP = "timestamp";
     public static final String VALUE = "value";
 
-    public static ChannelStateMap getChannelStateMap(JSONObject jo) {
+    public static ChannelStateMap getChannelStateMap(String key, VehicleAttributeStatus value) {
         if (CHANNELS.isEmpty()) {
             init();
         }
-        Set<String> s = jo.keySet();
-        if (s.size() == 1) {
-            String id = s.toArray()[0].toString();
-            String[] ch = CHANNELS.get(id);
-            if (ch != null) {
-                State state;
-                switch (id) {
-                    // Kilometer values
-                    case "odo":
-                    case "rangeelectric":
-                    case "rangeliquid":
-                        state = getKilometers((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
+        String[] ch = CHANNELS.get(key);
+        if (ch != null) {
+            State state;
+            switch (key) {
+                // Kilometer values
+                case "odo":
+                case "rangeelectric":
+                case "rangeliquid":
+                    state = QuantityType.valueOf(value.getIntValue(), KILOMETRE_UNIT);
+                    return new ChannelStateMap(ch[0], ch[1], state);
 
-                    // Percentages
-                    case "soc":
-                    case "tanklevelpercent":
-                        state = getPercentage((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
+                // Percentages
+                case "soc":
+                case "tanklevelpercent":
+                    state = QuantityType.valueOf(value.getIntValue(), Units.PERCENT);
+                    return new ChannelStateMap(ch[0], ch[1], state);
 
-                    // Contacts
-                    case "decklidstatus":
-                    case "doorstatusfrontleft":
-                    case "doorstatusfrontright":
-                    case "doorstatusrearleft":
-                    case "doorstatusrearright":
-                        state = getContact((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
+                // Contacts
+                case "decklidstatus":
+                case "doorstatusfrontleft":
+                case "doorstatusfrontright":
+                case "doorstatusrearleft":
+                case "doorstatusrearright":
+                    state = getContact(value.getBoolValue());
+                    return new ChannelStateMap(ch[0], ch[1], state);
 
-                    // Number Status
-                    case "lightswitchposition":
-                    case "rooftopstatus":
-                    case "sunroofstatus":
-                    case "windowstatusfrontleft":
-                    case "windowstatusfrontright":
-                    case "windowstatusrearleft":
-                    case "windowstatusrearright":
-                    case "doorlockstatusvehicle":
-                        state = getDecimal((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
+                // Number Status
+                case "lightswitchposition":
+                case "rooftopstatus":
+                case "sunroofstatus":
+                case "windowstatusfrontleft":
+                case "windowstatusfrontright":
+                case "windowstatusrearleft":
+                case "windowstatusrearright":
+                case "doorlockstatusvehicle":
+                    return new ChannelStateMap(ch[0], ch[1], new DecimalType(value.getIntValue()));
 
-                    // Switches
-                    case "interiorLightsFront":
-                    case "interiorLightsRear":
-                    case "readingLampFrontLeft":
-                    case "readingLampFrontRight":
-                        state = getOnOffType((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
+                // Switches
+                case "interiorLightsFront":
+                case "interiorLightsRear":
+                case "readingLampFrontLeft":
+                case "readingLampFrontRight":
+                    state = OnOffType.from(value.getBoolValue());
+                    return new ChannelStateMap(ch[0], ch[1], state);
 
-                    case "doorlockstatusdecklid":
-                    case "doorlockstatusgas":
-                        state = getOnOffTypeLock((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
+                case "doorlockstatusdecklid":
+                case "doorlockstatusgas":
+                    state = OnOffType.from(value.getBoolValue());
+                    return new ChannelStateMap(ch[0], ch[1], state);
 
-                    // Angle
-                    case "positionHeading":
-                        state = getAngle((JSONObject) jo.get(id));
-                        return new ChannelStateMap(ch[0], ch[1], state, getTimestamp((JSONObject) jo.get(id)));
-                    default:
-                        LOGGER.trace("No mapping available for {}", id);
-                }
-            } else {
-                LOGGER.trace("No mapping available for {}", id);
+                // Angle
+                case "positionHeading":
+                    state = QuantityType.valueOf(Double.valueOf(value.getIntValue()), Units.DEGREE_ANGLE);
+                    return new ChannelStateMap(ch[0], ch[1], state);
+                default:
+                    LOGGER.trace("No mapping available for {}", key);
             }
         } else {
-            LOGGER.debug("More than one key found {}", s);
+            LOGGER.trace("No mapping available for {}", key);
         }
         return INVALID_MAP;
     }
 
-    private static long getTimestamp(JSONObject jo) {
-        if (jo.has(TIMESTAMP)) {
-            return jo.getLong(TIMESTAMP);
-        }
-        return -1;
-    }
-
-    private static State getOnOffType(JSONObject jo) {
-        if (jo.has(VALUE)) {
-            String value = jo.get(VALUE).toString();
-            boolean b = Boolean.valueOf(value);
-            return OnOffType.from(b);
+    private static State getContact(boolean b) {
+        if (!b) {
+            return OpenClosedType.CLOSED;
         } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private static State getOnOffTypeLock(JSONObject jo) {
-        if (jo.has(VALUE)) {
-            String value = jo.get(VALUE).toString();
-            boolean b = Boolean.valueOf(value);
-            // Yes, false is locked and true unlocked
-            // https://developer.mercedes-benz.com/products/vehicle_lock_status/specifications/vehicle_lock_status_api
-            return OnOffType.from(!b);
-        } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private static State getAngle(JSONObject jo) {
-        if (jo.has(VALUE)) {
-            String value = jo.get(VALUE).toString();
-            return QuantityType.valueOf(Double.valueOf(value), Units.DEGREE_ANGLE);
-        } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private static State getDecimal(JSONObject jo) {
-        if (jo.has(VALUE)) {
-            String value = jo.get(VALUE).toString();
-            return DecimalType.valueOf(value);
-        } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private static State getContact(JSONObject jo) {
-        if (jo.has(VALUE)) {
-            String value = jo.get(VALUE).toString();
-            boolean b = Boolean.valueOf(value);
-            if (!b) {
-                return OpenClosedType.CLOSED;
-            } else {
-                return OpenClosedType.OPEN;
-            }
-        } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private static State getKilometers(JSONObject jo) {
-        if (jo.has(VALUE)) {
-            String value = jo.get(VALUE).toString();
-            return QuantityType.valueOf(Integer.valueOf(value), KILOMETRE_UNIT);
-        } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private static State getPercentage(JSONObject jo) {
-        if (jo.has(VALUE)) {
-            String value = jo.get(VALUE).toString();
-            return QuantityType.valueOf(Integer.valueOf(value), Units.PERCENT);
-        } else {
-            LOGGER.warn("JSONObject contains no value {}", jo);
-            return UnDefType.UNDEF;
+            return OpenClosedType.OPEN;
         }
     }
 
