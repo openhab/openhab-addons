@@ -27,11 +27,4 @@ public class VehicleConfiguration {
     public int refreshInterval = 5;
     public float batteryCapacity = -1;
     public float fuelCapacity = -1;
-
-    // Advanced
-    public boolean background = false;
-    public boolean night = false;
-    public boolean cropped = false;
-    public boolean roofOpen = false;
-    public String format = "webp";
 }
