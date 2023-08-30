@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -158,12 +155,8 @@ public class MBWebsocket {
     public void onBytes(InputStream is) {
         try {
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
-            Map m = pm.getAllFields();
-            // FieldDescriptor fd = new FieldDescriptor()
-            Set keys = m.keySet();
-            for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-                Object object = iterator.next();
-                logger.info("{}", object);
+            if (pm.hasVepUpdates()) {
+                accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
             }
         } catch (IOException e) {
             logger.warn("Error parsing message {}", e.getMessage());

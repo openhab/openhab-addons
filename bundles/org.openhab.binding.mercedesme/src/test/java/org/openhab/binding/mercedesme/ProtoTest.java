@@ -13,6 +13,8 @@ import org.openhab.binding.mercedesme.internal.proto.VehicleEvents;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.PushMessage;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdatesByVIN;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VehicleAttributeStatus;
+import org.openhab.binding.mercedesme.internal.utils.Mapper;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.MapEntry;
@@ -72,17 +74,24 @@ class ProtoTest {
 
     @Test
     void testMessages() {
-        for (int i = 1; i < 12; i++) {
+        for (int i = 11; i < 12; i++) {
             try {
                 FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
                 PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
                 if (pm.hasVepUpdates()) {
                     VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
+                    Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get("W1N2437011J016433")
+                            .getAttributesMap();
+                    m.forEach((key, value) -> {
+                        System.out.println(key + " => " + Mapper.getChannelStateMap(key, value));
+                        if (key.equals("odo")) {
+                            System.out.println(Mapper.getChannelStateMap(key, value));
+                        }
+                    });
                 }
                 System.out.println(i + " Size " + pm.getAllFields().size());
                 System.out.println(pm.hasVepUpdate() + " : " + pm.hasVepUpdates());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }

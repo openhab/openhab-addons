@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -52,7 +51,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_HYBRID, THING_TYPE_ACCOUNT);
 
     private final Logger logger = LoggerFactory.getLogger(MercedesMeHandlerFactory.class);
-    private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     private final MercedesMeCommandOptionProvider mmcop;
@@ -61,11 +59,9 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public MercedesMeHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory hcf,
-            @Reference StorageService storageService, final @Reference LocaleProvider lp,
-            @Reference MercedesMeCommandOptionProvider cop, final @Reference MercedesMeStateOptionProvider sop,
-            final @Reference TimeZoneProvider tzp) {
-        this.oAuthFactory = oAuthFactory;
+    public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
+            final @Reference LocaleProvider lp, @Reference MercedesMeCommandOptionProvider cop,
+            final @Reference MercedesMeStateOptionProvider sop, final @Reference TimeZoneProvider tzp) {
         this.storageService = storageService;
 
         localeProvider = lp;
@@ -93,8 +89,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             return new AccountHandler((Bridge) thing, httpClient, localeProvider, storageService);
         }
-        return new VehicleHandler(thing, httpClient, thingTypeUID.getId(), storageService, mmcop, mmsop,
-                timeZoneProvider);
+        return new VehicleHandler(thing);
     }
 
     @Override

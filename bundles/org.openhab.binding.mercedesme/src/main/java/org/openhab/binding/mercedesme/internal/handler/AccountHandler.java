@@ -13,6 +13,8 @@
 package org.openhab.binding.mercedesme.internal.handler;
 
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +25,7 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
+import org.openhab.binding.mercedesme.internal.proto.VehicleEvents.VEPUpdate;
 import org.openhab.binding.mercedesme.internal.server.CallbackServer;
 import org.openhab.binding.mercedesme.internal.server.MBWebsocket;
 import org.openhab.binding.mercedesme.internal.utils.AuthService;
@@ -54,6 +57,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final LocaleProvider localeProvider;
     private final Storage<AccessTokenResponse> storage;
     private final MBWebsocket ws;
+    private final Map<String, VehicleHandler> vehicleDataMapper = new HashMap<String, VehicleHandler>();
     private Optional<CallbackServer> server = Optional.empty();
     private Optional<WebSocketClient> wsClient = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
@@ -192,5 +196,24 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         request.setHeader("X-Applicationname", Utils.getUserAgent(config.get().region));
         request.setHeader("Ris-Application-Version", Utils.getRisApplicationVersion(config.get().region));
         return request;
+    }
+
+    public void registerVin(String vin, VehicleHandler handler) {
+        vehicleDataMapper.put(vin, handler);
+    }
+
+    public void unregisterVin(String vin) {
+        vehicleDataMapper.remove(vin);
+    }
+
+    public void distributeVepUpdates(Map<String, VEPUpdate> map) {
+        map.forEach((key, value) -> {
+            VehicleHandler h = vehicleDataMapper.get(key);
+            if (h != null) {
+                h.distributeContent(value);
+            } else {
+                logger.info("No VehicleHandler available for VIN {}", key);
+            }
+        });
     }
 }
