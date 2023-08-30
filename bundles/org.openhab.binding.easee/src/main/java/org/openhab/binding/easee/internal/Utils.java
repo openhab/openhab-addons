@@ -14,9 +14,6 @@ package org.openhab.binding.easee.internal;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -66,25 +63,6 @@ public final class Utils {
         LOGGER.trace("parsing: {}", date);
         ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
         return zdt;
-    }
-
-    /**
-     * returns a date in a readable format
-     *
-     * @param date
-     * @return
-     */
-    public static String formatDate(Instant date) {
-        if (date == OUTDATED_DATE) {
-            return "(expired)";
-        }
-        try {
-            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                    .withZone(ZoneId.systemDefault());
-            return formatter.format(date);
-        } catch (DateTimeException ex) {
-            return date.toString();
-        }
     }
 
     /**
