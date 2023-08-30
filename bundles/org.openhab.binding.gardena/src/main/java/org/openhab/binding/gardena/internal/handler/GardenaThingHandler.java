@@ -192,11 +192,20 @@ public class GardenaThingHandler extends BaseThingHandler {
                         Unit<?> unit = PropertyUtils.getPropertyValue(device, unitPropertyPath, Unit.class);
                         if (value == null) {
                             return UnDefType.NULL;
-                        } else if (acceptedItemType.equals(baseItemType) || unit == null) {
-                            // No UoM or no unit found
-                            return new DecimalType(value);
                         } else {
-                            return new QuantityType<>(value, unit);
+                            if ("rfLinkLevel".equals(propertyName)) {
+                                // Gardena gives us link level as 0..100%, while the system.signal-strength
+                                // channel type wants a 0..4 enum
+                                int percent = value.intValue();
+                                value = percent == 100 ? 4 : percent / 20;
+                                unit = null;
+                            }
+                            if (acceptedItemType.equals(baseItemType) || unit == null) {
+                                // No UoM or no unit found
+                                return new DecimalType(value);
+                            } else {
+                                return new QuantityType<>(value, unit);
+                            }
                         }
                     }
                 case "DateTime":
