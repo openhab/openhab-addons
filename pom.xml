@@ -77,7 +77,7 @@
     <netty.version>4.1.92.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
     <sat.version>0.15.0</sat.version>
-    <spotless.version>2.37.0</spotless.version>
+    <spotless.version>2.38.0</spotless.version>
     <!-- Eclipse Java formatter version 4.26+ does not check test files -->
     <spotless.eclipse.version>4.25</spotless.eclipse.version>
     <spotless.eclipse.wtp.version>4.21.0</spotless.eclipse.wtp.version>
@@ -292,13 +292,13 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.3.1</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
+          <version>3.11.0</version>
           <configuration>
             <compilerId>eclipse</compilerId>
             <compilerArguments>
@@ -330,19 +330,19 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.0.0-M2</version>
+          <version>3.4.0</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
+          <version>3.1.1</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.3.0</version>
         </plugin>
 
         <plugin>
@@ -365,13 +365,13 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.9.0</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.2</version>
+          <version>3.0.1</version>
           <configuration>
             <preparationGoals>clean install</preparationGoals>
           </configuration>
@@ -380,25 +380,25 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.3.1</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
+          <version>3.12.1</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.3.0</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.1.2</version>
           <configuration>
             <argLine>
               --add-opens java.base/java.lang=ALL-UNNAMED
@@ -413,41 +413,46 @@ Import-Package: \\
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.4.0</version>
         </plugin>
 
         <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
-          <version>3.0</version>
+          <version>4.2</version>
           <configuration>
             <basedir>${basedir}</basedir>
-            <header>licenses/epl-2.0/header.txt</header>
             <quiet>false</quiet>
             <failIfMissing>true</failIfMissing>
             <strictCheck>true</strictCheck>
             <aggregate>true</aggregate>
             <mapping>
+              <java>JAVADOC_STYLE</java>
               <xml>xml-header-style</xml>
             </mapping>
-            <headerDefinitions>
-              <headerDefinition>licenses/epl-2.0/xml-header-style.xml</headerDefinition>
-            </headerDefinitions>
-            <includes>
-              <include>**/org/openhab/**/*.java</include>
-              <include>**/features/**/header.xml</include>
-            </includes>
-            <excludes>
-              <exclude>**/3rdparty/**</exclude>
-              <exclude>target/**</exclude>
-              <exclude>**/pom.xml</exclude>
-              <exclude>_*.java</exclude>
-            </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
               <year>2023</year>
             </properties>
             <encoding>UTF-8</encoding>
+            <licenseSets>
+              <licenseSet>
+                <header>licenses/epl-2.0/header.txt</header>
+                <headerDefinitions>
+                  <headerDefinition>licenses/epl-2.0/xml-header-style.xml</headerDefinition>
+                </headerDefinitions>
+                <includes>
+                  <include>**/org/openhab/**/*.java</include>
+                  <include>**/features/**/header.xml</include>
+                </includes>
+                <excludes>
+                  <exclude>**/3rdparty/**</exclude>
+                  <exclude>target/**</exclude>
+                  <exclude>**/pom.xml</exclude>
+                  <exclude>_*.java</exclude>
+                </excludes>
+              </licenseSet>
+            </licenseSets>
           </configuration>
           <executions>
             <execution>
