@@ -42,7 +42,7 @@ public class ResourceReference {
     @Override
     public boolean equals(@Nullable Object obj) {
         String rid = this.rid;
-        return (obj instanceof ResourceReference ref) && (rid != null) && rid.equals(ref.rid);
+        return (obj instanceof ResourceReference) && (rid != null) && rid.equals(((ResourceReference) obj).rid);
     }
 
     public @Nullable String getId() {

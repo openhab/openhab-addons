@@ -62,10 +62,10 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setAlert(Resource target, Command command, @Nullable Resource source) {
-        if (command instanceof StringType stringCommand && Objects.nonNull(source)) {
+        if ((command instanceof StringType) && Objects.nonNull(source)) {
             Alerts otherAlert = source.getAlerts();
             if (Objects.nonNull(otherAlert)) {
-                ActionType actionType = ActionType.of(stringCommand.toString());
+                ActionType actionType = ActionType.of(((StringType) command).toString());
                 if (otherAlert.getActionValues().contains(actionType)) {
                     target.setAlerts(new Alerts().setAction(actionType));
                 }
@@ -87,7 +87,8 @@ public class Setters {
      */
     public static Resource setColorTemperatureAbsolute(Resource target, Command command, @Nullable Resource source) {
         QuantityType<?> mirek;
-        if (command instanceof QuantityType<?> quantity) {
+        if (command instanceof QuantityType<?>) {
+            QuantityType<?> quantity = (QuantityType<?>) command;
             Unit<?> unit = quantity.getUnit();
             if (Units.KELVIN.equals(unit)) {
                 mirek = quantity.toInvertibleUnit(Units.MIRED);
@@ -97,8 +98,9 @@ public class Setters {
                 QuantityType<?> kelvin = quantity.toInvertibleUnit(Units.KELVIN);
                 mirek = Objects.nonNull(kelvin) ? kelvin.toInvertibleUnit(Units.MIRED) : null;
             }
-        } else if (command instanceof DecimalType decimalCommand) {
-            mirek = QuantityType.valueOf(decimalCommand.doubleValue(), Units.KELVIN).toInvertibleUnit(Units.MIRED);
+        } else if (command instanceof DecimalType) {
+            mirek = QuantityType.valueOf(((DecimalType) command).doubleValue(), Units.KELVIN)
+                    .toInvertibleUnit(Units.MIRED);
         } else {
             mirek = null;
         }
@@ -128,7 +130,7 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorTemperaturePercent(Resource target, Command command, @Nullable Resource source) {
-        if (command instanceof PercentType percentCommand) {
+        if (command instanceof PercentType) {
             MirekSchema schema = target.getMirekSchema();
             schema = Objects.nonNull(schema) ? schema : Objects.nonNull(source) ? source.getMirekSchema() : null;
             schema = Objects.nonNull(schema) ? schema : MirekSchema.DEFAULT_SCHEMA;
@@ -136,7 +138,7 @@ public class Setters {
             colorTemperature = Objects.nonNull(colorTemperature) ? colorTemperature : new ColorTemperature();
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
-            double val = min + ((max - min) * percentCommand.doubleValue() / 100f);
+            double val = min + ((max - min) * ((PercentType) command).doubleValue() / 100f);
             target.setColorTemperature(colorTemperature.setMirek(val));
         }
         return target;
@@ -155,10 +157,11 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setColorXy(Resource target, Command command, @Nullable Resource source) {
-        if (command instanceof HSBType hsb) {
+        if (command instanceof HSBType) {
             Gamut gamut = target.getGamut();
             gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(source) ? source.getGamut() : null;
             gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
+            HSBType hsb = (HSBType) command;
             ColorXy color = target.getColorXy();
             target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut)));
         }
@@ -177,10 +180,11 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setDimming(Resource target, Command command, @Nullable Resource source) {
-        if (command instanceof PercentType brightness) {
+        if (command instanceof PercentType) {
             Double min = target.getMinimumDimmingLevel();
             min = Objects.nonNull(min) ? min : Objects.nonNull(source) ? source.getMinimumDimmingLevel() : null;
             min = Objects.nonNull(min) ? min : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
+            PercentType brightness = (PercentType) command;
             if (brightness.doubleValue() < min.doubleValue()) {
                 brightness = new PercentType(new BigDecimal(min, Resource.PERCENT_MATH_CONTEXT));
             }
@@ -204,10 +208,10 @@ public class Setters {
      * @return the target resource.
      */
     public static Resource setEffect(Resource target, Command command, @Nullable Resource source) {
-        if (command instanceof StringType stringCommand && Objects.nonNull(source)) {
+        if ((command instanceof StringType) && Objects.nonNull(source)) {
             Effects otherEffects = source.getEffects();
             if (Objects.nonNull(otherEffects)) {
-                EffectType effectType = EffectType.of(stringCommand.toString());
+                EffectType effectType = EffectType.of(((StringType) command).toString());
                 if (otherEffects.allows(effectType)) {
                     target.setEffects(new Effects().setEffect(effectType));
                 }

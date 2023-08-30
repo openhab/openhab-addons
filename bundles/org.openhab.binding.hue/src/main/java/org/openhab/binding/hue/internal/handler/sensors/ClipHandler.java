@@ -46,7 +46,6 @@ public class ClipHandler extends HueSensorHandler {
         return new SensorConfigUpdate();
     }
 
-    @Override
     protected void doSensorStateChanged(FullSensor sensor, Configuration config) {
     }
 }

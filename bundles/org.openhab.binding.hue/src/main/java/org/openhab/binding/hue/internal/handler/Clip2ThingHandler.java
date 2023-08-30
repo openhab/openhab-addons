@@ -261,8 +261,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof Clip2BridgeHandler bridgeHandler) {
-                return bridgeHandler;
+            if (handler instanceof Clip2BridgeHandler) {
+                return (Clip2BridgeHandler) handler;
             }
         }
         throw new AssetNotLoadedException("Bridge handler missing");
@@ -355,9 +355,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof IncreaseDecreaseType) {
                     if (Objects.nonNull(cache)) {
                         State current = cache.getColorTemperaturePercentState();
-                        if (current instanceof PercentType percentCommand) {
+                        if (current instanceof PercentType) {
                             int sign = IncreaseDecreaseType.INCREASE == command ? 1 : -1;
-                            int percent = percentCommand.intValue() + (sign * (int) Resource.PERCENT_DELTA);
+                            int percent = ((PercentType) current).intValue() + (sign * (int) Resource.PERCENT_DELTA);
                             command = new PercentType(Math.min(100, Math.max(0, percent)));
                         }
                     }
@@ -373,7 +373,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_COLOR:
                 putResource = new Resource(lightResourceType);
-                if (command instanceof HSBType color) {
+                if (command instanceof HSBType) {
+                    HSBType color = ((HSBType) command);
                     putResource = Setters.setColorXy(putResource, color, cache);
                     command = color.getBrightness();
                 }
@@ -384,15 +385,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (command instanceof IncreaseDecreaseType) {
                     if (Objects.nonNull(cache)) {
                         State current = cache.getBrightnessState();
-                        if (current instanceof PercentType percentCommand) {
+                        if (current instanceof PercentType) {
                             int sign = IncreaseDecreaseType.INCREASE == command ? 1 : -1;
-                            double percent = percentCommand.doubleValue() + (sign * Resource.PERCENT_DELTA);
+                            double percent = ((PercentType) current).doubleValue() + (sign * Resource.PERCENT_DELTA);
                             command = new PercentType(new BigDecimal(Math.min(100f, Math.max(0f, percent)),
                                     Resource.PERCENT_MATH_CONTEXT));
                         }
                     }
                 }
-                if (command instanceof PercentType brightness) {
+                if (command instanceof PercentType) {
+                    PercentType brightness = (PercentType) command;
                     putResource = Setters.setDimming(putResource, brightness, cache);
                     Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
                     minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
@@ -432,8 +434,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_SCENE:
-                if (command instanceof StringType stringCommand) {
-                    putResourceId = sceneResourceIds.get(stringCommand.toString());
+                if (command instanceof StringType) {
+                    putResourceId = sceneResourceIds.get(((StringType) command).toString());
                     if (Objects.nonNull(putResourceId)) {
                         putResource = new Resource(ResourceType.SCENE).setRecallAction(RecallAction.ACTIVE);
                     }
@@ -442,8 +444,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_DYNAMICS:
                 Duration clearAfter = Duration.ZERO;
-                if (command instanceof QuantityType<?> quantityCommand) {
-                    QuantityType<?> durationMs = quantityCommand.toUnit(MetricPrefix.MILLI(Units.SECOND));
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> durationMs = ((QuantityType<?>) command).toUnit(MetricPrefix.MILLI(Units.SECOND));
                     if (Objects.nonNull(durationMs) && durationMs.longValue() > 0) {
                         Duration duration = Duration.ofMillis(durationMs.longValue());
                         dynamicsDuration = duration;
@@ -582,8 +584,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof Clip2BridgeHandler clip2BridgeHandler) {
-                clip2BridgeHandler.childInitialized();
+            if (bridgeHandler instanceof Clip2BridgeHandler) {
+                ((Clip2BridgeHandler) bridgeHandler).childInitialized();
             }
         }
     }
@@ -1175,8 +1177,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     break;
 
                 case TRIGGER:
-                    if (state instanceof DecimalType decimalCommand) {
-                        triggerChannel(channelID, String.valueOf(decimalCommand.intValue()));
+                    if (state instanceof DecimalType) {
+                        triggerChannel(channelID, String.valueOf(((DecimalType) state).intValue()));
                     }
             }
         }

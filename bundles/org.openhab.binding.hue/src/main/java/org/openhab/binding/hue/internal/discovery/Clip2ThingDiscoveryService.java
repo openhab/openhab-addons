@@ -164,8 +164,8 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof Clip2BridgeHandler clip2BridgeHandler) {
-            bridgeHandler = clip2BridgeHandler;
+        if (handler instanceof Clip2BridgeHandler) {
+            bridgeHandler = (Clip2BridgeHandler) handler;
         }
     }
 
