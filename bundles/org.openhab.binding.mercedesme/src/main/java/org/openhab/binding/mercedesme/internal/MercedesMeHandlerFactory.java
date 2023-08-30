@@ -22,7 +22,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandler;
 import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -53,21 +52,14 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(MercedesMeHandlerFactory.class);
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
-    private final MercedesMeCommandOptionProvider mmcop;
-    private final MercedesMeStateOptionProvider mmsop;
     private final StorageService storageService;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
-            final @Reference LocaleProvider lp, @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop, final @Reference TimeZoneProvider tzp) {
+            final @Reference LocaleProvider lp) {
         this.storageService = storageService;
 
         localeProvider = lp;
-        mmcop = cop;
-        mmsop = sop;
-        timeZoneProvider = tzp;
         httpClient = hcf.createHttpClient(Constants.BINDING_ID);
         // https://github.com/jetty-project/jetty-reactive-httpclient/issues/33
         // httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
