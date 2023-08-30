@@ -90,18 +90,12 @@ public class AuthService {
     public String requestPin() {
         String url = Utils.getAuthURL(config.region);
         Request req = httpClient.POST(url);
-        req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
-        req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
-        req.header("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
-        req.header("X-Locale", locale.getLanguage() + "-" + locale.getCountry()); // de-DE
-        req.header("User-Agent", Utils.getApplication(config.region));
-        req.header("X-Applicationname", Utils.getUserAgent(config.region));
-        req.header("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
+        addBasicHeaders(req);
         req.header("X-Trackingid", UUID.randomUUID().toString());
         req.header("X-Sessionid", UUID.randomUUID().toString());
-        req.header(HttpHeader.CONTENT_TYPE, "application/json");
 
         PINRequest pr = new PINRequest(config.email, locale.getCountry());
+        req.header(HttpHeader.CONTENT_TYPE, "application/json");
         req.content(new StringContentProvider(Utils.GSON.toJson(pr), "utf-8"));
 
         try {
@@ -121,8 +115,16 @@ public class AuthService {
     public void requestToken(String password) {
         logger.info("Request Token");
         try {
-            Request req = getTokenRequest();
+            // Request + headers
+            String url = Utils.getTokenUrl(config.region);
+            logger.info("Get Token base URL {}", url);
+            Request req = httpClient.POST(url);
+            addBasicHeaders(req);
             req.header("Stage", "prod");
+            req.header("X-Device-Id", UUID.randomUUID().toString());
+            req.header("X-Request-Id", UUID.randomUUID().toString());
+
+            // Content URL form
             String clientid = "client_id="
                     + URLEncoder.encode(Utils.getLoginAppId(config.region), StandardCharsets.UTF_8.toString());
             String grantAttribute = "grant_type=password";
@@ -132,7 +134,10 @@ public class AuthService {
             String content = clientid + "&" + grantAttribute + "&" + userAttribute + "&" + passwordAttribute + "&"
                     + scopeAttribute;
             logger.info("Get Token Content {}", content);
+            req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
             req.content(new StringContentProvider(content));
+
+            // Send
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
                 logger.info("Success getting token");
@@ -149,12 +154,22 @@ public class AuthService {
     public void refreshToken() {
         logger.info("Refresh Token");
         try {
-            Request req = getTokenRequest();
+            // Request + headers
+            String url = Utils.getTokenUrl(config.region);
+            logger.info("Get Token base URL {}", url);
+            Request req = httpClient.POST(url);
+            req.header("X-Device-Id", UUID.randomUUID().toString());
+            req.header("X-Request-Id", UUID.randomUUID().toString());
+
+            // Content URL form
             String grantAttribute = "grant_type=refresh_token";
             String refreshTokenAttribute = "refresh_token="
                     + URLEncoder.encode(token.getRefreshToken(), StandardCharsets.UTF_8.toString());
             String content = grantAttribute + "&" + refreshTokenAttribute;
+            req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
             req.content(new StringContentProvider(content));
+
+            // Send
             ContentResponse cr = req.send();
             if (cr.getStatus() == 200) {
                 logger.info("Success getting token");
@@ -180,10 +195,7 @@ public class AuthService {
         return token.getAccessToken();
     }
 
-    private Request getTokenRequest() {
-        String url = Utils.getTokenUrl(config.region);
-        logger.info("Get Token base URL {}", url);
-        Request req = httpClient.POST(url);
+    private void addBasicHeaders(Request req) {
         req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
         req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
         req.header("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
@@ -191,10 +203,6 @@ public class AuthService {
         req.header("User-Agent", Utils.getApplication(config.region));
         req.header("X-Applicationname", Utils.getUserAgent(config.region));
         req.header("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
-        req.header("X-Device-Id", UUID.randomUUID().toString());
-        req.header("X-Request-Id", UUID.randomUUID().toString());
-        req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-        return req;
     }
 
     private void saveTokenResponse(String response) {

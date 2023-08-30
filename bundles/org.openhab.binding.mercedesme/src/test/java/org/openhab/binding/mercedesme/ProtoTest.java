@@ -69,4 +69,22 @@ class ProtoTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    void testMessages() {
+        for (int i = 1; i < 12; i++) {
+            try {
+                FileInputStream fis = new FileInputStream("src/test/resources/proto/message-" + i + ".blob");
+                PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
+                if (pm.hasVepUpdates()) {
+                    VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
+                }
+                System.out.println(i + " Size " + pm.getAllFields().size());
+                System.out.println(pm.hasVepUpdate() + " : " + pm.hasVepUpdates());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 }
