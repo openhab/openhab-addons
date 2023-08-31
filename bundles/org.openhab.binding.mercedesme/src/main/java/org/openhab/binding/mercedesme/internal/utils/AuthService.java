@@ -112,7 +112,7 @@ public class AuthService {
         return Constants.NOT_SET;
     }
 
-    public void requestToken(String password) {
+    public boolean requestToken(String password) {
         logger.info("Request Token");
         try {
             // Request + headers
@@ -143,12 +143,14 @@ public class AuthService {
                 logger.info("Success getting token");
                 saveTokenResponse(cr.getContentAsString());
                 logger.info("ATR {}", token);
+                return true;
             } else {
-                logger.debug("Failed to get image resources {} {}", cr.getStatus(), cr.getContentAsString());
+                logger.debug("Failed to get token {} {}", cr.getStatus(), cr.getContentAsString());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException e) {
-            logger.debug("Error getting image resources {}", e.getMessage());
+            logger.debug("Failed to get token {}", e.getMessage());
         }
+        return false;
     }
 
     public void refreshToken() {
