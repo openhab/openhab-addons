@@ -1,6 +1,6 @@
 # DanfossAirUnit Binding
 
-This binding supports controlling and monitoring [Danfoss air units](https://www.danfoss.com/en/products/energy-recovery-devices/dhs/heat-recovery-ventilation/air-units/) via Ethernet connection.
+This binding supports controlling and monitoring [Danfoss Air units](https://store.danfoss.com/en/Climate-Solutions-for-heating/Heat-Recovery-Ventilation/Ventilation-Units/c/4044) via Ethernet connection.
 
 ## Supported Things
 
