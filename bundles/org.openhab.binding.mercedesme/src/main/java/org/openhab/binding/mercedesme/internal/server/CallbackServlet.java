@@ -51,9 +51,13 @@ public class CallbackServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().println("<HTML>");
                 response.getWriter().println("<BODY>");
-                response.getWriter().println("PIN received?<BR>");
+                response.getWriter().println("<H1>Step 1 - PIN Requested</H1>");
+                response.getWriter().println("<BR>");
+                response.getWriter().println("PIN was requested and should be avialble in your EMail Inbox<BR>");
+                response.getWriter()
+                        .println("Check first if you received the PIN and then continue with the below Link<BR>");
                 response.getWriter().println("<a href=\"" + Constants.CALLBACK_ENDPOINT + "?guid=" + requestVal
-                        + "\">Click here to enter</a>");
+                        + "\">Click here to continue with Step 2</a>");
                 response.getWriter().println("</BODY>");
                 response.getWriter().println("</HTML>");
             } else {
@@ -73,8 +77,10 @@ public class CallbackServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().println("<HTML>");
             response.getWriter().println("<BODY>");
+            response.getWriter().println("<H1>Step 2 - Enter PIN</H1>");
+            response.getWriter().println("<BR>");
+            response.getWriter().println("Enter PIN in second input field - leave guid as it is!<BR>");
             response.getWriter().println("<form action=\"" + Constants.CALLBACK_ENDPOINT + "\">");
-
             response.getWriter().println("<input type=\"text\" id=\"guid\" name=\"guid\" value=\"" + guid + "\">");
             response.getWriter().println("<label for=\"PIN\">PIN</label>");
             response.getWriter().println("<input type=\"text\" id=\"pin\" name=\"pin\" placeholder=\"Your PIN\">");
@@ -84,7 +90,20 @@ public class CallbackServlet extends HttpServlet {
             response.getWriter().println("</HTML>");
         } else if (guid != null && pin != null) {
             // call getToken and show result
-            myAuthService.requestToken(guid + ":" + pin);
+            boolean result = myAuthService.requestToken(guid + ":" + pin);
+            response.setContentType("text/html");
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().println("<HTML>");
+            response.getWriter().println("<BODY>");
+            response.getWriter().println("<H1>Step 3 - Save Token</H1>");
+            response.getWriter().println("<BR>");
+            if (result) {
+                response.getWriter().println("Success - everything done!<BR>");
+            } else {
+                response.getWriter().println("Failure - Please check logs for further analysis!<BR>");
+            }
+            response.getWriter().println("</BODY>");
+            response.getWriter().println("</HTML>");
         }
         logger.debug("Call from {}:{} parameters {}", request.getLocalAddr(), request.getLocalPort(),
                 request.getParameterMap());
