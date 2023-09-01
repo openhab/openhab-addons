@@ -80,36 +80,44 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
      */
     private void discoverHueBridges() {
         for (BridgeJsonParameters bridge : getBridgeList()) {
-            if (isReachableAndValidHueBridge(bridge)) {
-                String host = bridge.getInternalIpAddress();
-                String serialNumber = bridge.getId().toLowerCase();
-                ThingUID uid = new ThingUID(THING_TYPE_BRIDGE, serialNumber);
-                ThingUID legacyUID = null;
-                String label = String.format(DISCOVERY_LABEL_PATTERN, host);
-
-                if (isClip2Supported(host)) {
-                    legacyUID = uid;
-                    uid = new ThingUID(THING_TYPE_BRIDGE_API2, serialNumber);
-                    Optional<Thing> legacyThingOptional = getLegacyBridge(host);
-                    if (legacyThingOptional.isPresent()) {
-                        Thing legacyThing = legacyThingOptional.get();
-                        String label2 = legacyThing.getLabel();
-                        label = Objects.nonNull(label2) ? label2 : label;
-                    }
-                }
-
-                DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
-                        .withLabel(label) //
-                        .withProperty(HOST, host) //
-                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber) //
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER);
-
-                if (Objects.nonNull(legacyUID)) {
-                    builder.withProperty(PROPERTY_LEGACY_THING_UID, legacyUID.getAsString());
-                }
-
-                thingDiscovered(builder.build());
+            if (!isReachableAndValidHueBridge(bridge)) {
+                continue;
             }
+            String host = bridge.getInternalIpAddress();
+            if (host == null) {
+                continue;
+            }
+            String id = bridge.getId();
+            if (id == null) {
+                continue;
+            }
+            String serialNumber = id.toLowerCase();
+            ThingUID uid = new ThingUID(THING_TYPE_BRIDGE, serialNumber);
+            ThingUID legacyUID = null;
+            String label = String.format(DISCOVERY_LABEL_PATTERN, host);
+
+            if (isClip2Supported(host)) {
+                legacyUID = uid;
+                uid = new ThingUID(THING_TYPE_BRIDGE_API2, serialNumber);
+                Optional<Thing> legacyThingOptional = getLegacyBridge(host);
+                if (legacyThingOptional.isPresent()) {
+                    Thing legacyThing = legacyThingOptional.get();
+                    String label2 = legacyThing.getLabel();
+                    label = Objects.nonNull(label2) ? label2 : label;
+                }
+            }
+
+            DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
+                    .withLabel(label) //
+                    .withProperty(HOST, host) //
+                    .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber) //
+                    .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER);
+
+            if (Objects.nonNull(legacyUID)) {
+                builder.withProperty(PROPERTY_LEGACY_THING_UID, legacyUID.getAsString());
+            }
+
+            thingDiscovered(builder.build());
         }
     }
 

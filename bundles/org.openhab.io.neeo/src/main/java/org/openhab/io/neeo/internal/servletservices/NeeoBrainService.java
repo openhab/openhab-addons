@@ -141,7 +141,7 @@ public class NeeoBrainService extends DefaultServletService {
             return false;
         }
 
-        if (paths[0].equalsIgnoreCase("device")) {
+        if ("device".equalsIgnoreCase(paths[0])) {
             return true;
         }
 
@@ -158,7 +158,7 @@ public class NeeoBrainService extends DefaultServletService {
             throw new IllegalArgumentException("paths cannot be empty");
         }
 
-        final boolean hasDeviceStart = paths[0].equalsIgnoreCase("device");
+        final boolean hasDeviceStart = "device".equalsIgnoreCase(paths[0]);
 
         if (hasDeviceStart) {
             final PathInfo pathInfo = new PathInfo(paths);
@@ -190,9 +190,9 @@ public class NeeoBrainService extends DefaultServletService {
         // 4. Old subscribe path: /{thingUID}/subscribe or unsubscribe/{deviceid}/{devicekey}
         // 4. Old unsubscribe path: /{thingUID}/subscribe or unsubscribe/{deviceid}
 
-        final boolean hasDeviceStart = paths[0].equalsIgnoreCase("device");
-        if (hasDeviceStart && (paths.length >= 3 && !paths[2].equalsIgnoreCase("subscribe")
-                && !paths[2].equalsIgnoreCase("unsubscribe"))) {
+        final boolean hasDeviceStart = "device".equalsIgnoreCase(paths[0]);
+        if (hasDeviceStart && (paths.length >= 3 && !"subscribe".equalsIgnoreCase(paths[2])
+                && !"unsubscribe".equalsIgnoreCase(paths[2]))) {
             try {
                 final PathInfo pathInfo = new PathInfo(paths);
 
@@ -404,10 +404,9 @@ public class NeeoBrainService extends DefaultServletService {
                 }
 
             } else {
-                if (channel instanceof NeeoDeviceChannelDirectory) {
+                if (channel instanceof NeeoDeviceChannelDirectory directoryChannel) {
                     final NeeoDirectoryRequest discoveryRequest = gson.fromJson(req.getReader(),
                             NeeoDirectoryRequest.class);
-                    final NeeoDeviceChannelDirectory directoryChannel = (NeeoDeviceChannelDirectory) channel;
                     NeeoUtil.write(resp, gson.toJson(new NeeoDirectoryResult(discoveryRequest, directoryChannel)));
                 } else {
                     logger.debug("Channel definition for '{}' not found to directory set value ({})",
