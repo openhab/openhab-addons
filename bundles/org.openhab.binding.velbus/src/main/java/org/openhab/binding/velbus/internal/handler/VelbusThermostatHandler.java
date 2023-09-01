@@ -29,6 +29,7 @@ import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -240,12 +241,35 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
                         THERMOSTAT_TEMPERATURE_SETPOINT_RESOLUTION);
                 updateState(currentTemperatureSetpointChannel,
                         new QuantityType<>(targetTemperatureValue, SIUnits.CELSIUS));
-            } else if (address != this.getModuleAddress().getAddress() && command == COMMAND_PUSH_BUTTON_STATUS) {
-                byte outputChannelsJustActivated = packet[5];
-                byte outputChannelsJustDeactivated = packet[6];
+            } else if (command == COMMAND_PUSH_BUTTON_STATUS) {
+                ThingTypeUID thingTypeUID = this.thing.getThingTypeUID();
+                if (thingTypeUID.equals(THING_TYPE_VMBELO) || thingTypeUID.equals(THING_TYPE_VMBGPO)
+                        || thingTypeUID.equals(THING_TYPE_VMBGPOD) || thingTypeUID.equals(THING_TYPE_VMBGPOD_2)) {
+                    // modules VMBELO, VMBGPO, VMBGPOD, VMBGPOD_2 use sub-address 4 for sensor
+                    if (address == this.getModuleAddress().getSubAddresses()[3]) {
+                        byte outputChannelsJustActivated = packet[5];
+                        byte outputChannelsJustDeactivated = packet[6];
 
-                triggerThermostatChannels(outputChannelsJustActivated, CommonTriggerEvents.PRESSED);
-                triggerThermostatChannels(outputChannelsJustDeactivated, CommonTriggerEvents.RELEASED);
+                        triggerThermostatChannels(outputChannelsJustActivated, CommonTriggerEvents.PRESSED);
+                        triggerThermostatChannels(outputChannelsJustDeactivated, CommonTriggerEvents.RELEASED);
+                    }
+                    // modules VMBEL1, VMBEL2, VMBEL4, VMBELPIR, VMBGP1, VMBGP1-2, VMBGP2, VMBGP2-2, VMBGP4, VMBGP4-2,
+                    // VMBGP4PIR, VMBGP4PIR-2 use sub-address 1 for sensor, wich is not usable as push button
+                } else if (thingTypeUID.equals(THING_TYPE_VMBEL1) || thingTypeUID.equals(THING_TYPE_VMBEL2)
+                        || thingTypeUID.equals(THING_TYPE_VMBEL4) || thingTypeUID.equals(THING_TYPE_VMBELPIR)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP1) || thingTypeUID.equals(THING_TYPE_VMBGP1_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP2) || thingTypeUID.equals(THING_TYPE_VMBGP2_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4) || thingTypeUID.equals(THING_TYPE_VMBGP4_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4PIR) || thingTypeUID.equals(THING_TYPE_VMBGP4PIR_2)) {
+                    if (address != this.getModuleAddress().getAddress()) {
+                        byte outputChannelsJustActivated = packet[5];
+                        byte outputChannelsJustDeactivated = packet[6];
+
+                        triggerThermostatChannels(outputChannelsJustActivated, CommonTriggerEvents.PRESSED);
+                        triggerThermostatChannels(outputChannelsJustDeactivated, CommonTriggerEvents.RELEASED);
+                    }
+                }
+
             }
         }
     }

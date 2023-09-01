@@ -82,6 +82,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBKP, 0x00A7);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBIN, 0x00A7);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB4PB, 0x00A7);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBDALI, 0x0513);
     }
 
     private static final byte ALARM_CONFIGURATION_MEMORY_SIZE = 0x09;
@@ -165,7 +166,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
                         // If AlarmType is not read only, it's an old implementation of the module, warn user and
                         // discard the command
                         logger.warn(
-                                "Old implementation of thing '{}', still works, but it's better to remove and recreate the thing.",
+                                "Old implementation of thing '{}'. Only local alarm on module, global alarm only on bridge. To avoid problem, remove and recreate the thing.",
                                 getThing().getUID());
                     }
                     return;

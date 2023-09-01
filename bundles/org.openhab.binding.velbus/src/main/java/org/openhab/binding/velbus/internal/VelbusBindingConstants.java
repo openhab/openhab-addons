@@ -87,22 +87,24 @@ public class VelbusBindingConstants {
     public static final ThingTypeUID THING_TYPE_VMBKP = new ThingTypeUID(BINDING_ID, "vmbkp");
     public static final ThingTypeUID THING_TYPE_VMBIN = new ThingTypeUID(BINDING_ID, "vmbin");
     public static final ThingTypeUID THING_TYPE_VMB4PB = new ThingTypeUID(BINDING_ID, "vmb4pb");
+    public static final ThingTypeUID THING_TYPE_VMBDALI = new ThingTypeUID(BINDING_ID, "vmbdali");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(BRIDGE_THING_TYPE, NETWORK_BRIDGE_THING_TYPE)));
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            new HashSet<>(Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB1DM, THING_TYPE_VMB1LED,
-                    THING_TYPE_VMB1RY, THING_TYPE_VMB1RYNO, THING_TYPE_VMB1RYNOS, THING_TYPE_VMB1RYS, THING_TYPE_VMB1TS,
-                    THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE, THING_TYPE_VMB2PBN, THING_TYPE_VMB4AN, THING_TYPE_VMB4DC,
-                    THING_TYPE_VMB4RY, THING_TYPE_VMB4RYLD, THING_TYPE_VMB4RYNO, THING_TYPE_VMB6IN, THING_TYPE_VMB6PBN,
-                    THING_TYPE_VMB7IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB, THING_TYPE_VMB8PBU, THING_TYPE_VMBDME,
-                    THING_TYPE_VMBDMI, THING_TYPE_VMBDMIR, THING_TYPE_VMBEL1, THING_TYPE_VMBEL2, THING_TYPE_VMBEL4,
-                    THING_TYPE_VMBELO, THING_TYPE_VMBELPIR, THING_TYPE_VMBGP1, THING_TYPE_VMBGP1_2, THING_TYPE_VMBGP2,
-                    THING_TYPE_VMBGP2_2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2, THING_TYPE_VMBGP4PIR,
-                    THING_TYPE_VMBGP4PIR_2, THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2,
-                    THING_TYPE_VMBMETEO, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM, THING_TYPE_VMBPIRO,
-                    THING_TYPE_VMBRFR8S, THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN, THING_TYPE_VMB4PB)));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB1DM,
+                    THING_TYPE_VMB1LED, THING_TYPE_VMB1RY, THING_TYPE_VMB1RYNO, THING_TYPE_VMB1RYNOS,
+                    THING_TYPE_VMB1RYS, THING_TYPE_VMB1TS, THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE, THING_TYPE_VMB2PBN,
+                    THING_TYPE_VMB4AN, THING_TYPE_VMB4DC, THING_TYPE_VMB4RY, THING_TYPE_VMB4RYLD, THING_TYPE_VMB4RYNO,
+                    THING_TYPE_VMB6IN, THING_TYPE_VMB6PBN, THING_TYPE_VMB7IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB,
+                    THING_TYPE_VMB8PBU, THING_TYPE_VMBDME, THING_TYPE_VMBDMI, THING_TYPE_VMBDMIR, THING_TYPE_VMBEL1,
+                    THING_TYPE_VMBEL2, THING_TYPE_VMBEL4, THING_TYPE_VMBELO, THING_TYPE_VMBELPIR, THING_TYPE_VMBGP1,
+                    THING_TYPE_VMBGP1_2, THING_TYPE_VMBGP2, THING_TYPE_VMBGP2_2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2,
+                    THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2, THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD,
+                    THING_TYPE_VMBGPOD_2, THING_TYPE_VMBMETEO, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM,
+                    THING_TYPE_VMBPIRO, THING_TYPE_VMBRFR8S, THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN,
+                    THING_TYPE_VMB4PB, THING_TYPE_VMBDALI)));
 
     // Velbus module types
     public static final byte MODULE_TYPE_VMB8PB = 0x01;
@@ -118,6 +120,7 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMB4RYLD = 0x10;
     public static final byte MODULE_TYPE_VMB4RYNO = 0x11;
     public static final byte MODULE_TYPE_VMB4DC = 0x12;
+    public static final byte MODULE_TYPE_VMBLCDWB = 0x13;
     public static final byte MODULE_TYPE_VMBDME = 0x14;
     public static final byte MODULE_TYPE_VMBDMI = 0x15;
     public static final byte MODULE_TYPE_VMB8PBU = 0x16;
@@ -156,6 +159,7 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMBKP = 0x42;
     public static final byte MODULE_TYPE_VMBIN = 0x43;
     public static final byte MODULE_TYPE_VMB4PB = 0x44;
+    public static final byte MODULE_TYPE_VMBDALI = 0x45;
 
     // Velbus commands
     public static final byte COMMAND_PUSH_BUTTON_STATUS = 0x00;
@@ -168,8 +172,14 @@ public class VelbusBindingConstants {
     public static final byte COMMAND_SLIDER_STATUS = 0x0F;
     public static final byte COMMAND_RESTORE_LAST_DIMVALUE = 0x11;
     public static final byte COMMAND_BLIND_POS = 0x1C;
+    public static final byte COMMAND_SET_DIMSCENE = (byte) 0x1D;
+    public static final byte COMMAND_SET_COLOR = (byte) 0x1E;
+    public static final byte COMMAND_DIMVALUE_STATUS = (byte) 0xA5;
+    public static final byte COMMAND_SUBTYPE_3 = (byte) 0xA6;
+    public static final byte COMMAND_SUBTYPE_2 = (byte) 0xA7;
     public static final byte COMMAND_SENSOR_RAW_DATA = (byte) 0xA9;
     public static final byte COMMAND_LIGHT_VALUE_REQUEST = (byte) 0xAA;
+    public static final byte COMMAND_POWER_UP = (byte) 0xAB;
     public static final byte COMMAND_TEXT = (byte) 0xAC;
     public static final byte COMMAND_DAYLIGHT_SAVING_STATUS = (byte) 0xAF;
     public static final byte COMMAND_SUBTYPE = (byte) 0xB0;
@@ -214,7 +224,12 @@ public class VelbusBindingConstants {
     public static final byte COMMAND_READ_DATA_FROM_MEMORY = (byte) 0xFD;
     public static final byte COMMAND_MEMORY_DATA = (byte) 0xFE;
     public static final byte COMMAND_MODULE_TYPE = (byte) 0xFF;
+
+    // Usefull values
     public static final byte ALL_CHANNELS = (byte) 0xFF;
+    public static final byte ALL_DALI_CHANNELS = (byte) 0x51;
+    public static final byte SUB_ADDRESS_DISABLED = (byte) 0xFF;
+    public static final byte VALUE_UNCHANGED = (byte) 0xFF;
 
     // Module properties
     public static final String PORT = "port";
@@ -256,6 +271,14 @@ public class VelbusBindingConstants {
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE = "clockAlarm#clockAlarm2WakeupMinute";
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR = "clockAlarm#clockAlarm2BedtimeHour";
     public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE = "clockAlarm#clockAlarm2BedtimeMinute";
+    public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_GROUP_INPUT = "input";
+    public static final String CHANNEL_GROUP_FEEDBACK = "feedback";
+    public static final String CHANNEL_GROUP_BUTTON = "button";
+    public static final String CHANNEL_GROUP_COLOR = "color";
+    public static final String CHANNEL_GROUP_SCENE = "scene";
 
     // Delay
     public static final Integer DELAY_SEND_CLOCK_ALARM_UPDATE = 10000;
