@@ -65,15 +65,6 @@ public class SenecHomeBindingConstants {
     public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH3 = "gridVoltagePhase3";
     public static final String CHANNEL_SENEC_GRID_FREQUENCY = "gridFrequency";
 
-    // SenecHomeStatistics
-    public static final String CHANNEL_SENEC_LIVE_BAT_CHARGE = "liveBatCharge";
-    public static final String CHANNEL_SENEC_LIVE_BAT_DISCHARGE = "liveBatDischarge";
-    public static final String CHANNEL_SENEC_LIVE_GRID_IMPORT = "liveGridImport";
-    public static final String CHANNEL_SENEC_LIVE_GRID_EXPORT = "liveGridExport";
-    public static final String CHANNEL_SENEC_LIVE_HOUSE_CONSUMPTION = "liveHouseConsumption";
-    public static final String CHANNEL_SENEC_LIVE_POWER_GENERATOR = "livePowerGenerator";
-    public static final String CHANNEL_SENEC_LIVE_ENERGY_WALLBOX1 = "liveEnergyWallbox1";
-
     // SenecHomeBattery
     public static final String CHANNEL_SENEC_CHARGED_ENERGY_PACK1 = "chargedEnergyPack1";
     public static final String CHANNEL_SENEC_CHARGED_ENERGY_PACK2 = "chargedEnergyPack2";

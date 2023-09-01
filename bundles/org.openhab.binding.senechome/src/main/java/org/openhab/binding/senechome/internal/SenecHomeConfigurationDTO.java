@@ -22,4 +22,5 @@ public class SenecHomeConfigurationDTO {
     public int refreshInterval = 15;
     public int limitationTresholdValue = 95;
     public int limitationDuration = 120;
+    public boolean useHttp = false;
 }
