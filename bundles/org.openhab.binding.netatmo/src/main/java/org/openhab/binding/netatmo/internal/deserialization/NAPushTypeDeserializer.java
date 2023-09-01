@@ -46,8 +46,8 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
             moduleType = fromNetatmoObject(elements[0]);
             eventType = fromEvent(elements[1]);
         } else if (elements.length == 1) {
-            moduleType = ModuleType.ACCOUNT;
             eventType = fromEvent(string);
+            moduleType = eventType.getFirstModule();
         }
 
         if (moduleType.equals(ModuleType.UNKNOWN) || eventType.equals(EventType.UNKNOWN)) {
