@@ -42,7 +42,7 @@ public class HostHandler extends ApiConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
 
     // We start in pull mode and switch to push after a first update...
-    private boolean pushSubscribed = false;
+    protected boolean pushSubscribed = false;
 
     public HostHandler(Thing thing) {
         super(thing);
@@ -65,7 +65,7 @@ public class HostHandler extends ApiConsumerHandler {
     protected void cancelPushSubscription() {
         if (pushSubscribed) {
             try {
-                getManager(WebSocketManager.class).unregisterListener(getMac());
+                getManager(WebSocketManager.class).unregisterLanHost(getMac());
             } catch (FreeboxException e) {
                 logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
             }
