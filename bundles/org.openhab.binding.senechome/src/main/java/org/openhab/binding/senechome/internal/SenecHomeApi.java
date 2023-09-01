@@ -44,8 +44,6 @@ import com.google.gson.stream.MalformedJsonException;
  */
 @NonNullByDefault
 public class SenecHomeApi {
-    private static final String HTTP_PROTO_PREFIX = "http://";
-
     private final Logger logger = LoggerFactory.getLogger(SenecHomeApi.class);
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
@@ -71,17 +69,26 @@ public class SenecHomeApi {
      */
     public SenecHomeResponse getStatistics()
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
-        String location = HTTP_PROTO_PREFIX + hostname;
+        String location = hostname + "/lala.cgi";
+        logger.trace("sending request to: {}", location);
+
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.error("cannot connect", e);
+        }
 
         Request request = httpClient.newRequest(location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
-        request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
+        request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
         ContentResponse response = null;
         try {
-            response = request.method(HttpMethod.POST)
-                    .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
+            String dataToSend = gson.toJson(new SenecHomeResponse());
+            logger.trace("data to send: {}", dataToSend);
+            response = request.method(HttpMethod.POST).content(new StringContentProvider(dataToSend)).send();
             if (response.getStatus() == HttpStatus.OK_200) {
-                return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
+                String responseString = response.getContentAsString();
+                return Objects.requireNonNull(gson.fromJson(responseString, SenecHomeResponse.class));
             } else {
                 logger.trace("Got unexpected response code {}", response.getStatus());
                 throw new IOException("Got unexpected response code " + response.getStatus());

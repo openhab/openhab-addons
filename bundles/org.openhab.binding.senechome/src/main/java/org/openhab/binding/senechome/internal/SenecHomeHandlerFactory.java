@@ -18,6 +18,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -37,15 +38,17 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.senechome", service = ThingHandlerFactory.class)
 public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
+    public static final String BINDING_ID = "senechome";
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY);
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
     public SenecHomeHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true); // Accept all certificates
+        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID, sslContextFactory);
     }
 
     @Override
