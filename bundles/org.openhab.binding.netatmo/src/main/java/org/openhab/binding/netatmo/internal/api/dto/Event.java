@@ -35,7 +35,7 @@ public abstract class Event extends NAObject {
     protected EventType type = EventType.UNKNOWN;
     @SerializedName(value = "camera_id", alternate = { "module_id" })
     private String cameraId = "";
-    protected int subType = -1;
+    protected String subType = "";
 
     public abstract ZonedDateTime getTime();
 
