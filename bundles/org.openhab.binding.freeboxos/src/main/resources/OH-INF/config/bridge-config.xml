@@ -42,6 +42,12 @@
 			<advanced>true</advanced>
 			<default>15682</default>
 		</parameter>
+		<parameter name="useWebsockets" type="boolean">
+			<label>Use websockets</label>
+			<description>Set to true the binding will get notifications of thing updates</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

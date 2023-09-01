@@ -82,8 +82,7 @@ public class HostHandler extends ApiConsumerHandler {
         LanHost host = getLanHost();
         updateConnectivityChannels(host);
         logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
-        getManager(WebSocketManager.class).registerListener(host.getMac(), this);
-        pushSubscribed = true;
+        pushSubscribed = getManager(WebSocketManager.class).registerListener(host.getMac(), this);
     }
 
     protected LanHost getLanHost() throws FreeboxException {

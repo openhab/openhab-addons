@@ -61,7 +61,6 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     private volatile @Nullable Session wsSession;
 
     private record Register(String action, List<String> events) {
-
     }
 
     public WebSocketManager(FreeboxOsSession session) throws FreeboxException {
@@ -91,6 +90,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         try {
             client.start();
             client.connect(this, uri, request);
+            logger.debug("Websocket manager connected to {}", uri);
         } catch (Exception e) {
             throw new FreeboxException(e, "Exception connecting websocket client");
         }
@@ -183,8 +183,12 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         /* do nothing */
     }
 
-    public void registerListener(MACAddress mac, HostHandler hostHandler) {
-        lanHosts.put(mac, hostHandler);
+    public boolean registerListener(MACAddress mac, HostHandler hostHandler) {
+        if (wsSession != null) {
+            lanHosts.put(mac, hostHandler);
+            return true;
+        }
+        return false;
     }
 
     public void unregisterListener(MACAddress mac) {

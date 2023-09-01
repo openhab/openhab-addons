@@ -51,6 +51,7 @@ public class FreeboxOsSession {
     private @NonNullByDefault({}) UriBuilder uriBuilder;
     private @Nullable Session session;
     private String appToken = "";
+    private boolean enableWebSockets;
 
     public enum BoxModel {
         FBXGW_R1_FULL, // Freebox Server (v6) revision 1
@@ -83,6 +84,7 @@ public class FreeboxOsSession {
         ApiVersion version = apiHandler.executeUri(config.getUriBuilder(API_VERSION_PATH).build(), HttpMethod.GET,
                 ApiVersion.class, null, null);
         this.uriBuilder = config.getUriBuilder(version.baseUrl());
+        this.enableWebSockets = config.useWebsockets;
         getManager(LoginManager.class);
         getManager(NetShareManager.class);
         getManager(LanManager.class);
@@ -93,7 +95,9 @@ public class FreeboxOsSession {
 
     public void openSession(String appToken) throws FreeboxException {
         Session newSession = getManager(LoginManager.class).openSession(appToken);
-        getManager(WebSocketManager.class).openSession(newSession.sessionToken());
+        if (enableWebSockets) {
+            getManager(WebSocketManager.class).openSession(newSession.sessionToken());
+        }
         session = newSession;
         this.appToken = appToken;
     }
