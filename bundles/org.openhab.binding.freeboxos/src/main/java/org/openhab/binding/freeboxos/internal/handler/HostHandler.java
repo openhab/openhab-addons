@@ -65,7 +65,7 @@ public class HostHandler extends ApiConsumerHandler {
     protected void cancelPushSubscription() {
         if (pushSubscribed) {
             try {
-                getManager(WebSocketManager.class).unregisterLanHost(getMac());
+                getManager(WebSocketManager.class).unregisterListener(getMac());
             } catch (FreeboxException e) {
                 logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
             }

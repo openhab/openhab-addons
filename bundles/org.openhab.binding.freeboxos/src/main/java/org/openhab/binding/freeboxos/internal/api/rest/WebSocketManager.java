@@ -220,7 +220,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         return false;
     }
 
-    public void unregisterLanHost(MACAddress mac) {
+    public void unregisterListener(MACAddress mac) {
         listeners.remove(mac);
     }
 }
