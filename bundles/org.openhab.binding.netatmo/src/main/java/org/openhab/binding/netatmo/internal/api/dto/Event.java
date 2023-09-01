@@ -54,11 +54,11 @@ public abstract class Event extends NAObject {
     @Override
     public @Nullable String getName() {
         String localMessage = super.getName();
-        return (localMessage != null ? localMessage.replace("<b>", "").replace("</b>", "") : "");
+        return localMessage != null ? localMessage.replace("<b>", "").replace("</b>", "") : "";
     }
 
     public Optional<EventSubType> getSubTypeDescription() {
-        return Stream.of(EventSubType.values()).filter(v -> v.types.contains(getEventType()) && v.subType == subType)
-                .findFirst();
+        return Stream.of(EventSubType.values())
+                .filter(v -> v.types.contains(getEventType()) && v.subType.equals(subType)).findFirst();
     }
 }
