@@ -482,7 +482,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     String error = null;
 
                     if (openConnection()) {
-                        long prevUpdateTime = lastPollingUpdate;
                         // poll all zones on the amplifier to get current state
                         amp.getZoneIds().stream().limit(numZones).forEach((streamZoneId) -> {
                             try {
@@ -505,11 +504,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                 logger.debug("Error sending Xantech periodic update commands: {}", e.getMessage());
                             }
                         }
-
-                        // prevUpdateTime should have changed if a zone update was received
-                        if (lastPollingUpdate == prevUpdateTime) {
-                            error = "@text/offline.communication-error-polling";
-                        }
                     } else {
                         error = "@text/offline.communication-error-reconnection";
                     }
@@ -518,7 +512,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                     } else {
                         updateStatus(ThingStatus.ONLINE);
-                        lastPollingUpdate = System.currentTimeMillis();
                     }
                 }
             }
