@@ -13,15 +13,13 @@
 		</parameter>
 		<parameter name="timeUpdateInterval" type="integer" unit="min">
 			<label>Time Update Interval</label>
-			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules
-				will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>360</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="reconnectionInterval" type="integer" unit="s">
 			<label>Reconnection Interval</label>
-			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication
-				problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
+			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
 			<default>15</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -39,15 +37,13 @@
 		</parameter>
 		<parameter name="timeUpdateInterval" type="integer" unit="min">
 			<label>Time Update Interval</label>
-			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules
-				will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>360</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="reconnectionInterval" type="integer" unit="s">
 			<label>Reconnection Interval</label>
-			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication
-				problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
+			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
 			<default>15</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -60,8 +56,7 @@
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
-				refresh will be scheduled.</description>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -273,8 +268,7 @@
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the counters (in seconds), default 300. If set to 0 or left empty, no refresh will
-				be scheduled.</description>
+			<description>Refresh interval for the counters (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -333,7 +327,7 @@
 		</parameter>
 		<parameter name="counter1PulseMultiplier" type="decimal">
 			<label>Counter 1 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 1</description>
+			<description>The pulse multiplier for counter 1.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -356,7 +350,7 @@
 		</parameter>
 		<parameter name="counter2PulseMultiplier" type="decimal">
 			<label>Counter 2 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 2</description>
+			<description>The pulse multiplier for counter 2.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -379,7 +373,7 @@
 		</parameter>
 		<parameter name="counter3PulseMultiplier" type="decimal">
 			<label>Counter 3 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 3</description>
+			<description>The pulse multiplier for counter 3.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -402,7 +396,7 @@
 		</parameter>
 		<parameter name="counter4PulseMultiplier" type="decimal">
 			<label>Counter 4 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 4</description>
+			<description>The pulse multiplier for counter 4.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -421,8 +415,7 @@
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
-				refresh will be scheduled.</description>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -532,8 +525,7 @@
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
-				refresh will be scheduled.</description>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -600,8 +592,7 @@
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the sensors (in seconds), default 300. If set to 0 or left empty, no refresh will
-				be scheduled.</description>
+			<description>Refresh interval for the sensors (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -692,8 +683,7 @@
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
-				refresh will be scheduled.</description>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
